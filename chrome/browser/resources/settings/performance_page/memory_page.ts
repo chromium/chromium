@@ -10,7 +10,9 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,7 +30,7 @@ export const MEMORY_SAVER_MODE_PREF =
 export const MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF =
     'performance_tuning.high_efficiency_mode.aggressiveness';
 
-const SettingsMemoryPageElementBase = PrefsMixin(PolymerElement);
+const SettingsMemoryPageElementBase = PrefServiceObserverMixin(PolymerElement);
 
 export interface SettingsMemoryPageElement {
   $: {
@@ -62,26 +64,41 @@ export class SettingsMemoryPageElement extends SettingsMemoryPageElementBase {
         type: Number,
         value: () => MemorySaverModeState.ENABLED,
       },
+
+      memorySaverStatePref_: {type: Object},
     };
   }
 
   declare private numericUncheckedValues_: MemorySaverModeState[];
   declare private numericCheckedValue_: MemorySaverModeState[];
+  declare private memorySaverStatePref_: chrome.settingsPrivate.PrefObject|
+      undefined;
+
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(MEMORY_SAVER_MODE_PREF, 'memorySaverStatePref_');
+  }
+
   private onMemorySaverModeChange_() {
     this.metricsProxy_.recordMemorySaverModeChanged(
-        this.getPref<number>(MEMORY_SAVER_MODE_PREF).value);
+        PrefService.getInstance()
+            .getPref<number>(MEMORY_SAVER_MODE_PREF)
+            .value);
   }
 
   private onMemorySaverModeAggressivenessChange_() {
     this.metricsProxy_.recordMemorySaverModeAggressivenessChanged(
-        this.getPref<number>(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF).value);
+        PrefService.getInstance()
+            .getPref<number>(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF)
+            .value);
   }
 
-  private isMemorySaverModeEnabled_(value: number): boolean {
-    return value !== MemorySaverModeState.DISABLED;
+  private isMemorySaverModeEnabled_(): boolean {
+    assert(this.memorySaverStatePref_);
+    return this.memorySaverStatePref_.value !== MemorySaverModeState.DISABLED;
   }
 
   private onMemorySaverLearnMoreLinkClick_() {

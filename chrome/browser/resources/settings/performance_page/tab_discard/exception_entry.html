@@ -17,7 +17,7 @@
   <div class="start text-elide">[[entry.site]]</div>
   <template is="dom-if" if="[[entry.managed]]">
     <cr-policy-pref-indicator
-        pref="[[prefs.performance_tuning.tab_discarding.exceptions_managed]]"
+        pref="[[exceptionsManagedPref_]]"
         on-mouseenter="onShowTooltip_" on-focus="onShowTooltip_">
     </cr-policy-pref-indicator>
   </template>

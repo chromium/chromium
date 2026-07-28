@@ -7,19 +7,22 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '../../settings_shared.css.js';
 
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../../base_mixin.js';
 
 import {getTemplate} from './exception_entry.html.js';
+import {TAB_DISCARD_EXCEPTIONS_MANAGED_PREF} from './exception_validation_mixin.js';
 
 export interface ExceptionEntry {
   site: string;
   managed: boolean;
 }
 
-const ExceptionEntryElementBase = BaseMixin(PolymerElement);
+const ExceptionEntryElementBase =
+    PrefServiceObserverMixin(BaseMixin(PolymerElement));
 
 export class ExceptionEntryElement extends
     ExceptionEntryElementBase {
@@ -34,12 +37,19 @@ export class ExceptionEntryElement extends
   static get properties() {
     return {
       entry: Object,
-      prefs: Object,
+      exceptionsManagedPref_: Object,
     };
   }
 
   declare entry: ExceptionEntry;
-  declare prefs: Record<string, unknown>;
+  declare private exceptionsManagedPref_: chrome.settingsPrivate.PrefObject|
+      undefined;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(
+        TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, 'exceptionsManagedPref_');
+  }
 
   private onMenuClick_(e: Event) {
     this.fire(

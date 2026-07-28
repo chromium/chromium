@@ -9,8 +9,6 @@ import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import './exception_add_input.js';
 import './exception_current_sites_list.js';
 
-import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
@@ -39,13 +37,7 @@ export interface ExceptionTabbedAddDialogElement {
   };
 }
 
-type Constructor<T> = new (...args: any[]) => T;
-const ExceptionTabbedAddDialogElementBase =
-    PrefsMixin(PolymerElement) as
-    Constructor<PrefsMixinInterface&PolymerElement>;
-
-export class ExceptionTabbedAddDialogElement extends
-    ExceptionTabbedAddDialogElementBase {
+export class ExceptionTabbedAddDialogElement extends PolymerElement {
   static get is() {
     return 'tab-discard-exception-tabbed-add-dialog';
   }

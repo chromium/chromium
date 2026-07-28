@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '/shared/settings/prefs/prefs.js';
+
 import '../settings_shared.css.js';
 import './battery_page.js';
 import './memory_page.js';
@@ -46,8 +46,6 @@ export class SettingsPerformancePageIndexElement extends
   // Used to hide battery settings section if the device has no battery.
   static get properties() {
     return {
-      prefs: Object,
-
       showBatterySettings_: {
         type: Boolean,
         value: false,
@@ -55,7 +53,6 @@ export class SettingsPerformancePageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private showBatterySettings_: boolean;
 
   private showDefaultViews_() {

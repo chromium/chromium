@@ -9,7 +9,8 @@ import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -35,7 +36,7 @@ export const PERFORMANCE_INTERVENTION_NOTIFICATION_PREF =
 const INACTIVE_TAB_SETTING_ELEMENT_ID = 'kInactiveTabSettingElementId';
 
 const SettingsPerformancePageElementBase =
-    HelpBubbleMixin(PrefsMixin(PolymerElement));
+    HelpBubbleMixin(PrefServiceObserverMixin(PolymerElement));
 
 export interface SettingsPerformancePageElement {
   $: {
@@ -73,7 +74,7 @@ export class SettingsPerformancePageElement extends
 
   private onDiscardRingChange_() {
     this.metricsProxy_.recordDiscardRingTreatmentEnabledChanged(
-        this.getPref<boolean>(DISCARD_RING_PREF).value);
+        PrefService.getInstance().getPref<boolean>(DISCARD_RING_PREF).value);
   }
 
   private onDiscardRingTreatmentLearnMoreLinkClick_() {
@@ -92,7 +93,8 @@ export class SettingsPerformancePageElement extends
 
   private onPerformanceInterventionToggleButtonChange_() {
     this.metricsProxy_.recordPerformanceInterventionToggleButtonChanged(
-        this.getPref<boolean>(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
+        PrefService.getInstance()
+            .getPref<boolean>(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
             .value);
   }
 

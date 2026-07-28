@@ -27,7 +27,7 @@
     page-title="$i18n{speedPageTitle}">
 
   <settings-toggle-button id="preloadingToggle"
-      pref="{{prefs.net.network_prediction_options}}"
+      pref-key="net.network_prediction_options"
       label="$i18n{preloadingPageTitle}"
       sub-label-with-link="$i18n{preloadingToggleSummary}"
       on-sub-label-link-clicked="onPreloadingLearnMoreLinkClick_"
@@ -36,16 +36,15 @@
       on-change="onPreloadingStateChange_">
   </settings-toggle-button>
   <cr-collapse
-      opened="[[isPreloadingEnabled_(
-          prefs.net.network_prediction_options.value)]]">
+      opened="[[isPreloadingEnabled_(preloadingStatePref_)]]">
     <div class="cr-row continuation settings-section-bottom-padding">
       <settings-radio-group id="preloadingRadioGroup"
-          pref="{{prefs.net.network_prediction_options}}"
+          pref-key="net.network_prediction_options"
           selectable-elements="settings-collapse-radio-button"
           on-change="onPreloadingStateChange_">
         <settings-collapse-radio-button id="preloadingExtended"
             name="[[networkPredictionOptionsEnum_.EXTENDED]]"
-            pref="[[prefs.net.network_prediction_options]]"
+            pref-key="net.network_prediction_options"
             label="$i18n{preloadingPageExtendedPreloadingTitle}"
             sub-label="$i18n{preloadingPageExtendedPreloadingSummary}"
             expand-aria-label="
@@ -82,12 +81,11 @@
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="preloadingStandard"
             name="[[networkPredictionOptionsEnum_.STANDARD]]"
-            pref="[[prefs.net.network_prediction_options]]"
+            pref-key="net.network_prediction_options"
             label="$i18n{preloadingPageStandardPreloadingTitle}"
             sub-label="$i18n{preloadingPageStandardPreloadingSummary}"
             expand-aria-label="
                 $i18n{preloadingPageStandardPreloadingExpandA11yLabel}"
-            info-opened="{{infoOpened_}}"
             no-automatic-collapse>
           <div slot="collapse" class="settings-columned-section">
             <div class="column">

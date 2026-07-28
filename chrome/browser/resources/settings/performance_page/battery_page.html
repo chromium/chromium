@@ -19,7 +19,7 @@
   </template>
   <template is="dom-if" if="[[!isBatterySaverModeManagedByOs_]]">
     <settings-toggle-button id="toggleButton" on-change="onChange_"
-        pref="{{prefs.performance_tuning.battery_saver_mode.state}}"
+        pref-key="performance_tuning.battery_saver_mode.state"
         label="$i18n{batterySaverModeLabel}"
         sub-label-with-link="$i18n{batterySaverModeDescription}"
         on-sub-label-link-clicked="onBatterySaverLearnMoreLinkClick_"
@@ -27,20 +27,20 @@
         numeric-checked-value="[[batterySaverModeStateEnum_.ENABLED_BELOW_THRESHOLD]]">
     </settings-toggle-button>
     <cr-collapse id="radioGroupCollapse"
-        opened="[[isBatterySaverModeEnabled_(prefs.performance_tuning.battery_saver_mode.state.value)]]">
+        opened="[[isBatterySaverModeEnabled_(batterySaverStatePref_)]]">
       <div class="cr-row continuation battery-saver-radio-group">
         <settings-radio-group id="radioGroup" on-change="onChange_"
-            pref="{{prefs.performance_tuning.battery_saver_mode.state}}"
+            pref-key="performance_tuning.battery_saver_mode.state"
             group-aria-label="$i18n{batterySaverModeRadioGroupAriaLabel}">
           <controlled-radio-button
               label="$i18n{batterySaverModeEnabledBelowThresholdLabel}"
               name="[[batterySaverModeStateEnum_.ENABLED_BELOW_THRESHOLD]]"
-              pref="[[prefs.performance_tuning.battery_saver_mode.state]]">
+              pref-key="performance_tuning.battery_saver_mode.state">
           </controlled-radio-button>
           <controlled-radio-button id="enabledOnBatteryButton"
               label="$i18n{batterySaverModeEnabledOnBatteryLabel}"
               name="[[batterySaverModeStateEnum_.ENABLED_ON_BATTERY]]"
-              pref="[[prefs.performance_tuning.battery_saver_mode.state]]">
+              pref-key="performance_tuning.battery_saver_mode.state">
           </controlled-radio-button>
         </settings-radio-group>
       </div>

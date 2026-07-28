@@ -7,27 +7,76 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsPerformancePageIndexElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, PerformanceBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeState, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService, Router, routes, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('PerformancePageIndex', function() {
   let index: SettingsPerformancePageIndexElement;
   let browserProxy: TestPerformanceBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(browserProxy);
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
+    prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: 'performance_tuning.battery_saver_mode.state',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: BatterySaverModeState.DISABLED,
+      },
+      {
+        key: 'performance_tuning.high_efficiency_mode.state',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: MemorySaverModeState.DISABLED,
+      },
+      {
+        key: 'performance_tuning.high_efficiency_mode.aggressiveness',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: MemorySaverModeAggressiveness.MEDIUM,
+      },
+      {
+        key: 'net.network_prediction_options',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 1,  // NetworkPredictionOptions.STANDARD
+      },
+      {
+        key: 'cpu_performance_tier_override',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: -1,
+      },
+      {
+        key: 'performance_tuning.discard_ring_treatment.enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
+        key: 'performance_tuning.intervention_notification.enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
+        key: TAB_DISCARD_EXCEPTIONS_PREF,
+        type: chrome.settingsPrivate.PrefType.DICTIONARY,
+        value: {},
+      },
+      {
+        key: TAB_DISCARD_EXCEPTIONS_MANAGED_PREF,
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     index = document.createElement('settings-performance-page-index');
-    index.prefs = settingsPrefs.prefs!;
     document.body.appendChild(index);
     return flushTasks();
   });

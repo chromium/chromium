@@ -13,8 +13,8 @@ import '../settings_columned_section.css.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -40,7 +40,8 @@ export interface SpeedPageElement {
   };
 }
 
-const SpeedPageElementBase = PrefsMixin(PolymerElement);
+const SpeedPageElementBase = PrefServiceObserverMixin(PolymerElement);
+export const PRELOADING_PREF = 'net.network_prediction_options';
 
 export class SpeedPageElement extends SpeedPageElementBase {
   static get is() {
@@ -83,7 +84,7 @@ export class SpeedPageElement extends SpeedPageElementBase {
       cpuPerformanceTierOptions_: {
         type: Array,
         readOnly: true,
-        value: () => [
+        value: () => ([
           {
             value: -1,
             name: loadTimeData.getString('cpuPerformanceTierDefault'),
@@ -108,30 +109,33 @@ export class SpeedPageElement extends SpeedPageElementBase {
             value: 4,
             name: loadTimeData.getString('cpuPerformanceTierUltra'),
           },
-        ],
+        ]),
       },
+
+      preloadingStatePref_: {type: Object},
     };
   }
 
-  private declare cpuPerformanceInfo_: CpuPerformanceInfo|null;
-  private declare cpuPerformanceModelLabel_: string;
-  private declare cpuPerformanceEnabled_: boolean;
-  private declare cpuPerformanceTierOptions_: DropdownMenuOptionList;
+  declare private cpuPerformanceInfo_: CpuPerformanceInfo|null;
+  declare private cpuPerformanceModelLabel_: string;
+  declare private cpuPerformanceEnabled_: boolean;
+  declare private cpuPerformanceTierOptions_: DropdownMenuOptionList;
   declare private numericUncheckedValues_: NetworkPredictionOptions[];
+  declare private preloadingStatePref_: chrome.settingsPrivate.PrefObject|
+      undefined;
 
   override ready() {
     super.ready();
 
-    CrSettingsPrefs.initialized.then(() => {
-      const prefValue = this.getPref<NetworkPredictionOptions>(
-                                'net.network_prediction_options')
+    PrefService.getInstance().whenInitialized().then(() => {
+      const prefValue = PrefService.getInstance()
+                            .getPref<NetworkPredictionOptions>(PRELOADING_PREF)
                             .value;
       if (prefValue === NetworkPredictionOptions.WIFI_ONLY_DEPRECATED) {
         // The default pref value is deprecated, and is treated the same as
         // STANDARD. See chrome/browser/preloading/preloading_prefs.h.
-        this.setPrefValue(
-            'net.network_prediction_options',
-            NetworkPredictionOptions.STANDARD);
+        PrefService.getInstance().setPrefValue(
+            PRELOADING_PREF, NetworkPredictionOptions.STANDARD);
       }
     });
 
@@ -146,16 +150,27 @@ export class SpeedPageElement extends SpeedPageElementBase {
         });
   }
 
-  private isPreloadingEnabled_(value: number): boolean {
-    return value !== NetworkPredictionOptions.DISABLED;
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(PRELOADING_PREF, 'preloadingStatePref_');
+  }
+
+  private isPreloadingEnabled_(): boolean {
+    assert(this.preloadingStatePref_);
+    return this.preloadingStatePref_.value !==
+        NetworkPredictionOptions.DISABLED;
   }
 
   private onPreloadingStateChange_() {
     // Automatic expanding is disabled so that the radio buttons are collapsed
     // initially. Because of this, radio buttons' expanded states need to be
     // updated manually.
-    this.$.preloadingExtended.updateCollapsed();
-    this.$.preloadingStandard.updateCollapsed();
+    // Defer updates to let the pref change propagate to the radio buttons
+    // first.
+    Promise.resolve().then(() => {
+      this.$.preloadingExtended.updateCollapsed();
+      this.$.preloadingStandard.updateCollapsed();
+    });
   }
 
   private onPreloadingLearnMoreLinkClick_() {

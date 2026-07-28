@@ -11,7 +11,9 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -36,7 +38,7 @@ export interface SettingsBatteryPageElement {
   };
 }
 
-const SettingsBatteryPageElementBase = PrefsMixin(PolymerElement);
+const SettingsBatteryPageElementBase = PrefServiceObserverMixin(PolymerElement);
 
 export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
   static get is() {
@@ -66,21 +68,34 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
         type: Array,
         value: () => [BatterySaverModeState.DISABLED],
       },
+
+      batterySaverStatePref_: {type: Object},
     };
   }
 
   declare private isBatterySaverModeManagedByOs_: boolean;
   declare private numericUncheckedValues_: BatterySaverModeState[];
+  declare private batterySaverStatePref_: chrome.settingsPrivate.PrefObject|
+      undefined;
+
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
-  private isBatterySaverModeEnabled_(value: number): boolean {
-    return value !== BatterySaverModeState.DISABLED;
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(BATTERY_SAVER_MODE_PREF, 'batterySaverStatePref_');
+  }
+
+  private isBatterySaverModeEnabled_(): boolean {
+    assert(this.batterySaverStatePref_);
+    return this.batterySaverStatePref_.value !== BatterySaverModeState.DISABLED;
   }
 
   private onChange_() {
     this.metricsProxy_.recordBatterySaverModeChanged(
-        this.getPref<number>(BATTERY_SAVER_MODE_PREF).value);
+        PrefService.getInstance()
+            .getPref<number>(BATTERY_SAVER_MODE_PREF)
+            .value);
   }
 
   private onBatterySaverLearnMoreLinkClick_() {

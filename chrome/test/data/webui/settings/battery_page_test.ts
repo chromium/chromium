@@ -4,22 +4,24 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import type {ControlledRadioButtonElement, SettingsBatteryPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, loadTimeData, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl} from 'chrome://settings/settings.js';
+import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, loadTimeData, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('BatteryPage', function() {
   let batteryPage: SettingsBatteryPageElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({isBatterySaverModeManagedByOS: false});
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
@@ -27,26 +29,27 @@ suite('BatteryPage', function() {
     performanceMetricsProxy = new TestPerformanceMetricsProxy();
     PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
 
+    prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: BATTERY_SAVER_MODE_PREF,
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: BatterySaverModeState.DISABLED,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     batteryPage = document.createElement('settings-battery-page');
-    batteryPage.set('prefs', {
-      performance_tuning: {
-        battery_saver_mode: {
-          state: {
-            type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: BatterySaverModeState.DISABLED,
-          },
-        },
-      },
-    });
     document.body.appendChild(batteryPage);
     return microtasksFinished();
   });
 
-  test('BatterySaverModeEnabledOnBattery', function() {
-    batteryPage.setPrefValue(
+  test('BatterySaverModeEnabledOnBattery', async function() {
+    await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_ON_BATTERY);
-    flush();
     assertTrue(
         batteryPage.shadowRoot!
             .querySelector<SettingsToggleButtonElement>(
@@ -65,10 +68,9 @@ suite('BatteryPage', function() {
         'selected radio button should be enabled on battery');
   });
 
-  test('BatterySaverModeEnabledBelowThreshold', function() {
-    batteryPage.setPrefValue(
+  test('BatterySaverModeEnabledBelowThreshold', async function() {
+    await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_BELOW_THRESHOLD);
-    flush();
     assertTrue(
         batteryPage.shadowRoot!
             .querySelector<SettingsToggleButtonElement>(
@@ -87,8 +89,8 @@ suite('BatteryPage', function() {
         'selected radio button should be enabled below threshold');
   });
 
-  test('BatterySaverModeDisabled', function() {
-    batteryPage.setPrefValue(
+  test('BatterySaverModeDisabled', async function() {
+    await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
     assertFalse(
         batteryPage.shadowRoot!
@@ -102,7 +104,7 @@ suite('BatteryPage', function() {
   });
 
   test('BatterySaverModeMetrics', async function() {
-    batteryPage.setPrefValue(
+    await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
 
     batteryPage.shadowRoot!

@@ -7,8 +7,7 @@ import '../../controls/settings_checkbox_list_entry.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 
-import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -36,9 +35,9 @@ type Site = string;
 
 type Constructor<T> = new (...args: any[]) => T;
 const ExceptionCurrentSitesListElementBase =
-    ListPropertyUpdateMixin(ScrollableMixin(PrefsMixin(PolymerElement))) as
+    ListPropertyUpdateMixin(ScrollableMixin(PolymerElement)) as
     Constructor<ListPropertyUpdateMixinInterface&ScrollableMixinInterface&
-                PrefsMixinInterface&PolymerElement>;
+                PolymerElement>;
 
 export class ExceptionCurrentSitesListElement extends
     ExceptionCurrentSitesListElementBase {
@@ -155,8 +154,10 @@ export class ExceptionCurrentSitesListElement extends
   }
 
   private async updateCurrentSites_() {
+    await PrefService.getInstance().whenInitialized();
     const existingSites = new Set(Object.keys(
-        this.getPref<Record<string, unknown>>(TAB_DISCARD_EXCEPTIONS_PREF)
+        PrefService.getInstance()
+            .getPref<Record<string, unknown>>(TAB_DISCARD_EXCEPTIONS_PREF)
             .value));
     const currentSites = (await this.browserProxy_.getCurrentOpenSites())
                              .filter(rule => !existingSites.has(rule));
@@ -198,9 +199,10 @@ export class ExceptionCurrentSitesListElement extends
 
   submit() {
     assert(!this.submitDisabled);
+    const epoch = convertDateToWindowsEpoch();
     this.selectedSites_.forEach(rule => {
-      this.setPrefDictEntry(
-          TAB_DISCARD_EXCEPTIONS_PREF, rule, convertDateToWindowsEpoch());
+      PrefService.getInstance().setPrefDictEntry(
+          TAB_DISCARD_EXCEPTIONS_PREF, rule, epoch);
     });
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.ADD_FROM_CURRENT);

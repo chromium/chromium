@@ -4,8 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
@@ -28,11 +27,9 @@ export interface ExceptionAddInputElement {
 
 type Constructor<T> = new (...args: any[]) => T;
 const ExceptionAddInputElementBase =
-    ExceptionValidationMixin(
-        ListPropertyUpdateMixin(PrefsMixin(PolymerElement))) as
+    ExceptionValidationMixin(ListPropertyUpdateMixin(PolymerElement)) as
     Constructor<ExceptionValidationMixinInterface&
-                ListPropertyUpdateMixinInterface&PrefsMixinInterface&
-                PolymerElement>;
+                ListPropertyUpdateMixinInterface&PolymerElement>;
 
 export class ExceptionAddInputElement extends
     ExceptionAddInputElementBase {
@@ -50,7 +47,7 @@ export class ExceptionAddInputElement extends
   submit() {
     assert(!this.submitDisabled);
     const rule = this.rule.trim();
-    this.setPrefDictEntry(
+    PrefService.getInstance().setPrefDictEntry(
         TAB_DISCARD_EXCEPTIONS_PREF, rule, convertDateToWindowsEpoch());
     this.metricsProxy_.recordExceptionListAction(
         MemorySaverModeExceptionListAction.ADD_MANUAL);

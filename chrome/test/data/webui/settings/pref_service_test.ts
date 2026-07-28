@@ -198,6 +198,32 @@ suite('PrefService', function() {
     assertDeepEquals({key1: 10, key2: 2, key3: 3}, callArgs.value);
   });
 
+  test('DeletePrefDictEntry', async function() {
+    const key = 'browser.dict_pref';
+
+    // Verify initial values.
+    const initialPref = service.getPref<Record<string, number>>(key);
+    assertEquals(1, initialPref.value['key1']);
+    assertEquals(2, initialPref.value['key2']);
+
+    // Delete an entry.
+    const promise = service.deletePrefDictEntry(key, 'key1');
+
+    // Verify synchronous update in cache.
+    const updatedPref = service.getPref<Record<string, number>>(key);
+    assertEquals(undefined, updatedPref.value['key1']);
+    assertEquals(2, updatedPref.value['key2']);
+
+    // Verify promise resolves to true.
+    const success = await promise;
+    assertTrue(success);
+
+    // Verify backend is called with correct params.
+    const callArgs = await proxy.fakeApi.whenCalled('setPref');
+    assertEquals(key, callArgs.key);
+    assertDeepEquals({key2: 2}, callArgs.value);
+  });
+
   test('addObserverSingleExternalChange', async function() {
     const key1 = 'browser.show_home_button';
     const key2 = 'browser.homepage';
