@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/test/ash_test_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "shelf_test_base.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -26,19 +27,14 @@ void ShelfTestBase::SetUp() {
 
 void ShelfTestBase::TearDown() {
   // When the test is completed, the page flip timer should be idle.
-  EXPECT_FALSE(scrollable_shelf_view_->IsPageFlipTimerBusyForTest());
+  EXPECT_FALSE(scrollable_shelf_view()->IsPageFlipTimerBusyForTest());
 
   AshTestBase::TearDown();
 }
 
 void ShelfTestBase::UpdateShelfRelatedMembers() {
-  scrollable_shelf_view_ = GetPrimaryShelf()
-                               ->shelf_widget()
-                               ->hotseat_widget()
-                               ->scrollable_shelf_view();
-  shelf_view_ = scrollable_shelf_view_->shelf_view();
   test_api_ =
-      std::make_unique<ShelfViewTestAPI>(scrollable_shelf_view_->shelf_view());
+      std::make_unique<ShelfViewTestAPI>(scrollable_shelf_view()->shelf_view());
   test_api_->SetAnimationDuration(base::Milliseconds(1));
 }
 
@@ -52,7 +48,7 @@ void ShelfTestBase::PopulateAppShortcut(int number,
 }
 
 void ShelfTestBase::AddAppShortcutsUntilOverflow(bool use_alternative_color) {
-  while (scrollable_shelf_view_->layout_strategy_for_test() ==
+  while (scrollable_shelf_view()->layout_strategy_for_test() ==
          ScrollableShelfView::kNotShowArrowButtons) {
     AddAppShortcutWithIconColor(
         TYPE_PINNED_APP, use_alternative_color
@@ -84,4 +80,25 @@ ShelfID ShelfTestBase::AddAppShortcutWithIconColor(ShelfItemType item_type,
   return item.id;
 }
 
+ScrollableShelfView* ShelfTestBase::scrollable_shelf_view() {
+  return GetPrimaryShelf()
+      ->shelf_widget()
+      ->hotseat_widget()
+      ->scrollable_shelf_view();
+}
+
+ShelfView* ShelfTestBase::shelf_view() {
+  return scrollable_shelf_view()->shelf_view();
+}
+
+const ScrollableShelfView* ShelfTestBase::scrollable_shelf_view() const {
+  return GetPrimaryShelf()
+      ->shelf_widget()
+      ->hotseat_widget()
+      ->scrollable_shelf_view();
+}
+
+const ShelfView* ShelfTestBase::shelf_view() const {
+  return scrollable_shelf_view()->shelf_view();
+}
 }  // namespace ash

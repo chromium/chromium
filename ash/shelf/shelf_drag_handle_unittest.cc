@@ -59,7 +59,7 @@ class DragHandleContextualNudgeTest : public ShelfLayoutManagerTestBase {
   }
   void TearDown() override {
     contextual_tooltip::ClearClockOverrideForTesting();
-    AshTestBase::TearDown();
+    ShelfLayoutManagerTestBase::TearDown();
   }
 
   base::SimpleTestClock test_clock_;

@@ -55,9 +55,9 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
       /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 0,
       GetPrimaryShelf()->GetWindow()));
 
-  ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
+  ASSERT_TRUE(scrollable_shelf_view()->right_arrow());
   const gfx::Point right_arrow_center =
-      scrollable_shelf_view_->right_arrow()->GetBoundsInScreen().CenterPoint();
+      scrollable_shelf_view()->right_arrow()->GetBoundsInScreen().CenterPoint();
 
   GetEventGenerator()->MoveMouseTo(right_arrow_center);
   GetEventGenerator()->ClickLeftButton();
@@ -120,7 +120,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Move the mouse to the shelf center then right-click.
   const gfx::Point shelf_center =
-      scrollable_shelf_view_->GetBoundsInScreen().CenterPoint();
+      scrollable_shelf_view()->GetBoundsInScreen().CenterPoint();
   GetEventGenerator()->MoveMouseTo(shelf_center);
   GetEventGenerator()->PressRightButton();
 

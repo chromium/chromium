@@ -2329,7 +2329,7 @@ TEST_F(ShelfLayoutManagerTest, ShutdownHandlesWindowActivation) {
 
 TEST_F(ShelfLayoutManagerTest, ShelfLayoutInUnifiedDesktop) {
   Shell::Get()->display_manager()->SetUnifiedDesktopEnabled(true);
-  UpdateDisplay("500x400, 500x400");
+  UpdateDisplay("500x400, 500x400", false, false);
 
   // When the unified desktop is enabled, UpdateDisplay() adds a display so the
   // shelf is recreated. Therefore, update the shelf related data members.

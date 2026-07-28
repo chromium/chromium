@@ -152,6 +152,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   bool IsPageFlipTimerBusyForTest() const;
 
   ShelfView* shelf_view() { return shelf_view_; }
+  const ShelfView* shelf_view() const { return shelf_view_; }
   ShelfContainerView* shelf_container_view() { return shelf_container_view_; }
   const ShelfContainerView* shelf_container_view() const {
     return shelf_container_view_;
