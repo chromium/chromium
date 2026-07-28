@@ -58,6 +58,7 @@ promise_test(async (t) => {
   }));
 
   await activateDocument(t);
+  await new Promise(r => requestAnimationFrame(r));
 
   assert_false(wasResumed);
 

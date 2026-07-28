@@ -651,6 +651,34 @@ TEST_P(AudioContextAutoplayTest,
   }
 }
 
+// Verifies that pending resume() promises resolve when a source node starts
+// following document user activation.
+TEST_P(AudioContextAutoplayTest,
+       PendingResumeResolvesOnSourceNodeStartWithUserActivation) {
+  if (GetParam() != AutoplayPolicy::Type::kDocumentUserActivationRequired) {
+    return;
+  }
+
+  ScriptState::Scope scope(GetScriptStateFrom(GetWindow()));
+
+  AudioContext* audio_context = AudioContext::Create(
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+
+  auto promise = audio_context->resumeContext(GetScriptStateFrom(GetWindow()),
+                                              ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(audio_context->ContextState(),
+            V8AudioContextState::Enum::kSuspended);
+
+  LocalFrame::NotifyUserActivation(
+      GetWindow().GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  audio_context->NotifySourceNodeStart();
+
+  EXPECT_EQ(audio_context->ContextState(), V8AudioContextState::Enum::kRunning);
+  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AudioContextAutoplayTest,
     AudioContextAutoplayTest,

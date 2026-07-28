@@ -1401,6 +1401,8 @@ void AudioContext::NotifySourceNodeStart() {
       !suspended_by_user_ && IsAllowedToStart()) {
     StartRendering();
     SetContextState(V8AudioContextState::Enum::kRunning);
+
+    ResolvePendingResumeResolvers();
   }
 }
 
