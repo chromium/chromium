@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/run_loop.h"
@@ -205,13 +206,26 @@ class TestVariationsService : public VariationsService {
     base::RunLoop().RunUntilIdle();
   }
 
-  bool DoFetchFromURL(const GURL& url, bool is_http_retry) override {
+  void DoFetchFromURL(const GURL& url,
+                      std::string header_serial_number) override {
+    last_header_serial_number_ = header_serial_number;
     if (intercepts_fetch_) {
       fetch_attempted_ = true;
-      return true;
+      if (fetch_intercepted_callback_) {
+        std::move(fetch_intercepted_callback_).Run();
+      }
+      return;
     }
 
-    return VariationsService::DoFetchFromURL(url, is_http_retry);
+    VariationsService::DoFetchFromURL(url, std::move(header_serial_number));
+  }
+
+  const std::string& last_header_serial_number() const {
+    return last_header_serial_number_;
+  }
+
+  void set_fetch_intercepted_callback(base::OnceClosure callback) {
+    fetch_intercepted_callback_ = std::move(callback);
   }
 
   void StoreSeed(std::string seed_data,
@@ -253,6 +267,8 @@ class TestVariationsService : public VariationsService {
   bool delta_compressed_seed_ = false;
   bool gzip_compressed_seed_ = false;
   bool runtime_simulation_called_ = false;
+  base::OnceClosure fetch_intercepted_callback_;
+  std::string last_header_serial_number_;
 };
 
 class TestVariationsServiceObserver : public VariationsService::Observer {
@@ -1013,6 +1029,34 @@ TEST_F(VariationsServiceTest, RetryOverHTTPIfURLisSet) {
   service.set_insecure_url(GURL("http://example.test"));
   EXPECT_TRUE(service.CallMaybeRetryOverHTTP());
   EXPECT_TRUE(service.fetch_attempted());
+}
+
+TEST_F(VariationsServiceTest, RetryOverHTTPWithBackgroundEncryption) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.set_intercepts_fetch(true);
+  service.set_last_request_was_retry(false);
+  service.set_insecure_url(GURL("http://example.test"));
+  service.set_latest_serial_number("test_serial_number");
+
+  base::RunLoop run_loop;
+  service.set_fetch_intercepted_callback(run_loop.QuitClosure());
+
+  // The retry should be initiated, but the actual fetch is delayed
+  // because encryption happens on a background thread.
+  EXPECT_TRUE(service.CallMaybeRetryOverHTTP());
+  EXPECT_FALSE(service.fetch_attempted());
+
+  // Run the loop until the background task and reply callback execute.
+  run_loop.Run();
+
+  EXPECT_TRUE(service.fetch_attempted());
+  EXPECT_NE(service.last_header_serial_number(), "test_serial_number");
+  std::string decoded;
+  EXPECT_TRUE(
+      base::Base64Decode(service.last_header_serial_number(), &decoded));
 }
 
 TEST_F(VariationsServiceTest, DoNotRetryAfterARetry) {

@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -306,10 +307,11 @@ class VariationsService
   // the response. This calls DoFetchToURL with the set url.
   virtual void DoActualFetch();
 
-  // Attempts a seed fetch from the set |url|. Returns true if the fetch was
-  // started successfully, false otherwise. |is_http_retry| should be true if
-  // this is a retry over HTTP, false otherwise.
-  virtual bool DoFetchFromURL(const GURL& url, bool is_http_retry);
+  // Attempts a seed fetch from the set |url|. |header_serial_number| is the
+  // value to be sent in the "If-None-Match" header (plaintext for HTTPS
+  // requests, and encrypted for HTTP retries).
+  virtual void DoFetchFromURL(const GURL& url,
+                              std::string header_serial_number);
 
   // Stores the seed to prefs. Set as virtual and protected so that it can be
   // overridden by tests.
@@ -416,6 +418,18 @@ class VariationsService
   // imply the actual fetch was successful.
   bool MaybeRetryOverHTTP();
 
+  // Fetches the seed over HTTPS.
+  void FetchSeedOverHTTPS();
+
+  // Fetches the seed over HTTP, encrypting the serial number in the background.
+  void FetchSeedOverHTTP();
+
+  // Continuation of FetchSeedOverHTTP() after the serial number has been
+  // encrypted in the background.
+  void ContinueRetryOverHTTP(
+      const GURL& url,
+      std::optional<std::string> encrypted_serial_number);
+
   // ResourceRequestAllowedNotifier::Observer implementation:
   void OnResourceRequestsAllowed() override;
 
@@ -429,12 +443,6 @@ class VariationsService
   ApplyRuntimeMutableChangesResult ApplyRuntimeMutableChanges(
       base::FieldTrial* simulated_trial,
       const ProcessedStudy& processed_study);
-
-  // Encrypts a string using the encrypted_messages component, input is passed
-  // in as |plaintext|, outputs a serialized EncryptedMessage protobuf as
-  // |encrypted|. Returns true on success, false on failure. The encryption can
-  // be done in-place.
-  bool EncryptString(const std::string& plaintext, std::string* encrypted);
 
   // Calls `done_callback` with the studies and their groups which could
   // possibly be forced from the given `seed`.
@@ -464,6 +472,11 @@ class VariationsService
   // Contains the current seed request. Will only have a value while a request
   // is pending, and will be reset by |OnURLFetchComplete|.
   std::unique_ptr<network::SimpleURLLoader> pending_seed_request_;
+
+  // Tracks whether a seed fetch is in progress. This covers the entire
+  // duration of the process, including the initial HTTPS request, the
+  // asynchronous encryption phase, and the HTTP retry if applicable.
+  bool is_fetching_seed_ = false;
 
   // The value of the "restrict" URL param to the variations server that has
   // been specified via |SetRestrictMode|. If empty, the URL param will be set

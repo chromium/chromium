@@ -30,6 +30,7 @@
 #include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
@@ -292,6 +293,21 @@ bool RuntimeMutableExperimentAlreadyApplied(
        !runtime_field_trial_overrides->IsFieldTrialOverridden(*existing_trial));
 }
 
+// Encrypts the serial number and encodes it in base64. Returns std::nullopt
+// on failure.
+std::optional<std::string> EncryptAndEncodeSerialNumber(
+    const std::string& serial_number) {
+  std::string encrypted;
+  encrypted_messages::EncryptedMessage encrypted_message;
+  if (!encrypted_messages::EncryptSerializedMessage(
+          kServerPublicKey, kServerPublicKeyVersion, kEncryptedMessageLabel,
+          serial_number, &encrypted_message) ||
+      !encrypted_message.SerializeToString(&encrypted)) {
+    return std::nullopt;
+  }
+  return base::Base64Encode(encrypted);
+}
+
 }  // namespace
 
 BASE_FEATURE(kVariationsRuntimeMutability, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -433,18 +449,6 @@ void VariationsService::PerformPreMainMessageLoopStartup() {
 
   StartRepeatedVariationsSeedFetch();
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-bool VariationsService::EncryptString(const std::string& plaintext,
-                                      std::string* encrypted) {
-  encrypted_messages::EncryptedMessage encrypted_message;
-  if (!encrypted_messages::EncryptSerializedMessage(
-          kServerPublicKey, kServerPublicKeyVersion, kEncryptedMessageLabel,
-          plaintext, &encrypted_message) ||
-      !encrypted_message.SerializeToString(encrypted)) {
-    return false;
-  }
-  return true;
 }
 
 void VariationsService::AddObserver(Observer* observer) {
@@ -655,30 +659,54 @@ void VariationsService::EnableFetchForTesting() {
 }
 
 void VariationsService::DoActualFetch() {
-  DoFetchFromURL(variations_server_url_, false);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Normally, there shouldn't be a fetch in progress when this fires.
+  // However it's not impossible - for example if Chrome was paused (e.g. in a
+  // debugger or if the machine was suspended) and the previous request hasn't
+  // completed yet. In this case, don't start a new request and just let the
+  // previous one finish.
+  if (is_fetching_seed_) {
+    return;
+  }
+  is_fetching_seed_ = true;
+  last_request_was_http_retry_ = false;
+  FetchSeedOverHTTPS();
+}
+
+void VariationsService::FetchSeedOverHTTPS() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DoFetchFromURL(variations_server_url_, GetLatestSerialNumber());
+}
+
+void VariationsService::FetchSeedOverHTTP() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string serial_number = GetLatestSerialNumber();
+  if (!serial_number.empty()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&EncryptAndEncodeSerialNumber, std::move(serial_number)),
+        base::BindOnce(&VariationsService::ContinueRetryOverHTTP,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       insecure_variations_server_url_));
+    return;
+  }
+  // If no serial number, just fetch without header.
+  DoFetchFromURL(insecure_variations_server_url_, std::string());
 }
 
 const std::string& VariationsService::GetLatestSerialNumber() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return field_trial_creator_.seed_store()->GetLatestSerialNumber();
 }
 
-bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
+void VariationsService::DoFetchFromURL(const GURL& url,
+                                       std::string header_serial_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsFetchingEnabled());
+  DCHECK(!pending_seed_request_);
 
   CHECK(state_manager_);
   safe_seed_manager_.RecordFetchStarted(state_manager_->startup_visibility());
-
-  // Normally, there shouldn't be a |pending_seed_request_| when this fires.
-  // However it's not impossible - for example if Chrome was paused (e.g. in a
-  // debugger or if the machine was suspended) and OnURLFetchComplete() hasn't
-  // had a chance to run yet from the previous request. In this case, don't
-  // start a new request and just let the previous one finish.
-  if (pending_seed_request_) {
-    return false;
-  }
-
-  last_request_was_http_retry_ = is_http_retry;
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("chrome_variations_service", R"(
@@ -704,20 +732,14 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  std::string serial_number = GetLatestSerialNumber();
-  if (!serial_number.empty()) {
-    // Get the seed only if its serial number doesn't match what we have.
-    // If the fetch is an HTTP retry, encrypt the If-None-Match header.
-    if (is_http_retry) {
-      if (!EncryptString(serial_number, &serial_number)) {
-        return false;
-      }
-      serial_number = base::Base64Encode(serial_number);
-    }
-    resource_request->headers.SetHeader("If-None-Match", serial_number);
-  }
+
   const bool enable_deltas =
-      !serial_number.empty() && !delta_error_since_last_success_;
+      !header_serial_number.empty() && !delta_error_since_last_success_;
+
+  if (!header_serial_number.empty()) {
+    resource_request->headers.SetHeader("If-None-Match",
+                                        std::move(header_serial_number));
+  }
   // Tell the server that delta-compressed and gzipped seeds are supported.
   const char* supported_im = enable_deltas ? "x-bm,gzip" : "gzip";
   resource_request->headers.SetHeader("A-IM", supported_im);
@@ -744,7 +766,21 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   ++request_count_;
   last_request_started_time_ = now;
   delta_error_since_last_success_ = false;
-  return true;
+}
+
+void VariationsService::ContinueRetryOverHTTP(
+    const GURL& url,
+    std::optional<std::string> encrypted_serial_number) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encrypted_serial_number.has_value()) {
+    // Encryption failed. Abort retry.
+    DVLOG(1) << "Failed to encrypt serial number for HTTP retry.";
+    is_fetching_seed_ = false;
+    return;
+  }
+
+  DoFetchFromURL(url, std::move(encrypted_serial_number).value());
 }
 
 void VariationsService::StoreSeed(std::string seed_data,
@@ -940,6 +976,7 @@ void VariationsService::OnSimpleLoaderComplete(
     // waiting the full time interval.
     // |request_scheduler_| will be null during unit tests.
     if (is_first_request && request_scheduler_) {
+      is_fetching_seed_ = false;
       request_scheduler_->ScheduleFetchShortly();
       return;
     }
@@ -951,6 +988,9 @@ void VariationsService::OnSimpleLoaderComplete(
       return;
     }
   }
+
+  // We are sure we won't retry. Mark to false right here.
+  is_fetching_seed_ = false;
 
   // Return if there was a failure. Note that we check both |is_success| which
   // is set above and the response code. There could be a case where there's a
@@ -1024,7 +1064,9 @@ bool VariationsService::MaybeRetryOverHTTP() {
   if (!last_request_was_http_retry_ &&
       !insecure_variations_server_url_.is_empty() &&
       insecure_variations_server_url_.SchemeIs(url::kHttpScheme)) {
-    return DoFetchFromURL(insecure_variations_server_url_, true);
+    last_request_was_http_retry_ = true;
+    FetchSeedOverHTTP();
+    return true;
   }
   return false;
 }
@@ -1393,6 +1435,9 @@ VariationsSource VariationsService::GetVariationsSource() const {
 
 void VariationsService::CancelCurrentRequestForTesting() {
   pending_seed_request_.reset();
+  is_fetching_seed_ = false;
+  // Cancel any pending replies (like ContinueRetryOverHTTP) or callbacks.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void VariationsService::StartRepeatedVariationsSeedFetchForTesting() {
