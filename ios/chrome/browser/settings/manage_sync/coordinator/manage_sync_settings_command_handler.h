@@ -18,6 +18,9 @@
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
 
+// Opens the "Connected Apps" web page.
+- (void)openConnectedAppsWebPage;
+
 // Sign-out and display a toast.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 

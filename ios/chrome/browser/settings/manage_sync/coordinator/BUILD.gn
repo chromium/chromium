@@ -29,6 +29,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
+    "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
     "//ios/chrome/browser/regional_capabilities/model",

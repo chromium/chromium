@@ -4705,6 +4705,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_MANAGE_STORAGE_ALERT_TITLE" desc="Title of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
         Your storage is full
       </message>
+      <message name="IDS_IOS_MANAGE_SYNC_CONNECTED_APPS_DESCRIPTION" desc="Subtitle for the cell to open the connected apps web page where the user can manage connected Google apps.">
+        Manage the connection between Search services and Google Workspace apps, like Google Drive
+      </message>
+      <message name="IDS_IOS_MANAGE_SYNC_CONNECTED_APPS_TITLE" desc="Title for the cell to open the connected apps web page where the user can manage connected Google apps.">
+        Google Search AI mode and connected apps
+      </message>
       <message name="IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION" desc="Subtitle for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
         Review your synced data
       </message>

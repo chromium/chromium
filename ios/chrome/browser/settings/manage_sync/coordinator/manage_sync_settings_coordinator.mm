@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/settings/bulk_upload/coordinator/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/settings/bulk_upload/coordinator/bulk_upload_coordinator_delegate.h"
@@ -444,6 +445,15 @@ enum class ActionAfterReauth {
                ? kNewSyncGoogleDashboardURL
                : kLegacySyncGoogleDashboardURL),
       GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [handler closePresentedViewsAndOpenURL:command];
+}
+
+- (void)openConnectedAppsWebPage {
+  CHECK(IsComposeboxConnectedAppsSettingEnabled());
+  GURL url(kConnectedAppsURL);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
   id<SceneCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);

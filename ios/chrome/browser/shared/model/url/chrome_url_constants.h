@@ -229,6 +229,10 @@ inline constexpr char kGeminiExtensionsURL[] = "https://gemini.google.com/apps";
 inline constexpr char kGeminiAppStorePromoURL[] =
     "https://www.google.com/chrome/mobile/#scrollable-gemini-in-chrome-slide-1";
 
+// URL for the Connected Apps Settings row.
+inline constexpr char kConnectedAppsURL[] =
+    "https://myactivity.google.com/search-services/apps?pli=1";
+
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
 inline constexpr auto kChromeHostURLs = std::to_array<std::string_view>({
     commerce::kChromeUICommerceInternalsHost,

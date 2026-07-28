@@ -12,6 +12,9 @@
 // Accessibility identifier for the Data from Chrome Sync cell.
 extern NSString* const kDataFromChromeSyncAccessibilityIdentifier;
 
+// Accessibility identifier for the Connected Apps cell.
+extern NSString* const kConnectedAppsAccessibilityIdentifier;
+
 // Accessibility identifier for Manage Sync table view.
 extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
 
@@ -104,6 +107,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   EncryptionItemType,
   // Data from Chrome sync.
   DataFromChromeSync,
+  // Connected apps item.
+  ConnectedAppsItemType,
   // Personalize Google services item.
   PersonalizeGoogleServicesItemType,
   // SyncErrorsSectionIdentifier section.

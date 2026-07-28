@@ -27,6 +27,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/settings/manage_sync/coordinator/manage_sync_settings_command_handler.h"
@@ -400,6 +401,26 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       GetNSString(IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_DESCRIPTION);
   [model addItem:dataFromChromeSyncItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+
+  if (IsComposeboxConnectedAppsSettingEnabled()) {
+    TableViewImageItem* connectedAppsItem =
+        [[TableViewImageItem alloc] initWithType:ConnectedAppsItemType];
+    connectedAppsItem.accessoryView = [[UIImageView alloc]
+        initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                          kExternalLinkSymbol)];
+    connectedAppsItem.accessoryView.tintColor =
+        [UIColor colorNamed:kTextQuaternaryColor];
+    connectedAppsItem.accessibilityIdentifier =
+        kConnectedAppsAccessibilityIdentifier;
+    connectedAppsItem.accessibilityTraits |= UIAccessibilityTraitButton;
+
+    connectedAppsItem.title =
+        GetNSString(IDS_IOS_MANAGE_SYNC_CONNECTED_APPS_TITLE);
+    connectedAppsItem.detailText =
+        GetNSString(IDS_IOS_MANAGE_SYNC_CONNECTED_APPS_DESCRIPTION);
+    [model addItem:connectedAppsItem
+        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
+  }
 }
 
 // Updates encryption item. If `notifyConsumer` is YES, the consumer is
@@ -927,6 +948,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SignOutItemType:
     case EncryptionItemType:
     case DataFromChromeSync:
+    case ConnectedAppsItemType:
     case PersonalizeGoogleServicesItemType:
     case PrimaryAccountReauthErrorItemType:
     case ShowPassphraseDialogErrorItemType:
@@ -1091,6 +1113,10 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     }
     case DataFromChromeSync:
       [self.commandHandler openDataFromChromeSyncWebPage];
+      break;
+    case ConnectedAppsItemType:
+      CHECK(IsComposeboxConnectedAppsSettingEnabled());
+      [self.commandHandler openConnectedAppsWebPage];
       break;
     case PersonalizeGoogleServicesItemType:
       if (self.isEEAAccount) {

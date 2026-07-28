@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/authentication",
+  "+ios/chrome/browser/composebox/public",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/policy/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled",
