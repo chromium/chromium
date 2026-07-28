@@ -346,10 +346,7 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(ENABLE_PLAYREADY)
 void AddPlayReady(std::vector<content::CdmInfo>* cdms) {
   DVLOG(1) << __func__;
-  // TODO(crbug.com/423799624): Need to clean up this check logic when
-  // deprecating Widevine hardware secure support on Windows.
-  if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) ||
-      (base::win::GetVersion() < base::win::Version::WIN11) ||
+  if ((base::win::GetVersion() < base::win::Version::WIN11) ||
       !media::SupportMediaFoundationEncryptedPlayback()) {
     DVLOG(1) << __func__ << ": Not adding PlayReady CdmInfo";
     return;
