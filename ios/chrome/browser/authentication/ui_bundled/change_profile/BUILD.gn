@@ -30,6 +30,7 @@ source_set("change_profile") {
 
   deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/send_tab_to_self",
     "//ios/chrome/app:change_profile_continuation",
     "//ios/chrome/app/profile",

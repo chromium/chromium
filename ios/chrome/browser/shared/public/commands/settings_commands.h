@@ -15,6 +15,9 @@ namespace autofill {
 class AutofillProfile;
 class CreditCard;
 }  // namespace autofill
+namespace autofill::autofill_metrics {
+enum class AutofillSettingsReferrer;
+}  // namespace autofill::autofill_metrics
 enum class DefaultBrowserSettingsPageSource;
 namespace password_manager {
 struct CredentialUIEntry;
@@ -77,7 +80,8 @@ enum class PushNotificationClientId;
                          (BOOL)shouldShowLevelUpWalkthroughIPH;
 
 // Shows the Autofill and Passwords settings page.
-- (void)showAutofillAndPasswordsSettings;
+- (void)showAutofillAndPasswordsSettingsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer;
 
 // Shows password manager on main page with a purpose to run the credential
 // exchange import flow. `UUID` is a token received from the OS during app

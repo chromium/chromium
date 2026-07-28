@@ -28,6 +28,10 @@ namespace autofill {
 class CreditCard;
 }  // namespace autofill
 
+namespace autofill::autofill_metrics {
+enum class AutofillSettingsReferrer;
+}  // namespace autofill::autofill_metrics
+
 // The accessibility identifier for the settings' "Done" button.
 extern NSString* const kSettingsDoneButtonId;
 
@@ -137,6 +141,9 @@ extern NSString* const kSettingsDoneButtonId;
 // displayed and should not be nil. `delegate` may be nil.
 + (instancetype)
     autofillAndPasswordsControllerForBrowser:(Browser*)browser
+                                    referrer:
+                                        (autofill::autofill_metrics::
+                                             AutofillSettingsReferrer)referrer
                                     delegate:
                                         (id<SettingsNavigationControllerDelegate>)
                                             delegate;

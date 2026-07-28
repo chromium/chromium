@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/base/consent_level.h"
@@ -1389,10 +1390,12 @@ inline LayoutStateScenePassKey PassKey() {
   }];
 }
 
-- (void)showAutofillAndPasswordsSettings {
+- (void)showAutofillAndPasswordsSettingsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
   __weak SceneCoordinator* weakSelf = self;
   [self dismissModalDialogsWithCompletion:^{
-    [weakSelf showAutofillAndPasswordsSettingsAfterModalDismiss];
+    [weakSelf
+        showAutofillAndPasswordsSettingsAfterModalDismissWithReferrer:referrer];
   }];
 }
 
@@ -1986,15 +1989,18 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 // Shows the Autofill and Passwords settings in the settings UI.
-- (void)showAutofillAndPasswordsSettingsAfterModalDismiss {
+- (void)showAutofillAndPasswordsSettingsAfterModalDismissWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
   DCHECK(!self.isSigninInProgress);
 
   if (_settingsNavigationController) {
-    [_settingsNavigationController showAutofillAndPasswordsSettings];
+    [_settingsNavigationController
+        showAutofillAndPasswordsSettingsWithReferrer:referrer];
     return;
   }
   _settingsNavigationController = [SettingsNavigationController
       autofillAndPasswordsControllerForBrowser:_regularBrowser.get()
+                                      referrer:referrer
                                       delegate:self];
   [self.activeViewController presentViewController:_settingsNavigationController
                                           animated:YES
@@ -2011,6 +2017,9 @@ inline LayoutStateScenePassKey PassKey() {
   }
   _settingsNavigationController = [SettingsNavigationController
       autofillAndPasswordsControllerForBrowser:_regularBrowser.get()
+                                      referrer:autofill::autofill_metrics::
+                                                   AutofillSettingsReferrer::
+                                                       kFillingFlowDropdown
                                       delegate:self];
   [_settingsNavigationController showAutofillSettings];
   [self.activeViewController presentViewController:_settingsNavigationController

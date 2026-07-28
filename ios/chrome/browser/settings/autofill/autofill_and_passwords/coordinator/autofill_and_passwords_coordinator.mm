@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/not_fatal_until.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
@@ -80,17 +81,23 @@ enum class YourSavedInfoDataCategory {
 
   AutofillAndPasswordsSigninPromoMediator* _signinPromoMediator;
   SigninCoordinator* _signinCoordinator;
+
+  autofill::autofill_metrics::AutofillSettingsReferrer _referrer;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                        referrer:(autofill::autofill_metrics::
+                                                      AutofillSettingsReferrer)
+                                                     referrer {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    _referrer = referrer;
   }
   return self;
 }
@@ -131,6 +138,8 @@ enum class YourSavedInfoDataCategory {
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
   base::RecordAction(base::UserMetricsAction("AutofillYourSavedInfoViewed"));
+  base::UmaHistogramEnumeration(
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer", _referrer);
 }
 
 - (void)stop {

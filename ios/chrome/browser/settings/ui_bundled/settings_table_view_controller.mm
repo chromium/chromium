@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "build/branding_buildflags.h"
+#import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -1688,7 +1689,10 @@ struct EnhancedSafeBrowsingActivePromoData
 
   _autofillAndPasswordsCoordinator = [[AutofillAndPasswordsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
-                               browser:_browser];
+                               browser:_browser
+                              referrer:autofill::autofill_metrics::
+                                           AutofillSettingsReferrer::
+                                               kSettingsMenu];
   _autofillAndPasswordsCoordinator.delegate = self;
   [_autofillAndPasswordsCoordinator start];
 }

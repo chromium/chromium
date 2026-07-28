@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+namespace autofill::autofill_metrics {
+enum class AutofillSettingsReferrer;
+}  // namespace autofill::autofill_metrics
+
 @class AutofillAndPasswordsCoordinator;
 
 // Delegate for AutofillAndPasswordsCoordinator.
@@ -30,6 +34,9 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                        referrer:(autofill::autofill_metrics::
+                                                      AutofillSettingsReferrer)
+                                                     referrer
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

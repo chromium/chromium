@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/strings/grit/components_strings.h"
@@ -370,6 +371,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 + (instancetype)
     autofillAndPasswordsControllerForBrowser:(Browser*)browser
+                                    referrer:
+                                        (autofill::autofill_metrics::
+                                             AutofillSettingsReferrer)referrer
                                     delegate:
                                         (id<SettingsNavigationControllerDelegate>)
                                             delegate {
@@ -378,7 +382,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  [navigationController showAutofillAndPasswords];
+  [navigationController showAutofillAndPasswordsWithReferrer:referrer];
 
   return navigationController;
 }
@@ -946,10 +950,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 // Shows the Autofill and Passwords settings.
-- (void)showAutofillAndPasswords {
+- (void)showAutofillAndPasswordsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
   _autofillAndPasswordsCoordinator = [[AutofillAndPasswordsCoordinator alloc]
       initWithBaseNavigationController:self
-                               browser:self.browser];
+                               browser:self.browser
+                              referrer:referrer];
   _autofillAndPasswordsCoordinator.delegate = self;
   [_autofillAndPasswordsCoordinator start];
 }
@@ -1316,8 +1322,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
             shouldShowLevelUpWalkthroughIPH];
 }
 
-- (void)showAutofillAndPasswordsSettings {
-  [self showAutofillAndPasswords];
+- (void)showAutofillAndPasswordsSettingsWithReferrer:
+    (autofill::autofill_metrics::AutofillSettingsReferrer)referrer {
+  [self showAutofillAndPasswordsWithReferrer:referrer];
 }
 
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID
