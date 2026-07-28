@@ -93,6 +93,12 @@ void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
   }
 }
 
+void OmniboxAimPopupWebUIContent::FocusInput() {
+  if (auto* handler = popup_aim_handler()) {
+    handler->FocusInput();
+  }
+}
+
 std::string_view OmniboxAimPopupWebUIContent::GetMetricPrefix() const {
   return "Omnibox.Popup.Aim";
 }

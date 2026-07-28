@@ -1656,10 +1656,13 @@ void OmniboxViewViews::OnBlur() {
   // Save the user's existing selection to restore it later.
   saved_selection_for_focus_change_ = GetSelectedRange();
 
-  // If focus is transferring to the WebUI popup widget, treat this as a
-  // logical focus transfer rather than a true blur. Keep the edit model's
-  // focus state active, and skip all reversion/blurring.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  // If focus is transferring to a WebUI popup widget (e.g., Full Popup or AIM
+  // Popup), treat this as a logical focus transfer rather than a true blur.
+  // Keep the edit model's focus state active, and skip all reversion/blurring.
+  if (controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull ||
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim) {
     return;
   }
 

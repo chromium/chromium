@@ -53,6 +53,9 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // the possibly empty input that should replace the omnibox text.
   void ApplyInputAndCleanup(const std::string& input);
 
+  // Focuses the input element inside the WebUI AIM popup via Mojo.
+  void FocusInput();
+
   // Refocuses the location bar if screen readers are enabled and the popup is
   // active.
   void UpdateLocationBarFocusForScreenReader();
