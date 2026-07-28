@@ -145,6 +145,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser",
       "//chrome/browser/infobars",
+      "//chrome/browser/ui/views/exclusive_access",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//components/headless/clipboard",

@@ -27,6 +27,7 @@ source_set("impl") {
   deps = [
     ":exclusive_access",
     "//chrome/app:command_ids",
+    "//chrome/browser/headless",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:url_identity",

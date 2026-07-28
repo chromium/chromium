@@ -16,13 +16,17 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/headless/headless_mode_init.h"
 #include "chrome/browser/headless/test/headless_mode_browsertest_utils.h"
@@ -30,6 +34,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -37,6 +42,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/headless/clipboard/headless_clipboard.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -147,6 +153,39 @@ namespace {
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserWindowIsActive) {
   EXPECT_TRUE(browser()->GetWindow()->IsActive());
+}
+
+// In headless mode frames are never presented to a display, so the exclusive
+// access bubble's presentation watchdog must not be armed -- otherwise it fires
+// (as it does on a GPU hang) and spuriously exits fullscreen. This is the
+// headless counterpart to
+// ExclusiveAccessBubbleViewsTest.PresentationWatchdog, which verifies the
+// watchdog *does* fire in headed mode.
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       PresentationWatchdogDisabledInHeadless) {
+  // Force the "frame never presented" condition that always holds in headless
+  // mode, so OnFirstPresentation() never runs to stop the watchdog. This is the
+  // same hook the headed PresentationWatchdog test uses.
+  ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing(true);
+  base::ScopedClosureRunner reset_gpu_hang_simulation(base::BindOnce(
+      &ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing, false));
+
+  // Enter browser fullscreen (the same path --start-fullscreen takes), show the
+  // exit bubble, and wait for the fullscreen transition to complete.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->GetExclusiveAccessBubble());
+
+  // Wait well past the 1.5s watchdog interval.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  // With the watchdog correctly skipped in headless, fullscreen persists.
+  // Without the fix the watchdog would have fired and exited fullscreen.
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 }
 
 // Infobar tests -------------------------------------------------------------

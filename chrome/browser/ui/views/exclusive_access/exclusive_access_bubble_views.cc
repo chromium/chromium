@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -416,10 +417,20 @@ void ExclusiveAccessBubbleViews::Show() {
   // fullscreen capabilities on Mac. See crbug.com/524763230 and
   // crbug.com/527790135
   // TODO(crbug.com/528276492): Reenable on Mac.
-  presentation_watchdog_timer_.Start(
-      FROM_HERE, base::Milliseconds(1500),
-      base::BindOnce(&ExclusiveAccessBubbleViews::OnPresentationTimeout,
-                     weak_ptr_factory_.GetWeakPtr()));
+  //
+  // In headless mode frames are never presented to a display, so
+  // OnFirstPresentation() never runs to stop the watchdog. There is also no
+  // human-facing browser window: fullscreen is controlled by the automation
+  // client, which can restore the window or terminate the browser without
+  // relying on visible exit instructions. Arming the watchdog would make it
+  // always fire and spuriously exit fullscreen (e.g. reverting the
+  // --start-fullscreen switch shortly after startup).
+  if (!headless::IsHeadlessMode()) {
+    presentation_watchdog_timer_.Start(
+        FROM_HERE, base::Milliseconds(1500),
+        base::BindOnce(&ExclusiveAccessBubbleViews::OnPresentationTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 #endif
 }
 
