@@ -563,7 +563,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
           render_frame_host->GetProcess()->GetBrowserContext()));
   const bool is_omnibox_aim_popup_enabled = omnibox::IsAimPopupFeatureEnabled();
   const bool is_contextual_tasks_enabled =
-      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+      contextual_tasks::IsContextualTasksUIEnabled();
 
   if (is_contextual_tasks_enabled) {
     RegisterWebUIControllerInterfaceBinder<
