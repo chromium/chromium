@@ -7,10 +7,7 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-
-class PrefService;
 
 namespace password_manager {
 
@@ -28,7 +25,7 @@ enum class NotificationCardType {
   // Access passwords on iOS/Android promo bubble.
   kAccessOnAnyDevice = 3,
   // Relaunch Chrome to fix the keychain issue.
-  kRelauchChrome = 4,
+  kRelaunchChrome = 4,
   // Move passwords stored only on this device to the account.
   kMovePasswords = 5,
   // kScreenlockReauth = 6, Obsolete
@@ -36,10 +33,19 @@ enum class NotificationCardType {
 };
 // LINT.ThenChange(//chrome/browser/resources/password_manager/notification_cards/notification_card.ts:NotificationCardMetricId)
 
-// This is the base class for all password manager notification cards. It has a
-// basic implementation to read/write to PrefService as well as basic properties
-// needed for each notification card. Each subclass must override GetCardID()
-// and the content to be displayed.
+enum class NotificationSeverity {
+  kCritical = 0,
+  kPromo = 1,
+};
+
+struct NotificationCardPrefState {
+  bool was_dismissed = false;
+  int number_of_times_shown = 0;
+  base::Time last_time_shown;
+};
+
+// This is the base class for all password manager notification cards. Each
+// subclass must override GetCardID() and the content to be displayed.
 class PasswordNotificationCardBase {
  public:
   PasswordNotificationCardBase(const PasswordNotificationCardBase&) = delete;
@@ -58,9 +64,16 @@ class PasswordNotificationCardBase {
   // Used to distinguish notification cards.
   virtual NotificationCardType GetNotificationCardType() const = 0;
 
-  // Whether promo can be shown. For most of the promos once it's dismissed it
-  // can't be shown again.
-  virtual bool ShouldShowCard() const = 0;
+  // Used to distinguish notification tiers (critical alerts vs standard
+  // promos).
+  virtual NotificationSeverity GetNotificationSeverity() const;
+
+  // Whether promo can be shown given its preference state.
+  virtual bool ShouldShowCard(
+      const NotificationCardPrefState& pref_state) const = 0;
+
+  // Whether the close ('X') button should be shown for this card.
+  virtual bool IsDismissible() const;
 
   // Title of the notification card to be shown in the WebUI.
   virtual std::u16string GetTitle() const = 0;
@@ -72,18 +85,8 @@ class PasswordNotificationCardBase {
   // default.
   virtual std::u16string GetActionButtonText() const;
 
-  void OnNotificationCardDismissed();
-  void OnNotificationCardShown();
-
-  base::Time last_time_shown() const { return last_time_shown_; }
-
  protected:
-  PasswordNotificationCardBase(const std::string& id, PrefService* prefs);
-
-  int number_of_times_shown_ = 0;
-  base::Time last_time_shown_;
-  bool was_dismissed_ = false;
-  raw_ptr<PrefService> prefs_;
+  PasswordNotificationCardBase();
 };
 
 }  // namespace password_manager

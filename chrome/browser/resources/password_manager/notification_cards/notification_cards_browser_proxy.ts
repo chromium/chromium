@@ -9,17 +9,19 @@ export interface NotificationCard {
   title: string;
   description: string;
   actionButtonText?: string;
+  isDismissible: boolean;
 }
 
 export interface NotificationCardsProxy {
   /**
-   * Returns promo card to show, or null if there are no available promo cards.
+   * Returns a notification card to show, or null if there are no available
+   * notification cards.
    */
   getAvailableNotificationCard(): Promise<NotificationCard|null>;
 
   /**
-   * Records dismissal of a promo card. This is important to determine whether
-   * promo should be shown in the future.
+   * Records dismissal of a notification card. This is important to determine
+   * whether the notification should be shown in the future.
    */
   recordNotificationDismissed(id: string): void;
 }
