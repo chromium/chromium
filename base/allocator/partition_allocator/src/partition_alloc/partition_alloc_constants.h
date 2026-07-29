@@ -476,9 +476,6 @@ static_assert(kThreadCacheLargeSizeThreshold <=
 
 // These constants are used outside PartitionAlloc itself, so we provide
 // non-internal aliases here.
-using ::partition_alloc::internal::kMaxSuperPagesInPool;
-using ::partition_alloc::internal::kMaxSupportedAlignment;
-using ::partition_alloc::internal::kSuperPageSize;
 using ::partition_alloc::internal::MaxDirectMapped;
 using ::partition_alloc::internal::PartitionPageSize;
 

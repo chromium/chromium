@@ -135,7 +135,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
                   partition_alloc::PartitionPageSize());
   } else {
     PA_BASE_CHECK(reservation_offset_table.IsManagedByNormalBuckets(address));
-    PA_BASE_CHECK(address % partition_alloc::kSuperPageSize >=
+    PA_BASE_CHECK(address % partition_alloc::internal::kSuperPageSize >=
                   partition_alloc::PartitionPageSize());
   }
 }

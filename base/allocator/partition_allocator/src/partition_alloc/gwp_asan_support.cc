@@ -65,7 +65,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
 
   size_t super_page_count = 1 + ((slot_count - 1) / kSlotsPerSuperPage);
   PA_CHECK(super_page_count <=
-           std::numeric_limits<size_t>::max() / kSuperPageSize);
+           std::numeric_limits<size_t>::max() / internal::kSuperPageSize);
   uintptr_t super_page_span_start;
   {
     internal::ScopedGuard locker{internal::PartitionRootLock(root)};
@@ -86,11 +86,12 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
 #endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
     uintptr_t super_page_span_end =
-        super_page_span_start + super_page_count * kSuperPageSize;
+        super_page_span_start + super_page_count * internal::kSuperPageSize;
     PA_CHECK(super_page_span_start < super_page_span_end);
 
     for (uintptr_t super_page = super_page_span_start;
-         super_page < super_page_span_end; super_page += kSuperPageSize) {
+         super_page < super_page_span_end;
+         super_page += internal::kSuperPageSize) {
       auto* page_metadata =
           internal::PartitionSuperPageToMetadataArea(super_page, root);
 

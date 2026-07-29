@@ -166,7 +166,7 @@ TEST(PartitionAllocAsMalloc, Memalign) {
 TEST(PartitionAllocAsMalloc, AlignedAlloc) {
   for (size_t alloc_size : {100, 100000, 10000000}) {
     for (size_t alignment = 1;
-         alignment <= partition_alloc::kMaxSupportedAlignment;
+         alignment <= partition_alloc::internal::kMaxSupportedAlignment;
          alignment <<= 1) {
       void* data = PartitionAllocFunctions::AlignedAlloc(
           alloc_size, alignment, kAllocTokenForTesting, nullptr);
@@ -180,7 +180,7 @@ TEST(PartitionAllocAsMalloc, AlignedAlloc) {
 TEST(PartitionAllocAsMalloc, AlignedRealloc) {
   for (size_t alloc_size : {100, 100000, 10000000}) {
     for (size_t alignment = 1;
-         alignment <= partition_alloc::kMaxSupportedAlignment;
+         alignment <= partition_alloc::internal::kMaxSupportedAlignment;
          alignment <<= 1) {
       void* data = PartitionAllocFunctions::AlignedAlloc(
           alloc_size, alignment, kAllocTokenForTesting, nullptr);
