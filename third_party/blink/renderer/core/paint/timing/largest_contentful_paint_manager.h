@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -28,7 +27,6 @@ class TextRecord;
 // to `LargestContentfulPaintCalculator`.
 class CORE_EXPORT LargestContentfulPaintManager
     : public GarbageCollected<LargestContentfulPaintManager>,
-      public PaintTimingClient,
       public LargestContentfulPaintCalculator::Delegate {
  public:
   explicit LargestContentfulPaintManager(LocalDOMWindow*);
@@ -44,19 +42,32 @@ class CORE_EXPORT LargestContentfulPaintManager
   bool IsHardNavigation() const override { return true; }
   void Trace(Visitor* visitor) const override;
 
-  // PaintTimingClient:
-  void OnElementFirstContentfulPaint(ImageRecord*) override;
-  void OnElementFirstAnimatedFramePaint(ImageRecord*) override;
-  void OnElementLastContentfulPaint(ImageRecord*) override;
-  void OnElementLastContentfulPaint(TextRecord*, ElementPaintStatus) override;
-  void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
-                        const HeapVector<Member<TextRecord>>&) override;
-  void OnImageRemoved(ImageRecord*,
-                      const LayoutObject&,
-                      const MediaTiming*) override;
-  // Shuts down the manager and stops recording LCP. The last value pushed to
-  // PerformanceTimingForReporting will be the final value.
-  void OnInputOrScroll() override;
+  // Called on the first discrete input or scroll. Shuts down the manager and
+  // stops recording LCP. The last value pushed to PerformanceTimingForReporting
+  // will be the final value.
+  void OnFirstInputOrScroll();
+
+  // Updates the current image and text LCP candidates based on `image_records`
+  // and `text_records`. Does nothing if the LCP algorithm has already stopped
+  // due to input.
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>& image_records,
+                        const HeapVector<Member<TextRecord>>& text_records);
+
+  // Called by PaintTiming on the first paint for `ImageRecord`. Marks the
+  // record as needed for LCP if it's a valid candidate and larger than last
+  // emitted candidate. This must not be called after the hard LCP algorithm has
+  // stopped.
+  void InitializePaintTracking(ImageRecord*);
+
+  // Called by PaintTiming on the first paint for `TextRecord`. Marks the record
+  // as needed for LCP if it's a valid candidate and larger than last emitted
+  // candidate. This must not be called after the hard LCP algorithm has
+  // stopped.
+  void InitializePaintTracking(TextRecord*);
+
+  // Called by PaintTiming when an image pending presentation time has been
+  // removed. This must not be called after the hard LCP algorithm has stopped.
+  void OnImageRemoved(ImageRecord*, const LayoutObject&, const MediaTiming*);
 
   // Called when a text or image element is painted while paints are being
   // ignored.

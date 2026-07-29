@@ -82,7 +82,7 @@ void LargestContentfulPaintManager::OnLcpMetricsForReportingChanged() {
   }
 }
 
-void LargestContentfulPaintManager::OnInputOrScroll() {
+void LargestContentfulPaintManager::OnFirstInputOrScroll() {
   // `PaintTiming` is only expected to call this once.
   CHECK(largest_contentful_paint_calculator_);
 
@@ -106,45 +106,29 @@ void LargestContentfulPaintManager::Trace(Visitor* visitor) const {
   visitor->Trace(largest_ignored_image_);
 }
 
-void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
+void LargestContentfulPaintManager::InitializePaintTracking(
     ImageRecord* record) {
   CHECK(largest_contentful_paint_calculator_);
-  if (!largest_contentful_paint_calculator_->ShouldTrackForPaintTiming(
-          *record)) {
-    return;
-  }
-  // Inform the `largest_contentful_paint_calculator_` so it can update the
-  // largest pending image if needed.
-  largest_contentful_paint_calculator_->OnImageFirstPaint(record);
-}
-
-void LargestContentfulPaintManager::OnElementFirstAnimatedFramePaint(
-    ImageRecord* record) {
-  // Treat this the same as the sufficiently loaded contentful paint, setting
-  // the LCP bit if needed so the record is considered for LCP (for metrics)
-  // after this frame is presented.
-  OnElementLastContentfulPaint(record);
-}
-
-void LargestContentfulPaintManager::OnElementLastContentfulPaint(
-    ImageRecord* record) {
   contains_full_viewport_image_ |=
       record->GetEffectiveVisualSizeResult().is_viewport_covered;
-  CHECK(largest_contentful_paint_calculator_);
-  record->SetIsNeededForLargestContentfulPaint(
-      largest_contentful_paint_calculator_->ShouldTrackForPaintTiming(*record));
+  if (largest_contentful_paint_calculator_->ShouldTrackForPaintTiming(
+          *record)) {
+    record->SetIsNeededForLargestContentfulPaint(true);
+    if (IgnorePaintTimingScope::IgnoreDepth() == 0) {
+      largest_contentful_paint_calculator_->OnImageFirstPaint(record);
+    }
+  }
 }
 
-void LargestContentfulPaintManager::OnElementLastContentfulPaint(
-    TextRecord* record,
-    ElementPaintStatus status) {
+void LargestContentfulPaintManager::InitializePaintTracking(
+    TextRecord* record) {
   CHECK(largest_contentful_paint_calculator_);
   // Note: unlike images, this tracks any records that are eligible for LCP,
   // even if they're not larger than the current candidate. This affects the
   // HUD, but doesn't affect LCP.
-  record->SetIsNeededForLargestContentfulPaint(
-      status == ElementPaintStatus::kFirstPaint &&
-      largest_contentful_paint_calculator_->IsEligibleForLcp(*record));
+  if (largest_contentful_paint_calculator_->IsEligibleForLcp(*record)) {
+    record->SetIsNeededForLargestContentfulPaint(true);
+  }
 }
 
 void LargestContentfulPaintManager::OnImageRemoved(ImageRecord* record,
@@ -154,7 +138,7 @@ void LargestContentfulPaintManager::OnImageRemoved(ImageRecord* record,
   // `record` is non-null if the image was removed while pending. In that case,
   // notify the lcp calculator so it can clear the largest pending image, if
   // that was removed.
-  if (record) {
+  if (record && record->IsNeededForLargestContentfulPaint()) {
     largest_contentful_paint_calculator_->OnPendingImageRemoved(record);
   }
   // Also check if the `largest_ignored_image_` was removed. Compare
@@ -226,7 +210,9 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredText(
     return;
   }
 
-  if (largest_contentful_paint_calculator_->IsEligibleForLcp(*record) &&
+  InitializePaintTracking(record);
+
+  if (record->IsNeededForLargestContentfulPaint() &&
       record->IsEffectiveSizeLargerThan(GetLargestIgnoredTextIfNotRemoved())) {
     largest_ignored_text_.key = &object;
     largest_ignored_text_.value = record;
@@ -255,7 +241,9 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
   record->SetLoadTime(base::TimeTicks::Now());
   record->MarkLoaded();
 
-  if (largest_contentful_paint_calculator_->IsEligibleForLcp(*record) &&
+  InitializePaintTracking(record);
+
+  if (record->IsNeededForLargestContentfulPaint() &&
       record->IsEffectiveSizeLargerThan(largest_ignored_image_)) {
     largest_ignored_image_ = record;
   }

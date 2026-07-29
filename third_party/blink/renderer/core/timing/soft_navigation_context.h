@@ -175,9 +175,6 @@ class CORE_EXPORT SoftNavigationContext
 
   template <IsDerivedFromPaintTimingRecord T>
   bool ShouldTrackForPaintTiming(const T& record) const {
-    if (!IsRecordingLargestContentfulPaint()) {
-      return false;
-    }
     // We want to know about all painted text and images if they're valid LCP
     // candidates.
     return lcp_calculator_->IsEligibleForLcp(record);

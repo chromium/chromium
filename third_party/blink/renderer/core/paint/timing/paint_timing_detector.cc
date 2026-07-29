@@ -296,15 +296,21 @@ void PaintTimingDetector::NotifyImageRemoved(
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  // Notify `PaintTiming` so it can notify its clients.
-  if (LocalDOMWindow* window = DomWindow()) {
-    PaintTiming::From(CHECK_DEREF(window->document())).OnInputOrScroll();
+  LocalDOMWindow* window = DomWindow();
+  if (SoftNavigationHeuristics* heuristics =
+          window ? window->GetSoftNavigationHeuristics() : nullptr) {
+    heuristics->OnInputOrScroll();
   }
 
   if (did_notify_first_input_or_scroll_) {
     return;
   }
   did_notify_first_input_or_scroll_ = true;
+
+  // Notify `PaintTiming` so it can shut down hard navigation LCP.
+  if (window) {
+    PaintTiming::From(CHECK_DEREF(window->document())).OnInputOrScroll();
+  }
 
   // TODO(crbug.com/454082773): We should compare the presentation
   // time to the input time to avoid ignoring candidates that were presented
