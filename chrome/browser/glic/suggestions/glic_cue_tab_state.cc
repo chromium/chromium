@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -20,11 +21,12 @@
 
 namespace glic {
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicCueTabState);
+DEFINE_USER_DATA(GlicCueTabState);
 
-GlicCueTabState::GlicCueTabState(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<GlicCueTabState>(*web_contents) {
+GlicCueTabState::GlicCueTabState(tabs::TabInterface& tab)
+    : content::WebContentsObserver(tab.GetContents()),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  content::WebContents* web_contents = tab.GetContents();
   if (base::FeatureList::IsEnabled(
           contextual_cueing::kContextualCueingV2MultiSource)) {
     annotation_service_ = PageContentAnnotationsServiceFactory::GetForProfile(
@@ -39,6 +41,11 @@ GlicCueTabState::GlicCueTabState(content::WebContents* web_contents)
     last_committed_timestamp_ =
         web_contents->GetController().GetLastCommittedEntry()->GetTimestamp();
   }
+}
+
+// static
+GlicCueTabState* GlicCueTabState::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
 }
 
 GlicCueTabState::~GlicCueTabState() {

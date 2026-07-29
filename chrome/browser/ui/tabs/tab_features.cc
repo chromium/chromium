@@ -327,7 +327,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 
     glic::ContextualCueingHelper::MaybeCreateForWebContents(tab.GetContents());
-    glic::GlicCueTabState::CreateForWebContents(tab.GetContents());
+    glic_cue_tab_state_ = std::make_unique<glic::GlicCueTabState>(tab);
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {

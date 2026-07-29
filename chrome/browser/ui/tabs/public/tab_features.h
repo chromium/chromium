@@ -129,6 +129,7 @@ class ExtensionSidePanelManager;
 }  // namespace extensions
 
 namespace glic {
+class GlicCueTabState;
 class GlicInstanceHelper;
 class GlicTabIndicatorHelper;
 class GlicSidePanelCoordinator;
@@ -530,6 +531,9 @@ class TabFeatures {
       glic_selection_overlay_controller_;
 
   std::unique_ptr<glic::GlicPageFeaturesManager> glic_page_features_manager_;
+
+  // Per-tab eligibility state for the glic contextual cue.
+  std::unique_ptr<glic::GlicCueTabState> glic_cue_tab_state_;
 
   std::unique_ptr<memory_saver::MemorySaverChipController>
       memory_saver_chip_controller_;

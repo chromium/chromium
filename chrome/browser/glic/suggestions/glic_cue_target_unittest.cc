@@ -17,19 +17,20 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "components/tabs/public/mock_tab_interface.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/pdf/common/constants.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace glic {
 namespace {
@@ -84,8 +85,7 @@ class GlicCueTargetTest : public testing::Test {
 
     target_ = std::make_unique<GlicCueTarget>(
         *mock_glic_keyed_service_,
-        /*optimization_guide_keyed_service=*/nullptr,
-        *mock_tab_);
+        /*optimization_guide_keyed_service=*/nullptr, *mock_tab_);
   }
 
   void TearDown() override {
@@ -272,18 +272,22 @@ class GlicCueTargetAsyncTest : public testing::Test {
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*mock_tab_, GetProfile())
         .WillRepeatedly(testing::Return(profile_));
+    EXPECT_CALL(*mock_tab_, GetContents())
+        .WillRepeatedly(testing::Return(web_contents_.get()));
+    EXPECT_CALL(*mock_tab_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(user_data_host_));
 
     target_ = std::make_unique<GlicCueTarget>(
         *mock_glic_keyed_service_,
-        /*optimization_guide_keyed_service=*/nullptr,
-        *mock_tab_);
+        /*optimization_guide_keyed_service=*/nullptr, *mock_tab_);
 
-    GlicCueTabState::CreateForWebContents(web_contents_.get());
+    cue_tab_state_ = std::make_unique<GlicCueTabState>(*mock_tab_);
   }
 
   void TearDown() override {
     GlicEnabling::SetBypassEnablementChecksForTesting(false);
     target_.reset();
+    cue_tab_state_.reset();
     mock_tab_.reset();
     mock_glic_keyed_service_.reset();
     web_contents_.reset();
@@ -338,9 +342,11 @@ class GlicCueTargetAsyncTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   GlicProfileManager glic_profile_manager_;
+  ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   std::unique_ptr<MockGlicKeyedService> mock_glic_keyed_service_;
   std::unique_ptr<GlicCueTarget> target_;
+  std::unique_ptr<GlicCueTabState> cue_tab_state_;
 };
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_NullWebContents) {
@@ -350,8 +356,7 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_NullWebContents) {
 }
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_NoAnnotationService) {
-  GlicCueTabState::FromWebContents(web_contents_.get())
-      ->SetAnnotationServiceForTesting(nullptr);
+  cue_tab_state_->SetAnnotationServiceForTesting(nullptr);
   bool eligible = true;
   CallCheckEligibility(web_contents_->GetWeakPtr(), &eligible);
   EXPECT_FALSE(eligible);
@@ -362,8 +367,8 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheHit_Eligible) {
   content::WebContentsTester::For(web_contents_.get())->NavigateAndCommit(url);
 
   // Pre-populate the cache with an eligible annotation.
-  GlicCueTabState::FromWebContents(web_contents_.get())
-      ->OnPageContentAnnotated(CreateVisit(url), CreateEligibleResult());
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateEligibleResult());
 
   bool eligible = false;
   CallCheckEligibility(web_contents_->GetWeakPtr(), &eligible);
@@ -374,8 +379,8 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheHit_Ineligible) {
   const GURL url("https://example.com/low");
   content::WebContentsTester::For(web_contents_.get())->NavigateAndCommit(url);
 
-  GlicCueTabState::FromWebContents(web_contents_.get())
-      ->OnPageContentAnnotated(CreateVisit(url), CreateIneligibleResult());
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateIneligibleResult());
 
   bool eligible = true;
   CallCheckEligibility(web_contents_->GetWeakPtr(), &eligible);
@@ -402,8 +407,8 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheMiss_AnnotationArrives) {
   EXPECT_FALSE(callback_ran);
 
   // Simulate annotation arriving.
-  GlicCueTabState::FromWebContents(web_contents_.get())
-      ->OnPageContentAnnotated(CreateVisit(url), CreateEligibleResult());
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateEligibleResult());
   EXPECT_TRUE(base::test::RunUntil([&]() { return callback_ran; }));
 
   EXPECT_TRUE(callback_ran);
@@ -475,16 +480,15 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_NewCheckCancelsPending) {
           &eligible2, &callback2_ran));
 
   // Second check is now pending. Deliver annotation for url2.
-  GlicCueTabState::FromWebContents(web_contents_.get())
-      ->OnPageContentAnnotated(CreateVisit(url2), CreateEligibleResult());
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url2),
+                                         CreateEligibleResult());
   EXPECT_TRUE(base::test::RunUntil([&]() { return callback2_ran; }));
 
   EXPECT_TRUE(callback2_ran);
   EXPECT_TRUE(eligible2);
 }
 
-TEST_F(GlicCueTargetAsyncTest,
-       CheckEligibility_WebContentsDestroyedDuringWait) {
+TEST_F(GlicCueTargetAsyncTest, CheckEligibility_TabStateDestroyedDuringWait) {
   const GURL url("https://example.com/destroyed");
   content::WebContentsTester::For(web_contents_.get())->NavigateAndCommit(url);
 
@@ -500,9 +504,10 @@ TEST_F(GlicCueTargetAsyncTest,
           },
           &eligible, &callback_ran));
 
-  // Destroy WebContents while check is pending.
-  // GlicCueTabState's destructor will fire the pending callback with false.
-  web_contents_.reset();
+  // Destroy the tab state while the check is pending, as TabFeatures does
+  // when the tab goes away. GlicCueTabState's destructor will fire the
+  // pending callback with false.
+  cue_tab_state_.reset();
   EXPECT_TRUE(base::test::RunUntil([&]() { return callback_ran; }));
 
   EXPECT_TRUE(callback_ran);
@@ -530,8 +535,8 @@ TEST_F(GlicCueTargetAsyncTest, DestructorFiresPendingCallback) {
   // and resolve with false.
   target_.reset();
 
-  GlicCueTabState::FromWebContents(web_contents_.get())
-      ->OnPageContentAnnotated(CreateVisit(url), CreateEligibleResult());
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateEligibleResult());
   EXPECT_TRUE(base::test::RunUntil([&]() { return callback_ran; }));
 
   EXPECT_TRUE(callback_ran);

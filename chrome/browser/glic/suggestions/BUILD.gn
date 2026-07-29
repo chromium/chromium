@@ -25,6 +25,7 @@ source_set("suggestions") {
     "//components/page_content_annotations/core",
     "//components/prefs",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
   deps = [ "//chrome/common:buildflags" ]
 }
@@ -130,9 +131,11 @@ source_set("unit_tests") {
     "//components/page_content_annotations/core:test_support",
     "//components/pdf/common:constants",
     "//components/sync_preferences:test_support",
+    "//components/tabs:test_support",
     "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/unowned_user_data",
   ]
   if (is_chromeos) {
     deps += [ "//chrome/browser/ash/test:test_support" ]

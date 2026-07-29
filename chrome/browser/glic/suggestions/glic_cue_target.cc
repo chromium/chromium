@@ -88,9 +88,14 @@ void GlicCueTarget::CheckEligibility(
     return;
   }
 
-  GlicCueTabState::CreateForWebContents(web_contents.get());
-  GlicCueTabState::FromWebContents(web_contents.get())
-      ->CheckEligibility(intrusiveness, std::move(callback), this);
+  GlicCueTabState* cue_tab_state = GlicCueTabState::From(&tab_.get());
+  if (!cue_tab_state) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), false, ContentGenerator()));
+    return;
+  }
+  cue_tab_state->CheckEligibility(intrusiveness, std::move(callback), this);
 }
 
 bool GlicCueTarget::IsPageEligible(
