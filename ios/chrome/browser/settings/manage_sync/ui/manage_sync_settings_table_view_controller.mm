@@ -174,6 +174,7 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                     avatarImage:avatarImage
                                 showsAITierRing:AITierRing
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:name
                                           email:email
                           managementDescription:managementDescription

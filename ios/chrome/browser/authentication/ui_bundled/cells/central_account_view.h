@@ -23,6 +23,7 @@
                   avatarImage:(UIImage*)avatarImage
               showsAITierRing:(BOOL)showsAITierRing
                aiTierFullName:(NSString*)aiTierFullName
+         subscriptionChipView:(UIView*)subscriptionChipView
                          name:(NSString*)name
                         email:(NSString*)email
         managementDescription:(NSString*)managementDescription

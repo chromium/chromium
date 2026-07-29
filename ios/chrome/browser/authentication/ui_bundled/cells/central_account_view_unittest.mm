@@ -38,6 +38,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
                                     avatarImage:image
                                 showsAITierRing:NO
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:mainText
                                           email:detailText
                           managementDescription:nil
@@ -64,6 +65,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
                                     avatarImage:image
                                 showsAITierRing:NO
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:nil
                                           email:mainText
                           managementDescription:nil
@@ -93,6 +95,7 @@ TEST_F(CentralAccountViewTest,
                                     avatarImage:image
                                 showsAITierRing:NO
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:mainText
                                           email:detailText
                           managementDescription:managementDescription
@@ -121,6 +124,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingGivenName) {
                                     avatarImage:image
                                 showsAITierRing:NO
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:identity.userFullName
                                           email:identity.userEmail
                           managementDescription:nil
@@ -148,6 +152,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingNames) {
                                     avatarImage:image
                                 showsAITierRing:NO
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:identity.userFullName
                                           email:identity.userEmail
                           managementDescription:nil
@@ -174,6 +179,7 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAITierRing) {
                                     avatarImage:image
                                 showsAITierRing:YES
                                  aiTierFullName:nil
+                           subscriptionChipView:nil
                                            name:mainText
                                           email:detailText
                           managementDescription:nil
@@ -221,6 +227,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
                                       avatarImage:image
                                   showsAITierRing:YES
                                    aiTierFullName:aiTierFullName
+                             subscriptionChipView:nil
                                              name:name
                                             email:email
                             managementDescription:managementDescription
@@ -242,6 +249,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
                                       avatarImage:image
                                   showsAITierRing:YES
                                    aiTierFullName:aiTierFullName
+                             subscriptionChipView:nil
                                              name:name
                                             email:email
                             managementDescription:nil
@@ -262,6 +270,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
                                       avatarImage:image
                                   showsAITierRing:YES
                                    aiTierFullName:aiTierFullName
+                             subscriptionChipView:nil
                                              name:nil
                                             email:email
                             managementDescription:managementDescription
@@ -283,6 +292,7 @@ TEST_F(CentralAccountViewTest, AccessibilityLabelsWithAITier) {
                                       avatarImage:image
                                   showsAITierRing:YES
                                    aiTierFullName:aiTierFullName
+                             subscriptionChipView:nil
                                              name:nil
                                             email:email
                             managementDescription:nil

@@ -67,6 +67,7 @@ UIImage* GetEnterpriseIcon() {
                   avatarImage:(UIImage*)avatarImage
               showsAITierRing:(BOOL)showsAITierRing
                aiTierFullName:(NSString*)aiTierFullName
+         subscriptionChipView:(UIView*)subscriptionChipView
                          name:(NSString*)name
                         email:(NSString*)email
         managementDescription:(NSString*)managementDescription
@@ -201,8 +202,6 @@ UIImage* GetEnterpriseIcon() {
       [_avatarView.heightAnchor
           constraintEqualToAnchor:_avatarView.widthAnchor],
 
-      [nameLabel.topAnchor constraintEqualToAnchor:_avatarView.bottomAnchor
-                                          constant:kTableViewVerticalSpacing],
       [nameLabel.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
@@ -217,6 +216,28 @@ UIImage* GetEnterpriseIcon() {
       [emailLabel.trailingAnchor
           constraintEqualToAnchor:nameLabel.trailingAnchor],
     ]];
+
+    if (subscriptionChipView) {
+      [self addSubview:subscriptionChipView];
+      subscriptionChipView.translatesAutoresizingMaskIntoConstraints = NO;
+
+      [NSLayoutConstraint activateConstraints:@[
+        [subscriptionChipView.topAnchor
+            constraintEqualToAnchor:_avatarView.bottomAnchor
+                           constant:4.0],
+        [subscriptionChipView.centerXAnchor
+            constraintEqualToAnchor:self.centerXAnchor],
+        [nameLabel.topAnchor
+            constraintEqualToAnchor:subscriptionChipView.bottomAnchor
+                           constant:kTableViewVerticalSpacing],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [nameLabel.topAnchor constraintEqualToAnchor:_avatarView.bottomAnchor
+                                            constant:kTableViewVerticalSpacing],
+      ]];
+    }
+
     [self updateFrame];
   }
   return self;

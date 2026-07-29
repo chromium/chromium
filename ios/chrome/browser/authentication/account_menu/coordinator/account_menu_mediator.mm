@@ -253,6 +253,14 @@
   return ios::provider::GetAITierFullName(aiTier);
 }
 
+- (NSString*)primaryAccountAITierName {
+  if (!IsAiAvatarRingIosEnabled()) {
+    return nil;
+  }
+  int tier = _subscriptionEligibilityService->GetAiSubscriptionTier();
+  return ios::provider::GetAITierName(tier);
+}
+
 - (NSString*)managementDescription {
   return GetManagementDescription(
       GetManagementState(_identityManager, _authenticationService, _prefs));
