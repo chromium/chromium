@@ -115,6 +115,11 @@
   return _sceneStateOptions.identifier;
 }
 
+- (void)setSceneSessionID:(std::string_view)sceneSessionID {
+  [self connectWithOptions:{.profile_state = _sceneStateOptions.profile_state,
+                            .identifier = std::string(sceneSessionID)}];
+}
+
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
   if (_activationLevel == newLevel) {
     return;

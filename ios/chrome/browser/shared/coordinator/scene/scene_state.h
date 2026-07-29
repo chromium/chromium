@@ -93,7 +93,7 @@ struct SceneStateOptions;
 
 // The persistent identifier for the scene session. This should be used instead
 // of -[UISceneSession persistentIdentifier].
-@property(nonatomic, readonly) std::string_view sceneSessionID;
+@property(nonatomic, assign) std::string_view sceneSessionID;
 
 // The controller for this scene.
 @property(nonatomic, weak) SceneController* controller;
