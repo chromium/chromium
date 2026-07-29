@@ -2303,7 +2303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.OpenOrChangeEntryTrigger"
-    enum="SidePanelOpenTrigger" expires_after="2026-03-15">
+    enum="SidePanelOpenTrigger" expires_after="2027-01-27">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
