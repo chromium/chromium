@@ -5,4 +5,4 @@ zalmashni@google.com
 per-file ai_mode_search_page.*=file://components/contextual_tasks/OWNERS
 per-file ai_suggestions_page.*=file://chrome/browser/contextual_cueing/OWNERS
 per-file skills_page.*=file://chrome/browser/skills/OWNERS
-
+per-file on_device_ai_browser_proxy.*=file://services/on_device_model/OWNERS
