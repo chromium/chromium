@@ -88,6 +88,11 @@ CommitDeferringConditionRunner::GetDeferringConditionForTesting() const {
 }
 
 void CommitDeferringConditionRunner::ResumeProcessing() {
+  if (is_in_will_commit_navigation_) {
+    was_resumed_synchronously_ = true;
+    return;
+  }
+
   DCHECK(is_deferred_);
   is_deferred_ = false;
   // End `condition->TraceEventName()` trace event.
@@ -208,8 +213,32 @@ void CommitDeferringConditionRunner::ProcessConditions() {
                        weak_factory_.GetWeakPtr());
     CommitDeferringCondition* condition = (*conditions_.begin()).get();
     is_deferred_ = false;
-    switch (condition->WillCommitNavigation(std::move(resume_closure))) {
+    is_in_will_commit_navigation_ = true;
+    was_resumed_synchronously_ = false;
+
+    base::WeakPtr<CommitDeferringConditionRunner> weak_self =
+        weak_factory_.GetWeakPtr();
+    CommitDeferringCondition::Result result =
+        condition->WillCommitNavigation(std::move(resume_closure));
+    // DO NOT ADD CODE before performing the `weak_self` check.
+    // The previous call to `WillCommitNavigation()` may have caused the
+    // destruction of the `NavigationRequest` that owns this
+    // `CommitDeferringConditionRunner`.
+    if (!weak_self) {
+      // The runner was deleted, which indicates the navigation was cancelled.
+      CHECK_NE(result, CommitDeferringCondition::Result::kProceed);
+      return;
+    }
+    is_in_will_commit_navigation_ = false;
+
+    switch (result) {
       case CommitDeferringCondition::Result::kDefer:
+        // If the resume_closure has been called synchronously, treat it as
+        // kProceed.
+        is_in_will_commit_navigation_ = false;
+        if (was_resumed_synchronously_) {
+          break;
+        }
         is_deferred_ = true;
         TRACE_EVENT_BEGIN("navigation", "CommitDeferringConditionRunning",
                           perfetto::Track::FromPointer(this));
@@ -217,14 +246,10 @@ void CommitDeferringConditionRunner::ProcessConditions() {
                           perfetto::DynamicString(condition->TraceEventName()),
                           perfetto::Track::FromPointer(this));
         return;
-      // TODO(crbug.com/40270812): Also add instant tracing for the condition
-      // that is being resolved synchronously.
       case CommitDeferringCondition::Result::kCancelled:
-        // DO NOT ADD CODE after this. The previous call to
-        // `WillCommitNavigation()` may have caused the destruction of the
-        // `NavigationRequest` that owns this `CommitDeferringConditionRunner`.
         return;
       case CommitDeferringCondition::Result::kProceed:
+        is_in_will_commit_navigation_ = false;
         break;
     }
 
