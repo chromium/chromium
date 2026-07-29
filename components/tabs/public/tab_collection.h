@@ -328,6 +328,22 @@ using TabCollectionHandle = TabCollection::Handle;
 using TabCollectionNodeHandle = TabCollection::NodeHandle;
 using TabCollectionNodes = TabCollection::NodeHandles;
 
+class TabIteratorRange {
+  STACK_ALLOCATED();
+
+ public:
+  TabIteratorRange(TabCollection::TabIterator begin,
+                   TabCollection::TabIterator end)
+      : begin_(begin), end_(end) {}
+
+  TabCollection::TabIterator begin() const { return begin_; }
+  TabCollection::TabIterator end() const { return end_; }
+
+ private:
+  TabCollection::TabIterator begin_;
+  TabCollection::TabIterator end_;
+};
+
 }  // namespace tabs
 
 #endif  // COMPONENTS_TABS_PUBLIC_TAB_COLLECTION_H_

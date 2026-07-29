@@ -94,6 +94,11 @@ content::WebContents* BrowserDelegateImpl::GetWebContentsAt(
   return browser_->tab_strip_model()->GetWebContentsAt(index);
 }
 
+tabs::TabIteratorRange BrowserDelegateImpl::GetTabIterator() const {
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  return {tab_strip_model->begin(), tab_strip_model->end()};
+}
+
 content::WebContents* BrowserDelegateImpl::GetInspectedWebContents() const {
   if (GetType() != BrowserType::kDevTools) {
     return nullptr;

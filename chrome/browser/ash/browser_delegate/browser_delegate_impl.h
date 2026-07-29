@@ -30,6 +30,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   content::WebContents* GetActiveWebContents() const override;
   size_t GetWebContentsCount() const override;
   content::WebContents* GetWebContentsAt(size_t index) const override;
+  tabs::TabIteratorRange GetTabIterator() const override;
   content::WebContents* GetInspectedWebContents() const override;
   ui::BaseWindow* GetWindow() const override;
   aura::Window* GetNativeWindow() const override;

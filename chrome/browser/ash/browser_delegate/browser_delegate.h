@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/account_id/account_id.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,6 +82,9 @@ class BrowserDelegate {
   // Returns the contents for the given index, or nullptr if out of bounds. Can
   // be nullptr even if index is in bounds, just like GetActiveWebContents().
   virtual content::WebContents* GetWebContentsAt(size_t index) const = 0;
+
+  // Returns a range wrapper to iterate over all tabs in the browser.
+  virtual tabs::TabIteratorRange GetTabIterator() const = 0;
 
   // Returns the inspected web contents if this is a kDevTools type browser.
   // Returns nullptr otherwise.

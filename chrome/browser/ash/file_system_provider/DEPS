@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/extensions",
 

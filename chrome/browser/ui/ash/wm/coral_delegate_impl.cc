@@ -25,8 +25,10 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -172,7 +174,7 @@ ash::BrowserDelegate* FindTabOnDeskAtIndex(const GURL& url,
         }
 
         int idx = 0;
-        for (tabs::TabInterface* tab : *browser.GetBrowser().GetTabStripModel()) {
+        for (tabs::TabInterface* tab : browser.GetTabIterator()) {
           if (tab->GetContents()->GetVisibleURL() == url) {
             out_tab_index = idx;
             found_browser = &browser;
