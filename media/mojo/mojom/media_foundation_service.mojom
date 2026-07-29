@@ -25,8 +25,10 @@ interface MediaFoundationService {
   // Queries the capabilities of the MediaFoundation-based CDM. The client lives
   // in the browser process. `key_system_capability.sw_capability_query_status`
   // or `key_system_capability.hw_capability_query_status` can be used to
-  // inspect the reason when no capability reported.
-  IsKeySystemSupported(string key_system)
+  // inspect the reason when no capability reported. `is_hw_secure` selects
+  // which robustness to query for key systems that use the same name for
+  // both software and hardware secure.
+  IsKeySystemSupported(string key_system, bool is_hw_secure)
     => (bool is_supported, KeySystemCapability key_system_capability);
 
   // Requests an InterfaceFactory. `frame_interfaces` can optionally be used to

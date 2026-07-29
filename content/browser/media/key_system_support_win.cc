@@ -79,7 +79,7 @@ void GetMediaFoundationServiceCdmCapability(
   auto& mf_service =
       GetMediaFoundationService(cdm_type, nullptr, GURL(), cdm_path);
   mf_service.IsKeySystemSupported(
-      key_system,
+      key_system, is_hw_secure,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&OnKeySystemCapability, is_hw_secure,
                          std::move(cdm_capability_cb)),

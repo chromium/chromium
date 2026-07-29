@@ -37,6 +37,7 @@ class MEDIA_MOJO_EXPORT MediaFoundationService final
 
   // mojom::MediaFoundationService implementation:
   void IsKeySystemSupported(const std::string& key_system,
+                            bool is_hw_secure,
                             IsKeySystemSupportedCallback callback) final;
   void CreateInterfaceFactory(
       mojo::PendingReceiver<mojom::InterfaceFactory> receiver,

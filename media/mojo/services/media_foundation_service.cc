@@ -564,6 +564,7 @@ MediaFoundationService::~MediaFoundationService() {
 
 void MediaFoundationService::IsKeySystemSupported(
     const std::string& key_system,
+    bool is_hw_secure,
     IsKeySystemSupportedCallback callback) {
   DVLOG(1) << __func__ << ": key_system=" << key_system;
 
@@ -619,7 +620,7 @@ void MediaFoundationService::IsKeySystemSupported(
   auto sw_cdm_capability_or_status =
       base::unexpected(CdmCapabilityQueryStatus::kNoSupportedVideoCodec);
   auto hw_cdm_capability_or_status = GetCdmCapability(
-      cdm_factory, key_system, /*is_hw_secure=*/true,
+      cdm_factory, key_system, is_hw_secure,
       base::BindRepeating(&IsTypeSupported, mf_type_support, key_system));
   auto key_system_capability = KeySystemCapability(sw_cdm_capability_or_status,
                                                    hw_cdm_capability_or_status);
