@@ -356,6 +356,8 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.TabUndoBarController;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry;
@@ -4670,6 +4672,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         } else if (id == R.id.toggle_tab_layout_menu_id) {
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuToggleTabLayout");
+                boolean isEnabling = !VerticalTabUtils.isVerticalTabsEnabled(this);
+                VerticalTabUtils.recordLayoutToggle(LayoutSwitchEntryPoint.APP_MENU, isEnabling);
             }
             ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleTabStrip();
         } else {

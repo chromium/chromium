@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -107,5 +108,75 @@ public class VerticalTabUtilsUnitTest {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         assertTrue(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_Enable_AppMenu() {
+        assertLayoutToggleHistogram(
+                VerticalTabUtils.LayoutSwitchEntryPoint.APP_MENU,
+                /* isEnabling= */ true,
+                VerticalTabUtils.LayoutToggleSourceAndDirection.ENABLE_APP_MENU);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_Enable_TabContextMenu() {
+        assertLayoutToggleHistogram(
+                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
+                /* isEnabling= */ true,
+                VerticalTabUtils.LayoutToggleSourceAndDirection.ENABLE_TAB_CONTEXT_MENU);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_Enable_TabStripContextMenu() {
+        assertLayoutToggleHistogram(
+                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
+                /* isEnabling= */ true,
+                VerticalTabUtils.LayoutToggleSourceAndDirection.ENABLE_TAB_STRIP_CONTEXT_MENU);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_Disable_AppMenu() {
+        assertLayoutToggleHistogram(
+                VerticalTabUtils.LayoutSwitchEntryPoint.APP_MENU,
+                /* isEnabling= */ false,
+                VerticalTabUtils.LayoutToggleSourceAndDirection.DISABLE_APP_MENU);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_Disable_TabContextMenu() {
+        assertLayoutToggleHistogram(
+                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
+                /* isEnabling= */ false,
+                VerticalTabUtils.LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_Disable_TabStripContextMenu() {
+        assertLayoutToggleHistogram(
+                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
+                /* isEnabling= */ false,
+                VerticalTabUtils.LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU);
+    }
+
+    private void assertLayoutToggleHistogram(
+            @VerticalTabUtils.LayoutSwitchEntryPoint int entryPoint,
+            boolean isEnabling,
+            @VerticalTabUtils.LayoutToggleSourceAndDirection int expectedEnumVal) {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.VerticalTabs.LayoutToggleSourceAndDirection",
+                                expectedEnumVal)
+                        .build();
+
+        VerticalTabUtils.recordLayoutToggle(entryPoint, isEnabling);
+
+        histogramWatcher.assertExpected();
     }
 }

@@ -6727,6 +6727,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.LayoutToggleSourceAndDirection"
+    enum="AndroidVerticalTabsLayoutToggleSourceAndDirection"
+    expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>eleanorlee@google.com</owner>
+  <summary>
+    Records the entry point and direction (enable/disable) when the user toggles
+    Vertical Tabs.
+  </summary>
+</histogram>
+
 <histogram name="Android.VerticalTabs.RailCollapsed" enum="Boolean"
     expires_after="2027-07-22">
   <owner>agazal@google.com</owner>

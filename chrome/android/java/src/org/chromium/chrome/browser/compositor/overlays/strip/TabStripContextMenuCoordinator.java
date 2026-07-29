@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -332,6 +333,9 @@ public class TabStripContextMenuCoordinator {
             } else if (model.get(MENU_ITEM_ID) == R.id.toggle_tab_layout_menu_id) {
                 TabStripMenuMetricsUtils.recordStripMenuUserAction(
                         StripMenuAction.TOGGLE_TAB_LAYOUT, mTabStripLayout);
+                boolean isEnablingVerticalTabs = mTabStripLayout == TabStripLayoutType.HORIZONTAL;
+                VerticalTabUtils.recordLayoutToggle(
+                        LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU, isEnablingVerticalTabs);
                 if (mContext instanceof MenuOrKeyboardActionController controller) {
                     controller.onMenuOrKeyboardAction(
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);

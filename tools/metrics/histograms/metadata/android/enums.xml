@@ -399,6 +399,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabListItemTouchHelperCallback.java:AndroidVerticalTabsDragDropResult) -->
 
+<!-- LINT.IfChange(AndroidVerticalTabsLayoutToggleSourceAndDirection) -->
+
+<enum name="AndroidVerticalTabsLayoutToggleSourceAndDirection">
+  <int value="0" label="Enable: App Menu"/>
+  <int value="1" label="Enable: Tab Context Menu"/>
+  <int value="2" label="Enable: Tab Strip Context Menu"/>
+  <int value="3" label="Disable: App Menu"/>
+  <int value="4" label="Disable: Tab Context Menu"/>
+  <int value="5" label="Disable: Tab Strip Context Menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/vertical_tabs/android/java/src/org/chromium/chrome/browser/ui/vertical_tabs/VerticalTabUtils.java:AndroidVerticalTabsLayoutToggleSourceAndDirection)-->
+
 <enum name="AndroidWebViewCrashCollectionState">
   <int value="0" label="ENABLED_BY_COMMANDLINE">
     Enabled by commandline. This doesn't check later cases (ex. user consent).
