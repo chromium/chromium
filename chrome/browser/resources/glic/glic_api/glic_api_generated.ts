@@ -635,6 +635,8 @@ export enum FeatureMode {
   UNIVERSAL_CART = 4,
   // Client feature mode for Promotion Page.
   PROMOTION_PAGE = 5,
+  // Client feature mode to initiate actuation for Password Change.
+  PASSWORD_CHANGE = 6,
 }
 
 // Settings for Gemini Enterprise.
