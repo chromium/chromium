@@ -1080,7 +1080,7 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewSwitchItem* showMemoryDebugSwitchItem =
       [self switchItemWithType:SettingsItemTypeMemoryDebugging
                             title:@"Show memory debug tools"
-                           symbol:DefaultSettingsRootSymbol(@"memorychip")
+                           symbol:SettingsRootSymbol(SymbolSpeedometer)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
   showMemoryDebugSwitchItem.on = [_showMemoryDebugToolsEnabled value];
@@ -1114,7 +1114,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (TableViewSwitchItem*)viewSourceSwitchItem {
   UIImage* image;
-  image = DefaultSettingsRootSymbol(@"keyboard.badge.eye");
+  image = SettingsRootSymbol(SymbolDocPlaintext);
   TableViewSwitchItem* viewSourceItem =
       [self switchItemWithType:SettingsItemTypeViewSource
                             title:@"View source menu"
