@@ -492,6 +492,10 @@ config("compiler") {
       ]
     }
 
+    if (current_os == "aix") {
+      defines += [ "__LIBC_NO_CPP_MATH_OVERLOADS__" ]
+    }
+
     if (exclude_unwind_tables) {
       cflags += [
         "-fno-unwind-tables",

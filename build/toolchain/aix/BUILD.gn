@@ -5,8 +5,13 @@
 import("//build/toolchain/gcc_toolchain.gni")
 
 gcc_toolchain("ppc64") {
-  cc = "gcc"
-  cxx = "g++"
+  if (is_clang) {
+    cc = "clang"
+    cxx = "clang++"
+  } else {
+    cc = "gcc"
+    cxx = "g++"
+  }
 
   readelf = "readelf"
   nm = "nm"
@@ -19,6 +24,5 @@ gcc_toolchain("ppc64") {
 
     # reclient does not support gcc.
     use_remoteexec = false
-    is_clang = false
   }
 }
