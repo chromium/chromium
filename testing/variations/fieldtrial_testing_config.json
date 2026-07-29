@@ -16500,6 +16500,21 @@
             ]
         }
     ],
+    "MachIPCVouchersHoldback": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Holdback",
+                    "disable_features": [
+                        "UseMachVouchers"
+                    ]
+                }
+            ]
+        }
+    ],
     "MagiChromeBatch1": [
         {
             "platforms": [
