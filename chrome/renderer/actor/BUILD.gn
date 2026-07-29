@@ -22,10 +22,6 @@ source_set("actor") {
     "mouse_move_tool.h",
     "no_op_tool.cc",
     "no_op_tool.h",
-    "page_stability_metrics.cc",
-    "page_stability_metrics.h",
-    "page_stability_monitor_delegate.cc",
-    "page_stability_monitor_delegate.h",
     "script_tool.cc",
     "script_tool.h",
     "scroll_tool.cc",
@@ -50,7 +46,7 @@ source_set("actor") {
 
   deps = [
     "//chrome/common",
-    "//components/actor/core:journal",
+    "//components/actor/core",
     "//components/actor/core:logging",
     "//components/page_content_annotations/content/renderer",
     "//components/page_content_annotations/core",
@@ -71,16 +67,4 @@ if (!skip_android_unmigrated_actor_files) {
       "//testing/gtest",
     ]
   }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "page_stability_monitor_delegate_unittest.cc" ]
-  deps = [
-    ":actor",
-    "//base/test:test_support",
-    "//components/actor/public/mojom:mojo_bindings",
-    "//components/page_content_annotations/core",
-    "//testing/gtest",
-  ]
 }

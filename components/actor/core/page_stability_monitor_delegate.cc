@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/actor/page_stability_monitor_delegate.h"
+#include "components/actor/core/page_stability_monitor_delegate.h"
 
 #include <memory>
 #include <utility>
 #include <variant>
 
 #include "base/time/time.h"
-#include "chrome/renderer/actor/page_stability_metrics.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/actor/core/page_stability_metrics.h"
 #include "components/actor/core/task_id.h"
 #include "components/page_content_annotations/core/page_stability_state.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"

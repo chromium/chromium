@@ -22,11 +22,8 @@ source_set("journal") {
     "aggregated_journal_in_memory_serializer.h",
     "aggregated_journal_serializer.cc",
     "aggregated_journal_serializer.h",
-    "journal_details_builder.cc",
-    "journal_details_builder.h",
   ]
   deps = [
-    ":core",
     ":logging",
     "//base",
     "//components/tracing:tracing_metrics",
@@ -37,6 +34,7 @@ source_set("journal") {
     "//url",
   ]
   public_deps = [
+    ":core",
     ":task_id",
     "//components/actor/public/mojom:mojo_bindings",
   ]
@@ -52,6 +50,14 @@ source_set("core") {
     "actor_switches.h",
     "actor_util.cc",
     "actor_util.h",
+    "journal_details_builder.cc",
+    "journal_details_builder.h",
+    "page_stability_metrics.cc",
+    "page_stability_metrics.h",
+    "page_stability_metrics_common.cc",
+    "page_stability_metrics_common.h",
+    "page_stability_monitor_delegate.cc",
+    "page_stability_monitor_delegate.h",
     "safety_list_manager.cc",
     "safety_list_manager.h",
     "shared_types.cc",
@@ -62,12 +68,16 @@ source_set("core") {
 
   public_deps = [
     "//base",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/content_settings/core/common",
     "//components/page_content_annotations/core",
     "//url",
   ]
 
-  deps = [ "//net" ]
+  deps = [
+    "//net",
+    "//ui/base",
+  ]
 }
 
 source_set("unit_tests") {
@@ -75,6 +85,7 @@ source_set("unit_tests") {
   sources = [
     "aggregated_journal_serializer_unittest.cc",
     "aggregated_journal_unittest.cc",
+    "page_stability_monitor_delegate_unittest.cc",
     "safety_list_manager_unittest.cc",
     "shared_types_unittest.cc",
   ]

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/actor/page_stability_metrics.h"
+#include "components/actor/core/page_stability_metrics.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/common/actor/page_stability_metrics_common.h"
+#include "components/actor/core/page_stability_metrics_common.h"
 #include "components/page_content_annotations/core/page_stability_state.h"
 
 namespace actor {

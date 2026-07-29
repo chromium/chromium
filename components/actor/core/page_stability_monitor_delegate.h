@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_DELEGATE_H_
-#define CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_DELEGATE_H_
+#ifndef COMPONENTS_ACTOR_CORE_PAGE_STABILITY_MONITOR_DELEGATE_H_
+#define COMPONENTS_ACTOR_CORE_PAGE_STABILITY_MONITOR_DELEGATE_H_
 
 #include <memory>
-#include <optional>
-#include <string_view>
 
-#include "base/time/time.h"
+#include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
@@ -18,12 +16,12 @@ namespace actor {
 
 class PageStabilityMetrics;
 
-// Actor-specific interface that extends
+// Actor-specific implementation of the
 // page_content_annotations::PageStabilityMonitorDelegate.
 //
-// Subclasses must implement the virtual `LogEvent` method to route page
-// stability events to Actor-specific logging frameworks (e.g. the Actor
-// Journal). This class also records actor-specific timing metrics.
+// This delegate routes page stability events to virtual methods (which
+// subclasses can implement to log to the Actor Journal, etc.) and records
+// timing metrics.
 class PageStabilityMonitorDelegate
     : public page_content_annotations::PageStabilityMonitorDelegate {
  public:
@@ -72,4 +70,4 @@ class PageStabilityMonitorDelegate
 
 }  // namespace actor
 
-#endif  // CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_DELEGATE_H_
+#endif  // COMPONENTS_ACTOR_CORE_PAGE_STABILITY_MONITOR_DELEGATE_H_

@@ -5,5 +5,6 @@ include_rules = [
   "+net/base/schemeful_site.h",
   "+third_party/abseil-cpp/absl",
   "+third_party/perfetto",
+  "+ui/base",
   "+ui/gfx/geometry/point.h",
 ]

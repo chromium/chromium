@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_ACTOR_PAGE_STABILITY_METRICS_COMMON_H_
-#define CHROME_COMMON_ACTOR_PAGE_STABILITY_METRICS_COMMON_H_
+#ifndef COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_COMMON_H_
+#define COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_COMMON_H_
 
 namespace actor {
 
@@ -47,4 +47,4 @@ extern char const
 
 }  // namespace actor
 
-#endif  // CHROME_COMMON_ACTOR_PAGE_STABILITY_METRICS_COMMON_H_
+#endif  // COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_COMMON_H_

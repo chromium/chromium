@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_RENDERER_ACTOR_PAGE_STABILITY_METRICS_H_
-#define CHROME_RENDERER_ACTOR_PAGE_STABILITY_METRICS_H_
+#ifndef COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_H_
+#define COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_H_
 
 #include "base/time/time.h"
-#include "chrome/common/actor/page_stability_metrics_common.h"
+#include "components/actor/core/page_stability_metrics_common.h"
 #include "components/page_content_annotations/core/page_stability_state.h"
 
 namespace actor {
@@ -53,4 +53,4 @@ class PageStabilityMetrics {
 
 }  // namespace actor
 
-#endif  // CHROME_RENDERER_ACTOR_PAGE_STABILITY_METRICS_H_
+#endif  // COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_H_
