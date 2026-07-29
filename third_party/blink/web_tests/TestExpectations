@@ -7185,11 +7185,6 @@ crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Failu
 # Gardener 2023-11-10
 crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history-interface/001.html [ Failure Pass ]
 
-# Tentatively allowed to fail to roll changes in the DevTools frontend.
-crbug.com/40279367 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/40279367 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/40279367 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-
 # Gardener 2023-11-16
 crbug.com/1502794 external/wpt/html/semantics/the-button-element/command-and-commandfor/on-video-behavior.tentative.html [ Failure Pass Timeout ]
 
