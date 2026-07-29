@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "webui_interactive_test_mixin.cc",
+      "webui_interactive_test_mixin.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/interaction",
+      "//ui/base",
+      "//ui/base/interaction:test_support",
+    ]
+  }
+}

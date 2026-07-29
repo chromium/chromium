@@ -578,6 +578,7 @@ static_library("test_support") {
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/views/test:test_support",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/webui/test_support",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/isolated_web_apps",
       "//components/crx_file",
@@ -627,8 +628,6 @@ static_library("test_support") {
 
     sources += [
       "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h",
-      "../browser/ui/webui/test_support/webui_interactive_test_mixin.cc",
-      "../browser/ui/webui/test_support/webui_interactive_test_mixin.h",
       "../test/base/browser_with_test_window_test.cc",
       "../test/base/browser_with_test_window_test.h",
       "base/dialog_test_browser_window.cc",
