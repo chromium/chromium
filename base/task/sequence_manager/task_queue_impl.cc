@@ -1484,9 +1484,8 @@ void TaskQueueImpl::MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(
   }
 }
 
-void TaskQueueImpl::ReportIpcTaskQueued(
-    const Task& pending_task,
-    const base::TimeDelta& time_since_disabled) {
+void TaskQueueImpl::ReportIpcTaskQueued(const Task& pending_task,
+                                        base::TimeDelta time_since_disabled) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
       [&](perfetto::EventContext ctx) {

@@ -520,7 +520,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
   void MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(const Task& pending_task);
   void ReportIpcTaskQueued(const Task& pending_task,
-                           const base::TimeDelta& time_since_disabled);
+                           base::TimeDelta time_since_disabled);
 
   // Invoked when the queue becomes enabled and not blocked by a fence.
   void OnQueueUnblocked();
