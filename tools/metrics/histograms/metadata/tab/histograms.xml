@@ -2915,20 +2915,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabSearch.AccidentalClicks" enum="AccidentalClickType"
-    expires_after="2026-09-09">
-  <owner>emshack@chromium.org</owner>
-  <owner>shibalik@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the total number of tab search clicks, and the number of accidental
-    clicks as measured by less than a second passing between clicking tab search
-    and clicking the new tab button. Percentage of accidental clicks can be
-    determined by accidental clicks / total clicks. This metric only logs for
-    clicks within the tab strip combo button.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabSearch.BubbleWidgetInitializationTime" units="ms"
     expires_after="2026-09-09">
   <owner>tluk@chromium.org</owner>
