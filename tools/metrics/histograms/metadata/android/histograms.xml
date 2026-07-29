@@ -2007,6 +2007,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Download.OpenTarget" enum="AndroidDownloadOpenTarget"
+    expires_after="2026-10-28">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records the target application used when a user opens a download on Android.
+    Logged when a download open request is handled in the downloads UI or from
+    notifications.
+  </summary>
+</histogram>
+
 <histogram name="Android.DownloadManager.ForegroundServiceLifecycle"
     enum="DownloadNotificationForegroundLifecycle" expires_after="never">
 <!-- expires-never: Download foreground notification stability metric. -->

@@ -210,6 +210,13 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="NEW_DOWNLOAD_TAB_OPEN_BUTTON"/>
 </enum>
 
+<enum name="AndroidDownloadOpenTarget">
+  <int value="0" label="CHROME_DEFAULT"/>
+  <int value="1" label="CHROME_FALLBACK"/>
+  <int value="2" label="OTHER_APP_DEFAULT"/>
+  <int value="3" label="OS_CHOOSER"/>
+</enum>
+
 <!-- LINT.IfChange(AndroidDragTargetType) -->
 
 <enum name="AndroidDragTargetType">

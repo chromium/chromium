@@ -38,6 +38,25 @@ public class DownloadMetrics {
         int NUM_ENTRIES = 4;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        DownloadOpenTarget.CHROME_DEFAULT,
+        DownloadOpenTarget.CHROME_FALLBACK,
+        DownloadOpenTarget.OTHER_APP_DEFAULT,
+        DownloadOpenTarget.OS_CHOOSER,
+        DownloadOpenTarget.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DownloadOpenTarget {
+        int CHROME_DEFAULT = 0;
+        int CHROME_FALLBACK = 1;
+        int OTHER_APP_DEFAULT = 2;
+        int OS_CHOOSER = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
     /**
      * Records download open source.
      *
@@ -100,5 +119,15 @@ public class DownloadMetrics {
                 "Download.OpenDownloads.OpenWithExternalAppsSource",
                 openWithExternalAppsSource,
                 OpenWithExternalAppsSource.NUM_ENTRIES);
+    }
+
+    /**
+     * Records download open target when a download is opened.
+     *
+     * @param target The target application where the download is opened.
+     */
+    public static void recordDownloadOpenTarget(@DownloadOpenTarget int target) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Download.OpenTarget", target, DownloadOpenTarget.NUM_ENTRIES);
     }
 }
