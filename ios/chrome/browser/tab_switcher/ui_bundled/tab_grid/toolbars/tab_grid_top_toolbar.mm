@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbar_scrolling_background.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -515,10 +516,19 @@ CGFloat HorizontalMargin() {
   _exitTabGridButton.accessibilityIdentifier =
       kTabGridExitTabGridButtonIdentifier;
 
-  _exitSelectionButton = [self
-      createButtonWithImage:nil
-                      title:l10n_util::GetNSString(IDS_IOS_TAB_GRID_DONE_BUTTON)
-             targetSelector:@selector(exitSelectionButtonTapped:)];
+  if (@available(iOS 26, *)) {
+    _exitSelectionButton =
+        [self createButtonWithImage:DefaultDoneButtonForToolbar()
+                              title:nil
+                     targetSelector:@selector(exitSelectionButtonTapped:)];
+    _exitSelectionButton.tintColor = [UIColor colorNamed:kBlueColor];
+  } else {
+    _exitSelectionButton =
+        [self createButtonWithImage:nil
+                              title:l10n_util::GetNSString(
+                                        IDS_IOS_TAB_GRID_DONE_BUTTON)
+                     targetSelector:@selector(exitSelectionButtonTapped:)];
+  }
   _exitSelectionButton.accessibilityIdentifier =
       kTabGridExitSelectionButtonIdentifier;
 

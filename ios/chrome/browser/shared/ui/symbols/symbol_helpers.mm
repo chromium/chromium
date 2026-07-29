@@ -14,6 +14,7 @@
 namespace {
 
 constexpr CGFloat kCloseSymbolSize = 22;
+constexpr CGFloat kDoneSymbolSize = 22;
 
 // Returns the default configuration with the given `point_size`.
 UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
@@ -56,6 +57,14 @@ UIImage* DefaultCloseButtonForToolbar() {
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
   return SymbolWithConfiguration(SymbolXMark, configuration);
+}
+
+UIImage* DefaultDoneButtonForToolbar() {
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kDoneSymbolSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  return SymbolWithConfiguration(SymbolCheckmark, configuration);
 }
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
