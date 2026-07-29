@@ -20,7 +20,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/settings_title_margin"
-        android:layout_marginEnd="@dimen/settings_title_margin">
+        android:layout_marginEnd="@dimen/settings_title_margin"
+        android:scrollbars="none">
         <LinearLayout
             android:id="@+id/settings_title_in_detailed_pane"
             android:layout_width="wrap_content"
