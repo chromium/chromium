@@ -2457,4 +2457,115 @@ suite('OmniboxComposeboxTest', () => {
               window.getComputedStyle(voiceSearchContainer).position);
         });
   });
+
+  suite('AskGComposeboxLensChip', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        askGComposeboxLensChipEnabled: true,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      omniboxComposebox = document.createElement('cr-omnibox-composebox');
+      document.body.appendChild(omniboxComposebox);
+      await microtasksFinished();
+      testProxy.page.updateContentSharingPolicy(true);
+      testProxy.page.updateLensSearchEligibility(true);
+      await microtasksFinished();
+    });
+
+    const getChip = () =>
+        omniboxComposebox.shadowRoot.querySelector('#lensSearchChip');
+
+    test('visible by default when flag and eligibility are true', () => {
+      assertTrue(!!getChip());
+    });
+
+    test('hidden when flag is disabled', async () => {
+      loadTimeData.overrideValues({askGComposeboxLensChipEnabled: false});
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      omniboxComposebox = document.createElement('cr-omnibox-composebox');
+      document.body.appendChild(omniboxComposebox);
+      await microtasksFinished();
+      assertFalse(!!getChip());
+    });
+
+    test('hidden when input is not empty', async () => {
+      assertTrue(!!getChip());
+      omniboxComposebox.input = 'test';
+      await microtasksFinished();
+      assertFalse(!!getChip());
+    });
+
+    test('hidden when files are present', async () => {
+      assertTrue(!!getChip());
+      const mockToken = 'mock-file-token';
+      const file = new ComposeboxFile(
+          mockToken, 'test.png', 'image/png', InputType.kLensImage);
+      omniboxComposebox.files.set(mockToken, file);
+      omniboxComposebox.files = new Map(omniboxComposebox.files);
+      await microtasksFinished();
+      assertFalse(!!getChip());
+    });
+
+    test('hidden when in tool mode', async () => {
+      assertTrue(!!getChip());
+      omniboxComposebox.inToolMode = true;
+      omniboxComposebox.inputState = {
+        ...createDefaultInputState(),
+        activeTool: ToolMode.kDeepSearch,
+      };
+      await microtasksFinished();
+      assertFalse(!!getChip());
+    });
+
+    test('hidden when content sharing is disabled', async () => {
+      assertTrue(!!getChip());
+      testProxy.page.updateContentSharingPolicy(false);
+      await microtasksFinished();
+      assertFalse(!!getChip());
+    });
+
+    test('hidden when lens search is ineligible', async () => {
+      assertTrue(!!getChip());
+      testProxy.page.updateLensSearchEligibility(false);
+      await microtasksFinished();
+      assertFalse(!!getChip());
+    });
+
+    test('Clicking lens search chip triggers handler', async () => {
+      const lensChip = getChip() as HTMLElement;
+      assertTrue(!!lensChip);
+
+      const innerButton = lensChip.shadowRoot!.querySelector<HTMLElement>(
+          '#lensSearchPill, #lensIcon');
+      assertTrue(!!innerButton);
+      innerButton.click();
+      await microtasksFinished();
+
+      assertEquals(1, testProxy.handler.getCallCount('openLensSearch'));
+    });
+
+    test('visibilitychange to hidden resets eligibility', async () => {
+      assertTrue(!!getChip());
+
+      const originalVisibilityState = document.visibilityState;
+      Object.defineProperty(document, 'visibilityState', {
+        get() {
+          return 'hidden';
+        },
+        configurable: true,
+      });
+
+      document.dispatchEvent(new Event('visibilitychange'));
+      await microtasksFinished();
+
+      assertFalse(!!getChip());
+
+      Object.defineProperty(document, 'visibilityState', {
+        get() {
+          return originalVisibilityState;
+        },
+        configurable: true,
+      });
+    });
+  });
 });

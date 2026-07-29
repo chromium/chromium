@@ -141,6 +141,12 @@ export function getHtml(this: OmniboxComposeboxElement) {
                     .smartTabSharingActive="${this.smartTabSharingActive}">
                 </cr-composebox-contextual-entrypoint-button>
               ` : ''}
+              ${this.isLensSearchChipShown_ ? html`
+                <cr-composebox-lens-search id="lensSearchChip"
+                    class="upload-button contextual-chip"
+                    @lens-search-click="${this.onLensSearchClick_}">
+                </cr-composebox-lens-search>
+              ` : ''}
               ${this.searchboxLayoutMode !== 'Compact' &&
                 this.inToolMode ? html`
                 <cr-composebox-tool-chip

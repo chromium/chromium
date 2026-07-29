@@ -5,9 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_OMNIBOX_COMPOSEBOX_HANDLER_H_
 
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/prefs/pref_change_registrar.h"
 
+class OmniboxController;
 class Profile;
 
 namespace content {
@@ -34,13 +40,23 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
   // composebox::mojom::PageHandler:
   void HandleFileUpload(bool is_image) override;
 
+  // searchbox::mojom::PageHandler:
+  void OpenLensSearch() override;
+
  protected:
   // ComposeboxHandler:
   void OpenUrl(GURL url, const WindowOpenDisposition disposition) override;
 
  private:
   void OnAimEligibilityChanged();
+  void OnContentSharingPolicyChanged();
+  void OnPopupStateChanged(OmniboxPopupState old_state,
+                           OmniboxPopupState new_state);
+  void UpdateLensSearchEligibility(const AutocompleteInput& input,
+                                   AutocompleteProviderClient* client);
 
+  base::CallbackListSubscription popup_state_subscription_;
+  PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription aim_eligibility_subscription_;
 
   base::WeakPtrFactory<OmniboxComposeboxHandler> weak_ptr_factory_{this};
