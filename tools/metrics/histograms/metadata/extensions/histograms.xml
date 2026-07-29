@@ -3956,6 +3956,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.SafeBrowsing.BlocklistedCount" units="count"
+    expires_after="2026-11-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of blocklisted extensions found during a Safe Browsing extension
+    check. Recorded each time a Safe Browsing check for extension IDs completes,
+    whether synchronously or asynchronously.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SandboxUnpackFailureReason2"
     enum="ExtensionUnpackFailureReason" expires_after="never">
 <!-- expires-never: Monitors core extension installation flows. -->
