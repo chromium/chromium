@@ -139,6 +139,15 @@ bool RarReader::ExtractNextEntry() {
         archive_->SeekToNext();
         return true;
       }
+
+      if (archive_->FileHead.WinSize > command_->WinSizeLimit &&
+          archive_->FileHead.WinSize > command_->WinSize) {
+        // The entry's declared dictionary size exceeds the configured limit,
+        // so unpacking was refused. Skip over this file but report the
+        // metadata we do have.
+        archive_->SeekToNext();
+        return true;
+      }
     }
   }
 

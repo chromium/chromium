@@ -463,6 +463,34 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithAsterisk) {
               testing::Eq("evil.exe"))));
 }
 
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithLargeDictionaryEntry) {
+  // Verifies that an entry whose declared dictionary size exceeds UnRAR's
+  // default limit doesn't cause subsequent entries to be skipped.
+  // large_dictionary.rar contains: "readme.txt", "dummy.bin" (declares an
+  // 8 GiB dictionary), "evil.exe".
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("large_dictionary.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  // All three entries should be enumerated.
+  EXPECT_THAT(
+      results.archived_binary,
+      testing::UnorderedElementsAre(
+          testing::Property(
+              &safe_browsing::ClientDownloadRequest_ArchivedBinary::file_path,
+              testing::Eq("readme.txt")),
+          testing::Property(
+              &safe_browsing::ClientDownloadRequest_ArchivedBinary::file_path,
+              testing::Eq("dummy.bin")),
+          testing::Property(
+              &safe_browsing::ClientDownloadRequest_ArchivedBinary::file_path,
+              testing::Eq("evil.exe"))));
+}
+
 TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
   base::FilePath file_path;
   ASSERT_NO_FATAL_FAILURE(file_path = GetFilePath("small_archive.rar"));
