@@ -75,6 +75,7 @@ InlineLoginDialogOnboarding* InlineLoginDialogOnboarding::Show(
   auto* dialog =
       new InlineLoginDialogOnboarding(size, std::move(dialog_closed_callback));
   dialog->ShowSystemDialog(window);
+  dialog->AttachWidgetObserver();
 
   return dialog;
 }

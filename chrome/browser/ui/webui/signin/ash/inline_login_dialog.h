@@ -11,12 +11,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_modal_delegate.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 class GURL;
 
@@ -26,7 +29,8 @@ class AccountManagerDialogCoordinator;
 
 // Extends from |SystemWebDialogDelegate| to create an always-on-top dialog.
 class InlineLoginDialog : public SystemWebDialogDelegate,
-                          public web_modal::WebContentsModalDialogHost {
+                          public web_modal::WebContentsModalDialogHost,
+                          public views::WidgetObserver {
  public:
   InlineLoginDialog(const InlineLoginDialog&) = delete;
   InlineLoginDialog& operator=(const InlineLoginDialog&) = delete;
@@ -42,6 +46,13 @@ class InlineLoginDialog : public SystemWebDialogDelegate,
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
+  // views::WidgetObserver overrides:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  void AttachWidgetObserver();
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(InlineLoginDialogTest, ReturnsEmptyDialogArgs);
@@ -93,6 +104,8 @@ class InlineLoginDialog : public SystemWebDialogDelegate,
   base::OnceClosure close_dialog_closure_;
   base::ObserverList<web_modal::ModalDialogHostObserver>
       modal_dialog_host_observer_list_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 }  // namespace ash

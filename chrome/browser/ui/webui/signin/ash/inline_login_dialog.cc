@@ -158,6 +158,26 @@ void InlineLoginDialog::RemoveObserver(
   modal_dialog_host_observer_list_.RemoveObserver(observer);
 }
 
+void InlineLoginDialog::OnWidgetBoundsChanged(views::Widget* widget,
+                                              const gfx::Rect& new_bounds) {
+  for (auto& observer : modal_dialog_host_observer_list_) {
+    observer.OnPositionRequiresUpdate();
+  }
+}
+
+void InlineLoginDialog::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
+void InlineLoginDialog::AttachWidgetObserver() {
+  DCHECK(!widget_observation_.IsObserving());
+  gfx::NativeWindow window = dialog_window();
+  DCHECK(window);
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+  DCHECK(widget);
+  widget_observation_.Observe(widget);
+}
+
 InlineLoginDialog::InlineLoginDialog()
     : InlineLoginDialog(GetInlineLoginUrl(std::string())) {}
 
@@ -278,6 +298,7 @@ void InlineLoginDialog::ShowInternal(
   dialog = new InlineLoginDialog(GetInlineLoginUrl(email), options,
                                  std::move(close_dialog_closure));
   dialog->ShowSystemDialog();
+  dialog->AttachWidgetObserver();
 
   // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on
   // Chrome OS is defined.
