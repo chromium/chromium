@@ -153,19 +153,21 @@ std::string GetHeadingHtmlTagForPDF(const ui::AXNode* ax_node,
     return "p";
   }
 
-  // A single block of text could be incorrectly formatted with multiple heading
-  // nodes (one for each line of text) instead of a single paragraph node. This
-  // case should be detected to improve readability. If there are multiple
-  // consecutive nodes with the same heading level, assume that they are all a
-  // part of one paragraph.
-  ui::AXNode* next = ax_node->GetNextUnignoredSibling();
-  ui::AXNode* prev = ax_node->GetPreviousUnignoredSibling();
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    // A single block of text could be incorrectly formatted with multiple
+    // heading nodes (one for each line of text) instead of a single paragraph
+    // node. This case should be detected to improve readability. If there are
+    // multiple consecutive nodes with the same heading level, assume that they
+    // are all a part of one paragraph.
+    ui::AXNode* next = ax_node->GetNextUnignoredSibling();
+    ui::AXNode* prev = ax_node->GetPreviousUnignoredSibling();
 
-  if ((next && next->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag) ||
-      (prev && prev->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag)) {
-    return "span";
+    if ((next && next->GetStringAttribute(
+                     ax::mojom::StringAttribute::kHtmlTag) == html_tag) ||
+        (prev && prev->GetStringAttribute(
+                     ax::mojom::StringAttribute::kHtmlTag) == html_tag)) {
+      return "span";
+    }
   }
 
   int32_t hierarchical_level =
