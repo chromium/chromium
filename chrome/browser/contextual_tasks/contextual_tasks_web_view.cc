@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -20,6 +21,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -36,6 +38,8 @@ ContextualTasksWebView::ContextualTasksWebView(
     toolbar_web_view_ =
         AddChildView(std::make_unique<views::WebView>(browser_context));
     toolbar_web_view_->SetPreferredSize(gfx::Size(0, 40));
+    toolbar_web_view_->LoadInitialURL(
+        GURL(chrome::kChromeUIContextualTasksToolbarURL));
 
     content_web_view_ =
         AddChildView(std::make_unique<views::WebView>(browser_context));
