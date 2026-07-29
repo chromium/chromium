@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +37,8 @@ Verdict ChromeRulesService::GetPasteVerdict(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const ui::ClipboardMetadata& metadata) const {
+  base::ScopedUmaHistogramTimer timer(
+      "Enterprise.DataControls.Paste.EvaluationLatency");
   return GetVerdict(Rule::Restriction::kClipboard,
                     {
                         .source = GetAsActionSource(source, metadata),

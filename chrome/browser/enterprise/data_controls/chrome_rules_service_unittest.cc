@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1504,6 +1505,23 @@ TEST_F(DataControlsRulesServiceTest, PasteContentSize) {
                       ->GetPasteVerdict(
                           /*source*/ empty_endpoint(),
                           /*destination*/ google_url_endpoint(), large_metadata));
+}
+
+TEST_F(DataControlsRulesServiceTest, PasteLatencyHistogramLogged) {
+  base::HistogramTester histogram_tester;
+  SetDataControls(profile()->GetPrefs(), {R"({
+    "name": "Block paste rule",
+    "rule_id": "1234",
+    "sources": { "url_regexprs": ["^https://secret\\.com/.*$"] },
+    "restrictions": [ {"class": "CLIPBOARD", "level": "BLOCK"} ]
+  })"});
+
+  ChromeRulesServiceFactory::GetInstance()
+      ->GetForBrowserContext(profile())
+      ->GetPasteVerdict(google_url_endpoint(), empty_endpoint(), {});
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.DataControls.Paste.EvaluationLatency", 1);
 }
 
 }  // namespace data_controls

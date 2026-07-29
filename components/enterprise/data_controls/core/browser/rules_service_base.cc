@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_controls/core/browser/rules_service_base.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
@@ -86,6 +87,8 @@ Verdict RulesServiceBase::GetDownloadVerdict(const GURL& download_url) const {
 }
 
 bool RulesServiceBase::BlockScreenshots(const GURL& url) const {
+  base::ScopedUmaHistogramTimer timer(
+      "Enterprise.DataControls.Screenshot.EvaluationLatency");
   return GetVerdict(Rule::Restriction::kScreenshot,
                     {
                         .source =

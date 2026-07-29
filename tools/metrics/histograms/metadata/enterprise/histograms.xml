@@ -1211,6 +1211,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DataControls.Paste.EvaluationLatency" units="ms"
+    expires_after="2027-07-22">
+  <owner>richardbadir@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the time taken to evaluate Data Controls policy conditions for a
+    clipboard paste operation. Recorded synchronously on the UI thread when
+    GetPasteVerdict() finishes, immediately before returning the verdict.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DataControls.Screenshot.EvaluationLatency"
+    units="ms" expires_after="2027-07-22">
+  <owner>richardbadir@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the time taken to evaluate Data Controls policy conditions for a
+    screenshot check. Recorded synchronously on the UI thread when
+    BlockScreenshots() finishes, immediately before returning the verdict.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DataControls.SearchWith.Verdict"
     enum="EnterpriseDlpPolicyLevel" expires_after="2027-05-11">
   <owner>anaercegovac@google.com</owner>
