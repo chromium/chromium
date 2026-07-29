@@ -63,6 +63,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/global_features.h"
@@ -89,6 +90,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
@@ -96,6 +98,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "components/session_manager/core/session.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/arc_package_specifics.pb.h"
@@ -435,7 +438,14 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     arc_app_test_.PreProfileSetUp();
 
     extensions::ExtensionServiceTestBase::SetUp();
-    InitializeExtensionService(ExtensionServiceInitParams());
+    {
+      ash::ScopedAccountIdAnnotator annotator(
+          testing_profile_manager()->profile_manager(),
+          session_manager::SessionManager::Get()
+              ->GetPrimarySession()
+              ->account_id());
+      InitializeExtensionService(ExtensionServiceInitParams());
+    }
     service()->Init();
 
     OnBeforeArcTestSetup();
@@ -849,6 +859,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
 
+  apps::AppServiceRegistry app_service_registry_;
   ash::SessionTerminationManager session_termination_manager_;
   ArcAppTest arc_app_test_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;

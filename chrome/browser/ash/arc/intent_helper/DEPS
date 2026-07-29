@@ -38,5 +38,6 @@ specific_include_rules = {
   ],
   "arc_settings_service_unittest\\.cc": [
     "+chrome/common/pref_names.h",
+    "+chrome/browser/ash/login/users/scoped_account_id_annotator.h",
   ],
 }

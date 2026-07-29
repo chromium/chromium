@@ -83,6 +83,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -430,6 +431,8 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+
+  apps::AppServiceRegistry app_service_registry_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   user_manager::ScopedUserManager user_manager_;

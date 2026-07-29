@@ -98,7 +98,8 @@ class AppServiceProxyBase : public KeyedService,
 
   Profile* profile() const { return profile_; }
 
-  apps::AppRegistryCache& AppRegistryCache();
+  apps::AppRegistryCache& AppRegistryCache() override;
+
   apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
@@ -169,25 +170,12 @@ class AppServiceProxyBase : public KeyedService,
                           LaunchSource launch_source,
                           std::vector<base::FilePath> file_paths);
 
-  // Launches an app for the given `app_id`, passing `intent` to the app.
-  //
-  // - `event_flags` is a bitset of ui::EventFlags providing additional context
-  // about the action which launches the app (e.g. a middle click indicating
-  // opening a background tab).
-  // - `launch_source` is the UI surface which is launching the app (e.g. shelf,
-  // search box).
-  // - `window_info` specifies the desired location of the new app window
-  // (e.g. window bounds, display ID). If `window_info` is nullptr, the app
-  // publisher will position the new app window using its default behavior (e.g.
-  // on the currently active display).
-  // - `callback` will be called with the result of the launch once it is
-  // complete.
-  virtual void LaunchAppWithIntent(const std::string& app_id,
-                                   int32_t event_flags,
-                                   IntentPtr intent,
-                                   LaunchSource launch_source,
-                                   WindowInfoPtr window_info,
-                                   LaunchCallback callback);
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           LaunchCallback callback) override;
 
   // Launches an app for the given `app_id`, passing `url` to the app.
   //

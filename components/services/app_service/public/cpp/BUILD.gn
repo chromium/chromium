@@ -57,6 +57,7 @@ component("app_service") {
   ]
   deps = [
     ":app_types",
+    ":intents",
     "//base",
   ]
 

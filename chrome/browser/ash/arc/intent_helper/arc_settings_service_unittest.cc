@@ -14,11 +14,13 @@
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -43,6 +45,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
+#include "components/session_manager/core/session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace arc {
@@ -171,11 +175,21 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     return &backup_settings_instance_;
   }
 
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    ash::ScopedAccountIdAnnotator annotator(
+        profile_manager()->profile_manager(),
+        session_manager::SessionManager::Get()
+            ->GetPrimarySession()
+            ->account_id());
+    return BrowserWithTestWindowTest::CreateProfile(profile_name);
+  }
+
  private:
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   TestingPrefServiceSimple local_state_;
+  apps::AppServiceRegistry app_service_registry_;
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

@@ -28,6 +28,7 @@
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
@@ -141,6 +142,8 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+
+  apps::AppServiceRegistry app_service_registry_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   ash::ScopedStubInstallAttributes install_attributes_;
