@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // A simple unit-test style driver for libfuzzer tests.
 // Usage: <fuzzer_test> <file>...
 
@@ -53,12 +48,19 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  if (LLVMFuzzerInitialize)
+  if (LLVMFuzzerInitialize) {
     LLVMFuzzerInitialize(&argc, &argv);
+  }
 
   for (int i = 1; i < argc; ++i) {
+    // This file is shared with WebRTC standalone builds, which do not depend on
+    // //base. We cannot use base::span or UNSAFE_BUFFERS here.
+    // Instead, we suppress the unsafe-buffer-usage warning locally.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
     std::cout << argv[i] << std::endl;
     auto v = readFile(argv[i]);
+#pragma clang diagnostic pop
     LLVMFuzzerTestOneInput(v.data(), v.size());
   }
 }
