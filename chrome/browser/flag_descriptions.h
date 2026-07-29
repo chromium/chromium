@@ -5663,6 +5663,11 @@ inline constexpr char kOpenDownloadInPreferredAppDescription[] =
     "When enabled, downloaded items in Chrome will open in the user's "
     "preferred app for that file type.";
 
+inline constexpr char kSidePanelTopHairlineRefactorAndroidName[] =
+    "Side Panel Top Hairline Refactor Android";
+inline constexpr char kSidePanelTopHairlineRefactorAndroidDescription[] =
+    "Enables the Side Panel top hairline refactor on Android.";
+
 inline constexpr char kTextHighlightFullLinkName[] = "Text Highlight Full Link";
 inline constexpr char kTextHighlightFullLinkDescription[] =
     "In the share sheet, use the full URL instead of canonical URL for "

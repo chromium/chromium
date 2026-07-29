@@ -9108,6 +9108,11 @@
     "expiry_milestone" : 160
   },
   {
+    "name": "side-panel-top-hairline-refactor-android",
+    "owners": ["nemco@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "signin-level-up-button",
     "owners": [
       "crowleso@google.com",
