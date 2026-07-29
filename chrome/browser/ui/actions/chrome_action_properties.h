@@ -14,22 +14,14 @@ namespace url {
 class Origin;
 }
 
-namespace chrome {
+DECLARE_UI_CLASS_PROPERTY_TYPE(WindowOpenDisposition)
+DECLARE_UI_CLASS_PROPERTY_TYPE(const GURL*)
+DECLARE_UI_CLASS_PROPERTY_TYPE(const url::Origin*)
 
-enum class ActionInvocationSource {
-  kUnknown = 0,
-  kKeyboardShortcut,
-  kViewButton,
-  kContextMenu,
-  kOmniboxChip,
-};
+namespace chrome {
 
 // The disposition (e.g., current tab, new tab, new window) to use.
 extern const ui::ClassProperty<WindowOpenDisposition>* const kDispositionKey;
-
-// The invocation source (e.g., keyboard shortcut, view button).
-extern const ui::ClassProperty<ActionInvocationSource>* const
-    kActionInvocationSourceKey;
 
 // The target URL of a link.
 extern const ui::ClassProperty<const GURL*>* const kLinkUrlKey;
@@ -42,10 +34,5 @@ extern const ui::ClassProperty<const url::Origin*>* const kFrameOriginKey;
 extern const ui::ClassProperty<int>* const kReferrerPolicyKey;
 
 }  // namespace chrome
-
-DECLARE_UI_CLASS_PROPERTY_TYPE(WindowOpenDisposition)
-DECLARE_UI_CLASS_PROPERTY_TYPE(const GURL*)
-DECLARE_UI_CLASS_PROPERTY_TYPE(const url::Origin*)
-DECLARE_UI_CLASS_PROPERTY_TYPE(chrome::ActionInvocationSource)
 
 #endif  // CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_PROPERTIES_H_

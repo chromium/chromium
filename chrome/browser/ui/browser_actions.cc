@@ -1149,19 +1149,10 @@ void BrowserActions::InitializeChromeMenuActions() {
                       controller->GetCollapseState() ==
                       tabs::VerticalTabStripCollapseState::kExpanded;
                   controller->RequestCollapse(collapse);
-                  if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
-                      chrome::ActionInvocationSource::kKeyboardShortcut) {
-                    base::RecordAction(base::UserMetricsAction(
-                        collapse ? "VerticalTabs_TabStrip_"
-                                   "KeyboardShortcutToggleCollapsed"
-                                 : "VerticalTabs_TabStrip_"
-                                   "KeyboardShortcutToggleUncollapsed"));
-                  } else {
-                    base::RecordAction(base::UserMetricsAction(
-                        collapse
-                            ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
-                            : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
-                  }
+                  base::RecordAction(base::UserMetricsAction(
+                      collapse
+                          ? "VerticalTabs_TabStrip_ButtonToggleCollapsed"
+                          : "VerticalTabs_TabStrip_ButtonToggleUncollapsed"));
                 },
                 bwi))
             .SetActionId(kActionToggleCollapseVertical)
