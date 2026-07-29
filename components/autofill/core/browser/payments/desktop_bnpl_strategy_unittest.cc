@@ -70,6 +70,14 @@ TEST_F(DesktopBnplStrategyTest,
           kReplaceLoadingThrobberWithIssuerSuggestionsOnDesktop);
 }
 
+// Verify that GetNextActionOnUserDecisionToUseSavedCards() returns the correct
+// action for the desktop platform.
+TEST_F(DesktopBnplStrategyTest, GetNextActionOnUserDecisionToUseSavedCards) {
+  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnUserDecisionToUseSavedCards(),
+            BnplStrategy::UserDecisionToUseSavedCardsNextAction::
+                kUpdateDesktopPopupSuggestions);
+}
+
 // Verify that GetUiDismissalAction() returns the correct action for
 // the desktop platform.
 TEST_F(DesktopBnplStrategyTest, GetUiDismissalAction) {

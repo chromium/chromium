@@ -28,6 +28,8 @@ class AndroidBnplStrategy : public BnplStrategy {
   BeforeSwitchingViewAction GetBeforeViewSwitchAction() override;
   BnplAiBasedAmountExtractionReturnedNextAction
   GetNextActionOnAiBasedAmountExtractionReturned() override;
+  UserDecisionToUseSavedCardsNextAction
+  GetNextActionOnUserDecisionToUseSavedCards() override;
   UiDismissalAction GetUiDismissalAction() override;
   bool ShouldRemoveExistingUiOnServerReturn(
       PaymentsAutofillClient::PaymentsRpcResult result) override;

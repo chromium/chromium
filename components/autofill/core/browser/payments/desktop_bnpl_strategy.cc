@@ -48,6 +48,11 @@ DesktopBnplStrategy::GetNextActionOnAiBasedAmountExtractionReturned() {
       kReplaceLoadingThrobberWithIssuerSuggestionsOnDesktop;
 }
 
+BnplStrategy::UserDecisionToUseSavedCardsNextAction
+DesktopBnplStrategy::GetNextActionOnUserDecisionToUseSavedCards() {
+  return UserDecisionToUseSavedCardsNextAction::kUpdateDesktopPopupSuggestions;
+}
+
 BnplStrategy::UiDismissalAction DesktopBnplStrategy::GetUiDismissalAction() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {

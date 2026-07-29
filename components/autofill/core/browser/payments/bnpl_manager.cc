@@ -351,39 +351,58 @@ void BnplManager::OnCreditCardSuggestionsShown(
 
 void BnplManager::OnUserDecisionToUseSavedCards() {
   CancelOngoingRequests();
-  CHECK(ongoing_flow_state_);
 
   browser_autofill_manager_->GetCreditCardFormEventLogger()
       .OnUserDecisionToUsePayNowTab();
 
-  // Always go to issuer suggestions if there is a checkout amount present.
-  // Early return in this case to keep the checkout amount cached.
-  if (ongoing_flow_state_->final_checkout_amount) {
-    ongoing_flow_state_->issuer.reset();
-    ReplaceLoadingThrobberWithIssuerSuggestions(
-        GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
-                                   ongoing_flow_state_->final_checkout_amount));
+  if (!ongoing_flow_state_) {
     return;
   }
 
-  if (HasSeenAmountExtractionAiTerms() && is_card_number_field_empty_) {
-    // Make sure the loading throbber is showing when all below conditions are
-    // met:
-    // 1. The user has seen the AI terms before.
-    // 2. There is no checkout amount retrieved.
-    // 3. The card number field is empty.
-    ReplaceIssuerSuggestionsWithLoadingThrobber();
-  } else {
-    // For first time users, if there is no checkout amount, make sure the
-    // Pay Later tab is updated to show issuer suggestions.
-    ReplaceLoadingThrobberWithIssuerSuggestions(
-        GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
-                                   ongoing_flow_state_->final_checkout_amount));
-  }
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::UserDecisionToUseSavedCardsNextAction;
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetNextActionOnUserDecisionToUseSavedCards()) {
+    case kUpdateDesktopPopupSuggestions: {
+      // Always go to issuer suggestions if there is a checkout amount present.
+      // Early return in this case to keep the checkout amount cached.
+      if (ongoing_flow_state_->final_checkout_amount) {
+        ongoing_flow_state_->issuer.reset();
+        ReplaceLoadingThrobberWithIssuerSuggestions(GetSortedBnplIssuerContext(
+            browser_autofill_manager_->client(),
+            ongoing_flow_state_->final_checkout_amount));
+        return;
+      }
 
-  // Reset flow cache to restart the flow if the user select the Pay Later tab
-  // again.
-  ongoing_flow_state_.reset();
+      if (HasSeenAmountExtractionAiTerms() && is_card_number_field_empty_) {
+        // Make sure the loading throbber is showing when all below conditions
+        // are met:
+        // 1. The user has seen the AI terms before.
+        // 2. There is no checkout amount retrieved.
+        // 3. The card number field is empty.
+        ReplaceIssuerSuggestionsWithLoadingThrobber();
+      } else {
+        // For first time users, if there is no checkout amount, make sure the
+        // Pay Later tab is updated to show issuer suggestions.
+        ReplaceLoadingThrobberWithIssuerSuggestions(GetSortedBnplIssuerContext(
+            browser_autofill_manager_->client(),
+            ongoing_flow_state_->final_checkout_amount));
+      }
+      ongoing_flow_state_.reset();
+      break;
+    }
+    case kResetSelectedIssuerOrFlowStateOnAndroid: {
+      // Android strategy: keep cached checkout amount if present, while
+      // resetting selected issuer choice. Otherwise reset flow state.
+      if (ongoing_flow_state_->final_checkout_amount) {
+        ongoing_flow_state_->issuer.reset();
+      } else {
+        ongoing_flow_state_.reset();
+      }
+      break;
+    }
+  }
 }
 
 void BnplManager::OnAmountExtractionReturned(
@@ -481,6 +500,7 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
           break;
         }
         case kSwitchToIssuerSelectionScreenOnAndroid:
+          ongoing_flow_state_->issuer.reset();
           payments_autofill_client().OnPurchaseAmountExtracted(
               issuer_contexts,
               /*checkout_amount=*/std::nullopt,
@@ -709,9 +729,12 @@ void BnplManager::FetchVcnDetails(GURL url) {
 }
 
 void BnplManager::CancelOngoingRequests() {
+  // Invalidate weak pointers before cancelling requests so that any network or
+  // amount extraction callbacks triggered synchronously during cancellation are
+  // ignored.
+  weak_factory_.InvalidateWeakPtrs();
   payments_autofill_client().GetPaymentsNetworkInterface()->CancelRequest();
   browser_autofill_manager_->GetAmountExtractionManager().Reset();
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 void BnplManager::Reset() {

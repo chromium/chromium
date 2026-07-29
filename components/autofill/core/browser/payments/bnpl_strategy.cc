@@ -36,6 +36,11 @@ BnplStrategy::GetNextActionOnAiBasedAmountExtractionReturned() {
   NOTREACHED();
 }
 
+BnplStrategy::UserDecisionToUseSavedCardsNextAction
+BnplStrategy::GetNextActionOnUserDecisionToUseSavedCards() {
+  NOTREACHED();
+}
+
 BnplStrategy::UiDismissalAction BnplStrategy::GetUiDismissalAction() {
   NOTREACHED();
 }

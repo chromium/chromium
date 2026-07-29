@@ -45,6 +45,12 @@ AndroidBnplStrategy::GetNextActionOnAiBasedAmountExtractionReturned() {
       kSwitchToIssuerSelectionScreenOnAndroid;
 }
 
+BnplStrategy::UserDecisionToUseSavedCardsNextAction
+AndroidBnplStrategy::GetNextActionOnUserDecisionToUseSavedCards() {
+  return UserDecisionToUseSavedCardsNextAction::
+      kResetSelectedIssuerOrFlowStateOnAndroid;
+}
+
 BnplStrategy::UiDismissalAction AndroidBnplStrategy::GetUiDismissalAction() {
   return UiDismissalAction::kRemoveBnplUi;
 }

@@ -98,6 +98,19 @@ class BnplStrategy {
     kMaxValue = kRemoveBnplUi,
   };
 
+  // Defines the action to take when the user decides to use saved cards / Pay
+  // Now tab.
+  enum class UserDecisionToUseSavedCardsNextAction {
+    // Desktop: Update inline popup items / throbbers in the autofill dropdown.
+    kUpdateDesktopPopupSuggestions = 0,
+
+    // Android: Clear/reset selected issuer choice or flow state for tabbed
+    // sheet.
+    kResetSelectedIssuerOrFlowStateOnAndroid = 1,
+
+    kMaxValue = kResetSelectedIssuerOrFlowStateOnAndroid,
+  };
+
   virtual ~BnplStrategy();
 
   // Returns the next action to take after the user has been shown a payment
@@ -119,6 +132,10 @@ class BnplStrategy {
   // finished.
   virtual BnplAiBasedAmountExtractionReturnedNextAction
   GetNextActionOnAiBasedAmountExtractionReturned();
+
+  // Returns the next action to take when the user decides to use saved cards.
+  virtual UserDecisionToUseSavedCardsNextAction
+  GetNextActionOnUserDecisionToUseSavedCards();
 
   // Returns the action to take to dismiss the active BNPL UI.
   virtual UiDismissalAction GetUiDismissalAction();
