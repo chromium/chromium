@@ -516,7 +516,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 
   base::LaunchOptions options;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
   // If minidump path is set in the capability, enable minidump for crashes.
   if (!capabilities.minidump_path.empty()) {
     VLOG(0) << "Minidump generation specified. Will save dumps to: "
@@ -540,7 +540,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   // We need to allow new privileges so that chrome's setuid sandbox can run.
   options.allow_new_privs = true;
 #endif
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 
 #if !BUILDFLAG(IS_WIN)
   if (!capabilities.log_path.empty())

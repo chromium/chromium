@@ -138,7 +138,7 @@ bool HandleLogMessage(int severity,
           local_time.wMilliseconds,
           level_name,
           message.c_str());
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
       timeval tv;
       gettimeofday(&tv, nullptr);
       time_t t = tv.tv_sec;

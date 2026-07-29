@@ -17,11 +17,6 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include <poll.h>
-#include <sys/ioctl.h>
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 PipeReaderPosix::PipeReaderPosix()
     : fd_(base::kInvalidPlatformFile), read_fd_watcher_(FROM_HERE) {}
 

@@ -213,14 +213,7 @@ bool FindBrowser(
   LOG_IF(ERROR, browser_exes[0].empty()) << "Unsupported platform.";
 
   base::FilePath module_dir;
-#if BUILDFLAG(IS_FUCHSIA)
-  // Use -1 to allow this to compile.
-  // TODO(crbug.com/40799321): Determine whether Fuchsia should support this and
-  // if so provide an appropriate implementation for this function.
-  if (base::PathService::Get(-1, &module_dir)) {
-#else
   if (base::PathService::Get(base::DIR_MODULE, &module_dir)) {
-#endif
     for (const base::FilePath& file_path : browser_exes) {
       base::FilePath path = module_dir.Append(file_path);
       VLOG(logging::LOGGING_INFO) << "Browser search. Trying... " << path;
