@@ -3424,6 +3424,7 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Load failed - Checksum mismatch"/>
   <int value="4" label="Load failed - Version mismatch"/>
   <int value="5" label="Load failed - Checksum not found in prefs"/>
+  <int value="6" label="Load failed - Ruleset file size limit exceeded"/>
 </enum>
 
 <enum name="ManifestInvalidAppStatusError">
@@ -3515,6 +3516,7 @@ Called by update_extension_permission.py.-->
   <int value="3" label="kJSONParseError"/>
   <int value="4" label="kJSONIsNotList"/>
   <int value="5" label="kRuleCountLimitExceeded"/>
+  <int value="6" label="kRulesetFileSizeLimitExceeded"/>
 </enum>
 
 <enum name="RegexRuleStatus">
@@ -3590,6 +3592,8 @@ Called by update_extension_permission.py.-->
   <int value="16" label="kErrorSerializeToJson"/>
   <int value="17" label="kErrorWriteJson"/>
   <int value="18" label="kErrorWriteFlatbuffer"/>
+  <int value="19" label="kErrorUnsafeRuleCountExceeded"/>
+  <int value="20" label="kErrorCreateMatcher_RulesetFileSizeLimitExceeded"/>
 </enum>
 
 <enum name="VerifiedFileType">

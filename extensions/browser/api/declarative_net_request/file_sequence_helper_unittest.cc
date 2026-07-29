@@ -218,7 +218,7 @@ TEST_F(FileSequenceHelperTest, NoRulesetsToLoad) {
 }
 
 TEST_F(FileSequenceHelperTest, IndexedRulesetDeleted) {
-  const size_t kNumRulesets = 3;
+  constexpr size_t kNumRulesets = 3;
   std::vector<TestCase> test_cases = InitializeRulesets(kNumRulesets);
 
   TestLoadRulesets(test_cases);
@@ -238,7 +238,7 @@ TEST_F(FileSequenceHelperTest, IndexedRulesetDeleted) {
 }
 
 TEST_F(FileSequenceHelperTest, ChecksumMismatch) {
-  const size_t kNumRulesets = 4;
+  constexpr size_t kNumRulesets = 4;
   std::vector<TestCase> test_cases = InitializeRulesets(kNumRulesets);
 
   TestLoadRulesets(test_cases);
@@ -269,7 +269,7 @@ TEST_F(FileSequenceHelperTest, ChecksumMismatch) {
 }
 
 TEST_F(FileSequenceHelperTest, RulesetFormatVersionMismatch) {
-  const size_t kNumRulesets = 4;
+  constexpr size_t kNumRulesets = 4;
   std::vector<TestCase> test_cases = InitializeRulesets(kNumRulesets);
 
   TestLoadRulesets(test_cases);
@@ -289,7 +289,7 @@ TEST_F(FileSequenceHelperTest, RulesetFormatVersionMismatch) {
 }
 
 TEST_F(FileSequenceHelperTest, JSONAndIndexedRulesetDeleted) {
-  const size_t kNumRulesets = 3;
+  constexpr size_t kNumRulesets = 3;
   std::vector<TestCase> test_cases = InitializeRulesets(kNumRulesets);
 
   TestLoadRulesets(test_cases);
@@ -372,6 +372,72 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
                         std::nullopt /* expected_error */,
                         true /* expected_did_load_successfully*/);
   }
+}
+
+// Test that attempting to load a static ruleset file larger than a maximum size
+// fails cleanly. Regression for crbug.com/515443146.
+TEST_F(FileSequenceHelperTest, MaxRulesetSizeStatic) {
+  constexpr size_t kNumRulesets = 1;
+  std::vector<TestCase> test_cases = InitializeRulesets(kNumRulesets);
+
+  // 1. Set a low but valid limit (12 KB). The ruleset should load successfully.
+  base::AutoReset<size_t> limit_override =
+      CreateScopedMaxRulesetSizeOverrideForTesting(12 * 1024);
+  TestLoadRulesets(test_cases);
+
+  // 2. Set the limit to 1 byte. Loading the ruleset should now fail because
+  // the indexed ruleset file on disk is larger than 1 byte.
+  base::AutoReset<size_t> limit_override_2 =
+      CreateScopedMaxRulesetSizeOverrideForTesting(1);
+
+  // Since we loaded successfully in step 1, the indexed file now exists.
+  // When we try to load it again with the new file size limit:
+  // - CreateVerifiedMatcher will fail to read the indexed file as its size
+  //   exceeds the limit.
+  // - Chrome will try to re-index from JSON. This fails as the JSON file size
+  //   also exceeds the limit.
+  // - Loading fails with kErrorRulesetFileSizeLimitExceeded.
+  test_cases[0].expected_result.indexing_successful = false;
+  test_cases[0].expected_result.load_result =
+      LoadRulesetResult::kErrorRulesetFileSizeLimitExceeded;
+
+  TestLoadRulesets(test_cases);
+}
+
+// Test that attempting to update dynamic rules when the existing ruleset file
+// is larger than a maximum size fails cleanly. Regression for
+// crbug.com/515443146.
+TEST_F(FileSequenceHelperTest, MaxRulesetSizeDynamic) {
+  // Simulate adding rules for the first time i.e. with no JSON and indexed
+  // ruleset files.
+  FileBackedRulesetSource source = CreateTemporarySource();
+  base::DeleteFile(source.json_path());
+  base::DeleteFile(source.indexed_path());
+
+  // Write a rule first so the file exists.
+  std::vector<api::declarative_net_request::Rule> api_rules;
+  api_rules.push_back(GetAPIRule(CreateGenericRule()));
+  TestAddDynamicRules(source.Clone(), std::move(api_rules),
+                      ReadJSONRulesResult::Status::kFileDoesNotExist,
+                      UpdateDynamicRulesStatus::kSuccess,
+                      /*expected_error=*/std::nullopt,
+                      /*expected_did_load_successfully=*/true);
+
+  // Set a very small limit so any subsequent write will cause the rules file to
+  // exceed the maximum size.
+  base::AutoReset<size_t> limit_override =
+      CreateScopedMaxRulesetSizeOverrideForTesting(1);
+
+  // Attempting to add another rule should fail because reading the dynamic rule
+  // file fails due to it exceeding the maximum size.
+  api_rules.clear();
+  api_rules.push_back(GetAPIRule(CreateGenericRule()));
+  TestAddDynamicRules(
+      source.Clone(), std::move(api_rules),
+      ReadJSONRulesResult::Status::kRulesetFileSizeLimitExceeded,
+      UpdateDynamicRulesStatus::kErrorReadJSONRules,
+      kInternalErrorUpdatingDynamicRules,
+      /*expected_did_load_successfully=*/false);
 }
 
 }  // namespace

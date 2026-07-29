@@ -60,6 +60,9 @@ static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 16,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated kIndexedRulesetFormatVersion above.");
 
+// Maximum size in bytes of a single ruleset file.
+constexpr size_t kMaxRulesetJsonBytes = std::numeric_limits<int>::max() - 1;
+
 constexpr int kInvalidIndexedRulesetFormatVersion = -1;
 int g_indexed_ruleset_format_version_for_testing =
     kInvalidIndexedRulesetFormatVersion;
@@ -76,6 +79,9 @@ int g_unsafe_dynamic_rule_limit_for_testing = kInvalidRuleLimit;
 int g_session_rule_limit_for_testing = kInvalidRuleLimit;
 int g_unsafe_session_rule_limit_for_testing = kInvalidRuleLimit;
 int g_disabled_static_rule_limit_for_testing = kInvalidRuleLimit;
+
+constexpr size_t kInvalidSizeLimit = 0;
+size_t g_max_ruleset_size_for_testing = kInvalidSizeLimit;
 
 int GetIndexedRulesetFormatVersion() {
   return g_indexed_ruleset_format_version_for_testing ==
@@ -426,6 +432,12 @@ int GetDisabledStaticRuleLimit() {
              : g_disabled_static_rule_limit_for_testing;
 }
 
+size_t GetMaximumRulesetFileSize() {
+  return g_max_ruleset_size_for_testing == kInvalidSizeLimit
+             ? kMaxRulesetJsonBytes
+             : g_max_ruleset_size_for_testing;
+}
+
 ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
     int minimum) {
   return base::AutoReset<int>(&g_static_guaranteed_minimum_for_testing,
@@ -469,6 +481,11 @@ CreateScopedUnsafeSessionRuleLimitOverrideForTesting(  // IN-TEST
 ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
     int limit) {
   return base::AutoReset<int>(&g_disabled_static_rule_limit_for_testing, limit);
+}
+
+base::AutoReset<size_t> CreateScopedMaxRulesetSizeOverrideForTesting(
+    size_t maximum_size) {
+  return base::AutoReset<size_t>(&g_max_ruleset_size_for_testing, maximum_size);
 }
 
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {

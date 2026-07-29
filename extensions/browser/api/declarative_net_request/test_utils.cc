@@ -379,6 +379,9 @@ std::ostream& operator<<(std::ostream& output, LoadRulesetResult result) {
     case LoadRulesetResult::kErrorChecksumNotFound:
       output << "kErrorChecksumNotFound";
       break;
+    case LoadRulesetResult::kErrorRulesetFileSizeLimitExceeded:
+      output << "kErrorRulesetFileSizeLimitExceeded";
+      break;
   }
   return output;
 }
