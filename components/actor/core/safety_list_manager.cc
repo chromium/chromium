@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -230,6 +231,14 @@ void SafetyListManager::ParseSafetyLists(std::string json_string,
       FROM_HERE, base::BindOnce(&DoParseSafetyLists, std::move(json_string)),
       base::BindOnce(&SafetyListManager::OnParsedSafetyLists,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
+}
+
+void ParseSafetyListsForTesting(SafetyListManager* manager,
+                                const std::string json) {
+  CHECK(manager);
+  base::RunLoop run_loop;
+  manager->ParseSafetyLists(std::move(json), run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace actor

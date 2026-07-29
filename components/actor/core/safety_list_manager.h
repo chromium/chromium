@@ -74,9 +74,11 @@ class SafetyListManager {
   Decision Find(const GURL& source, const GURL& destination) const;
 
   // ParseSafetyLists parses the input JSON off the main thread and
-  // posts the reply back. Callback is invoked when parsing is complete
-  // and is used for testing only.
-  void ParseSafetyLists(std::string json_string,
+  // posts the reply back. Callback is invoked when parsing is complete, calling
+  // Find() before this callback runs will result in possibly inaccurate
+  // results. In practice, this should not matter, since the actor framework
+  // calls Find() after startup completes and the user enters a task.
+  void ParseSafetyLists(const std::string json_string,
                         base::OnceClosure done_callback);
 
  private:
@@ -95,7 +97,7 @@ class SafetyListManager {
       std::string_view json_string);
   // Private static so it can use ParseSafetyListsInternal.
   static std::unique_ptr<content_settings::HostIndexedContentSettings>
-  DoParseSafetyLists(std::string json_string);
+  DoParseSafetyLists(const std::string json_string);
   void OnParsedSafetyLists(
       base::OnceClosure done_callback,
       std::unique_ptr<content_settings::HostIndexedContentSettings>
@@ -109,6 +111,9 @@ class SafetyListManager {
           std::make_unique<content_settings::HostIndexedContentSettings>();
   base::WeakPtrFactory<SafetyListManager> weak_ptr_factory_{this};
 };
+
+void ParseSafetyListsForTesting(SafetyListManager* manager,
+                                const std::string json);
 
 }  // namespace actor
 
