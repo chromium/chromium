@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
-#include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
@@ -47,8 +46,6 @@
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/status.h"
 #include "ipc/constants.mojom.h"
-#include "mojo/buildflags.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -741,45 +738,13 @@ Status Database::GetAllOperation(
       "Value wrapping threshold is higher than BigBuffer inline size; "
       "BigBuffer may use shared memory with LevelDB backing store");
 
-  const size_t kMaxValuesBeforeSending = blink::mojom::kIDBGetAllChunkSize;
-
-  // Mojo limits the number of handles/file descriptors in a single message on
-  // certain platforms. Since SQLite does not wrap large values in blobs, the
-  // `mojo_base::BigBuffer` holding the value may be backed by shared memory
-  // (which uses handles/file descriptors - see
-  // `mojo::core::ipcz_driver::SharedBuffer::Serialize()`), and hence need a
-  // separate cap.
-  std::optional<uint32_t> max_shared_memory_values_in_chunk;
-  uint32_t shared_memory_values_in_chunk = 0;
-
-  if (bucket_context_->IsUsingSqlite()) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-    // channel_posix limits the number of file descriptors per message to 128:
-    // crbug.com/439305148.
-#if BUILDFLAG(IS_ANDROID)
-    // 1 file descriptor is used per shared memory buffer.
-    max_shared_memory_values_in_chunk = 128;
-#else
-    // 2 file descriptors are used per shared memory buffer.
-    max_shared_memory_values_in_chunk = 64;
-#endif
-#elif BUILDFLAG(IS_FUCHSIA)
-    // channel_fuchsia.cc limits the number of handles per message to 64
-    // (ZX_CHANNEL_MAX_MSG_HANDLES): crbug.com/508116627.
-    // 1 platform handle is used per shared memory buffer.
-    max_shared_memory_values_in_chunk = 64;
-#endif
-  }
+  const size_t max_values_before_sending = blink::mojom::kIDBGetAllChunkSize;
 
   for (uint32_t i = 0; i < max_count; ++i) {
     // Periodically stream records if we have too many.
-    if (found_records.size() >= kMaxValuesBeforeSending ||
-        (max_shared_memory_values_in_chunk.has_value() &&
-         shared_memory_values_in_chunk >=
-             max_shared_memory_values_in_chunk.value())) {
+    if (found_records.size() >= max_values_before_sending) {
       result_sink->SendResults(std::move(found_records), /*done=*/false);
       found_records.clear();
-      shared_memory_values_in_chunk = 0;
     }
 
     // Cursor creation performs the first seek, returning a nullptr cursor when
@@ -828,12 +793,6 @@ Status Database::GetAllOperation(
           std::move(index_key));
     } else {
       NOTREACHED();
-    }
-
-    if (return_record->return_value &&
-        return_record->return_value->value->bits.storage_type() ==
-            mojo_base::BigBuffer::StorageType::kSharedMemory) {
-      ++shared_memory_values_in_chunk;
     }
 
     found_records.emplace_back(std::move(return_record));
