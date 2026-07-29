@@ -2263,6 +2263,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.OnDeviceTranslation.ErrorReason"
+    enum="OnDeviceTranslationErrorReason" expires_after="2027-01-01">
+  <owner>danft@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the specific error reason when an on-device live translation request
+    fails.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveTranslate.OnDeviceTranslation.Latency"
     units="ms" expires_after="2026-12-06">
   <owner>danft@google.com</owner>

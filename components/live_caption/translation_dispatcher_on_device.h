@@ -20,6 +20,28 @@
 
 namespace captions {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OnDeviceTranslationErrorReason)
+enum class OnDeviceTranslationErrorReason {
+  kCanTranslateLanguageNotSupported = 0,
+  kCanTranslateServiceCrashed = 1,
+  kCanTranslateExceedsServiceCountLimitation = 2,
+  kCreateTranslatorInvalidBinary = 3,
+  kCreateTranslatorInvalidFunctionPointer = 4,
+  kCreateTranslatorFailedToInitialize = 5,
+  kCreateTranslatorFailedToCreateTranslator = 6,
+  kCreateTranslatorInvalidVersion = 7,
+  kCreateTranslatorServiceCrashed = 8,
+  kCreateTranslatorNotSupportedLanguage = 9,
+  kCreateTranslatorExceedsServiceCountLimitation = 10,
+  kCreateTranslatorExceedsPendingTaskCountLimitation = 11,
+  kCreateTranslatorUnknownError = 12,
+  kTranslationExecutionFailed = 13,
+  kMaxValue = kTranslationExecutionFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:OnDeviceTranslationErrorReason)
+
 class TranslationDispatcherOnDevice : public TranslationDispatcher {
  public:
   TranslationDispatcherOnDevice();
@@ -62,6 +84,10 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
       TranslateEventCallback callback,
       on_device_translation::OnDeviceTranslationController::CanTranslateResult
           can_translate_result);
+
+  void ResetCreationAndNotifyFailure(
+      TranslateEventCallback callback,
+      OnDeviceTranslationErrorReason error_reason);
 
   std::string source_language_;
   std::string target_language_;
