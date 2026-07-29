@@ -592,9 +592,8 @@ bool ScrollRectToVisible(const LayoutObject& layout_object,
   params->is_for_scroll_sequence |=
       params->type == mojom::blink::ScrollType::kProgrammatic;
 
-  PhysicalBoxStrut scroll_margin =
-      layout_object.Style() ? layout_object.StyleRef().ScrollMarginStrut()
-                            : PhysicalBoxStrut();
+  const PhysicalBoxStrut scroll_margin =
+      layout_object.StyleRef().ScrollMarginStrut();
   BubblingScrollResult result = PerformBubblingScrollIntoViewWithResult(
       *enclosing_box, absolute_rect_to_scroll, params, scroll_margin, container,
       from_remote_frame, include_self, resolver);

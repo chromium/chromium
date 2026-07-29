@@ -99,9 +99,8 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
           ? scroll_marker->GetLayoutObject()
           : target_object;
   CHECK(bounding_box_object);
-  PhysicalBoxStrut scroll_margin =
-      target_object->Style() ? target_object->StyleRef().ScrollMarginStrut()
-                             : PhysicalBoxStrut();
+  const PhysicalBoxStrut scroll_margin =
+      target_object->StyleRef().ScrollMarginStrut();
   // Ignore sticky position offsets for the purposes of scrolling elements
   // into view. See https://www.w3.org/TR/css-position-3/#stickypos-scroll for
   // details
