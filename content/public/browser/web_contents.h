@@ -183,6 +183,30 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   using UniqueToken = base::TokenType<class WebContentsTokenTag>;
   using DragId = base::StrongAlias<class DragIdTag, base::UnguessableToken>;
 
+  // Marks a WebContents as a privileged-contents host: it indicates that the
+  // embedder (e.g., //chrome) is loading a trusted, network-hosted site and
+  // providing it with elevated browser APIs (see //chrome's
+  // PrivilegedWebContents). Passed at creation via CreateParams and immutable
+  // for the WebContents' lifetime. The content-internal enforcements keyed
+  // off these fields only apply when the embedder explicitly provides these
+  // parameters at WebContents creation.
+  struct PrivilegedParams {
+    // Opaque embedder-assigned identifier of the blessed feature. Frames in
+    // WebContents with the same `feature_id` may share renderer processes
+    // with each other but never with ordinary WebContents. Embedders are
+    // responsible for assigning distinct ids so that different privileged
+    // features never collide.
+    int32_t feature_id = 0;
+
+    // When true, documents in this WebContents are never controlled by a
+    // service worker.
+    bool disallow_service_worker_control = false;
+
+    // When true, frames in this WebContents may not create or connect to
+    // shared workers.
+    bool disallow_shared_workers = false;
+  };
+
   struct CONTENT_EXPORT CreateParams {
     explicit CreateParams(
         BrowserContext* context,
@@ -341,6 +365,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // default network will be used.
     net::handles::NetworkHandle target_network =
         net::handles::kInvalidNetworkHandle;
+
+    // See PrivilegedParams. Unset for ordinary WebContents.
+    std::optional<PrivilegedParams> privileged_params;
   };
 
   // Token that causes input to be blocked on this WebContents for at least as
