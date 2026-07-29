@@ -2662,8 +2662,8 @@ TEST_P(ScrollbarsTest, AutosizeTest) {
     Compositor().BeginFrame();
     EXPECT_FALSE(layout_viewport->VerticalScrollbar());
     EXPECT_FALSE(layout_viewport->HorizontalScrollbar());
-    EXPECT_EQ(100, frame_view->FrameRect().width());
-    EXPECT_EQ(150, frame_view->FrameRect().height());
+    EXPECT_EQ(100, frame_view->Width());
+    EXPECT_EQ(150, frame_view->Height());
   }
 
   // Subsequent autosizes should be stable. Specifically checking the condition
@@ -2673,8 +2673,8 @@ TEST_P(ScrollbarsTest, AutosizeTest) {
     Compositor().BeginFrame();
     EXPECT_FALSE(layout_viewport->VerticalScrollbar());
     EXPECT_FALSE(layout_viewport->HorizontalScrollbar());
-    EXPECT_EQ(100, frame_view->FrameRect().width());
-    EXPECT_EQ(150, frame_view->FrameRect().height());
+    EXPECT_EQ(100, frame_view->Width());
+    EXPECT_EQ(150, frame_view->Height());
   }
 
   // Try again.
@@ -2683,8 +2683,8 @@ TEST_P(ScrollbarsTest, AutosizeTest) {
     Compositor().BeginFrame();
     EXPECT_FALSE(layout_viewport->VerticalScrollbar());
     EXPECT_FALSE(layout_viewport->HorizontalScrollbar());
-    EXPECT_EQ(100, frame_view->FrameRect().width());
-    EXPECT_EQ(150, frame_view->FrameRect().height());
+    EXPECT_EQ(100, frame_view->Width());
+    EXPECT_EQ(150, frame_view->Height());
   }
 }
 

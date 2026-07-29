@@ -815,6 +815,11 @@
       status: "stable",
     },
     {
+      // Killswitch M153.
+      name: "AvoidEmbeddedContentViewLocation",
+      status: "stable",
+    },
+    {
       // Fix for https://crbug.com/471876082
       name: "AvoidMergingStyledSpanWithSiblings",
       status: "stable",

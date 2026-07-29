@@ -168,10 +168,11 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
                                    const CullRect& cull_rect,
                                    const gfx::Vector2d& paint_offset) const {
   // Don't paint anything if the plugin doesn't intersect.
-  if (!cull_rect.Intersects(FrameRect()))
+  if (!cull_rect.Intersects(DeprecatedFrameRect())) {
     return;
+  }
 
-  gfx::Rect visual_rect = FrameRect();
+  gfx::Rect visual_rect = DeprecatedFrameRect();
   visual_rect.Offset(paint_offset);
 
   GraphicsContext& context = paint_info.context;
@@ -209,7 +210,7 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
     // WebPlugin::paint.
     RecordForeignLayer(context, *element_->GetLayoutObject(),
                        DisplayItem::kForeignLayerPlugin, layer_,
-                       FrameRect().origin() + paint_offset);
+                       DeprecatedLocation() + paint_offset);
     return;
   }
 
@@ -452,7 +453,7 @@ void WebPluginContainerImpl::PrintPage(int page_index, GraphicsContext& gc) {
     return;
 
   DrawingRecorder recorder(gc, *element_->GetLayoutObject(),
-                           DisplayItem::kWebPlugin, FrameRect());
+                           DisplayItem::kWebPlugin, DeprecatedFrameRect());
   gc.Save();
 
   cc::PaintCanvas* canvas = gc.Canvas();
@@ -610,7 +611,7 @@ bool WebPluginContainerImpl::IsRectTopmost(const gfx::Rect& rect) {
     return false;
 
   gfx::Rect frame_rect = rect;
-  frame_rect.Offset(Location().OffsetFromOrigin());
+  frame_rect.Offset(DeprecatedLocation().OffsetFromOrigin());
   HitTestLocation location((PhysicalRect(frame_rect)));
   HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive |
@@ -813,12 +814,13 @@ void WebPluginContainerImpl::Dispose() {
 }
 
 void WebPluginContainerImpl::SetFrameRect(const gfx::Rect& rect) {
-  gfx::Rect old_rect(FrameRect());
+  gfx::Rect old_rect(DeprecatedFrameRect());
   EmbeddedContentView::SetFrameRect(rect);
   // We need to report every time SetFrameRect is called, even if there is no
   // change (if there is a change, FrameRectsChanged will do the reporting).
-  if (old_rect == FrameRect())
+  if (old_rect == DeprecatedFrameRect()) {
     PropagateFrameRects();
+  }
 }
 
 void WebPluginContainerImpl::Trace(Visitor* visitor) const {
@@ -878,7 +880,7 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
       data_transfer->GetDataObject()->ToWebDragData(nullptr);
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
-  gfx::Point location(Location());
+  gfx::Point location(DeprecatedLocation());
   gfx::PointF drag_location(event.AbsoluteLocation().x() - location.x(),
                             event.AbsoluteLocation().y() - location.y());
 
@@ -1109,7 +1111,7 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
 
   // The frameRect is already in absolute space of the local frame to the
   // plugin so map it up to the root frame.
-  window_rect = FrameRect();
+  window_rect = DeprecatedFrameRect();
   PhysicalRect layout_window_rect =
       element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
           PhysicalRect(window_rect), kTraverseDocumentBoundaries);

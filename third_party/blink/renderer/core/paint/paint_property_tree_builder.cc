@@ -207,7 +207,8 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   // Block fragmentation doesn't cross frame boundaries.
   context.current.is_in_block_fragmentation = false;
 
-  context.current.paint_offset += PhysicalOffset(frame_view.Location());
+  context.current.paint_offset +=
+      PhysicalOffset(frame_view.DeprecatedLocation());
   context.rendering_context_id = 0;
   context.should_flatten_inherited_transform = true;
   context.absolute_position = context.current;

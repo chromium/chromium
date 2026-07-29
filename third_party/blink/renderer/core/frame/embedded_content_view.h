@@ -58,8 +58,20 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   // See WebFrameWidgetImpl::SetZoomLevel() for how this value is used.
   virtual void ZoomFactorChanged(float zoom_factor) {}
 
-  gfx::Rect FrameRect() const { return gfx::Rect(Location(), Size()); }
-  gfx::Point Location() const;
+  // This is deprecated because:
+  // - It's not necessarily the origin of the frame, e.g. when there are
+  //   non-translation transforms;
+  // - It's incorrectly pixel-snapped before we know the paint offset.
+  // We should use other means e.g. LayoutObject geometry mapping routines
+  // instead.
+  gfx::Point DeprecatedLocation() const;
+  // Besides the reasons of deprecating Location(), this is deprecated
+  // because it's not a rect of anything with non-translation transforms,
+  // but the origin is of the bounding box in the containing frame, and
+  // the size is in local coordinates.
+  gfx::Rect DeprecatedFrameRect() const {
+    return gfx::Rect(DeprecatedLocation(), Size());
+  }
   int Width() const { return Size().width(); }
   int Height() const { return Size().height(); }
   gfx::Size Size() const { return frame_rect_.size(); }

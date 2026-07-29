@@ -978,7 +978,7 @@ void WebPagePopupImpl::CheckScreenPointInOwnerWindowAndCount(
 gfx::Rect WebPagePopupImpl::OwnerWindowRectInScreen() const {
   LocalFrameView* view = popup_client_->OwnerElement().GetDocument().View();
   DCHECK(view);
-  gfx::Rect frame_rect = view->FrameRect();
+  gfx::Rect frame_rect = view->DeprecatedFrameRect();
   return view->FrameToScreen(frame_rect);
 }
 

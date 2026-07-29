@@ -74,7 +74,7 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
   }
 
   gfx::Vector2d view_paint_offset =
-      paint_location - embedded_content_view->FrameRect().origin();
+      paint_location - embedded_content_view->DeprecatedLocation();
   CullRect adjusted_cull_rect = paint_info.GetCullRect();
   adjusted_cull_rect.Move(-view_paint_offset);
   embedded_content_view->Paint(paint_info, adjusted_cull_rect,
@@ -95,7 +95,7 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
   if (auto layer =
           GetSubframeSnapshotLayer(*embedded_content_view, paint_info.phase)) {
     GraphicsContext& context = paint_info.context;
-    layer->SetBounds(embedded_content_view->FrameRect().size());
+    layer->SetBounds(embedded_content_view->Size());
     layer->SetIsDrawable(true);
     RecordForeignLayer(context, layout_embedded_content_,
                        DisplayItem::kForeignLayerViewTransitionContent,

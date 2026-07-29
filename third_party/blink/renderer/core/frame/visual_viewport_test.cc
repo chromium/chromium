@@ -693,7 +693,7 @@ TEST_P(VisualViewportTest, TestOffsetClampingWithResizeAndScale) {
   UpdateAllLifecyclePhases();
   EXPECT_EQ(WebView()->MainFrameViewWidget()->Size(), visual_viewport.Size());
   EXPECT_EQ(WebView()->MainFrameViewWidget()->Size(),
-            GetFrame()->View()->FrameRect().size());
+            GetFrame()->View()->Size());
   visual_viewport.SetLocation(gfx::PointF(1000, 1000));
   EXPECT_POINTF_EQ(gfx::PointF(320, 240),
                    visual_viewport.VisibleRect().origin());
@@ -723,7 +723,7 @@ TEST_P(VisualViewportTest, TestFrameViewSizedToContent) {
   // Note: the size is ceiled and should match the behavior in CC's
   // LayerImpl::bounds().
   EXPECT_EQ(gfx::Size(200, 267),
-            WebView()->MainFrameImpl()->GetFrameView()->FrameRect().size());
+            WebView()->MainFrameImpl()->GetFrameView()->Size());
 }
 
 // The main LocalFrameView's size should be set such that its the size of the
@@ -740,7 +740,7 @@ TEST_P(VisualViewportTest, TestFrameViewSizedToMinimumScale) {
   UpdateAllLifecyclePhases();
 
   EXPECT_EQ(gfx::Size(100, 160),
-            WebView()->MainFrameImpl()->GetFrameView()->FrameRect().size());
+            WebView()->MainFrameImpl()->GetFrameView()->Size());
 }
 
 // Test that attaching a new frame view resets the size of the inner viewport
@@ -792,7 +792,7 @@ TEST_P(VisualViewportTest, TestFrameViewSizedToViewportMetaMinimumScale) {
   UpdateAllLifecyclePhases();
 
   EXPECT_EQ(gfx::Size(50, 80),
-            WebView()->MainFrameImpl()->GetFrameView()->FrameRect().size());
+            WebView()->MainFrameImpl()->GetFrameView()->Size());
 }
 
 // Test that the visual viewport still gets sized in AutoSize/AutoResize mode.
@@ -951,7 +951,7 @@ TEST_P(VisualViewportTest,
       ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
 
-  EXPECT_EQ(gfx::Size(1000, 1000), frame_view->FrameRect().size());
+  EXPECT_EQ(gfx::Size(1000, 1000), frame_view->Size());
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   visual_viewport.SetScale(2);
@@ -977,7 +977,7 @@ TEST_P(VisualViewportTest,
                            ->Loader()
                            .GetDocumentLoader()
                            ->GetHistoryItem());
-  EXPECT_LT(frame_view->FrameRect().size().width(), 1000);
+  EXPECT_LT(frame_view->Width(), 1000);
   EXPECT_EQ(ScrollOffset(0, 1000), firstItem->GetViewState()->scroll_offset_);
 }
 
@@ -1251,9 +1251,9 @@ static ScrollOffset expectedMaxLayoutViewportScrollOffset(
     LocalFrameView& frame_view) {
   float aspect_ratio = visual_viewport.VisibleRect().width() /
                        visual_viewport.VisibleRect().height();
-  float new_height = frame_view.FrameRect().width() / aspect_ratio;
+  float new_height = frame_view.Width() / aspect_ratio;
   gfx::Size contents_size = frame_view.LayoutViewport()->ContentsSize();
-  return ScrollOffset(contents_size.width() - frame_view.FrameRect().width(),
+  return ScrollOffset(contents_size.width() - frame_view.Width(),
                       contents_size.height() - new_height);
 }
 
@@ -1271,7 +1271,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustment) {
 
   visual_viewport.SetScale(1);
   EXPECT_EQ(gfx::SizeF(500, 450), visual_viewport.VisibleRect().size());
-  EXPECT_EQ(gfx::Size(1000, 900), frame_view.FrameRect().size());
+  EXPECT_EQ(gfx::Size(1000, 900), frame_view.Size());
 
   // Simulate bringing down the browser controls by 20px.
   WebView()->MainFrameViewWidget()->ApplyViewportChangesForTesting(
@@ -1325,7 +1325,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentWithScale) {
 
   visual_viewport.SetScale(2);
   EXPECT_EQ(gfx::SizeF(250, 225), visual_viewport.VisibleRect().size());
-  EXPECT_EQ(gfx::Size(1000, 900), frame_view.FrameRect().size());
+  EXPECT_EQ(gfx::Size(1000, 900), frame_view.Size());
 
   // Simulate bringing down the browser controls by 20px. Since we're zoomed in,
   // the browser controls take up half as much space (in document-space) than
@@ -1423,7 +1423,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentAndResize) {
             visual_viewport.VisibleRect().size());
   EXPECT_EQ(gfx::Size(1000, layout_viewport_height -
                                 browser_controls_height / min_page_scale),
-            frame_view.FrameRect().size());
+            frame_view.Size());
   EXPECT_EQ(gfx::Size(500, visual_viewport_height - browser_controls_height),
             visual_viewport.Size());
 
@@ -1460,8 +1460,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsAdjustmentAndResize) {
   EXPECT_EQ(gfx::Size(500, visual_viewport_height), visual_viewport.Size());
   EXPECT_EQ(gfx::SizeF(250, visual_viewport_height / page_scale),
             visual_viewport.VisibleRect().size());
-  EXPECT_EQ(gfx::Size(1000, layout_viewport_height),
-            frame_view.FrameRect().size());
+  EXPECT_EQ(gfx::Size(1000, layout_viewport_height), frame_view.Size());
 
   EXPECT_EQ(total_expected, visual_viewport.GetScrollOffset() +
                                 frame_view.LayoutViewport()->GetScrollOffset());
@@ -1500,8 +1499,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsShrinkAdjustmentAndResize) {
   visual_viewport.SetScale(page_scale);
   EXPECT_EQ(gfx::SizeF(250, visual_viewport_height / page_scale),
             visual_viewport.VisibleRect().size());
-  EXPECT_EQ(gfx::Size(1000, layout_viewport_height),
-            frame_view.FrameRect().size());
+  EXPECT_EQ(gfx::Size(1000, layout_viewport_height), frame_view.Size());
   EXPECT_EQ(gfx::Size(500, visual_viewport_height), visual_viewport.Size());
 
   // Scroll all the way to the bottom, showing the the browser controls in the
@@ -1544,7 +1542,7 @@ TEST_P(VisualViewportTest, TestBrowserControlsShrinkAdjustmentAndResize) {
             visual_viewport.VisibleRect().size());
   EXPECT_EQ(gfx::Size(1000, layout_viewport_height -
                                 browser_controls_height / min_page_scale),
-            frame_view.FrameRect().size());
+            frame_view.Size());
   EXPECT_EQ(total_expected, visual_viewport.GetScrollOffset() +
                                 frame_view.LayoutViewport()->GetScrollOffset());
 }
@@ -1790,7 +1788,7 @@ TEST_P(VisualViewportTest, TestMainFrameInitializationSizing) {
   local_frame->CreateFrameView();
 
   LocalFrameView& frame_view = *local_frame->GetFrameView();
-  EXPECT_EQ(gfx::Size(200, 400), frame_view.FrameRect().size());
+  EXPECT_EQ(gfx::Size(200, 400), frame_view.Size());
   frame_view.Dispose();
 }
 

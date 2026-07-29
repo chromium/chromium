@@ -17,7 +17,7 @@ void EmbeddedContentView::SetFrameRect(const gfx::Rect& frame_rect) {
   FrameRectsChanged(old_rect);
 }
 
-gfx::Point EmbeddedContentView::Location() const {
+gfx::Point EmbeddedContentView::DeprecatedLocation() const {
   gfx::Point location(frame_rect_.origin());
 
   // As an optimization, we don't include the root layer's scroll offset in the

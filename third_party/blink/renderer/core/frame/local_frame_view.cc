@@ -603,7 +603,7 @@ void LocalFrameView::SetLifecycleUpdatesThrottledForTesting(bool throttled) {
 void LocalFrameView::FrameRectsChanged(const gfx::Rect& old_rect) {
   PropagateFrameRects();
 
-  if (FrameRect() != old_rect) {
+  if (DeprecatedFrameRect() != old_rect) {
     if (auto* layout_view = GetLayoutView())
       layout_view->SetShouldCheckForPaintInvalidation();
   }
@@ -3780,7 +3780,7 @@ gfx::Rect LocalFrameView::ConvertFromContainingEmbeddedContentView(
     const gfx::Rect& parent_rect) const {
   if (ParentFrameView()) {
     gfx::Rect local_rect = parent_rect;
-    local_rect.Offset(-Location().OffsetFromOrigin());
+    local_rect.Offset(-DeprecatedLocation().OffsetFromOrigin());
     return local_rect;
   }
   return parent_rect;
@@ -4055,7 +4055,7 @@ void LocalFrameView::PropagateFrameRects() {
   // To limit the number of Mojo communications, only notify the browser when
   // the rect's size changes, not when the position changes. The size needs to
   // be replicated if the iframe goes out-of-process.
-  gfx::Size frame_size = FrameRect().size();
+  gfx::Size frame_size = Size();
   if (!frame_size_ || *frame_size_ != frame_size) {
     frame_size_ = frame_size;
     GetFrame().GetLocalFrameHostRemote().FrameSizeChanged(frame_size);
@@ -4241,12 +4241,12 @@ bool LocalFrameView::CapturePaintPreview(
 
   // Create a placeholder ID that maps to an embedding token.
   context.Canvas()->recordCustomData(tracker->CreateContentForRemoteFrame(
-      FrameRect(), maybe_embedding_token.value()));
+      DeprecatedFrameRect(), maybe_embedding_token.value()));
   context.Restore();
 
   // Send a request to the browser to trigger a capture of the frame.
   GetFrame().GetLocalFrameHostRemote().CapturePaintPreviewOfSubframe(
-      FrameRect(), tracker->Guid());
+      DeprecatedFrameRect(), tracker->Guid());
   return true;
 }
 
@@ -4275,8 +4275,9 @@ void LocalFrameView::Paint(const PaintInfo& paint_info,
     }
   }
 
-  if (!cull_rect.Rect().Intersects(FrameRect()))
+  if (!cull_rect.Rect().Intersects(DeprecatedFrameRect())) {
     return;
+  }
 
   // |paint_offset| is not used because paint properties of the contents will
   // ensure the correct location.

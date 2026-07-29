@@ -296,7 +296,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   // because in practice they are sometimes used to drive UI logic.
   bool zero_viewport_intersection = viewport_intersection.IsEmpty();
   bool is_display_none = !owner_layout_object;
-  bool has_zero_area = FrameRect().IsEmpty();
+  bool has_zero_area = Size().IsEmpty();
   bool should_throttle =
       (is_display_none || (zero_viewport_intersection && !has_zero_area));
 

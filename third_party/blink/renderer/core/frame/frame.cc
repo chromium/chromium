@@ -1031,7 +1031,7 @@ void Frame::AdjustOffsetByAncestorFrames(gfx::Point* origin_point) {
   Frame* current_frame = this;
   while (current_frame->Owner()) {
     if (auto* frame_view = current_frame->View()) {
-      gfx::Point location = frame_view->Location();
+      gfx::Point location = frame_view->DeprecatedLocation();
       origin_point->Offset(-location.x(), -location.y());
     }
     current_frame = current_frame->Parent();

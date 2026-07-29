@@ -7555,11 +7555,11 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
       // If it's a popup, account for the popup window's offset.
       auto& chrome_client = view->GetPage()->GetChromeClient();
       if (chrome_client.IsPopup()) {
-        gfx::Rect frame_rect = view->FrameToScreen(view->FrameRect());
+        gfx::Rect frame_rect = view->FrameToScreen(view->DeprecatedFrameRect());
         LocalFrameView* root_view =
             AXObjectCache().GetDocument().GetFrame()->View();
         gfx::Rect root_frame_rect =
-            root_view->FrameToScreen(root_view->FrameRect());
+            root_view->FrameToScreen(root_view->DeprecatedFrameRect());
         // If a color picker popup is found inside of an iframe, account for the
         // distance from the current frame to the parent frame.
         auto* owner_element = chrome_client.GetPopupClientOwnerElement();
