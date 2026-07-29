@@ -9946,6 +9946,21 @@
             ]
         }
     ],
+    "EnableAndroidEnterpriseScreenshotProtection": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAndroidEnterpriseScreenshotProtection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableAndroidSidePanel": [
         {
             "platforms": [
