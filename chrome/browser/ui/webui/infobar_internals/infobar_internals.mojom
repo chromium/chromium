@@ -10,6 +10,10 @@ enum InfoBarType {
   // Alternate nav infobar.
   kAlternateNav,
 
+  // Chrome for Testing infobar.
+  [EnableIf=is_chrome_for_testing]
+  kChromeForTesting,
+
   // Collected cookies infobar.
   kCollectedCookies,
 

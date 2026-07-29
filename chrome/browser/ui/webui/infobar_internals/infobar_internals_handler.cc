@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
@@ -42,6 +43,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
@@ -108,6 +113,13 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
         "The Alternate Nav infobar is shown when a user searches for a term "
         "they may have meant to navigate to."));
   }
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kChromeForTesting, /*name=*/"Chrome for Testing",
+      /*description=*/
+      "The Chrome for Testing infobar warns users that this version is only "
+      "for automated testing."));
+#endif
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kCollectedCookies, /*name=*/"Collected Cookies",
       /*description=*/
@@ -240,6 +252,23 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
           web_contents, u"test", match, GURL("https://youtube.com/"));
       return true;
     }
+#if BUILDFLAG(CHROME_FOR_TESTING)
+    case InfoBarType::kChromeForTesting: {
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE);
+      } else {
+        ChromeForTestingInfoBarDelegate::Create();
+      }
+      return true;
+    }
+#endif
     case InfoBarType::kCollectedCookies: {
       if (!bwi || !bwi->GetActiveTabInterface()) {
         return false;
