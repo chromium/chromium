@@ -37,6 +37,13 @@ E.g. [`//chrome/app/chromium_strings.grd`](../chrome/app/chromium_strings.grd)
 vs
 [`//chrome/app/google_chrome_strings.grd`](../chrome/app/google_chrome_strings.grd).
 
+If the string refers to a different Google brand than Google Chrome,
+you can still put it in the non-branded file.
+
+E.g. "Upload to Google Drive" has no chromium brand-free equivalent,
+so we can keep it in chromium_strings.grd.
+It is up to the developers to ensure it does not appear in Chromium.
+
 ## Internal asset repositories
 
 Assets live in various locations based on where they are used: native vs WebUI,
