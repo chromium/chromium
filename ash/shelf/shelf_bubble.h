@@ -49,10 +49,6 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView {
   void CreateBubble();
 
  private:
-  // views::BubbleDialogDelegateView:
-  std::unique_ptr<views::FrameView> CreateFrameView(
-      views::Widget* widget) override;
-
   int border_radius_ = 0;
 
   const bool for_tooltip_;

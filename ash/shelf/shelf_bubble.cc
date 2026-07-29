@@ -7,39 +7,18 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
 namespace {
-
-class ShelfTooltipBubbleFrameView : public views::BubbleFrameView {
-  METADATA_HEADER(ShelfTooltipBubbleFrameView, views::BubbleFrameView)
-
- public:
-  ShelfTooltipBubbleFrameView()
-      : BubbleFrameView(gfx::Insets(), gfx::Insets()) {}
-  ShelfTooltipBubbleFrameView(const ShelfTooltipBubbleFrameView&) = delete;
-  ShelfTooltipBubbleFrameView& operator=(const ShelfTooltipBubbleFrameView&) =
-      delete;
-  ~ShelfTooltipBubbleFrameView() override = default;
-
- private:
-  // views::BubbleFrameView:
-  gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const override {
-    return display::Screen::Get()
-        ->GetDisplayNearestPoint(rect.CenterPoint())
-        .bounds();
-  }
-};
-
-BEGIN_METADATA(ShelfTooltipBubbleFrameView)
-END_METADATA
 
 views::BubbleBorder::Arrow GetArrow(ash::ShelfAlignment alignment) {
   switch (alignment) {
@@ -69,6 +48,17 @@ ShelfBubble::ShelfBubble(
       for_tooltip_(for_tooltip) {
   SetBackgroundColor(SK_ColorTRANSPARENT);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetUseAnchorWindowBounds(false);
+  set_frame_margins({.title = gfx::Insets()});
+
+  if (for_tooltip_) {
+    set_available_screen_bounds_callback(
+        base::BindRepeating([](const gfx::Rect& rect) {
+          return display::Screen::Get()
+              ->GetDisplayNearestPoint(rect.CenterPoint())
+              .bounds();
+        }));
+  }
 
   // Place the bubble in the same display as the anchor.
   set_parent_window(
@@ -90,20 +80,6 @@ void ShelfBubble::CreateBubble() {
   // Settings that should only be changed just after bubble creation.
   GetBubbleFrameView()->SetRoundedCorners(gfx::RoundedCornersF(border_radius_));
   GetBubbleFrameView()->SetBackgroundColor(background_color());
-}
-
-std::unique_ptr<views::FrameView> ShelfBubble::CreateFrameView(
-    views::Widget* widget) {
-  auto frame = for_tooltip_ ? std::make_unique<ShelfTooltipBubbleFrameView>()
-                            : BubbleDialogDelegateView::CreateFrameView(widget);
-  auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
-  frame_ptr->set_use_anchor_window_bounds(false);
-
-  auto border = std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  border->SetColor(background_color());
-  frame_ptr->SetBubbleBorder(std::move(border));
-
-  return frame;
 }
 
 BEGIN_METADATA(ShelfBubble)

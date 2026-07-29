@@ -621,6 +621,10 @@ std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
   frame->SetFootnoteMargins(margin.footnote);
   frame->SetFootnoteView(DisownFootnoteView());
   frame->set_use_anchor_window_bounds(use_anchor_window_bounds_);
+  if (available_screen_bounds_callback_) {
+    frame->set_available_screen_bounds_callback(
+        available_screen_bounds_callback_);
+  }
 
   std::unique_ptr<BubbleBorder> border =
       std::make_unique<BubbleBorder>(arrow(), GetShadow());

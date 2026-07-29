@@ -44,11 +44,6 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
       const views::SizeBounds& available_size) const override;
   void Init() override;
 
- protected:
-  // views::WidgetDelegateView overrides:
-  std::unique_ptr<views::FrameView> CreateFrameView(
-      views::Widget* widget) override;
-
  private:
   gfx::Rect cursor_bounds_;
   raw_ptr<views::Label> label_view_;

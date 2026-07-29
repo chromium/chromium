@@ -549,6 +549,17 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // anchor, while retaining the other anchor view logic.
   virtual gfx::Rect GetBubbleBounds();
 
+  using GetAvailableScreenBoundsCallback =
+      BubbleFrameView::GetAvailableScreenBoundsCallback;
+
+  // This sets the callback to customize how the BubbleFrameView calculates the
+  // available screen bounds. When it is not set, the default implementation in
+  // BubbleFrameView is used.
+  void set_available_screen_bounds_callback(
+      GetAvailableScreenBoundsCallback callback) {
+    available_screen_bounds_callback_ = std::move(callback);
+  }
+
  protected:
   // A helper class for logging UMA metrics related to bubbles.
   // The class logs metrics to:
@@ -737,6 +748,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // Cumulated time of bubble being visible.
   base::TimeDelta bubble_shown_duration_;
+
+  GetAvailableScreenBoundsCallback available_screen_bounds_callback_;
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.

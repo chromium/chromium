@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -113,7 +114,10 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       subtitle_(title_container_->AddChildView(
           CreateLabelWithContextAndStyle(std::u16string(),
                                          style::CONTEXT_LABEL,
-                                         style::STYLE_SECONDARY))) {
+                                         style::STYLE_SECONDARY))),
+      available_screen_bounds_callback_(
+          base::BindRepeating(&BubbleFrameView::GetDefaultAvailableScreenBounds,
+                              base::Unretained(this))) {
   title_container_->SetOrientation(BoxLayout::Orientation::kVertical);
 
   default_title_->SetVisible(false);
@@ -1003,6 +1007,11 @@ gfx::Insets BubbleFrameView::GetClientViewInsets() const {
 }
 
 gfx::Rect BubbleFrameView::GetAvailableScreenBounds(
+    const gfx::Rect& rect) const {
+  return available_screen_bounds_callback_.Run(rect);
+}
+
+gfx::Rect BubbleFrameView::GetDefaultAvailableScreenBounds(
     const gfx::Rect& rect) const {
   display::Display display =
       display::Screen::Get()->GetDisplayNearestPoint(rect.CenterPoint());
