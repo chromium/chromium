@@ -950,6 +950,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 }
 // LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm:GetCallerApp)
 
+// LINT.IfChange(GetLaunchSource)
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_url_context.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 - (first_run::ExternalLaunch)launchSource {
   if ([self callerApp] != CALLER_APP_APPLE_MOBILESAFARI) {
     return first_run::LAUNCH_BY_OTHERS;
@@ -984,5 +988,6 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   }
   return first_run::LAUNCH_BY_SMARTAPPBANNER;
 }
+// LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm:GetLaunchSource)
 
 @end

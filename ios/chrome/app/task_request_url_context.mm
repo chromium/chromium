@@ -8,11 +8,14 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_private.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -70,6 +73,40 @@ MobileSessionCallerApp GetCallerApp(NSString* source_app, NSURL* url) {
   return CALLER_APP_OTHER;
 }
 
+// Returns the launch source for first run metrics.
+first_run::ExternalLaunch GetLaunchSource(MobileSessionCallerApp caller_app,
+                                          NSURL* url) {
+  if (caller_app != CALLER_APP_APPLE_MOBILESAFARI) {
+    return first_run::LAUNCH_BY_OTHERS;
+  }
+
+  NSString* query = url.query;
+  if (![query length]) {
+    return first_run::LAUNCH_BY_MOBILESAFARI;
+  }
+
+  // Look for `safarisab` (Smart App Banner key) anywhere in the query string.
+  NSRange found = [query rangeOfString:@"safarisab"];
+  if (found.location == NSNotFound) {
+    return first_run::LAUNCH_BY_MOBILESAFARI;
+  }
+
+  if (found.location + found.length < [query length]) {
+    unichar char_after =
+        [query characterAtIndex:(found.location + found.length)];
+    if (char_after != '&' && char_after != '=') {
+      return first_run::LAUNCH_BY_MOBILESAFARI;
+    }
+  }
+  if (found.location > 0) {
+    unichar char_before = [query characterAtIndex:(found.location - 1)];
+    if (char_before != '&') {
+      return first_run::LAUNCH_BY_MOBILESAFARI;
+    }
+  }
+  return first_run::LAUNCH_BY_SMARTAPPBANNER;
+}
+
 // Returns whether the URL specifies opening default browser settings.
 bool IsShowDefaultBrowserSettings(NSURL* url) {
   NSURLComponents* components = [NSURLComponents componentsWithURL:url
@@ -83,8 +120,8 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
   return false;
 }
 
-// Records metrics for opening a URL context.
-void RecordMetrics(UIOpenURLContext* url_context) {
+// Records metrics for opening a URL context at startup time.
+void RecordStartupMetrics(UIOpenURLContext* url_context) {
   NSURL* url = url_context.URL;
   NSString* source_application = url_context.options.sourceApplication;
 
@@ -96,6 +133,20 @@ void RecordMetrics(UIOpenURLContext* url_context) {
   if (IsShowDefaultBrowserSettings(url)) {
     base::UmaHistogramEnumeration("Startup.ShowDefaultPromoFromApps",
                                   caller_app, MOBILE_SESSION_CALLER_APP_COUNT);
+  }
+}
+
+// Records metrics for opening a URL context at runtime.
+void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
+  NSURL* url = url_context.URL;
+  NSString* source_application = url_context.options.sourceApplication;
+
+  MobileSessionCallerApp caller_app = GetCallerApp(source_application, url);
+
+  if (is_first_run) {
+    base::UmaHistogramEnumeration("FirstRun.LaunchSource",
+                                  GetLaunchSource(caller_app, url),
+                                  first_run::LAUNCH_SIZE);
   }
 }
 
@@ -111,7 +162,7 @@ void RecordMetrics(UIOpenURLContext* url_context) {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _URLContext = URLContext;
     [self extractGaiaID];
-    RecordMetrics(URLContext);
+    RecordStartupMetrics(URLContext);
   }
   return self;
 }
@@ -119,6 +170,10 @@ void RecordMetrics(UIOpenURLContext* url_context) {
 - (void)execute {
   SceneState* sceneState = [self sceneStateFromSessionID];
   CHECK(sceneState);
+
+  const BOOL isFirstRun =
+      sceneState.profileState.appState.startupInformation.isFirstRun;
+  RecordRuntimeMetrics(_URLContext, isFirstRun);
 
   if (!self.isColdStart) {
     NSSet* URLContextSet = [NSSet setWithObject:_URLContext];

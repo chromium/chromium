@@ -9,8 +9,10 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -30,8 +32,11 @@ class TaskRequestForURLContextTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
     SaveEnableNewStartupFlowForNextStart();
 
+    mock_startup_information_ = OCMProtocolMock(@protocol(StartupInformation));
+    app_state_ =
+        [[AppState alloc] initWithStartupInformation:mock_startup_information_];
     profile_ = TestProfileIOS::Builder().Build();
-    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.profileState = profile_state_;
@@ -39,6 +44,8 @@ class TaskRequestForURLContextTest : public PlatformTest {
   }
 
   void TearDown() override {
+    app_state_ = nil;
+    mock_startup_information_ = nil;
     browser_.reset();
     [scene_state_ shutdown];
     scene_state_ = nil;
@@ -54,8 +61,15 @@ class TaskRequestForURLContextTest : public PlatformTest {
     return mockContext;
   }
 
+  // Sets whether the app is in first run for testing metrics.
+  void SetIsFirstRun(BOOL is_first_run) {
+    OCMStub([mock_startup_information_ isFirstRun]).andReturn(is_first_run);
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  id mock_startup_information_;
+  AppState* app_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
@@ -94,4 +108,28 @@ TEST_F(TaskRequestForURLContextTest, TestStartupShowDefaultPromoFromApps) {
   histogram_tester.ExpectTotalCount("Startup.ShowDefaultPromoFromApps", 1);
   histogram_tester.ExpectBucketCount("Startup.ShowDefaultPromoFromApps",
                                      CALLER_APP_THIRD_PARTY, 1);
+}
+
+// Tests that FirstRun.LaunchSource is logged on first run.
+TEST_F(TaskRequestForURLContextTest, TestFirstRunLaunchSource) {
+  SetIsFirstRun(YES);
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL URLWithString:@"https://www.example.com"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [[TaskRequestForURLContext alloc] initWithURLContext:context
+                                                sceneState:scene_state_
+                                               isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  // ProfileState may be nil early during app startup, so these metrics should
+  // be collected later when executing the request.
+  histogram_tester.ExpectTotalCount("FirstRun.LaunchSource", 0);
+
+  [request execute];
+
+  histogram_tester.ExpectTotalCount("FirstRun.LaunchSource", 1);
+  histogram_tester.ExpectBucketCount("FirstRun.LaunchSource",
+                                     first_run::LAUNCH_BY_OTHERS, 1);
 }
