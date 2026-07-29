@@ -764,14 +764,17 @@ void IndigoToolbar::OnExpandButtonClicked() {
 }
 
 void IndigoToolbar::OnRegenerateButtonClicked() {
+  SetPresentationState(PresentationState::kCollapsed, kInitialAutoCompactDelay);
   delegate_->OnRegenerate(this);
 }
 
 void IndigoToolbar::OnReplacePhotoClicked() {
+  SetPresentationState(PresentationState::kCollapsed, kInitialAutoCompactDelay);
   delegate_->OnReplaceOriginalPhoto(this);
 }
 
 void IndigoToolbar::OnDeletePhotoClicked() {
+  SetPresentationState(PresentationState::kCollapsed, kInitialAutoCompactDelay);
   delegate_->OnDeleteOriginalPhoto(this);
 }
 
