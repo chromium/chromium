@@ -45,9 +45,8 @@ namespace cbor {
 #if BUILDFLAG(USE_CBOR_RUST)
 #define ASSERT_DECODER_ERROR_EQ(cpp_err, rust_err)                   \
   static_assert(std::to_underlying(Reader::DecoderError::cpp_err) == \
-                std::to_underlying(cbor::rust::ErrorCode::Tag::rust_err))
+                std::to_underlying(cbor::rust::Error::Tag::rust_err))
 // LINT.IfChange(DecoderErrorAsserts)
-ASSERT_DECODER_ERROR_EQ(CBOR_NO_ERROR, Ok);
 ASSERT_DECODER_ERROR_EQ(UNSUPPORTED_MAJOR_TYPE, UnsupportedMajorType);
 ASSERT_DECODER_ERROR_EQ(UNKNOWN_ADDITIONAL_INFO, UnknownAdditionalInfo);
 ASSERT_DECODER_ERROR_EQ(INCOMPLETE_CBOR_DATA, IncompleteCborData);
@@ -63,7 +62,7 @@ ASSERT_DECODER_ERROR_EQ(UNSUPPORTED_FLOATING_POINT_VALUE,
 ASSERT_DECODER_ERROR_EQ(OUT_OF_RANGE_INTEGER_VALUE, OutOfRangeIntegerValue);
 ASSERT_DECODER_ERROR_EQ(DUPLICATE_KEY, DuplicateKey);
 ASSERT_DECODER_ERROR_EQ(UNKNOWN_ERROR, UnknownError);
-// LINT.ThenChange(//components/cbor/reader.h:DecoderError,//components/cbor/rust/reader.rs:ErrorCode)
+// LINT.ThenChange(//components/cbor/reader.h:DecoderError,//components/cbor/rust/reader.rs:Error)
 #undef ASSERT_DECODER_ERROR_EQ
 #endif
 
@@ -221,27 +220,26 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
     DecoderError& error_code_out =
         config.error_code_out ? *config.error_code_out : ignored_error_code_out;
 
-    cbor::rust::ParseResult result =
-        cbor::rust::parse_with_config_ffi(data, rust_config);
+    auto result = cbor::rust::parse_with_config(data, rust_config);
 
-    if (result.error_code.tag != cbor::rust::ErrorCode::Tag::Ok) {
+    if (!result.has_value()) {
       num_bytes_consumed = 0;
       // The static_cast is currently safe because the enum values in
       // cbor::Reader::DecoderError are initialized by the values of
-      // cbor::rust::ErrorCode.
-      error_code_out = static_cast<DecoderError>(result.error_code.tag);
+      // cbor::rust::Error.
+      error_code_out = static_cast<DecoderError>(result.err().tag);
       return std::nullopt;
     }
 
-    if (!config.num_bytes_consumed && result.bytes_consumed < data.size()) {
+    if (!config.num_bytes_consumed && result->bytes_consumed < data.size()) {
       error_code_out = DecoderError::EXTRANEOUS_DATA;
       return std::nullopt;
     }
 
-    num_bytes_consumed = result.bytes_consumed;
+    num_bytes_consumed = result->bytes_consumed;
     error_code_out = DecoderError::CBOR_NO_ERROR;
 
-    return ConvertRustValueToCpp(result.value);
+    return ConvertRustValueToCpp(result->value);
   }
 #else
   CHECK(!config.use_rust)

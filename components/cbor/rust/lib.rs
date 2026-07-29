@@ -49,7 +49,7 @@ mod values;
 mod writer;
 
 pub use constants::MAX_DEPTH;
-pub use reader::{parse_with_config, parse_with_config_ffi, Config, Error, ErrorCode, ParseResult};
+pub use reader::{parse_with_config, Config, Error, ParseResult};
 pub use values::{MapEntryRef, MapKey, MapKeyKind, Value, ValueKind};
 pub use writer::write;
 
