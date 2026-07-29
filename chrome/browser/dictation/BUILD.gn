@@ -64,6 +64,7 @@ source_set("impl") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/dictation",
@@ -72,6 +73,7 @@ source_set("impl") {
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
+    "//components/tabs:public",
     "//content/public/browser",
     "//extensions/browser",
     "//ui/base",
@@ -145,10 +147,12 @@ source_set("browser_tests") {
     "//chrome/browser/glic/test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/views/dictation",
     "//chrome/test:test_support",
+    "//components/tabs:test_support",
     "//content/test:test_support",
   ]
 }

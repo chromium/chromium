@@ -15,12 +15,84 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace dictation {
+
+namespace {
+
+bool MockIsEligible(
+    const std::string& host,
+    const std::string& path,
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
+  return false;
+}
+
+bool MockIsEligibleWithAccount(
+    const std::string& host,
+    const std::string& path,
+    const std::string& account_email,
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
+  return false;
+}
+
+bool MockShouldReextractPageContext(
+    const std::string& host,
+    const std::string& path,
+    const std::vector<std::string>& updated_meta_tags) {
+  return false;
+}
+
+optimization_guide::StringViewSpan MockGetMeta(
+    std::string_view,
+    std::string_view,
+    const std::vector<optimization_guide::FrameMetadata>&) {
+  return optimization_guide::StringViewSpan{.data = nullptr, .size = 0};
+}
+
+optimization_guide::PageEligibilityResult MockCheckPageEligibility(
+    const std::vector<optimization_guide::FrameUrl>& frames) {
+  return optimization_guide::PageEligibilityResult{
+      .status = optimization_guide::PageEligibility::kIneligible,
+      .meta_tag_names_affecting_eligibility = {.data = nullptr, .size = 0}};
+}
+
+optimization_guide::PageContextEligibilityAPI g_ineligible_api = {
+    .IsPageContextEligible = &MockIsEligible,
+    .IsPageContextEligibleWithAccount = &MockIsEligibleWithAccount,
+    .ShouldReextractPageContext = &MockShouldReextractPageContext,
+    .GetMetaTagNamesAffectingEligibility = &MockGetMeta,
+    .CheckPageEligibility = &MockCheckPageEligibility,
+};
+
+class ScopedPageContextEligibilityForTesting {
+ public:
+  explicit ScopedPageContextEligibilityForTesting(
+      const optimization_guide::PageContextEligibilityAPI* api)
+      : holder_(api) {
+    optimization_guide::PageContextEligibility::SetForTesting(&holder_);
+  }
+  ~ScopedPageContextEligibilityForTesting() {
+    optimization_guide::PageContextEligibility::SetForTesting(nullptr);
+  }
+
+  ScopedPageContextEligibilityForTesting(
+      const ScopedPageContextEligibilityForTesting&) = delete;
+  ScopedPageContextEligibilityForTesting& operator=(
+      const ScopedPageContextEligibilityForTesting&) = delete;
+
+ private:
+  optimization_guide::PageContextEligibility holder_;
+};
+
+}  // namespace
 
 class DictationContextBrowserTest : public DictationBrowserTestBase {
  public:
@@ -220,6 +292,33 @@ IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest,
 
   ASSERT_TRUE(context->editable_content.has_value());
   EXPECT_EQ(*context->editable_content, "quick brown");
+}
+
+IN_PROC_BROWSER_TEST_F(DictationContextBrowserTest, IneligiblePageElided) {
+  ScopedPageContextEligibilityForTesting scoped_eligibility(&g_ineligible_api);
+
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  StartSession();
+
+  ASSERT_NE(session_controller(), nullptr);
+
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      session_controller()->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+
+  ExtensionWaitForStreamStart(profile(), provider->stream_id_for_testing());
+  std::optional<DictationContext> context = ExtensionGetStartStreamDetails(
+      profile(), provider->stream_id_for_testing());
+  ASSERT_TRUE(context.has_value());
+
+  // Verify that the context was elided because the page is not eligible.
+  EXPECT_FALSE(context->annotated_page_content.has_value());
+  EXPECT_FALSE(context->inner_text.has_value());
+  EXPECT_FALSE(context->editable_content.has_value());
 }
 
 }  // namespace dictation
