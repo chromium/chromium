@@ -135,6 +135,10 @@ class MainThreadStackSamplingProfiler;
 class WindowsSystemTracingClient;
 struct NavigateParams;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+class Profile;
+#endif
+
 #if BUILDFLAG(ENABLE_VR)
 namespace vr {
 class ChromeXrIntegrationClient;

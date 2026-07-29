@@ -388,11 +388,13 @@ source_set("icon_loader") {
 
 source_set("startup_data") {
   public = [ "startup_data.h" ]
-  deps = [
+  public_deps = [
     "//base",
-    "//components/leveldb_proto",
     "//extensions/buildflags",
   ]
+  if (is_android) {
+    public_deps += [ "//components/leveldb_proto" ]
+  }
 }
 
 # The following header-only targets exist so that targets like :core and

@@ -9,8 +9,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/leveldb_proto/public/proto_database_provider.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 namespace extensions {
