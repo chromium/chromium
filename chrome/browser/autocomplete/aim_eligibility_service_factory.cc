@@ -27,7 +27,7 @@ AimEligibilityService::Configuration CreateConfiguration(
     bool is_off_the_record) {
   AimEligibilityService::Configuration config;
   config.is_off_the_record = is_off_the_record;
-  if (!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
     return config;
   }
 

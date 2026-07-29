@@ -147,7 +147,7 @@ TabView::TabView(TabCollectionNode* collection_node)
   BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
   if (browser_window &&
       (glic::GlicEnabling::IsProfileEligible(browser_window->GetProfile()) ||
-       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks))) {
+       contextual_tasks::IsContextualTasksUIEnabled())) {
     glic_tab_underline_view_ =
         AddChildView(views::Builder<glic::TabUnderlineView>(
                          glic::TabUnderlineView::Factory::Create(

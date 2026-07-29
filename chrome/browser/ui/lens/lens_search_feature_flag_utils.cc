@@ -54,7 +54,7 @@ bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
-      !aim_eligibility_service->IsCobrowseEligible()) {
+      !aim_eligibility_service->IsCobrowseServerEligible()) {
     return false;
   }
 
@@ -80,7 +80,7 @@ bool IsAimM3Enabled(Profile* profile) {
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
-      !aim_eligibility_service->IsCobrowseEligible()) {
+      !aim_eligibility_service->IsCobrowseServerEligible()) {
     return false;
   }
 

@@ -1028,7 +1028,7 @@ bool ContextualTasksUIConfig::IsWebUIEnabled(
       !lens::features::IsLensSidePanelUnificationEnabled()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  return contextual_tasks::IsContextualTasksUIEnabled();
 }
 
 bool ContextualTasksUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild()

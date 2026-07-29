@@ -9689,6 +9689,7 @@ from previous Chrome versions.
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
   <int value="-1557048150" label="TabGroupShortcuts:disabled"/>
   <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
+  <int value="-1556705995" label="ContextualTasksSidePanel:enabled"/>
   <int value="-1556654570" label="tab-groups-save-v2:enabled"/>
   <int value="-1555616901" label="ShoppingListTrackByDefault:disabled"/>
   <int value="-1555375841" label="FedCmRpContext:enabled"/>
@@ -17865,6 +17866,7 @@ from previous Chrome versions.
   <int value="1074310931" label="OmniboxMobileParityUpdateV2:disabled"/>
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
+  <int value="1074609906" label="ContextualTasksSidePanel:disabled"/>
   <int value="1075191614" label="LauncherSystemInfoAnswerCards:disabled"/>
   <int value="1075535842" label="TabStripGroupContextMenuAndroid:enabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>

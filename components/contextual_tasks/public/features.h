@@ -15,6 +15,7 @@ namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksPrivateApiNoAnimation);
+BASE_DECLARE_FEATURE(kContextualTasksSidePanel);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
@@ -155,6 +156,12 @@ bool GetIsContextualTasksUploadChunkingEnabled();
 bool GetContextualTasksSpatialModelToolbarLayoutEnabled();
 
 bool GetContextualTasksSpatialModelToolbarLayoutNewThreadInOverflow();
+
+// Returns whether the Contextual Tasks side panel container, coordinator,
+// and supporting response services should be initialized.
+// Returns true if either full Contextual Tasks (`kContextualTasks`) or
+// infrastructure-only mode (`kContextualTasksSidePanel`) is enabled.
+bool IsContextualTasksUIEnabled();
 
 bool IsStickyConversationEnabled();
 
@@ -447,6 +454,8 @@ extern const char kContextualTasksPrivateApiNoAnimationName[];
 extern const char kContextualTasksPrivateApiNoAnimationDescription[];
 extern const char kContextualTasksName[];
 extern const char kContextualTasksDescription[];
+extern const char kContextualTasksSidePanelName[];
+extern const char kContextualTasksSidePanelDescription[];
 extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];

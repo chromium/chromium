@@ -455,7 +455,7 @@ bool TabUnderlineController::ShouldUseSignalsForGlicUnderlines() {
 }
 
 bool TabUnderlineController::ShouldUseSignalsForContextualTasks() {
-  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  return contextual_tasks::IsContextualTasksUIEnabled();
 }
 
 BrowserWindowInterface* TabUnderlineController::GetBrowserWindowInterface() {

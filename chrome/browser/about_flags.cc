@@ -9390,7 +9390,8 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"omnibox-dynamic-ai-mode-button", flag_descriptions::kDynamicAiModeButtonName,
+    {"omnibox-dynamic-ai-mode-button",
+     flag_descriptions::kDynamicAiModeButtonName,
      flag_descriptions::kDynamicAiModeButtonDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxDynamicAiModeButton,
                                     kWebUIOmniboxDynamicAiModeButtonVariations,
@@ -11908,6 +11909,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          contextual_tasks::kContextualTasksPrivateApiNoAnimation)},
+
+    {"contextual-tasks-side-panel",
+     contextual_tasks::flag_descriptions::kContextualTasksSidePanelName,
+     contextual_tasks::flag_descriptions::kContextualTasksSidePanelDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSidePanel)},
 
     {"contextual-tasks-java-fusebox",
      contextual_tasks::flag_descriptions::kContextualTasksJavaFuseboxName,

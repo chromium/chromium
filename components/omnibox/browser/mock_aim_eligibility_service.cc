@@ -26,6 +26,9 @@ MockAimEligibilityService::MockAimEligibilityService(
   ON_CALL(*this, IsAimLocallyEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsAimEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsCanvasEligible()).WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsCobrowseServerEligible())
+      .WillByDefault(testing::Invoke(
+          this, &MockAimEligibilityService::IsCobrowseEligible));
   ON_CALL(*this, IsCobrowseEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsDeepSearchEligible()).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsCreateImagesEligible()).WillByDefault(testing::Return(true));

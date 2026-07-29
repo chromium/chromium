@@ -107,7 +107,7 @@ bool ContextualTasksEligibilityManager::IsEligible() const {
 }
 
 bool ContextualTasksEligibilityManager::IsEligibleWithoutIdentity() const {
-  if (!base::FeatureList::IsEnabled(kContextualTasks)) {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
     return false;
   }
 
@@ -119,7 +119,10 @@ bool ContextualTasksEligibilityManager::IsEligibleWithoutIdentity() const {
     return false;
   }
 
-  if (pref_service_ &&
+  // Only check if context sharing is enabled if the panel container is not
+  // being initialized without context (i.e. ContextualTasks feature is
+  // enabled).
+  if (base::FeatureList::IsEnabled(kContextualTasks) && pref_service_ &&
       !contextual_search::ContextualSearchService::IsContextSharingEnabled(
           pref_service_)) {
     return false;

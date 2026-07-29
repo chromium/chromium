@@ -58,6 +58,10 @@ bool TestingAimEligibilityService::IsAimEligible() const {
   return is_aim_eligible_;
 }
 
+bool TestingAimEligibilityService::IsCobrowseServerEligible() const {
+  return is_cobrowse_eligible_;
+}
+
 bool TestingAimEligibilityService::IsCobrowseEligible() const {
   return is_cobrowse_eligible_;
 }

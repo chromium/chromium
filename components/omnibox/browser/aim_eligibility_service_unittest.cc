@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/country_codes/country_codes.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/testing_pref_service.h"
@@ -506,20 +507,23 @@ TEST_F(AimEligibilityServiceTest, RequestMode_PostWithProto) {
 
 TEST_F(AimEligibilityServiceTest, IsCobrowseEligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      omnibox::kAimCoBrowseEligibilityCheckEnabled);
+  feature_list.InitWithFeatures({omnibox::kAimCoBrowseEligibilityCheckEnabled,
+                                 contextual_tasks::kContextualTasks},
+                                {});
 
   omnibox::AimEligibilityResponse response;
   response.set_is_cobrowse_eligible(true);
   response.set_is_eligible(true);
   aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
   EXPECT_TRUE(aim_eligibility_service_->IsCobrowseEligible());
+  EXPECT_TRUE(aim_eligibility_service_->IsCobrowseServerEligible());
 
   omnibox::AimEligibilityResponse response2;
   response2.set_is_cobrowse_eligible(false);
   response.set_is_eligible(true);
   aim_eligibility_service_->SetAimEligibilityResponse(std::move(response2));
   EXPECT_FALSE(aim_eligibility_service_->IsCobrowseEligible());
+  EXPECT_FALSE(aim_eligibility_service_->IsCobrowseServerEligible());
 }
 
 TEST_F(AimEligibilityServiceTest, FetchEligibility) {
@@ -532,7 +536,7 @@ TEST_F(AimEligibilityServiceTest, FetchEligibility) {
 
 TEST_F(AimEligibilityServiceTest, IsCobrowseEligible_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({},
+  feature_list.InitWithFeatures({contextual_tasks::kContextualTasks},
                                 {omnibox::kAimCoBrowseEligibilityCheckEnabled,
                                  omnibox::kAimServerEligibilityEnabled});
 
@@ -542,12 +546,28 @@ TEST_F(AimEligibilityServiceTest, IsCobrowseEligible_FeatureDisabled) {
 
   // Should be true regardless of response if feature is disabled.
   EXPECT_TRUE(aim_eligibility_service_->IsCobrowseEligible());
+  EXPECT_TRUE(aim_eligibility_service_->IsCobrowseServerEligible());
+}
+
+TEST_F(AimEligibilityServiceTest, IsCobrowseEligible_ContextualTasksDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kAimCoBrowseEligibilityCheckEnabled},
+                                {contextual_tasks::kContextualTasks});
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_cobrowse_eligible(true);
+  response.set_is_eligible(true);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
+  EXPECT_FALSE(aim_eligibility_service_->IsCobrowseEligible());
+  EXPECT_TRUE(aim_eligibility_service_->IsCobrowseServerEligible());
 }
 
 TEST_F(AimEligibilityServiceTest, ParsingResponse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {omnibox::kAimEnabled, omnibox::kAimServerEligibilityEnabled}, {});
+      {omnibox::kAimEnabled, omnibox::kAimServerEligibilityEnabled,
+       contextual_tasks::kContextualTasks},
+      {});
 
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);

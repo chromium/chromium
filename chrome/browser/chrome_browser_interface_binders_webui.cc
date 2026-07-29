@@ -247,7 +247,7 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
         policy::mojom::PolicyPageHandlerFactory, PolicyUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  if (contextual_tasks::IsContextualTasksUIEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
     RegisterWebUIControllerInterfaceBinder<

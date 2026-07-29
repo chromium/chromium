@@ -622,7 +622,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   //   CloseButtonController depends on VerticalTabStripStateController.
   //   CloseButtonController depends on ImmersiveModeController.
   // TODO(crbug.com/481268779): Pass these dependencies explicitly.
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  if (contextual_tasks::IsContextualTasksUIEnabled()) {
     contextual_tasks_browser_controller_ =
         GetUserDataFactory()
             .CreateInstance<contextual_tasks::ContextualTasksBrowserController>(

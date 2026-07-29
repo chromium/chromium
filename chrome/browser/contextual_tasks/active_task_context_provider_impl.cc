@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
@@ -18,6 +19,7 @@
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -240,6 +242,11 @@ void ActiveTaskContextProviderImpl::OnTaskDisassociatedFromTab(
 }
 
 void ActiveTaskContextProviderImpl::RefreshContext() {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
+    ResetStateAndNotifyObservers();
+    return;
+  }
+
   // Increment the callback ID to invalidate any outstanding callbacks.
   callback_id_++;
 
