@@ -112,6 +112,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -538,6 +539,26 @@ void ActivateTab(TabStripModel* model,
     model->ChangeTabGroupVisuals(group_id.value(), std::move(new_visual_data));
   }
   model->ActivateTabAt(index, gesture_detail);
+}
+
+bool IsTabSelectable(
+    TabStripModel* model,
+    tabs::TabInterface* tab,
+    const std::optional<tab_groups::TabGroupId>& focused_group) {
+  // Do not select the tab if it is in a collapsed group.
+  if (tab->GetGroup().has_value() &&
+      model->IsGroupCollapsed(tab->GetGroup().value())) {
+    return false;
+  }
+
+  // Do not select the tab if it is not part of the focused state.
+  if (focused_group.has_value() &&
+      !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+          tab, focused_group)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -1472,14 +1493,18 @@ void MoveTabPrevious(BrowserWindowInterface* browser) {
 void SelectNumberedTab(BrowserWindowInterface* browser,
                        int index,
                        TabStripUserGestureDetails gesture_detail) {
+  TabStripModel* model = browser->GetTabStripModel();
+  std::optional<tab_groups::TabGroupId> focused_group =
+      model->GetFocusedGroup();
   int visible_count = 0;
-  for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
-    if (browser->GetTabStripModel()->IsTabCollapsed(i)) {
+  for (tabs::TabInterface* tab : *model) {
+    if (!IsTabSelectable(model, tab, focused_group)) {
       continue;
     }
+
     if (visible_count == index) {
       base::RecordAction(UserMetricsAction("SelectNumberedTab"));
-      browser->GetTabStripModel()->ActivateTabAt(i, gesture_detail);
+      model->ActivateTab(tab, gesture_detail);
       break;
     }
     visible_count += 1;
@@ -1488,12 +1513,18 @@ void SelectNumberedTab(BrowserWindowInterface* browser,
 
 void SelectLastTab(BrowserWindowInterface* browser,
                    TabStripUserGestureDetails gesture_detail) {
-  for (int i = browser->GetTabStripModel()->count() - 1; i >= 0; i--) {
-    if (!browser->GetTabStripModel()->IsTabCollapsed(i)) {
-      base::RecordAction(UserMetricsAction("SelectLastTab"));
-      browser->GetTabStripModel()->ActivateTabAt(i, gesture_detail);
-      break;
+  TabStripModel* model = browser->GetTabStripModel();
+  std::optional<tab_groups::TabGroupId> focused_group =
+      model->GetFocusedGroup();
+  for (int i = model->count() - 1; i >= 0; i--) {
+    tabs::TabInterface* tab = model->GetTabAtIndex(i);
+    if (!IsTabSelectable(model, tab, focused_group)) {
+      continue;
     }
+
+    base::RecordAction(UserMetricsAction("SelectLastTab"));
+    model->ActivateTab(tab, gesture_detail);
+    break;
   }
 }
 
