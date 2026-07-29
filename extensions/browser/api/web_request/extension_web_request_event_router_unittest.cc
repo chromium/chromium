@@ -640,4 +640,35 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
   EXPECT_TRUE(set_headers_.empty());
 }
 
+// Tests that when a request matches both a started worker's concrete identity
+// and a lazy listener for the same extension (e.g. while a service worker is
+// in the middle of executing its top-level script), the targets are folded
+// into a single dispatch.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       LazyGroupFoldsIntoStartedWorker) {
+  // Register a concrete listener for the active worker.
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING));
+  // Simulate mid-startup: a second listener remains under the lazy key.
+  ASSERT_TRUE(AddListener("http://*/*", ExtraInfoSpec::BLOCKING,
+                          /*is_lazy=*/true));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  // Verify only 1 event was dispatched to the concrete target.
+  ASSERT_EQ(1u, dispatched_events().size());
+  const Event& event = *dispatched_events()[0];
+  ASSERT_TRUE(event.restrict_to_dispatch_target.has_value());
+  EXPECT_EQ(ActiveDispatchTarget(), *event.restrict_to_dispatch_target);
+
+  RespondWithCancel(request->id);
+  EXPECT_FALSE(result_.has_value());
+
+  // Verify one completion signal unblocks the request. Without folding,
+  // a dangling lazy target would leave the request blocked after this call.
+  FinishHandling(request->id);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, *result_);
+}
+
 }  // namespace extensions

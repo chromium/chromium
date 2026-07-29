@@ -1716,10 +1716,35 @@ WebRequestEventRouter::GroupListenersByDispatchTarget(
   for (EventListener* listener : listeners) {
     targets[DispatchTargetKey::ForListener(*listener)].push_back(listener);
   }
-  // TODO(andreaorru): fold each lazy group into the corresponding concrete
-  // group to support receiving events while listeners are in the process of
-  // being registered (e.g. while a service worker top level is in the process
-  // of being run).
+
+  // Fold each lazy group into the concrete group of its started worker, if one
+  // exists. When a service worker starts, it re-registers listeners one by one;
+  // without folding, events would dispatch twice and cause the request to hang
+  // waiting for a second completion signal.
+  std::vector<std::pair<DispatchTargetKey, DispatchTargetKey>> fold_pairs;
+  for (const auto& [lazy_key, lazy_group] : targets) {
+    if (!lazy_key.IsLazy()) {
+      continue;
+    }
+    for (const auto& [candidate_key, candidate_group] : targets) {
+      if (!candidate_key.IsLazy() && candidate_key.web_view_instance_id == 0 &&
+          candidate_key.listener_context_id == lazy_key.listener_context_id &&
+          candidate_key.extension_id == lazy_key.extension_id &&
+          candidate_key.service_worker_version_id !=
+              blink::mojom::kInvalidServiceWorkerVersionId) {
+        fold_pairs.emplace_back(lazy_key, candidate_key);
+        break;
+      }
+    }
+  }
+  for (const auto& [lazy_key, concrete_key] : fold_pairs) {
+    RawListeners& lazy_listeners = targets[lazy_key];
+    RawListeners& concrete_listeners = targets[concrete_key];
+    concrete_listeners.insert(concrete_listeners.end(), lazy_listeners.begin(),
+                              lazy_listeners.end());
+    targets.erase(lazy_key);
+  }
+
   return targets;
 }
 
