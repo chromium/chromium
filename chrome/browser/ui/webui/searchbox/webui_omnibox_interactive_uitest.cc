@@ -922,8 +922,9 @@ class WebUIOmniboxSimplificationInteractiveTest
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
                        MAYBE_HasBackgroundApplied) {
-  const DeepQuery kContextButton = {"omnibox-popup-app", "#context",
-                                    "#entrypoint"};
+  const DeepQuery kContextButton = {
+      "omnibox-popup-app", "#context",
+      "cr-composebox-contextual-entrypoint-button", "#entrypoint"};
   RunTestSequence(
       SetAimEligibleResponse(),
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
@@ -946,8 +947,9 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
                        MAYBE_OblongShapeApplied) {
-  const DeepQuery kContextButton = {"omnibox-popup-app", "#context",
-                                    "#entrypoint"};
+  const DeepQuery kContextButton = {
+      "omnibox-popup-app", "#context",
+      "cr-composebox-contextual-entrypoint-button", "#entrypoint"};
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOblongStyleApplied);
   StateChange style_applied;
   style_applied.event = kOblongStyleApplied;
@@ -974,8 +976,9 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
                        MAYBE_HasSuggestionLabel) {
-  const DeepQuery kSuggestionLabel = {"omnibox-popup-app", "#context",
-                                      "#description"};
+  const DeepQuery kSuggestionLabel = {
+      "omnibox-popup-app", "#context",
+      "cr-composebox-contextual-entrypoint-button", "#description"};
   browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
   std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);

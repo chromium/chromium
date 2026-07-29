@@ -11,7 +11,6 @@ import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import type {InputState} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -23,7 +22,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
+import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 declare global {
   interface SpeechRecognition extends EventTarget {
@@ -1370,28 +1369,6 @@ suite('OmniboxComposeboxTest', () => {
     const dropEvent = createDragEvent('drop', files);
     dropZone.dispatchEvent(dropEvent);
     await microtasksFinished();
-  }
-
-  function createDefaultInputState(): InputState {
-    return {
-      allowedModels: [],
-      allowedTools: [],
-      allowedInputTypes: [],
-      activeModel: 0,
-      activeTool: 0,
-      disabledModels: [],
-      disabledTools: [],
-      disabledInputTypes: [],
-      toolConfigs: [],
-      modelConfigs: [],
-      inputTypeConfigs: [],
-      toolsSectionConfig: null,
-      modelSectionConfig: null,
-      hintText: '',
-      maxInputsByType: {},
-      maxTotalInputs: 0,
-      isCanvasQuerySubmitted: false,
-    };
   }
 
   suite('DragAndDrop', () => {

@@ -3,21 +3,19 @@
 // found in the LICENSE file.
 
 import '//resources/cr_components/composebox/composebox_lens_search.js';
-import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import '//resources/cr_components/composebox/current_tab_chip.js';
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_elements/icons.html.js';
+import './omnibox_contextual_entrypoint_button.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
 import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual, selectionToString} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import type {AutocompleteResult, OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {SelectionLineState} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
-import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -33,6 +31,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {OmniboxContextualEntrypointButtonElement} from './omnibox_contextual_entrypoint_button.js';
 import type {BrowserProxy} from './omnibox_popup.mojom-webui.js';
 import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
 
@@ -159,6 +158,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     return this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_();
   }
 
+  private browserProxy_: BrowserProxy;
   private searchboxBrowserProxy_: SearchboxBrowserProxy;
   private eventTracker_ = new EventTracker();
   private hideContextButton_: boolean =
@@ -168,8 +168,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   protected accessor showContextButtonSuggestionLabel_: boolean =
       loadTimeData.getBoolean('omniboxShowContextButtonSuggestionLabel');
   private listenerIds_: number[] = [];
-
-  private browserProxy_: BrowserProxy;
   private popupListenerIds_: number[] = [];
 
   constructor() {
@@ -187,9 +185,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     this.popupListenerIds_ = [
       this.browserProxy_.callbackRouter.onShow.addListener(
           this.onShow_.bind(this)),
-      this.browserProxy_.callbackRouter.onContextMenuClosed.addListener(
-          this.onContextMenuClosed_.bind(this)),
-
     ];
 
     this.listenerIds_ = [
@@ -356,20 +351,16 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     }
   }
 
-  private getContextualEntrypointButton_(): ContextualEntrypointButtonElement|
-      null {
+  private getContextualEntrypointButton_():
+      OmniboxContextualEntrypointButtonElement|null {
     if (this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_()) {
-      return this.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
-          '#context');
+      return this.shadowRoot
+          .querySelector<OmniboxContextualEntrypointButtonElement>('#context');
     }
     return null;
   }
 
   private onShow_() {
-    // When the popup is shown, blur the contextual entrypoint. This prevents a
-    // focus ring from appearing on the entrypoint, e.g. when the user clicks
-    // away and then re-focuses the Omnibox.
-    this.getContextualEntrypointButton_()?.blur();
     this.refreshCurrentTabForChip_();
   }
 
@@ -409,22 +400,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     if (entrypoint) {
       entrypoint.hasPopupFocus = this.selection.state ===
           SelectionLineState.kFocusedButtonContextEntrypoint;
-      if (entrypoint.hasPopupFocus) {
-        this.notifyContextualEntrypoint_(entrypoint);
-      }
-    }
-  }
-
-  private notifyContextualEntrypoint_(
-      entrypoint: ContextualEntrypointButtonElement) {
-    const message = entrypoint.shadowRoot.querySelector('#entrypoint')
-                        ?.getAttribute('aria-label');
-    if (message) {
-      if (entrypoint.ariaNotify) {
-        entrypoint.ariaNotify(message);
-      } else {
-        getA11yAnnouncer(entrypoint).announce(message);
-      }
     }
   }
 
@@ -446,7 +421,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   private openCurrentSelection_(disposition: WindowOpenDisposition) {
     if (this.selection.state ===
         SelectionLineState.kFocusedButtonContextEntrypoint) {
-      this.browserProxy_.handler.showContextMenu({x: 0, y: 0});
+      this.getContextualEntrypointButton_()?.showContextMenu();
     } else if (selectionIsNativelySupported(this.selection)) {
       this.searchboxBrowserProxy_.handler.openPopupSelection(
           this.result_?.sequenceId || 0, this.selection, disposition);
@@ -459,31 +434,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
     this.hasSecondarySide = e.detail.value;
-  }
-
-  protected onContextMenuEntrypointClick_(
-      e: CustomEvent<{x: number, y: number}>) {
-    e.preventDefault();
-    const point = {
-      x: e.detail.x,
-      y: e.detail.y,
-    };
-
-    // Force the button to keep its hover background visually while
-    // the menu is open, even if the mouse doesn't move out of the button
-    // area after clicking.
-    const contextButton = this.getContextualEntrypointButton_();
-    if (contextButton) {
-      contextButton.classList.add('menu-open');
-    }
-    this.browserProxy_.handler.showContextMenu(point);
-  }
-
-  private onContextMenuClosed_() {
-    const contextButton = this.getContextualEntrypointButton_();
-    if (contextButton) {
-      contextButton.classList.remove('menu-open');
-    }
   }
 
   protected onLensSearchClick_() {
