@@ -47,7 +47,7 @@ clang_modules_platform_supported =
     is_apple || is_fuchsia || is_chromeos ||
     # Cross-compiling linux -> windows works, but win -> win appears to still
     # have issues.
-    (is_win && current_cpu == "x64" && current_os != target_os)
+    (is_win && current_cpu == "x64" && host_os != "win")
 
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
