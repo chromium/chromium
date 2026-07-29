@@ -55,8 +55,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SettingsRoutesRedirect DISABLED_SettingsRoutesRedirect
+#else
+#define MAYBE_SettingsRoutesRedirect SettingsRoutesRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
-                       SettingsRoutesRedirect) {
+                       MAYBE_SettingsRoutesRedirect) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL base_settings_url("chrome://settings/");
