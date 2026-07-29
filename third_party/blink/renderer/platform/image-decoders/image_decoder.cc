@@ -187,18 +187,32 @@ inline bool MatchesBMPSignature(base::span<const uint8_t> contents) {
 constexpr wtf_size_t kLongestSignatureLength = sizeof("RIFF????WEBPVP") - 1;
 
 // static
-String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
-  // At least kLongestSignatureLength bytes are needed to sniff the signature.
-  if (reader->size() < kLongestSignatureLength) {
+String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader,
+                             bool data_complete) {
+  // At least kLongestSignatureLength bytes are needed to sniff the signature,
+  // unless the data is already complete: a valid image can be shorter than
+  // the longest signature (e.g. the smallest valid JPEG XL codestream is 12
+  // bytes), and no more data will ever arrive.
+  const size_t data_size = reader->size();
+  if (data_size < kLongestSignatureLength && !data_complete) {
     return String();
   }
 
   // Access the first kLongestSignatureLength chars to sniff the signature.
-  // (note: FastSharedBufferReader only makes a copy if the bytes are segmented)
-  std::array<uint8_t, kLongestSignatureLength> buffer;
+  // (note: FastSharedBufferReader only makes a copy if the bytes are
+  // segmented). If the complete data is shorter than the longest signature,
+  // the rest of the zero-initialized buffer is sniffed, so the signature
+  // matchers below can always read kLongestSignatureLength bytes.
+  std::array<uint8_t, kLongestSignatureLength> buffer = {};
   const FastSharedBufferReader fast_reader(reader);
-  base::span<const uint8_t> contents =
-      fast_reader.GetConsecutiveData(0, kLongestSignatureLength, buffer);
+  const size_t bytes_to_read =
+      std::min<size_t>(data_size, kLongestSignatureLength);
+  base::span<const uint8_t> available =
+      fast_reader.GetConsecutiveData(0, bytes_to_read, buffer);
+  if (available.data() != buffer.data()) {
+    base::span(buffer).copy_prefix_from(available);
+  }
+  base::span<const uint8_t> contents = buffer;
 
   if (MatchesJPEGSignature(contents)) {
     return "image/jpeg";
@@ -282,7 +296,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     size_t platform_max_decoded_bytes,
     const SkISize& desired_size,
     AnimationOption animation_option) {
-  auto type = SniffMimeTypeInternal(data);
+  auto type = SniffMimeTypeInternal(data, data_complete);
   if (type.empty()) {
     return nullptr;
   }
@@ -364,7 +378,14 @@ bool ImageDecoder::ImageIsHighBitDepth() {
   return false;
 }
 
-bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
+bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data,
+                                                    bool all_data_received) {
+  // If the data is complete, what we have is all we will ever get, so it is
+  // by definition sufficient to attempt sniffing.
+  if (all_data_received) {
+    return true;
+  }
+
   // At least kLongestSignatureLength bytes are needed to sniff the signature.
   if (data.size() < kLongestSignatureLength) {
     return false;
@@ -396,7 +417,8 @@ bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
 // static
 String ImageDecoder::SniffMimeType(scoped_refptr<SharedBuffer> image_data) {
   return SniffMimeTypeInternal(
-      SegmentReader::CreateFromSharedBuffer(std::move(image_data)));
+      SegmentReader::CreateFromSharedBuffer(std::move(image_data)),
+      /*data_complete=*/false);
 }
 
 // static
@@ -410,7 +432,8 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   // (for example, due to a misconfigured web server), then it is possible that
   // the wrong compression format will be returned. However, this case should be
   // exceedingly rare.
-  if (image_data && HasSufficientDataToSniffMimeType(*image_data.get())) {
+  if (image_data && HasSufficientDataToSniffMimeType(
+                        *image_data, /*all_data_received=*/false)) {
     mime_type = SniffMimeType(image_data);
   }
   if (!mime_type) {

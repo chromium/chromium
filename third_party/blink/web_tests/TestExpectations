@@ -2844,7 +2844,6 @@ crbug.com/507921593 external/wpt/css/css-align/baseline-rules/inline-table-inlin
 crbug.com/507904199 [ Win ] external/wpt/css/css-lists/parsing/counter-increment-computed.html [ Pass Timeout ]
 crbug.com/507902976 [ Win ] external/wpt/fullscreen/api/document-fullscreen-keyboard-lock-shadowdom.tentative.window.html [ Pass Timeout ]
 crbug.com/507903802 virtual/jxl-enabled/external/wpt/jpegxl/patches-reftest.html [ Failure ]
-crbug.com/507903802 virtual/jxl-enabled/external/wpt/jpegxl/smallest-valid-reftest.html [ Failure ]
 external/wpt/css/css-backgrounds/border-image-repeat-round.html [ Failure ]
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-repeat-round.html [ Failure ]
 crbug.com/505118033 virtual/jxl-enabled/external/wpt/jpegxl/cmyk-basic-conversion-reftest.html [ Failure ]

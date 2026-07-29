@@ -260,8 +260,11 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // Returns true if the buffer holds enough data to instantiate a decoder.
   // This is useful for callers to determine whether a decoder instantiation
-  // failure is due to insufficient or bad data.
-  static bool HasSufficientDataToSniffMimeType(const SharedBuffer&);
+  // failure is due to insufficient or bad data. If |all_data_received| is
+  // true, the data is always considered sufficient, since no more data will
+  // ever arrive.
+  static bool HasSufficientDataToSniffMimeType(const SharedBuffer&,
+                                               bool all_data_received);
 
   // Looks at the image data to determine and return the image MIME type.
   static String SniffMimeType(scoped_refptr<SharedBuffer> image_data);

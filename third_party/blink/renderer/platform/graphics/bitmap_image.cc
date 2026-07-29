@@ -241,7 +241,8 @@ Image::SizeAvailability BitmapImage::SetData(scoped_refptr<SharedBuffer> data,
     return DataChanged(all_data_received);
   }
 
-  bool has_enough_data = ImageDecoder::HasSufficientDataToSniffMimeType(*data);
+  bool has_enough_data =
+      ImageDecoder::HasSufficientDataToSniffMimeType(*data, all_data_received);
   decoder_ = DeferredImageDecoder::Create(std::move(data), all_data_received,
                                           ImageDecoder::kAlphaPremultiplied,
                                           ColorBehavior::kTag);

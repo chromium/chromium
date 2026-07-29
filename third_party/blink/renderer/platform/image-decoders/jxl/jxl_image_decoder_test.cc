@@ -259,6 +259,38 @@ TEST_F(JXLImageDecoderTest, SmallestValidBitstream) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+// Regression test: a 12-byte valid naked JXL codestream must decode to a
+// 256x128 black image, at any partial/full data split. See
+// crbug.com/507903802.
+TEST_F(JXLImageDecoderTest, SmallValidBitstream) {
+  // base64: /wrfBwiDBAwASyAY
+  static constexpr std::array<uint8_t, 12> kSmallValid = {
+      0xFF, 0x0A, 0xDF, 0x07, 0x08, 0x83, 0x04, 0x0C, 0x00, 0x4B, 0x20, 0x18};
+  const auto bytes = base::span(kSmallValid);
+
+  for (size_t split = 0; split < bytes.size(); ++split) {
+    SCOPED_TRACE(split);
+    auto decoder = CreateJXLDecoder();
+    scoped_refptr<SharedBuffer> partial_data =
+        SharedBuffer::Create(bytes.first(split));
+    decoder->SetData(partial_data.get(), false);
+    if (decoder->IsSizeAvailable()) {
+      decoder->DecodeFrameBufferAtIndex(0);
+    }
+
+    scoped_refptr<SharedBuffer> full_data = SharedBuffer::Create(bytes);
+    decoder->SetData(full_data.get(), true);
+    EXPECT_TRUE(decoder->IsSizeAvailable());
+    EXPECT_EQ(256, decoder->Size().width());
+    EXPECT_EQ(128, decoder->Size().height());
+
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+    EXPECT_FALSE(decoder->Failed());
+  }
+}
+
 // Regression test: a corrupt bitstream with trailing invalid bytes must be
 // rejected. The decoder must not silently produce a transparent image.
 // See crbug.com/484171917.

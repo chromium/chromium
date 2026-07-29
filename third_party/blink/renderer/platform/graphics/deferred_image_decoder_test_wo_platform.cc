@@ -2,17 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
-
+#include <array>
 #include <memory>
+
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
@@ -112,7 +120,8 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
 
     // Truncated signature (only 1 byte).  Decoder instantiation should fail.
     scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(first_byte);
-    EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+    EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(
+        *buffer, /*all_data_received=*/false));
     EXPECT_EQ(nullptr, DeferredImageDecoder::Create(
                            buffer, false, ImageDecoder::kAlphaPremultiplied,
                            ColorBehavior::kIgnore));
@@ -120,7 +129,8 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
     // Append the rest of the data.  We should be able to sniff the signature
     // now, even if segmented.
     buffer->Append(rest_of_data);
-    EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+    EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(
+        *buffer, /*all_data_received=*/false));
     std::unique_ptr<DeferredImageDecoder> decoder =
         DeferredImageDecoder::Create(buffer, false,
                                      ImageDecoder::kAlphaPremultiplied,
@@ -129,5 +139,50 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
     EXPECT_TRUE(String(test_file).ends_with(decoder->FilenameExtension()));
   }
 }
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+// A complete image can be shorter than the longest signature used for MIME
+// sniffing: the smallest valid naked JPEG XL codestream is 12 bytes. Decoder
+// instantiation must succeed once all data is received, even if the data is
+// too short for regular signature sniffing. See crbug.com/507903802.
+TEST(DeferredImageDecoderTestWoPlatform, completeDataShorterThanSniffLength) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::ScopedFeatureList feature_list(features::kJXLImageFormat);
+
+  // base64: /wrfBwiDBAwASyAY, a 256x128 all-black image.
+  static constexpr std::array<uint8_t, 12> kSmallJxl = {
+      0xFF, 0x0A, 0xDF, 0x07, 0x08, 0x83, 0x04, 0x0C, 0x00, 0x4B, 0x20, 0x18};
+  scoped_refptr<SharedBuffer> buffer =
+      SharedBuffer::Create(base::span(kSmallJxl));
+
+  // With incomplete data, there is not enough to sniff the MIME type.
+  EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(
+      *buffer, /*all_data_received=*/false));
+  EXPECT_EQ(nullptr, DeferredImageDecoder::Create(
+                         buffer, false, ImageDecoder::kAlphaPremultiplied,
+                         ColorBehavior::kIgnore));
+
+  // With complete data, sniffing must proceed with the available bytes.
+  EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(
+      *buffer, /*all_data_received=*/true));
+  std::unique_ptr<DeferredImageDecoder> decoder = DeferredImageDecoder::Create(
+      buffer, true, ImageDecoder::kAlphaPremultiplied, ColorBehavior::kIgnore);
+  ASSERT_NE(decoder, nullptr);
+  EXPECT_EQ("jxl", decoder->FilenameExtension());
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(256, decoder->Size().width());
+  EXPECT_EQ(128, decoder->Size().height());
+
+  sk_sp<SkImage> image = CreateFrameAtIndex(decoder.get(), 0);
+  ASSERT_NE(image, nullptr);
+
+  // Force a lazy decode by reading pixels.
+  SkImageInfo info = SkImageInfo::MakeN32Premul(256, 128);
+  Vector<char> storage(
+      base::checked_cast<wtf_size_t>(info.computeMinByteSize()));
+  SkPixmap pixmap(info, storage.data(), info.minRowBytes());
+  EXPECT_TRUE(image->readPixels(pixmap, 0, 0));
+}
+#endif  // BUILDFLAG(ENABLE_JXL_DECODER)
 
 }  // namespace blink
