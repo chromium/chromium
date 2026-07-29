@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config_internal.h"
@@ -270,7 +271,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
       issuer.Serialize().c_str(), encoded_public_key.c_str(),
       expiration_str.c_str());
   GetDictFromJSON(json_str);
-  std::unique_ptr<PrivateVerificationTokensIssuerConfig> config =
+  scoped_refptr<PrivateVerificationTokensIssuerConfig> config =
       PrivateVerificationTokensIssuerConfig::Create(std::move(config_dict_));
   EXPECT_THAT(config, testing::NotNull());
   EXPECT_THAT(config->config(), testing::SizeIs(1));
@@ -318,7 +319,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   })",
       encoded_public_key1.c_str(), encoded_public_key2.c_str());
   GetDictFromJSON(json_str);
-  std::unique_ptr<PrivateVerificationTokensIssuerConfig> config =
+  scoped_refptr<PrivateVerificationTokensIssuerConfig> config =
       PrivateVerificationTokensIssuerConfig::Create(std::move(config_dict_));
   EXPECT_THAT(config, testing::NotNull());
   EXPECT_THAT(config->config(), testing::SizeIs(2));
@@ -375,7 +376,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   })",
       encoded_public_key1.c_str());
   GetDictFromJSON(json_str);
-  std::unique_ptr<PrivateVerificationTokensIssuerConfig> config =
+  scoped_refptr<PrivateVerificationTokensIssuerConfig> config =
       PrivateVerificationTokensIssuerConfig::Create(std::move(config_dict_));
   EXPECT_THAT(config, testing::NotNull());
   EXPECT_THAT(config->config(), testing::SizeIs(1));
@@ -433,7 +434,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
       encoded_public_key.c_str(), encoded_public_key.c_str(),
       encoded_public_key.c_str());
   GetDictFromJSON(json_str);
-  std::unique_ptr<PrivateVerificationTokensIssuerConfig> config =
+  scoped_refptr<PrivateVerificationTokensIssuerConfig> config =
       PrivateVerificationTokensIssuerConfig::Create(std::move(config_dict_));
   EXPECT_THAT(config, testing::NotNull());
   EXPECT_THAT(config->config(), testing::SizeIs(2));

@@ -7,6 +7,7 @@ static_library("private_verification_tokens") {
     ":*",
     "//chrome/browser:*",
     "//chrome/browser/browsing_data:*",
+    "//chrome/browser/component_updater:*",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
   ]
 
@@ -23,6 +24,7 @@ static_library("private_verification_tokens") {
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/browser",
     "//components/keyed_service/core",
+    "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
     "//components/private_verification_tokens/common:private_verification_tokens_store",
     "//components/private_verification_tokens/mojom",
     "//content/public/browser",
@@ -40,6 +42,7 @@ source_set("browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/private_verification_tokens/common:private_verification_tokens_database",
+    "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
     "//components/private_verification_tokens/mojom",
   ]
 }

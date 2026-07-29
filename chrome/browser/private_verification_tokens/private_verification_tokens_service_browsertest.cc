@@ -28,6 +28,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "components/private_verification_tokens/mojom/private_verification_tokens_service.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -715,6 +716,41 @@ IN_PROC_BROWSER_TEST_F(
   service->GetTokenIssuers(issuers_future.GetCallback());
   auto issuers = issuers_future.Take();
   EXPECT_EQ(issuers.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
+                       SetIssuerConfig_UpdatesService) {
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->issuer_config());
+
+  base::DictValue dict;
+  dict.Set(private_verification_tokens::kIssuersKey, base::ListValue());
+  auto config = private_verification_tokens::
+      PrivateVerificationTokensIssuerConfig::Create(std::move(dict));
+  ASSERT_TRUE(config);
+
+  service->SetIssuerConfig(config);
+  EXPECT_EQ(service->issuer_config(), config);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
+                       GlobalIssuerConfig_PropagatesToFactoryAndProfiles) {
+  base::DictValue dict;
+  dict.Set(private_verification_tokens::kIssuersKey, base::ListValue());
+  auto config = private_verification_tokens::
+      PrivateVerificationTokensIssuerConfig::Create(std::move(dict));
+  ASSERT_TRUE(config);
+
+  PrivateVerificationTokensServiceFactory::SetGlobalIssuerConfig(config);
+  EXPECT_EQ(PrivateVerificationTokensServiceFactory::GetGlobalIssuerConfig(),
+            config);
+
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(service->issuer_config(), config);
 }
 
 }  // namespace

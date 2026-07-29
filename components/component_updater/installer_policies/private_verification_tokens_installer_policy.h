@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
@@ -29,7 +29,7 @@ class PrivateVerificationTokensInstallerPolicy
   // Callback invoked when the component is ready and parsed.
   // It passes the parsed config.
   using OnComponentReadyCallback = base::RepeatingCallback<void(
-      std::unique_ptr<
+      scoped_refptr<
           private_verification_tokens::PrivateVerificationTokensIssuerConfig>)>;
 
   explicit PrivateVerificationTokensInstallerPolicy(

@@ -10,6 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/private_verification_tokens_installer_policy.h"
@@ -28,11 +33,21 @@ void RegisterPrivateVerificationTokensComponentIfEnabled(
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<PrivateVerificationTokensInstallerPolicy>(
           base::BindRepeating(
-              [](std::unique_ptr<private_verification_tokens::
-                                     PrivateVerificationTokensIssuerConfig>
+              [](scoped_refptr<private_verification_tokens::
+                                   PrivateVerificationTokensIssuerConfig>
                      issuer_config) {
-                // TODO(crbug.com/513184977): Hook PVT service to the component
-                // updater.
+                PrivateVerificationTokensServiceFactory::SetGlobalIssuerConfig(
+                    issuer_config);
+                if (g_browser_process && g_browser_process->profile_manager()) {
+                  for (Profile* profile : g_browser_process->profile_manager()
+                                              ->GetLoadedProfiles()) {
+                    if (PrivateVerificationTokensService* service =
+                            PrivateVerificationTokensServiceFactory::
+                                GetForProfileIfExists(profile)) {
+                      service->SetIssuerConfig(issuer_config);
+                    }
+                  }
+                }
               })));
 
   installer->Register(cus, base::OnceClosure());

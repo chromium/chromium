@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
@@ -259,6 +260,12 @@ void PrivateVerificationTokensService::DeleteTokensByFilter(
           .Then(base::BindOnce(&PrivateVerificationTokensService::DeleteTokens,
                                weak_ptr_factory_.GetWeakPtr(), delete_begin,
                                delete_end, std::move(callback))));
+}
+
+void PrivateVerificationTokensService::SetIssuerConfig(
+    scoped_refptr<const private_verification_tokens::
+                      PrivateVerificationTokensIssuerConfig> issuer_config) {
+  issuer_config_ = std::move(issuer_config);
 }
 
 void PrivateVerificationTokensService::OnStoreInitialized() {

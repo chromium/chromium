@@ -11,9 +11,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 #include "components/private_verification_tokens/mojom/private_verification_tokens_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -86,6 +88,15 @@ class PrivateVerificationTokensService
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void SetIssuerConfig(
+      scoped_refptr<const private_verification_tokens::
+                        PrivateVerificationTokensIssuerConfig> issuer_config);
+  scoped_refptr<
+      const private_verification_tokens::PrivateVerificationTokensIssuerConfig>
+  issuer_config() const {
+    return issuer_config_;
+  }
+
  private:
   explicit PrivateVerificationTokensService(
       HostContentSettingsMap* host_content_settings_map);
@@ -99,6 +110,11 @@ class PrivateVerificationTokensService
       receivers_;
   std::unique_ptr<private_verification_tokens::PrivateVerificationTokensStore>
       store_;
+
+  scoped_refptr<
+      const private_verification_tokens::PrivateVerificationTokensIssuerConfig>
+      issuer_config_;
+
   raw_ptr<HostContentSettingsMap> host_content_settings_map_ = nullptr;
   bool is_shutting_down_ = false;
 

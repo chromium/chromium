@@ -5,16 +5,53 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "net/base/features.h"
 
+namespace {
+
+scoped_refptr<
+    const private_verification_tokens::PrivateVerificationTokensIssuerConfig>&
+GetGlobalIssuerConfigStorage() {
+  static base::NoDestructor<scoped_refptr<
+      const private_verification_tokens::PrivateVerificationTokensIssuerConfig>>
+      config;
+  return *config;
+}
+
+}  // namespace
+
+// static
+void PrivateVerificationTokensServiceFactory::SetGlobalIssuerConfig(
+    scoped_refptr<const private_verification_tokens::
+                      PrivateVerificationTokensIssuerConfig> config) {
+  GetGlobalIssuerConfigStorage() = std::move(config);
+}
+
+// static
+scoped_refptr<
+    const private_verification_tokens::PrivateVerificationTokensIssuerConfig>
+PrivateVerificationTokensServiceFactory::GetGlobalIssuerConfig() {
+  return GetGlobalIssuerConfigStorage();
+}
+
 PrivateVerificationTokensService*
 PrivateVerificationTokensServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<PrivateVerificationTokensService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+// static
+PrivateVerificationTokensService*
+PrivateVerificationTokensServiceFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<PrivateVerificationTokensService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 PrivateVerificationTokensServiceFactory*
@@ -42,9 +79,15 @@ PrivateVerificationTokensServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(profile);
-  return PrivateVerificationTokensService::Create(
+  auto service = PrivateVerificationTokensService::Create(
       profile->GetPath(),
       HostContentSettingsMapFactory::GetForProfile(profile));
+  if (service) {
+    if (auto config = GetGlobalIssuerConfig()) {
+      service->SetIssuerConfig(std::move(config));
+    }
+  }
+  return service;
 }
 
 bool PrivateVerificationTokensServiceFactory::

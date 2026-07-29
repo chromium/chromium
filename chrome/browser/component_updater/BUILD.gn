@@ -147,6 +147,8 @@ source_set("impl") {
     "//chrome/browser/net",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/permissions",
+    "//chrome/browser/private_verification_tokens",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/update_client",
     "//chrome/common",
     "//chrome/common/platform_runtime",

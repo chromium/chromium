@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -185,7 +186,7 @@ IssuerConfig& IssuerConfig::operator=(IssuerConfig&&) = default;
 IssuerConfig::~IssuerConfig() = default;
 
 // static
-std::unique_ptr<PrivateVerificationTokensIssuerConfig>
+scoped_refptr<PrivateVerificationTokensIssuerConfig>
 PrivateVerificationTokensIssuerConfig::Create(base::DictValue config) {
   const base::ListValue* issuers = config.FindList(kIssuersKey);
   if (!issuers) {
@@ -203,7 +204,7 @@ PrivateVerificationTokensIssuerConfig::Create(base::DictValue config) {
     url::Origin issuer = ic->public_key.issuer();
     result.try_emplace(issuer, std::move(*ic));
   }
-  return base::WrapUnique(
+  return base::WrapRefCounted(
       new PrivateVerificationTokensIssuerConfig(std::move(result)));
 }
 
@@ -215,7 +216,7 @@ PrivateVerificationTokensIssuerConfig::
     ~PrivateVerificationTokensIssuerConfig() = default;
 
 // static
-std::unique_ptr<PrivateVerificationTokensIssuerConfig>
+scoped_refptr<PrivateVerificationTokensIssuerConfig>
 PrivateVerificationTokensIssuerConfig::LoadFromFile(
     const base::FilePath& path) {
   if (path.empty()) {

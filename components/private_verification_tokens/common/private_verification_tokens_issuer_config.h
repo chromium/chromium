@@ -7,11 +7,12 @@
 
 #include <cstdint>
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "url/origin.h"
@@ -44,14 +45,20 @@ struct IssuerConfig {
 };
 
 // Parses and holds the config for all issuers served by the component updater.
-class PrivateVerificationTokensIssuerConfig {
+//
+// Inherits from `base::RefCountedThreadSafe` to enable safe, shared ownership
+// of the immutable configuration across multiple profile services and across
+// thread boundaries (e.g., loading on a background sequence and passing to the
+// UI thread).
+class PrivateVerificationTokensIssuerConfig
+    : public base::RefCountedThreadSafe<PrivateVerificationTokensIssuerConfig> {
  public:
   // Creates config from given dictionary. The config is served by the component
   // updater (trusted).  Component updater will have its own checks and tests to
   // serve configs in the right form. Chrome does verify the config as well. For
   // duplicated issuers in the dictionary, Chrome uses the first one in the
   // issuers list.
-  static std::unique_ptr<PrivateVerificationTokensIssuerConfig> Create(
+  static scoped_refptr<PrivateVerificationTokensIssuerConfig> Create(
       base::DictValue config);
 
   // Loads and parses the config from the config file at `path`. The config file
@@ -63,7 +70,7 @@ class PrivateVerificationTokensIssuerConfig {
   // NOTE: This function performs blocking I/O and must be called on a
   // sequence that allows blocking (e.g., using base::ThreadPool with
   // base::MayBlock()).
-  static std::unique_ptr<PrivateVerificationTokensIssuerConfig> LoadFromFile(
+  static scoped_refptr<PrivateVerificationTokensIssuerConfig> LoadFromFile(
       const base::FilePath& path);
 
   PrivateVerificationTokensIssuerConfig(
@@ -75,13 +82,15 @@ class PrivateVerificationTokensIssuerConfig {
   PrivateVerificationTokensIssuerConfig& operator=(
       PrivateVerificationTokensIssuerConfig&&) = delete;
 
-  ~PrivateVerificationTokensIssuerConfig();
-
   const std::map<url::Origin, IssuerConfig>& config() const;
 
  private:
+  friend class base::RefCountedThreadSafe<
+      PrivateVerificationTokensIssuerConfig>;
   explicit PrivateVerificationTokensIssuerConfig(
       std::map<url::Origin, IssuerConfig> config);
+  ~PrivateVerificationTokensIssuerConfig();
+
   const std::map<url::Origin, IssuerConfig> config_;
 };
 

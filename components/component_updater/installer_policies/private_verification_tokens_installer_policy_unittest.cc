@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -122,7 +123,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
 
   bool callback_called = false;
   auto callback =
-      [&](std::unique_ptr<
+      [&](scoped_refptr<
           private_verification_tokens::PrivateVerificationTokensIssuerConfig>
               got) {
         callback_called = true;
@@ -192,7 +193,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, IgnoresInvalidJson) {
   base::RunLoop run_loop;
   bool callback_called = false;
   auto callback =
-      [&](std::unique_ptr<
+      [&](scoped_refptr<
           private_verification_tokens::PrivateVerificationTokensIssuerConfig>
               got) {
         callback_called = true;
