@@ -111,7 +111,6 @@ BASE_FEATURE(kMigrateEverythingMenuPinnedToTabstrip,
 bool IsVerticalTabsFeatureEnabled() {
   return base::FeatureList::IsEnabled(kVerticalTabs) ||
          base::FeatureList::IsEnabled(kVerticalTabsLaunch);
-  ;
 }
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled() {
