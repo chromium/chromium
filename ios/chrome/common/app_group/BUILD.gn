@@ -16,8 +16,8 @@ source_set("app_group") {
     "app_group_utils.mm",
   ]
 
+  public_deps = [ ":helper" ]
   deps = [
-    ":helper",
     "//base",
     "//components/version_info",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
@@ -42,6 +42,8 @@ source_set("helper") {
   sources = [
     "app_group_helper.h",
     "app_group_helper.mm",
+    "widget_constants.h",
+    "widget_constants.mm",
   ]
 
   deps = [

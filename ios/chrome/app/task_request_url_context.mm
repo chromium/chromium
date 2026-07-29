@@ -7,7 +7,10 @@
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
@@ -20,10 +23,18 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/widget_constants.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace {
+
+// Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
+void LogWidgetKitAction(WidgetKitExtensionAction action) {
+  base::UmaHistogramEnumeration(kWidgetKitActionHistogram, action);
+}
 
 // Returns the MobileSessionCallerApp for the specified `source_app` and `url`.
 MobileSessionCallerApp GetCallerApp(NSString* source_app, NSURL* url) {
@@ -121,11 +132,10 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
 }
 
 // Records metrics for opening a URL context at startup time.
-void RecordStartupMetrics(UIOpenURLContext* url_context) {
+void RecordStartupMetrics(UIOpenURLContext* url_context,
+                          const GURL& parsed_url,
+                          MobileSessionCallerApp caller_app) {
   NSURL* url = url_context.URL;
-  NSString* source_application = url_context.options.sourceApplication;
-
-  MobileSessionCallerApp caller_app = GetCallerApp(source_application, url);
 
   base::UmaHistogramEnumeration("Startup.MobileSessionStartFromApps",
                                 caller_app, MOBILE_SESSION_CALLER_APP_COUNT);
@@ -133,6 +143,71 @@ void RecordStartupMetrics(UIOpenURLContext* url_context) {
   if (IsShowDefaultBrowserSettings(url)) {
     base::UmaHistogramEnumeration("Startup.ShowDefaultPromoFromApps",
                                   caller_app, MOBILE_SESSION_CALLER_APP_COUNT);
+  }
+
+  if ([url.scheme isEqualToString:kWidgetKitSchemeChrome]) {
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
+                              START_ACTION_WIDGET_KIT_COMMAND,
+                              MOBILE_SESSION_START_ACTION_COUNT);
+    base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::WIDGET);
+
+    NSString* sourceWidget = url.host;
+    NSString* path = url.path;
+
+    if ([sourceWidget isEqualToString:kWidgetKitHostSearchWidget]) {
+      LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SEARCH_WIDGET_SEARCH);
+    } else if ([sourceWidget
+                   isEqualToString:kWidgetKitHostQuickActionsWidget]) {
+      if ([path isEqualToString:kWidgetKitActionSearch]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_SEARCH);
+      } else if ([path isEqualToString:kWidgetKitActionIncognito]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_INCOGNITO);
+      } else if ([path isEqualToString:kWidgetKitActionVoiceSearch]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_VOICE_SEARCH);
+      } else if ([path isEqualToString:kWidgetKitActionQRReader]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_QR_READER);
+      } else if ([path isEqualToString:kWidgetKitActionLens]) {
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_LENS);
+      }
+    } else if ([sourceWidget
+                   isEqualToString:kWidgetKitHostLockscreenLauncherWidget]) {
+      if ([path isEqualToString:kWidgetKitActionSearch]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_SEARCH);
+      } else if ([path isEqualToString:kWidgetKitActionIncognito]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO);
+      } else if ([path isEqualToString:kWidgetKitActionVoiceSearch]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH);
+      } else if ([path isEqualToString:kWidgetKitActionGame]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_GAME);
+      }
+    } else if ([sourceWidget isEqualToString:kWidgetKitHostShortcutsWidget]) {
+      if ([path isEqualToString:kWidgetKitActionSearch]) {
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_SEARCH);
+      } else if ([path isEqualToString:kWidgetKitActionOpenURL]) {
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN);
+      }
+    } else if ([sourceWidget
+                   isEqualToString:kWidgetKitHostSearchPasswordsWidget]) {
+      LogWidgetKitAction(WidgetKitExtensionAction::
+                             ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS);
+      base::UmaHistogramEnumeration(
+          "PasswordManager.ManagePasswordsReferrer",
+          password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget);
+      base::RecordAction(base::UserMetricsAction(
+          "MobileSearchPasswordsWidgetOpenPasswordManager"));
+    } else if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
+      if ([path isEqualToString:kWidgetKitActionGame]) {
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
+      }
+    }
   }
 }
 
@@ -154,6 +229,8 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 
 @implementation TaskRequestForURLContext {
   UIOpenURLContext* _URLContext;
+  GURL _parsedURL;
+  MobileSessionCallerApp _callerApp;
 }
 
 - (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
@@ -161,8 +238,11 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
                        isColdStart:(BOOL)isColdStart {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _URLContext = URLContext;
+    _parsedURL = net::GURLWithNSURL(_URLContext.URL);
+    _callerApp =
+        GetCallerApp(_URLContext.options.sourceApplication, _URLContext.URL);
     [self extractGaiaID];
-    RecordStartupMetrics(URLContext);
+    RecordStartupMetrics(URLContext, _parsedURL, _callerApp);
   }
   return self;
 }

@@ -133,3 +133,39 @@ TEST_F(TaskRequestForURLContextTest, TestFirstRunLaunchSource) {
   histogram_tester.ExpectBucketCount("FirstRun.LaunchSource",
                                      first_run::LAUNCH_BY_OTHERS, 1);
 }
+
+// Tests that WidgetKit URLs log the launch source and WidgetKit action metrics.
+TEST_F(TaskRequestForURLContextTest, TestWidgetKitActionMetrics) {
+  struct TestCase {
+    NSString* url_string;
+    WidgetKitExtensionAction expected_action;
+  } test_cases[] = {
+      {@"chromewidgetkit://search-widget/search",
+       WidgetKitExtensionAction::ACTION_SEARCH_WIDGET_SEARCH},
+      {@"chromewidgetkit://quick-actions-widget/incognito",
+       WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_INCOGNITO},
+      {@"chromewidgetkit://lockscreen-launcher-widget/search",
+       WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_SEARCH},
+      {@"chromewidgetkit://shortcuts-widget/open",
+       WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    NSURL* url = [NSURL URLWithString:test_case.url_string];
+    UIOpenURLContext* context = CreateMockURLContext(url);
+
+    TaskRequestForURLContext* request =
+        [[TaskRequestForURLContext alloc] initWithURLContext:context
+                                                  sceneState:scene_state_
+                                                 isColdStart:YES];
+    EXPECT_NE(request, nil);
+
+    histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
+                                        START_ACTION_WIDGET_KIT_COMMAND, 1);
+    histogram_tester.ExpectUniqueSample(kAppLaunchSource,
+                                        AppLaunchSource::WIDGET, 1);
+    histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram,
+                                        test_case.expected_action, 1);
+  }
+}
