@@ -470,8 +470,6 @@ crbug.com/519220175 [ angle-swiftshader fuchsia web-engine-shell ] Pixel_Reflect
 crbug.com/372055518 [ angle-metal asan mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 crbug.com/514645136 [ angle-metal asan mac ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 
-# Flaky hang on Mac GL ASAN
-crbug.com/40277254 [ mac angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 # Win/AMD RX 7600 failures
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
@@ -500,8 +498,6 @@ crbug.com/402429382 [ win11 qualcomm-0x36334330 ] Pixel_ReflectedDiv [ Failure ]
 # Failures on all Mac and Windows bots running these tests
 crbug.com/370694819 [ mac ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
 crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
-crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
-crbug.com/370694819 [ angle-opengl asan graphite-disabled mac ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
 
 # Flaky D3D11 device creation crash
 # Should be re-added when the conflicting Failure expectation is removed.
@@ -557,12 +553,10 @@ crbug.com/510186413 [ mac ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 crbug.com/510186413 [ win ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 
 # Flakily loses DevTools websocket connection during browser startup.
-crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_AV1 [ RetryOnFailure ]
 crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_BackdropFilter [ RetryOnFailure ]
 crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_HEVC [ RetryOnFailure ]
 crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
 crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
-crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_Video_VP9 [ RetryOnFailure ]
 crbug.com/536089774 [ android android-pixel-10 android-webview-instrumentation ] Pixel_ViewTransitionsCapture [ RetryOnFailure ]
 
 #######################################################################
