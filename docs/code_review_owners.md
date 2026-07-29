@@ -111,3 +111,9 @@ used to bypass OWNERS and the rollout of this policy prevented this bypass. In
 consultation with senior leaders, we decided that rolling both out
 simultaneously allowed for more streamlined communication and change management
 for the contributor community.
+
+### OWNERS should just be for code reviews. Can I opt-out of security issue assignment?
+
+No. OWNERS take on responsibility for an area of code and this includes owning,
+triaging, fixing and merging security issues within that area. If you cannot
+work on security issues you should remove yourself from OWNERS.

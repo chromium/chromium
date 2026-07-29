@@ -112,6 +112,11 @@ with at least 3 months' tenure, and in addition should:
     discourage people from sending reviews, including writing "slow" or
     "emeritus" after your name.
 
+  * OWNERS will be assigned [security
+    issues](../docs/security/security-issue-guide-for-devs.md) in their area of
+    responsibility and these should be investigated and fixed within the
+    project's SLOs.
+
 Seldom-updated directories may have exceptions to the "substantiality" and
 "recency" requirements.
 

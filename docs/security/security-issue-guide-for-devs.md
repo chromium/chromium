@@ -34,6 +34,28 @@ Critical, High and Medium severity security issues must be assigned to someone,
 this is Chromium policy, so if you feel you are the wrong assignee try not to
 simply remove yourself, instead work to find an alternative assignee.
 
+## My team has a triage rotation or oncall can we assign NEW security issues ourselves?
+
+In general: no. Chromium is too complex to have different security processes for
+every component or directory. Managing security SLOs requires issues have owners
+and we cannot relax that for every team.
+
+The robots can use an oncall or rotation tool to preferentially assign new
+security issues in a component to the current oncaller. Googlers can contact the
+product security team (go/sheepdog-feedback) to set this up for your component.
+
+Large teams with a proven record of quickly fixing security issues may implement
+a [delegated triage](delegated-triage.md) process with the agreement of the
+Chrome security team.
+
+## We cannot work on the issue immediately, can we mark it as NEW to mark it as available?
+
+Security issues must be owned by a person who is responsible for fixing or
+tracking updates to the issue, and Chrome's processes for enforcing SLOs are
+based on issues being assigned to people. For example, the issue reporter might
+provide new information and this could be missed if the issue is not assigned.
+Security issues with Low (S3) severity do not have SLOs and may be unassigned.
+
 ## Participate in the discussion on the issue
 
 Some bugs involve discussion with the reporter and/or members of the security

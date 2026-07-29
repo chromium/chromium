@@ -7,6 +7,10 @@ abridged version of the [shepherd guide], which describes the full security bug
 triage process, including a lot of steps and special cases you do not need to
 handle.
 
+Delegated triage is available to a limited number of areas in Chromium. Adding
+a new delegated triage requires agreement from the security team and a
+commitment from the team that issues will be assigned to meet security SLOs.
+
 ## Security Triage
 
 Security bug reports in Chromium need to be _valid_, which means they:
@@ -38,7 +42,10 @@ at which point delegated triagers for that component (that's you!) take over.
 
 If at any point you get stuck, confused, or this process isn't working for you,
 you can get in touch with the on-duty security shepherds: [shepherd-1] and
-[shepherd-2]. Please do not assign bugs to these shepherds, but you can reach them over Chat.
+[shepherd-2]. Please do not assign bugs to these shepherds, but you can reach
+them over Chat or ask a question on the issue and add the [Chrome Security
+Klaxon](https://issues.chromium.org/hotlists/8699168) hotlist
+(hotlistid:8699168).
 
 For each security bug in the component you're triaging, do these steps:
 
