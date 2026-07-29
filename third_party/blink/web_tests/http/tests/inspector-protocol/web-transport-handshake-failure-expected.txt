@@ -4,5 +4,5 @@ Instantiate WebTransport.
 Log.onEntryAdded
 source: network
 level: error
-text: Failed to establish a connection to https://localhost/: [net error].
+text: Failed to establish a connection to https://localhost/: [net error]
 

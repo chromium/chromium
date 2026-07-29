@@ -8,8 +8,8 @@
 
   dp.Log.onEntryAdded(event => {
     const entry = event.params.entry;
-    // Remove the error code, as it is platform-specific and can change.
-    const text = entry.text.replace(/net::ERR_[A-Z_]+/, '[net error]');
+    // Remove the error string, as it is platform-specific and can change.
+    const text = entry.text.replace(/net::ERR_[A-Z_]+.*$/, '[net error]');
     testRunner.log('Log.onEntryAdded');
     testRunner.log(`source: ${entry.source}`);
     testRunner.log(`level: ${entry.level}`);
