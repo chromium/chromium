@@ -27373,6 +27373,17 @@ Called by update_net_error_codes.py.-->
 
 </enum>
 
+<!-- LINT.IfChange(UsedInstantLoad) -->
+
+<enum name="UsedInstantLoad">
+  <int value="0" label="NoInstantLoad"/>
+  <int value="1" label="Prefetch"/>
+  <int value="2" label="Prerender"/>
+  <int value="3" label="BFCache"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/preload_serving_metrics.cc:UsedInstantLoad) -->
+
 <enum name="UserAgentRequestType">
   <int value="0" label="RequestDesktop"/>
   <int value="1" label="RequestMobile"/>

@@ -26,6 +26,11 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
 
   virtual void RecordMetricsForNonPrerenderNavigationCommitted() const = 0;
 
+  virtual void RecordPreloadServingMetricsByNavigationInitiator(
+      bool did_nav_use_bfcache,
+      const std::string& navigation_initiator_string,
+      bool is_url_srp) const = 0;
+
   // Records FirstContentfulPaint
   //
   // The parameter `corrected_first_contentful_paint` is the return value of

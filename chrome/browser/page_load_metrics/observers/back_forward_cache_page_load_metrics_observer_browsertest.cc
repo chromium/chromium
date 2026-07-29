@@ -766,3 +766,46 @@ IN_PROC_BROWSER_TEST_F(
     histogram_tester().ExpectTotalCount(uma, 1);
   }
 }
+
+// TODO(https://crbug.com/517725655): Add more tests verifying
+// more complex BFCache navigation combining other preloading technologies
+// scenarios. Verifies PreloadServingMetrics recording when restoring from
+// BackForwardCache. See
+// http://crrev.com/c/8129579/comment/3a33f615_9c5e9eea/ for more details.
+//
+// Scenario:
+//
+// 1. Navigate to Page A.
+// 2. Navigate to Page B (Page A enters BFCache).
+// 3. Go back to Page A (restore from BFCache).
+// 4. Navigate to about:blank to flush Page A's BFCache restore session.
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       PreloadServingMetricsBFCacheRestore) {
+  Start();
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
+
+  // 1. Navigate to Page A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
+
+  // 2. Navigate to Page B (Page A enters BFCache).
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Initial navigation to Page A flushes as kNoPreload (0).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.All",
+                                       0 /* kNoPreload */, 1);
+
+  // 3. Go back to Page A (restore from BFCache).
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // 4. Navigate to about:blank to flush Page A's BFCache restore session.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // The BFCache restore session for Page A flushes as kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.All",
+                                       3 /* kBFCache */, 1);
+}

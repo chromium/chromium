@@ -299,6 +299,19 @@ PreloadServingMetrics::GetMeaningfulPrefetchMatchMetrics() const {
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(UsedInstantLoad)
+enum class UsedInstantLoad {
+  kNoInstantLoad = 0,
+  kPrefetch = 1,
+  kPrerender = 2,
+  kBFCache = 3,
+  kMaxValue = kBFCache,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:UsedInstantLoad)
+
 void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
     const {
   RecordMetricsInternal(*this, "PreloadServingMetrics.ForNavigationCommitted.",
@@ -308,6 +321,34 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
         *prerender_initial_preload_serving_metrics,
         "PreloadServingMetrics.ForPrerenderInitialNavigationUsed.",
         /*is_prerender_initial_navigation=*/true);
+  }
+}
+
+void PreloadServingMetrics::RecordPreloadServingMetricsByNavigationInitiator(
+    bool did_nav_use_bfcache,
+    const std::string& navigation_initiator_string,
+    bool is_url_srp) const {
+  UsedInstantLoad used_instant_load;
+  if (did_nav_use_bfcache) {
+    used_instant_load = UsedInstantLoad::kBFCache;
+  } else if (prerender_initial_preload_serving_metrics) {
+    used_instant_load = UsedInstantLoad::kPrerender;
+  } else if (const auto* prefetch_match = GetMeaningfulPrefetchMatchMetrics();
+             prefetch_match && prefetch_match->IsActualMatch()) {
+    used_instant_load = UsedInstantLoad::kPrefetch;
+  } else {
+    used_instant_load = UsedInstantLoad::kNoInstantLoad;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"PreloadServingMetrics.", navigation_initiator_string, ".All"}),
+      used_instant_load);
+  if (is_url_srp) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"PreloadServingMetrics.", navigation_initiator_string, ".SRP"}),
+        used_instant_load);
   }
 }
 
@@ -493,6 +534,15 @@ PreloadServingMetricsCapsuleImpl::~PreloadServingMetricsCapsuleImpl() = default;
 void PreloadServingMetricsCapsuleImpl::
     RecordMetricsForNonPrerenderNavigationCommitted() const {
   preload_serving_metrics_->RecordMetricsForNonPrerenderNavigationCommitted();
+}
+
+void PreloadServingMetricsCapsuleImpl::
+    RecordPreloadServingMetricsByNavigationInitiator(
+        bool did_nav_use_bfcache,
+        const std::string& navigation_initiator_string,
+        bool is_url_srp) const {
+  preload_serving_metrics_->RecordPreloadServingMetricsByNavigationInitiator(
+      did_nav_use_bfcache, navigation_initiator_string, is_url_srp);
 }
 
 void PreloadServingMetricsCapsuleImpl::RecordFirstContentfulPaint(

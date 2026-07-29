@@ -4,6 +4,7 @@ include_rules = [
   "+content/public/test",
   "+content/test",
   "+components/blocklist",
+  "+components/google/core/common",
   "+components/heavy_ad_intervention",
   "+components/history/core/browser",
   "+components/history/core/test",

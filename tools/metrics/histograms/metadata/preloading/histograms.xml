@@ -20,6 +20,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ChromeInitiatorLocation">
+  <variant name="BookmarkBar" summary="Initiated from BookmarkBar"/>
+  <variant name="NewTabPage" summary="Initiated from NewTabPage"/>
+  <variant name="OmniboxDefaultSearchEngine"
+      summary="Initiated from OmniboxDefaultSearchEngine"/>
+  <variant name="OmniboxDirectUrlInput"
+      summary="Initiated from OmniboxDirectUrlInput"/>
+  <variant name="Other" summary="Initiated from other"/>
+</variants>
+
 <variants name="ExperimentalPreloadingPrediction">
   <variant name="OnPointerHoverWithMotionEstimator"
       summary="Predictor based on pointer hover, except if the pointer
@@ -34,6 +44,11 @@ chromium-metrics-reviews@google.com.
 <variants name="GroundTruth">
   <variant name="Negative" summary=""/>
   <variant name="Positive" summary=""/>
+</variants>
+
+<variants name="NavigationDestinationSuffix">
+  <variant name="All" summary="All navigations"/>
+  <variant name="SRP" summary="Navigation to Google Search Result Page"/>
 </variants>
 
 <variants name="PrefetchDataPipeTeeStateLoadingOrSizeExceeded">
@@ -431,6 +446,21 @@ chromium-metrics-reviews@google.com.
     Recorded when {WithPreloadSuffix}.
   </summary>
   <token key="WithPreloadSuffix" variants="WithPreloadSuffix"/>
+</histogram>
+
+<histogram
+    name="PreloadServingMetrics.{ChromeInitiatorLocation}.{NavigationDestinationSuffix}"
+    enum="UsedInstantLoad" expires_after="2026-12-01">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Recorded when navigation finishes. Records the instant load technology used
+    for the navigation. Evaluated for {ChromeInitiatorLocation} and for
+    {NavigationDestinationSuffix}.
+  </summary>
+  <token key="ChromeInitiatorLocation" variants="ChromeInitiatorLocation"/>
+  <token key="NavigationDestinationSuffix"
+      variants="NavigationDestinationSuffix"/>
 </histogram>
 
 <histogram

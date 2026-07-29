@@ -222,6 +222,10 @@ struct CONTENT_EXPORT PreloadServingMetrics final {
   const PrefetchMatchMetrics* GetMeaningfulPrefetchMatchMetrics() const;
 
   void RecordMetricsForNonPrerenderNavigationCommitted() const;
+  void RecordPreloadServingMetricsByNavigationInitiator(
+      bool did_nav_use_bfcache,
+      const std::string& navigation_initiator_string,
+      bool is_url_srp) const;
   void RecordMetricsForPrerenderInitialNavigationFailed() const;
   void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint) const;
@@ -254,6 +258,10 @@ class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
       NavigationHandle& navigation_handle);
 
   void RecordMetricsForNonPrerenderNavigationCommitted() const override;
+  void RecordPreloadServingMetricsByNavigationInitiator(
+      bool did_nav_use_bfcache,
+      const std::string& navigation_initiator_string,
+      bool is_url_srp) const override;
   void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint) const override;
 
