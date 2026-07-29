@@ -18,6 +18,7 @@ BASE_DECLARE_FEATURE(kCentralizedInfoBarFramework);
 
 BASE_DECLARE_FEATURE_PARAM(bool, kEnableAll);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedCollectedCookies);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedGoogleApiKeys);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPageInfo);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPdf);
