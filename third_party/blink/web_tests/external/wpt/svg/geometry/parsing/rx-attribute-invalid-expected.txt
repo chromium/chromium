@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] rx="-10" should be an invalid attribute value (ignored)
+  assert_equals: SVGAnimatedLength.baseVal.value should keep the initial value expected 0 but got -10
+[FAIL] rx="-10px" should be an invalid attribute value (ignored)
+  assert_equals: SVGAnimatedLength.baseVal.value should keep the initial value expected 0 but got -10
+[FAIL] rx="-10%" should be an invalid attribute value (ignored)
+  assert_equals: SVGAnimatedLength.baseVal.value should keep the initial value expected 0 but got -80
+[FAIL] rx="none" should be an invalid attribute value (ignored)
+  assert_equals: getComputedStyle() should keep the initial value expected "auto" but got "0px"
+[FAIL] rx="10px 20px" should be an invalid attribute value (ignored)
+  assert_equals: getComputedStyle() should keep the initial value expected "auto" but got "0px"
+[FAIL] rx="garbage" should be an invalid attribute value (ignored)
+  assert_equals: getComputedStyle() should keep the initial value expected "auto" but got "0px"
+Harness: the test ran to completion.
+

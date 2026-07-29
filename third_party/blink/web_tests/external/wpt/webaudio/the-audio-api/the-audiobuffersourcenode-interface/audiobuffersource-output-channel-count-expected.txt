@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] A source with a stereo buffer that was never started outputs one channel
+  assert_array_equals: unstarted source with a stereo buffer expected property 0 to be 1 but got 2 (expected array [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] got [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+[FAIL] A source whose buffer is set to null outputs one channel
+  assert_array_equals: unstarted source with a cleared buffer expected property 0 to be 1 but got 2 (expected array [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] got [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+[FAIL] A playing source whose buffer is null outputs one channel
+  assert_array_equals: playing source with a cleared buffer expected property 0 to be 1 but got 2 (expected array [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] got [2, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+Harness: the test ran to completion.
+

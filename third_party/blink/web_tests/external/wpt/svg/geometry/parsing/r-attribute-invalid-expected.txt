@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] r="-10" should be an invalid attribute value (ignored)
+  assert_equals: SVGAnimatedLength.baseVal.value should keep the initial value expected 0 but got -10
+[FAIL] r="-10px" should be an invalid attribute value (ignored)
+  assert_equals: SVGAnimatedLength.baseVal.value should keep the initial value expected 0 but got -10
+[FAIL] r="-10%" should be an invalid attribute value (ignored)
+  assert_equals: SVGAnimatedLength.baseVal.value should keep the initial value expected 0 but got -80
+Harness: the test ran to completion.
+

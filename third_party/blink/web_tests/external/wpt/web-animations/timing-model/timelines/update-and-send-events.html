@@ -98,6 +98,29 @@ promise_test(async t => {
 }, 'Sorts finish events by composite order');
 
 promise_test(async t => {
+  const div = createDiv(t);
+
+  // animA comes first in composite order but is scheduled to finish after
+  // animB, so the events have to be re-sorted by scheduled event time.
+  const animA = div.animate(null, 100 * MS_PER_SEC);
+  const animB = div.animate(null, 100 * MS_PER_SEC);
+
+  const receivedEvents = [];
+  animA.onfinish = () => receivedEvents.push('animA');
+  animB.onfinish = () => receivedEvents.push('animB');
+
+  await Promise.all([animA.ready, animB.ready]);
+
+  animA.currentTime = 100 * MS_PER_SEC - 2;
+  animB.currentTime = 100 * MS_PER_SEC - 1;
+
+  await waitForAnimationFrames(2);
+
+  assert_array_equals(receivedEvents, [ 'animB', 'animA' ],
+    'finish events should be sorted by scheduled event time');
+}, 'Sorts finish events by scheduled event time');
+
+promise_test(async t => {
   createStyle(t, { '@keyframes anim': '' });
   const div = createDiv(t);
 

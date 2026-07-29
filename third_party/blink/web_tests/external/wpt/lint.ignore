@@ -302,6 +302,7 @@ SET TIMEOUT: secure-contexts/basic-popup-and-iframe-tests.https.js
 SET TIMEOUT: service-workers/cache-storage/cache-abort.https.any.js
 SET TIMEOUT: service-workers/service-worker/activation.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-frame-resource.https.html
+SET TIMEOUT: service-workers/service-worker/fetch-request-body-cancel-worker.js
 SET TIMEOUT: service-workers/service-worker/fetch-request-redirect.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-waits-for-activate.https.html
 SET TIMEOUT: service-workers/service-worker/postMessage-client-worker.js
