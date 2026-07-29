@@ -217,7 +217,17 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
     PrefService* local_state = g_browser_process->local_state();
     if (!local_state ||
         !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning)) {
-      ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)) {
+        if (auto* manager =
+                infobars::BrowserInfoBarManager::From(g_browser_process)) {
+          manager->Show(
+              web_contents,
+              infobars::InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE);
+        }
+      } else {
+        ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
+      }
     }
   }
 

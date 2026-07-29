@@ -34,6 +34,10 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool, kMigratedPdf, &kCentralizedInfoBarFramework, false);
+BASE_FEATURE_PARAM(bool,
+                   kMigratedObsoleteSystem,
+                   &kCentralizedInfoBarFramework,
+                   false);
 
 BASE_FEATURE_PARAM(bool,
                    kMigratedChromeForTesting,
@@ -55,6 +59,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedPdf;
     case InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE:
       return &kMigratedChromeForTesting;
+    case InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
+      return &kMigratedObsoleteSystem;
     default:
       return nullptr;
   }

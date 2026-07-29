@@ -15,6 +15,7 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
+#include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -79,6 +80,21 @@ void RegisterInfoBars() {
     if (browser_infobar_manager) {
       ChromePageInfoDelegate::RegisterPageInfoInfoBar(browser_infobar_manager);
     }
+  }
+
+  if (IsInfoBarMigrated(InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)
+            .SetMessageText(ObsoleteSystem::LocalizedObsoleteString())
+            .SetLinkText(l10n_util::GetStringUTF16(IDS_LEARN_MORE))
+            .SetLinkNavigationUrl(GURL(ObsoleteSystem::GetLinkURL()))
+            .SetScope(InfoBarScope::kTab)
+            .SetExpireOnNavigation(false)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
   }
 }
 

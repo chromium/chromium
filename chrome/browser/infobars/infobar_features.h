@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPageInfo);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPdf);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedChromeForTesting);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedObsoleteSystem);
 
 // Returns true if the centralization framework is enabled and the specified
 // infobar is configured to be migrated.

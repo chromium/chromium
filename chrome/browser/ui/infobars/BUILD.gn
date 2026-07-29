@@ -13,6 +13,7 @@ source_set("infobars") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/infobars",
+    "//chrome/browser/obsolete_system",
     "//chrome/browser/ui/page_info",
     "//components/infobars/core",
     "//components/strings:components_strings",

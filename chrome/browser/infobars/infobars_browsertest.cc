@@ -168,7 +168,8 @@ class InfoBarUiTest : public TestInfoBar,
           infobars::kCentralizedInfoBarFramework,
           {{"MigratedCollectedCookies", "true"},
            {"MigratedPageInfo", "true"},
-           {"MigratedGoogleApiKeys", "true"}});
+           {"MigratedGoogleApiKeys", "true"},
+           {"MigratedObsoleteSystem", "true"}});
     } else {
       feature_list_.InitAndDisableFeature(
           infobars::kCentralizedInfoBarFramework);
@@ -335,7 +336,17 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE:
-      ObsoleteSystemInfoBarDelegate::Create(GetInfoBarManager());
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)) {
+        if (auto* browser_infobar_manager =
+                infobars::BrowserInfoBarManager::From(g_browser_process)) {
+          browser_infobar_manager->Show(
+              GetWebContents(),
+              infobars::InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE);
+        }
+      } else {
+        ObsoleteSystemInfoBarDelegate::Create(GetInfoBarManager());
+      }
       break;
 
     case IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE:
