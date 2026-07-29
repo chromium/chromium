@@ -308,6 +308,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
           didUpdateAttachments:(ComposeboxAttachmentSelection*)attachments {
   _successfulActionPerformed = YES;
+  __weak __typeof(self) weakSelf = self;
   if (_isStandaloneMenu) {
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
@@ -315,7 +316,6 @@ CGFloat const kSheetTopPadding = 40.0f;
                   toolMode:ComposeboxMode::kRegularSearch
                  modelMode:ComposeboxModelOption::kNone
             attachmentList:attachments];
-    __weak __typeof(self) weakSelf = self;
     [_viewController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:^{
@@ -324,7 +324,10 @@ CGFloat const kSheetTopPadding = 40.0f;
   } else {
     [self.inputPlateDelegate composeboxMenuCoordinator:self
                                   didUpdateAttachments:attachments];
-    [_viewController dismissViewControllerAnimated:YES completion:nil];
+    [_viewController dismissViewControllerAnimated:YES
+                                        completion:^{
+                                          [weakSelf requestMenuDismissal];
+                                        }];
   }
 }
 
