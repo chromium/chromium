@@ -191,8 +191,12 @@ final class SideUiCoordinatorImpl
     @Override
     public void unregisterSideUiContainer(SideUiContainer sideUiContainer) {
         ThreadUtils.assertOnUiThread();
-        assert mSideUiContainers.contains(sideUiContainer)
-                : "Unregistering unknown SideUiContainer.";
+
+        // It's possible to request unregistering a SideUiContainer before it's registered.
+        // For example, if a SideUiContainer needs to be registered _after_ the async native
+        // initialization, but ChromeActivity is destroyed before the async task is completed.
+        //
+        // Therefore, we shouldn't assert that the given SideUiContainer is already registered.
         mSideUiContainers.remove(sideUiContainer);
     }
 
