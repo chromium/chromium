@@ -3724,6 +3724,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.EphemeralPortRandomizer.ConnectResult"
+    enum="NetErrorCodes" expires_after="2027-01-28">
+  <owner>arichiv@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    Logged on connection completion when EphemeralPortRandomizer was used to
+    pick the port. Records the associated net error (or OK). MacOS only.
+  </summary>
+</histogram>
+
+<histogram name="Net.EphemeralPortRandomizer.PickPortExhausted" enum="Boolean"
+    expires_after="2027-01-28">
+  <owner>arichiv@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    Logged as true when EphemeralPortRandomizer::PickPort fails to find a port
+    to allocate for a pending TCP connection. Never logged as false. MacOS only.
+  </summary>
+</histogram>
+
 <histogram name="Net.ErrorCodesForHTTPSGoogleMainFrame3" enum="NetErrorCodes"
     expires_after="never">
 <!-- expires-never: Core network stack health metric -->
