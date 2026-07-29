@@ -1919,8 +1919,7 @@ void GetPresetNTPBackgroundPreview(
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
 
-  if ((base::FeatureList::IsEnabled(kShareInOverflowMenu) ||
-       (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible())) &&
+  if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
       [self isCurrentURLWebURL]) {
     base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
                                   ShareThisPageLocation::kOverflowMenu);

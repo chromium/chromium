@@ -864,13 +864,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)setTrailingButtonState:(TrailingButtonState)state {
-  // This is dirty, but this is experiment-only and will be removed in one
-  // milestone.
-  if (base::FeatureList::IsEnabled(kDisableShareButton) &&
-      state == kShareButton) {
-    state = kNoButton;
-  }
-
   if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
       state == kShareButton) {
     state = kNoButton;
@@ -987,8 +980,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof__(self) weakSelf = self;
 
-  if ((base::FeatureList::IsEnabled(kShareInOmniboxLongPress) ||
-       (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible())) &&
+  if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
       self.shareButtonEnabled) {
     base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
                                   ShareThisPageLocation::kOmniboxLongPress);

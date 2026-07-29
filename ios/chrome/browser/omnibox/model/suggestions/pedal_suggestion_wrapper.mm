@@ -41,10 +41,6 @@
   return NO;
 }
 
-- (BOOL)isShareable {
-  return NO;
-}
-
 - (NSNumber*)suggestionGroupId {
   return nil;
 }

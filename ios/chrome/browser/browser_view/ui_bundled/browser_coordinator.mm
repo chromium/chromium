@@ -3171,12 +3171,6 @@ const char kChromeAppStoreUrl[] =
   }
 }
 
-- (void)hideComposeboxAndShowShareSheet {
-  [self hideComposeboxWithCompletion:^{
-    [self showShareSheetFromShareButton:nil];
-  }];
-}
-
 - (void)hideComposeboxWithCompletion:(ProceduralBlock)completion {
   if (IsComposeboxIOSEnabled()) {
     [self hideComposeboxImmediately:NO completion:completion];

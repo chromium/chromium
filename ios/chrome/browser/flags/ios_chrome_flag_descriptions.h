@@ -613,11 +613,6 @@ inline constexpr char kDisableLensCameraDescription[] =
     "camera menu when Google is the selected search engine, accessible from "
     "the home screen widget, new tab page, and keyboard, is disabled.";
 
-inline constexpr char kDisableShareButtonName[] =
-    "Disable Share Button in Toolbar";
-inline constexpr char kDisableShareButtonDescription[] =
-    "Hides the share button in toolbar.";
-
 inline constexpr char kDisplayTracingName[] = "Display Tracing";
 inline constexpr char kDisplayTracingDescription[] =
     "Enables display and input latency tracing instrumentation on view "
@@ -1840,19 +1835,6 @@ inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
 inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =
     "Enables an enhanced version of Send Tab To Self that propagates more "
     "information, such as form fields, and updates various UIs.";
-
-inline constexpr char kShareInOmniboxLongPressName[] =
-    "Share in Omnibox Long Press";
-inline constexpr char kShareInOmniboxLongPressDescription[] =
-    "Displays an option to share current page in the omnibox long press menu";
-
-inline constexpr char kShareInOverflowMenuName[] = "Share in Overflow Menu";
-inline constexpr char kShareInOverflowMenuDescription[] =
-    "Displays share menu item in overflow menu";
-
-inline constexpr char kShareInVerbatimMatchName[] = "Share in Verbatim Match";
-inline constexpr char kShareInVerbatimMatchDescription[] =
-    "Displays share button in the omnibox verbatim match";
 
 inline constexpr char kSharedHighlightingIOSName[] =
     "Enable Shared Highlighting features";

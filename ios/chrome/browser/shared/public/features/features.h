@@ -812,12 +812,6 @@ void SaveEnableNewStartupFlowForNextStart();
 // Resets the cached value for IsEnableNewStartupFlowEnabled, needed for tests.
 void ResetEnableNewStartupFlowEnabledForTesting();
 
-// Flags for Share Ablation study.
-BASE_DECLARE_FEATURE(kDisableShareButton);
-BASE_DECLARE_FEATURE(kShareInOmniboxLongPress);
-BASE_DECLARE_FEATURE(kShareInOverflowMenu);
-BASE_DECLARE_FEATURE(kShareInVerbatimMatch);
-
 BASE_DECLARE_FEATURE(kUseSceneViewController);
 
 // Returns true if the UseSceneViewController feature is enabled.

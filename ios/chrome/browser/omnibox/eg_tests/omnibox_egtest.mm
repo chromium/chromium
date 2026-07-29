@@ -745,7 +745,7 @@ void FocusFakebox() {
 }
 
 // Tests that the Share button is visible in the context menu of the location
-// bar when kShareInOmniboxLongPress is enabled.
+// bar.
 - (void)testShareButtonInContextMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Share is not in the menu on iPad.");
