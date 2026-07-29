@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Address;
@@ -43,6 +44,7 @@ import java.util.Map;
 
 /** Tests for {@link WebPaymentIntentHelper}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class WebPaymentIntentHelperTest {
     @Rule public ExpectedException thrown = ExpectedException.none();
 
