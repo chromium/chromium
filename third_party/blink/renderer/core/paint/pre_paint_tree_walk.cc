@@ -1559,10 +1559,16 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
           if (context.tree_builder_context) {
             auto& current =
                 context.tree_builder_context->fragment_context.current;
-            current.paint_offset = PhysicalOffset(ToRoundedPoint(
-                current.paint_offset +
-                layout_embedded_content->ReplacedContentRect().offset -
-                PhysicalOffset(embedded_view->DeprecatedLocation())));
+            current.paint_offset +=
+                layout_embedded_content->ReplacedContentRect().offset;
+            if (!RuntimeEnabledFeatures::
+                    AvoidEmbeddedContentViewLocationEnabled()) {
+              current.paint_offset -=
+                  PhysicalOffset(embedded_view->DeprecatedLocation());
+            }
+            current.paint_offset =
+                PhysicalOffset(ToRoundedPoint(current.paint_offset));
+
             // Subpixel accumulation doesn't propagate across embedded view.
             current.directly_composited_container_paint_offset_subpixel_delta =
                 PhysicalOffset();
