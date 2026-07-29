@@ -12,10 +12,12 @@ option optimize_for = LITE_RUNTIME;
 package sync_tab_context;
 
 import "components/sync/protocol/agile_encryption_keys.proto";
+import "google/protobuf/timestamp.proto";
 
 message GenerateEphemeralKeyRequest {}
 
 message GenerateEphemeralKeyResponse {
   optional sync_pb.AgileSymmetricKeySet agile_symmetric_key_set = 1;
-  optional bytes server_token = 2;
+  optional string name = 2;
+  optional google.protobuf.Timestamp expire_time = 4;
 }

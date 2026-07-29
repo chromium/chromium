@@ -50,14 +50,15 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
       std::move(callback).Run(std::nullopt);
       return;
     }
-    const std::string server_token =
-        base::NumberToString(++next_server_token_id_);
+    const std::string name = base::NumberToString(++next_server_token_id_);
     auto key_set = syncer::AgileSymmetricKeySet::CreateEmpty();
     key_set->RotatePrimaryToNewlyGeneratedRandomKey();
-    issued_key_sets_[server_token] = key_set->ToProto();
+    issued_key_sets_[name] = key_set->ToProto();
 
-    EphemeralKeyFetcher::Result result{.ephemeral_key = std::move(key_set),
-                                       .server_token = server_token};
+    EphemeralKeyFetcher::Result result{
+        .ephemeral_key = std::move(key_set),
+        .name = name,
+        .expire_time = base::Time::FromSecondsSinceUnixEpoch(1234567890)};
     std::move(callback).Run(std::move(result));
   }
 
@@ -65,10 +66,10 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
   void set_should_fail(bool fail) { should_fail_ = fail; }
 
   // Retrieves a copy of the issued `AgileSymmetricKeySet` associated with
-  // `server_token`, or nullptr if no key set was issued for `server_token`.
+  // `name`, or nullptr if no key set was issued for `name`.
   std::unique_ptr<syncer::AgileSymmetricKeySet> GetIssuedKeySet(
-      const std::string& server_token) const {
-    auto it = issued_key_sets_.find(server_token);
+      const std::string& name) const {
+    auto it = issued_key_sets_.find(name);
     if (it == issued_key_sets_.end()) {
       return nullptr;
     }
@@ -150,11 +151,13 @@ TEST_F(TabContextSyncServiceImplTest,
 
   TabContextContainerAccessToken token_proto;
   ASSERT_TRUE(token_proto.ParseFromString(*token_string));
-  EXPECT_FALSE(token_proto.server_token().empty());
+  EXPECT_FALSE(token_proto.name().empty());
+  EXPECT_TRUE(token_proto.has_expire_time());
+  EXPECT_EQ(token_proto.expire_time().seconds(), 1234567890);
 
   // Verify container key can be decrypted with the issued ephemeral key set.
   std::unique_ptr<syncer::AgileSymmetricKeySet> ephemeral_key_set =
-      fake_fetcher_->GetIssuedKeySet(token_proto.server_token());
+      fake_fetcher_->GetIssuedKeySet(token_proto.name());
   ASSERT_THAT(ephemeral_key_set, NotNull());
 
   sync_pb::EncryptedData encrypted_data;

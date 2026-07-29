@@ -11,10 +11,11 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_tab_context;
 
-// Access token wrapping an encrypted container key and server token.
+import "google/protobuf/timestamp.proto";
+
+// Access token wrapping an encrypted container key and key name.
 message TabContextContainerAccessToken {
-  optional bytes server_token = 1;
+  optional string name = 1;
   optional bytes encrypted_container_key = 2;
-  // TODO(crbug.com/535450467): Consider adding additional fields such as
-  // expiration time.
+  optional google.protobuf.Timestamp expire_time = 3;
 }

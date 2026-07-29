@@ -9,6 +9,9 @@ proto_library("proto") {
     "ephemeral_key_service.proto",
     "tab_context_container_access_token.proto",
   ]
-  deps = [ "//components/sync/protocol" ]
+  deps = [
+    "//components/sync/protocol",
+    "//third_party/protobuf:timestamp_proto",
+  ]
   import_dirs = [ "//" ]
 }
