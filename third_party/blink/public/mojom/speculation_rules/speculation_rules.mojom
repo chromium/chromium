@@ -52,6 +52,8 @@ interface SpeculationHost {
 enum SpeculationHeuristic {
   kPointerDown,
   kPointerHover,
+  kViewportModerate,
+  kViewportEager,
 };
 
 // The action that is proposed. The actions can be executed in a pipeline-like

@@ -1978,6 +1978,11 @@ BASE_FEATURE(kPreloadingModerateViewportHeuristics,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+BASE_FEATURE_PARAM(bool,
+                   kPreloadingModerateViewportHeuristicsEnactCandidates,
+                   &kPreloadingModerateViewportHeuristics,
+                   "enact_candidates",
+                   BUILDFLAG(IS_ANDROID));
 
 BASE_FEATURE(kPreloadingEligibilityCheckOnRenderer,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -73,6 +73,29 @@ bool CandidatesAreValid(
   return true;
 }
 
+// A renderer-selected candidate may only be enacted when the feature behind the
+// selecting `heuristic` is enabled, mirroring the browser-side gating in
+// AnchorElementInteractionHostImpl and PreloadingDecider. This stops a
+// compromised renderer from enacting via a disabled heuristic.
+bool HeuristicMayEnact(blink::mojom::SpeculationHeuristic heuristic) {
+  switch (heuristic) {
+    case blink::mojom::SpeculationHeuristic::kPointerDown:
+    case blink::mojom::SpeculationHeuristic::kPointerHover:
+      return true;
+    case blink::mojom::SpeculationHeuristic::kViewportModerate:
+      // The param mirrors
+      // PreloadingDecider::OnModerateViewportHeuristicTriggered, which only
+      // enacts candidates when it is set.
+      return base::FeatureList::IsEnabled(
+                 blink::features::kPreloadingModerateViewportHeuristics) &&
+             blink::features::
+                 kPreloadingModerateViewportHeuristicsEnactCandidates.Get();
+    case blink::mojom::SpeculationHeuristic::kViewportEager:
+      return base::FeatureList::IsEnabled(
+          blink::features::kPreloadingEagerViewportHeuristics);
+  }
+}
+
 }  // namespace
 
 // static
@@ -137,6 +160,13 @@ void SpeculationHostImpl::EnactCandidate(
   if (!base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesRendererSideHeuristics)) {
     mojo::ReportBadMessage("SH_ENACT_CANDIDATE_FEATURE_DISABLED");
+    return;
+  }
+
+  // The heuristic that selected the candidate must have its browser-side
+  // feature (and enactment param) enabled.
+  if (!HeuristicMayEnact(heuristic)) {
+    mojo::ReportBadMessage("SH_ENACT_CANDIDATE_HEURISTIC_DISABLED");
     return;
   }
 

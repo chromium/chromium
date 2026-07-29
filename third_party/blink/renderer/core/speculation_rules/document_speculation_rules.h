@@ -88,6 +88,9 @@ class CORE_EXPORT DocumentSpeculationRules
   void OnPointerDownHeuristic(const KURL& url);
   void OnHoverHeuristic(const KURL& url,
                         mojom::blink::SpeculationEagerness triggered_eagerness);
+  void OnViewportHeuristic(
+      const KURL& url,
+      mojom::blink::SpeculationEagerness triggered_eagerness);
 
   // Requests a future call to UpdateSpeculationCandidates, if none is yet
   // scheduled.
@@ -104,7 +107,7 @@ class CORE_EXPORT DocumentSpeculationRules
 
   // Shared implementation for the renderer-driven heuristics above: asks the
   // browser to enact every sent candidate whose URL equals `url` and whose
-  // eagerness is in `eagernesses`.
+  // eagerness is in `eagernesses`, attributing the enactment to `heuristic`.
   void EnactMatchingCandidates(
       const KURL& url,
       const Vector<mojom::blink::SpeculationEagerness>& eagernesses,

@@ -75,6 +75,10 @@ PreloadingPredictor PredictorForRendererHeuristic(
       return preloading_predictor::kUrlPointerDownOnAnchor;
     case blink::mojom::SpeculationHeuristic::kPointerHover:
       return preloading_predictor::kUrlPointerHoverOnAnchor;
+    case blink::mojom::SpeculationHeuristic::kViewportModerate:
+      return preloading_predictor::kModerateViewportHeuristic;
+    case blink::mojom::SpeculationHeuristic::kViewportEager:
+      return preloading_predictor::kEagerViewportHeuristic;
   }
   NOTREACHED();
 }
@@ -360,11 +364,8 @@ void PreloadingDecider::OnPointerHover(
 void PreloadingDecider::OnModerateViewportHeuristicTriggered(const GURL& url) {
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kPreloadingModerateViewportHeuristics));
-  static const base::FeatureParam<bool> kShouldEnactCandidates{
-      &blink::features::kPreloadingModerateViewportHeuristics,
-      "enact_candidates", BUILDFLAG(IS_ANDROID)};
-  const bool should_enact_candidates = kShouldEnactCandidates.Get();
-  if (!should_enact_candidates) {
+  if (!blink::features::kPreloadingModerateViewportHeuristicsEnactCandidates
+           .Get()) {
     AddPreloadingPrediction(url,
                             preloading_predictor::kModerateViewportHeuristic,
                             PreloadingConfidence(100));

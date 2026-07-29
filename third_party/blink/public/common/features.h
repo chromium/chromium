@@ -1434,9 +1434,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // "random_anchor_sampling_period" set to 1, and
 // kNavigationPredictorNewViewportFeatures.
 // Note: The prediction will only be preloaded if the "enact_candidates" param
-// is set to true (false by default), otherwise it is only logged for metrics
-// purposes.
+// is set to true (the default outside Android is false), otherwise it is only
+// logged for metrics purposes.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingModerateViewportHeuristics);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPreloadingModerateViewportHeuristicsEnactCandidates);
 
 // If enabled, preloading eligibility checks (e.g., data saver, battery saver)
 // are performed on the renderer side.

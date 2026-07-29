@@ -672,6 +672,23 @@ void DocumentSpeculationRules::OnHoverHeuristic(
                           mojom::blink::SpeculationHeuristic::kPointerHover);
 }
 
+void DocumentSpeculationRules::OnViewportHeuristic(
+    const KURL& url,
+    mojom::blink::SpeculationEagerness triggered_eagerness) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSpeculationRulesRendererSideHeuristics)) {
+    return;
+  }
+  // The moderate/eager viewport heuristics each enact candidates at exactly
+  // their eagerness (matching PreloadingDecider's kModerateViewportHeuristic /
+  // kEagerViewportHeuristic predictors).
+  const mojom::blink::SpeculationHeuristic heuristic =
+      triggered_eagerness == mojom::blink::SpeculationEagerness::kEager
+          ? mojom::blink::SpeculationHeuristic::kViewportEager
+          : mojom::blink::SpeculationHeuristic::kViewportModerate;
+  EnactMatchingCandidates(url, {triggered_eagerness}, heuristic);
+}
+
 void DocumentSpeculationRules::EnactMatchingCandidates(
     const KURL& url,
     const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
