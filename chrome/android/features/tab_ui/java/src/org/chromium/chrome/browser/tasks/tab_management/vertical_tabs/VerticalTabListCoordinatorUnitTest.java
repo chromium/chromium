@@ -12,10 +12,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -99,6 +101,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -227,6 +230,17 @@ public class VerticalTabListCoordinatorUnitTest {
         GlicEnabling.setEnabledForTesting(false);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
+
+        when(mTabHoverCardViewStub.getParent()).thenReturn(mock(ViewGroup.class));
+        when(mTabHoverCardView.getContext()).thenReturn(mActivity);
+        doAnswer(
+                        invocation -> {
+                            ViewStub.OnInflateListener listener = invocation.getArgument(0);
+                            listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
+                            return null;
+                        })
+                .when(mTabHoverCardViewStub)
+                .setOnInflateListener(any());
 
         doAnswer(
                         invocation -> {
@@ -1073,7 +1087,7 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     // =============================================================================================
-    // Side-Rail Collapse & Hover Expand Tests
+    // Side-Rail Collapse & Hover Expand & Hover Card Tests
     // =============================================================================================
 
     @Test
@@ -1233,6 +1247,45 @@ public class VerticalTabListCoordinatorUnitTest {
         containerView.dispatchGenericMotionEvent(hoverExit);
         verify(mMockRailCollapseListener)
                 .onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+    }
+
+    @Test
+    @SmallTest
+    public void testHoverCard_ShowAndHide() {
+        createCoordinator();
+        int tabId = 1;
+        Tab tab = prepareMockTab(mMockTab1, tabId);
+        when(mTabModelSelector.getTabById(tabId)).thenReturn(tab);
+        // Set tab not selected
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(tabId + 1);
+
+        TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
+        assertNotNull(hoverListener);
+        hoverListener.onTabHoverCardStateChanged(tabId, mMockChildView, true);
+
+        verify(mTabHoverCardViewStub).inflate();
+        verify(mTabHoverCardView).show(eq(tab), anyFloat(), anyFloat());
+
+        hoverListener.onTabHoverCardStateChanged(tabId, mMockChildView, false);
+        verify(mTabHoverCardView).hide();
+    }
+
+    @Test
+    @SmallTest
+    public void testHoverCard_SelectedTab_DoNotShow() {
+        createCoordinator();
+        int tabId = 1;
+        Tab tab = prepareMockTab(mMockTab1, tabId);
+        when(mTabModelSelector.getTabById(tabId)).thenReturn(tab);
+        // Set tab selected
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(tabId);
+
+        TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
+        assertNotNull(hoverListener);
+        hoverListener.onTabHoverCardStateChanged(tabId, mMockChildView, true);
+
+        verify(mTabHoverCardViewStub, never()).inflate();
+        verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
     }
 
     // =============================================================================================
@@ -1416,15 +1469,6 @@ public class VerticalTabListCoordinatorUnitTest {
                         dragHandlerCallCount.getAndIncrement() == 0
                                 ? mMainTabSwitcherDragHandler
                                 : mPinnedTabSwitcherDragHandler);
-
-        doAnswer(
-                        invocation -> {
-                            ViewStub.OnInflateListener listener = invocation.getArgument(0);
-                            listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
-                            return null;
-                        })
-                .when(mTabHoverCardViewStub)
-                .setOnInflateListener(any());
 
         mCoordinator =
                 new VerticalTabListCoordinator(

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -762,6 +763,7 @@ class TabVerticalViewBinder {
                                                         /* isIncognito= */ false)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
+                            notifyHoverChange(model, view, /* isHovered= */ true);
                             return true;
                         case MotionEvent.ACTION_HOVER_EXIT:
                             float x = motionEvent.getX();
@@ -771,6 +773,7 @@ class TabVerticalViewBinder {
                                     ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
                                 }
                                 updateIcons(model, view, /* isHovered= */ false);
+                                notifyHoverChange(model, view, /* isHovered= */ false);
                             }
                             return true;
                     }
@@ -792,6 +795,7 @@ class TabVerticalViewBinder {
                                                         /* isIncognito= */ false)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
+                            notifyHoverChange(model, view, /* isHovered= */ true);
                             return true;
                         } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
                             v.setHovered(false);
@@ -805,11 +809,20 @@ class TabVerticalViewBinder {
                                     ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
                                 }
                                 updateIcons(model, view, /* isHovered= */ false);
+                                notifyHoverChange(model, view, /* isHovered= */ false);
                             }
                             return true;
                         }
                         return false;
                     });
+        }
+    }
+
+    private static void notifyHoverChange(PropertyModel model, View view, boolean isHovered) {
+        TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+        if (listener != null) {
+            int tabId = model.get(TabProperties.TAB_ID);
+            listener.onTabHoverCardStateChanged(tabId, view, isHovered);
         }
     }
 }

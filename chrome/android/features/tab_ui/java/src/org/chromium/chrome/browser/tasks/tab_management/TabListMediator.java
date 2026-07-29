@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -293,6 +294,9 @@ public class TabListMediator implements TabListNotificationHandler {
         /** Returns a supplier for the rail collapsed state, if applicable. */
         @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 getRailCollapseStateSupplier();
+
+        /** Returns a listener for tab hover card events, if applicable. */
+        @Nullable TabHoverCardListener getTabHoverCardListener();
     }
 
     /** Interface for toggling whether item animations will run on the recycler view. */
@@ -409,6 +413,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final boolean mIsSingleContextMode;
     private final @TabListLayoutType int mLayoutType;
     private final boolean mSupportsMessageCards;
+    private final @Nullable TabHoverCardListener mTabHoverCardListener;
 
     private int mNextTabId = Tab.INVALID_TAB_ID;
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
@@ -927,6 +932,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mTabListItemOnClickListenerProvider = tabListItemOnClickListenerProvider;
         mLayoutType = tabListConfigDelegate.getLayoutType();
         mSupportsMessageCards = tabListConfigDelegate.supportsMessageCards();
+        mTabHoverCardListener = tabListConfigDelegate.getTabHoverCardListener();
         mTabGridDialogHandler = dialogHandler;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mComponentId = componentId;
@@ -2160,6 +2166,7 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(
                 TabProperties.TAB_CONTEXT_CLICK_LISTENER,
                 getTabContextClickListener(tabActionState));
+        model.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
 
         if (mTabActionState != TabActionState.SELECTABLE) {
             updateDescriptionString(tab, model);
