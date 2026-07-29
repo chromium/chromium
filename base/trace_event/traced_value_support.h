@@ -128,7 +128,7 @@ struct TraceFormatTraits<::base::raw_ref<T, Traits>,
 template <>
 struct TraceFormatTraits<::base::TimeDelta> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::base::TimeDelta& value) {
+                             ::base::TimeDelta value) {
     std::move(context).WriteInt64(value.InMicroseconds());
   }
 };
@@ -136,7 +136,7 @@ struct TraceFormatTraits<::base::TimeDelta> {
 template <>
 struct TraceFormatTraits<::base::TimeTicks> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::base::TimeTicks& value) {
+                             ::base::TimeTicks value) {
     perfetto::WriteIntoTracedValue(std::move(context), value.since_origin());
   }
 };
@@ -144,7 +144,7 @@ struct TraceFormatTraits<::base::TimeTicks> {
 template <>
 struct TraceFormatTraits<::base::Time> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::base::Time& value) {
+                             ::base::Time value) {
     perfetto::WriteIntoTracedValue(std::move(context), value.since_origin());
   }
 };
