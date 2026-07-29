@@ -174,6 +174,18 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     return;
   }
 
+#if BUILDFLAG(ENABLE_PDF)
+  // text/pdf is an alias for application/pdf for the purpose of invoking the
+  // built-in PDF viewer (crbug.com/40774340). Canonicalize it here -- before
+  // the download decision below -- so the download pref, the PDF viewer
+  // machinery, and the committed WebContents contents MIME type uniformly
+  // observe application/pdf, preserving the invariant that a full-page PDF's
+  // contents MIME type is application/pdf.
+  if (response_head->mime_type == "text/pdf") {
+    response_head->mime_type = pdf::kPDFMimeType;
+  }
+#endif
+
   if (content::download_utils::MustDownload(
           web_contents->GetBrowserContext(), response_url,
           response_head->headers.get(), response_head->mime_type)) {

@@ -206,14 +206,20 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
   // Background color hard-coded in `GetPdfBackgroundColor()`.
   EXPECT_EQ(SkColorSetRGB(40, 40, 40), plugin_info->plugin.background_color);
 
-  // Has PDF MIME type.
-  ASSERT_THAT(plugin_info->plugin.mime_types, SizeIs(1));
+  // Has the PDF MIME types: application/pdf and text/pdf.
+  ASSERT_THAT(plugin_info->plugin.mime_types, SizeIs(2));
 
   WebPluginMimeType mime_type = plugin_info->plugin.mime_types[0];
   EXPECT_EQ(pdf::kPDFMimeType, mime_type.mime_type);
   EXPECT_THAT(mime_type.file_extensions, ElementsAre("pdf"));
   EXPECT_EQ(u"", mime_type.description);
   EXPECT_THAT(mime_type.additional_params, IsEmpty());
+
+  WebPluginMimeType text_pdf_mime_type = plugin_info->plugin.mime_types[1];
+  EXPECT_EQ("text/pdf", text_pdf_mime_type.mime_type);
+  EXPECT_THAT(text_pdf_mime_type.file_extensions, IsEmpty());
+  EXPECT_EQ(u"", text_pdf_mime_type.description);
+  EXPECT_THAT(text_pdf_mime_type.additional_params, IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,

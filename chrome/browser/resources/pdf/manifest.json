@@ -18,7 +18,8 @@
     {"fileSystem": ["write"]}
   ],
   "mime_types": [
-    "application/pdf"
+    "application/pdf",
+    "text/pdf"
   ],
   "content_security_policy": "script-src 'self' blob: filesystem: chrome://resources chrome://webui-test; object-src * blob: externalfile: file: filesystem: data:",
   "mime_types_handler": "index.html",
