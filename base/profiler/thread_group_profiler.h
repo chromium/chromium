@@ -131,7 +131,7 @@ class BASE_EXPORT ThreadGroupProfiler {
         const flat_map<internal::WorkerThread*, WorkerThreadContext>&
             worker_thread_context_set,
         int64_t thread_group_type,
-        const TimeDelta& sampling_duration,
+        TimeDelta sampling_duration,
         SequencedTaskRunner* task_runner,
         ProfilerFactory stack_sampling_profiler_factory,
         OnceClosure collection_completed_callback);

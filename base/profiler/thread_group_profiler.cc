@@ -181,7 +181,7 @@ ThreadGroupProfiler::ActiveCollection::ActiveCollection(
     const flat_map<internal::WorkerThread*, WorkerThreadContext>&
         worker_thread_context_set,
     int64_t thread_group_type,
-    const TimeDelta& sampling_duration,
+    TimeDelta sampling_duration,
     SequencedTaskRunner* task_runner,
     ProfilerFactory factory,
     OnceClosure collection_complete_callback)
