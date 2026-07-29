@@ -2088,7 +2088,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   BOOL forceDisableShortcuts =
       base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
   BOOL hasVisibleContent = compactMode ? _hasText : hasContent;
-  BOOL showShortcuts = !hasVisibleContent && !canSend && !forceDisableShortcuts;
+  // Note: Temporarily disable shortcuts for cobrowse.
+  // See http://crbug.com/539904096 for more details.
+  BOOL showShortcuts = !hasVisibleContent && !canSend &&
+                       !forceDisableShortcuts && !self.isCobrowse;
   // Hide the plus button is different from !allowsMultimodalActions. When the
   // plus button is hidden, the user can still use multimodal actions from other
   // sources such as drag and drop.
