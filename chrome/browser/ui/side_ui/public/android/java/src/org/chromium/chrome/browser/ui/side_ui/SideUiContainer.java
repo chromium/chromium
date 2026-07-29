@@ -63,8 +63,10 @@ public interface SideUiContainer {
      *
      * @param availableWidth The available width that this container can consume in px.
      * @param windowWidth The new window width in px.
+     * @param isFullscreen Whether the app is currently in persistent fullscreen mode.
      */
-    SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth);
+    SideUiSize determineShowableSize(
+            @Px int availableWidth, @Px int windowWidth, boolean isFullscreen);
 
     /**
      * Returns whether the container has content to show.

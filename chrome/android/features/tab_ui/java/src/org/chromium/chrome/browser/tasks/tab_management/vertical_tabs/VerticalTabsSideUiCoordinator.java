@@ -123,7 +123,11 @@ public class VerticalTabsSideUiCoordinator
     }
 
     @Override
-    public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
+    public SideUiSize determineShowableSize(
+            @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
+        if (isFullscreen) {
+            return new SideUiSize(0, HeightType.NOT_APPLICABLE);
+        }
         int targetWidth =
                 getRailCollapseState(isCurrentWindowNarrow()) == RailCollapseState.COLLAPSED
                         ? mCollapsedViewWidth
