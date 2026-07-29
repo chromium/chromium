@@ -242,10 +242,12 @@ public class AccessibilityState {
         }
     }
 
-    private static final AccessibilityStateDelegateImpl sDelegate =
-            new AccessibilityStateDelegateImpl();
+    private static @Nullable AccessibilityStateDelegateImpl sDelegate;
 
     static AccessibilityStateDelegateImpl getDelegate() {
+        if (sDelegate == null) {
+            sDelegate = new AccessibilityStateDelegateImpl();
+        }
         return sDelegate;
     }
 
@@ -540,6 +542,9 @@ public class AccessibilityState {
     }
 
     public static void uninitializeForTesting() {
-        getDelegate().uninitializeForTesting();
+        if (sDelegate != null) {
+            sDelegate.uninitializeForTesting();
+        }
+        sDelegate = null;
     }
 }

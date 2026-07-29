@@ -89,6 +89,7 @@ public class AccessibilityStateTest {
     @After
     public void tearDown() throws Exception {
         mCloseableMocks.close();
+        AccessibilityState.uninitializeForTesting();
     }
 
     private AccessibilityServiceInfo createPasswordManagerServiceInfoWithFlags(int flags) {
@@ -528,7 +529,38 @@ public class AccessibilityStateTest {
 
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
         ApplicationStatus.destroyForJUnitTests();
+    }
+
+    @Test
+    @SmallTest
+    public void testUninitialize() {
+        Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
+
+        // Initialize and register observers.
+        AccessibilityState.initializeOnStartup();
+        AccessibilityState.registerObservers();
+
+        // Verify initial call from initializeOnStartup().
+        Mockito.verify(mAccessibilityStateNatives, Mockito.times(1))
+                .onAnimatorDurationScaleChanged();
+
+        // Verify observer is notified when activity is resumed.
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.PAUSED);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Mockito.verify(mAccessibilityStateNatives, Mockito.times(2))
+                .onAnimatorDurationScaleChanged();
+
+        // Verify that observer is not notified when activity is resumed after uninitialization.
         AccessibilityState.uninitializeForTesting();
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.PAUSED);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Mockito.verify(mAccessibilityStateNatives, Mockito.times(2))
+                .onAnimatorDurationScaleChanged();
+
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     private void startTestWithService(AccessibilityServiceInfo newService) {

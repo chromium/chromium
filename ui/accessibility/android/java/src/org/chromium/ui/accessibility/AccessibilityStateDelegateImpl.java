@@ -948,6 +948,10 @@ class AccessibilityStateDelegateImpl {
     }
 
     private void unregisterObservers() {
+        if (!mHasRegisteredObservers) {
+            return;
+        }
+
         assert mAccessibilityServicesObserver != null;
         assert mAnimationDurationScaleObserver != null;
         assert mDisplayInversionEnabledObserver != null;
@@ -1118,6 +1122,9 @@ class AccessibilityStateDelegateImpl {
     }
 
     protected void uninitializeForTesting() {
+        unregisterObservers();
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        ApplicationStatus.unregisterApplicationStateListener(mApplicationStateListener);
         mState = null;
         mServiceProperties = null;
         mAccessibilityManager = null;
