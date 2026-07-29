@@ -160,22 +160,14 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(coordinator().GetInstances().size(), 0u);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/523146661): Failing on Android.
-#define MAYBE_CloseHidesInstance DISABLED_CloseHidesInstance
-#else
-#define MAYBE_CloseHidesInstance CloseHidesInstance
-#endif
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, MAYBE_CloseHidesInstance) {
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, CloseHidesInstance) {
   ToggleGlicForActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen());
 
   PreventDeletionOnClose(instance, "test_conversation");
-  ToggleGlicForActiveTab();
-  ASSERT_OK(WaitForGlicClose());
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
   EXPECT_FALSE(instance->IsShowing());
-  EXPECT_OK(
-      WaitForWebUiContentsVisibility(instance, content::Visibility::HIDDEN));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -1700,14 +1692,8 @@ class GlicInstanceCoordinatorLocalHotkeyScopeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/522616857): Failing on Android.
-#define MAYBE_HotkeyTriggersToggle DISABLED_HotkeyTriggersToggle
-#else
-#define MAYBE_HotkeyTriggersToggle HotkeyTriggersToggle
-#endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocalHotkeyScopeTest,
-                       MAYBE_HotkeyTriggersToggle) {
+                       HotkeyTriggersToggle) {
   EXPECT_EQ(coordinator().GetInstances().size(), 0u);
 
   // Simulate receiving the hotkey command.

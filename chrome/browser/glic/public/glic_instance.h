@@ -138,6 +138,9 @@ class GlicInstance {
   // loaded).
   virtual bool IsHibernated() const = 0;
 
+  // Returns true if all embedders of this instance are closed.
+  virtual bool IsFullyClosedForTesting() const = 0;
+
   // Triggers sending skill previews to the web client.
   virtual void UpdateSkillPreviews(
       std::optional<tabs::TabInterface*> updated_tab) = 0;

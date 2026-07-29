@@ -39,6 +39,7 @@ class MockGlicInstance : public GlicInstance {
               (DestructionCallback),
               (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
+  MOCK_METHOD(bool, IsFullyClosedForTesting, (), (const, override));
   MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
   MOCK_METHOD(Target, GetInvokeTarget, (Target::Surface), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));

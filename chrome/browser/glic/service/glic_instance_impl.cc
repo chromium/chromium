@@ -389,6 +389,18 @@ bool GlicInstanceImpl::IsShowing() const {
   return false;
 }
 
+bool GlicInstanceImpl::IsFullyClosedForTesting() const {
+  if (HasActiveEmbedder()) {
+    return false;
+  }
+  for (const auto& [key, entry] : embedders_) {
+    if (entry.embedder && entry.embedder->IsShowingOrBackgrounded()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool GlicInstanceImpl::HasActiveEmbedder() const {
   return active_embedder_key_.has_value();
 }

@@ -1161,10 +1161,14 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteJsTest();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/533085229): Re-enable on Android once close flakiness is fixed.
-#if !BUILDFLAG(IS_ANDROID)
+#define MAYBE_testNoZssWarmingStateMachine DISABLED_testNoZssWarmingStateMachine
+#else
+#define MAYBE_testNoZssWarmingStateMachine testNoZssWarmingStateMachine
+#endif
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
-                       testNoZssWarmingStateMachine) {
+                       MAYBE_testNoZssWarmingStateMachine) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
 
   // 1. Initial Open via Blocked Source (kPromotionPage) -> disables warming.
@@ -1250,7 +1254,6 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
 
   ExecuteJsTest();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
                        testGetZeroStateSuggestionsApi) {
