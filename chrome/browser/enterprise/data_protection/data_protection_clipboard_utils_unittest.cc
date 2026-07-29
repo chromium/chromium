@@ -1182,6 +1182,58 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest, CopyContentAna
             data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
 }
 
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       CopyScanningMessage) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::BLOCK);
+          }),
+          "dm_token"));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+
+  // Read the clipboard before the scan finishes.
+  base::test::TestFuture<std::u16string> clipboard_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      clipboard_future.GetCallback());
+  EXPECT_EQ(clipboard_future.Get(),
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_SCANNING_MESSAGE));
+
+  // Wait for the scan to finish.
+  EXPECT_TRUE(future.Wait());
+}
+
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 TEST_F(DataProtectionClipboardTest, DragAllowed_NoRule) {
