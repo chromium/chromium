@@ -11,12 +11,23 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Size of the Chrome product logo.
+constexpr CGFloat kLogoSize = 30;
+
+// Top spacing before the Chrome product logo in the bottom sheet.
+constexpr CGFloat kSpacingBeforeImage = 24;
+
+}  // namespace
 
 @interface AmbientAutofillNoticeCoordinator () <
     ConfirmationAlertActionHandler,
@@ -60,6 +71,14 @@
                                               autofillHandler:autofillHandler];
 
   _viewController = [[ConfirmationAlertViewController alloc] init];
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  _viewController.image = MakeSymbolMulticolor(
+      SymbolWithPointSize(SymbolMulticolorChromeball, kLogoSize));
+#else
+  _viewController.image = SymbolWithPointSize(SymbolChromeProduct, kLogoSize);
+#endif
+  _viewController.imageHasFixedSize = YES;
+  _viewController.customSpacingBeforeImage = kSpacingBeforeImage;
   _viewController.titleString =
       l10n_util::GetNSString(IDS_IOS_AMBIENT_AUTOFILL_NOTICE_TITLE);
   _viewController.subtitleString =
@@ -69,8 +88,6 @@
   _viewController.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_AMBIENT_AUTOFILL_NOTICE_SETTINGS);
 
-  // TODO(crbug.com/533502803): Add the chrome logo.
-  _viewController.image = nil;
   _viewController.actionHandler = self;
 
   _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
