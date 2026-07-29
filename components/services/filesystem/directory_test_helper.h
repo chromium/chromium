@@ -24,6 +24,7 @@ class DirectoryTestHelper {
   ~DirectoryTestHelper();
 
   mojo::Remote<mojom::Directory> CreateTempDir();
+  mojo::Remote<mojom::Directory> CreateReadOnlyTempDir();
 
  private:
   class BlockingState;
