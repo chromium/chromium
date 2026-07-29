@@ -1022,7 +1022,7 @@ public class UrlBar extends AutocompleteEditText {
                     });
         }
 
-        if (OmniboxFeatures.sOmniboxListMenuContextMenu.isEnabled() && mContextMenuHelper != null) {
+        if (mContextMenuHelper != null) {
             mContextMenuHelper.showListMenu(menu);
             menu.clear();
         }

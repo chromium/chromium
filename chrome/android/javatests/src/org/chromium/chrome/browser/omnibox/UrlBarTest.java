@@ -38,7 +38,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -46,7 +45,6 @@ import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -752,7 +750,6 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU)
     public void testUrlBarContextMenu() {
         mOmnibox.requestFocus();
         mOmnibox.setText("test context menu");

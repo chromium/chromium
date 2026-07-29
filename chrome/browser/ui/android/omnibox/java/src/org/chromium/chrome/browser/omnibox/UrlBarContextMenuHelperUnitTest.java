@@ -23,8 +23,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -32,7 +30,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link UrlBarContextMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU)
 public class UrlBarContextMenuHelperUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

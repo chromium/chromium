@@ -200,11 +200,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sResetSuggestionsScroll =
             newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED);
 
-    public static final CachedFlag sOmniboxListMenuContextMenu =
-            newFlag(
-                    OmniboxFeatureList.OMNIBOX_LIST_MENU_CONTEXT_MENU,
-                    FeatureState.ENABLED_IN_PROD);
-
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
                     sUseFusedLocationProvider,

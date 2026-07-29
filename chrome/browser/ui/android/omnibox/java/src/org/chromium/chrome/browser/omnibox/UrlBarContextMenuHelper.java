@@ -14,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -91,10 +90,6 @@ class UrlBarContextMenuHelper {
     }
 
     public void showListMenu(ContextMenu menu) {
-        if (!OmniboxFeatures.sOmniboxListMenuContextMenu.isEnabled()) {
-            return;
-        }
-
         if (!menu.hasVisibleItems()) {
             return;
         }

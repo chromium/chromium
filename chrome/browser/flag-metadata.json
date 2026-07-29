@@ -7568,11 +7568,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-list-menu-context-menu",
-    "owners": ["oka@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
     "owners": [ "mahmadi@chromium.org", "ender@google.com", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140
