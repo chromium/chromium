@@ -312,6 +312,76 @@ TEST(DMGAnalyzerTest, NestedArchiveCopiedIntact) {
   EXPECT_EQ(inner, written_bytes);
 }
 
+// Non-Mach-O entries with extensions that are checked binaries (e.g. .pkg)
+// should be recorded in `archived_binary` so they are included in the download
+// protection request, matching the behavior of the other archive analyzers.
+TEST(DMGAnalyzerTest, ContainedPkgRecorded) {
+  base::test::TaskEnvironment task_environment;
+  DMGAnalyzer analyzer_;
+  base::FilePath temp_path;
+  base::File temp_file;
+  base::CreateTemporaryFile(&temp_path);
+  temp_file.Initialize(
+      temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                  base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                  base::File::FLAG_DELETE_ON_CLOSE));
+
+  MockDMGIterator::FileList file_list{
+      {"DMG/Install.pkg", {'x', 'a', 'r', '!', 0x00, 0x1c, 0x00, 0x01}},
+  };
+
+  std::unique_ptr<MockDMGIterator> iterator =
+      std::make_unique<MockDMGIterator>(true, file_list);
+  safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
+  analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(1, results.archived_binary.size());
+  EXPECT_EQ("DMG/Install.pkg", results.archived_binary.Get(0).file_path());
+  EXPECT_TRUE(results.archived_binary.Get(0).is_executable());
+  EXPECT_TRUE(results.archived_binary.Get(0).has_digests());
+}
+
+// Non-Mach-O entries with extensions that are archives (e.g. .tar) should be
+// recorded in `archived_binary`, matching the behavior of the other archive
+// analyzers.
+TEST(DMGAnalyzerTest, ContainedTarRecorded) {
+  base::test::TaskEnvironment task_environment;
+  DMGAnalyzer analyzer_;
+  base::FilePath temp_path;
+  base::File temp_file;
+  base::CreateTemporaryFile(&temp_path);
+  temp_file.Initialize(
+      temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                  base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                  base::File::FLAG_DELETE_ON_CLOSE));
+
+  MockDMGIterator::FileList file_list{
+      {"DMG/payload.tar", {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}},
+  };
+
+  std::unique_ptr<MockDMGIterator> iterator =
+      std::make_unique<MockDMGIterator>(true, file_list);
+  safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
+  analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(results.success);
+  EXPECT_TRUE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+  EXPECT_EQ("DMG/payload.tar", results.archived_binary.Get(0).file_path());
+  EXPECT_TRUE(results.archived_binary.Get(0).is_archive());
+  EXPECT_TRUE(results.archived_binary.Get(0).has_digests());
+}
+
 }  // namespace
 }  // namespace dmg
 }  // namespace safe_browsing

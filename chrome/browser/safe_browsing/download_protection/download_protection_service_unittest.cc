@@ -2460,21 +2460,26 @@ TEST_F(DownloadProtectionServiceTest, DMGAnalysisEndToEnd) {
   EXPECT_EQ(ClientDownloadRequest_DownloadType_MAC_EXECUTABLE,
             request->download_type());
 
-  ASSERT_EQ(2, request->archived_binary().size());
-  for (const auto& binary : request->archived_binary()) {
+  EXPECT_GT(request->archived_binary_size(), 0);
+  bool found_mach_o = false;
+  for (int i = 0; i < request->archived_binary_size(); ++i) {
+    const auto& binary = request->archived_binary(i);
     EXPECT_FALSE(binary.file_path().empty());
-    EXPECT_EQ(ClientDownloadRequest_DownloadType_MAC_EXECUTABLE,
-              binary.download_type());
     ASSERT_TRUE(binary.has_digests());
     EXPECT_TRUE(binary.digests().has_sha256());
     EXPECT_TRUE(binary.has_length());
-    ASSERT_TRUE(binary.has_image_headers());
-    ASSERT_FALSE(binary.image_headers().mach_o_headers().empty());
+    if (binary.image_headers().mach_o_headers().empty()) {
+      continue;
+    }
+    found_mach_o = true;
+    EXPECT_EQ(ClientDownloadRequest_DownloadType_MAC_EXECUTABLE,
+              binary.download_type());
     EXPECT_FALSE(
         binary.image_headers().mach_o_headers().Get(0).mach_header().empty());
     EXPECT_FALSE(
         binary.image_headers().mach_o_headers().Get(0).load_commands().empty());
   }
+  EXPECT_TRUE(found_mach_o);
 
   ASSERT_EQ(1, request->detached_code_signature().size());
   EXPECT_FALSE(request->detached_code_signature().Get(0).file_name().empty());

@@ -213,28 +213,21 @@ bool DMGAnalyzer::ResumeExtraction() {
     } else {
       // Get a new `stream` because it was moved from in previous branches.
       stream = iterator_->GetReadStream();
-      DownloadFileType_InspectionType file_type =
-          GetFileType(base::FilePath(path));
-      if (file_type == DownloadFileType::ZIP ||
-          file_type == DownloadFileType::RAR ||
-          file_type == DownloadFileType::DMG ||
-          file_type == DownloadFileType::SEVEN_ZIP) {
-        if (!CopyStreamToFile(*stream, temp_file_)) {
-          continue;
-        }
+      if (!CopyStreamToFile(*stream, temp_file_)) {
+        continue;
+      }
 
-        if (!temp_file_.IsValid()) {
-          continue;
-        }
+      if (!temp_file_.IsValid()) {
+        continue;
+      }
 
-        // TODO(crbug.com/40871873): Support file length here.
-        if (!UpdateResultsForEntry(
-                temp_file_.Duplicate(), GetRootPath().Append(path),
-                /*file_length=*/0,
-                /*is_encrypted=*/false, /*is_directory=*/false,
-                /*contents_valid=*/true)) {
-          return false;
-        }
+      // TODO(crbug.com/40871873): Support file length here.
+      if (!UpdateResultsForEntry(temp_file_.Duplicate(),
+                                 GetRootPath().Append(path),
+                                 /*file_length=*/0,
+                                 /*is_encrypted=*/false, /*is_directory=*/false,
+                                 /*contents_valid=*/true)) {
+        return false;
       }
     }
   }
