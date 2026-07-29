@@ -53,6 +53,10 @@ public class CronetLibraryLoader {
     private static final String LIBRARY_NAME_CRONET = "cronet";
     private static final String TESTING_LIBRARY_SUFFIX = "_for_testing";
     private static boolean sSwitchToTestLibrary;
+    // HttpEngine is preloaded in Zygote. Re-loading should be a no-op, but System.loadLibrary is
+    // synchronized across threads, blocking concurrent native library loads.
+    // See b/539400536 for more details.
+    private static boolean sLibAlreadyLoaded;
     @VisibleForTesting public static final String TAG = CronetLibraryLoader.class.getSimpleName();
     // Thread used for initialization work and processing callbacks for
     // long-lived global singletons. This thread lives forever as things like
@@ -70,18 +74,6 @@ public class CronetLibraryLoader {
 
     @VisibleForTesting
     public static final String TRACE_NET_LOG_SYSTEM_PROPERTY_KEY = "debug.cronet.trace_netlog";
-
-    /**
-     * Ensure that native library is loaded and initialized. Can be called from any thread, the load
-     * and initialization is performed on init thread.
-     *
-     * @return True if the library was initialized as part of this call, false if it was already
-     *     initialized.
-     */
-    public static boolean ensureInitialized(
-            Context applicationContext, final CronetEngineBuilderImpl builder) {
-        return ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
-    }
 
     /**
      * This method will be called by the Zygote pre-fork to preload the native code. Which means
@@ -117,6 +109,7 @@ public class CronetLibraryLoader {
     }
 
     private static void loadLibraryInternal(LibraryLoaderLambda loadLibraryFunction) {
+        sLibAlreadyLoaded = true;
         if (BuildConfig.CRONET_FOR_AOSP_BUILD) {
             // For AOSP we have only one library name, and exceptions should propagate.
             loadLibraryFunction.loadLibrary(getLibraryName(LIBRARY_NAME_HTTPENGINE));
@@ -154,9 +147,7 @@ public class CronetLibraryLoader {
     }
 
     public static boolean ensureInitialized(
-            Context applicationContext,
-            final CronetEngineBuilderImpl builder,
-            boolean libAlreadyLoaded) {
+            Context applicationContext, final CronetEngineBuilderImpl builder) {
         try (var traceEvent = ScopedSysTraceEvent.scoped("CronetLibraryLoader#ensureInitialized")) {
             synchronized (sLoadLock) {
                 if (sInitialized) return false;
@@ -185,7 +176,7 @@ public class CronetLibraryLoader {
                                 });
                     }
                 }
-                if (!libAlreadyLoaded) {
+                if (!sLibAlreadyLoaded) {
                     try (var loadLibTraceEvent =
                             ScopedSysTraceEvent.scoped(
                                     "CronetLibraryLoader#ensureInitialized loading native"
@@ -427,7 +418,7 @@ public class CronetLibraryLoader {
         // using ContextUtils.initApplicationContext().
         Context applicationContext = ContextUtils.getApplicationContext();
         assert applicationContext != null;
-        ensureInitialized(applicationContext, null, /* libAlreadyLoaded= */ true);
+        ensureInitialized(applicationContext, null);
     }
 
     @CalledByNative
