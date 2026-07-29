@@ -835,7 +835,23 @@ export class ComposeboxVoiceSearchElement extends
     this.start();
     this.fire('voice-search-restart');
   }
+
+  getErrorForTesting(): VoiceSearchError|null {
+    return this.error_;
   }
+
+  getErrorMessageForTesting(): string {
+    return this.errorMessage_;
+  }
+
+  setErrorMessageForTesting(errorMessage: string) {
+    this.errorMessage_ = errorMessage;
+  }
+
+  voiceModeEndCleanupForTesting() {
+    this.voiceModeEndCleanup_();
+  }
+}
 
 declare global {
   interface HTMLElementTagNameMap {

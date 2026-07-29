@@ -324,7 +324,7 @@ suite('ExpandableTiles', () => {
     await handler.whenCalled('getMostVisitedExpandedState');
     await microtasksFinished();
     await addTiles(mostVisited.maxTilesInCollapsedState);
-    assertTrue(mostVisited['showAll_']);
+    assertTrue(mostVisited.getShowAllForTesting());
     assertTrue(isVisible(getShowLessButton()));
     assertFalse(isVisible(getShowMoreButton()));
   });
@@ -1366,7 +1366,7 @@ suite('Modification', () => {
           // same as its own, but we're testing the logic).
           inputUrl.value = 'https://e1/';
           await inputUrl.updateComplete;
-          assertFalse(mostVisited['dialogShortcutAlreadyExists_']);
+          assertFalse(mostVisited.getDialogShortcutAlreadyExistsForTesting());
           assertFalse(inputUrl.invalid);
           await leaveUrlInput();
           assertFalse(inputUrl.invalid);
@@ -1419,7 +1419,7 @@ suite('Modification', () => {
       // Save button should be visible and clickable.
       inputUrl.value = 'https://e1/';
       await inputUrl.updateComplete;
-      assertFalse(mostVisited['dialogShortcutAlreadyExists_']);
+      assertFalse(mostVisited.getDialogShortcutAlreadyExistsForTesting());
       assertFalse(inputUrl.invalid);
       await leaveUrlInput();
       assertFalse(inputUrl.invalid);
