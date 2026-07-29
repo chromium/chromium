@@ -8352,7 +8352,7 @@
       "crowleso@google.com",
       "chrome-signin-mobile-team@google.com"
     ],
-    "expiry_milestone": 153
+    "expiry_milestone": 155
   },
   {
     "name": "profile-signals-reporting-enabled",
@@ -9097,7 +9097,7 @@
       "crowleso@google.com",
       "chrome-signin-mobile-team@google.com"
     ],
-    "expiry_milestone": 153
+    "expiry_milestone": 155
   },
   {
     "name": "signin-promo-on-avatar-pill",
