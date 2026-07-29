@@ -285,7 +285,32 @@ void SqlPersistentStore::DeleteLiveEntriesBetween(
     base::Time end_time,
     std::vector<ResIdAndShardId> excluded_list,
     ErrorCallback callback) {
-  auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
+  auto barrier_callback =
+      base::BarrierCallback<DeletedSharedCacheResourcesOrError>(
+          GetSizeOfShards(),
+          base::BindOnce(
+              [](base::WeakPtr<SqlPersistentStore> weak_ptr,
+                 ErrorCallback callback,
+                 std::vector<DeletedSharedCacheResourcesOrError> results) {
+                Error first_error = Error::kOk;
+                std::vector<SqlSharedCacheResourceId> all_deleted_resources;
+                for (auto& res : results) {
+                  if (res.has_value()) {
+                    all_deleted_resources.insert(
+                        all_deleted_resources.end(),
+                        std::make_move_iterator(res->begin()),
+                        std::make_move_iterator(res->end()));
+                  } else if (first_error == Error::kOk) {
+                    first_error = res.error();
+                  }
+                }
+                if (weak_ptr && !all_deleted_resources.empty()) {
+                  weak_ptr->OnSharedCacheResourcesDeleted(
+                      std::move(all_deleted_resources));
+                }
+                std::move(callback).Run(first_error);
+              },
+              weak_factory_.GetWeakPtr(), std::move(callback)));
   auto res_id_sets =
       GroupResIdPerShardId(std::move(excluded_list), GetSizeOfShards());
   for (size_t i = 0; i < GetSizeOfShards(); ++i) {

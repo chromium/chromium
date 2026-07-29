@@ -202,7 +202,7 @@ void SqlPersistentStore::BackendShard::DeleteLiveEntriesBetween(
     base::Time initial_time,
     base::Time end_time,
     base::flat_set<ResId> excluded_res_ids,
-    ErrorCallback callback) {
+    DeletedSharedCacheResourcesOrErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::DeleteLiveEntriesBetween)
       .WithArgs(initial_time, end_time, std::move(excluded_res_ids),
                 base::TimeTicks::Now())
@@ -603,33 +603,6 @@ SqlPersistentStore::BackendShard::WrapEntryInfoOrErrorCallback(
         }
       },
       weak_factory_.GetWeakPtr(), std::move(callback), key.hash(), location);
-}
-
-base::OnceCallback<
-    void(SqlPersistentStore::HashAndResIdListOrErrorAndStoreStatus)>
-SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
-    ErrorCallback callback,
-    IndexMismatchLocation location) {
-  return base::BindOnce(
-      [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
-         IndexMismatchLocation location,
-         HashAndResIdListOrErrorAndStoreStatus result) {
-        if (weak_ptr) {
-          if (result.result.has_value() && weak_ptr->index_.has_value()) {
-            for (const auto& hash_and_res_id : result.result.value()) {
-              if (!weak_ptr->index_->Remove(hash_and_res_id.hash,
-                                            hash_and_res_id.res_id)) {
-                weak_ptr->RecordIndexMismatch(location);
-              }
-            }
-          }
-          weak_ptr->store_status_ = result.store_status;
-          // We should not run the callback when `this` was deleted.
-          std::move(callback).Run(
-              std::move(result.result.error_or(Error::kOk)));
-        }
-      },
-      weak_factory_.GetWeakPtr(), std::move(callback), location);
 }
 
 base::OnceCallback<

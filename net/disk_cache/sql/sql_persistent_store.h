@@ -369,6 +369,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using ResIdOrErrorAndStoreStatus = ResultAndStoreStatus<ResIdOrError>;
   using HashAndResIdListOrErrorAndStoreStatus =
       ResultAndStoreStatus<HashAndResIdListOrError>;
+  struct HashAndSharedCacheResource {
+    CacheEntryKey::Hash hash;
+    std::optional<SqlSharedCacheResourceId> shared_cache_resource_id;
+  };
+  using HashAndSharedCacheResourceOrError =
+      base::expected<HashAndSharedCacheResource, Error>;
   using HashOrError = base::expected<CacheEntryKey::Hash, Error>;
   struct UsageAndHash {
     int64_t bytes_usage;

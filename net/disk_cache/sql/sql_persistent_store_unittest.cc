@@ -7274,4 +7274,22 @@ TEST_P(SqlPersistentStoreSharedCacheTest,
                                 entry_data.row_id);
 }
 
+TEST_P(SqlPersistentStoreSharedCacheTest,
+       DeleteLiveEntriesBetweenDeletesSharedCacheResource) {
+  base::Time start_time = base::Time::Now();
+  auto entry_data = PrepareLiveSharedCacheEntry();
+  base::Time end_time = base::Time::Now() + base::Seconds(10);
+
+  // Delete live entries between start_time and end_time.
+  base::test::TestFuture<SqlPersistentStore::Error> delete_future;
+  store_->DeleteLiveEntriesBetween(start_time - base::Seconds(1), end_time,
+                                   /*excluded_list=*/{},
+                                   delete_future.GetCallback());
+  FlushPendingTask();
+  ASSERT_EQ(delete_future.Get(), SqlPersistentStore::Error::kOk);
+
+  VerifySharedCacheEntryDeleted(entry_data.handle, entry_data.key,
+                                entry_data.row_id);
+}
+
 }  // namespace disk_cache

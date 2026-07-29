@@ -72,7 +72,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
       base::TimeTicks start_time);
 
   ErrorAndStoreStatus DeleteAllEntries(base::TimeTicks start_time);
-  HashAndResIdListOrErrorAndStoreStatus DeleteLiveEntriesBetween(
+  DeleteLiveEntryResultOrErrorAndStoreStatus DeleteLiveEntriesBetween(
       base::Time initial_time,
       base::Time end_time,
       base::flat_set<ResId> excluded_res_ids,
@@ -274,7 +274,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
       const CacheEntryKey& key,
       bool& corruption_detected);
   Error DeleteAllEntriesInternal(bool& corruption_detected);
-  HashAndResIdListOrError DeleteLiveEntriesBetweenInternal(
+  DeleteLiveEntryResultOrError DeleteLiveEntriesBetweenInternal(
       base::Time initial_time,
       base::Time end_time,
       const base::flat_set<ResId>& excluded_res_ids,
@@ -385,7 +385,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   DeletedSharedCacheResourceOrError DeleteResourceByResId(ResId res_id);
   // Deletes a single resource entry from the `resources` table by its `res_id`
   // and returns the `cache_key_hash` of the deleted entry.
-  HashOrError DeleteResourceByResIdReturnHash(ResId res_id);
+  HashAndSharedCacheResourceOrError DeleteResourceByResIdReturnHash(
+      ResId res_id);
   // Deletes a single live resource entry from the `resources` table by its
   // `res_id` and returns the `bytes_usage` and `cache_key_hash` of the deleted
   // entry.

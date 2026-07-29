@@ -69,10 +69,11 @@ class SqlPersistentStore::BackendShard {
   void DeleteLiveEntry(const CacheEntryKey& key,
                        DeletedSharedCacheResourcesOrErrorCallback callback);
   void DeleteAllEntries(ErrorCallback callback);
-  void DeleteLiveEntriesBetween(base::Time initial_time,
-                                base::Time end_time,
-                                base::flat_set<ResId> excluded_res_ids,
-                                ErrorCallback callback);
+  void DeleteLiveEntriesBetween(
+      base::Time initial_time,
+      base::Time end_time,
+      base::flat_set<ResId> excluded_res_ids,
+      DeletedSharedCacheResourcesOrErrorCallback callback);
   void UpdateEntryLastUsedByKey(const CacheEntryKey& key,
                                 base::Time last_used,
                                 ErrorCallback callback);
@@ -238,9 +239,6 @@ class SqlPersistentStore::BackendShard {
                                const CacheEntryKey& key,
                                IndexMismatchLocation location);
 
-  base::OnceCallback<void(HashAndResIdListOrErrorAndStoreStatus)>
-  WrapErrorCallbackToRemoveFromIndex(ErrorCallback callback,
-                                     IndexMismatchLocation location);
   base::OnceCallback<void(DeleteLiveEntryResultOrErrorAndStoreStatus)>
   WrapErrorCallbackToRemoveFromIndex(
       DeletedSharedCacheResourcesOrErrorCallback callback,
