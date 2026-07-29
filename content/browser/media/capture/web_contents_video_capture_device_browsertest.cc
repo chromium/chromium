@@ -656,11 +656,13 @@ INSTANTIATE_TEST_SUITE_P(
 // and whether the main document contains a cross-site iframe.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-// TODO(crbug/328419809): Also flaky on Mac.
-// TODO(crbug/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
+// TODO(crbug.com/328419809): Also flaky on Mac.
+// TODO(crbug.com/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
+// TODO(crbug.com/540031290): Also flaky on Win ASAN.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) ||                          \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges
