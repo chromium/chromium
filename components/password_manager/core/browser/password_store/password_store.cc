@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -508,9 +507,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     error = ActionableError::kNoError;
 #endif
   }
-  if (error.has_value() &&
-      base::FeatureList::IsEnabled(
-          features::kPasswordStorePropagatesActionableErrors)) {
+  if (error.has_value()) {
     NotifyObserversIfErrorStateChanged(error.value());
   }
 
@@ -564,10 +561,7 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
     error = BackendErrorToActionableError(backend_error.type);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPasswordStorePropagatesActionableErrors)) {
-    NotifyObserversIfErrorStateChanged(error);
-  }
+  NotifyObserversIfErrorStateChanged(error);
 
   // Clients don't expect errors yet, so just wait for the next notification.
   if (std::holds_alternative<PasswordStoreBackendError>(result)) {

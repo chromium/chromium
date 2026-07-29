@@ -457,10 +457,6 @@ void PasswordStoreBuiltInBackend::OnStateChanged(syncer::SyncService* sync) {
 #endif
 
   CHECK(sync_observation_.IsObservingSource(sync));
-  if (!base::FeatureList::IsEnabled(
-          features::kPasswordStorePropagatesActionableErrors)) {
-    return;
-  }
   if (remote_form_changes_received_callback_) {
     if (ShouldForwardSyncErrorToStore(sync->GetUserActionableError())) {
       remote_form_changes_received_callback_.Run(

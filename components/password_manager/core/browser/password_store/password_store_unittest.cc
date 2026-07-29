@@ -641,30 +641,6 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfAdditionReturnsError) {
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest,
-       DoNotCallOnErrorStateChangedIfAdditionReturnsErrorAndFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kPasswordStorePropagatesActionableErrors);
-
-  const StoredCredential kTestForm = MakeStoredCredential(kTestWebRealm1);
-  MockPasswordStoreObserver mock_observer;
-  auto [store, fake_backend] = CreateUnownedStoreWithOwnedFakeBackend();
-  fake_backend->ReturnErrorOnRequest(kBackendError);
-  store->Init();
-  store->AddObserver(&mock_observer);
-
-  // Expect that observers does not receive the change when backend fails.
-  EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
-  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
-  EXPECT_CALL(mock_observer, OnErrorStateChanged).Times(0);
-  store->AddLogin(CloneStoredCredential(kTestForm));
-  WaitForPasswordStore();
-
-  store->RemoveObserver(&mock_observer);
-  store->ShutdownOnUIThread();
-}
-
 TEST_F(PasswordStoreTest, DoNotCallOnErrorStateChangedIfErrorStateIsIdentical) {
   const StoredCredential kTestForm = MakeStoredCredential(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
@@ -929,9 +905,6 @@ TEST_F(PasswordStoreTest, UpdateLoginWithPrimaryKey_UsernameChanges) {
 // ActionableError::kInactionable) to observers.
 TEST_F(PasswordStoreTest,
        OnErrorStateChangedFlowOnAndroidForegroundRefreshFailure) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPasswordStorePropagatesActionableErrors);
-
   MockPasswordStoreObserver mock_observer;
   auto [store, fake_backend] = CreateUnownedStoreWithOwnedFakeBackend();
 
@@ -959,9 +932,6 @@ TEST_F(PasswordStoreTest,
 // ActionableError::kNoError to observers via OnErrorStateChanged.
 TEST_F(PasswordStoreTest,
        OnErrorStateChangedFlowOnNonAndroidRemoteChangesNullopt) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPasswordStorePropagatesActionableErrors);
-
   MockPasswordStoreObserver mock_observer;
   auto [store, fake_backend] = CreateUnownedStoreWithOwnedFakeBackend();
 

@@ -173,9 +173,6 @@ BASE_FEATURE(kPasswordManualFallbackSecurityChecks,
 BASE_FEATURE(kPasswordSaveInContextErrorResolution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPasswordStorePropagatesActionableErrors,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPreventAPCOnFederatedLogin, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreventPasswordManagerOnFederatedLogin,
