@@ -33,6 +33,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
+import org.chromium.components.browser_ui.media.MediaNotificationManager.MediaTypeId;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
@@ -503,6 +504,7 @@ public class MediaNotificationController {
         void logNotificationShown(NotificationWrapper notification);
 
         /** Returns the media type ID associated with this delegate. */
+        @MediaTypeId
         int getMediaTypeId();
 
         /** Returns the unique notification ID associated with this delegate. */
@@ -1213,7 +1215,7 @@ public class MediaNotificationController {
         return mMediaNotificationInfo == null || mMediaNotificationInfo.isPaused;
     }
 
-    public int getMediaTypeId() {
+    public @MediaTypeId int getMediaTypeId() {
         return mDelegate.getMediaTypeId();
     }
 
