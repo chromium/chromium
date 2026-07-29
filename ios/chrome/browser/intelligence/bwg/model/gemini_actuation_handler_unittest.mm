@@ -8,6 +8,7 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
@@ -287,29 +288,31 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_InjectsTabId) {
   NSData* data = [NSData dataWithBytes:serialized.data()
                                 length:serialized.size()];
 
-  __block BOOL callback_called = NO;
+  base::test::TestFuture<NSData*> future;
+  base::test::TestFuture<NSData*>* future_ptr = &future;
   auto completionBlock = ^(NSData* serializedActionsResult) {
-    callback_called = YES;
-    ASSERT_NE(nil, serializedActionsResult);
-    optimization_guide::proto::ActionsResult actions_result;
-    EXPECT_TRUE(actions_result.ParseFromArray(
-        [serializedActionsResult bytes], [serializedActionsResult length]));
-
-    // If the tab ID injection succeeded, the Actor Tool Factory will
-    // successfully resolve the tab (finding our active fake WebState with ID
-    // 123), and not failing with an invalid arguments error due to a missing
-    // tab ID.
-    std::string invalid_args_error =
-        actor::GetToolExecutionResultMessage(actor::ToolExecutionResult(
-            actor::mojom::ActionResultCode::kArgumentsInvalid));
-    EXPECT_NE(actions_result.error_message(), invalid_args_error);
+    future_ptr->SetValue(serializedActionsResult);
   };
 
   [handler performActionsWithTaskID:task_id
                          taskUpdate:@"Update"
              serializedActionProtos:@[ data ]
                     completionBlock:completionBlock];
-  EXPECT_TRUE(callback_called);
+
+  NSData* serializedActionsResult = future.Get();
+  ASSERT_NE(nil, serializedActionsResult);
+  optimization_guide::proto::ActionsResult actions_result;
+  EXPECT_TRUE(actions_result.ParseFromArray([serializedActionsResult bytes],
+                                            [serializedActionsResult length]));
+
+  // If the tab ID injection succeeded, the Actor Tool Factory will
+  // successfully resolve the tab (finding our active fake WebState with ID
+  // 123), and not failing with an invalid arguments error due to a missing
+  // tab ID.
+  std::string invalid_args_error =
+      actor::GetToolExecutionResultMessage(actor::ToolExecutionResult(
+          actor::mojom::ActionResultCode::kArgumentsInvalid));
+  EXPECT_NE(actions_result.error_message(), invalid_args_error);
 }
 
 // Tests that performActions returns a failure result when passed an unmapped

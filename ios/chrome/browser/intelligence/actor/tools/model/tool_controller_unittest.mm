@@ -25,6 +25,74 @@
 namespace actor {
 namespace {
 
+// A test tool that completes synchronously and tracks whether it was destroyed
+// before it finished executing, to verify UAF protection.
+class SyncActorTool : public ActorTool {
+ public:
+  SyncActorTool(bool* tool_destroyed_flag, bool* callback_completed_flag)
+      : tool_destroyed_flag_(tool_destroyed_flag),
+        callback_completed_flag_(callback_completed_flag) {}
+
+  ~SyncActorTool() override {
+    if (tool_destroyed_flag_) {
+      *tool_destroyed_flag_ = true;
+    }
+  }
+
+  void Validate(ToolExecutionCallback callback) override {
+    std::move(callback).Run(ToolExecutionResult::Ok());
+  }
+
+  void Execute(ToolExecutionCallback callback) override {
+    // Copy members to local variables on the stack BEFORE running the callback,
+    // so we don't access 'this' members if we are deleted inside the callback.
+    bool* callback_completed_flag = callback_completed_flag_;
+    bool* tool_destroyed_flag = tool_destroyed_flag_;
+
+    std::move(callback).Run(ToolExecutionResult::Ok());
+
+    if (tool_destroyed_flag && *tool_destroyed_flag) {
+      if (callback_completed_flag) {
+        *callback_completed_flag = false;
+      }
+    } else {
+      if (callback_completed_flag) {
+        *callback_completed_flag = true;
+      }
+    }
+  }
+
+  base::WeakPtr<web::WebState> GetTargetWebState() const override {
+    return nullptr;
+  }
+  ToolType GetToolType() const override { return ToolType::kWait; }
+
+ private:
+  bool* tool_destroyed_flag_;
+  bool* callback_completed_flag_;
+};
+
+class SyncActorToolFactory : public ActorToolFactory {
+ public:
+  explicit SyncActorToolFactory(ProfileIOS* profile,
+                                bool* tool_destroyed_flag,
+                                bool* callback_completed_flag)
+      : ActorToolFactory(profile),
+        tool_destroyed_flag_(tool_destroyed_flag),
+        callback_completed_flag_(callback_completed_flag) {}
+
+  base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
+      const ActorToolRequest& request,
+      ToolDelegate* tool_delegate) override {
+    return std::make_unique<SyncActorTool>(tool_destroyed_flag_,
+                                           callback_completed_flag_);
+  }
+
+ private:
+  bool* tool_destroyed_flag_;
+  bool* callback_completed_flag_;
+};
+
 // A test tool that never completes, added to test ToolController::Cancel.
 class AsyncActorTool : public ActorTool {
  public:
@@ -279,6 +347,72 @@ TEST_F(ToolControllerTest, RestartObservationOnNavigation) {
   // Fast forward by another 4 seconds (total 10s after the navigation).
   task_environment_.FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(invoke_future.Get().IsOk());
+}
+
+// Tests that deleting the ToolController synchronously inside its completion
+// callback does not cause a Use-After-Free (UAF) crash when executing a tool.
+TEST_F(ToolControllerTest, DeletingControllerInCompletionCallbackDoesNotUAF) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  bool tool_destroyed = false;
+  bool callback_completed_safely = false;
+
+  tool_factory_ = std::make_unique<SyncActorToolFactory>(
+      profile_.get(), &tool_destroyed, &callback_completed_safely);
+  controller_ = std::make_unique<ToolController>(this);
+
+  std::unique_ptr<ActorToolRequest> request = MakeSuccessfulActorToolRequest();
+
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*request, validation_future.GetCallback());
+  EXPECT_TRUE(validation_future.Get().IsOk());
+
+  base::RunLoop run_loop;
+
+  // We invoke the tool and inside the completion callback, we synchronously
+  // delete the ToolController instance.
+  controller_->Invoke(base::BindOnce(
+      [](std::unique_ptr<ToolController>* controller, base::RunLoop* loop,
+         ToolExecutionResult result) {
+        controller->reset();
+        loop->Quit();
+      },
+      &controller_, &run_loop));
+
+  run_loop.Run();
+
+  EXPECT_EQ(controller_, nullptr);
+  EXPECT_TRUE(tool_destroyed);
+  EXPECT_TRUE(callback_completed_safely);
+}
+
+// Tests that deleting the ToolController synchronously inside its validation
+// completion callback does not cause a Use-After-Free (UAF) crash.
+TEST_F(ToolControllerTest, DeletingControllerInValidationCallbackDoesNotUAF) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  controller_ = std::make_unique<ToolController>(this);
+
+  std::unique_ptr<ActorToolRequest> request = MakeSuccessfulActorToolRequest();
+
+  base::RunLoop run_loop;
+
+  // We validate the tool and inside the validation callback, we synchronously
+  // delete the ToolController instance.
+  controller_->CreateToolAndValidate(
+      *request, base::BindOnce(
+                    [](std::unique_ptr<ToolController>* controller,
+                       base::RunLoop* loop, ToolExecutionResult result) {
+                      controller->reset();
+                      loop->Quit();
+                    },
+                    &controller_, &run_loop));
+
+  run_loop.Run();
+
+  EXPECT_EQ(controller_, nullptr);
 }
 
 }  // namespace
