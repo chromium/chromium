@@ -11,6 +11,14 @@
  * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style
  * #css_wrapper_metadata_end */
 
+#themeSnapshot {
+  display: block;
+}
+
+#themeSnapshot:focus {
+  outline: none;
+}
+
 #editButtonsContainer {
   display: flex;
   gap: 8px;

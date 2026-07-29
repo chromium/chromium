@@ -237,6 +237,32 @@ suite('AppearanceTest', () => {
         appearanceElement.$.thirdPartyThemeLinkButton, 'display', 'none');
   });
 
+  test(
+      'theme snapshot is tabbable and triggers edit theme on keydown',
+      async () => {
+        const theme = createTheme();
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+
+        const snapshot = appearanceElement.$.themeSnapshot;
+        assertEquals('button', snapshot.getAttribute('role'));
+        assertEquals('0', snapshot.getAttribute('tabindex'));
+
+        // Test Enter key
+        const enterPromise =
+            eventToPromise('edit-theme-click', appearanceElement);
+        snapshot.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+        const enterEvent = await enterPromise;
+        assertTrue(!!enterEvent);
+
+        // Test Space key
+        const spacePromise =
+            eventToPromise('edit-theme-click', appearanceElement);
+        snapshot.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+        const spaceEvent = await spacePromise;
+        assertTrue(!!spaceEvent);
+      });
+
   test('respects policy for edit theme', async () => {
     const theme = createTheme();
     theme.backgroundManagedByPolicy = true;

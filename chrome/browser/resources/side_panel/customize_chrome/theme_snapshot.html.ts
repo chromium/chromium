@@ -18,7 +18,7 @@ ${this.themeType_ === CustomizeThemeType.CUSTOM_THEME ? html`
       <img class="image" id="customThemeImage" is="cr-auto-img"
           .autoSrc="${this.theme_!.backgroundImage!.snapshotUrl}"
           draggable="false"
-          aria-labelledby="customThemeTitle">
+          aria-hidden="true">
       <div class="overlay"></div>
       <cr-ripple></cr-ripple>
     </div>
@@ -32,7 +32,7 @@ ${this.themeType_ === CustomizeThemeType.CLASSIC_CHROME ? html`
       theme-type="${CustomizeThemeType.CLASSIC_CHROME}">
     <div class="image-background image" id="classicChromeBackground"
         @click="${this.onThemeSnapshotClick_}">
-      <svg id="miniNewTabPage" aria-labelledby="classicChromeThemeTitle"
+      <svg id="miniNewTabPage" aria-hidden="true"
           viewBox="0 0 240 126" preserveAspectRatio="xMidYMid meet">
         <use href="icons/mini_new_tab_page.svg#miniNewTabPage"></use>
       </svg>
@@ -50,7 +50,7 @@ ${this.themeType_ === CustomizeThemeType.UPLOADED_IMAGE ? html`
     <div class="image-background" id="uploadedThemeImageBackground"
         @click="${this.onThemeSnapshotClick_}">
       <img class="image" id="uploadedThemeImage" src="icons/uploaded_image.svg"
-          aria-labelledby="uploadedThemeTitle">
+          aria-hidden="true">
       <div class="overlay"></div>
       <cr-ripple></cr-ripple>
     </div>

@@ -10,6 +10,8 @@ export function getHtml(this: AppearanceElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <customize-chrome-theme-snapshot id="themeSnapshot"
+    role="button" tabindex="0"
+    @keydown="${this.onThemeSnapshotKeydown_}"
     @edit-theme-click="${this.onEditThemeClick_}"
     ?hidden="${!this.showThemeSnapshot_}">
 </customize-chrome-theme-snapshot>

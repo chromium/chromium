@@ -281,6 +281,13 @@ export class AppearanceElement extends AppearanceElementBase {
         !!this.managedByName_;
   }
 
+  protected onThemeSnapshotKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      this.onEditThemeClick_();
+    }
+  }
+
   protected onEditThemeClick_() {
     recordCustomizeChromeAction(CustomizeChromeAction.EDIT_THEME_CLICKED);
     if (this.handleClickForManagedThemes_()) {

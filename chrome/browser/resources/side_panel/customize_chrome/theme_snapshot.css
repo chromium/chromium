@@ -9,6 +9,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  display: block;
   --image-background-color: var(
       --color-side-panel-customize-chrome-theme-snapshot-background);
 }
@@ -79,6 +80,12 @@ cr-ripple {
 
 .image-background:hover .overlay {
   background-color: var(--cr-hover-on-subtle-background-color);
+}
+
+:host-context(.focus-outline-visible) .image-background:focus,
+.image-background:focus-visible,
+:host(:focus-visible) .image-background {
+  outline: 2px solid var(--cr-focus-outline-color);
 }
 
 cr-ripple {

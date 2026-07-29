@@ -61,11 +61,6 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         CustomizeThemeType.CUSTOM_THEME, page.getAttribute('theme-type'));
     assertEquals(
-        $$<HTMLImageElement>(
-            themeSnapshotElement, '.snapshot-container #customThemeImage')!
-            .getAttribute('aria-labelledby'),
-        'customThemeTitle');
-    assertEquals(
         'foo',
         $$(themeSnapshotElement,
            '.snapshot-container #customThemeTitle')!.textContent.trim());
@@ -93,11 +88,6 @@ suite('ThemeSnapshotTest', () => {
     assertEquals(
         CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
     assertEquals(
-        $$<HTMLImageElement>(
-            themeSnapshotElement,
-            '#classicChromeBackground svg')!.getAttribute('aria-labelledby'),
-        'classicChromeThemeTitle');
-    assertEquals(
         'Default Chrome',
         $$(themeSnapshotElement,
            '.snapshot-container #classicChromeThemeTitle')!.textContent.trim());
@@ -121,10 +111,6 @@ suite('ThemeSnapshotTest', () => {
     assertTrue(!!page);
     assertEquals(
         CustomizeThemeType.UPLOADED_IMAGE, page.getAttribute('theme-type'));
-    assertEquals(
-        $$(themeSnapshotElement, '.snapshot-container #uploadedThemeImage')!
-            .getAttribute('aria-labelledby'),
-        'uploadedThemeTitle');
     assertEquals(
         'Uploaded image',
         $$(themeSnapshotElement,
