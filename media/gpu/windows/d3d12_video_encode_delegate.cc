@@ -278,6 +278,10 @@ D3D12VideoEncodeDelegate::Encode(D3D12PictureBuffer picture_buffer,
             "Number of manual reference buffers exceeds that is supported by "
             "encoder"};
   }
+  if (!svc_layers_ && !options.key_frame && options.reference_buffers.empty()) {
+    return {EncoderStatus::Codes::kBadReferenceBuffer,
+            "Non-keyframe must have at least one reference buffer"};
+  }
 
   // Validate reference buffer indices early, before submitting any GPU work
   // (e.g., video processing). This prevents a scenario where GPU commands are

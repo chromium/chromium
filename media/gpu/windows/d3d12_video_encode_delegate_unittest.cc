@@ -386,4 +386,39 @@ TEST_F(D3D12VideoEncodeDelegateTest,
   EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
 }
 
+TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithEmptyRefsOnNonKeyframeFails) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.manual_reference_buffer_control = true;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  gfx::Size input_size = config.input_visible_size;
+  auto input_frame = CreateResource(input_size, config.input_format);
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
+  constexpr size_t kPayloadSize = 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kPayloadSize);
+
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillRepeatedly(
+          [&] { return GetEncoderOutputMetadataResourceMap(kPayloadSize); });
+
+  // Frame 0: keyframe with empty references — should succeed.
+  VideoEncoder::EncodeOptions options;
+  options.key_frame = true;
+  options.reference_buffers = {};
+  options.update_buffer = 0;
+  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
+                                                   bitstream_buffer, options);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  // Frame 1: non-keyframe with empty references — should fail.
+  options.key_frame = false;
+  options.reference_buffers = {};
+  options.update_buffer = std::nullopt;
+  result_or_error = encoder_delegate_->Encode(input_frame, color_space,
+                                              bitstream_buffer, options);
+  EXPECT_FALSE(result_or_error.has_value());
+  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+}
+
 }  // namespace media

@@ -491,6 +491,7 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeWithManualReferenceControl) {
   // Pass reference_buffers and update_buffer in EncodeOptions for emulation of
   // L1T2 encoding of 3 frames.
   VideoEncoder::EncodeOptions encode_opts;
+  encode_opts.key_frame = true;
   encode_opts.reference_buffers = {};
   encode_opts.update_buffer = 0;
   auto result_or_error =
