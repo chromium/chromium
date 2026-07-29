@@ -4369,7 +4369,7 @@ enum WebFeature {
   kOBSOLETE_V8AIRewriter_RewriteStreaming_Method = 5070,
   kOBSOLETE_V8AIRewriter_Destroy_Method = 5071,
   // The items above roughly this point are available in the M129 branch.
-  kFencedFrameCanLoadOpaqueURL = 5072,
+  kOBSOLETE_FencedFrameCanLoadOpaqueURL = 5072,
   kV8Performance_Memory_AttributeGetter_NotLockedToSite = 5073,
   kOBSOLETE_PartitionedPopin_OpenAttempt = 5074,
   kOBSOLETE_PartitionedPopin_Opened = 5075,

@@ -288,14 +288,4 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
       kFencedFrameFailedSandboxLoadInTopLevelFrame, false, 1);
 }
 
-TEST_F(HTMLFencedFrameElementTest, HistogramTestCanLoadOpaqueURL) {
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kFencedFrameCanLoadOpaqueURL));
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(GetDocument().GetFrame());
-  HTMLFencedFrameElement::canLoadOpaqueURL(script_state);
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kFencedFrameCanLoadOpaqueURL));
-}
-
 }  // namespace blink

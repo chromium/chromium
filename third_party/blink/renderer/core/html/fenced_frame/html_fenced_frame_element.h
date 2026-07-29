@@ -119,12 +119,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // frame to the config's URL. If `config` is null, navigates to about:blank.
   void setConfig(FencedFrameConfig* config);
 
-  // Web-exposed API that returns whether an opaque-ads fenced frame would be
-  // allowed to be created in the current active document of this node.
-  // Note: This function is deprecated. Please use
-  // `NavigatorAuction::canLoadAdAuctionFencedFrame` instead.
-  static bool canLoadOpaqueURL(ScriptState*);
-
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.

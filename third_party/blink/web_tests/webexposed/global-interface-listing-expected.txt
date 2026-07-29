@@ -4297,7 +4297,6 @@ interface HTMLEmbedElement : HTMLElement
     setter type
     setter width
 interface HTMLFencedFrameElement : HTMLElement
-    static method canLoadOpaqueURL
     attribute @@toStringTag
     getter allow
     getter config
