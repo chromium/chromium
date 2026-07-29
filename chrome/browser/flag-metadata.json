@@ -8167,7 +8167,7 @@
   {
     "name": "picture-in-picture-mute-control",
     "owners": [ "tibeekeocha@microsoft.com", "bkeen@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 165
   },
   {
     "name": "platform-keys-changes-wave-1",
