@@ -1407,6 +1407,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.lensButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     [_buttonStack addArrangedSubview:self.lensButton];
+    [self.layoutGuideCenter referenceView:self.lensButton
+                                underName:kFakeboxLensIconGuide];
     if (_useNewBadgeForLensButton) {
       [self.lensButton addTarget:self
                           action:@selector(lensButtonWithNewBadgeTapped:)
