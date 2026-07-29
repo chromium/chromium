@@ -62,7 +62,7 @@ std::string TestInvalidOhttpKey() {
   return "invalid_key";
 }
 constexpr char kExpectedKeyFetchServerUrl[] =
-    "https://www.gstatic.com/ohttp_gateway/hpke_public_keys/sbc_prod";
+    "https://www.gstatic.com/ohttp_gateway/hpke_public_keys/v1/sbc_prod";
 
 }  // namespace
 
