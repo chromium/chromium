@@ -341,7 +341,8 @@ export enum AiPageInteractions {
   SKILLS_CLICK = 8,
   INDIGO_CLICK = 9,
   GOOGLE_SEARCH_AI_MODE_WORKSPACE_CLICK = 10,
-  MAX_VALUE = 11,
+  INLINE_CUE_MENU_CLICK = 11,
+  MAX_VALUE = 12,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
 

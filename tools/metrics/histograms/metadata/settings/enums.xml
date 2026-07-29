@@ -393,6 +393,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Skills row click"/>
   <int value="9" label="Indigo row click"/>
   <int value="10" label="Google Search AI Mode Workspace row click"/>
+  <int value="11" label="Inline Cue Menu row click"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->

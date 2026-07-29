@@ -130,10 +130,10 @@
     This feature is disabled by your organization
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_INLINE_CUE_MENU" desc="Label for the inline cue menu content setting.">
-    Floating menu on selected text
+    Select text to ask Gemini
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_INLINE_CUE_MENU_MID_SENTENCE" desc="Label for the inline cue menu content setting when referenced mid-sentence.">
-    floating menu on selected text
+    select text to ask Gemini
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_ALLOWED" desc="Label for the enabled option of the inline cue menu content setting.">
     Show the floating menu when text is selected
@@ -142,7 +142,7 @@
     Don't show the floating menu when text is selected
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_DESCRIPTION" desc="Description for the inline cue menu setting page.">
-    Chrome can show a floating menu with actions when you select text on a site.
+    Get a definition or learn more about a topic
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_BLOCKED_EXCEPTIONS" desc="Header for the list of sites blocked from showing the inline cue menu.">
     Sites where the floating menu is blocked

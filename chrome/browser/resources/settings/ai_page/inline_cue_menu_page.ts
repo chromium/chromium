@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './settings_category_default_radio_group.js';
-import './site_settings_shared.css.js';
+import '../site_settings/settings_category_default_radio_group.js';
+import '../site_settings/site_settings_shared.css.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
-import './category_setting_exceptions.js';
+import '../site_settings/category_setting_exceptions.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

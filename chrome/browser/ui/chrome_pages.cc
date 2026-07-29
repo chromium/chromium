@@ -235,15 +235,19 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::WEB_PRINTING, "webPrinting"},
           {ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
            "autoPictureInPicture"},
-          {ContentSettingsType::INLINE_CUE_MENU, "inlineCueMenu"},
+          {ContentSettingsType::INLINE_CUE_MENU, "ai/inlineCueMenu"},
       });
 
   const std::string_view* override =
       base::FindOrNull(kSettingsPathOverrides, type);
-  return base::StrCat(
-      {kContentSettingsSubPage, "/",
-       override ? *override
-                : site_settings::ContentSettingsTypeToGroupName(type)});
+  if (override) {
+    if (override->find('/') != std::string_view::npos) {
+      return std::string(*override);
+    }
+    return base::StrCat({kContentSettingsSubPage, "/", *override});
+  }
+  return base::StrCat({kContentSettingsSubPage, "/",
+                       site_settings::ContentSettingsTypeToGroupName(type)});
 }
 
 bool SiteGURLIsValid(const GURL& url) {

@@ -55,7 +55,7 @@ import './site_settings/hand_tracking_page.js';
 import './site_settings/hid_devices_page.js';
 import './site_settings/idle_detection_page.js';
 import './site_settings/images_page.js';
-import './site_settings/inline_cue_menu_page.js';
+import './ai_page/inline_cue_menu_page.js';
 import './site_settings/insecure_content_page.js';
 import './site_settings/javascript_page.js';
 import './site_settings/keyboard_lock_page.js';
@@ -162,6 +162,7 @@ export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicator} from './ai_page/ai
 export {SettingsAiSuggestionsPageElement} from './ai_page/ai_suggestions_page.js';
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
+export {InlineCueMenuPageElement} from './ai_page/inline_cue_menu_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 // <if expr="_google_chrome">
 export type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './ai_page/on_device_ai_browser_proxy.js';
@@ -306,7 +307,6 @@ export {FileSystemSiteEntryElement} from './site_settings/file_system_site_entry
 export {FileSystemSiteEntryItemElement} from './site_settings/file_system_site_entry_item.js';
 export {FileSystemSiteListElement} from './site_settings/file_system_site_list.js';
 export {GeolocationPageElement} from './site_settings/geolocation_page.js';
-export {InlineCueMenuPageElement} from './site_settings/inline_cue_menu_page.js';
 export {NotificationsPageElement} from './site_settings/notifications_page.js';
 export {PdfDocumentsPageElement} from './site_settings/pdf_documents_page.js';
 export {ProtectedContentPageElement} from './site_settings/protected_content_page.js';

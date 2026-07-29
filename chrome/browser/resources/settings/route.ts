@@ -132,8 +132,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_LOOPBACK_NETWORK =
         r.SITE_SETTINGS.createChild('loopbackNetwork');
   }
-  r.SITE_SETTINGS_INLINE_CUE_MENU =
-      r.SITE_SETTINGS.createChild('inlineCueMenu');
 }
 
 /**
@@ -196,6 +194,9 @@ function createRoutes(): SettingsRoutes {
     }
     if (loadTimeData.getBoolean('showAiSuggestionsControl')) {
       r.AI_SUGGESTIONS = r.AI.createChild('/ai/suggestions');
+    }
+    if (loadTimeData.getBoolean('showInlineCueMenuControl')) {
+      r.INLINE_CUE_MENU = r.AI.createChild('/ai/inlineCueMenu');
     }
     if (loadTimeData.getBoolean('showSkillsSettingPage')) {
       r.SKILLS = r.AI.createChild('/ai/skills');

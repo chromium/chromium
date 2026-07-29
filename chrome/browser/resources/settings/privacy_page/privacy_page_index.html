@@ -308,15 +308,6 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
-      routes_.SITE_SETTINGS_INLINE_CUE_MENU, currentRoute, inSearchMode)]]"
-      update-when-false>
-    <settings-inline-cue-menu-page slot="view" id="siteSettingsInlineCueMenu"
-        route-path$="[[routes_.SITE_SETTINGS_INLINE_CUE_MENU.path]]"
-        data-parent-view-id="privacy">
-    </settings-inline-cue-menu-page>
-  </template>
-
-  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_MIXEDSCRIPT, currentRoute, inSearchMode)]]"
       update-when-false>
     <settings-insecure-content-page slot="view"

@@ -42,6 +42,7 @@ suite('AiPageIndex', function() {
       enableAiModeSearchSetting: true,
       actorLoginFederatedLoginSupportEnabled: true,
       showAiSuggestionsControl: true,
+      showInlineCueMenuControl: true,
     });
     resetRouterForTesting();
     return createAiPageIndex();
@@ -81,6 +82,10 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.AI_SUGGESTIONS);
     await microtasksFinished();
     assertActiveViews(['aiSuggestions']);
+
+    Router.getInstance().navigateTo(routes.INLINE_CUE_MENU);
+    await microtasksFinished();
+    assertActiveViews(['inlineCueMenu']);
   });
 
   test('aiFeaturesSectionVisibility', async function() {
@@ -126,6 +131,7 @@ suite('AiPageIndex', function() {
       'historySearch',
       'compose',
       'aiSuggestions',
+      'inlineCueMenu',
     ];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(

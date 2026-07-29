@@ -40,6 +40,14 @@
         role-description="$i18n{subpageArrowRoleDescription}"
         on-click="onAiSuggestionsRowClick_">
     </cr-link-row>
+    <cr-link-row id="inlineCueMenuRow" class="hr"
+        hidden="[[!showInlineCueMenuControl_]]"
+        start-icon="settings20:text-analysis"
+        label="$i18n{siteSettingsInlineCueMenu}"
+        sub-label="$i18n{siteSettingsInlineCueMenuDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onInlineCueMenuRowClick_">
+    </cr-link-row>
     <cr-link-row id="skillsRow" class="hr"
         hidden="[[!showSkillsSettingPage_]]"
         start-icon="settings20:flash-on-filled"

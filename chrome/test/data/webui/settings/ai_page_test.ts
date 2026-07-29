@@ -317,6 +317,29 @@ suite('AiPage', function() {
     assertEquals(routes.AI, currentRoute.parent);
   });
 
+  test('inlineCueMenuRow', async () => {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showInlineCueMenuControl: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const inlineCueMenuRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#inlineCueMenuRow');
+
+    assertTrue(!!inlineCueMenuRow);
+    assertTrue(isVisible(inlineCueMenuRow));
+    inlineCueMenuRow.click();
+    await verifyFeatureInteractionMetrics(
+        AiPageInteractions.INLINE_CUE_MENU_CLICK,
+        'Settings.AiPage.InlineCueMenuEntryPointClick');
+
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.INLINE_CUE_MENU, currentRoute);
+    assertEquals(routes.AI, currentRoute.parent);
+  });
+
   test('skillsRow', async () => {
     loadTimeData.overrideValues({
       showAiPage: true,
