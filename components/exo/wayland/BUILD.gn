@@ -297,6 +297,7 @@ source_set("unit_tests") {
     "output_controller_test_api.h",
     "output_controller_unittest.cc",
     "output_metrics_unittest.cc",
+    "remote_shell_security_unittest.cc",
     "serial_tracker_unittest.cc",
     "server_unittest.cc",
     "shell_unittest.cc",
