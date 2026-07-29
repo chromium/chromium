@@ -14,6 +14,8 @@ source_set("language_tag") {
     "language_tag.h",
     "language_tag_matcher.cc",
     "language_tag_matcher.h",
+    "locale_holder.cc",
+    "locale_holder.h",
     "tag_converters.cc",
     "tag_converters.h",
   ]
@@ -80,14 +82,26 @@ source_set("time_formatting_types") {
   sources = [ "time_formatting_types.h" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [ "test/test_locale_holder.h" ]
+  public_deps = [
+    "//base",
+    "//base:i18n",
+  ]
+}
+
 source_set("unittests") {
   testonly = true
   sources = [
     "bcp47_extensions_unittest.cc",
     "language_tag_matcher_unittest.cc",
     "language_tag_unittest.cc",
+    "locale_holder_unittest.cc",
+    "test/test_locale_holder_unittest.cc",
   ]
   deps = [
+    ":test_support",
     "//base",
     "//base:i18n",
     "//base/i18n/internal:unittests",
