@@ -24,6 +24,9 @@ bool PostTaskFromRust(SequencedTaskRunner& runner,
 void AddRef(const SequencedTaskRunner& runner);
 void Release(const SequencedTaskRunner& runner);
 
+// Check if we're currently on this runner's sequence
+bool RunsTasksInCurrentSequence(const SequencedTaskRunner& runner);
+
 }  // namespace base
 
 #endif  // BASE_TASK_SEQUENCED_TASK_RUNNER_RUST_SHIM_H_
