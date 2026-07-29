@@ -146,7 +146,7 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
   // 2nd request: Failure (Transient network error)
   AccessTokenResult result2 = FetchAccessTokenAsyncFailure(
       auth_service, AuthScope::kCloudSecureGateway,
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   ASSERT_FALSE(result2.has_value());
   EXPECT_EQ(TokenFetchError::kTransientError, result2.error());
   EXPECT_EQ(0u, auth_service.GetPendingTokenFetchCountForTesting());
@@ -193,24 +193,24 @@ TEST_F(EnterpriseNetworkAuthServiceTest, MapsGoogleServiceAuthErrors) {
       &profile_id_service_);
 
   const struct {
-    GoogleServiceAuthError::State gaia_state;
+    GoogleServiceAuthError auth_error;
     TokenFetchError expected_error;
   } kTestCases[] = {
-      {GoogleServiceAuthError::CONNECTION_FAILED,
+      {GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED),
        TokenFetchError::kTransientError},
-      {GoogleServiceAuthError::SERVICE_UNAVAILABLE,
+      {GoogleServiceAuthError::FromServiceUnavailable(""),
        TokenFetchError::kTransientError},
-      {GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
+      {GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN),
        TokenFetchError::kInvalidCredentials},
-      {GoogleServiceAuthError::ACCOUNT_NOT_FOUND,
+      {GoogleServiceAuthError::CreateAccountNotFound(),
        TokenFetchError::kNoPrimaryAccount},
   };
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histogram_tester;
     AccessTokenResult result = FetchAccessTokenAsyncFailure(
-        auth_service, AuthScope::kCloudSecureGateway,
-        GoogleServiceAuthError(test_case.gaia_state));
+        auth_service, AuthScope::kCloudSecureGateway, test_case.auth_error);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(test_case.expected_error, result.error());
     histogram_tester.ExpectBucketCount(kTestHistogramName,
@@ -280,7 +280,8 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
           signin::ConsentLevel::kSignin);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,

@@ -312,20 +312,21 @@ TEST_F(ProvisioningDomainFetcherTest, MapsOAuthFetchErrors) {
 
   // GAIA error state mappings
   const struct {
-    GoogleServiceAuthError::State gaia_state;
+    GoogleServiceAuthError auth_error;
     TokenFetchError expected_token_error;
   } kGaiaErrorCases[] = {
-      {GoogleServiceAuthError::ACCOUNT_NOT_FOUND,
+      {GoogleServiceAuthError::CreateAccountNotFound(),
        TokenFetchError::kNoPrimaryAccount},
-      {GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
+      {GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN),
        TokenFetchError::kInvalidCredentials},
-      {GoogleServiceAuthError::CONNECTION_FAILED,
+      {GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED),
        TokenFetchError::kTransientError},
   };
 
   for (const auto& test_case : kGaiaErrorCases) {
-    ProvisioningDomainFetchResult result = FetchWithOAuthAsyncError(
-        auth_service, policy, GoogleServiceAuthError(test_case.gaia_state));
+    ProvisioningDomainFetchResult result =
+        FetchWithOAuthAsyncError(auth_service, policy, test_case.auth_error);
     EXPECT_EQ(0, test_url_loader_factory_.NumPending());
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(ProvisioningDomainFetchResultStatus::kTokenFetchError,

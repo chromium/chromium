@@ -90,7 +90,7 @@ TEST_F(HttpRpcBasedEphemeralKeyFetcherTest,
   base::test::TestFuture<std::optional<EphemeralKeyFetcher::Result>> future;
   fetcher_.FetchEphemeralKey(future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR));
+      GoogleServiceAuthError::FromServiceError(""));
   EXPECT_EQ(future.Take(), std::nullopt);
 }
 
