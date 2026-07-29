@@ -2747,22 +2747,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.InputDevice.Keyboard.Active" enum="Boolean"
-    expires_after="2026-08-30">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Emitted when a hardware keyboard is connected or disconnected.
-  </summary>
-</histogram>
-
-<histogram name="Android.InputDevice.Mouse.Active" enum="Boolean"
-    expires_after="2026-08-30">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>Emitted when a mouse is connected or disconnected.</summary>
-</histogram>
-
 <histogram name="Android.InputHintChecker.InitializationResult"
     enum="InputHintInitializationResult" expires_after="2026-12-20">
   <owner>pasko@chromium.org</owner>
