@@ -754,3 +754,54 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, OmniboxActionsRegistered) {
   EXPECT_TRUE(regular_model_action->GetText().empty());
   EXPECT_FALSE(regular_model_action->GetImage().IsEmpty());
 }
+
+// Tests that unsafe schemes are not allowed to be opened from middle clicks.
+IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
+                       MiddleClickPasteAndGoBlocksUnsafeSchemes) {
+  if (!ui::Clipboard::IsMiddleClickPasteEnabled() ||
+      !ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL start_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+
+  LocationBarView* location_bar_view = GetLocationBarView();
+  LocationIconView* location_icon_view =
+      location_bar_view->location_icon_view();
+
+  // Try file:// URL. Note: ui::Clipboard::ReadText is asynchronous on Linux, so
+  // we must pump the runloop to allow the callback to run and be rejected.
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(u"file:///etc/passwd");
+  }
+
+  ui::MouseEvent middle_click_event(ui::EventType::kMousePressed, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks::Now(),
+                                    ui::EF_MIDDLE_MOUSE_BUTTON,
+                                    ui::EF_MIDDLE_MOUSE_BUTTON);
+  location_icon_view->OnMousePressed(middle_click_event);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(start_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
+
+  // Try chrome:// URL.
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(u"chrome://version");
+  }
+
+  location_icon_view->OnMousePressed(middle_click_event);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(start_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
+}

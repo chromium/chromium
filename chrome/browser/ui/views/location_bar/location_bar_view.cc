@@ -19,6 +19,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
@@ -101,6 +102,7 @@
 #include "components/contextual_search/input_state_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -116,6 +118,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -2170,6 +2173,15 @@ void LocationBarView::OnMiddleClickPaste(base::TimeTicks event_timestamp,
   text = omnibox::SanitizeTextForPaste(text);
 
   if (!GetOmniboxController()->edit_model()->CanPasteAndGo(text)) {
+    return;
+  }
+
+  AutocompleteMatch match;
+  AutocompleteClassifierFactory::GetForProfile(GetProfile())
+      ->Classify(text, false, false, metrics::OmniboxEventProto::BLANK, &match,
+                 nullptr);
+  if (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
+          std::string(match.destination_url.scheme()))) {
     return;
   }
 

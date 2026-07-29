@@ -182,6 +182,7 @@
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -1335,7 +1336,10 @@ void NewTabFromClipboardURL(BrowserWindowInterface* browser) {
                   ->Classify(text, false, false,
                              metrics::OmniboxEventProto::BLANK, &match,
                              nullptr);
-              if (match.destination_url.is_valid()) {
+              if (match.destination_url.is_valid() &&
+                  content::ChildProcessSecurityPolicy::GetInstance()
+                      ->IsWebSafeScheme(
+                          std::string(match.destination_url.scheme()))) {
                 browser_weak->tab_strip_model()->delegate()->AddTabAt(
                     match.destination_url, -1, true);
               }

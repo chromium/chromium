@@ -38,7 +38,10 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ui_base_features.h"
 
 namespace chrome {
@@ -790,5 +793,61 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(ToastId::kClosePinnedTab, toast_controller->GetCurrentToastId());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
+
+#if BUILDFLAG(IS_LINUX)
+// Tests that unsafe schemes are not allowed when opening new tabs from a
+// clipboard URL.
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       NewTabFromClipboardURLBlocksUnsafeSchemes) {
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    return;
+  }
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  int initial_tab_count = tab_strip_model->count();
+
+  // Try file:// URL. Note: ui::Clipboard::ReadText is asynchronous on Linux, so
+  // we must pump the runloop to allow the callback to run and be rejected.
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(u"file:///etc/passwd");
+  }
+
+  chrome::NewTabFromClipboardURL(browser());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(initial_tab_count, tab_strip_model->count());
+
+  // Try chrome:// URL.
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(u"chrome://version");
+  }
+
+  chrome::NewTabFromClipboardURL(browser());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(initial_tab_count, tab_strip_model->count());
+
+  // Try a safe URL (http). We explicitly observe both the new tab addition and
+  // the navigation completion instead of guessing runloop cycles.
+  GURL safe_url = https_server_.GetURL("a.test", "/title1.html");
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(base::UTF8ToUTF16(safe_url.spec()));
+  }
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  content::TestNavigationObserver observer(safe_url);
+  observer.StartWatchingNewWebContents();
+
+  chrome::NewTabFromClipboardURL(browser());
+  tab_waiter.Wait();
+  observer.Wait();
+
+  EXPECT_EQ(initial_tab_count + 1, tab_strip_model->count());
+  EXPECT_EQ(safe_url,
+            tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
+}
+#endif
 
 }  // namespace chrome
