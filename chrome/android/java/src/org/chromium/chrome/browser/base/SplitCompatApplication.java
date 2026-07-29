@@ -48,6 +48,7 @@ import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporter;
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporterFactory;
 import org.chromium.components.module_installer.util.ModuleUtil;
+import org.chromium.components.policy.PolicyCache;
 import org.chromium.ui.base.ResourceBundle;
 
 import java.util.function.Supplier;
@@ -191,6 +192,12 @@ public class SplitCompatApplication extends Application {
                         }
                         throw unsatisfiedLinkError;
                     };
+
+            // These shared preference objects are needed later when we initialize the feature list.
+            // Constructing the objects now will kick start a background thread to read the relevant
+            // file on disk, which will speed up the feature list initialization later.
+            ContextUtils.getAppSharedPreferences();
+            PolicyCache.get().getSharedPreferences();
         }
 
         maybeInitProcessType();

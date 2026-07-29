@@ -61,13 +61,12 @@ public class PolicyCache {
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
     /**
-     * Creates and returns SharedPreferences instance that is used to cache policy
-     * value.
+     * Creates and returns SharedPreferences instance that is used to cache policy value.
      *
      * @return The SharedPreferences instance that is used for policy caching. Returns null if
-     *         application context is not available.
+     *     application context is not available.
      */
-    private @Nullable SharedPreferences getSharedPreferences() {
+    public @Nullable SharedPreferences getSharedPreferences() {
         assert mReadable;
         mThreadChecker.assertOnValidThread();
         if (mSharedPreferences == null) {
