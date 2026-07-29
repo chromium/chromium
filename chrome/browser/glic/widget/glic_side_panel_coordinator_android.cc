@@ -226,6 +226,10 @@ void GlicSidePanelCoordinatorAndroid::OnManagerInitialized(
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
 
   if (tab_window == window) {
+    // Rebuild CoBrowseViews now that TabBottomSheetManager is registered on the
+    // window, ensuring the PeekViewManager is instantiated non-null.
+    views_bridge_->CreateCoBrowseViews(web_contents_.get(),
+                                       /*request_focus=*/false);
     ShowOptions options = std::exchange(pending_show_options_, std::nullopt)
                               .value_or(ShowOptions());
     Show(options);
