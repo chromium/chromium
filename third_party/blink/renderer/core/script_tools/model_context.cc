@@ -560,6 +560,11 @@ bool ModelContext::ExecuteTool(const base::UnguessableToken& invocation_id,
 }
 
 bool ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
+  CHECK(document_->IsActive());
+
+  // It's possible for `invocation_id` to not match any pending execution, for
+  // example, if the tool execution finishes before a tool caller's signal to
+  // cancel execution comes in.
   auto it = pending_executions_.find(String(invocation_id.ToString()));
   if (it == pending_executions_.end()) {
     return false;
