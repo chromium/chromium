@@ -50,6 +50,8 @@ namespace net::x509_util {
 
 namespace {
 
+constexpr size_t kMaxBase128Uint64Size = 10;
+
 bool AddSignatureAlgorithm(CBB* cbb,
                            base::span<const uint8_t> oid_bytes,
                            bool null_param) {
@@ -597,7 +599,6 @@ bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
 
 std::vector<uint8_t> AppendOidComponent(base::span<const uint8_t> oid,
                                         uint64_t component) {
-  constexpr size_t kMaxBase128Uint64Size = 10;
   bssl::ScopedCBB cbb;
   CHECK(CBB_init(cbb.get(),
                  /*initial_capacity=*/oid.size() + kMaxBase128Uint64Size) &&
@@ -683,6 +684,24 @@ std::string TrustAnchorIDsToString(
     oid_strings.emplace_back(RelativeOidToString(id));
   }
   return base::JoinString(oid_strings, ", ");
+}
+
+std::vector<uint8_t> CreateMtcLandmarkGroupTrustAnchorID(
+    base::span<const uint8_t> ca_id,
+    uint16_t log_number,
+    uint64_t landmark_number) {
+  bssl::ScopedCBB cbb;
+  CHECK(
+      CBB_init(cbb.get(),
+               /*initial_capacity=*/ca_id.size() + kMaxBase128Uint64Size * 3) &&
+      CBB_add_bytes(cbb.get(), ca_id.data(), ca_id.size()) &&
+      CBB_add_asn1_oid_component(cbb.get(), 2) &&
+      CBB_add_asn1_oid_component(cbb.get(), log_number) &&
+      CBB_add_asn1_oid_component(cbb.get(), landmark_number));
+  // SAFETY: CBB_data(cbb) returns a pointer to the written data with length
+  // CBB_len(cbb).
+  return base::ToVector(UNSAFE_BUFFERS(
+      base::span<const uint8_t>(CBB_data(cbb.get()), CBB_len(cbb.get()))));
 }
 
 }  // namespace net::x509_util

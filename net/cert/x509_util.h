@@ -239,6 +239,11 @@ NET_EXPORT std::vector<std::vector<uint8_t>> ParseTlsTrustAnchorIDs(
 NET_EXPORT std::string TrustAnchorIDsToString(
     const std::vector<std::vector<uint8_t>>& trust_anchor_ids);
 
+NET_EXPORT std::vector<uint8_t> CreateMtcLandmarkGroupTrustAnchorID(
+    base::span<const uint8_t> ca_id,
+    uint16_t log_number,
+    uint64_t landmark_number);
+
 }  // namespace x509_util
 
 }  // namespace net

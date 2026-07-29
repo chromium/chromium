@@ -1844,6 +1844,13 @@ bool MtcLogBuilder::AdvanceLandmark() {
   return true;
 }
 
+std::vector<uint8_t> MtcLogBuilder::GetLandmarkTrustAnchorGroup() const {
+  CHECK_EQ(spec_, kPlants05);
+
+  return x509_util::CreateMtcLandmarkGroupTrustAnchorID(ca_id_, log_number_,
+                                                        landmarks_.size() - 1);
+}
+
 std::vector<bssl::Subtree> MtcLogBuilder::GetLandmarkSubtrees() const {
   // TODO(crbug.com/469624806): could cache the subtrees when adding a landmark
   // so we don't need to be recalculated.
@@ -1871,6 +1878,13 @@ std::vector<bssl::TrustedSubtree> MtcLogBuilder::GetLandmarkSubtreeHashes()
     result.emplace_back(subtree, *hash);
   }
 
+  return result;
+}
+
+std::map<uint16_t, std::vector<bssl::TrustedSubtree>>
+MtcLogBuilder::GetPerLogLandmarkSubtreeHashes() const {
+  std::map<uint16_t, std::vector<bssl::TrustedSubtree>> result;
+  result[log_number_] = GetLandmarkSubtreeHashes();
   return result;
 }
 

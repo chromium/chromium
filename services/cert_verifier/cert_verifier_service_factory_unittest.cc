@@ -39,6 +39,7 @@
 #include "net/net_buildflags.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/chrome_root_store_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -512,17 +513,6 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
       root->GetCertBuffer()));
 }
 
-void SetFakeProtoTrustedSubtreeData(
-    chrome_root_store::MtcAnchorData* mtc_anchor_metadata) {
-  chrome_root_store::MtcSubTree* subtree =
-      mtc_anchor_metadata->add_trusted_subtrees();
-  subtree->set_start_inclusive(1);
-  subtree->set_end_exclusive(2);
-  std::array<uint8_t, crypto::hash::kSha256Size> hash;
-  hash.fill(0);
-  subtree->set_hash(base::as_string_view(hash));
-}
-
 TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
   base::test::ScopedFeatureList feature_list_{net::features::kVerifyMTCs};
 
@@ -543,31 +533,31 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
   int64_t kRootStoreVersion = net::CompiledChromeRootStoreVersion() + 1;
 
   {
-    // Create updated Chrome Root Store with a regular anchor and 2 MTC anchors.
+    // Create updated Chrome Root Store with a regular anchor so parsing
+    // succeeds.
     chrome_root_store::RootStore root_store;
     root_store.set_version_major(kRootStoreVersion);
     chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
     anchor->set_der(root->GetDER());
 
-    // Two anchors that will have matching MTC metadata
-    chrome_root_store::MtcAnchor* mtc_anchor = root_store.add_mtc_anchors();
-    mtc_anchor->set_log_id({0x01, 0x02, 0x03});
-    mtc_anchor->set_tls_trust_anchor(true);
-
-    mtc_anchor = root_store.add_mtc_anchors();
-    mtc_anchor->set_log_id({0x21, 0x22});
-    mtc_anchor->set_tls_trust_anchor(true);
+    chrome_root_store::MtcConfig mtc_config;
+    mtc_config.mutable_signer_set()->mutable_timestamp()->set_seconds(
+        base::Time::Now().InSecondsFSinceUnixEpoch());
+    // Two anchors that will have matching MTC metadata.
+    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(),
+                            {0x01, 0x02, 0x03}, "op1", std::nullopt);
+    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(), {0x21, 0x22},
+                            "op2", std::nullopt);
 
     // One anchor that doesn't match the MTC metadata.
-    mtc_anchor = root_store.add_mtc_anchors();
-    mtc_anchor->set_log_id({0x31, 0x32});
-    mtc_anchor->set_tls_trust_anchor(true);
+    net::AddSignerSetIssuer(*mtc_config.mutable_signer_set(), {0x31, 0x32},
+                            "op3", std::nullopt);
 
     // Feed factory the new Chrome Root Store.
     base::RunLoop update_run_loop;
     cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
+        mojo_base::ProtoWrapper(root_store),
+        mojo_base::ProtoWrapper(mtc_config), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 
@@ -593,37 +583,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
         now.InMillisecondsSinceUnixEpoch() / 1000);
 
     // Two anchor metadatas that match the MTC anchors above.
-    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
-        mtc_metadata_proto.add_mtc_anchor_data();
-    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
-        {0x04, 0x05});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_min_active_landmark_inclusive(1);
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_last_landmark_inclusive(42);
-    SetFakeProtoTrustedSubtreeData(mtc_anchor_metadata);
-
-    mtc_anchor_metadata = mtc_metadata_proto.add_mtc_anchor_data();
-    mtc_anchor_metadata->set_log_id({0x21, 0x22});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
-        {0x24, 0x25});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_min_active_landmark_inclusive(21);
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_last_landmark_inclusive(242);
-    SetFakeProtoTrustedSubtreeData(mtc_anchor_metadata);
-
-    // One anchor metadata that doesn't match the MTC anchors above.
-    mtc_anchor_metadata = mtc_metadata_proto.add_mtc_anchor_data();
-    mtc_anchor_metadata->set_log_id({0x41, 0x42});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
-        {0x44, 0x45});
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_min_active_landmark_inclusive(41);
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_last_landmark_inclusive(442);
-    SetFakeProtoTrustedSubtreeData(mtc_anchor_metadata);
+    // TODO(crbug.com/462227032): Restore tests of MTC info once plants-05
+    // style MTC CAs are supported in GetChromeRootStoreInfo.
 
     // Feed factory the new MTC metadata.
     base::RunLoop update_run_loop;
@@ -646,21 +607,9 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
 
     EXPECT_EQ(info_ptr->mtc_metadata_update_time, now_truncated_to_seconds);
 
-    // root_mtc_info only includes anchors that were present in both the root
-    // store mtc_anchors and the mtc metadata.
-    ASSERT_EQ(info_ptr->root_mtc_info.size(), 2u);
-    {
-      const auto& mtc_info = *info_ptr->root_mtc_info[0];
-      EXPECT_EQ(mtc_info.log_id_text, "1.2.3");
-      EXPECT_EQ(mtc_info.min_landmark_id_text, "4.5.1");
-      EXPECT_EQ(mtc_info.last_landmark_id_text, "4.5.42");
-    }
-    {
-      const auto& mtc_info = *info_ptr->root_mtc_info[1];
-      EXPECT_EQ(mtc_info.log_id_text, "33.34");
-      EXPECT_EQ(mtc_info.min_landmark_id_text, "36.37.21");
-      EXPECT_EQ(mtc_info.last_landmark_id_text, "36.37.242");
-    }
+    // TODO(crbug.com/462227032): Restore tests of MTC info once plants-05
+    // style MTC CAs are supported in GetChromeRootStoreInfo.
+    ASSERT_EQ(info_ptr->root_mtc_info.size(), 0u);
   }
 }
 

@@ -9,8 +9,10 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/transparent_hash.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "crypto/sha2.h"
@@ -232,22 +234,6 @@ class NET_EXPORT ChromeRootStoreData {
     std::optional<int32_t> crs_root_id;
   };
 
-  struct NET_EXPORT MtcAnchor {
-    MtcAnchor(std::vector<uint8_t> log_id,
-              std::vector<ChromeRootCertConstraints> constraints,
-              std::optional<int32_t> crs_root_id);
-    ~MtcAnchor();
-
-    MtcAnchor(const MtcAnchor& other);
-    MtcAnchor(MtcAnchor&& other);
-    MtcAnchor& operator=(const MtcAnchor& other);
-    MtcAnchor& operator=(MtcAnchor&& other);
-
-    std::vector<uint8_t> log_id;
-    std::vector<ChromeRootCertConstraints> constraints;
-    std::optional<int32_t> crs_root_id;
-  };
-
   // CreateFromRootStoreProto converts |proto| into a usable
   // ChromeRootStoreData object. Returns std::nullopt if the passed in
   // proto has errors in it (e.g. an unparsable DER-encoded certificate).
@@ -262,7 +248,6 @@ class NET_EXPORT ChromeRootStoreData {
   static ChromeRootStoreData CreateForTesting(
       base::span<const ChromeRootCertInfo> certs,
       base::span<const base::span<const uint8_t>> eutl_certs,
-      base::span<const ChromeMtcAnchorInfo> mtc_anchors,
       int64_t version);
 
   ~ChromeRootStoreData();
@@ -274,9 +259,6 @@ class NET_EXPORT ChromeRootStoreData {
 
   const std::vector<Anchor>& trust_anchors() const { return trust_anchors_; }
   const std::vector<Anchor>& eutl_certs() const { return eutl_certs_; }
-  const std::vector<MtcAnchor>& mtc_trust_anchors() const {
-    return mtc_trust_anchors_;
-  }
   const std::optional<ChromeRootStoreSignerSet>& signer_set() const {
     return signer_set_;
   }
@@ -295,13 +277,11 @@ class NET_EXPORT ChromeRootStoreData {
   ChromeRootStoreData();
   ChromeRootStoreData(base::span<const ChromeRootCertInfo> certs,
                       base::span<const base::span<const uint8_t>> eutl_certs,
-                      base::span<const ChromeMtcAnchorInfo> mtc_anchors,
                       bool certs_are_static,
                       int64_t version);
 
   std::vector<Anchor> trust_anchors_;
   std::vector<Anchor> eutl_certs_;
-  std::vector<MtcAnchor> mtc_trust_anchors_;
   std::optional<ChromeRootStoreSignerSet> signer_set_;
   bool disable_mtc_mirroring_requirements_ = false;
   int64_t version_;
@@ -423,13 +403,13 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
     MtcAnchorExtraData& operator=(const MtcAnchorExtraData& other);
     MtcAnchorExtraData& operator=(MtcAnchorExtraData&& other);
 
-    std::optional<int32_t> crs_root_id;
-
+    // TODO(crbug.com/452986179) rename to revoked_serials;
     // The revocation map key is the end index (exclusive) and the value is the
     // start index (inclusive).
     base::flat_map<uint64_t, uint64_t> revoked_indices;
 
-    std::vector<ChromeRootCertConstraints> constraints;
+    // The Signer data from the SignerSet for this issuer.
+    Signer signer_config;
 
     // TODO(crbug.com/452986180): support constraint overrides for MTC anchors.
   };
@@ -473,12 +453,15 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   GetTrustAnchorIDsFromCompiledInRootStore(
       base::span<const ChromeRootCertInfo> cert_list_for_testing = {});
 
-  // Returns the list of MTC log IDs from the compiled-in root store.
+  // Returns the list of MTC CA IDs from the compiled-in root store.
   // If |anchor_list_for_testing| is non-empty, it will override the
   // compiled-in production root store.
   static std::vector<std::vector<uint8_t>>
-  GetTrustedMtcLogIDsFromCompiledInRootStore(
-      base::span<const ChromeMtcAnchorInfo> anchor_list_for_testing = {});
+  GetTrustedMtcCaIDsFromCompiledInRootStore();
+
+  static std::vector<std::vector<uint8_t>>
+  GetTrustedMtcCaIDsFromCompiledInRootStoreForTesting(
+      const ChromeRootStoreSignerSet& signer_set);
 
   // Creates a TrustStoreChrome that uses the compiled in Chrome Root Store.
   TrustStoreChrome();
@@ -533,6 +516,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   bssl::TrustStore* eutl_trust_store() { return &eutl_trust_store_; }
 
  private:
+  static std::vector<std::vector<uint8_t>>
+  GetTrustedMtcCaIDsFromCompiledInRootStore(
+      const ChromeRootStoreSignerSet& signer_set);
+
   TrustStoreChrome(const ChromeRootStoreData& root_store_data,
                    const ChromeRootStoreMtcMetadata* mtc_metadata,
                    ConstraintOverrideMap override_constraints);
@@ -554,17 +541,12 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
 
   bssl::TrustStoreInMemory trust_store_;
 
-  // Hasher that allows heterogeneous lookup from span<const uint8_t>.
-  struct ByteSpanHash
-      : absl::DefaultHashContainerHash<base::span<const uint8_t>> {
-    using is_transparent = void;
-  };
   // Map from log_id to additional data for the MTC anchor with the
   // matching log id. This stores data that isn't handled in bssl:MTCAnchor.
   absl::flat_hash_map<std::vector<uint8_t>,
                       MtcAnchorExtraData,
-                      ByteSpanHash,
-                      std::ranges::equal_to>
+                      base::TransparentHashAs<base::span<const uint8_t>>,
+                      base::TransparentEqualAs<base::span<const uint8_t>>>
       mtc_anchor_extra_data_;
 
   // Map from certificate DER bytes to additional data (if any) for that
@@ -580,6 +562,14 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   bssl::TrustStoreInMemory eutl_trust_store_;
 
   int64_t version_;
+
+  base::Time signer_set_timestamp_;
+  absl::flat_hash_map<std::vector<uint8_t>,
+                      Signer,
+                      base::TransparentHashAs<base::span<const uint8_t>>,
+                      base::TransparentEqualAs<base::span<const uint8_t>>>
+      signer_set_mirrors_;
+  bool disable_mtc_mirroring_requirements_ = false;
 
   std::optional<base::Time> mtc_metadata_update_time_;
 };

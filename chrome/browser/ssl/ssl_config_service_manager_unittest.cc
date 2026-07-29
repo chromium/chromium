@@ -20,6 +20,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/features.h"
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_config.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -293,6 +294,11 @@ TEST_F(SSLConfigServiceManagerTest,
 // context params: initially from compiled-in root store data, and then from
 // dynamically-configured Trust Anchor IDs when present.
 TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates({{net::features::kTLSTrustAnchorIDs, true},
+                                      {net::features::kVerifyMTCs, true},
+                                      {net::features::kTestRootStore, false}});
+
   TestingPrefServiceSimple local_state;
   SSLConfigServiceManager::RegisterPrefs(local_state.registry());
 
@@ -302,7 +308,10 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
       initial_config_->trust_anchor_ids,
       testing::UnorderedElementsAreArray(
           net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
-  EXPECT_TRUE(initial_config_->mtc_trust_anchor_ids.empty());
+  EXPECT_THAT(
+      initial_config_->mtc_trust_anchor_ids,
+      testing::UnorderedElementsAreArray(
+          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore()));
 
   // Simulate an update that has an empty set of Trust Anchor IDs.
   config_manager->UpdateTrustAnchorIDs({}, {}, 0);
@@ -418,6 +427,46 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
         testing::UnorderedElementsAre(std::vector<uint8_t>({0x05, 0x07}),
                                       std::vector<uint8_t>({0x07, 0x09})));
   }
+}
+
+TEST_F(SSLConfigServiceManagerTest,
+       InitialTrustAnchorIDsMtcEnabledWithTestRoots) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates({{net::features::kTLSTrustAnchorIDs, true},
+                                      {net::features::kVerifyMTCs, true},
+                                      {net::features::kTestRootStore, true}});
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+  EXPECT_THAT(
+      initial_config_->trust_anchor_ids,
+      testing::UnorderedElementsAreArray(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
+  EXPECT_THAT(
+      initial_config_->mtc_trust_anchor_ids,
+      testing::UnorderedElementsAreArray(
+          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore()));
+}
+
+TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsMtcDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates({{net::features::kTLSTrustAnchorIDs, true},
+                                      {net::features::kVerifyMTCs, false}});
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+  EXPECT_THAT(
+      initial_config_->trust_anchor_ids,
+      testing::UnorderedElementsAreArray(
+          net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()));
+  EXPECT_THAT(initial_config_->mtc_trust_anchor_ids,
+              testing::UnorderedElementsAre());
 }
 
 // Tests that Trust Anchor IDs are properly set in new SSLConfigs after pref

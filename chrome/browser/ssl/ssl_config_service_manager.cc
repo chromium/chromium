@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/base/features.h"
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_config_service.h"
@@ -150,6 +151,23 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
 
   // Populate |disabled_cipher_suites_| with the initial pref value.
   OnDisabledCipherSuitesChange(local_state);
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Populate initial trust anchor ID state from compiled-in values.
+  //
+  // Theoretically there should be some check here for whether Chrome Root
+  // Store is enabled, on builds where it is optional. That is currently
+  // configured through the GetCertVerifierServiceFactory
+  // SetUseChromeRootStore() call, so the status is not easily accessible from
+  // here. Currently the only platform where CRS is optional and disabled is
+  // android webview, which doesn't use this file, so this is okay.
+  trust_anchor_ids_ =
+      net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
+    mtc_trust_anchor_ids_ =
+        net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore();
+  }
+#endif
 }
 
 SSLConfigServiceManager::~SSLConfigServiceManager() = default;
@@ -253,14 +271,9 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
 
   config->ech_enabled = ech_enabled_.GetValue();
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  config->trust_anchor_ids =
-      trust_anchor_ids_.has_value()
-          ? trust_anchor_ids_.value()
-          : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  config->trust_anchor_ids = trust_anchor_ids_;
   config->mtc_trust_anchor_ids = mtc_trust_anchor_ids_;
   config->mtc_update_time_seconds = mtc_update_time_seconds_;
-#endif
 
   ConfigureSSLComplianceSettings(key_exchange_compliance_,
                                  tls13_cipher_compliance_, config.get());

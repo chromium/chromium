@@ -15,6 +15,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -199,23 +200,23 @@ PKIMetadataComponentInstallerService::PKIMetadataComponentInstallerService() {
       net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
-    auto trusted_mtc_logids =
-        net::TrustStoreChrome::GetTrustedMtcLogIDsFromCompiledInRootStore();
-    crs_trusted_mtc_logids_ = absl::flat_hash_set<std::vector<uint8_t>>(
-        trusted_mtc_logids.begin(), trusted_mtc_logids.end());
+    auto trusted_mtc_ca_ids =
+        net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore();
+    crs_trusted_mtc_ca_ids_ = absl::flat_hash_set<std::vector<uint8_t>>(
+        trusted_mtc_ca_ids.begin(), trusted_mtc_ca_ids.end());
   }
 }
 
-PKIMetadataComponentInstallerService::MtcLogIdAndLandmarkTrustAnchorId::
-    MtcLogIdAndLandmarkTrustAnchorId() = default;
-PKIMetadataComponentInstallerService::MtcLogIdAndLandmarkTrustAnchorId::
-    ~MtcLogIdAndLandmarkTrustAnchorId() = default;
-PKIMetadataComponentInstallerService::MtcLogIdAndLandmarkTrustAnchorId::
-    MtcLogIdAndLandmarkTrustAnchorId(MtcLogIdAndLandmarkTrustAnchorId&&) =
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
+    MtcCaIdAndLandmarkTrustAnchorIds() = default;
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
+    ~MtcCaIdAndLandmarkTrustAnchorIds() = default;
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
+    MtcCaIdAndLandmarkTrustAnchorIds(MtcCaIdAndLandmarkTrustAnchorIds&&) =
         default;
-PKIMetadataComponentInstallerService::MtcLogIdAndLandmarkTrustAnchorId::
-    MtcLogIdAndLandmarkTrustAnchorId(
-        const MtcLogIdAndLandmarkTrustAnchorId& other) = default;
+PKIMetadataComponentInstallerService::MtcCaIdAndLandmarkTrustAnchorIds::
+    MtcCaIdAndLandmarkTrustAnchorIds(
+        const MtcCaIdAndLandmarkTrustAnchorIds& other) = default;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 // static
@@ -334,7 +335,14 @@ void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
     ChromeRootStoreAndMtcConfig root_store_and_mtc_config) {
   auto& [chrome_root_store, mtc_config] = root_store_and_mtc_config;
   if (chrome_root_store.has_value()) {
-    UpdateCRSTrustAnchorIDs(chrome_root_store.value());
+    bool updated_tai = UpdateCRSTrustAnchorIDs(chrome_root_store.value());
+    if (mtc_config.has_value() &&
+        UpdateSignerSetTrustAnchorIDs(mtc_config.value())) {
+      updated_tai = true;
+    }
+    if (updated_tai) {
+      UpdateTrustAnchorIDsImpl();
+    }
 
     content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
         std::move(chrome_root_store.value()), std::move(mtc_config),
@@ -366,40 +374,32 @@ void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDsImpl() {
   // Start with trust anchor ids of the CRS trusted anchors.
   std::vector<std::vector<uint8_t>> trust_anchor_ids = crs_trust_anchor_ids_;
 
+  // Add MTC trust anchor ids, if MTCs are enabled.
   std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids;
   if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
-    // Add trust anchor ids for MTC trusted subtrees.
-    //
-    // Intersect the trusted subtree anchors log_ids from fastpush, with the MTC
-    // trust anchor log_ids, and add these subtree TAIs to trust_anchor_ids.
-    //
-    // The intersection is necessary since the components update on different
-    // schedules, so it's possible to have the trusted subtrees for a MTC
-    // anchor that isn't trusted in the Chrome Root Store (or vice versa, but
-    // that doesn't matter here).
-    // A site using such a subtree will not actually be trusted unless the
-    // matching anchor is present in the CRS, so advertising support for it in
-    // TAI would lead to asking sites to send certs we can't actually verify.
-    for (const auto& signatureless_tai :
-         mtc_log_id_landmark_trust_anchor_ids_) {
-      if (crs_trusted_mtc_logids_.contains(signatureless_tai.anchor_log_id)) {
-        DVLOG(1) << "using signatureless TAI "
-                 << net::x509_util::RelativeOidToString(
-                        signatureless_tai.landmark_trust_anchor_id)
-                 << " for trusted MTC Anchor log_id="
-                 << net::x509_util::RelativeOidToString(
-                        signatureless_tai.anchor_log_id);
-        mtc_trust_anchor_ids.push_back(
-            signatureless_tai.landmark_trust_anchor_id);
-      } else {
-        DVLOG(1) << "ignoring signatureless TAI "
-                 << net::x509_util::RelativeOidToString(
-                        signatureless_tai.landmark_trust_anchor_id)
-                 << " as no trusted MTC Anchor found with log_id="
-                 << net::x509_util::RelativeOidToString(
-                        signatureless_tai.anchor_log_id);
+    absl::flat_hash_set<std::vector<uint8_t>> trusted_mtc_ca_ids =
+        crs_trusted_mtc_ca_ids_;
+    for (const auto& landmark_info : mtc_ca_id_landmark_trust_anchor_ids_) {
+      if (!trusted_mtc_ca_ids.contains(landmark_info.ca_id)) {
+        // The fastpush component contained data for a CA that isn't trusted in
+        // the signer set. Ignore it.
+        continue;
       }
+      // If we have landmark group TAI(s) for a MTC CA, they also imply trust
+      // of the standalone CA ID, so we don't need to advertise that
+      // separately. Remove the CA ID from the list that will be advertised.
+      trusted_mtc_ca_ids.erase(landmark_info.ca_id);
+
+      // Add the landmark group IDs to the result.
+      base::Extend(mtc_trust_anchor_ids,
+                   landmark_info.landmark_trust_anchor_ids);
     }
+
+    // If there were trusted MTC CAs that did not have trusted landmarks in the
+    // fastpush data (or there was no fastpush data), add those CA IDs to the
+    // result. This indicates we support these CAs for standalone MTC
+    // verification only.
+    base::Extend(mtc_trust_anchor_ids, trusted_mtc_ca_ids);
   }
 
   SystemNetworkContextManager* network_context_manager =
@@ -410,15 +410,48 @@ void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDsImpl() {
       mtc_metadata_update_time_seconds_);
 }
 
-void PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
+bool PKIMetadataComponentInstallerService::UpdateSignerSetTrustAnchorIDs(
+    const mojo_base::ProtoWrapper& mtc_config) {
+  if (!base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
+    return false;
+  }
+  auto message = mtc_config.As<chrome_root_store::MtcConfig>();
+  if (!message.has_value()) {
+    LOG(ERROR) << "error parsing proto for MtcConfig";
+    return false;
+  }
+  if (!message->has_signer_set() ||
+      message->signer_set().timestamp().seconds() <=
+          net::CompiledSignerSetTimestampSeconds()) {
+    DVLOG(1) << "ignored out of date SignerSet";
+    return false;
+  }
+  auto signer_set =
+      net::ChromeRootStoreSignerSet::CreateFromProto(message->signer_set());
+  if (!signer_set) {
+    LOG(ERROR) << "error parsing SignerSet";
+    return false;
+  }
+
+  absl::flat_hash_set<std::vector<uint8_t>> crs_trusted_mtc_ca_ids;
+  for (const auto& issuer : signer_set->trusted_issuers()) {
+    crs_trusted_mtc_ca_ids.insert(issuer.base_id);
+  }
+
+  crs_trusted_mtc_ca_ids_ = std::move(crs_trusted_mtc_ca_ids);
+
+  return true;
+}
+
+bool PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
     const mojo_base::ProtoWrapper& chrome_root_store) {
   auto message = chrome_root_store.As<chrome_root_store::RootStore>();
   if (!message.has_value()) {
     LOG(ERROR) << "error parsing proto for Chrome Root Store";
-    return;
+    return false;
   }
   if (message->version_major() <= net::CompiledChromeRootStoreVersion()) {
-    return;
+    return false;
   }
 
   // TODO(crbug.com/465497426): These methods should check the version
@@ -441,28 +474,10 @@ void PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
     }
   }
 
-  absl::flat_hash_set<std::vector<uint8_t>> crs_trusted_mtc_logids;
-  if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
-    for (const auto& mtc_anchor : message->mtc_anchors()) {
-      if (mtc_anchor.tls_trust_anchor()) {
-        crs_trusted_mtc_logids.insert(
-            base::ToVector(base::as_byte_span(mtc_anchor.log_id())));
-        // TODO(crbug.com/452983502): once signatureful MTCs are supported, we
-        // should add the log ids for trusted signatureful `mtc_anchors()` to
-        // the Trust Anchor IDs that we send. This probably needs to be a
-        // different member than `crs_trust_anchor_ids` if we want to have them
-        // end up in the `mtc_trust_anchor_ids` config.
-        //
-        // (The trust anchor ids for signatureless MTCs are handled by
-        // UpdateMtcMetadataTrustAnchorIDs.)
-      }
-    }
-  }
 
   crs_trust_anchor_ids_ = std::move(crs_trust_anchor_ids);
-  crs_trusted_mtc_logids_ = std::move(crs_trusted_mtc_logids);
 
-  UpdateTrustAnchorIDsImpl();
+  return true;
 }
 
 bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
@@ -495,33 +510,42 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
     return false;
   }
 
-  std::vector<MtcLogIdAndLandmarkTrustAnchorId>
-      mtc_log_id_signatureless_trust_anchor_ids;
-
-  for (const auto& anchor_data : message->mtc_anchor_data()) {
-    if (!anchor_data.has_log_id() ||
-        !anchor_data.has_trusted_landmark_ids_range()) {
-      LOG(ERROR) << "ignored invalid MtcAnchorData";
-      continue;
-    }
-    const auto& tai_range = anchor_data.trusted_landmark_ids_range();
-    if (!tai_range.has_base_id() ||
-        !tai_range.has_min_active_landmark_inclusive() ||
-        !tai_range.has_last_landmark_inclusive()) {
-      LOG(ERROR) << "ignored invalid MtcAnchorData";
-      continue;
-    }
-    MtcLogIdAndLandmarkTrustAnchorId tai_entry;
-    tai_entry.anchor_log_id =
-        base::ToVector(base::as_byte_span(anchor_data.log_id()));
-    tai_entry.landmark_trust_anchor_id = net::x509_util::AppendOidComponent(
-        base::as_byte_span(tai_range.base_id()),
-        tai_range.last_landmark_inclusive());
-    mtc_log_id_signatureless_trust_anchor_ids.push_back(std::move(tai_entry));
+  // Use the ChromeRootStoreMtcMetadata class to parse the proto, which ensures
+  // that we do the same set of parsing checks as will be done when using the
+  // data in the cert verifier service.
+  // TODO(crbug.com/452986179): this does some unnecessary work in populating
+  // the revoked_serial flat_map, which isn't used here. Perhaps refactor to
+  // avoid that?
+  auto parsed =
+      net::ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(*message);
+  if (!parsed) {
+    LOG(ERROR) << "error parsing proto for MtcMetadata";
+    return false;
   }
 
-  mtc_log_id_landmark_trust_anchor_ids_ =
-      std::move(mtc_log_id_signatureless_trust_anchor_ids);
+  std::vector<MtcCaIdAndLandmarkTrustAnchorIds>
+      mtc_ca_id_landmark_trust_anchor_ids;
+  for (const auto& [ca_id, ca_data] : parsed->plants05_anchor_data()) {
+    MtcCaIdAndLandmarkTrustAnchorIds tai_entry;
+    tai_entry.ca_id = ca_id;
+    if (ca_data.trusted_landmark_ranges.empty()) {
+      // If a CA entry in the fastpush had no trusted landmark data, don't add
+      // an empty entry to the landmark trust anchor ids map.
+      // (This is not an error, it's valid to use MtcMetadata to push
+      // revocation information for a CA we don't have trusted subtrees for.)
+      continue;
+    }
+    for (const auto& landmark_range : ca_data.trusted_landmark_ranges) {
+      tai_entry.landmark_trust_anchor_ids.push_back(
+          net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(
+              ca_id, landmark_range.log_number,
+              landmark_range.landmark_max_inclusive));
+    }
+    mtc_ca_id_landmark_trust_anchor_ids.push_back(std::move(tai_entry));
+  }
+
+  mtc_ca_id_landmark_trust_anchor_ids_ =
+      std::move(mtc_ca_id_landmark_trust_anchor_ids);
   mtc_metadata_update_time_seconds_ = message->update_time_seconds();
 
   UpdateTrustAnchorIDsImpl();

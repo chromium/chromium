@@ -527,38 +527,11 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
   if (proc_params_.root_store_mtc_metadata) {
     info_ptr->mtc_metadata_update_time =
         proc_params_.root_store_mtc_metadata->update_time();
-
-    // TODO(crbug.com/452983502): when full MTCs are supported, populating
-    // `root_mtc_info` should be moved outside the
-    // `if (proc_params_.root_store_mtc_metadata)` so that we report MTC anchor
-    // info even when the metadata hasn't been loaded yet.
-    for (const auto& anchor :
-         proc_params_.root_store_data->mtc_trust_anchors()) {
-      if (!IsAnchorTrustedOnThisChromeVersion(anchor.constraints)) {
-        continue;
-      }
-      auto it = proc_params_.root_store_mtc_metadata->mtc_anchor_data().find(
-          anchor.log_id);
-      if (it == proc_params_.root_store_mtc_metadata->mtc_anchor_data().end()) {
-        continue;
-      }
-
-      const net::ChromeRootStoreMtcMetadata::MtcAnchorData& anchor_data =
-          it->second;
-
-      info_ptr->root_mtc_info.push_back(
-          mojom::ChromeRootMerkleTreeCertInfo::New(
-              net::x509_util::RelativeOidToString(anchor.log_id),
-              net::x509_util::RelativeOidToString(
-                  net::x509_util::AppendOidComponent(
-                      anchor_data.landmark_base_id,
-                      anchor_data.landmark_min_inclusive)),
-              net::x509_util::RelativeOidToString(
-                  net::x509_util::AppendOidComponent(
-                      anchor_data.landmark_base_id,
-                      anchor_data.landmark_max_inclusive))));
-    }
   }
+  // TODO(crbug.com/462227032): include signer_set timestamp in output
+  // TODO(crbug.com/462227032): Update this to show plants-05 style MTC CA
+  // information. (Which should show even if the fastpush data isn't
+  // available.)
 
   std::move(callback).Run(std::move(info_ptr));
 }
