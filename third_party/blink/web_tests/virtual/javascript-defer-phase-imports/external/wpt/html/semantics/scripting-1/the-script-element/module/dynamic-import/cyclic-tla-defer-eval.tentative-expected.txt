@@ -1,3 +1,5 @@
 This is a testharness.js-based test.
+[FAIL] import.defer() deadlocks on cyclic TLA dependency: the promise never settles
+  assert_equals: module A's body should never run expected (undefined) undefined but got (boolean) true
 Harness: the test ran to completion.
 
