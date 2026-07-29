@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
+#include "ui/color/color_id.h"
 
 class AppMenuProxyActionItem;
 
@@ -30,9 +31,11 @@ struct MenuEntry {
   std::u16string text;
   std::vector<MenuEntry> children;
   DisplayType display_type = DisplayType::kRow;
+  std::optional<ui::ColorId> container_color;
 };
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(MenuEntry::DisplayType)
+DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ColorId)
 
 // Manages the action item tree and its visual properties (display
 // types) for the Block Style ChroMenu.
@@ -40,6 +43,7 @@ class AppMenuActionManager : public actions::ActionManager {
  public:
   static const ui::ClassProperty<MenuEntry::DisplayType>* const
       kAppMenuDisplayTypeKey;
+  static const ui::ClassProperty<ui::ColorId>* const kAppMenuContainerColorKey;
 
   explicit AppMenuActionManager(actions::ActionItem* action_scope = nullptr);
   AppMenuActionManager(const AppMenuActionManager&) = delete;
@@ -55,7 +59,10 @@ class AppMenuActionManager : public actions::ActionManager {
   actions::ActionItem* root_action_item() { return root_action_item_.get(); }
 
  private:
-  void PopulateSubtree(actions::ActionItem* parent, const MenuEntry& entry);
+  void PopulateSubtree(
+      actions::ActionItem* parent,
+      const MenuEntry& entry,
+      std::optional<ui::ColorId> inherited_container_color = std::nullopt);
 
   std::unique_ptr<AppMenuProxyActionItem> CreateAppMenuProxyActionItem(
       actions::ActionId action_id);

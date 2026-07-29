@@ -26,6 +26,8 @@
   E_CPONLY(kColorAppMenuExpandedForegroundPrimary) \
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
+  E_CPONLY(kColorAppMenuYourChromeBackground) \
+  E_CPONLY(kColorAppMenuToolsAndActionsBackground) \
   /* Actor UI colors.*/ \
   E_CPONLY(kColorActorUiHandoffButtonBorder) \
   E_CPONLY(kColorActorUiOverlayBorder) \

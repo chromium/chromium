@@ -1400,6 +1400,9 @@ are declared in tools/grit/grit_args.gni.
 
       <!-- Page menu. Android has separate strings for its menu -->
       <if expr="not is_android">
+        <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and Actions section in the main App Menu">
+          Tools and Actions
+        </message>
         <message name="IDS_PROFILE_ROW_VERIFY_MESSAGE" desc="A label to indicate that the profile needs credential verification (reauthentication). This is a shorter version of 'Verify it's you' that is used in other places.">
           Verify
         </message>

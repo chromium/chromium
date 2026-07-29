@@ -303,6 +303,9 @@ chromium_strings.grd. -->
           Welcome to Chrome; new browser window opened
         </message>
       </if>
+      <message name="IDS_APP_MENU_YOUR_CHROME_HEADER" desc="Header title for the Your Chrome section in the main App Menu">
+        Your Chrome
+      </message>
       <if expr="is_macosx or is_linux">
         <message name="IDS_FIRST_RUN_DIALOG_WINDOW_TITLE" desc="Window title of First Run dialog on Mac and Linux, displayed in title bar">
           Welcome to Google Chrome
