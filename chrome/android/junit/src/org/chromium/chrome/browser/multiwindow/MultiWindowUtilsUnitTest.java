@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ActivityState;
@@ -83,6 +84,8 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
+import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -1505,6 +1508,23 @@ public class MultiWindowUtilsUnitTest {
                 INSTANCE_ID_1,
                 MultiWindowUtils.getLastAccessedWindowIdExcludingSelf(
                         INSTANCE_ID_0, PersistedInstanceType.ACTIVE));
+    }
+
+    @Test
+    @Config(shadows = {ShadowToast.class})
+    public void testShowInstanceCreationLimitToast() {
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        Context context = ApplicationProvider.getApplicationContext();
+        MultiWindowUtils.showInstanceCreationLimitToast(context);
+
+        ToastManager toastManager =
+                ReflectionHelpers.callStaticMethod(ToastManager.class, "getInstance");
+        Toast toast = ReflectionHelpers.callInstanceMethod(toastManager, "getCurrentToast");
+        Assert.assertNotNull("Toast should have been shown.", toast);
+
+        String expectedText =
+                context.getString(R.string.multi_instance_creation_limit_message_toast, 3);
+        Assert.assertEquals("Toast text should match.", expectedText, toast.getText().toString());
     }
 
     @Test
