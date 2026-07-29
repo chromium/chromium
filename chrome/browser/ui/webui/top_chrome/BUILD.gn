@@ -89,3 +89,58 @@ source_set("test_support") {
     "//url",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = [
+    "preload_context_browsertest.cc",
+    "webui_contents_preload_manager_browsertest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":test_support",
+    ":top_chrome",
+    "//chrome/app:command_ids",
+    "//chrome/browser/page_load_metrics",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/actions",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = [
+    "per_profile_webui_tracker_unittest.cc",
+    "profile_preload_candidate_selector_unittest.cc",
+    "top_chrome_webui_config_unittest.cc",
+    "webui_contents_preload_manager_unittest.cc",
+    "webui_contents_wrapper_unittest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":test_support",
+    ":top_chrome",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//components/input",
+    "//components/site_engagement/content",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
