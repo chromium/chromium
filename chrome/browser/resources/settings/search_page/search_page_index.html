@@ -13,27 +13,24 @@
 
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
-  <settings-search-page slot="view" id="parent" prefs="{{prefs}}"
+  <settings-search-page slot="view" id="parent"
       route-path$="[[routes_.SEARCH.path]]">
   </settings-search-page>
 
   <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]" restamp>
-    <settings-site-shortcuts-page slot="view" id="siteShortcuts"
-        prefs="[[prefs]]">
+    <settings-site-shortcuts-page slot="view" id="siteShortcuts">
     </settings-site-shortcuts-page>
 
-    <settings-feature-shortcuts-page slot="view" id="featureShortcuts"
-        prefs="[[prefs]]">
+    <settings-feature-shortcuts-page slot="view" id="featureShortcuts">
     </settings-feature-shortcuts-page>
 
-    <settings-keyboard-shortcut-page slot="view" id="keyboardShortcut"
-        prefs="{{prefs}}">
+    <settings-keyboard-shortcut-page slot="view" id="keyboardShortcut">
     </settings-keyboard-shortcut-page>
   </template>
 
   <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]" restamp>
     <settings-search-engines-page slot="view" id="searchEngines"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.SEARCH_ENGINES.path]]">
     </settings-search-engines-page>
   </template>

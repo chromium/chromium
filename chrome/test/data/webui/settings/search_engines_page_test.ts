@@ -9,12 +9,23 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
 import type {SearchEnginesInfo} from 'chrome://settings/settings.js';
-import {loadTimeData, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'omnibox.keyword_space_triggering_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+}
 
 suite('SearchEnginePageTests', function() {
   let page: SettingsSearchEnginesPageElement;
@@ -95,6 +106,12 @@ suite('SearchEnginePageTests', function() {
   };
 
   setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    const prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     browserProxy = new TestSearchEnginesBrowserProxy();
 
     // Purposefully pass a clone of |searchEnginesInfo| to avoid any
@@ -108,11 +125,6 @@ suite('SearchEnginePageTests', function() {
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-engines-page');
-    page.set('prefs.omnibox.keyword_space_triggering_enabled', {
-      key: 'prefs.omnibox.keyword_space_triggering_enabled',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true,
-    });
     document.body.appendChild(page);
     await browserProxy.whenCalled('getSearchEnginesList');
   });

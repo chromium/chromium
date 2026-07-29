@@ -23,16 +23,16 @@
     </div>
     <div class="list-frame">
       <settings-radio-group id="keyboardShortcutSettingGroup"
-          pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+          pref-key="omnibox.keyword_space_triggering_enabled"
           on-change="onKeyboardShortcutSettingChange_">
         <controlled-radio-button class="list-item" name="true"
-            pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+            pref-key="omnibox.keyword_space_triggering_enabled"
             label="$i18n{searchEnginesKeyboardShortcutsSpaceOrTab}"
             aria-labelledby="keyboardShortcutsTitle"
             no-extension-indicator>
         </controlled-radio-button>
         <controlled-radio-button class="list-item" name="false"
-            pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+            pref-key="omnibox.keyword_space_triggering_enabled"
             label="$i18n{searchEnginesKeyboardShortcutsTab}"
             aria-labelledby="keyboardShortcutsTitle"
             no-extension-indicator>

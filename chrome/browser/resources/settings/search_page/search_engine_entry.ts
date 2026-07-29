@@ -19,7 +19,7 @@ import './search_engine_icon.js';
 
 import {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 import type {ExtensionControlBrowserProxy} from '/shared/settings/extension_control_browser_proxy.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -32,7 +32,7 @@ import type {SearchEngine, SearchEnginesBrowserProxy} from './search_engines_bro
 import {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 
 const SettingsSearchEngineEntryElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    PrefServiceObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsSearchEngineEntryElement extends
     SettingsSearchEngineEntryElementBase {
@@ -47,6 +47,8 @@ export class SettingsSearchEngineEntryElement extends
   static get properties() {
     return {
       engine: Object,
+
+      defaultSearchProviderDataPref_: Object,
 
       showShortcut: {type: Boolean, value: false, reflectToAttribute: true},
 
@@ -70,8 +72,8 @@ export class SettingsSearchEngineEntryElement extends
 
       disableDots_: {
         type: Boolean,
-        computed: 'computeDisableDots_(engine,' +
-            'prefs.default_search_provider_data.template_url_data.value)',
+        computed:
+            'computeDisableDots_(engine, defaultSearchProviderDataPref_.value)',
       },
 
       turnOnLabel: {
@@ -95,6 +97,8 @@ export class SettingsSearchEngineEntryElement extends
   declare showShortcut: boolean;
   declare showQueryUrl: boolean;
   declare isDefault: boolean;
+  declare private defaultSearchProviderDataPref_:
+      chrome.settingsPrivate.PrefObject|undefined;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
   private extensionBrowserProxy_: ExtensionControlBrowserProxy =
@@ -107,6 +111,13 @@ export class SettingsSearchEngineEntryElement extends
 
   declare private searchSettingsUpdateEnabled_: boolean;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(
+        'default_search_provider_data.template_url_data',
+        'defaultSearchProviderDataPref_');
+  }
+
   private closePopupMenu_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
@@ -116,9 +127,7 @@ export class SettingsSearchEngineEntryElement extends
       return false;
     }
 
-    const extensionId =
-        this.getPref('default_search_provider_data.template_url_data')
-            .extensionId;
+    const extensionId = this.defaultSearchProviderDataPref_?.extensionId;
     return !!extensionId && extensionId === this.engine.extension.id;
   }
 

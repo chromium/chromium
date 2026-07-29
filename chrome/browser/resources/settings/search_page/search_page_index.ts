@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '/shared/settings/prefs/prefs.js';
 import './site_shortcuts_page.js';
 import './feature_shortcuts_page.js';
 import './keyboard_shortcut_page.js';
@@ -45,8 +44,6 @@ export class SettingsSearchPageIndexElement extends
 
   static get properties() {
     return {
-      prefs: Object,
-
       routes_: {
         type: Object,
         value: () => routes,
@@ -59,7 +56,6 @@ export class SettingsSearchPageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
   declare private searchSettingsUpdateEnabled_: boolean;
 

@@ -9,13 +9,25 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CategorizedTemplateUrls, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
-import {resetRouterForTesting, SearchEnginesBrowserProxyImpl, Router, routes, loadTimeData, SearchEnginesInteractions} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'default_search_provider_data.template_url_data',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+    },
+  ];
+}
 
 // clang-format on
 
@@ -51,11 +63,19 @@ function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
 suite('SearchPageTests', function() {
   let page: SettingsSearchPageElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
   let metrics: MetricsTracker;
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({searchSettingsUpdate: false});
     resetRouterForTesting();
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     metrics = fakeMetricsPrivate();
     browserProxy = new TestSearchEnginesBrowserProxy();
@@ -64,11 +84,6 @@ suite('SearchPageTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-page');
-    page.prefs = {
-      default_search_provider_data: {
-        template_url_data: {},
-      },
-    };
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -146,15 +161,17 @@ suite('SearchPageTests', function() {
     assertFalse(
         !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
 
-    page.set('prefs.default_search_provider_data.template_url_data', {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'default_search_provider_data.template_url_data',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       controlledByName: 'fake extension name',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       extensionId: 'fake extension id',
       extensionCanBeDisabled: true,
-      value: {},
-    });
-    flush();
+    }]);
+    await microtasksFinished();
 
     assertTrue(openSearchEngineListButton['disabled']);
     assertTrue(
@@ -174,12 +191,14 @@ suite('SearchPageTests', function() {
     assertFalse(
         !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
 
-    page.set('prefs.default_search_provider_data.template_url_data', {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'default_search_provider_data.template_url_data',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      value: {},
-    });
-    flush();
+    }]);
+    await microtasksFinished();
 
     assertTrue(openSearchEngineListButton.disabled);
     assertFalse(
@@ -241,11 +260,19 @@ suite('SearchPageTests', function() {
 suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
   let page: SettingsSearchPageElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
   let metrics: MetricsTracker;
 
   setup(async function() {
     loadTimeData.overrideValues({searchSettingsUpdate: true});
     resetRouterForTesting();
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     metrics = fakeMetricsPrivate();
     browserProxy = new TestSearchEnginesBrowserProxy();
@@ -254,11 +281,6 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-page');
-    page.prefs = {
-      default_search_provider_data: {
-        template_url_data: {},
-      },
-    };
     document.body.appendChild(page);
 
     await browserProxy.whenCalled('getCategorizedTemplateUrls');
@@ -298,22 +320,22 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
             searchEngineListDialog.searchEngines[1]!.id);
       });
 
-  test('ControlledByExtension', function() {
+  test('ControlledByExtension', async function() {
     const openSearchEngineListButton =
         page.shadowRoot!.querySelector<HTMLButtonElement>('#openDialogButton')!;
     assertFalse(openSearchEngineListButton.disabled);
     assertFalse(
         !!page.shadowRoot!.querySelector('extension-controlled-message'));
 
-    page.set('prefs.default_search_provider_data.template_url_data', {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'default_search_provider_data.template_url_data',
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       controlledByName: 'fake extension name',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       extensionId: 'fake extension id',
       extensionCanBeDisabled: true,
-      value: {},
-    });
-    flush();
+    }]);
+    await microtasksFinished();
 
     assertTrue(openSearchEngineListButton['disabled']);
     assertTrue(

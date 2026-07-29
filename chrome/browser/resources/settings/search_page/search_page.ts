@@ -20,6 +20,7 @@ import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -35,8 +36,8 @@ import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, S
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 import {getTemplate} from './search_page.html.js';
 
-const SettingsSearchPageElementBase =
-    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SettingsSearchPageElementBase = PrefServiceObserverMixin(
+    SettingsViewMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   static get is() {
@@ -49,7 +50,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   static get properties() {
     return {
-      prefs: Object,
+      defaultSearchProviderDataPref_: Object,
 
       /**
        * List of search engines available in the search engine list dialog.
@@ -84,7 +85,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     };
   }
 
-  declare prefs: Object;
+  declare private defaultSearchProviderDataPref_:
+      chrome.settingsPrivate.PrefObject|undefined;
   declare private searchEngines_: SearchEngine[];
   declare private showSearchEngineListDialog_: boolean;
   declare private defaultSearchEngine_: SearchEngine|null;
@@ -98,6 +100,10 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.mirrorPref(
+        'default_search_provider_data.template_url_data',
+        'defaultSearchProviderDataPref_');
 
     if (this.searchSettingsUpdateEnabled_) {
       // Only regional search engines and the default engine should be visible
@@ -137,15 +143,16 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
   }
 
-  private isDefaultSearchControlledByPolicy_(
-      pref: chrome.settingsPrivate.PrefObject): boolean {
-    return pref.controlledBy ===
+  private isDefaultSearchControlledByPolicy_(): boolean {
+    assert(this.defaultSearchProviderDataPref_);
+    return this.defaultSearchProviderDataPref_.controlledBy ===
         chrome.settingsPrivate.ControlledBy.USER_POLICY;
   }
 
-  private isDefaultSearchEngineEnforced_(
-      pref: chrome.settingsPrivate.PrefObject): boolean {
-    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  private isDefaultSearchEngineEnforced_(): boolean {
+    assert(this.defaultSearchProviderDataPref_);
+    return this.defaultSearchProviderDataPref_.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
   private computeSearchPageTitle_(): string {

@@ -39,15 +39,15 @@
           </settings-search-engine-icon>
           <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
           <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
-              prefs.default_search_provider_data.template_url_data)]]">
-            <cr-policy-pref-indicator pref="[[
-                prefs.default_search_provider_data.template_url_data]]">
+              defaultSearchProviderDataPref_)]]">
+            <cr-policy-pref-indicator
+                pref="[[defaultSearchProviderDataPref_]]">
             </cr-policy-pref-indicator>
           </template>
           <cr-button id="openDialogButton"
               on-click="onOpenDialogButtonClick_"
               disabled$="[[isDefaultSearchEngineEnforced_(
-                  prefs.default_search_provider_data.template_url_data)]]">
+                  defaultSearchProviderDataPref_)]]">
             $i18n{searchEnginesChange}
           </cr-button>
         </div>
@@ -63,19 +63,17 @@
         <div>[[confirmationToastLabel_]]</div>
       </cr-toast>
     </div>
-    <template is="dom-if"
-        if="[[
-            prefs.default_search_provider_data.template_url_data.extensionId]]">
+    <template is="dom-if" if="[[defaultSearchProviderDataPref_.extensionId]]">
       <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]">
         <div class="cr-row">
           <extension-controlled-message
               class="flex"
-            extension-id="[[
-                prefs.default_search_provider_data.template_url_data.extensionId]]"
-            extension-name="[[
-                prefs.default_search_provider_data.template_url_data.controlledByName]]"
-            extension-can-be-disabled="[[
-                prefs.default_search_provider_data.template_url_data.extensionCanBeDisabled]]"
+              extension-id="[[
+                  defaultSearchProviderDataPref_.extensionId]]"
+              extension-name="[[
+                  defaultSearchProviderDataPref_.controlledByName]]"
+              extension-can-be-disabled="[[
+                  defaultSearchProviderDataPref_.extensionCanBeDisabled]]"
               on-disable-extension-click="onDisableExtensionClick_">
           </extension-controlled-message>
         </div>
@@ -85,11 +83,11 @@
           <extension-controlled-indicator
               class="flex"
               extension-id="[[
-                  prefs.default_search_provider_data.template_url_data.extensionId]]"
+                  defaultSearchProviderDataPref_.extensionId]]"
               extension-name="[[
-                  prefs.default_search_provider_data.template_url_data.controlledByName]]"
+                  defaultSearchProviderDataPref_.controlledByName]]"
               extension-can-be-disabled="[[
-                  prefs.default_search_provider_data.template_url_data.extensionCanBeDisabled]]"
+                  defaultSearchProviderDataPref_.extensionCanBeDisabled]]"
               on-disable-extension-click="onDisableExtensionClick_">
           </extension-controlled-indicator>
         </div>

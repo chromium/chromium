@@ -70,14 +70,6 @@ export class SettingsSearchEnginesPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       defaultEngines: Array,
       activeEngines: Array,
       otherEngines: Array,
@@ -151,7 +143,6 @@ export class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
-  declare prefs: Record<string, unknown>;
   declare defaultEngines: SearchEngine[];
   declare activeEngines: SearchEngine[];
   declare otherEngines: SearchEngine[];

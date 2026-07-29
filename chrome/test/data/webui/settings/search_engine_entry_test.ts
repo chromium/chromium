@@ -7,16 +7,27 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElement} from 'chrome://settings/lazy_load.js';
-import type { SearchEngine, CrActionMenuElement } from 'chrome://settings/settings.js';
-import { ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation, SearchEnginesInteractions } from 'chrome://settings/settings.js';
+import type {SearchEngine, CrActionMenuElement} from 'chrome://settings/settings.js';
+import {ExtensionControlBrowserProxyImpl, PrefsBrowserProxy, PrefService, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import { eventToPromise, isVisible } from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'default_search_provider_data.template_url_data',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+    },
+  ];
+}
 
 type ViewOrEditSearchEngineEvent = CustomEvent<{
   engine: SearchEngine,
@@ -591,9 +602,18 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
   let entry: SettingsSearchEngineEntryElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
   let extensionBrowserProxy: TestExtensionControlBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     extensionBrowserProxy = new TestExtensionControlBrowserProxy();
@@ -603,31 +623,28 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
 
     entry = document.createElement('settings-search-engine-entry');
     entry.engine = createSampleSearchEngine();
-    entry.prefs = {
-      default_search_provider_data: {
-        template_url_data: {},
-      },
-    };
     document.body.appendChild(entry);
 
     return flushTasks();
   });
 
-  function setControlledByExtension(extensionId: string) {
-    entry.set('prefs.default_search_provider_data.template_url_data', {
+  async function setControlledByExtension(extensionId: string) {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'default_search_provider_data.template_url_data',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       controlledByName: 'fake extension name',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       extensionId: extensionId,
       extensionCanBeDisabled: true,
-      value: {},
-    });
-    flush();
+    }]);
+    await microtasksFinished();
   }
 
   // Verifies that the action menu (three-dot menu) is visible. Engines managed
   // by extensions should have the menu disabled.
-  test('ActionMenuBehavior', function() {
+  test('ActionMenuBehavior', async function() {
     // Test for regular engine (Action menu should be visible and not disabled).
     let menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
@@ -637,7 +654,7 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     // Simulate installing an extension that controls `engine`.
     const engine = createSampleOmniboxExtension({isOmniboxExtension: false});
     assertTrue(!!engine.extension);
-    setControlledByExtension(engine.extension.id);
+    await setControlledByExtension(engine.extension.id);
 
     // Test for engine set by an omnibox extension (Action menu should be
     // visible and disabled).
