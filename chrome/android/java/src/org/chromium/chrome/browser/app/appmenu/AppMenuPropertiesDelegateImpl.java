@@ -615,17 +615,54 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected ListItem buildAddToHomescreenListItem(Tab currentTab, boolean showIcon) {
         ResolveInfo resolveInfo = queryWebApkResolveInfo(mContext, currentTab);
 
+        String manifestId =
+                AppBannerManager.maybeGetManifestId(assumeNonNull(currentTab.getWebContents()));
+        String webApkPackageName =
+                WebappRegistry.getInstance().findWebApkWithManifestId(manifestId);
+        boolean isWebApkInstalled = false;
+
+        if (webApkPackageName != null) {
+            if (org.chromium.base.PackageUtils.isPackageInstalled(webApkPackageName)) {
+                isWebApkInstalled = true;
+            } else {
+                String webappId =
+                        org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils
+                                .getIdForWebApkPackage(webApkPackageName);
+                org.chromium.chrome.browser.webapps.WebappDataStorage storage =
+                        WebappRegistry.getInstance().getWebappDataStorage(webappId);
+                if (storage != null) {
+                    long registrationTime = storage.getLocalRegistrationTimestamp();
+                    long latencyWindow = 5000; // 5 seconds
+                    if (org.chromium.base.TimeUtils.currentTimeMillis() - registrationTime
+                            < latencyWindow) {
+                        isWebApkInstalled = true;
+                    }
+                }
+            }
+        }
+
         // When Universal Install is active, we only show this menu item if we are browsing
         // the root page of an already installed app.
         boolean openWebApkItemVisible =
-                resolveInfo != null
-                        && resolveInfo.activityInfo.packageName != null
+                (resolveInfo != null || isWebApkInstalled)
                         && "/".equals(currentTab.getUrl().getPath());
 
         if (openWebApkItemVisible) {
-            assumeNonNull(resolveInfo);
-            // This is the 'webapp is already installed' case, so we offer to open the webapp.
-            String appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
+            String appName = null;
+            if (resolveInfo != null) {
+                appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
+            } else if (webApkPackageName != null) {
+                try {
+                    android.content.pm.PackageManager pm = mContext.getPackageManager();
+                    appName =
+                            pm.getApplicationLabel(pm.getApplicationInfo(webApkPackageName, 0))
+                                    .toString();
+                } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+                }
+            }
+            if (appName == null) {
+                appName = currentTab.getTitle();
+            }
             return new ListItem(
                     showIcon
                             ? AppMenuHandler.AppMenuItemType.STANDARD

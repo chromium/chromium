@@ -83,6 +83,14 @@ public class WebappRegistry {
     /** Maps webapp ids to storages. */
     private final Map<String, WebappDataStorage> mStorages;
 
+    /**
+     * Maps a WebAPK's manifest ID to its package name for installations that are in progress. This
+     * in-memory map helps detect concurrent installation requests for the same manifest and allows
+     * internal services to block duplicate installation attempts before the package is fully
+     * registered in the system.
+     */
+    private final Map<String, String> mPendingManifestIdToPackageName = new HashMap<>();
+
     private final SharedPreferences mPreferences;
     private InstalledWebappPermissionStore mPermissionStore;
 
@@ -159,6 +167,11 @@ public class WebappRegistry {
                 mPreferences.edit().putStringSet(KEY_WEBAPP_SET, mStorages.keySet()).apply();
                 storage.updateLastUsedTime();
                 if (callback != null) callback.onWebappDataStorageRetrieved(storage);
+
+                String manifestId = storage.getWebApkManifestId();
+                if (manifestId != null) {
+                    mPendingManifestIdToPackageName.remove(manifestId);
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -364,14 +377,27 @@ public class WebappRegistry {
         return webApkIdsWithPendingUpdate;
     }
 
+    public void registerPendingWebApk(String manifestId, String packageName) {
+        mPendingManifestIdToPackageName.put(manifestId, packageName);
+    }
+
+    public void removePendingWebApk(String manifestId) {
+        mPendingManifestIdToPackageName.remove(manifestId);
+    }
+
     /**
-     * Returns the WebAPK PackageName whose manifestId matches the provided one. Returns null if no
-     * matches.
+     * Returns the WebAPK PackageName whose manifestId matches the provided one. It checks both
+     * pending installations and fully registered apps. Returns null if no matches.
      *
      * @param manifestId The manifestId to search for.
      * @return The package name for the WebAPK, or null if one cannot be found.
      */
     public @Nullable String findWebApkWithManifestId(@Nullable String manifestId) {
+        if (manifestId == null) return null;
+        String pendingInstallPackageName = mPendingManifestIdToPackageName.get(manifestId);
+        if (pendingInstallPackageName != null) {
+            return pendingInstallPackageName;
+        }
         WebappDataStorage storage = getWebappDataStorageForManifestId(manifestId);
         if (storage != null) {
             return storage.getWebApkPackageName();

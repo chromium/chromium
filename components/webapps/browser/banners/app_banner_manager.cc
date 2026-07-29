@@ -865,8 +865,8 @@ std::string AppBannerManager::GetInstallableWebAppManifestId(
   switch (manager->installable_web_app_check_result_) {
     case InstallableWebAppCheckResult::kUnknown:
     case InstallableWebAppCheckResult::kNo:
-    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
       return std::string();
+    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
     case InstallableWebAppCheckResult::kYes_ByUserRequest:
     case InstallableWebAppCheckResult::kYes_Promotable:
       CHECK(manager->web_app_data_);

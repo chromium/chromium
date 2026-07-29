@@ -217,7 +217,8 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
                                       package_name);
     Java_WebApkInstaller_installWebApkAsync(
         env, java_ref_, webapk_package_, webapk_version_, short_name_, token,
-        webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
+        webapps::ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA,
+        manifest_id_.spec());
   } else {
     Java_WebApkInstaller_updateAsync(env, java_ref_, webapk_package_,
                                      webapk_version_, short_name_, token);

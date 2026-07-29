@@ -34,6 +34,7 @@ public class WebApkInstaller {
     private final @Nullable GooglePlayWebApkInstallDelegate mInstallDelegate;
 
     private final String mWebApkServerUrl;
+    private @Nullable String mPendingManifestId;
 
     private WebApkInstaller(long nativePtr) {
         mNativePointer = nativePtr;
@@ -48,6 +49,10 @@ public class WebApkInstaller {
 
     @CalledByNative
     private void destroy() {
+        if (mPendingManifestId != null) {
+            WebappRegistry.getInstance().removePendingWebApk(mPendingManifestId);
+            mPendingManifestId = null;
+        }
         mNativePointer = 0;
     }
 
@@ -67,7 +72,11 @@ public class WebApkInstaller {
             int version,
             @JniType("std::u16string") final String title,
             @JniType("std::string") String token,
-            final int source) {
+            final int source,
+            @JniType("std::string") final String manifestId) {
+        mPendingManifestId = manifestId;
+        WebappRegistry.getInstance().registerPendingWebApk(manifestId, packageName);
+
         // Check whether the WebAPK package is already installed. The WebAPK may have been installed
         // by another Chrome version (e.g. Chrome Dev). We have to do this check because the Play
         // install API fails silently if the package is already installed.
@@ -85,8 +94,10 @@ public class WebApkInstaller {
 
         Callback<Integer> callback =
                 (Integer result) -> {
-                    WebApkInstaller.this.notify(result);
-                    if (result == WebApkInstallResult.FAILURE) return;
+                    if (result == WebApkInstallResult.FAILURE) {
+                        WebApkInstaller.this.notify(result);
+                        return;
+                    }
                     var intentDataProvider =
                             WebApkIntentDataProviderFactory.create(
                                     new Intent(),
@@ -104,8 +115,10 @@ public class WebApkInstaller {
                                 storage.updateFromWebappIntentDataProvider(intentDataProvider);
                                 storage.updateSource(source);
                                 storage.updateTimeOfLastCheckForUpdatedWebManifest();
+                                storage.updateLocalRegistrationTimestamp();
                                 WebApkSyncService.onWebApkUsed(
                                         intentDataProvider, storage, /* isInstall= */ true);
+                                WebApkInstaller.this.notify(result);
                             };
                     WebappRegistry.getInstance()
                             .register(
@@ -116,6 +129,10 @@ public class WebApkInstaller {
     }
 
     private void notify(@WebApkInstallResult int result) {
+        if (mPendingManifestId != null) {
+            WebappRegistry.getInstance().removePendingWebApk(mPendingManifestId);
+            mPendingManifestId = null;
+        }
         if (mNativePointer != 0) {
             WebApkInstallerJni.get().onInstallFinished(mNativePointer, result);
         }

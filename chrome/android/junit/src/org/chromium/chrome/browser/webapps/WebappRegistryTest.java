@@ -823,6 +823,67 @@ public class WebappRegistryTest {
 
     @Test
     @Feature({"WebApk"})
+    public void testPendingWebApkRegistration() {
+        final String testManifestId = START_URL + "/id";
+        final String testPackageName = "org.chromium.webapk";
+
+        assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+
+        WebappRegistry.getInstance().registerPendingWebApk(testManifestId, testPackageName);
+        assertEquals(
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testRemovePendingWebApk() {
+        final String testManifestId = START_URL + "/id";
+        final String testPackageName = "org.chromium.webapk";
+
+        WebappRegistry.getInstance().registerPendingWebApk(testManifestId, testPackageName);
+        assertEquals(
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+
+        WebappRegistry.getInstance().removePendingWebApk(testManifestId);
+        assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testPendingWebApkClearedOnRegister() throws Exception {
+        final String testManifestId = START_URL + "/id";
+        final String testPackageName = "org.chromium.webapk";
+
+        WebappRegistry.getInstance().registerPendingWebApk(testManifestId, testPackageName);
+        assertEquals(
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(testPackageName, START_URL)
+                        .setWebApkManifestId(testManifestId)
+                        .build();
+        registerWebapp(intentDataProvider);
+
+        // It should still be found because it is now registered.
+        assertEquals(
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+
+        WebappRegistry.getInstance()
+                .removePendingWebApk(testManifestId); // Should be no-op if already removed
+        assertEquals(
+                testPackageName,
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+
+        WebappRegistry.getInstance().clearForTesting();
+        assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+    }
+
+    @Test
+    @Feature({"WebApk"})
     public void testGetWebApkSyncDatas() throws Exception {
         final String testStartUrl1 = START_URL;
         final String testManifestId1 = testStartUrl1 + "/id";
