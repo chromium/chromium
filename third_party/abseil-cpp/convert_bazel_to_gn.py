@@ -80,6 +80,14 @@ _ADD_CONTENT = {
     'log:scoped_mock_log_test': 'if (is_ios) { sources = [] }',
     'random:uniform_real_distribution_test': 'if (is_ios) { sources = [] }',
     'random/internal:seed_material': 'if (is_win) {  libs = [ "bcrypt.lib" ]}',
+    'strings:strings': '''public_deps = [
+    # string_view.h was once part of :strings, so string_view.h is
+    # re-exported for backwards compatibility.
+    # New code should directly depend on :string_view.
+    # TODO(crbug.com/40276308): Remove once all targets are migrated to
+    # :string_view.
+    ":string_view" ]''',
+    'strings:str_format_convert_test': 'if (is_fuchsia) { sources = [] }',
 }
 
 
@@ -113,6 +121,10 @@ class _Converter:
                 self.year = m.group(1)
 
     def _translate_dep(self, dep):
+        if dep.startswith('@do_not_use'):
+            return None
+        if dep == '//absl/' + self.rel_path:
+            return ':' + self.rel_path.split('/')[-1]
         if dep.startswith(':'):
             return dep
         if dep.startswith('//absl/' + self.rel_path + ':'):
@@ -154,7 +166,8 @@ class _Converter:
     # For backward compatibility it is possible to depend just on 'strings', but it is
     # better to depend on string_view directly.
     def _need_to_add_string_view(self, bt):
-        if "//absl/strings" not in bt.get('deps', []):
+        string_target = ':strings' if self.rel_path == 'strings' else '//absl/strings'
+        if string_target not in bt.get('deps', []):
             # If target doesn't depend on 'strings', it either doesn't use string_view,
             # or already directly depends on string_view. Skip reading source files.
             return False
@@ -264,6 +277,9 @@ class _Converter:
             if hdrs:
                 out.append('public = [')
                 for h in sorted(hdrs):
+                    # One exception where header is excluded
+                    if target_name == 'strings:strings' and h == 'string_view.h':
+                        continue
                     out.append(f'"{h}",')
                 out.append(']')
 
@@ -350,6 +366,7 @@ def convert_all(root_dir):
             'random',
             'random/internal',
             'status',
+            'strings',
             'synchronization',
             'time',
             'types',
