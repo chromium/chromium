@@ -38,10 +38,13 @@ class ProxyProvisioningDomainManager {
         ProxyProvisioningDomainManager* domain_manager) = 0;
   };
 
+  using GetURLLoaderFactoryCallback =
+      base::RepeatingCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
+
   ProxyProvisioningDomainManager(
       const ProvisioningDomainConfig& policy,
       EnterpriseNetworkAuthService* auth_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      GetURLLoaderFactoryCallback url_loader_factory_callback);
   ProxyProvisioningDomainManager(const ProxyProvisioningDomainManager&) =
       delete;
   ProxyProvisioningDomainManager& operator=(
@@ -85,6 +88,7 @@ class ProxyProvisioningDomainManager {
   ProvisioningDomainProxyConfig fetched_config_;
 
   const raw_ptr<EnterpriseNetworkAuthService> auth_service_;
+  GetURLLoaderFactoryCallback url_loader_factory_callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<ProvisioningDomainFetcher> fetcher_;
 

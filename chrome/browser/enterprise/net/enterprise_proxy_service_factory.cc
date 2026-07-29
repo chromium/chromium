@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
+#include "components/enterprise/net/core/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -43,6 +44,10 @@ EnterpriseProxyServiceFactory::~EnterpriseProxyServiceFactory() = default;
 std::unique_ptr<KeyedService>
 EnterpriseProxyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!enterprise_net::IsDynamicRouteFetchingEnabled()) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   auto url_loader_factory_callback = base::BindRepeating(
       [](Profile* profile) {
@@ -51,7 +56,8 @@ EnterpriseProxyServiceFactory::BuildServiceInstanceForBrowserContext(
       },
       profile);
   return std::make_unique<enterprise_net::EnterpriseProxyService>(
-      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      profile->GetPrefs(),
+      EnterpriseNetworkAuthServiceFactory::GetForProfile(profile),
       std::move(url_loader_factory_callback),
       enterprise::ProfileIdServiceFactory::GetForProfile(profile));
 }

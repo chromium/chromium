@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
+#include "components/enterprise/net/core/features.h"
 
 // static
 enterprise_net::EnterpriseNetworkAuthService*
@@ -41,6 +42,9 @@ bool EnterpriseNetworkAuthServiceFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 EnterpriseNetworkAuthServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!enterprise_net::IsDynamicRouteFetchingEnabled()) {
+    return nullptr;
+  }
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<enterprise_net::EnterpriseNetworkAuthService>(
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),

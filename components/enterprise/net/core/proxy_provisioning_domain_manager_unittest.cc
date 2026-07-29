@@ -85,11 +85,14 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
   std::unique_ptr<ProxyProvisioningDomainManager> CreateManager(
       const ProvisioningDomainConfig& policy,
       EnterpriseNetworkAuthService* auth_service) {
-    auto shared_factory =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
+    auto url_loader_factory_callback = base::BindRepeating(
+        [](network::TestURLLoaderFactory* test_url_loader_factory)
+            -> scoped_refptr<network::SharedURLLoaderFactory> {
+          return test_url_loader_factory->GetSafeWeakWrapper();
+        },
+        &test_url_loader_factory_);
     return std::make_unique<ProxyProvisioningDomainManager>(
-        policy, auth_service, shared_factory);
+        policy, auth_service, std::move(url_loader_factory_callback));
   }
 
   ProvisioningDomainConfig CreateTestPolicyConfig() {
@@ -375,6 +378,44 @@ TEST_F(ProxyProvisioningDomainManagerTest,
     EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
               manager->state());
   }
+}
+
+TEST_F(ProxyProvisioningDomainManagerTest, NullURLLoaderFactoryRecovery) {
+  auto auth_service = CreateAuthService();
+  bool return_valid_factory = false;
+
+  auto url_loader_factory_callback = base::BindRepeating(
+      [](network::TestURLLoaderFactory* test_url_loader_factory,
+         bool* return_valid_factory)
+          -> scoped_refptr<network::SharedURLLoaderFactory> {
+        if (!*return_valid_factory) {
+          return nullptr;
+        }
+        return test_url_loader_factory->GetSafeWeakWrapper();
+      },
+      &test_url_loader_factory_, &return_valid_factory);
+
+  auto manager = std::make_unique<ProxyProvisioningDomainManager>(
+      CreateTestPolicyConfig(), auth_service.get(),
+      std::move(url_loader_factory_callback));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !manager->is_refresh_in_progress(); }));
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedTransient,
+            manager->state());
+
+  // Make factory available and force refresh.
+  return_valid_factory = true;
+  manager->ForceRefresh();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager->is_refresh_in_progress(); }));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kTestUrl,
+                                                             kTestPvdJson);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !manager->is_refresh_in_progress(); }));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
 }
 
 }  // namespace

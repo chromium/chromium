@@ -77,12 +77,12 @@ bool IsTransientError(const ProvisioningDomainFetchError& error) {
 ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
     const ProvisioningDomainConfig& policy,
     EnterpriseNetworkAuthService* auth_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    GetURLLoaderFactoryCallback url_loader_factory_callback)
     : policy_(policy),
       auth_service_(auth_service),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_callback_(std::move(url_loader_factory_callback)) {
   CHECK(auth_service_);
-  CHECK(url_loader_factory_);
+  CHECK(url_loader_factory_callback_);
   fetched_config_.pvd_id = policy_.pvd_id;
   fetched_config_.state = ProvisioningDomainProxyConfig::State::kRefreshNeeded;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -129,11 +129,21 @@ void ProxyProvisioningDomainManager::Refresh() {
 }
 
 void ProxyProvisioningDomainManager::StartRefreshInternal() {
+  if (!url_loader_factory_) {
+    url_loader_factory_ = url_loader_factory_callback_.Run();
+  }
+
+  if (!url_loader_factory_) {
+    fetched_config_.state =
+        ProvisioningDomainProxyConfig::State::kFailedTransient;
+    NotifyIfStateChanged();
+    return;
+  }
+  fetcher_ = std::make_unique<ProvisioningDomainFetcher>(policy_, auth_service_,
+                                                         url_loader_factory_);
   fetched_config_.state = ProvisioningDomainProxyConfig::State::kFetching;
   NotifyIfStateChanged();
 
-  fetcher_ = std::make_unique<ProvisioningDomainFetcher>(policy_, auth_service_,
-                                                         url_loader_factory_);
   fetcher_->Start(
       base::BindOnce(&ProxyProvisioningDomainManager::OnRefreshComplete,
                      weak_factory_.GetWeakPtr()));
