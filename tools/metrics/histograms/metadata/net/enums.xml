@@ -647,6 +647,7 @@ historical analysis. -->
   <int value="6" label="Signing exceeded"/>
   <int value="7" label="Refreshed as waiter"/>
   <int value="8" label="Transient signing error"/>
+  <int value="9" label="In-scope refresh not yet needed"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult) -->

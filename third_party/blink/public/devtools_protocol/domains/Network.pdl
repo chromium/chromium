@@ -2258,6 +2258,7 @@ domain Network
   experimental type RefreshEventDetails extends object
     properties
       # The result of a refresh.
+      # LINT.IfChange(DeviceBoundSessionRefreshResult)
       enum refreshResult
         Refreshed
         InitializedService
@@ -2267,6 +2268,8 @@ domain Network
         SigningQuotaExceeded
         RefreshedAsWaiter
         TransientSigningError
+        InScopeRefreshNotYetNeeded
+      # LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult,//content/browser/devtools/protocol/network_handler.cc:DeviceBoundSessionRefreshResult)
       # If there was a fetch attempt, the result of that.
       optional DeviceBoundSessionFetchResult fetchResult
       # The session display if there was a newly created session. This is populated

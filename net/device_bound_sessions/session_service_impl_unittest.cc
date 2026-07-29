@@ -2093,6 +2093,32 @@ TEST_F(SessionServiceImplTest, NoDebugHeaderOnSuccess) {
   EXPECT_FALSE(debug_header.has_value());
 }
 
+TEST_F(SessionServiceImplTest, NoDebugHeaderOnInScopeRefreshNotYetNeeded) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  request->AddDeviceBoundSessionDeferral(
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)},
+      RefreshResult::kInScopeRefreshNotYetNeeded);
+
+  HttpRequestHeaders extra_headers;
+  DbscRequest dbsc_request(request.get());
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(dbsc_request, &extra_headers,
+                            FirstPartySetMetadata());
+  EXPECT_FALSE(maybe_deferral);
+
+  std::optional<std::string> debug_header =
+      extra_headers.GetHeader("Secure-Session-Skipped");
+  EXPECT_FALSE(debug_header.has_value());
+}
+
 TEST_F(SessionServiceImplTestWithFederatedSessions,
        FederatedRegistrationSuccess) {
   // Create the provider session

@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/device_bound_sessions_mojom_traits.h"
 
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,15 @@ TEST(DeviceBoundSessionsMojomTraitsTest, SerializeAndDeserializeSessionParams) {
   // `UnexportableSigningKeyId`s are not currently serialized/deserialized.
   EXPECT_EQ(input.allowed_refresh_initiators,
             output.allowed_refresh_initiators);
+}
+
+TEST(DeviceBoundSessionsMojomTraitsTest, SerializeAndDeserializeRefreshResult) {
+  net::device_bound_sessions::RefreshResult input =
+      net::device_bound_sessions::RefreshResult::kInScopeRefreshNotYetNeeded;
+  net::device_bound_sessions::RefreshResult output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              network::mojom::DeviceBoundSessionRefreshResult>(input, output));
+  EXPECT_EQ(input, output);
 }
 
 }  // namespace

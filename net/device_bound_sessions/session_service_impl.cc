@@ -92,6 +92,7 @@ class DebugHeaderBuilder {
       case RefreshResult::kTransientSigningError:
       case RefreshResult::kFatalError:
       case RefreshResult::kRefreshedAsWaiter:
+      case RefreshResult::kInScopeRefreshNotYetNeeded:
         return;
       case RefreshResult::kInitializedService:
         NOTREACHED();

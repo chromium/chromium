@@ -32,9 +32,11 @@ enum class RefreshResult {
   kRefreshedAsWaiter = 7,
   // Transient local signing failure. Examples include canceled key operations.
   kTransientSigningError = 8,
-  kMaxValue = kTransientSigningError
+  // Prewarm check found in-scope session does not need a refresh yet.
+  kInScopeRefreshNotYetNeeded = 9,
+  kMaxValue = kInScopeRefreshNotYetNeeded
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionRefreshResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionRefreshResult,//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionRefreshResult,//content/browser/devtools/protocol/network_handler.cc:DeviceBoundSessionRefreshResult)
 
 }  // namespace net::device_bound_sessions
 

@@ -2165,6 +2165,7 @@ String BuildProtocolDeviceBoundSessionFetchResult(
 }
 // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionFetchResult)
 
+// LINT.IfChange(DeviceBoundSessionRefreshResult)
 String BuildProtocolDeviceBoundSessionRefreshResult(
     net::device_bound_sessions::RefreshResult result) {
   switch (result) {
@@ -2192,8 +2193,12 @@ String BuildProtocolDeviceBoundSessionRefreshResult(
     case net::device_bound_sessions::RefreshResult::kTransientSigningError:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           TransientSigningError;
+    case net::device_bound_sessions::RefreshResult::kInScopeRefreshNotYetNeeded:
+      return protocol::Network::RefreshEventDetails::RefreshResultEnum::
+          InScopeRefreshNotYetNeeded;
   }
 }
+// LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionRefreshResult,//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult)
 
 String BuildProtocolDeviceBoundSessionChallengeResult(
     net::device_bound_sessions::ChallengeResult result) {
