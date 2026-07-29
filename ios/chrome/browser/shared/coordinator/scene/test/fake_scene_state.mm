@@ -8,7 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
