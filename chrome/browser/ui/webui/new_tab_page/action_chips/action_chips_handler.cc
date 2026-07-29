@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
@@ -24,14 +26,21 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/mojom/url.mojom.h"
 
@@ -236,4 +245,31 @@ void ActionChipsHandler::OnVisibilityChanged() {
     last_processed_url_.reset();
     StartActionChipsRetrieval();
   }
+}
+
+void ActionChipsHandler::NavigateToAim(const std::u16string& query_text) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider()) {
+    return;
+  }
+
+  GURL aim_url = GetUrlForAim(
+      template_url_service,
+      // TODO(crbug.com/540050449): This is a temporary placeholder that needs
+      // to be updated to the new Action Chips entry point.
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+      base::Time::Now(), query_text,
+      lens::LensOverlayInvocationSource::kNtpActionChips,
+      /*additional_params=*/{});
+
+  // TODO(crbug.com/540067558): Replace hardcoded CURRENT_TAB with
+  // WindowOpenDisposition based on click modifiers passed from WebUI.
+  content::OpenURLParams params(aim_url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_GENERATED,
+                                /*is_renderer_initiated=*/false);
+  web_ui_->GetWebContents()->OpenURL(params,
+                                     /*navigation_handle_callback=*/{});
 }

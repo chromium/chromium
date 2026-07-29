@@ -41,6 +41,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
@@ -91,6 +92,25 @@ class MockPage : public Page {
               (override));
 
   mojo::Receiver<Page> receiver_{this};
+};
+
+class TestWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+      /*navigation_handle_callback*/) override {
+    last_open_url_params_ = std::make_unique<content::OpenURLParams>(params);
+    return source;
+  }
+
+  const content::OpenURLParams* last_open_url_params() const {
+    return last_open_url_params_.get();
+  }
+
+ private:
+  std::unique_ptr<content::OpenURLParams> last_open_url_params_;
 };
 
 class MockActionChipsGenerator : public ActionChipsGenerator {
@@ -744,4 +764,38 @@ TEST_F(ActionChipsHandlerTest, NullBrowserWindowInterface) {
       mojo::PendingRemote<Page>(), profile_.get(), web_ui_.get(),
       std::move(mock_action_chips_generator));
 }
+
+TEST_F(ActionChipsHandlerTest, NavigateToAimOpensCorrectUrl) {
+  TestWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURLData data;
+  data.SetShortName(u"google");
+  data.SetKeyword(u"google");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  TemplateURL* turl =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(turl);
+
+  handler().NavigateToAim(u"test query");
+
+  ASSERT_TRUE(delegate.last_open_url_params());
+  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
+            delegate.last_open_url_params()->disposition);
+  EXPECT_TRUE(
+      ui::PageTransitionCoreTypeIs(delegate.last_open_url_params()->transition,
+                                   ui::PAGE_TRANSITION_GENERATED));
+
+  const GURL& opened_url = delegate.last_open_url_params()->url;
+  EXPECT_TRUE(opened_url.is_valid());
+  EXPECT_THAT(opened_url.query(),
+              testing::HasSubstr("source=chrome.crn.ntpac"));
+  EXPECT_THAT(opened_url.query(), testing::HasSubstr("test+query"));
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+
 }  // namespace
