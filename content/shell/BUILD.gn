@@ -645,6 +645,9 @@ if (is_android) {
       ":content_shell_framework_bundle_data",
       ":content_shell_resources_bundle_data",
 
+      # This target contains only macros. No C++ declarations/definitions.
+      "//base:compiler_specific",
+
       # Despite its path, this does not add a //base dependency, see comments in
       # the .cc file.
       "//base/allocator:early_zone_registration_apple",
@@ -989,6 +992,8 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
       deps = [
+        # This target contains only macros. No C++ declarations/definitions.
+        "//base:compiler_specific",
         "//base/allocator:early_zone_registration_apple",
         "//sandbox/mac:seatbelt",
       ]

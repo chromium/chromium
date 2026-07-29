@@ -18,12 +18,8 @@
 #include <sys/cdefs.h>
 
 #include "base/allocator/early_zone_registration_apple.h"
+#include "base/compiler_specific.h"
 #include "sandbox/mac/seatbelt_exec.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 extern "C" {
 // abort_report_np() records the message in a special section that both the
@@ -41,12 +37,12 @@ namespace {
   va_list valist;
   va_start(valist, format);
   char message[4096];
-  int rv = vsnprintf(message, sizeof(message), format, valist);
+  int rv = UNSAFE_TODO(vsnprintf(message, sizeof(message), format, valist));
   va_end(valist);
   if (rv >= 0) {
-    fprintf(stderr, "aperitif: %s\n", message);
+    UNSAFE_TODO(fprintf(stderr, "aperitif: %s\n", message));
     fflush(stderr);
-    abort_report_np("aperitif: %s", message);
+    UNSAFE_TODO(abort_report_np("aperitif: %s", message));
   }
   abort();
 }

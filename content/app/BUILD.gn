@@ -154,6 +154,7 @@ if (is_mac) {
   source_set("aperitif") {
     sources = [ "aperitif_mac.cc" ]
     deps = [
+      "//base:compiler_specific",
       "//base/allocator:early_zone_registration_apple",
       "//sandbox/mac:seatbelt",
     ]
