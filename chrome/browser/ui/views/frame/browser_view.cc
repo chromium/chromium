@@ -4622,14 +4622,18 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
                          &test_point)) {
       if (vertical_tab_strip_region_view_->IsPositionInWindowCaption(
               test_point)) {
-        return HTCAPTION;
+        // We return HTNOWHERE so that the caller will hit-test the window
+        // controls before finally falling back to HTCAPTION.
+        return HTNOWHERE;
       }
       return HTCLIENT;
     } else {
       gfx::Point test_point2(point);
       if (ConvertedHitTest(parent(), top_container_, &test_point2) &&
           top_container_->IsPositionInWindowCaption(test_point2)) {
-        return HTCAPTION;
+        // We return HTNOWHERE so that the caller will hit-test the window
+        // controls before finally falling back to HTCAPTION.
+        return HTNOWHERE;
       }
     }
   } else if (GetTabStripVisible()) {
