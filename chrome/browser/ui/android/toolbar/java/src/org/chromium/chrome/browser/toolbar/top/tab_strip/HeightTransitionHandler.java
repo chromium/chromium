@@ -126,6 +126,12 @@ class HeightTransitionHandler {
         mTabStripSuppressed = suppressTabStripAtStart;
         mTabStripHeight = suppressTabStripAtStart ? 0 : tabStripHeightFromResource;
         mTabStripVisible = mTabStripHeight > 0;
+        if (suppressTabStripAtStart) {
+            int minHeight =
+                    mControlContainer.getToolbarHeight()
+                            + mControlContainer.getToolbarHairlineHeight();
+            controlContainerView().setMinimumHeight(minHeight);
+        }
         mDeferTransitionTokenHolder =
                 new TokenHolder(mCallbackController.makeCancelable(this::onTokenUpdate));
 
@@ -241,8 +247,9 @@ class HeightTransitionHandler {
         // Update the min size for the control container. This is needed one-layout-before browser
         // controls start changing its height, as it assumed a fixed size control container during
         // transition. See b/324178484.
+        int tabStripHeight = showTabStrip ? calculateTabStripHeight() : 0;
         int maxHeight =
-                calculateTabStripHeight()
+                tabStripHeight
                         + mControlContainer.getToolbarHeight()
                         + mControlContainer.getToolbarHairlineHeight();
         controlContainerView().setMinimumHeight(maxHeight);

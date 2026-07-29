@@ -129,4 +129,31 @@ public class ToolbarProgressBarLayerTest {
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
     }
+
+    @Test
+    public void testOnProgressBarInfoUpdate_withXOffset() {
+        org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo drawingInfo =
+                new org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo();
+        drawingInfo.progressBarRect.set(0, 0, 100, 10);
+        drawingInfo.progressBarBackgroundRect.set(100, 0, 500, 10);
+        drawingInfo.progressBarStaticBackgroundRect.set(0, 0, 500, 10);
+
+        ViewGroup.MarginLayoutParams params =
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = 240;
+        mProgressBarContainer.setLayoutParams(params);
+
+        View controlContainerView = new View(mActivity);
+        when(mControlContainer.getView()).thenReturn(controlContainerView);
+
+        mLayer.onProgressBarInfoUpdate(drawingInfo);
+
+        assertEquals(240, drawingInfo.progressBarRect.left);
+        assertEquals(340, drawingInfo.progressBarRect.right);
+        assertEquals(340, drawingInfo.progressBarBackgroundRect.left);
+        assertEquals(740, drawingInfo.progressBarBackgroundRect.right);
+        assertEquals(240, drawingInfo.progressBarStaticBackgroundRect.left);
+        assertEquals(740, drawingInfo.progressBarStaticBackgroundRect.right);
+    }
 }

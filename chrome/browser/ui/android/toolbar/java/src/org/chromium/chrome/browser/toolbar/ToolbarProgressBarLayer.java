@@ -183,7 +183,7 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
                     // the progress bar is relative to the toolbar, and isn't effected by the
                     // capture, so when the bug happens, the progress bar should still be in the
                     // correct place.
-                    yOffset += mToolbarLayout.getTabStripHeightFromResource();
+                    yOffset += mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TOOLBAR);
                 }
             } else if (toolbarPosition == ControlsPosition.BOTTOM) {
                 yOffset =
@@ -194,8 +194,15 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
                                 - hairlineHeight;
             }
         }
-        drawingInfo.progressBarRect.offset(0, yOffset);
-        drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
+        int xOffset = Math.round(mProgressBarContainer.getX());
+        if (xOffset == 0
+                && mProgressBarContainer.getLayoutParams()
+                        instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
+            xOffset = marginLayoutParams.leftMargin;
+        }
+        drawingInfo.progressBarRect.offset(xOffset, yOffset);
+        drawingInfo.progressBarBackgroundRect.offset(xOffset, yOffset);
+        drawingInfo.progressBarStaticBackgroundRect.offset(xOffset, yOffset);
     }
 
     // Progress bar should anchor at the bottom of the top controls.

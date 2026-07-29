@@ -1091,7 +1091,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // with toolbar height and hairline height.
         int diff = 0;
 
-        int tabStripHeight = mToolbarLayout.getTabStripHeightFromResource();
+        int tabStripHeight = getTabStripHeight();
         if (ChromeFeatureList.sAndroidTabstripStartupCaptureBugFix.isEnabled()
                 && !ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()
                 && captureHeight == 0
