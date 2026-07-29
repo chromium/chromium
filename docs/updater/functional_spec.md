@@ -392,7 +392,10 @@ process is determined by command-line arguments:
 *   `RUNFORCEINSTALL` (for MSI installers)
     * Allows running an MSI metainstaller with the `--force-install` option.
     * In addition, if the MSI is tagged, this also installs the application(s)
-      that are implicitly specified in the tag.
+      that are implicitly specified in the tag and registers the MSI product
+      component state.
+    * If the MSI is untagged, this force-installs the updater only, without
+      registering application MSI component state.
     * For example, `msiexec /i GoogleChrome.msi RUNFORCEINSTALL=1`.
 *   --test
     *   Exit immediately with no error.

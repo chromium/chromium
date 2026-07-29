@@ -89,7 +89,6 @@
     <Media Id="1" />
 
     <Feature Id="Complete" Level="1" AllowAbsent="yes">
-      <Level Value="0" Condition="RUNFORCEINSTALL &lt;&gt; &quot;&quot;" />
       <ComponentRef Id="ProductClientState" />
     </Feature>
 
@@ -255,7 +254,7 @@
       <Custom
         Action="ExtractTagInfoFromInstaller"
         Before="SetProductTagProperty"
-        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)"
       />
       <!-- Now start forming [ProdutTag], first with the appguid and name. -->
       <Custom
@@ -349,6 +348,7 @@
     <!-- Use the ProductCode as the ComponentId since we want the latter to
          change for each version change in support of major upgrades. -->
     <Component Id="ProductClientState" Guid="$(var.MsiProductId)" Directory="TARGETDIR" Bitness="always32">
+      <Condition>(RUNFORCEINSTALL = &quot;&quot;) OR (TAGSTRING &lt;&gt; &quot;&quot;)</Condition>
       <!-- Clear the last UI string before running the installer so we know
            that any value present upon rollback is fresh. -->
       <RemoveRegistryValue
