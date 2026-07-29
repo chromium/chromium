@@ -91,4 +91,26 @@ TEST(InMemoryMemoryBankTest, DeleteEntries) {
   EXPECT_TRUE(GetAllEntriesSync(memory_bank).empty());
 }
 
+TEST(InMemoryMemoryBankTest, GetEntriesByIds) {
+  InMemoryMemoryBank memory_bank;
+
+  memory_bank.SaveTab(GURL("https://www.google.com"), "Google", "Text 1",
+                      base::DoNothing());
+  memory_bank.SaveTab(GURL("https://www.youtube.com"), "YouTube", "Text 2",
+                      base::DoNothing());
+  std::vector<MemoryBankEntry> all_entries = GetAllEntriesSync(memory_bank);
+  ASSERT_EQ(2u, all_entries.size());
+
+  std::vector<MemoryBankEntry> retrieved;
+  memory_bank.GetEntriesByIds(
+      {all_entries[0].id},
+      base::BindLambdaForTesting([&](std::vector<MemoryBankEntry> entries) {
+        retrieved = std::move(entries);
+      }));
+
+  ASSERT_EQ(1u, retrieved.size());
+  EXPECT_EQ(all_entries[0].id, retrieved[0].id);
+  EXPECT_EQ(all_entries[0].url, retrieved[0].url);
+}
+
 }  // namespace context_hub

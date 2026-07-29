@@ -138,8 +138,14 @@ void ContextHubService::DeleteEntries(
 }
 
 void ContextHubService::GetAllEntries(
-    MemoryBank::GetAllEntriesCallback callback) const {
+    MemoryBank::GetEntriesCallback callback) const {
   memory_bank_->GetAllEntries(std::move(callback));
+}
+
+void ContextHubService::GetEntriesByIds(
+    base::span<const int64_t> ids,
+    MemoryBank::GetEntriesCallback callback) const {
+  memory_bank_->GetEntriesByIds(ids, std::move(callback));
 }
 
 void ContextHubService::GetTabGroups(GetTabGroupsCallback callback) const {

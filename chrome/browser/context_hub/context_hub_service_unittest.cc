@@ -181,6 +181,25 @@ TEST_F(ContextHubServiceTest, DeleteEntries) {
   EXPECT_TRUE(get_entries_future2.Get().empty());
 }
 
+TEST_F(ContextHubServiceTest, GetEntriesByIds) {
+  service_.SaveTab(GURL("https://example1.com"), "Title1", "Page text 1",
+                   base::DoNothing());
+  service_.SaveTab(GURL("https://example2.com"), "Title2", "Page text 2",
+                   base::DoNothing());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
+  service_.GetAllEntries(get_entries_future.GetCallback());
+  auto entries = get_entries_future.Get();
+  ASSERT_EQ(2u, entries.size());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> by_ids_future;
+  service_.GetEntriesByIds({entries[0].id}, by_ids_future.GetCallback());
+  auto selected_entries = by_ids_future.Get();
+  ASSERT_EQ(1u, selected_entries.size());
+  EXPECT_EQ(entries[0].id, selected_entries[0].id);
+  EXPECT_EQ(entries[0].tab_title, selected_entries[0].tab_title);
+}
+
 TEST_F(ContextHubServiceTest, GroupTabs_NoTabs) {
   base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>>
       future;

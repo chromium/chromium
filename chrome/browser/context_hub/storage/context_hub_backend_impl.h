@@ -30,7 +30,10 @@ class ContextHubBackendImpl : public ContextHubBackend {
                                   OperationCompleteCallback callback) override;
   void DeleteMemoryBankEntries(base::span<const int64_t> ids,
                                OperationCompleteCallback callback) override;
-  void GetAllMemoryBankEntries(GetAllEntriesCallback callback) const override;
+  void GetAllMemoryBankEntries(GetEntriesCallback callback) const override;
+  void GetMemoryBankEntriesByIds(
+      base::span<const int64_t> ids,
+      GetEntriesCallback callback) const override;
 
  private:
   enum class DbState {

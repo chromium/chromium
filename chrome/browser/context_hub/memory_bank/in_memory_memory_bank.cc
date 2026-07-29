@@ -56,13 +56,27 @@ void InMemoryMemoryBank::SaveTextSelection(const GURL& url,
   }
 }
 
-void InMemoryMemoryBank::GetAllEntries(GetAllEntriesCallback callback) const {
+void InMemoryMemoryBank::GetAllEntries(GetEntriesCallback callback) const {
   std::vector<MemoryBankEntry> result;
   for (const auto& [id, entry] : entries_) {
     result.push_back(entry);
   }
   if (callback) {
-  std::move(callback).Run(std::move(result));
+    std::move(callback).Run(std::move(result));
+  }
+}
+
+void InMemoryMemoryBank::GetEntriesByIds(base::span<const int64_t> ids,
+                                         GetEntriesCallback callback) const {
+  std::vector<MemoryBankEntry> result;
+  for (int64_t id : ids) {
+    auto it = entries_.Peek(id);
+    if (it != entries_.end()) {
+      result.push_back(it->second);
+    }
+  }
+  if (callback) {
+    std::move(callback).Run(std::move(result));
   }
 }
 

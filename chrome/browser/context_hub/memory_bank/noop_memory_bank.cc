@@ -32,7 +32,12 @@ void NoOpMemoryBank::SaveTextSelection(const GURL& url,
   }
 }
 
-void NoOpMemoryBank::GetAllEntries(GetAllEntriesCallback callback) const {
+void NoOpMemoryBank::GetAllEntries(GetEntriesCallback callback) const {
+  std::move(callback).Run({});
+}
+
+void NoOpMemoryBank::GetEntriesByIds(base::span<const int64_t> ids,
+                                     GetEntriesCallback callback) const {
   std::move(callback).Run({});
 }
 

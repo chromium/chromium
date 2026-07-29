@@ -95,7 +95,10 @@ class ContextHubService : public KeyedService {
   void DeleteEntries(base::span<const int64_t> ids,
                      MemoryBank::OperationCompleteCallback callback);
   // Returns all entries from the memory bank.
-  void GetAllEntries(MemoryBank::GetAllEntriesCallback callback) const;
+  void GetAllEntries(MemoryBank::GetEntriesCallback callback) const;
+  // Returns entries for the given IDs from the memory bank.
+  void GetEntriesByIds(base::span<const int64_t> ids,
+                       MemoryBank::GetEntriesCallback callback) const;
 
   using GetTabGroupsCallback =
       base::OnceCallback<void(std::vector<TabGroupEntry>)>;

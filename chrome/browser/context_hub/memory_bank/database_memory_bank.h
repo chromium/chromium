@@ -34,7 +34,9 @@ class DatabaseMemoryBank : public MemoryBank {
                          OperationCompleteCallback callback) override;
   void DeleteEntries(base::span<const int64_t> ids,
                      OperationCompleteCallback callback) override;
-  void GetAllEntries(GetAllEntriesCallback callback) const override;
+  void GetAllEntries(GetEntriesCallback callback) const override;
+  void GetEntriesByIds(base::span<const int64_t> ids,
+                       GetEntriesCallback callback) const override;
 
  private:
   const raw_ref<ContextHubBackend> context_hub_backend_;

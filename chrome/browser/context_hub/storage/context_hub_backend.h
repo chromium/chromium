@@ -29,11 +29,15 @@ class ContextHubBackend {
   // Deletes entries in the MemoryBankTable with the given ids.
   virtual void DeleteMemoryBankEntries(base::span<const int64_t> ids,
                                        OperationCompleteCallback callback) = 0;
-  using GetAllEntriesCallback =
+  using GetEntriesCallback =
       base::OnceCallback<void(std::vector<MemoryBankEntry>)>;
   // Returns all entries in the MemoryBankTable.
   virtual void GetAllMemoryBankEntries(
-      GetAllEntriesCallback callback) const = 0;
+      GetEntriesCallback callback) const = 0;
+  // Returns entries for the given IDs in the MemoryBankTable.
+  virtual void GetMemoryBankEntriesByIds(
+      base::span<const int64_t> ids,
+      GetEntriesCallback callback) const = 0;
 };
 
 }  // namespace context_hub

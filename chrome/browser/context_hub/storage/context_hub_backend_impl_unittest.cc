@@ -118,7 +118,41 @@ TEST_F(ContextHubBackendImplTest, OperationsQueuedBeforeInit) {
   base::test::TestFuture<std::vector<MemoryBankEntry>> empty_future;
   backend->GetAllMemoryBankEntries(empty_future.GetCallback());
   EXPECT_TRUE(empty_future.Get().empty());
+}
 
+TEST_F(ContextHubBackendImplTest, GetMemoryBankEntriesByIds) {
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://example.com/1");
+  entry1.tab_title = "Tab 1";
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://example.com/2");
+  entry2.tab_title = "Tab 2";
+
+  base::test::TestFuture<bool> save_future1;
+  backend_->AddOrUpdateMemoryBankEntry(entry1, save_future1.GetCallback());
+  ASSERT_TRUE(save_future1.Get());
+
+  base::test::TestFuture<bool> save_future2;
+  backend_->AddOrUpdateMemoryBankEntry(entry2, save_future2.GetCallback());
+  ASSERT_TRUE(save_future2.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> all_future;
+  backend_->GetAllMemoryBankEntries(all_future.GetCallback());
+  auto all_entries = all_future.Get();
+  ASSERT_EQ(2u, all_entries.size());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> by_ids_future;
+  backend_->GetMemoryBankEntriesByIds({all_entries[0].id},
+                                       by_ids_future.GetCallback());
+  auto selected_entries = by_ids_future.Get();
+  ASSERT_EQ(1u, selected_entries.size());
+  EXPECT_EQ(all_entries[0].id, selected_entries[0].id);
+  EXPECT_EQ(all_entries[0].tab_title, selected_entries[0].tab_title);
 }
 
 }  // namespace context_hub

@@ -70,4 +70,29 @@ TEST_F(DatabaseMemoryBankTest, SaveTextSelectionAndDelete) {
   EXPECT_TRUE(empty_future.Get().empty());
 }
 
+TEST_F(DatabaseMemoryBankTest, GetEntriesByIds) {
+  base::test::TestFuture<void> save_future1;
+  memory_bank_->SaveTab(GURL("https://example.com/1"), "Tab 1", "Content 1",
+                        save_future1.GetCallback());
+  EXPECT_TRUE(save_future1.Wait());
+
+  base::test::TestFuture<void> save_future2;
+  memory_bank_->SaveTab(GURL("https://example.com/2"), "Tab 2", "Content 2",
+                        save_future2.GetCallback());
+  EXPECT_TRUE(save_future2.Wait());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> all_future;
+  memory_bank_->GetAllEntries(all_future.GetCallback());
+  auto all_entries = all_future.Get();
+  ASSERT_EQ(2u, all_entries.size());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> by_ids_future;
+  memory_bank_->GetEntriesByIds({all_entries[0].id},
+                                 by_ids_future.GetCallback());
+  auto selected_entries = by_ids_future.Get();
+  ASSERT_EQ(1u, selected_entries.size());
+  EXPECT_EQ(all_entries[0].id, selected_entries[0].id);
+  EXPECT_EQ(all_entries[0].tab_title, selected_entries[0].tab_title);
+}
+
 }  // namespace context_hub

@@ -121,6 +121,15 @@ std::optional<MemoryBankEntry> ContextHubDatabase::GetMemoryBankEntry(
   return memory_bank_table_.GetEntry(id);
 }
 
+std::vector<MemoryBankEntry> ContextHubDatabase::GetMemoryBankEntriesByIds(
+    base::span<const int64_t> ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_ || !db_->is_open()) {
+    return {};
+  }
+  return memory_bank_table_.GetEntriesByIds(ids);
+}
+
 std::vector<MemoryBankEntry> ContextHubDatabase::GetAllMemoryBankEntries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_ || !db_->is_open()) {

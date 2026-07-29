@@ -166,6 +166,21 @@ std::optional<MemoryBankEntry> MemoryBankTable::GetEntry(int64_t id) {
   return ToMemoryBankEntry(statement);
 }
 
+std::vector<MemoryBankEntry> MemoryBankTable::GetEntriesByIds(
+    base::span<const int64_t> ids) {
+  if (!db_ || ids.empty()) {
+    return {};
+  }
+  std::vector<MemoryBankEntry> entries;
+  for (int64_t id : ids) {
+    auto entry = GetEntry(id);
+    if (entry.has_value()) {
+      entries.push_back(std::move(*entry));
+    }
+  }
+  return entries;
+}
+
 std::vector<MemoryBankEntry> MemoryBankTable::GetAllEntries() {
   if (!db_) {
     return {};

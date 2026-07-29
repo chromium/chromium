@@ -115,8 +115,33 @@ TEST_F(ContextHubDatabaseTest, InitializeGreaterVersionThanCurrent) {
 TEST_F(ContextHubDatabaseTest, CallMemoryBankMethodsBeforeInit) {
   EXPECT_FALSE(db_->AddOrUpdateMemoryBankEntry(CreateTestData()));
   EXPECT_FALSE(db_->GetMemoryBankEntry(1).has_value());
+  EXPECT_TRUE(db_->GetMemoryBankEntriesByIds({1}).empty());
   EXPECT_TRUE(db_->GetAllMemoryBankEntries().empty());
   EXPECT_FALSE(db_->DeleteMemoryBankEntries({1}));
+}
+
+// Tests retrieving memory bank entries by IDs.
+TEST_F(ContextHubDatabaseTest, GetMemoryBankEntriesByIds) {
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  MemoryBankEntry entry1 = CreateTestData();
+  entry1.url = GURL("https://example1.com");
+  entry1.tab_title = "Site 1";
+  MemoryBankEntry entry2 = CreateTestData();
+  entry2.url = GURL("https://example2.com");
+  entry2.tab_title = "Site 2";
+
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+
+  std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
+  ASSERT_EQ(all_entries.size(), 2u);
+
+  std::vector<MemoryBankEntry> retrieved =
+      db_->GetMemoryBankEntriesByIds({all_entries[0].id});
+  ASSERT_EQ(retrieved.size(), 1u);
+  EXPECT_EQ(retrieved[0].id, all_entries[0].id);
+  EXPECT_EQ(retrieved[0].tab_title, all_entries[0].tab_title);
 }
 
 // Tests adding and retrieving memory bank entries.

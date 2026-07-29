@@ -31,7 +31,9 @@ class NoOpMemoryBank : public MemoryBank {
                          std::string_view tab_title,
                          std::string_view selected_text,
                          OperationCompleteCallback callback) override;
-  void GetAllEntries(GetAllEntriesCallback callback) const override;
+  void GetAllEntries(GetEntriesCallback callback) const override;
+  void GetEntriesByIds(base::span<const int64_t> ids,
+                       GetEntriesCallback callback) const override;
   void DeleteEntries(base::span<const int64_t> ids,
                      OperationCompleteCallback callback) override;
 };

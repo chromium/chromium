@@ -212,4 +212,30 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   EXPECT_TRUE(fetched->tags.empty());
 }
 
+TEST_F(MemoryBankTableTest, GetEntriesByIds) {
+  MemoryBankEntry entry1;
+  entry1.type = MemoryBankType::kTab;
+  entry1.timestamp = base::Time::FromSecondsSinceUnixEpoch(1000);
+  entry1.url = GURL("https://site1.com");
+  entry1.tab_title = "Site 1";
+
+  MemoryBankEntry entry2;
+  entry2.type = MemoryBankType::kTab;
+  entry2.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  entry2.url = GURL("https://site2.com");
+  entry2.tab_title = "Site 2";
+
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
+  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+
+  std::vector<MemoryBankEntry> all = table_.GetAllEntries();
+  ASSERT_EQ(2u, all.size());
+
+  std::vector<MemoryBankEntry> retrieved =
+      table_.GetEntriesByIds({all[0].id});
+  ASSERT_EQ(1u, retrieved.size());
+  EXPECT_EQ(all[0].id, retrieved[0].id);
+  EXPECT_EQ(all[0].tab_title, retrieved[0].tab_title);
+}
+
 }  // namespace context_hub

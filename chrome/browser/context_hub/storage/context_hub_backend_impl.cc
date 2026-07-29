@@ -96,7 +96,7 @@ void ContextHubBackendImpl::DeleteMemoryBankEntries(
 }
 
 void ContextHubBackendImpl::GetAllMemoryBankEntries(
-    GetAllEntriesCallback callback) const {
+    GetEntriesCallback callback) const {
   auto* non_const_this = const_cast<ContextHubBackendImpl*>(this);
   switch (db_state_) {
     case DbState::kUninitialized:
@@ -110,7 +110,30 @@ void ContextHubBackendImpl::GetAllMemoryBankEntries(
           .Then(std::move(callback));
       break;
     case DbState::kFailed:
-      std::move(const_cast<GetAllEntriesCallback&>(callback)).Run({});
+      std::move(const_cast<GetEntriesCallback&>(callback)).Run({});
+      break;
+  }
+}
+
+void ContextHubBackendImpl::GetMemoryBankEntriesByIds(
+    base::span<const int64_t> ids,
+    GetEntriesCallback callback) const {
+  auto* non_const_this = const_cast<ContextHubBackendImpl*>(this);
+  switch (db_state_) {
+    case DbState::kUninitialized:
+    case DbState::kInitializing:
+      non_const_this->queued_operations_.push_back(
+          base::BindOnce(&ContextHubBackendImpl::GetMemoryBankEntriesByIds,
+                         weak_ptr_factory_.GetWeakPtr(), base::ToVector(ids),
+                         std::move(callback)));
+      break;
+    case DbState::kReady:
+      db_.AsyncCall(&ContextHubDatabase::GetMemoryBankEntriesByIds)
+          .WithArgs(base::ToVector(ids))
+          .Then(std::move(callback));
+      break;
+    case DbState::kFailed:
+      std::move(const_cast<GetEntriesCallback&>(callback)).Run({});
       break;
   }
 }

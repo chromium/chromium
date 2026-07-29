@@ -34,10 +34,13 @@ class MemoryBank {
   // Deletes entries from the memory bank.
   virtual void DeleteEntries(base::span<const int64_t> ids,
                              OperationCompleteCallback callback) = 0;
-  using GetAllEntriesCallback =
+  using GetEntriesCallback =
       base::OnceCallback<void(std::vector<MemoryBankEntry>)>;
   // Returns all entries from the memory bank via the callback.
-  virtual void GetAllEntries(GetAllEntriesCallback callback) const = 0;
+  virtual void GetAllEntries(GetEntriesCallback callback) const = 0;
+  // Returns entries for the given IDs from the memory bank via the callback.
+  virtual void GetEntriesByIds(base::span<const int64_t> ids,
+                               GetEntriesCallback callback) const = 0;
 };
 
 }  // namespace context_hub

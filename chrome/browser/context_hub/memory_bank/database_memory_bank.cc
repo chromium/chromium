@@ -67,8 +67,13 @@ void DatabaseMemoryBank::DeleteEntries(base::span<const int64_t> ids,
       ids, base::IgnoreArgs<bool>(std::move(callback)));
 }
 
-void DatabaseMemoryBank::GetAllEntries(GetAllEntriesCallback callback) const {
+void DatabaseMemoryBank::GetAllEntries(GetEntriesCallback callback) const {
   context_hub_backend_->GetAllMemoryBankEntries(std::move(callback));
+}
+
+void DatabaseMemoryBank::GetEntriesByIds(base::span<const int64_t> ids,
+                                         GetEntriesCallback callback) const {
+  context_hub_backend_->GetMemoryBankEntriesByIds(ids, std::move(callback));
 }
 
 }  // namespace context_hub
