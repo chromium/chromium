@@ -80,7 +80,7 @@ namespace glic {
 namespace {
 
 constexpr size_t kMaxSelectionLengthForTooltip = 50;
-constexpr int kIconSize = 14;
+constexpr int kIconSize = 16;
 
 // Corner radius following Chrome Material 3 design specs:
 // 10dp for compact floating pills, 16dp for larger card containers/buttons.
@@ -238,7 +238,7 @@ class GlicSelectionContentsView : public views::View {
 
     ask_pill_ = AddChildView(std::make_unique<views::BoxLayoutView>());
     ask_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    ask_pill_->SetInsideBorderInsets(gfx::Insets::VH(2, 2));
+    ask_pill_->SetInsideBorderInsets(gfx::Insets::TLBR(2, 3, 2, 0));
     ask_pill_->SetBetweenChildSpacing(2);
     ask_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -268,12 +268,12 @@ class GlicSelectionContentsView : public views::View {
             GetCtaLabel()));
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
-    ask_gemini_btn->SetImageLabelSpacing(4);
+    ask_gemini_btn->SetImageLabelSpacing(6);
     ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurface);
     ask_gemini_btn->SetTextColor(views::Button::STATE_DISABLED,
                                  ui::kColorLabelForegroundDisabled);
-    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_2_MEDIUM);
-    ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(0, 4, 0, 6));
+    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_3_MEDIUM);
+    ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(5, 6, 5, 6));
     ask_gemini_btn->SetBgColorOverrideDeprecated(SK_ColorTRANSPARENT);
     ask_gemini_btn->SetInstallFocusRingOnFocus(false);
 
@@ -304,7 +304,7 @@ class GlicSelectionContentsView : public views::View {
                   IDR_GLIC_BUTTON_VECTOR_ICON);
           return gfx::CreateVectorIcon(
               vector_icon, kIconSize,
-              color_provider->GetColor(ui::kColorSysOnSurfaceVariant));
+              color_provider->GetColor(ui::kColorSysOnSurfaceSubtle));
         });
 
     inactive_icon_model_ = ui::ImageModel::FromImageGenerator(
@@ -325,6 +325,7 @@ class GlicSelectionContentsView : public views::View {
     ask_gemini_btn->SetShowInkDropWhenHotTracked(true);
     views::InstallRoundRectHighlightPathGenerator(ask_gemini_btn, gfx::Insets(),
                                                   kCornerRadius - 2);
+    ask_gemini_btn->SetCornerRadius(kCornerRadius - 2);
 
     if (features::kGlicSelectionShowCopyButtons.Get()) {
       // Copy Button
@@ -349,9 +350,9 @@ class GlicSelectionContentsView : public views::View {
           features::IsRoundedIconsEnabled() ? vector_icons::kContentCopyIcon
                                             : vector_icons::kContentCopyOldIcon,
           kIconSize,
-          views::IconColors(ui::kColorSysOnSurfaceVariant,
+          views::IconColors(ui::kColorSysOnSurfaceSubtle,
                             ui::kColorLabelForegroundDisabled,
-                            ui::kColorSysOnSurfaceVariant));
+                            ui::kColorSysOnSurfaceSubtle));
       CreateToolbarInkdropCallbacks(copy_btn, kColorToolbarInkDropHover,
                                     kColorToolbarInkDropRipple);
 
@@ -379,22 +380,21 @@ class GlicSelectionContentsView : public views::View {
               ? omnibox::kShareIcon
               : omnibox::kShareChromeRefreshOldIcon,
           kIconSize,
-          views::IconColors(ui::kColorSysOnSurfaceVariant,
+          views::IconColors(ui::kColorSysOnSurfaceSubtle,
                             ui::kColorLabelForegroundDisabled,
-                            ui::kColorSysOnSurfaceVariant));
+                            ui::kColorSysOnSurfaceSubtle));
       CreateToolbarInkdropCallbacks(copy_link_btn_, kColorToolbarInkDropHover,
                                     kColorToolbarInkDropRipple);
       copy_link_btn_->SetEnabled(false);
     }
 
     // Integrated Options Section (instead of separate pill)
-    control_pill_ =
+    close_pill_ =
         ask_pill_->AddChildView(std::make_unique<views::BoxLayoutView>());
-    control_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    // Extra space on the left to show the division from the CTA buttons.
-    control_pill_->SetInsideBorderInsets(gfx::Insets(0));
-    control_pill_->SetBetweenChildSpacing(2);
-    control_pill_->SetCrossAxisAlignment(
+    close_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    close_pill_->SetInsideBorderInsets(gfx::Insets::TLBR(4, 0, 4, 3));
+    close_pill_->SetBetweenChildSpacing(2);
+    close_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
     auto close_tooltip = l10n_util::GetStringUTF16(IDS_CLOSE);
@@ -402,12 +402,11 @@ class GlicSelectionContentsView : public views::View {
         features::IsRoundedIconsEnabled()
             ? vector_icons::kCloseIcon
             : vector_icons::kCloseOldIcon;
-    close_btn_ =
-        control_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            base::BindRepeating(
-                &GlicSelectionWidgetDelegate::ActionDelegate::OnHide,
-                base::Unretained(&widget_delegate_->action_delegate())),
-            close_icon, close_tooltip));
+    close_btn_ = close_pill_->AddChildView(views::ImageButton::CreateIconButton(
+        base::BindRepeating(
+            &GlicSelectionWidgetDelegate::ActionDelegate::OnHide,
+            base::Unretained(&widget_delegate_->action_delegate())),
+        close_icon, close_tooltip));
     close_btn_->SetTooltipText(close_tooltip);
     close_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     close_btn_->SetBorder(views::CreateEmptyBorder(
@@ -415,17 +414,17 @@ class GlicSelectionContentsView : public views::View {
             views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
         close_btn_, close_icon, kIconSize,
-        views::IconColors(ui::kColorSysOnSurfaceVariant,
+        views::IconColors(ui::kColorSysOnSurfaceSubtle,
                           ui::kColorLabelForegroundDisabled,
-                          ui::kColorSysOnSurfaceVariant));
+                          ui::kColorSysOnSurfaceSubtle));
     CreateToolbarInkdropCallbacks(close_btn_, kColorToolbarInkDropHover,
                                   kColorToolbarInkDropRipple);
     close_btn_subscription_ = close_btn_->AddStateChangedCallback(
         base::BindRepeating(&GlicSelectionContentsView::RefreshAskGeminiState,
                             base::Unretained(this)));
 
-    control_pill_->SetPaintToLayer();
-    control_pill_->layer()->SetFillsBoundsOpaquely(false);
+    close_pill_->SetPaintToLayer();
+    close_pill_->layer()->SetFillsBoundsOpaquely(false);
   }
 
   void RefreshAskGeminiState() {
@@ -537,8 +536,8 @@ class GlicSelectionContentsView : public views::View {
     if (ask_pill_) {
       ask_pill_->SetVisible(false);
     }
-    if (control_pill_) {
-      control_pill_->SetVisible(false);
+    if (close_pill_) {
+      close_pill_->SetVisible(false);
     }
   }
 
@@ -786,7 +785,7 @@ class GlicSelectionContentsView : public views::View {
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
   raw_ptr<views::ImageButton> close_btn_ = nullptr;
-  raw_ptr<views::BoxLayoutView> control_pill_ = nullptr;
+  raw_ptr<views::BoxLayoutView> close_pill_ = nullptr;
   base::CallbackListSubscription close_btn_subscription_;
   raw_ptr<views::BoxLayoutView> explanation_container_ = nullptr;
 };

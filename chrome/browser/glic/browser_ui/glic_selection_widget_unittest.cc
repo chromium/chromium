@@ -108,9 +108,9 @@ TEST_F(GlicSelectionWidgetTest, CopyButtonsHiddenByDefault) {
   ASSERT_EQ(pill_children.size(), 2u);
   EXPECT_TRUE(views::AsViewClass<views::MdTextButton>(pill_children[0]));
 
-  auto control_children = pill_children[1]->children();
-  ASSERT_EQ(control_children.size(), 1u);
-  EXPECT_TRUE(views::AsViewClass<views::ImageButton>(control_children[0]));
+  auto close_children = pill_children[1]->children();
+  ASSERT_EQ(close_children.size(), 1u);
+  EXPECT_TRUE(views::AsViewClass<views::ImageButton>(close_children[0]));
 }
 
 TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
@@ -141,10 +141,10 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   auto* copy_link_btn =
       views::AsViewClass<views::ImageButton>(pill_children[2]);
 
-  views::View* control_pill = pill_children[3];
-  auto control_children = control_pill->children();
-  ASSERT_EQ(control_children.size(), 1u);
-  auto* close_btn = views::AsViewClass<views::ImageButton>(control_children[0]);
+  views::View* close_pill = pill_children[3];
+  auto close_children = close_pill->children();
+  ASSERT_EQ(close_children.size(), 1u);
+  auto* close_btn = views::AsViewClass<views::ImageButton>(close_children[0]);
 
   ASSERT_TRUE(ask_gemini_btn);
   ASSERT_TRUE(copy_btn);
