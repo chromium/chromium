@@ -268,13 +268,6 @@ testing::AssertionResult AutofillUiTest::SendKeyToPopupAndWait(
   return result;
 }
 
-void AutofillUiTest::DoNothingAndWait(base::TimeDelta timeout,
-                                      base::Location location) {
-  test_delegate()->SetExpectations({ObservedUiEvents::kNoEvent}, timeout,
-                                   location);
-  ASSERT_FALSE(test_delegate()->Wait());
-}
-
 void AutofillUiTest::DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout) {
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

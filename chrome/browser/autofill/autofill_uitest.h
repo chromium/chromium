@@ -138,11 +138,7 @@ class AutofillUiTest : public InProcessBrowserTest,
 
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
-  // DoNothingAndWait() violates an assertion if during the time an event
-  // happens. Delayed events during DoNothingAndWait() may therefore cause
-  // flakiness. DoNothingAndWaitAndIgnoreEvents() ignores any events.
-  void DoNothingAndWait(base::TimeDelta timeout,
-                        base::Location location = FROM_HERE);
+  // Sleeps for `timeout` while ignoring any events.
   void DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout);
 
   content::WebContents* GetWebContents();
