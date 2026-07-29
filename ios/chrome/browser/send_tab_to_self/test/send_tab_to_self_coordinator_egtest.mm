@@ -688,6 +688,55 @@ void DismissSnackbar() {
                       grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
 }
 
+// Tests that when the "Send to your device" bottom sheet is opened from the tab
+// switcher context menu, simulating an external URL open dismisses the bottom
+// sheet and opens the requested URL.
+- (void)
+    testDismissSendToYourDeviceBottomSheetWhenOpenedFromTabSwitcherOnExternalURL {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+
+  // Open tab switcher.
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Long press the active tab cell (index 0).
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_longPress()];
+
+  // Verify the "Send to your device" menu item shows up.
+  id<GREYMatcher> sendToDevicesMenuItem =
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+          IDS_SEND_TAB_TO_SELF);
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the context menu item.
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      performAction:grey_tap()];
+
+  // Verify that the device picker shows up.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+
+  // Simulate opening an external URL, which requires dismissing all modal
+  // dialogs on the tab switcher.
+  [ChromeEarlGrey simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:
+                      self.testServer->GetURL("/send_tab_to_self/"
+                                              "send_tab_to_self_active_page."
+                                              "html")];
+
+  // Verify that the device picker modal was dismissed.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityLabel(
+                                                 kTargetDeviceName)];
+}
+
 // Tests that long-pressing a tab cell in the tab switcher shows "Send to Your
 // Devices" and tapping it displays the sign-in promo if the user is signed out.
 - (void)testLongPressTabSwitcherTabToShowSigninPromo {

@@ -1367,6 +1367,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self dismissActionSheetCoordinator];
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+  [self.sendTabToSelfCoordinator stop];
+  self.sendTabToSelfCoordinator = nil;
+  [self.pageActionMenuCoordinator stop];
+  self.pageActionMenuCoordinator = nil;
 }
 
 #pragma mark - GridCoordinatorAudience
