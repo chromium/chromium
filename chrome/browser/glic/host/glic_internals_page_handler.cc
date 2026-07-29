@@ -779,6 +779,7 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   options.skill_id = std::move(mojo_options->skill_id);
   options.error_message = std::move(mojo_options->error_message);
   options.timeout = mojo_options->timeout;
+  options.supersede_if_in_progress = mojo_options->supersede_if_in_progress;
   options.fre_override = mojo_options->fre_override;
   options.wait_for_panel_open = mojo_options->wait_for_panel_open;
   if (mojo_options->focus_on_show.has_value()) {

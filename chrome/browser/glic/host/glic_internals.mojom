@@ -103,6 +103,7 @@ struct TriggerInvokeFromInternalsOptions {
   InvocationPayload? payload;
   bool take_screenshot;
   ScreenshotTestKeyConfiguration? key_config;
+  bool supersede_if_in_progress;
 };
 
 // Page handler for the glic internals WebUI.

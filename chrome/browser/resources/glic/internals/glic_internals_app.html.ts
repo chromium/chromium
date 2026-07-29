@@ -240,6 +240,12 @@ export function getHtml(this: GlicInternalsAppElement) {
                   @change="${this.onInvokeTakeScreenshotChange_}">
               Test Take Screenshot
             </label>
+            <label style="flex: 1 1 calc(50% - 8px);">
+              <input type="checkbox"
+                  .checked="${this.invokeSupersedeIfInProgress_}"
+                  @change="${this.onInvokeSupersedeIfInProgressChange_}">
+              Supersede if In Progress
+            </label>
           </div>
           ${this.invokeTakeScreenshot_ ? html`
             <div style="display: flex; flex-direction: column; gap: 8px;

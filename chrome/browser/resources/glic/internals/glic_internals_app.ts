@@ -52,6 +52,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeFreCompletionWaitMode_: {type: Number},
       freCompletionWaitModeEnumValues_: {type: Array},
       invokeTakeScreenshot_: {type: Boolean},
+      invokeSupersedeIfInProgress_: {type: Boolean},
       invokePublicKey_: {type: String},
       invokeAuthSecret_: {type: String},
 
@@ -88,6 +89,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeFreCompletionWaitMode_: FreCompletionWaitMode =
       FreCompletionWaitMode.kDefault;
   protected accessor invokeTakeScreenshot_: boolean = false;
+  protected accessor invokeSupersedeIfInProgress_: boolean = false;
   protected accessor invokePublicKey_: string =
       'BFlvj1VrkwP8pxa1zSiJZzZ7yeMEO1DOPS' +
       'bNw6XV8NK3Xo++7ql9NTcxNaciYM2eQ/G1ebnwrtRrHyMXEDhN5ck=';
@@ -400,6 +402,9 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected onInvokeTakeScreenshotChange_(e: Event) {
     this.invokeTakeScreenshot_ = (e.target as HTMLInputElement).checked;
   }
+  protected onInvokeSupersedeIfInProgressChange_(e: Event) {
+    this.invokeSupersedeIfInProgress_ = (e.target as HTMLInputElement).checked;
+  }
   protected onInvokePublicKeyInput_(e: Event) {
     this.invokePublicKey_ = (e.target as HTMLInputElement).value;
   }
@@ -470,6 +475,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,
       payload: payload,
       takeScreenshot: this.invokeTakeScreenshot_,
+      supersedeIfInProgress: this.invokeSupersedeIfInProgress_,
       keyConfig: (this.invokePublicKey_ || this.invokeAuthSecret_) ? {
         publicKey: this.invokePublicKey_,
         authSecret: this.invokeAuthSecret_,
