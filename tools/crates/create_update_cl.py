@@ -363,7 +363,6 @@ Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
 Cq-Include-Trybots: chromium/try:linux-rust-x64-rel
 Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
 Cq-Include-Trybots: chromium/try:win-rust-x64-rel
-Disable-Rts: True
 """
 
     return description
