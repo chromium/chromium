@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -957,6 +959,33 @@ public class SnackbarTest {
                 verifySnackbarBottomMarginEquals(baselineMargin));
     }
 
+    @Test
+    @SmallTest
+    public void testGenericMotionEventConsumed() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "test snackbar text",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
+        pollSnackbarCondition("Snackbar should be shown", () -> mManager.isShowing());
+
+        MotionEvent mouseEvent = createMouseEvent(MotionEvent.ACTION_BUTTON_PRESS);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SnackbarView view = mManager.getCurrentSnackbarViewForTesting();
+                    Assert.assertNotNull("SnackbarView should not be null", view);
+                    View containerView = view.getContainerViewForTesting();
+                    Assert.assertNotNull("Container view should not be null", containerView);
+                    assertTrue(
+                            "SnackbarView container view should consume mouse events",
+                            containerView.onGenericMotionEvent(mouseEvent)
+                                    || containerView.dispatchGenericMotionEvent(mouseEvent));
+                });
+    }
+
     private void pollSnackbarCondition(String message, Supplier<Boolean> condition) {
         CriteriaHelper.pollUiThread(condition::get, message);
     }
@@ -993,6 +1022,19 @@ public class SnackbarTest {
                                     view.getContainerViewForTesting().getLayoutParams())
                             .bottomMargin;
                 });
+    }
+
+    private MotionEvent createMouseEvent(int action) {
+        MotionEvent.PointerProperties[] pp = new MotionEvent.PointerProperties[1];
+        pp[0] = new MotionEvent.PointerProperties();
+        pp[0].id = 0;
+        pp[0].toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        MotionEvent.PointerCoords[] pc = new MotionEvent.PointerCoords[1];
+        pc[0] = new MotionEvent.PointerCoords();
+
+        return MotionEvent.obtain(
+                0, 0, action, 1, pp, pc, 0, 0, 1.0f, 1.0f, 0, 0, InputDevice.SOURCE_MOUSE, 0);
     }
 
     private static class MockKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {

@@ -42,6 +42,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.MotionEventUtils;
 
 /**
  * Visual representation of a snackbar. It has a fixed maximum width and is anchored at the
@@ -171,6 +172,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                     mContainerView.performClick();
                     return true;
                 });
+        mContainerView.setOnGenericMotionListener(
+                (view, event) -> MotionEventUtils.isPointerEvent(event));
 
         mSnackbarView = mContainerView.findViewById(R.id.snackbar);
         mAnimationDuration =
