@@ -864,10 +864,10 @@ Error SqlPersistentStore::Backend::DoomEntryInternal(
       /*total_size_delta=*/total_size_delta.ValueOrDie(), corruption_detected);
 }
 
-ErrorAndStoreStatus SqlPersistentStore::Backend::DeleteDoomedEntry(
-    const CacheEntryKey& key,
-    ResId res_id,
-    base::TimeTicks start_time) {
+SqlPersistentStore::DeletedSharedCacheResourceOrError
+SqlPersistentStore::Backend::DeleteDoomedEntry(const CacheEntryKey& key,
+                                               ResId res_id,
+                                               base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteDoomedEntry", "data",
                     [&](perfetto::TracedValue trace_context) {
@@ -879,65 +879,83 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::DeleteDoomedEntry(
   base::ElapsedTimer timer;
   auto result = DeleteDoomedEntryInternal(res_id);
   RecordTimeAndErrorResultHistogram("DeleteDoomedEntry", posting_delay,
-                                    timer.Elapsed(), result,
+                                    timer.Elapsed(),
+                                    result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
   TRACE_EVENT_END("disk_cache", "result",
                   [&](perfetto::TracedValue trace_context) {
                     auto dict = std::move(trace_context).WriteDictionary();
-                    PopulateTraceDetails(result, store_status_, dict);
+                    PopulateTraceDetails(result.error_or(Error::kOk),
+                                         store_status_, dict);
                   });
-  return ErrorAndStoreStatus(result, store_status_);
+  return result;
 }
 
-Error SqlPersistentStore::Backend::DeleteDoomedEntryInternal(ResId res_id) {
+SqlPersistentStore::DeletedSharedCacheResourceOrError
+SqlPersistentStore::Backend::DeleteDoomedEntryInternal(ResId res_id) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return db_error;
+    return base::unexpected(db_error);
   }
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return Error::kFailedToStartTransaction;
+    return base::unexpected(Error::kFailedToStartTransaction);
   }
 
+  std::optional<SqlSharedCacheResourceId> deleted_shared_resource;
   int64_t deleted_count = 0;
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
         GetQuery(Query::kDeleteDoomedEntry_DeleteFromResources)));
     statement.BindInt64(0, res_id.value());
-    if (!statement.Run()) {
-      return Error::kFailedToExecute;
+    if (shared_cache_enabled_) {
+      if (statement.Step()) {
+        deleted_shared_resource =
+            GetSharedCacheResourceIdFromStatement(statement, 0, 1);
+        deleted_count = 1;
+      }
+    } else {
+      if (!statement.Run()) {
+        return base::unexpected(Error::kFailedToExecute);
+      }
+      deleted_count = db_.GetLastChangeCount();
     }
-    deleted_count = db_.GetLastChangeCount();
   }
   // The res_id should uniquely identify a single doomed entry.
   CHECK_LE(deleted_count, 1);
 
   // If we didn't find any doomed entry matching the res_id, report it.
   if (deleted_count == 0) {
-    return transaction.Commit() ? Error::kNotFound
-                                : Error::kFailedToCommitTransaction;
+    if (!transaction.Commit()) {
+      return base::unexpected(Error::kFailedToCommitTransaction);
+    }
+    return base::unexpected(Error::kNotFound);
   }
 
   // Delete the associated blobs from the `blobs` table.
   if (Error error = DeleteBlobsByResId(res_id); error != Error::kOk) {
-    return error;
+    return base::unexpected(error);
   }
 
-  return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
+  if (!transaction.Commit()) {
+    return base::unexpected(Error::kFailedToCommitTransaction);
+  }
+
+  return deleted_shared_resource;
 }
 
-Error SqlPersistentStore::Backend::DeleteDoomedEntries(
-    ResIdList res_ids_to_delete,
-    base::TimeTicks start_time) {
+SqlPersistentStore::DeletedSharedCacheResourcesOrError
+SqlPersistentStore::Backend::DeleteDoomedEntries(ResIdList res_ids_to_delete,
+                                                 base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN("disk_cache", "SqlBackend.DeleteDoomedEntries");
   base::ElapsedTimer timer;
   bool corruption_detected = false;
   auto result =
       DeleteDoomedEntriesInternal(res_ids_to_delete, corruption_detected);
-  RecordTimeAndErrorResultHistogram("DeleteDoomedEntries", posting_delay,
-                                    timer.Elapsed(), result,
-                                    corruption_detected);
+  RecordTimeAndErrorResultHistogram(
+      "DeleteDoomedEntries", posting_delay, timer.Elapsed(),
+      result.error_or(Error::kOk), corruption_detected);
   if (!reduce_uma_) {
     base::UmaHistogramCounts100("Net.SqlDiskCache.DeleteDoomedEntriesCount",
                                 res_ids_to_delete.size());
@@ -945,40 +963,47 @@ Error SqlPersistentStore::Backend::DeleteDoomedEntries(
   TRACE_EVENT_END("disk_cache", "result",
                   [&](perfetto::TracedValue trace_context) {
                     auto dict = std::move(trace_context).WriteDictionary();
-                    PopulateTraceDetails(result, store_status_, dict);
+                    PopulateTraceDetails(result.error_or(Error::kOk),
+                                         store_status_, dict);
                     dict.Add("deleted_count", res_ids_to_delete.size());
                   });
   MaybeCrashIfCorrupted(corruption_detected);
   return result;
 }
 
-Error SqlPersistentStore::Backend::DeleteDoomedEntriesInternal(
+SqlPersistentStore::DeletedSharedCacheResourcesOrError
+SqlPersistentStore::Backend::DeleteDoomedEntriesInternal(
     const ResIdList& res_ids_to_delete,
     bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return db_error;
+    return base::unexpected(db_error);
   }
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return Error::kFailedToStartTransaction;
+    return base::unexpected(Error::kFailedToStartTransaction);
   }
 
   // 1. Delete from `resources` table by `res_id`.
-  if (auto error = DeleteResourcesByResIds(res_ids_to_delete);
-      error != Error::kOk) {
-    return error;
+  auto deleted_shared_resources_or_error =
+      DeleteResourcesByResIds(res_ids_to_delete);
+  if (!deleted_shared_resources_or_error.has_value()) {
+    return base::unexpected(deleted_shared_resources_or_error.error());
   }
 
   // 2. Delete corresponding blobs by res_id.
   if (auto error = DeleteBlobsByResIds(res_ids_to_delete);
       error != Error::kOk) {
-    return error;
+    return base::unexpected(error);
   }
 
   // 3. Commit the transaction.
   // Note: The entries for the res IDs passed to this method are assumed to be
   // doomed, so store_status_'s entry_count and total_size are not updated.
-  return transaction.Commit() ? Error::kOk : Error::kFailedToCommitTransaction;
+  if (!transaction.Commit()) {
+    return base::unexpected(Error::kFailedToCommitTransaction);
+  }
+
+  return std::move(*deleted_shared_resources_or_error);
 }
 
 HashAndResIdListOrErrorAndStoreStatus
@@ -2125,16 +2150,23 @@ Error SqlPersistentStore::Backend::DeleteBlobsByResIds(
   return Error::kOk;
 }
 
-Error SqlPersistentStore::Backend::DeleteResourceByResId(ResId res_id) {
+SqlPersistentStore::DeletedSharedCacheResourceOrError
+SqlPersistentStore::Backend::DeleteResourceByResId(ResId res_id) {
   TRACE_EVENT0("disk_cache", "SqlBackend.DeleteResourceByResId");
   sql::Statement delete_resource_stmt(db_.GetCachedStatement(
       SQL_FROM_HERE,
       GetQuery(Query::kDeleteResourceByResIds_DeleteFromResources)));
   delete_resource_stmt.BindInt64(0, res_id.value());
-  if (!delete_resource_stmt.Run()) {
-    return Error::kFailedToExecute;
+  if (shared_cache_enabled_) {
+    if (delete_resource_stmt.Step()) {
+      return GetSharedCacheResourceIdFromStatement(delete_resource_stmt, 0, 1);
+    }
+    return std::nullopt;
   }
-  return Error::kOk;
+  if (!delete_resource_stmt.Run()) {
+    return base::unexpected(Error::kFailedToExecute);
+  }
+  return std::nullopt;
 }
 
 SqlPersistentStore::HashOrError
@@ -2166,27 +2198,21 @@ SqlPersistentStore::Backend::DeleteLiveResourceByResIdReturnUsageAndHash(
   return base::unexpected(Error::kNotFound);
 }
 
-Error SqlPersistentStore::Backend::DeleteResourcesByResIds(
-    const HashAndResIdList& hash_and_res_ids) {
-  TRACE_EVENT0("disk_cache", "SqlBackend.DeleteResourcesByResIds");
-  for (const auto& hash_and_res_id : hash_and_res_ids) {
-    if (auto error = DeleteResourceByResId(hash_and_res_id.res_id);
-        error != Error::kOk) {
-      return error;
-    }
-  }
-  return Error::kOk;
-}
-
-Error SqlPersistentStore::Backend::DeleteResourcesByResIds(
+SqlPersistentStore::DeletedSharedCacheResourcesOrError
+SqlPersistentStore::Backend::DeleteResourcesByResIds(
     const std::vector<ResId>& res_ids) {
   TRACE_EVENT0("disk_cache", "SqlBackend.DeleteResourcesByResIds");
+  std::vector<SqlSharedCacheResourceId> deleted_shared_resources;
   for (const auto& res_id : res_ids) {
-    if (auto error = DeleteResourceByResId(res_id); error != Error::kOk) {
-      return error;
+    auto res = DeleteResourceByResId(res_id);
+    if (!res.has_value()) {
+      return base::unexpected(res.error());
+    }
+    if (res.value().has_value()) {
+      deleted_shared_resources.push_back(*res.value());
     }
   }
-  return Error::kOk;
+  return deleted_shared_resources;
 }
 
 ReadResultOrError SqlPersistentStore::Backend::ReadEntryData(

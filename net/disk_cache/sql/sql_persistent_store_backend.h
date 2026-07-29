@@ -60,11 +60,13 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   ErrorAndStoreStatus DoomEntry(const CacheEntryKey& key,
                                 ResId res_id,
                                 base::TimeTicks start_time);
-  ErrorAndStoreStatus DeleteDoomedEntry(const CacheEntryKey& key,
-                                        ResId res_id,
-                                        base::TimeTicks start_time);
-  Error DeleteDoomedEntries(ResIdList res_ids_to_delete,
-                            base::TimeTicks start_time);
+  DeletedSharedCacheResourceOrError DeleteDoomedEntry(
+      const CacheEntryKey& key,
+      ResId res_id,
+      base::TimeTicks start_time);
+  DeletedSharedCacheResourcesOrError DeleteDoomedEntries(
+      ResIdList res_ids_to_delete,
+      base::TimeTicks start_time);
   HashAndResIdListOrErrorAndStoreStatus DeleteLiveEntry(
       const CacheEntryKey& key,
       base::TimeTicks start_time);
@@ -264,9 +266,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   Error DoomEntryInternal(const CacheEntryKey& key,
                           ResId res_id,
                           bool& corruption_detected);
-  Error DeleteDoomedEntryInternal(ResId res_id);
-  Error DeleteDoomedEntriesInternal(const ResIdList& res_ids_to_delete,
-                                    bool& corruption_detected);
+  DeletedSharedCacheResourceOrError DeleteDoomedEntryInternal(ResId res_id);
+  DeletedSharedCacheResourcesOrError DeleteDoomedEntriesInternal(
+      const ResIdList& res_ids_to_delete,
+      bool& corruption_detected);
   HashAndResIdListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
                                                   bool& corruption_detected);
   Error DeleteAllEntriesInternal(bool& corruption_detected);
@@ -378,7 +381,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   Error DeleteBlobsByResIds(const ResIdList& res_ids);
   Error DeleteBlobsByResIds(const HashAndResIdList& hash_and_res_ids);
   // Deletes a single resource entry from the `resources` table by its `res_id`.
-  Error DeleteResourceByResId(ResId res_id);
+  DeletedSharedCacheResourceOrError DeleteResourceByResId(ResId res_id);
   // Deletes a single resource entry from the `resources` table by its `res_id`
   // and returns the `cache_key_hash` of the deleted entry.
   HashOrError DeleteResourceByResIdReturnHash(ResId res_id);
@@ -388,8 +391,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   UsageAndHashOrError DeleteLiveResourceByResIdReturnUsageAndHash(ResId res_id);
   // Deletes multiple resource entries from the `resources` table by their
   // `res_id`s.
-  Error DeleteResourcesByResIds(const ResIdList& res_ids);
-  Error DeleteResourcesByResIds(const HashAndResIdList& hash_and_res_ids);
+  DeletedSharedCacheResourcesOrError DeleteResourcesByResIds(
+      const ResIdList& res_ids);
 
   // Selects a list of eviction candidates from the `resources` table.
   // Entries in `high_priority_res_ids` are less likely to be selected as

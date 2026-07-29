@@ -205,12 +205,25 @@ inline constexpr const char kDoomEntry_MarkDoomedResources[] =
         "bytes_usage";       // 0
 // clang-format on
 
-inline constexpr const char kDeleteDoomedEntry_DeleteFromResources[] =
-    // clang-format off
+inline constexpr const char
+    kDeleteDoomedEntry_DeleteFromResources_SharedCacheDisabled[] =
+        // clang-format off
     "DELETE FROM resources "
     "WHERE "
         "res_id=? AND "  // 0
         "doomed=1";
+// clang-format on
+
+inline constexpr const char
+    kDeleteDoomedEntry_DeleteFromResources_SharedCacheEnabled[] =
+        // clang-format off
+    "DELETE FROM resources "
+    "WHERE "
+        "res_id=? AND "  // 0
+        "doomed=1 "
+    "RETURNING "
+        "shared_cache_db_id,"   // 0
+        "shared_cache_row_id";  // 1
 // clang-format on
 
 inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
@@ -243,8 +256,14 @@ inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
         "doomed=0";
 // clang-format on
 
-inline constexpr const char kDeleteResourceByResIds_DeleteFromResources[] =
-    "DELETE FROM resources WHERE res_id=?";
+inline constexpr const char
+    kDeleteResourceByResIds_DeleteFromResources_SharedCacheDisabled[] =
+        "DELETE FROM resources WHERE res_id=?";
+
+inline constexpr const char
+    kDeleteResourceByResIds_DeleteFromResources_SharedCacheEnabled[] =
+        "DELETE FROM resources WHERE res_id=? "
+        "RETURNING shared_cache_db_id, shared_cache_row_id";
 
 inline constexpr const char kDeleteResourceByResIdReturnHash[] =
     "DELETE FROM resources WHERE res_id=? RETURNING cache_key_hash";
@@ -716,7 +735,12 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
     case Query::kDoomEntry_MarkDoomedResources:
       return internal::kDoomEntry_MarkDoomedResources;
     case Query::kDeleteDoomedEntry_DeleteFromResources:
-      return internal::kDeleteDoomedEntry_DeleteFromResources;
+      if (shared_cache_enabled) {
+        return internal::
+            kDeleteDoomedEntry_DeleteFromResources_SharedCacheEnabled;
+      }
+      return internal::
+          kDeleteDoomedEntry_DeleteFromResources_SharedCacheDisabled;
     case Query::kDeleteLiveEntry_DeleteFromResources:
       return internal::kDeleteLiveEntry_DeleteFromResources;
     case Query::kDeleteAllEntries_DeleteFromResources:
@@ -726,7 +750,12 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
     case Query::kDeleteLiveEntriesBetween_SelectLiveResources:
       return internal::kDeleteLiveEntriesBetween_SelectLiveResources;
     case Query::kDeleteResourceByResIds_DeleteFromResources:
-      return internal::kDeleteResourceByResIds_DeleteFromResources;
+      if (shared_cache_enabled) {
+        return internal::
+            kDeleteResourceByResIds_DeleteFromResources_SharedCacheEnabled;
+      }
+      return internal::
+          kDeleteResourceByResIds_DeleteFromResources_SharedCacheDisabled;
     case Query::kDeleteResourceByResIdReturnHash:
       return internal::kDeleteResourceByResIdReturnHash;
     case Query::kDeleteLiveResourceByResIdReturnUsageAndHash:

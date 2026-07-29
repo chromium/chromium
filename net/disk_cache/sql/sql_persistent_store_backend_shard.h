@@ -65,7 +65,7 @@ class SqlPersistentStore::BackendShard {
                  ErrorCallback callback);
   void DeleteDoomedEntry(const CacheEntryKey& key,
                          ResId res_id,
-                         ErrorCallback callback);
+                         DeletedSharedCacheResourceOrErrorCallback callback);
   void DeleteLiveEntry(const CacheEntryKey& key, ErrorCallback callback);
   void DeleteAllEntries(ErrorCallback callback);
   void DeleteLiveEntriesBetween(base::Time initial_time,
@@ -165,7 +165,8 @@ class SqlPersistentStore::BackendShard {
   // triggers a task to delete them from the database. The cleanup is performed
   // in the background. Returns true if a cleanup task was scheduled, and false
   // otherwise. `callback` is invoked upon completion of the cleanup task.
-  bool MaybeRunCleanupDoomedEntries(ErrorCallback callback);
+  bool MaybeRunCleanupDoomedEntries(
+      DeletedSharedCacheResourcesOrErrorCallback callback);
 
   void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback);
   void MaybeRunIncrementalVacuum(

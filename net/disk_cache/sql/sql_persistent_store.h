@@ -378,6 +378,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using EvictionResultCallback = base::OnceCallback<void(EvictionResult)>;
   using EvictionResultWithMetadataCallback =
       base::OnceCallback<void(EvictionResultWithMetadata)>;
+  using DeletedSharedCacheResourceOrError =
+      base::expected<std::optional<SqlSharedCacheResourceId>, Error>;
+  using DeletedSharedCacheResourceOrErrorCallback =
+      base::OnceCallback<void(DeletedSharedCacheResourceOrError)>;
+  using DeletedSharedCacheResourcesOrError =
+      base::expected<std::vector<SqlSharedCacheResourceId>, Error>;
+  using DeletedSharedCacheResourcesOrErrorCallback =
+      base::OnceCallback<void(DeletedSharedCacheResourcesOrError)>;
   using InMemoryIndexAndDoomedResIdsOrError =
       base::expected<InMemoryIndexAndDoomedResIds, Error>;
 
@@ -657,6 +665,23 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   void MaybeRunIncrementalVacuum(
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       base::OnceCallback<void(bool)> callback);
+
+  // Notifies the SqlSharedCacheManager that the specified shared cache
+  // resources were deleted from the store shards, so that corresponding entries
+  // in the shared cache database can be cleaned up.
+  void OnSharedCacheResourcesDeleted(std::vector<SqlSharedCacheResourceId> ids);
+
+  // Wraps an ErrorCallback to handle deletion of a single shared cache
+  // resource. When the shard operation completes successfully, if a shared
+  // cache resource was deleted, triggers OnSharedCacheResourcesDeleted.
+  DeletedSharedCacheResourceOrErrorCallback
+  WrapCallbackWithSingleSharedCacheDelete(ErrorCallback callback);
+
+  // Wraps an ErrorCallback to handle deletion of multiple shared cache
+  // resources. When the shard operation completes successfully, if shared cache
+  // resources were deleted, triggers OnSharedCacheResourcesDeleted.
+  DeletedSharedCacheResourcesOrErrorCallback WrapCallbackWithSharedCacheDelete(
+      ErrorCallback callback);
 
   enum class IndexState {
     // The in-memory index is not available (e.g., not yet loaded or

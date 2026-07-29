@@ -159,10 +159,10 @@ void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
 void SqlPersistentStore::BackendShard::DeleteDoomedEntry(
     const CacheEntryKey& key,
     ResId res_id,
-    ErrorCallback callback) {
+    DeletedSharedCacheResourceOrErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::DeleteDoomedEntry)
       .WithArgs(key, res_id, base::TimeTicks::Now())
-      .Then(WrapCallbackWithStoreStatus(std::move(callback)));
+      .Then(WrapCallback(std::move(callback)));
 }
 
 void SqlPersistentStore::BackendShard::DeleteLiveEntry(const CacheEntryKey& key,
@@ -414,7 +414,7 @@ void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
 }
 
 bool SqlPersistentStore::BackendShard::MaybeRunCleanupDoomedEntries(
-    ErrorCallback callback) {
+    DeletedSharedCacheResourcesOrErrorCallback callback) {
   if (to_be_deleted_res_ids_.empty()) {
     return false;
   }

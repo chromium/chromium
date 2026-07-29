@@ -262,7 +262,9 @@ void SqlPersistentStore::DoomEntry(const CacheEntryKey& key,
 void SqlPersistentStore::DeleteDoomedEntry(const CacheEntryKey& key,
                                            ResId res_id,
                                            ErrorCallback callback) {
-  GetShard(key).DeleteDoomedEntry(key, res_id, std::move(callback));
+  GetShard(key).DeleteDoomedEntry(
+      key, res_id,
+      WrapCallbackWithSingleSharedCacheDelete(std::move(callback)));
 }
 
 void SqlPersistentStore::DeleteLiveEntry(const CacheEntryKey& key,
@@ -672,7 +674,8 @@ bool SqlPersistentStore::MaybeRunCleanupDoomedEntries(ErrorCallback callback) {
   auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
   size_t sync_return_count = 0;
   for (const auto& backend_shard : backend_shards_) {
-    if (!backend_shard->MaybeRunCleanupDoomedEntries(barrier_callback)) {
+    if (!backend_shard->MaybeRunCleanupDoomedEntries(
+            WrapCallbackWithSharedCacheDelete(barrier_callback))) {
       // If a shard completes synchronously, it returns false. Count how many do
       // so.
       ++sync_return_count;
@@ -739,6 +742,41 @@ void SqlPersistentStore::MaybeRunIncrementalVacuum(
   for (const auto& backend_shard : backend_shards_) {
     backend_shard->MaybeRunIncrementalVacuum(abort_flag, barrier_callback);
   }
+}
+
+void SqlPersistentStore::OnSharedCacheResourcesDeleted(
+    std::vector<SqlSharedCacheResourceId> ids) {
+  if (ids.empty() || !shared_cache_manager_) {
+    return;
+  }
+  shared_cache_manager_->DeleteResources(std::move(ids), base::DoNothing());
+}
+
+SqlPersistentStore::DeletedSharedCacheResourceOrErrorCallback
+SqlPersistentStore::WrapCallbackWithSingleSharedCacheDelete(
+    ErrorCallback callback) {
+  return base::BindOnce(
+      [](base::WeakPtr<SqlPersistentStore> store, ErrorCallback callback,
+         DeletedSharedCacheResourceOrError result) {
+        if (store && result.has_value() && result->has_value()) {
+          store->OnSharedCacheResourcesDeleted({**result});
+        }
+        std::move(callback).Run(result.error_or(Error::kOk));
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback));
+}
+
+SqlPersistentStore::DeletedSharedCacheResourcesOrErrorCallback
+SqlPersistentStore::WrapCallbackWithSharedCacheDelete(ErrorCallback callback) {
+  return base::BindOnce(
+      [](base::WeakPtr<SqlPersistentStore> store, ErrorCallback callback,
+         DeletedSharedCacheResourcesOrError result) {
+        if (store && result.has_value() && !result->empty()) {
+          store->OnSharedCacheResourcesDeleted(std::move(*result));
+        }
+        std::move(callback).Run(result.error_or(Error::kOk));
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback));
 }
 
 void SqlPersistentStore::EnableStrictCorruptionCheckForTesting() {
