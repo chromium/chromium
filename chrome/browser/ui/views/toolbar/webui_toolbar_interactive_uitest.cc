@@ -1593,9 +1593,19 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                        MAYBE_CopyTextFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const char kAdjustTextScript[] = R"(
+    (el) => {
+      el.focus();
+      el.value = 'title1';
+      el.select();
+      // Let the element know about our new value to avoid races.
+      el.dispatchEvent(new InputEvent('input'));
+    }
+  )";
+
   RunTestSequence(RunClipboardSetTest(
       kClipboardOp::kCopy, embedded_test_server()->GetURL("/title1.html"),
-      "title1", "(el) => { el.focus(); el.value = 'title1'; el.select(); }",
+      "title1", kAdjustTextScript,
       "el => el.adjustedCopyResult?.adjustedText === 'title1'", u"title1"));
 #endif
 }
@@ -1628,14 +1638,22 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                        MAYBE_CopyJavascriptFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const char kAdjustTextTemplate[] = R"(
+    (el) => {
+      el.focus();
+      el.value = $1;
+      el.select();
+      // Let the element know about our new value to avoid races.
+      el.dispatchEvent(new InputEvent('input'));
+    }
+  )";
+
   const std::string js_to_copy = "javascript:alert(1)";
   RunTestSequence(RunClipboardSetTest(
       kClipboardOp::kCopy, embedded_test_server()->GetURL("/title1.html"),
-      "title1",
-      base::StringPrintf(
-          "(el) => { el.focus(); el.value = '%s'; el.select(); }",
-          js_to_copy.c_str()),
-      "el => el.adjustedCopyResult !== null", base::UTF8ToUTF16(js_to_copy)));
+      "title1", content::JsReplace(kAdjustTextTemplate, js_to_copy),
+      "el => el.adjustedCopyResult?.adjustedText.includes('alert')",
+      base::UTF8ToUTF16(js_to_copy)));
 #endif
 }
 
