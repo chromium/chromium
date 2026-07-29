@@ -271,7 +271,7 @@ void PinnedActionToolbarButtonMenuModel::AddActionSpecificItems() {
 actions::ActionItem* PinnedActionToolbarButtonMenuModel::GetActionItemFor(
     actions::ActionId id) const {
   return actions::ActionManager::Get().FindAction(
-      id, browser_->GetActions()->root_action_item());
+      id, BrowserActions::From(browser_)->root_action_item());
 }
 
 bool PinnedActionToolbarButtonMenuModel::IsPinnable() const {

@@ -106,10 +106,10 @@ void TranslatePageActionController::UpdatePageAction() {
     // so we manually enable the action here. This should be removed once the
     // bug is fixed.
     actions::ActionManager::Get()
-        .FindAction(kActionShowTranslate,
-                    tab_interface_->GetBrowserWindowInterface()
-                        ->GetActions()
-                        ->root_action_item())
+        .FindAction(
+            kActionShowTranslate,
+            BrowserActions::From(tab_interface_->GetBrowserWindowInterface())
+                ->root_action_item())
         ->SetEnabled(true);
     page_action_controller->Show(kActionShowTranslate);
   } else {

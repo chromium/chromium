@@ -432,9 +432,6 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     browser_actions_ =
         std::make_unique<BrowserActions>(&mock_browser_window_interface_);
 
-    ON_CALL(mock_browser_window_interface_, GetActions())
-        .WillByDefault(::testing::Return(browser_actions_.get()));
-
     test_tab_strip_model_delegate_->SetBrowserWindowInterface(
         &mock_browser_window_interface_);
 

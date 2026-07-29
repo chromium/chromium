@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
   ASSERT_TRUE(controller);
 
   actions::ActionItem* action = actions::ActionManager::Get().FindAction(
-      kActionAutofillPayment, browser()->GetActions()->root_action_item());
+      kActionAutofillPayment,
+      BrowserActions::From(browser())->root_action_item());
   ASSERT_NE(action, nullptr);
   EXPECT_FALSE(action->GetIsShowingBubble());
 

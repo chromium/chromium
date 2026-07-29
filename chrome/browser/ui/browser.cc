@@ -681,10 +681,6 @@ void Browser::SynchronouslyDestroyBrowser() {
   // `this` is no longer valid from this point forward.
 }
 
-BrowserActions* Browser::GetActions() {
-  return GetFeatures().browser_actions();
-}
-
 BrowserWindowInterface::Type Browser::GetType() const {
   return type_;
 }

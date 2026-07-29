@@ -47,7 +47,7 @@ void UpdateBubbleVisibilityState(BrowserWindowInterface* browser,
   }
 
   auto* action_item = actions::ActionManager::Get().FindAction(
-      kActionShowZoomBubble, browser->GetActions()->root_action_item());
+      kActionShowZoomBubble, BrowserActions::From(browser)->root_action_item());
   CHECK(action_item);
   action_item->SetIsShowingBubble(is_bubble_visible);
 }

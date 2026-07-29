@@ -533,22 +533,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        PinnedButtonVisibilityUpdatesOnEligibilityChange) {
-  RunTestSequence(SignIntoEligibleAccount(), Do([&]() {
-                    actions::ActionItem* action_item =
-                        actions::ActionManager::Get().FindAction(
-                            kActionSidePanelShowContextualTasks,
-                            browser()->browser_actions()->root_action_item());
-                    ASSERT_NE(action_item, nullptr);
-                    EXPECT_TRUE(action_item->GetVisible());
-                  }),
-                  ClearPrimaryAccount(), Do([&]() {
-                    actions::ActionItem* action_item =
-                        actions::ActionManager::Get().FindAction(
-                            kActionSidePanelShowContextualTasks,
-                            browser()->browser_actions()->root_action_item());
-                    ASSERT_NE(action_item, nullptr);
-                    EXPECT_FALSE(action_item->GetVisible());
-                  }));
+  RunTestSequence(
+      SignIntoEligibleAccount(), Do([&]() {
+        actions::ActionItem* action_item =
+            actions::ActionManager::Get().FindAction(
+                kActionSidePanelShowContextualTasks,
+                BrowserActions::From(browser())->root_action_item());
+        ASSERT_NE(action_item, nullptr);
+        EXPECT_TRUE(action_item->GetVisible());
+      }),
+      ClearPrimaryAccount(), Do([&]() {
+        actions::ActionItem* action_item =
+            actions::ActionManager::Get().FindAction(
+                kActionSidePanelShowContextualTasks,
+                BrowserActions::From(browser())->root_action_item());
+        ASSERT_NE(action_item, nullptr);
+        EXPECT_FALSE(action_item->GetVisible());
+      }));
 }
 
 class ContextualTasksEphemeralBrandedButtonInteractiveTest

@@ -135,7 +135,8 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
 
   void UpdateActionItem(const actions::ActionId& id) {
     auto* action = actions::ActionManager::Get().FindAction(
-        id, browser_view()->browser()->browser_actions()->root_action_item());
+        id,
+        BrowserActions::From(browser_view()->browser())->root_action_item());
     action->SetText(u"Test Action");
     action->SetTooltipText(u"Test Action");
     action->SetImage(ui::ImageModel::FromVectorIcon(
@@ -708,7 +709,7 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
   actions::ActionItemVector action_items;
   actions::ActionManager::Get().GetActions(
       action_items,
-      browser_view()->browser()->GetActions()->root_action_item());
+      BrowserActions::From(browser_view()->browser())->root_action_item());
   size_t pinnable_count =
       std::ranges::count_if(action_items, [](actions::ActionItem* action) {
         return action->GetProperty(actions::kActionItemPinnableKey) ==

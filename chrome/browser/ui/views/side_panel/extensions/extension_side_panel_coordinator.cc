@@ -443,7 +443,7 @@ void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
   std::optional<actions::ActionId> extension_action_id =
       actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
   CHECK(extension_action_id.has_value());
-  BrowserActions* browser_actions = browser_->GetActions();
+  BrowserActions* browser_actions = BrowserActions::From(browser_);
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       extension_action_id.value(), browser_actions->root_action_item());
   if (action_item) {

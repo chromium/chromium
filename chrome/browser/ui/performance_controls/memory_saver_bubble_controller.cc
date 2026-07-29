@@ -23,7 +23,7 @@ MemorySaverBubbleController::MemorySaverBubbleController(
   // invocations come from the expected ActionItem.
   action_item_ = actions::ActionManager::Get().FindAction(
       kActionShowMemorySaverChip,
-      /*scope=*/bwi->GetActions()->root_action_item());
+      /*scope=*/BrowserActions::From(bwi)->root_action_item());
   CHECK(action_item_);
 }
 

@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeToolbarHandlerBrowserTest,
 
   // Set visibility of devtools to false, and...
   actions::ActionItem* const scope_action =
-      browser()->browser_actions()->root_action_item();
+      BrowserActions::From(browser())->root_action_item();
   actions::ActionItem* const devtools_action_item =
       actions::ActionManager::Get().FindAction(kActionDevTools, scope_action);
 

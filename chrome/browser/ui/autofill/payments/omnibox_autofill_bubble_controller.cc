@@ -206,7 +206,7 @@ actions::ActionItem* OmniboxAutofillBubbleController::GetActionItem() {
     return nullptr;
   }
   actions::ActionItem* root_action_item =
-      browser_window->GetActions()->root_action_item();
+      BrowserActions::From(browser_window)->root_action_item();
   if (!root_action_item) {
     return nullptr;
   }

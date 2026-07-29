@@ -82,8 +82,6 @@ class BookmarkTest : public ChromeRenderViewHostTestHarness {
 
     ON_CALL(mock_browser_window_interface_, GetTabStripModel())
         .WillByDefault(testing::Return(tab_strip_model_.get()));
-    ON_CALL(mock_browser_window_interface_, GetActions())
-        .WillByDefault(testing::Return(browser_actions_.get()));
     ON_CALL(mock_browser_window_interface_, GetFeatures())
         .WillByDefault(testing::ReturnRef(features_));
   }

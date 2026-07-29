@@ -60,15 +60,15 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_NullWindow) {
 }
 
 TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_NullActions) {
-  ON_CALL(*browser_window_, GetActions()).WillByDefault(testing::Return(nullptr));
   UpdatePinButtonVisibilityState(browser_window_.get(), true);
 }
 
 TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_NullRootActionItem) {
   FakeBrowserActions fake_actions;
   fake_actions.root_action_item = nullptr;
-  ON_CALL(*browser_window_, GetActions())
-      .WillByDefault(testing::Return(reinterpret_cast<BrowserActions*>(&fake_actions)));
+  ui::ScopedUnownedUserData<BrowserActions> scoped_actions(
+      browser_window_->GetUnownedUserDataHost(),
+      *reinterpret_cast<BrowserActions*>(&fake_actions));
 
   UpdatePinButtonVisibilityState(browser_window_.get(), true);
 }
@@ -80,8 +80,9 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_ActionNotFound) 
 
   FakeBrowserActions fake_actions;
   fake_actions.root_action_item = root_action.get();
-  ON_CALL(*browser_window_, GetActions())
-      .WillByDefault(testing::Return(reinterpret_cast<BrowserActions*>(&fake_actions)));
+  ui::ScopedUnownedUserData<BrowserActions> scoped_actions(
+      browser_window_->GetUnownedUserDataHost(),
+      *reinterpret_cast<BrowserActions*>(&fake_actions));
 
   UpdatePinButtonVisibilityState(browser_window_.get(), true);
 }
@@ -98,8 +99,9 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Eligible_Pinned)
 
   FakeBrowserActions fake_actions;
   fake_actions.root_action_item = root_action.get();
-  ON_CALL(*browser_window_, GetActions())
-      .WillByDefault(testing::Return(reinterpret_cast<BrowserActions*>(&fake_actions)));
+  ui::ScopedUnownedUserData<BrowserActions> scoped_actions(
+      browser_window_->GetUnownedUserDataHost(),
+      *reinterpret_cast<BrowserActions*>(&fake_actions));
 
   auto* model = PinnedToolbarActionsModel::Get(profile_.get());
   model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
@@ -123,8 +125,9 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Pinne
 
   FakeBrowserActions fake_actions;
   fake_actions.root_action_item = root_action.get();
-  ON_CALL(*browser_window_, GetActions())
-      .WillByDefault(testing::Return(reinterpret_cast<BrowserActions*>(&fake_actions)));
+  ui::ScopedUnownedUserData<BrowserActions> scoped_actions(
+      browser_window_->GetUnownedUserDataHost(),
+      *reinterpret_cast<BrowserActions*>(&fake_actions));
 
   auto* model = PinnedToolbarActionsModel::Get(profile_.get());
   model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
@@ -148,8 +151,9 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Unpin
 
   FakeBrowserActions fake_actions;
   fake_actions.root_action_item = root_action.get();
-  ON_CALL(*browser_window_, GetActions())
-      .WillByDefault(testing::Return(reinterpret_cast<BrowserActions*>(&fake_actions)));
+  ui::ScopedUnownedUserData<BrowserActions> scoped_actions(
+      browser_window_->GetUnownedUserDataHost(),
+      *reinterpret_cast<BrowserActions*>(&fake_actions));
 
   auto* model = PinnedToolbarActionsModel::Get(profile_.get());
   ASSERT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
@@ -173,8 +177,9 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Pinne
 
   FakeBrowserActions fake_actions;
   fake_actions.root_action_item = root_action.get();
-  ON_CALL(*browser_window_, GetActions())
-      .WillByDefault(testing::Return(reinterpret_cast<BrowserActions*>(&fake_actions)));
+  ui::ScopedUnownedUserData<BrowserActions> scoped_actions(
+      browser_window_->GetUnownedUserDataHost(),
+      *reinterpret_cast<BrowserActions*>(&fake_actions));
 
   // Setup original profile and OTR profile
   Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);

@@ -30,7 +30,8 @@ class PinnedActionToolbarButtonMenuModelBrowserTest
 
   actions::ActionItem* action_item() {
     return actions::ActionManager::Get().FindAction(
-        actions::kActionCut, browser()->browser_actions()->root_action_item());
+        actions::kActionCut,
+        BrowserActions::From(browser())->root_action_item());
   }
 };
 

@@ -262,13 +262,12 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
 
   actions.push_back(std::move(split_tab_action));
 
-
   const auto add_action =
       [&actions, this, &provider, scale_factor, bwi](
           actions::ActionId id,
           side_panel::customize_chrome::mojom::CategoryId category) {
         actions::ActionItem* const scope_action =
-            bwi->GetActions()->root_action_item();
+            BrowserActions::From(bwi)->root_action_item();
         actions::ActionItem* const action_item =
             actions::ActionManager::Get().FindAction(id, scope_action);
         if (!action_item || !action_item->GetVisible()) {
