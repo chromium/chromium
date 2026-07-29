@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
 import android.provider.Settings;
@@ -420,7 +421,7 @@ public class MainSettingsFragmentTest {
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
-                        any(Activity.class),
+                        any(Context.class),
                         any(Profile.class),
                         configCaptor.capture(),
                         eq(SigninAccessPoint.SETTINGS));

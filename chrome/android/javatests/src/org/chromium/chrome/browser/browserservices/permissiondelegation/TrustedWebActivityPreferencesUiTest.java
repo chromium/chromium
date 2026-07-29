@@ -21,6 +21,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.site_settings.SiteSettingsTestUtils;
@@ -43,6 +45,7 @@ import org.chromium.components.embedder_support.util.Origin;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
+@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
 @Batch(Batch.PER_CLASS)
 public class TrustedWebActivityPreferencesUiTest {
     @Rule

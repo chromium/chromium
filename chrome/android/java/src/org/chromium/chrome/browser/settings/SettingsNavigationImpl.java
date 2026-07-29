@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -83,6 +84,7 @@ import org.chromium.components.page_info.PageInfoCookiesSettings;
 /** Implementation class for launching a {@link SettingsActivity}. */
 @NullMarked
 public class SettingsNavigationImpl implements SettingsNavigation {
+    private boolean mUseSettingsActivityForTesting;
 
     /** Instantiated through SettingsNavigationFactory. */
     SettingsNavigationImpl() {}
@@ -204,7 +206,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag) {
-        if (SettingsInTab.isEnabled()) {
+        if (useSettingsInTab()) {
             Activity activity = ActivityUtil.getActivityFromContext(context);
             // Some components pass a non-Activity context (e.g. AccessibilitySettings).
             if (activity == null) {
@@ -264,7 +266,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             @Nullable String tag) {
         String fragmentName = fragment == null ? null : fragment.getName();
         return SettingsIntentUtil.createIntent(
-                context, fragmentName, fragmentArgs, addToBackStack, tag);
+                context, fragmentName, fragmentArgs, addToBackStack, tag, useSettingsInTab());
     }
 
     @Override
@@ -415,7 +417,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         if (activity == null) return;
 
         // SettingsInTab does not use SettingsActivity.
-        if (SettingsInTab.isEnabled()) {
+        if (useSettingsInTab()) {
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             if (settingsHostFragment != null) {
                 settingsHostFragment.finishCurrentSettings(fragment);
@@ -429,7 +431,7 @@ public class SettingsNavigationImpl implements SettingsNavigation {
     @Override
     public void executePendingNavigations(Activity activity) {
         // SettingsInTab does not use SettingsActivity.
-        if (SettingsInTab.isEnabled()) {
+        if (useSettingsInTab()) {
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             if (settingsHostFragment != null) {
                 settingsHostFragment.executePendingNavigations();
@@ -438,5 +440,19 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         }
 
         ((SettingsActivity) activity).executePendingNavigations();
+    }
+
+    @Override
+    public void setUseSettingsActivityForTesting(boolean value) {
+        mUseSettingsActivityForTesting = value;
+        ResettersForTesting.register(() -> mUseSettingsActivityForTesting = false);
+    }
+
+    private boolean useSettingsInTab() {
+        // Always use SettingsActivity if requested by tests.
+        if (mUseSettingsActivityForTesting) {
+            return false;
+        }
+        return SettingsInTab.isEnabled();
     }
 }

@@ -182,7 +182,7 @@ public class PreloadPagesSettingsFragmentTest {
                     getExtendedPreloadingButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
-                                    mPreloadPagesSettingsFragment.getContext(),
+                                    mPreloadPagesSettingsFragment.getActivity(),
                                     ExtendedPreloadingSettingsFragment.class,
                                     null,
                                     true);
@@ -200,7 +200,7 @@ public class PreloadPagesSettingsFragmentTest {
                     getStandardPreloadingButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
-                                    mPreloadPagesSettingsFragment.getContext(),
+                                    mPreloadPagesSettingsFragment.getActivity(),
                                     StandardPreloadingSettingsFragment.class,
                                     null,
                                     true);

@@ -21,6 +21,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.EnableLeakChecks;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -63,6 +64,7 @@ public class PublicTransitLeakTest {
 
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
     public void settingsActivityTest() {
         WebPageStation page = mChromeTabbedActivityTestRule.startOnBlankPage();
         page.openRegularTabAppMenu()

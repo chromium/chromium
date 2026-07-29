@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -44,6 +45,7 @@ import org.chromium.ui.util.AttrUtils;
 /** Tests for the Settings menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
+@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
 public class SettingsActivityTest {
     @Rule
     public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =

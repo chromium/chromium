@@ -69,7 +69,10 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for FinancialAccountsManagementFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS})
-@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
+@DisableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
+    ChromeFeatureList.SETTINGS_IN_TAB // crbug.com/521895796
+})
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
     @Rule public final AutofillTestRule rule = new AutofillTestRule();

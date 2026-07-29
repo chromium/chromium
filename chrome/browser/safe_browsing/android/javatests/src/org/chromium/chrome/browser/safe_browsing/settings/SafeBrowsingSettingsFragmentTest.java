@@ -313,7 +313,7 @@ public class SafeBrowsingSettingsFragmentTest {
                     getEnhancedProtectionButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
-                                    mSafeBrowsingSettingsFragment.getContext(),
+                                    mSafeBrowsingSettingsFragment.getActivity(),
                                     EnhancedProtectionSettingsFragment.class,
                                     null,
                                     true);
@@ -331,7 +331,7 @@ public class SafeBrowsingSettingsFragmentTest {
                     getStandardProtectionButton().getAuxButtonForTests().performClick();
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
-                                    mSafeBrowsingSettingsFragment.getContext(),
+                                    mSafeBrowsingSettingsFragment.getActivity(),
                                     StandardProtectionSettingsFragment.class,
                                     null,
                                     true);

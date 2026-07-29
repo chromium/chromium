@@ -341,4 +341,13 @@ public interface SettingsNavigation {
      * @param activity The settings activity.
      */
     void executePendingNavigations(Activity activity);
+
+    /**
+     * Forces the SettingsNavigation to use SettingsActivity, even if it would normally open
+     * settings in a tab. TODO(crbug.com/521895796): Remove this after collecting data from canary
+     * channel.
+     *
+     * @param value Whether to use SettingsActivity for testing.
+     */
+    void setUseSettingsActivityForTesting(boolean value);
 }

@@ -122,6 +122,7 @@ public class TabbedAppMenuPTTest {
     /** Tests that "Settings" opens the SettingsActivity. */
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
     public void testOpenSettings() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
         Tab tab = pageStation.loadedTabElement.value();

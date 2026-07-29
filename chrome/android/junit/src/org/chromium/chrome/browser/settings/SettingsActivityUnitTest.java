@@ -56,7 +56,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList.SETTINGS_IN_TAB // crbug.com/521895796
+})
 @EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class SettingsActivityUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();

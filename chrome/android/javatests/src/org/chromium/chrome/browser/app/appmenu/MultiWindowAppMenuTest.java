@@ -112,7 +112,10 @@ public class MultiWindowAppMenuTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableFeatures({
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+        ChromeFeatureList.SETTINGS_IN_TAB // crbug.com/521895796
+    })
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288091
     public void testInteractWithBothWindows() {
         doTestInteractWithBothWindows();

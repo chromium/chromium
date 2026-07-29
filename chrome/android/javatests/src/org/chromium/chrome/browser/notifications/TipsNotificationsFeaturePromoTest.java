@@ -33,6 +33,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
@@ -71,6 +72,7 @@ import java.util.List;
     ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
+@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_STARTUP_PROMOS})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
