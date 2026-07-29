@@ -96,6 +96,7 @@ export enum LoadingStage {
   HANDSHAKE = 'HANDSHAKE',
   GUEST_FRAMEWORK = 'GUEST_FRAMEWORK',
   GUEST_WEB_CLIENT = 'GUEST_WEB_CLIENT',
+  GUEST_DATA_FETCH = 'GUEST_DATA_FETCH',
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/histograms.xml:SkillsLoadingStage)
 
@@ -107,3 +108,4 @@ export function getLoadingStageHistogramName(stage: LoadingStage): string {
 /** Non-stage histogram names used by both production code and WebUI tests. */
 export const HISTOGRAM_HANDSHAKE_RESULT = 'Skills.Webview.Handshake.Result';
 export const HISTOGRAM_TOTAL_INIT_LATENCY = 'Skills.Webview.TotalInitLatency';
+export const HISTOGRAM_WRITE_LATENCY = 'Skills.Webview.WriteLatency';

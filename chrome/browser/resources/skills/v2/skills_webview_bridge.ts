@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ToastType} from '../skills.mojom-webui.js';
 
-import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
+import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
  * <protocol>://<hostname>[:<port>]
@@ -80,6 +80,7 @@ export class SkillsWebviewBridge {
   private isInitialHandshake_: boolean = true;
   private isInitialGuestFramework_: boolean = true;
   private isInitialGuestWebClient_: boolean = true;
+  private isInitialGuestDataFetch_: boolean = true;
 
   constructor(
       webview: chrome.webviewTag.WebView,
@@ -264,6 +265,14 @@ export class SkillsWebviewBridge {
       chrome.histograms.recordMediumTime(
           getLoadingStageHistogramName(LoadingStage.GUEST_WEB_CLIENT), valueMs);
       this.isInitialGuestWebClient_ = false;
+    } else if (
+        data.metricName === 'guest-data-fetch-time' &&
+        this.isInitialGuestDataFetch_) {
+      chrome.histograms.recordMediumTime(
+          getLoadingStageHistogramName(LoadingStage.GUEST_DATA_FETCH), valueMs);
+      this.isInitialGuestDataFetch_ = false;
+    } else if (data.metricName === 'guest-data-save-time') {
+      chrome.histograms.recordMediumTime(HISTOGRAM_WRITE_LATENCY, valueMs);
     }
   }
 

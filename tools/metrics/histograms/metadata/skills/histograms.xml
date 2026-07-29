@@ -58,6 +58,8 @@ chromium-metrics-reviews@google.com.
 <variants name="SkillsLoadingStage">
   <variant name="COOKIE_SYNC"
       summary="Time spent copying cookies from main profile."/>
+  <variant name="GUEST_DATA_FETCH"
+      summary="Time spent fetching initial skills data from Contrib service."/>
   <variant name="GUEST_FRAMEWORK"
       summary="Time to bootstrap the Angular framework."/>
   <variant name="GUEST_WEB_CLIENT"
@@ -67,6 +69,8 @@ chromium-metrics-reviews@google.com.
   <variant name="NAVIGATION"
       summary="Time for webview to load and commit URL."/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/skills/v2/skills_webview_bridge_constants.ts:LoadingStage) -->
 
 <histogram name="Skills.Dialog.PromptRefinementOutcome"
     enum="SkillsPromptRefinementOutcome" expires_after="2027-02-01">
@@ -246,7 +250,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/skills/v2/skills_webview_bridge_constants.ts:LoadingStage) -->
+<histogram name="Skills.Webview.WriteLatency" units="ms"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the time taken for the guest Webview to successfully save/update a
+    skill over the network.
+  </summary>
+</histogram>
 
 </histograms>
 

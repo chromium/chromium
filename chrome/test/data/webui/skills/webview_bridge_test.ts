@@ -463,6 +463,31 @@ suite('SkillsWebviewBridgeTest', () => {
     });
     window.dispatchEvent(webClientEvent);
 
+    // Send guest metric 'guest-data-fetch-time' (as float)
+    const dataFetchEvent = new MessageEvent('message', {
+      data: {
+        type: SKILLS_LOG_METRIC,
+        metricName: 'guest-data-fetch-time',
+        valueMs: 789.6,
+      },
+      origin: getPrimarySkillsOrigin(),
+      source: window,
+    });
+    window.dispatchEvent(dataFetchEvent);
+
+    // Send guest metric 'guest-data-save-time' (as float)
+    const dataSaveEvent = new MessageEvent('message', {
+      data: {
+        type: SKILLS_LOG_METRIC,
+        metricName: 'guest-data-save-time',
+        valueMs: 1011.2,
+      },
+      origin: getPrimarySkillsOrigin(),
+      source: window,
+    });
+    window.dispatchEvent(dataSaveEvent);
+
+    // Verify histograms
     const frameworkMetric = recordedHistograms.find(
         h => h.name ===
             getLoadingStageHistogramName(LoadingStage.GUEST_FRAMEWORK));
@@ -474,6 +499,16 @@ suite('SkillsWebviewBridgeTest', () => {
             getLoadingStageHistogramName(LoadingStage.GUEST_WEB_CLIENT));
     assertTrue(!!webClientMetric);
     assertEquals(456, webClientMetric.value);
+
+    const dataFetchMetric = recordedHistograms.find(
+        h => h.name === 'Skills.Webview.LoadingStageDuration.GUEST_DATA_FETCH');
+    assertTrue(!!dataFetchMetric);
+    assertEquals(789, dataFetchMetric.value);
+
+    const dataSaveMetric =
+        recordedHistograms.find(h => h.name === 'Skills.Webview.WriteLatency');
+    assertTrue(!!dataSaveMetric);
+    assertEquals(1011, dataSaveMetric.value);
   });
 
   test('SkillsWebview_GetInitStartTime', () => {
