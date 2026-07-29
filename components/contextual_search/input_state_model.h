@@ -191,6 +191,8 @@ class InputStateModel {
 
   bool is_smart_tab_sharing_active_ = false;
 
+  std::set<ToolMode> user_removed_tools_;
+
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };
 

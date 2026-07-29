@@ -379,6 +379,79 @@ TEST_F(InputStateModelTest, UpdateToolFromUrl_ThreadChangedResetsTool) {
   EXPECT_FALSE(state_model->get_state_for_testing().is_canvas_query_submitted);
 }
 
+TEST_F(InputStateModelTest, UserRemovedTool_PreventsStaleUrlReactivatingTool) {
+  omnibox::SearchboxConfig config;
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  GURL canvas_url("https://example.com/?rc=1&mtid=123");
+  auto state_model = std::make_unique<InputStateModel>(
+      session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/true);
+
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  // User explicitly removes/exits Canvas.
+  state_model->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+
+  // `UpdateStateFromUrl` with the stale canvas URL on the same thread
+  // (e.g. after submitting a query).
+  state_model->UpdateStateFromUrl(canvas_url);
+
+  // Assert: Tool remains `UNSPECIFIED` and `is_canvas_query_submitted` is false
+  // because the user has removed the tool (as recorded by
+  // `user_removed_tools_`).
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE(state_model->get_state_for_testing().is_canvas_query_submitted);
+
+  // Navigating to a new thread resets the removed tools set.
+  GURL new_thread_canvas_url("https://example.com/?rc=1&mtid=456");
+  state_model->UpdateStateFromUrl(new_thread_canvas_url);
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+}
+
+TEST_F(
+    InputStateModelTest,
+    SetActiveTool_UnspecifiedWhenAlreadyUnspecified_DoesNotRecordRemovedTool) {
+  omnibox::SearchboxConfig config;
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  // Initial state has `active_tool` == `TOOL_MODE_UNSPECIFIED`.
+  GURL normal_url("https://example.com/?mtid=123");
+  auto state_model = std::make_unique<InputStateModel>(
+      session_handle_, config, normal_url, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/true);
+
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+
+  // Calling `setActiveTool(TOOL_MODE_UNSPECIFIED)` when tool is already
+  // `UNSPECIFIED` should not record Canvas as removed.
+  state_model->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+
+  // `UpdateStateFromUrl` with a Canvas URL on the same thread should properly
+  // match Canvas.
+  GURL canvas_url("https://example.com/?rc=1&mtid=123");
+  state_model->UpdateStateFromUrl(canvas_url);
+
+  // Assert: Canvas is parsed and active because Canvas was not in
+  // `user_removed_tools_`.
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+}
+
 TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
   omnibox::SearchboxConfig config;
 
