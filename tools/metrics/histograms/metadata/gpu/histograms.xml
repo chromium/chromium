@@ -1237,6 +1237,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Graphite.SkiaOutputDeviceSubmitDurationUs"
+    units="microseconds" expires_after="2026-10-31">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration of each Graphite context submit call in SkiaOutputDevice in
+    microseconds. This is subsampled at 1%. Only reported on platforms
+    supporting high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.Graphite.SubmitDurationUs" units="microseconds"
+    expires_after="2026-10-31">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration of each Graphite context submit call in microseconds. This is
+    subsampled at 1%. Only reported on platforms supporting high-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GraphiteDawn.DeviceLockAcquireTimeAvgUs"
     units="microseconds" expires_after="2027-06-01">
   <owner>magchen@chromium.org</owner>

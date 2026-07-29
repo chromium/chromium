@@ -390,6 +390,9 @@ bool GraphiteSharedContext::SubmitImpl(
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
           : nullptr;
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  bool success = false;
+
   // Ensure fFinishedProc is called on the original thread if there is only one
   // graphite::Context.
   if (submit_info.fFinishedProc && task_runner) {
@@ -399,10 +402,18 @@ bool GraphiteSharedContext::SubmitImpl(
         CreateFinishedProcThreadSafe(submit_info.fFinishedProc,
                                      submit_info.fFinishedContext,
                                      std::move(task_runner));
-    return graphite_context_->submit(wrapped_submit_info);
+    success = graphite_context_->submit(wrapped_submit_info);
+  } else {
+    success = graphite_context_->submit(submit_info);
   }
 
-  return graphite_context_->submit(submit_info);
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Graphite.SubmitDurationUs", base::TimeTicks::Now() - start_time,
+        base::Microseconds(1), base::Seconds(1), 50);
+  }
+
+  return success;
 }
 
 void GraphiteSharedContext::submitAndFlushBackend(
