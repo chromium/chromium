@@ -8000,25 +8000,6 @@
             ]
         }
     ],
-    "CrossDeviceSigninMobile": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260430",
-                    "params": {
-                        "url": "https://www.google.com/chrome/go-mobile"
-                    },
-                    "enable_features": [
-                        "CrossDeviceSignin"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrostiniContainerless": [
         {
             "platforms": [
