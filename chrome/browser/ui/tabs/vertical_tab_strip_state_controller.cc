@@ -312,6 +312,7 @@ void VerticalTabStripStateController::OnModeChanged() {
   is_vertical_tabs_enabled_ = new_enabled;
 
   NotifyModeChanged();
+  UpdateCollapseActionItem();
 }
 
 void VerticalTabStripStateController::OnExpandOnHoverEnabledChanged() {
@@ -399,6 +400,7 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
         chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
     collapse_action->SetTooltipText(
         chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
+    collapse_action->SetEnabled(ShouldDisplayVerticalTabs());
   }
 }
 
