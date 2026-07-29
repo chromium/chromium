@@ -445,7 +445,6 @@ template("generate_jni_impl") {
           rebase_path(_resolved_types_path, root_build_dir),
         ]
       }
-      args += [ "--use-std-primitive-types" ]
 
       if (_from_source) {
         assert(defined(invoker.sources))

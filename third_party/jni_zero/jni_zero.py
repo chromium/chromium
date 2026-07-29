@@ -150,9 +150,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         action='store_true',
         help='Generate .srcjar and .h such that a final generate-final '
         'step is not necessary')
-    group.add_argument('--use-std-primitive-types',
-                       action='store_true',
-                       help='Use e.g.: int32_t rather than jint in codegen')
     group.add_argument('--allow-private-called-by-natives',
                        action='store_true',
                        help='Whether to allow private @CalledByNative symbols.')

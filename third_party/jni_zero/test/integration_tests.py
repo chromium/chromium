@@ -68,7 +68,6 @@ class CliOptions:
     self.register_natives_name = None
     self.class_blocklist = None
     self.enable_jni_multiplexing = False
-    self.use_std_primitive_types = self.action.startswith('from')
     self.package_prefix = None
     self.package_prefix_filter = None
     self.use_proxy_hash = False
@@ -90,8 +89,6 @@ class CliOptions:
 
     if self.enable_jni_multiplexing:
       ret.append('--enable-jni-multiplexing')
-    if self.use_std_primitive_types:
-      ret.append('--use-std-primitive-types')
     if self.package_prefix:
       ret += ['--package-prefix', self.package_prefix]
     if self.package_prefix_filter:

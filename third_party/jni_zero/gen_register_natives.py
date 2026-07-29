@@ -119,8 +119,6 @@ def GenerateRegisterNativesFromJars(parser, args, jni_mode):
       parser.error('Could not find "javap" on your PATH. Use --javap to '
                    'specify its location.')
 
-  java_types.SetUseJniPrimitiveTypes()
-
   class_blocklist = None
   if args.class_blocklist:
     class_blocklist = args.class_blocklist.split(',')

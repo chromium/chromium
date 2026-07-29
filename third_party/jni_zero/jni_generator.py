@@ -695,9 +695,6 @@ def _WriteResolvedTypes(resolved_types_path, jni_objs):
 
 
 def GenerateFromSource(parser, args, jni_mode):
-  if not args.use_std_primitive_types:
-    java_types.SetUseJniPrimitiveTypes()
-
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
   # incremental builds will usually not catch this).
@@ -788,10 +785,6 @@ def GenerateFromJar(parser, args, jni_mode):
     if not args.javap:
       parser.error('Could not find "javap" on your PATH. Use --javap to '
                    'specify its location.')
-
-  if not args.use_std_primitive_types:
-    java_types.CPP_UNDERLYING_TYPE_BY_JAVA_TYPE = \
-        java_types.CPP_TYPE_BY_JAVA_TYPE
 
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
