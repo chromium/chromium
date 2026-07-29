@@ -35,22 +35,13 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
-#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/defaults.h"
@@ -59,76 +50,49 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/repost_form_warning_controller.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
-#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
-#include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
-#include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
-#include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
-#include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
-#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -138,54 +102,34 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/unload_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/contents_web_view.h"
-#include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/blocked_content/list_item_position.h"
-#include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
-#include "components/blocked_content/popup_tracker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/captive_portal/core/buildflags.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/custom_handlers/protocol_handler.h"
-#include "components/custom_handlers/protocol_handler_registry.h"
-#include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
-#include "components/find_in_page/find_tab_helper.h"
-#include "components/headless/console_message_logger/headless_console_message_logger.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -195,37 +139,21 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/paint_preview/buildflags/buildflags.h"
-#include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
-#include "components/sessions/core/tab_restore_service.h"
-#include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/invalidate_type.h"
-#include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/ssl_status.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
@@ -234,34 +162,19 @@
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/webplugininfo.h"
-#include "content/public/common/window_container_type.mojom-shared.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "net/base/filename_util.h"
-#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
-#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
-#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/views/focus/focus_manager.h"
-#include "url/origin.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -277,34 +190,15 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "components/printing/browser/print_composite_client.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
-#include "components/paint_preview/browser/paint_preview_client.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
-#include "ui/display/types/display_constants.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/platform_session_manager.h"
 #endif
-
-#if defined(USE_AURA)
-#include "chrome/browser/ui/overscroll_pref_manager.h"
-#endif  // defined(USE_AURA)
 
 using base::UserMetricsAction;
 using content::GlobalRenderFrameHostId;
@@ -988,7 +882,8 @@ WebContents* Browser::OpenURL(
   DCHECK(params.Valid());
 #endif
 
-  return OpenURLFromTab(nullptr, params, std::move(navigation_handle_callback));
+  return BrowserWebContentsDelegate::From(this)->OpenURLFromTab(
+      nullptr, params, std::move(navigation_handle_callback));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1056,136 +951,6 @@ void Browser::TabStripEmpty() {
   window_->Close();
 }
 
-void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
-                                       float ratio) {
-  BrowserWebContentsDelegate::From(this)->SetTopControlsShownRatio(web_contents,
-                                                                   ratio);
-}
-
-int Browser::GetTopControlsHeight() {
-  return BrowserWebContentsDelegate::From(this)->GetTopControlsHeight();
-}
-
-bool Browser::DoBrowserControlsShrinkRendererSize(
-    content::WebContents* contents) {
-  return BrowserWebContentsDelegate::From(this)
-      ->DoBrowserControlsShrinkRendererSize(contents);
-}
-
-int Browser::GetVirtualKeyboardHeight(content::WebContents* contents) {
-  return BrowserWebContentsDelegate::From(this)->GetVirtualKeyboardHeight(
-      contents);
-}
-
-void Browser::SetTopControlsGestureScrollInProgress(bool in_progress) {
-  BrowserWebContentsDelegate::From(this)->SetTopControlsGestureScrollInProgress(
-      in_progress);
-}
-
-bool Browser::CanOverscrollContent() {
-  return BrowserWebContentsDelegate::From(this)->CanOverscrollContent();
-}
-
-bool Browser::ShouldPreserveAbortedURLs(WebContents* source) {
-  return BrowserWebContentsDelegate::From(this)->ShouldPreserveAbortedURLs(
-      source);
-}
-
-void Browser::SetFocusToLocationBar() {
-  BrowserWebContentsDelegate::From(this)->SetFocusToLocationBar();
-}
-
-void Browser::PreHandleDragUpdate(const content::DropData& drop_data,
-                                  const gfx::PointF& client_pt) {
-  BrowserWebContentsDelegate::From(this)->PreHandleDragUpdate(drop_data,
-                                                              client_pt);
-}
-
-void Browser::PreHandleDragExit() {
-  BrowserWebContentsDelegate::From(this)->PreHandleDragExit();
-}
-
-void Browser::HandleDragEnded() {
-  BrowserWebContentsDelegate::From(this)->HandleDragEnded();
-}
-
-content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
-    content::WebContents* source,
-    const NativeWebKeyboardEvent& event) {
-  return BrowserWebContentsDelegate::From(this)->PreHandleKeyboardEvent(source,
-                                                                        event);
-}
-
-bool Browser::HandleKeyboardEvent(content::WebContents* source,
-                                  const NativeWebKeyboardEvent& event) {
-  return BrowserWebContentsDelegate::From(this)->HandleKeyboardEvent(source,
-                                                                     event);
-}
-
-bool Browser::CanDragEnter(content::WebContents* source,
-                           const content::DropData& data,
-                           blink::DragOperationsMask operations_allowed) {
-  return BrowserWebContentsDelegate::From(this)->CanDragEnter(
-      source, data, operations_allowed);
-}
-
-void Browser::CreateSmsPrompt(content::RenderFrameHost* host,
-                              const std::vector<url::Origin>& origin_list,
-                              const std::string& one_time_code,
-                              base::OnceClosure on_confirm,
-                              base::OnceClosure on_cancel) {
-  BrowserWebContentsDelegate::From(this)->CreateSmsPrompt(
-      host, origin_list, one_time_code, std::move(on_confirm),
-      std::move(on_cancel));
-}
-
-bool Browser::ShouldAllowRunningInsecureContent(
-    content::WebContents* web_contents,
-    bool allowed_per_prefs,
-    const url::Origin& origin,
-    const GURL& resource_url) {
-  return BrowserWebContentsDelegate::From(this)
-      ->ShouldAllowRunningInsecureContent(web_contents, allowed_per_prefs,
-                                          origin, resource_url);
-}
-
-void Browser::OnDidBlockNavigation(
-    content::WebContents* web_contents,
-    const GURL& blocked_url,
-    const GURL& initiator_url,
-    const url::Origin& initiator_origin,
-    blink::mojom::NavigationBlockedReason reason) {
-  BrowserWebContentsDelegate::From(this)->OnDidBlockNavigation(
-      web_contents, blocked_url, initiator_url, initiator_origin, reason);
-}
-
-content::PictureInPictureResult Browser::EnterPictureInPicture(
-    content::WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->EnterPictureInPicture(
-      web_contents);
-}
-
-void Browser::ExitPictureInPicture() {
-  BrowserWebContentsDelegate::From(this)->ExitPictureInPicture();
-}
-
-bool Browser::IsBackForwardCacheSupported(content::WebContents& web_contents) {
-  return BrowserWebContentsDelegate::From(this)->IsBackForwardCacheSupported(
-      web_contents);
-}
-
-content::PreloadingEligibility Browser::IsPrerender2Supported(
-    content::WebContents& web_contents,
-    content::PreloadingTriggerType trigger_type) {
-  return BrowserWebContentsDelegate::From(this)->IsPrerender2Supported(
-      web_contents, trigger_type);
-}
-
-bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
-  return BrowserWebContentsDelegate::From(this)
-      ->ShouldShowStaleContentOnEviction(source);
-}
-
 void Browser::OnWindowDidShow() {
   if (window_has_shown_) {
     return;
@@ -1208,438 +973,6 @@ void Browser::OnWindowDidShow() {
     error->ShowBubbleView(this);
   }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, content::WebContentsDelegate implementation:
-
-content::WebContents* Browser::OpenURLFromTab(
-    content::WebContents* source,
-    const content::OpenURLParams& params,
-    base::OnceCallback<void(content::NavigationHandle&)>
-        navigation_handle_callback) {
-  return BrowserWebContentsDelegate::From(this)->OpenURLFromTab(
-      source, params, std::move(navigation_handle_callback));
-}
-
-void Browser::NavigationStateChanged(content::WebContents* source,
-                                     content::InvalidateTypes changed_flags) {
-  BrowserWebContentsDelegate::From(this)->NavigationStateChanged(source,
-                                                                 changed_flags);
-}
-
-void Browser::VisibleSecurityStateChanged(content::WebContents* source) {
-  BrowserWebContentsDelegate::From(this)->VisibleSecurityStateChanged(source);
-}
-
-content::WebContents* Browser::AddNewContents(
-    content::WebContents* source,
-    std::unique_ptr<content::WebContents> new_contents,
-    const GURL& target_url,
-    WindowOpenDisposition disposition,
-    const blink::mojom::WindowFeatures& window_features,
-    bool user_gesture,
-    bool* was_blocked) {
-  return BrowserWebContentsDelegate::From(this)->AddNewContents(
-      source, std::move(new_contents), target_url, disposition, window_features,
-      user_gesture, was_blocked);
-}
-
-void Browser::ActivateContents(content::WebContents* contents) {
-  BrowserWebContentsDelegate::From(this)->ActivateContents(contents);
-}
-
-bool Browser::IsContentsActive(content::WebContents* contents) {
-  return BrowserWebContentsDelegate::From(this)->IsContentsActive(contents);
-}
-
-void Browser::LoadingStateChanged(content::WebContents* source,
-                                  bool should_show_loading_ui) {
-  BrowserWebContentsDelegate::From(this)->LoadingStateChanged(
-      source, should_show_loading_ui);
-}
-
-void Browser::CloseContents(content::WebContents* source) {
-  BrowserWebContentsDelegate::From(this)->CloseContents(source);
-}
-
-void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
-  BrowserWebContentsDelegate::From(this)->SetContentsBounds(source, bounds);
-}
-
-void Browser::UpdateTargetURL(WebContents* source, const GURL& url) {
-  BrowserWebContentsDelegate::From(this)->UpdateTargetURL(source, url);
-}
-
-void Browser::ContentsMouseEvent(WebContents* source, const ui::Event& event) {
-  BrowserWebContentsDelegate::From(this)->ContentsMouseEvent(source, event);
-}
-
-void Browser::ContentsZoomChange(bool zoom_in) {
-  BrowserWebContentsDelegate::From(this)->ContentsZoomChange(zoom_in);
-}
-
-bool Browser::TakeFocus(content::WebContents* source, bool reverse) {
-  return BrowserWebContentsDelegate::From(this)->TakeFocus(source, reverse);
-}
-
-bool Browser::DidAddMessageToConsole(
-    content::WebContents* source,
-    blink::mojom::ConsoleMessageLevel log_level,
-    const std::u16string& message,
-    int32_t line_no,
-    const std::u16string& source_id) {
-  return BrowserWebContentsDelegate::From(this)->DidAddMessageToConsole(
-      source, log_level, message, line_no, source_id);
-}
-
-void Browser::BeforeUnloadFired(WebContents* web_contents,
-                                bool proceed,
-                                bool* proceed_to_fire_unload) {
-  BrowserWebContentsDelegate::From(this)->BeforeUnloadFired(
-      web_contents, proceed, proceed_to_fire_unload);
-}
-
-bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {
-  return BrowserWebContentsDelegate::From(this)
-      ->ShouldFocusLocationBarByDefault(source);
-}
-
-bool Browser::ShouldFocusPageAfterCrash(WebContents* source) {
-  return BrowserWebContentsDelegate::From(this)->ShouldFocusPageAfterCrash(
-      source);
-}
-
-void Browser::ShowRepostFormWarningDialog(WebContents* source) {
-  BrowserWebContentsDelegate::From(this)->ShowRepostFormWarningDialog(source);
-}
-
-bool Browser::IsWebContentsCreationOverridden(
-    content::RenderFrameHost* opener,
-    content::SiteInstance* source_site_instance,
-    content::mojom::WindowContainerType window_container_type,
-    const GURL& opener_url,
-    const std::string& frame_name,
-    const GURL& target_url) {
-  return BrowserWebContentsDelegate::From(this)
-      ->IsWebContentsCreationOverridden(opener, source_site_instance,
-                                        window_container_type, opener_url,
-                                        frame_name, target_url);
-}
-
-WebContents* Browser::CreateCustomWebContents(
-    content::RenderFrameHost* opener,
-    content::SiteInstance* source_site_instance,
-    bool is_new_browsing_instance,
-    const GURL& opener_url,
-    const std::string& frame_name,
-    const GURL& target_url,
-    WindowOpenDisposition disposition,
-    const blink::mojom::WindowFeatures& window_features,
-    const content::StoragePartitionConfig& partition_config,
-    content::SessionStorageNamespace* session_storage_namespace) {
-  return BrowserWebContentsDelegate::From(this)->CreateCustomWebContents(
-      opener, source_site_instance, is_new_browsing_instance, opener_url,
-      frame_name, target_url, disposition, window_features, partition_config,
-      session_storage_namespace);
-}
-
-void Browser::WebContentsCreated(WebContents* source_contents,
-                                 const GlobalRenderFrameHostId& opener_id,
-                                 const std::string& frame_name,
-                                 const GURL& target_url,
-                                 WebContents* new_contents) {
-  BrowserWebContentsDelegate::From(this)->WebContentsCreated(
-      source_contents, opener_id, frame_name, target_url, new_contents);
-}
-
-void Browser::RendererUnresponsive(
-    WebContents* source,
-    content::RenderWidgetHost* render_widget_host,
-    base::RepeatingClosure hang_monitor_restarter) {
-  BrowserWebContentsDelegate::From(this)->RendererUnresponsive(
-      source, render_widget_host, hang_monitor_restarter);
-}
-
-void Browser::RendererResponsive(
-    WebContents* source,
-    content::RenderWidgetHost* render_widget_host) {
-  BrowserWebContentsDelegate::From(this)->RendererResponsive(
-      source, render_widget_host);
-}
-
-content::JavaScriptDialogManager* Browser::GetJavaScriptDialogManager(
-    WebContents* source) {
-  return BrowserWebContentsDelegate::From(this)->GetJavaScriptDialogManager(
-      source);
-}
-
-bool Browser::GuestSaveFrame(content::WebContents* guest_web_contents) {
-  return BrowserWebContentsDelegate::From(this)->GuestSaveFrame(
-      guest_web_contents);
-}
-
-std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
-    content::RenderFrameHost* frame,
-    content::EyeDropperListener* listener) {
-  return BrowserWebContentsDelegate::From(this)->OpenEyeDropper(frame,
-                                                                listener);
-}
-
-bool Browser::ShouldUseInstancedSystemMediaControls() const {
-  return BrowserWebContentsDelegate::From(this)
-      ->ShouldUseInstancedSystemMediaControls();
-}
-
-void Browser::DraggableRegionsChanged(
-    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
-    content::WebContents* contents) {
-  BrowserWebContentsDelegate::From(this)->DraggableRegionsChanged(regions,
-                                                                  contents);
-}
-
-std::vector<blink::mojom::RelatedApplicationPtr>
-Browser::GetSavedRelatedApplications(WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->GetSavedRelatedApplications(
-      web_contents);
-}
-
-content::WebContents* Browser::GetResponsibleWebContents(
-    content::WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->GetResponsibleWebContents(
-      web_contents);
-}
-
-std::optional<gfx::Rect> Browser::GetWindowBoundsInScreen() {
-  return BrowserWebContentsDelegate::From(this)->GetWindowBoundsInScreen();
-}
-
-void Browser::RunFileChooser(
-    content::RenderFrameHost* render_frame_host,
-    scoped_refptr<content::FileSelectListener> listener,
-    const blink::mojom::FileChooserParams& params) {
-  BrowserWebContentsDelegate::From(this)->RunFileChooser(
-      render_frame_host, std::move(listener), params);
-}
-
-void Browser::EnumerateDirectory(
-    WebContents* web_contents,
-    scoped_refptr<content::FileSelectListener> listener,
-    const base::FilePath& path) {
-  BrowserWebContentsDelegate::From(this)->EnumerateDirectory(
-      web_contents, std::move(listener), path);
-}
-
-bool Browser::GetCanResize() {
-  return BrowserWebContentsDelegate::From(this)->GetCanResize();
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-bool Browser::CanUseWindowingControls(
-    content::RenderFrameHost* requesting_frame) {
-  return BrowserWebContentsDelegate::From(this)->CanUseWindowingControls(
-      requesting_frame);
-}
-
-void Browser::MinimizeFromWebAPI() {
-  BrowserWebContentsDelegate::From(this)->MinimizeFromWebAPI();
-}
-
-void Browser::MaximizeFromWebAPI() {
-  BrowserWebContentsDelegate::From(this)->MaximizeFromWebAPI();
-}
-
-void Browser::RestoreFromWebAPI() {
-  BrowserWebContentsDelegate::From(this)->RestoreFromWebAPI();
-}
-
-void Browser::SetResizableFromWebAPI(bool resizable) {
-  BrowserWebContentsDelegate::From(this)->SetResizableFromWebAPI(resizable);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-ui::mojom::WindowShowState Browser::GetWindowShowState() const {
-  return BrowserWebContentsDelegate::From(this)->GetWindowShowState();
-}
-
-bool Browser::CanEnterFullscreenModeForTab(
-    content::RenderFrameHost* requesting_frame) {
-  return BrowserWebContentsDelegate::From(this)->CanEnterFullscreenModeForTab(
-      requesting_frame);
-}
-
-void Browser::EnterFullscreenModeForTab(
-    content::RenderFrameHost* requesting_frame,
-    const blink::mojom::FullscreenOptions& options) {
-  BrowserWebContentsDelegate::From(this)->EnterFullscreenModeForTab(
-      requesting_frame, options);
-}
-
-void Browser::ExitFullscreenModeForTab(WebContents* web_contents) {
-  BrowserWebContentsDelegate::From(this)->ExitFullscreenModeForTab(
-      web_contents);
-}
-
-bool Browser::IsFullscreenForTabOrPending(const WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->IsFullscreenForTabOrPending(
-      web_contents);
-}
-
-content::FullscreenState Browser::GetFullscreenState(
-    const WebContents* web_contents) const {
-  return BrowserWebContentsDelegate::From(this)->GetFullscreenState(
-      web_contents);
-}
-
-blink::mojom::DisplayMode Browser::GetDisplayMode(
-    const WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->GetDisplayMode(web_contents);
-}
-
-blink::mojom::ApplicationContext Browser::GetApplicationContext(
-    const WebContents* /*web_contents*/) {
-  return web_app::AppBrowserController::IsWebApp(this)
-             ? blink::mojom::ApplicationContext::kApplication
-             : blink::mojom::ApplicationContext::kNone;
-}
-
-blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
-    content::RenderFrameHost* requesting_frame) {
-  return BrowserWebContentsDelegate::From(this)
-      ->GetProtocolHandlerSecurityLevel(requesting_frame);
-}
-
-void Browser::RegisterProtocolHandler(
-    content::RenderFrameHost* requesting_frame,
-    const std::string& protocol,
-    const GURL& url,
-    bool user_gesture) {
-  BrowserWebContentsDelegate::From(this)->RegisterProtocolHandler(
-      requesting_frame, protocol, url, user_gesture);
-}
-
-void Browser::UnregisterProtocolHandler(
-    content::RenderFrameHost* requesting_frame,
-    const std::string& protocol,
-    const GURL& url,
-    bool user_gesture) {
-  BrowserWebContentsDelegate::From(this)->UnregisterProtocolHandler(
-      requesting_frame, protocol, url, user_gesture);
-}
-
-void Browser::FindReply(WebContents* web_contents,
-                        int request_id,
-                        int number_of_matches,
-                        const gfx::Rect& selection_rect,
-                        int active_match_ordinal,
-                        bool final_update) {
-  BrowserWebContentsDelegate::From(this)->FindReply(
-      web_contents, request_id, number_of_matches, selection_rect,
-      active_match_ordinal, final_update);
-}
-
-void Browser::RequestPointerLock(WebContents* web_contents,
-                                 bool user_gesture,
-                                 bool last_unlocked_by_target) {
-  BrowserWebContentsDelegate::From(this)->RequestPointerLock(
-      web_contents, user_gesture, last_unlocked_by_target);
-}
-
-void Browser::LostPointerLock() {
-  BrowserWebContentsDelegate::From(this)->LostPointerLock();
-}
-
-bool Browser::IsWaitingForPointerLockPrompt(WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->IsWaitingForPointerLockPrompt(
-      web_contents);
-}
-
-bool Browser::AllowKeyboardLockForInnerContents(WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)
-      ->AllowKeyboardLockForInnerContents(web_contents);
-}
-
-void Browser::RequestKeyboardLock(WebContents* web_contents,
-                                  bool esc_key_locked) {
-  BrowserWebContentsDelegate::From(this)->RequestKeyboardLock(web_contents,
-                                                              esc_key_locked);
-}
-
-void Browser::CancelKeyboardLockRequest(WebContents* web_contents) {
-  BrowserWebContentsDelegate::From(this)->CancelKeyboardLockRequest(
-      web_contents);
-}
-
-void Browser::RequestMediaAccessPermission(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback) {
-  BrowserWebContentsDelegate::From(this)->RequestMediaAccessPermission(
-      web_contents, request, std::move(callback));
-}
-
-void Browser::ProcessSelectAudioOutput(
-    const content::SelectAudioOutputRequest& request,
-    content::SelectAudioOutputCallback callback) {
-  BrowserWebContentsDelegate::From(this)->ProcessSelectAudioOutput(
-      request, std::move(callback));
-}
-
-bool Browser::CheckMediaAccessPermission(
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& security_origin,
-    blink::mojom::MediaStreamType type) {
-  return BrowserWebContentsDelegate::From(this)->CheckMediaAccessPermission(
-      render_frame_host, security_origin, type);
-}
-
-std::string Browser::GetTitleForMediaControls(WebContents* web_contents) {
-  return BrowserWebContentsDelegate::From(this)->GetTitleForMediaControls(
-      web_contents);
-}
-
-void Browser::GetAIPageContent(
-    content::WebContents* web_contents,
-    bool include_actionable_elements,
-    base::OnceCallback<void(const std::string&)> callback) {
-  auto options = include_actionable_elements
-                     ? optimization_guide::ActionableAIPageContentOptions(
-                           /*on_critical_path=*/false)
-                     : optimization_guide::DefaultAIPageContentOptions(
-                           /*on_critical_path=*/false);
-
-  optimization_guide::GetAIPageContent(
-      web_contents, std::move(options),
-      base::BindOnce([](optimization_guide::AIPageContentResultOrError result)
-                         -> std::string {
-        if (!result.has_value()) {
-          return "";
-        }
-        return result->proto.SerializeAsString();
-      }).Then(std::move(callback)));
-}
-
-#if BUILDFLAG(ENABLE_PRINTING)
-void Browser::PrintCrossProcessSubframe(
-    content::WebContents* web_contents,
-    const gfx::Rect& rect,
-    int document_cookie,
-    content::RenderFrameHost* subframe_host) const {
-  BrowserWebContentsDelegate::From(this)->PrintCrossProcessSubframe(
-      web_contents, rect, document_cookie, subframe_host);
-}
-#endif
-
-#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
-void Browser::CapturePaintPreviewOfSubframe(
-    content::WebContents* web_contents,
-    const gfx::Rect& rect,
-    const base::UnguessableToken& guid,
-    content::RenderFrameHost* render_frame_host) {
-  BrowserWebContentsDelegate::From(this)->CapturePaintPreviewOfSubframe(
-      web_contents, rect, guid, render_frame_host);
-}
-#endif
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Command and state updating (private):
@@ -2074,7 +1407,8 @@ chrome::BrowserCommandController* Browser::GetCommandController() {
 // Browser, Assorted utility functions (private):
 
 void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
-  Browser* delegate = set_delegate ? this : nullptr;
+  content::WebContentsDelegate* delegate =
+      set_delegate ? BrowserWebContentsDelegate::From(this) : nullptr;
 
   // WebContents...
   web_contents->SetDelegate(delegate);
