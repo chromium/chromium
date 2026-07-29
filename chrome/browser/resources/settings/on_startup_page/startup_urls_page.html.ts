@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {StartupPageInfo} from './startup_urls_page_browser_proxy.js';
 import type {SettingsStartupUrlsPageElement} from './startup_urls_page.js';
-
-export interface TemplatizedDomNodes {
-  infiniteList: CrInfiniteListElement<StartupPageInfo>;
-}
 
 export function getHtml(this: SettingsStartupUrlsPageElement) {
   // clang-format off
@@ -18,23 +12,14 @@ export function getHtml(this: SettingsStartupUrlsPageElement) {
 <div id="outer" class="flex list-frame">
   <div id="container" class="scroll-container cr-scrollable" scrollable>
     <div class="cr-scrollable-top"></div>
-    <cr-infinite-list id="infiniteList" class="cr-separators"
-        .items="${this.startupPages_}"
-        .scrollTarget="${this.scrollTarget_}"
-        .template="${(item: StartupPageInfo, index: number, tabindex: number) => html`
-          <settings-startup-url-entry
-              .model="${item}"
-              tabindex="${tabindex}"
-              .focusRowIndex="${index}"
-              .listTabIndex="${tabindex}"
-              .lastFocused="${this.lastFocused_}"
-              @last-focused-changed="${this.onLastFocusedChanged_}"
-              .listBlurred="${this.listBlurred_}"
-              @list-blurred-changed="${this.onListBlurredChanged_}"
-              ?editable="${this.shouldAllowUrlsEdit_()}">
-          </settings-startup-url-entry>
-        `}">
-    </cr-infinite-list>
+    <div id="list" focusgroup="toolbar block">
+      ${this.startupPages_.map(item => html`
+        <settings-startup-url-entry
+            .model="${item}"
+            ?editable="${this.shouldAllowUrlsEdit_()}">
+        </settings-startup-url-entry>
+      `)}
+    </div>
     <div class="cr-scrollable-bottom"></div>
   </div>
 </div>

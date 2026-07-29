@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import type {SettingsStartupUrlDialogElement, SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement} from 'chrome://settings/settings.js';
+import type {SettingsStartupUrlDialogElement, SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupPageInfo} from 'chrome://settings/settings.js';
 import {EDIT_STARTUP_URL_EVENT, PrefsBrowserProxy, PrefService, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -69,6 +69,7 @@ suite('StartupUrlDialog', function() {
     // Assert that the text field is pre-populated.
     const inputElement = dialog.$.url;
     assertTrue(!!inputElement);
+    assertTrue(!!dialog.model);
     assertEquals(dialog.model.url, inputElement.value);
   });
 
@@ -276,10 +277,15 @@ suite('StartupUrlsPage', function() {
     assertFalse(!!page.shadowRoot.querySelector('#addPage'));
     assertFalse(!!page.shadowRoot.querySelector('#useCurrentPages'));
   });
+
+  // Test that 'focusgroup' is leveraged to trigger arrow button navigation
+  // within the list.
+  test('FocusgroupAttribute', function() {
+    assertEquals('toolbar block', page.$.list.getAttribute('focusgroup'));
+  });
 });
 
-/** @return {!StartupPageInfo} */
-function createSampleUrlEntry() {
+function createSampleUrlEntry(): StartupPageInfo {
   return {
     modelIndex: 2,
     title: 'Test page',

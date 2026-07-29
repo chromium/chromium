@@ -43,6 +43,10 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SecureDns) {
   RunTest("settings/security/secure_dns_interactive_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, StartupUrlsPage) {
+  RunTest("settings/startup_urls_page_focus_test.js", "mocha.run()");
+}
+
 // Times out on Mac. See https://crbug.com/40679346.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SettingsUIToolbarAndDrawer DISABLED_SettingsUIToolbarAndDrawer

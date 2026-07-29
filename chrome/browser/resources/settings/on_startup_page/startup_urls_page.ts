@@ -9,7 +9,6 @@
 
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_lit.css.js';
-import 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import './startup_url_dialog.js';
 import './startup_url_entry.js';
@@ -29,6 +28,7 @@ import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy
 export interface SettingsStartupUrlsPageElement {
   $: {
     container: HTMLElement,
+    list: HTMLElement,
   };
 }
 
@@ -55,9 +55,6 @@ export class SettingsStartupUrlsPageElement extends
       startupPages_: {type: Array},
       showStartupUrlDialog_: {type: Boolean},
       startupUrlDialogModel_: {type: Object},
-      lastFocused_: {type: Object},
-      listBlurred_: {type: Boolean},
-      scrollTarget_: {type: Object},
     };
   }
 
@@ -66,9 +63,6 @@ export class SettingsStartupUrlsPageElement extends
   protected accessor startupPages_: StartupPageInfo[] = [];
   protected accessor showStartupUrlDialog_: boolean = false;
   protected accessor startupUrlDialogModel_: StartupPageInfo|null = null;
-  protected accessor lastFocused_: HTMLElement|null = null;
-  protected accessor listBlurred_: boolean = false;
-  protected accessor scrollTarget_: HTMLElement = document.documentElement;
 
   private browserProxy_: StartupUrlsPageBrowserProxy =
       StartupUrlsPageBrowserProxyImpl.getInstance();
@@ -101,17 +95,28 @@ export class SettingsStartupUrlsPageElement extends
     });
   }
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    this.scrollTarget_ = this.$.container;
-  }
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-  protected onLastFocusedChanged_(e: CustomEvent<{value: HTMLElement | null}>) {
-    this.lastFocused_ = e.detail.value;
-  }
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
 
-  protected onListBlurredChanged_(e: CustomEvent<{value: boolean}>) {
-    this.listBlurred_ = e.detail.value;
+    // Restore focus to the last element if the previous last element was
+    // deleted while it was focused.
+    if (changedPrivateProperties.has('startupPages_')) {
+      const previousPages =
+          changedPrivateProperties.get('startupPages_') as StartupPageInfo[] |
+          undefined;
+      if (previousPages && this.startupPages_.length < previousPages.length) {
+        const focused = this.shadowRoot.querySelector(
+            'settings-startup-url-entry:focus-within');
+        if (!focused) {
+          const toFocus = this.shadowRoot.querySelector<HTMLElement>(
+              'settings-startup-url-entry:last-of-type');
+          toFocus?.focus();
+        }
+      }
+    }
   }
 
   protected onAddPageClick_(e: Event) {

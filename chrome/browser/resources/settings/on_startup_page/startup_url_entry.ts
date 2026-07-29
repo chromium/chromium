@@ -16,7 +16,6 @@ import '../site_favicon.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -32,13 +31,16 @@ import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy
  */
 export const EDIT_STARTUP_URL_EVENT: string = 'edit-startup-url';
 
-const SettingsStartupUrlEntryElementBase =
-    I18nMixinLit(FocusRowMixinLit(CrLitElement));
+const SettingsStartupUrlEntryElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {
   static get is() {
     return 'settings-startup-url-entry';
+  }
+
+  static override get shadowRootOptions() {
+    return {...super.shadowRootOptions, delegatesFocus: true};
   }
 
   static override get styles() {

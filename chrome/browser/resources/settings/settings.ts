@@ -100,7 +100,7 @@ export {SettingsStartupUrlDialogElement} from './on_startup_page/startup_url_dia
 export {EDIT_STARTUP_URL_EVENT, SettingsStartupUrlEntryElement} from './on_startup_page/startup_url_entry.js';
 export {SettingsStartupUrlsPageElement} from './on_startup_page/startup_urls_page.js';
 export {StartupUrlsPageBrowserProxyImpl} from './on_startup_page/startup_urls_page_browser_proxy.js';
-export type {StartupUrlsPageBrowserProxy} from './on_startup_page/startup_urls_page_browser_proxy.js';
+export type {StartupPageInfo, StartupUrlsPageBrowserProxy} from './on_startup_page/startup_urls_page_browser_proxy.js';
 export {pageVisibility, resetPageVisibilityForTesting} from './page_visibility.js';
 export type {PrivacyPageVisibility} from './page_visibility.js';
 // <if expr="is_chromeos">
