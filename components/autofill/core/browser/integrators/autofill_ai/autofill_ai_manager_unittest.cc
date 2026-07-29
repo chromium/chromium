@@ -321,7 +321,7 @@ TEST_F(AutofillAiManagerTest,
   AddOrUpdateEntityInstance(GetPassportEntityInstance());
   EXPECT_THAT(manager().GetSuggestions(form_structure, form.fields().front()),
               ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
-                          HasType(kManageAutofillAi)));
+                          HasType(kManageAutofillAiIdentityDocs)));
 }
 
 // Tests that PrefetchContext is executed.

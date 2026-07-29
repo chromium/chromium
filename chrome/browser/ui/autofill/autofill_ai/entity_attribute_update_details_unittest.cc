@@ -98,16 +98,15 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeAdded) {
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
           new_number, old_number, "en-US"),
-      ElementsAre(
-          EntityAttributeUpdateDetails(
-              u"Number", u"4321", u"1234",
-              EntityAttributeUpdateType::kNewEntityAttributeUpdated),
-          EntityAttributeUpdateDetails(
-              u"Expiration date", u"Jan 1, 2030", std::nullopt,
-              EntityAttributeUpdateType::kNewEntityAttributeAdded),
-          EntityAttributeUpdateDetails(
-              u"Name", u"Name", std::nullopt,
-              EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
+      ElementsAre(EntityAttributeUpdateDetails(
+                      u"Name", u"Name", std::nullopt,
+                      EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
+                  EntityAttributeUpdateDetails(
+                      u"Number", u"4321", u"1234",
+                      EntityAttributeUpdateType::kNewEntityAttributeUpdated),
+                  EntityAttributeUpdateDetails(
+                      u"Expiration date", u"Jan 1, 2030", std::nullopt,
+                      EntityAttributeUpdateType::kNewEntityAttributeAdded)));
 }
 
 TEST(EntityAttributeUpdateDetailsTest, AttributeRemoved) {
@@ -120,13 +119,12 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeRemoved) {
   ASSERT_THAT(
       EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
           new_number, old_number, "en-US"),
-      ElementsAre(
-          EntityAttributeUpdateDetails(
-              u"Number", u"4321", u"1234",
-              EntityAttributeUpdateType::kNewEntityAttributeUpdated),
-          EntityAttributeUpdateDetails(
-              u"Name", u"Name", std::nullopt,
-              EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
+      ElementsAre(EntityAttributeUpdateDetails(
+                      u"Name", u"Name", std::nullopt,
+                      EntityAttributeUpdateType::kNewEntityAttributeUnchanged),
+                  EntityAttributeUpdateDetails(
+                      u"Number", u"4321", u"1234",
+                      EntityAttributeUpdateType::kNewEntityAttributeUpdated)));
 }
 
 // Tests that masked attributes are compared by their suffixes rather than a raw

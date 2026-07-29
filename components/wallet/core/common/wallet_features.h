@@ -10,7 +10,7 @@
 
 namespace wallet::features {
 
-BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kWalletApiPrivatePassesEnabled);
+BASE_DECLARE_FEATURE(kWalletApiPrivatePassesEnabled);
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kWalletSaveUrl);
 

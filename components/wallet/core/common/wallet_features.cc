@@ -7,9 +7,7 @@
 namespace wallet::features {
 
 // Controls whether the Wallet API is enabled.
-BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kWalletApiPrivatePassesEnabled,
-                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
-                                       "us");
+BASE_FEATURE(kWalletApiPrivatePassesEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The backend URL to save the walletable pass.
 BASE_FEATURE_PARAM(std::string,
