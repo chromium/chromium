@@ -478,11 +478,11 @@
     ],
 
     'official_mac_arm_pgo_with_symbols': [
-      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
+      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'arm64', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_mac_pgo_with_symbols': [
-      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'x64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
+      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'x64', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_minimal_symbols_android_arm64': [
@@ -859,10 +859,6 @@
 
     'disable_stripping': {
       'gn_args': 'enable_stripping=false',
-    },
-
-    'disable_widevine_signing': {
-      'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
 
     'ffmpeg_branding_chrome': {
