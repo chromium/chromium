@@ -233,6 +233,45 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
+                       DataIframeInitiatedNavigationIntoAppBlocked) {
+  GURL app_url = GetAppURL();
+  EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
+  EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+
+  // A data: URL iframe created by the app commits with an opaque origin whose
+  // precursor is the app origin.
+  RenderFrameHost* iframe =
+      CreateChildIframe(main_rfh(), GURL("data:text/html,body"));
+  EXPECT_TRUE(iframe->GetLastCommittedOrigin().opaque());
+
+  // The data: iframe must not be allowed to navigate itself back into the app.
+  std::unique_ptr<TestNavigationObserver> navigation_observer =
+      SelfNavigateIframeToURL(iframe, app_url);
+  EXPECT_FALSE(navigation_observer->last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            navigation_observer->last_net_error_code());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
+                       AppInitiatedDataIframeNavigationIntoAppAllowed) {
+  GURL app_url = GetAppURL();
+  EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
+  EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
+
+  RenderFrameHost* iframe =
+      CreateChildIframe(main_rfh(), GURL("data:text/html,body"));
+  EXPECT_TRUE(iframe->GetLastCommittedOrigin().opaque());
+
+  // The app's main frame is allowed to navigate the data: iframe into the app.
+  std::unique_ptr<TestNavigationObserver> navigation_observer =
+      NavigateIframeToUrlFromParent(iframe, app_url);
+  EXPECT_EQ(main_rfh()->GetFrameToken(),
+            navigation_observer->last_initiator_frame_token().value());
+  EXPECT_TRUE(navigation_observer->last_navigation_succeeded());
+  EXPECT_EQ(net::OK, navigation_observer->last_net_error_code());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        AppInitiatedIframeNavigationIntoAppAllowed) {
   GURL app_url = GetAppURL();
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
