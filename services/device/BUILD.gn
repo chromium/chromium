@@ -331,6 +331,10 @@ source_set("tests") {
       ]
     }
 
+    if (is_win) {
+      sources += [ "serial/serial_device_enumerator_win_unittest.cc" ]
+    }
+
     if (is_linux || is_chromeos) {
       deps += [ "//device/udev_linux:test_support" ]
     }
@@ -535,6 +539,14 @@ source_set("utility") {
       "utils/mac_utils.cc",
       "utils/mac_utils.h",
     ]
+  }
+  if (is_win) {
+    sources += [
+      "utils/setupdi_utils_win.cc",
+      "utils/setupdi_utils_win.h",
+    ]
+    libs = [ "setupapi.lib" ]
+    public_deps = [ "//components/device_event_log" ]
   }
   deps = [ "//base" ]
 }

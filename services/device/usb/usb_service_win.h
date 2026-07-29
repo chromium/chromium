@@ -5,11 +5,10 @@
 #ifndef SERVICES_DEVICE_USB_USB_SERVICE_WIN_H_
 #define SERVICES_DEVICE_USB_USB_SERVICE_WIN_H_
 
-#include "services/device/usb/usb_service.h"
-
 #include <list>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -18,8 +17,15 @@
 #include "base/threading/sequence_bound.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/usb/usb_device_win.h"
+#include "services/device/usb/usb_service.h"
 
 namespace device {
+
+// Returns the interface number extracted from `instance_id` or
+// `hardware_ids` for a device node created by a USB composite device driver,
+// or -1 if the interface number could not be determined.
+int GetInterfaceNumber(const std::wstring& instance_id,
+                       const std::vector<std::wstring>& hardware_ids);
 
 class UsbServiceWin final : public DeviceMonitorWin::Observer,
                             public UsbService {

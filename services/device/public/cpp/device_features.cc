@@ -95,6 +95,12 @@ BASE_FEATURE(kSafeHidConnectionWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
 // completion, even if the port is closed.
 BASE_FEATURE(kSafeSerialPortImplWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, SerialDeviceEnumeratorWin reads the USB product and interface
+// string descriptors from the hub driver to build the display name for
+// USB-backed serial ports. When disabled the "bus reported device description"
+// is used instead.
+BASE_FEATURE(kSerialUsbDisplayNameWin, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Defines a feature parameter for the `kWinSystemLocationPermission` feature.
 // This parameter controls the polling interval (in milliseconds) for checking
 // the permission status. The default polling interval is set to 500

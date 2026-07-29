@@ -77,6 +77,14 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android) {
         "serial_io_handler_win.cc",
         "serial_io_handler_win.h",
       ]
+
+      deps += [
+        # SetupDi device property utilities.
+        "//services/device:utility",
+
+        # Reuse USB string descriptor parsing and interface number lookup.
+        "//services/device/usb",
+      ]
     }
 
     if (is_android) {

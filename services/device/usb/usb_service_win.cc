@@ -27,7 +27,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,14 +36,49 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "services/device/usb/webusb_descriptors.h"
+#include "services/device/utils/setupdi_utils_win.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace device {
+
+int GetInterfaceNumber(const std::wstring& instance_id,
+                       const std::vector<std::wstring>& hardware_ids) {
+  // According to MSDN the instance IDs for the device nodes created by the
+  // composite driver is in the form "USB\VID_vvvv&PID_dddd&MI_zz" where "zz"
+  // is the interface number.
+  //
+  // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/standard-usb-identifiers#multiple-interface-usb-devices
+  RE2 pattern("MI_([0-9a-fA-F]{2})");
+
+  std::string instance_id_ascii = base::WideToASCII(instance_id);
+  std::string match;
+  if (!RE2::PartialMatch(instance_id_ascii, pattern, &match)) {
+    // Alternative composite drivers, such as the one used for Samsung devices,
+    // don't use the standard format for the instance ID, but one of the
+    // hardware IDs will still match the expected pattern.
+    bool found = false;
+    for (const std::wstring& hardware_id : hardware_ids) {
+      std::string hardware_id_ascii = base::WideToASCII(hardware_id);
+      if (RE2::PartialMatch(hardware_id_ascii, pattern, &match)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      return -1;
+    }
+  }
+
+  int interface_number;
+  if (!base::HexStringToInt(match, &interface_number)) {
+    return -1;
+  }
+  return interface_number;
+}
 
 namespace {
 
@@ -55,130 +89,10 @@ bool IsCompositeDevice(const std::wstring& service_name) {
          base::EqualsCaseInsensitiveASCII(service_name, L"dg_ssudbus");
 }
 
-std::ostream& operator<<(std::ostream& os, const DEVPROPKEY& value) {
-  os << "{" << base::win::WStringFromGUID(value.fmtid) << ", " << value.pid
-     << "}";
-  return os;
-}
-
-std::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
-                                                SP_DEVINFO_DATA* dev_info_data,
-                                                const DEVPROPKEY& property) {
-  // SetupDiGetDeviceProperty() makes an RPC which may block.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  DEVPROPTYPE property_type;
-  uint32_t buffer;
-  if (!SetupDiGetDeviceProperty(
-          dev_info, dev_info_data, &property, &property_type,
-          reinterpret_cast<PBYTE>(&buffer), sizeof(buffer), nullptr, 0)) {
-    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return std::nullopt;
-  }
-
-  if (property_type != DEVPROP_TYPE_UINT32) {
-    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
-                   << ") returned unexpected type (" << property_type
-                   << " != " << DEVPROP_TYPE_UINT32 << ")";
-    return std::nullopt;
-  }
-
-  return buffer;
-}
-
-std::optional<std::wstring> GetDeviceStringProperty(
-    HDEVINFO dev_info,
-    SP_DEVINFO_DATA* dev_info_data,
-    const DEVPROPKEY& property) {
-  // SetupDiGetDeviceProperty() makes an RPC which may block.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  DEVPROPTYPE property_type;
-  DWORD required_size;
-  if (SetupDiGetDeviceProperty(dev_info, dev_info_data, &property,
-                               &property_type, nullptr, 0, &required_size, 0)) {
-    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
-                   << ") unexpectedly succeeded";
-    return std::nullopt;
-  }
-
-  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return std::nullopt;
-  }
-
-  if (property_type != DEVPROP_TYPE_STRING) {
-    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
-                   << ") returned unexpected type (" << property_type
-                   << " != " << DEVPROP_TYPE_STRING << ")";
-    return std::nullopt;
-  }
-
-  std::wstring buffer;
-  if (!SetupDiGetDeviceProperty(
-          dev_info, dev_info_data, &property, &property_type,
-          reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
-          required_size, nullptr, 0)) {
-    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return std::nullopt;
-  }
-
-  return buffer;
-}
-
-std::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
-    HDEVINFO dev_info,
-    SP_DEVINFO_DATA* dev_info_data,
-    const DEVPROPKEY& property) {
-  // SetupDiGetDeviceProperty() makes an RPC which may block.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  DEVPROPTYPE property_type;
-  DWORD required_size;
-  if (SetupDiGetDeviceProperty(dev_info, dev_info_data, &property,
-                               &property_type, nullptr, 0, &required_size, 0)) {
-    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
-                   << ") unexpectedly succeeded";
-    return std::nullopt;
-  }
-
-  if (GetLastError() == ERROR_NOT_FOUND) {
-    // Simplify callers by returning empty list when the property isn't found.
-    return std::vector<std::wstring>();
-  }
-
-  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return std::nullopt;
-  }
-
-  if (property_type != DEVPROP_TYPE_STRING_LIST) {
-    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
-                   << ") returned unexpected type (" << property_type
-                   << " != " << DEVPROP_TYPE_STRING_LIST << ")";
-    return std::nullopt;
-  }
-
-  std::wstring buffer;
-  if (!SetupDiGetDeviceProperty(
-          dev_info, dev_info_data, &property, &property_type,
-          reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
-          required_size, nullptr, 0)) {
-    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
-    return std::nullopt;
-  }
-
-  // Windows string list properties use a NUL character as the delimiter.
-  return base::SplitString(buffer, std::wstring_view(L"\0", 1),
-                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-}
-
 std::wstring GetServiceName(HDEVINFO dev_info, SP_DEVINFO_DATA* dev_info_data) {
   std::optional<std::wstring> property =
-      GetDeviceStringProperty(dev_info, dev_info_data, DEVPKEY_Device_Service);
+      GetDeviceStringProperty(dev_info, dev_info_data, DEVPKEY_Device_Service,
+                              device_event_log::LOG_TYPE_USB);
   if (!property.has_value())
     return std::wstring();
 
@@ -198,6 +112,11 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
                                std::vector<std::wstring>* child_instance_ids,
                                std::vector<std::wstring>* hardware_ids,
                                std::wstring* service_name) {
+  // SetupDi functions make RPCs to the device manager service which may
+  // block.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
   SP_DEVINFO_DATA dev_info_data = {};
   dev_info_data.cbSize = sizeof(dev_info_data);
 
@@ -237,7 +156,8 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
 
   if (bus_number) {
     auto result = GetDeviceUint32Property(dev_info, &dev_info_data,
-                                          DEVPKEY_Device_BusNumber);
+                                          DEVPKEY_Device_BusNumber,
+                                          device_event_log::LOG_TYPE_USB);
     if (!result.has_value())
       return false;
     *bus_number = result.value();
@@ -245,7 +165,8 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
 
   if (port_number) {
     auto result = GetDeviceUint32Property(dev_info, &dev_info_data,
-                                          DEVPKEY_Device_Address);
+                                          DEVPKEY_Device_Address,
+                                          device_event_log::LOG_TYPE_USB);
     if (!result.has_value())
       return false;
     *port_number = result.value();
@@ -253,15 +174,17 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
 
   if (instance_id) {
     auto result = GetDeviceStringProperty(dev_info, &dev_info_data,
-                                          DEVPKEY_Device_InstanceId);
+                                          DEVPKEY_Device_InstanceId,
+                                          device_event_log::LOG_TYPE_USB);
     if (!result.has_value())
       return false;
     *instance_id = std::move(result.value());
   }
 
   if (parent_instance_id) {
-    auto result = GetDeviceStringProperty(dev_info, &dev_info_data,
-                                          DEVPKEY_Device_Parent);
+    auto result =
+        GetDeviceStringProperty(dev_info, &dev_info_data, DEVPKEY_Device_Parent,
+                                device_event_log::LOG_TYPE_USB);
     if (!result.has_value())
       return false;
     *parent_instance_id = std::move(result.value());
@@ -269,7 +192,8 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
 
   if (child_instance_ids) {
     auto result = GetDeviceStringListProperty(dev_info, &dev_info_data,
-                                              DEVPKEY_Device_Children);
+                                              DEVPKEY_Device_Children,
+                                              device_event_log::LOG_TYPE_USB);
     if (!result.has_value())
       return false;
     *child_instance_ids = std::move(result.value());
@@ -277,7 +201,8 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
 
   if (hardware_ids) {
     auto result = GetDeviceStringListProperty(dev_info, &dev_info_data,
-                                              DEVPKEY_Device_HardwareIds);
+                                              DEVPKEY_Device_HardwareIds,
+                                              device_event_log::LOG_TYPE_USB);
     if (!result.has_value())
       return false;
     *hardware_ids = std::move(result.value());
@@ -325,42 +250,14 @@ std::wstring GetDevicePath(const std::wstring& instance_id,
   return device_path;
 }
 
-int GetInterfaceNumber(const std::wstring& instance_id,
-                       const std::vector<std::wstring>& hardware_ids) {
-  // According to MSDN the instance IDs for the device nodes created by the
-  // composite driver is in the form "USB\VID_vvvv&PID_dddd&MI_zz" where "zz"
-  // is the interface number.
-  //
-  // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/standard-usb-identifiers#multiple-interface-usb-devices
-  RE2 pattern("MI_([0-9a-fA-F]{2})");
-
-  std::string instance_id_ascii = base::WideToASCII(instance_id);
-  std::string match;
-  if (!RE2::PartialMatch(instance_id_ascii, pattern, &match)) {
-    // Alternative composite drivers, such as the one used for Samsung devices,
-    // don't use the standard format for the instance ID, but one of the
-    // hardware IDs will still match the expected pattern.
-    bool found = false;
-    for (const std::wstring& hardware_id : hardware_ids) {
-      std::string hardware_id_ascii = base::WideToASCII(hardware_id);
-      if (RE2::PartialMatch(hardware_id_ascii, pattern, &match)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found)
-      return -1;
-  }
-
-  int interface_number;
-  if (!base::HexStringToInt(match, &interface_number))
-    return -1;
-  return interface_number;
-}
-
 UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
   UsbDeviceWin::FunctionInfo info;
   info.interface_number = -1;
+
+  // SetupDi functions make RPCs to the device manager service which may
+  // block.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
 
   base::win::ScopedDevInfo dev_info(
       SetupDiCreateDeviceInfoList(nullptr, nullptr));
@@ -384,7 +281,8 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
 
   std::optional<std::vector<std::wstring>> hardware_ids =
       GetDeviceStringListProperty(dev_info.get(), &dev_info_data,
-                                  DEVPKEY_Device_HardwareIds);
+                                  DEVPKEY_Device_HardwareIds,
+                                  device_event_log::LOG_TYPE_USB);
   if (!hardware_ids.has_value()) {
     return info;
   }

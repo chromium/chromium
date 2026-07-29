@@ -40,7 +40,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_devinfo.h"
-#include "base/win/win_util.h"
 #include "base/win/windows_handle_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_win.h"
@@ -48,6 +47,7 @@
 #include "services/device/hid/hid_preparsed_data.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/device/public/proto/hid_gcpw.pb.h"
+#include "services/device/utils/setupdi_utils_win.h"
 
 namespace device {
 
@@ -78,74 +78,6 @@ void UnpackBitField(uint16_t bit_field, mojom::HidReportItem* item) {
   item->has_null_position = bit_field & kBitFieldFlagHasNullPosition;
   item->is_volatile = bit_field & kBitFieldFlagVolatile;
   item->is_buffered_bytes = bit_field & kBitFieldFlagBufferedBytes;
-}
-
-// Looks up the value of a string device property specified by |property_key|
-// for the device described by |device_info_data|. On success, returns the
-// property value as a wstring. Returns std::nullopt if the property is not
-// present or has a different type.
-std::optional<std::wstring> GetDeviceStringProperty(
-    HDEVINFO device_info_set,
-    SP_DEVINFO_DATA& device_info_data,
-    const DEVPROPKEY& property_key) {
-  DEVPROPTYPE property_type;
-  DWORD required_size;
-  if (SetupDiGetDeviceProperty(device_info_set, &device_info_data,
-                               &property_key, &property_type,
-                               /*PropertyBuffer=*/nullptr,
-                               /*PropertyBufferSize=*/0, &required_size,
-                               /*Flags=*/0)) {
-    HID_LOG(DEBUG) << "SetupDiGetDeviceProperty unexpectedly succeeded.";
-    return std::nullopt;
-  }
-
-  DWORD last_error = GetLastError();
-  if (last_error == ERROR_NOT_FOUND)
-    return std::nullopt;
-
-  if (last_error != ERROR_INSUFFICIENT_BUFFER) {
-    HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
-    return std::nullopt;
-  }
-
-  if (property_type != DEVPROP_TYPE_STRING)
-    return std::nullopt;
-
-  std::wstring property_buffer;
-  if (!SetupDiGetDeviceProperty(
-          device_info_set, &device_info_data, &property_key, &property_type,
-          reinterpret_cast<PBYTE>(
-              base::WriteInto(&property_buffer, required_size)),
-          required_size, /*RequiredSize=*/nullptr, /*Flags=*/0)) {
-    HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
-    return std::nullopt;
-  }
-
-  return property_buffer;
-}
-
-// Looks up the value of a GUID-type device property specified by |property| for
-// the device described by |device_info_data|. On success, returns the property
-// value as a string. Returns std::nullopt if the property is not present or
-// has a different type.
-std::optional<std::string> GetDeviceGuidProperty(
-    HDEVINFO device_info_set,
-    SP_DEVINFO_DATA& device_info_data,
-    const DEVPROPKEY& property_key) {
-  DEVPROPTYPE property_type;
-  GUID property_buffer;
-  if (!SetupDiGetDeviceProperty(
-          device_info_set, &device_info_data, &property_key, &property_type,
-          reinterpret_cast<PBYTE>(&property_buffer), sizeof(property_buffer),
-          /*RequiredSize=*/nullptr, /*Flags=*/0)) {
-    HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
-    return std::nullopt;
-  }
-
-  if (property_type != DEVPROP_TYPE_GUID)
-    return std::nullopt;
-
-  return base::SysWideToUTF8(base::win::WStringFromGUID(property_buffer));
 }
 
 // Looks up information about the device described by |device_interface_data|
@@ -243,8 +175,9 @@ std::optional<std::wstring> GetParentInstanceId(
   }
 
   // Get the parent instance ID.
-  auto instance_id = GetDeviceStringProperty(device_info_set, device_info_data,
-                                             DEVPKEY_Device_Parent);
+  auto instance_id = GetDeviceStringProperty(device_info_set, &device_info_data,
+                                             DEVPKEY_Device_Parent,
+                                             device_event_log::LOG_TYPE_HID);
   if (!instance_id)
     return std::nullopt;
 
@@ -562,7 +495,8 @@ void HidServiceWin::EnumerateBlocking(
 
       // Get the container ID for the physical device.
       auto physical_device_id = GetDeviceGuidProperty(
-          device_info_set.get(), device_info_data, DEVPKEY_Device_ContainerId);
+          device_info_set.get(), &device_info_data, DEVPKEY_Device_ContainerId,
+          device_event_log::LOG_TYPE_HID);
       if (!physical_device_id)
         continue;
 
@@ -723,7 +657,8 @@ void HidServiceWin::OnDeviceAdded(const GUID& class_guid,
 
   // Get the container ID for the physical device.
   auto physical_device_id = GetDeviceGuidProperty(
-      device_info_set.get(), device_info_data, DEVPKEY_Device_ContainerId);
+      device_info_set.get(), &device_info_data, DEVPKEY_Device_ContainerId,
+      device_event_log::LOG_TYPE_HID);
   if (!physical_device_id)
     return;
 

@@ -5,6 +5,12 @@
 #ifndef SERVICES_DEVICE_SERIAL_SERIAL_DEVICE_ENUMERATOR_WIN_H_
 #define SERVICES_DEVICE_SERIAL_SERIAL_DEVICE_ENUMERATOR_WIN_H_
 
+#include <stdint.h>
+
+#include <optional>
+#include <string>
+
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/win/windows_types.h"
@@ -15,6 +21,18 @@ typedef void* HDEVINFO;
 typedef struct _SP_DEVINFO_DATA SP_DEVINFO_DATA;
 
 namespace device {
+
+namespace serial_win_internal {
+
+std::optional<uint8_t> FindInterfaceStringDescriptorIndex(
+    base::span<const uint8_t> configuration_descriptor,
+    int interface_number);
+
+std::optional<std::string> BuildUsbDisplayName(
+    const std::optional<std::string>& product_name,
+    const std::optional<std::string>& interface_name);
+
+}  // namespace serial_win_internal
 
 // Discovers and enumerates serial devices available to the host.
 class SerialDeviceEnumeratorWin : public SerialDeviceEnumerator {
