@@ -317,13 +317,6 @@ static_library("test_support") {
     ]
   }
 
-  if (toolkit_views) {
-    sources += [
-      "../browser/ui/views/external_protocol_dialog_test_harness.cc",
-      "../browser/ui/views/external_protocol_dialog_test_harness.h",
-    ]
-  }
-
   if (is_chrome_branded &&
       (is_mac || is_win || (is_posix && !is_android && !is_chromeos))) {
     sources += [ "base/scoped_channel_override.h" ]
@@ -3724,6 +3717,7 @@ if (!is_android) {
     }
     if (toolkit_views) {
       deps += [
+        "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
         "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests",
       ]
@@ -9083,6 +9077,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/translate:test_support",
         "//chrome/browser/ui/user_education",
         "//chrome/browser/ui/user_education:interactive_ui_tests",
+        "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views:layout_provider",
         "//chrome/browser/ui/views/commerce",
         "//chrome/browser/ui/views/commerce:interactive_ui_tests",
