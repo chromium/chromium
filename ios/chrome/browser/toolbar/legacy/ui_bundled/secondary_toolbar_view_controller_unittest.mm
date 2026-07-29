@@ -4,17 +4,10 @@
 
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_view_controller.h"
 
-#import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
-#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_style.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_keyboard_state_provider.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 @interface SecondaryToolbarViewController (Testing)
 @property(nonatomic) BOOL locationIndicatorActive;
@@ -80,72 +73,4 @@ TEST_F(SecondaryToolbarViewControllerTest,
   // Tapping the collapsed toolbar button should not crash now because
   // locationIndicatorActive is NO.
   [view_controller_ collapsedToolbarButtonTapped];
-}
-
-// Tests that setting locationIndicatorActive to NO does not exit forced
-// fullscreen mode if the Find in Page navigator is visible.
-TEST_F(SecondaryToolbarViewControllerTest,
-       DoesNotExitFullscreenWhenFindNavigatorVisibleOnDeactivation) {
-  base::test::ScopedFeatureList scoped_feature_list(kFullscreenRefactoring);
-
-  id keyboard_provider =
-      OCMProtocolMock(@protocol(SecondaryToolbarKeyboardStateProvider));
-  view_controller_.keyboardStateProvider = keyboard_provider;
-
-  id fullscreen_commands = OCMProtocolMock(@protocol(FullscreenCommands));
-  view_controller_.fullscreenCommands = fullscreen_commands;
-
-  // Activate location indicator.
-  OCMExpect([fullscreen_commands
-      enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
-                        animated:YES]);
-  view_controller_.locationIndicatorActive = YES;
-  EXPECT_TRUE(view_controller_.locationIndicatorActive);
-
-  // When Find in Page navigator is visible, deactivating location indicator
-  // should NOT call exitFullscreenWithTrigger.
-  OCMStub([keyboard_provider isFindNavigatorVisibleForWebContent])
-      .andReturn(YES);
-  OCMReject([fullscreen_commands
-      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
-                       animated:YES]);
-
-  view_controller_.locationIndicatorActive = NO;
-  EXPECT_FALSE(view_controller_.locationIndicatorActive);
-
-  EXPECT_OCMOCK_VERIFY(fullscreen_commands);
-}
-
-// Tests that setting locationIndicatorActive to NO exits forced fullscreen
-// mode if the Find in Page navigator is not visible.
-TEST_F(SecondaryToolbarViewControllerTest,
-       ExitsFullscreenWhenFindNavigatorNotVisibleOnDeactivation) {
-  base::test::ScopedFeatureList scoped_feature_list(kFullscreenRefactoring);
-
-  id keyboard_provider =
-      OCMProtocolMock(@protocol(SecondaryToolbarKeyboardStateProvider));
-  view_controller_.keyboardStateProvider = keyboard_provider;
-
-  id fullscreen_commands = OCMProtocolMock(@protocol(FullscreenCommands));
-  view_controller_.fullscreenCommands = fullscreen_commands;
-
-  // Activate location indicator.
-  OCMExpect([fullscreen_commands
-      enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
-                        animated:YES]);
-  view_controller_.locationIndicatorActive = YES;
-  EXPECT_TRUE(view_controller_.locationIndicatorActive);
-
-  // When Find in Page navigator is not visible, deactivating location indicator
-  // should call exitFullscreenWithTrigger.
-  OCMStub([keyboard_provider isFindNavigatorVisibleForWebContent])
-      .andReturn(NO);
-  OCMExpect([fullscreen_commands
-      exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
-                       animated:YES]);
-
-  view_controller_.locationIndicatorActive = NO;
-  EXPECT_FALSE(view_controller_.locationIndicatorActive);
-
-  EXPECT_OCMOCK_VERIFY(fullscreen_commands);
 }

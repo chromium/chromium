@@ -79,20 +79,17 @@
   FullscreenModeTransitionTrigger trigger =
       FullscreenModeTransitionTrigger::kForcedByCode;
 
-  BOOL findNavigatorVisible =
-      [self.keyboardStateProvider isFindNavigatorVisibleForWebContent];
-
   if (IsFullscreenRefactoringEnabled()) {
     if (locationIndicatorActive) {
       [self.fullscreenCommands enterFullscreenWithTrigger:trigger animated:YES];
-    } else if (!findNavigatorVisible) {
+    } else {
       [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
     }
   } else if (_fullscreenController) {
     if (locationIndicatorActive) {
       _fullscreenController->EnterForceFullscreenMode(
           /* insets_update_enabled */ false, trigger);
-    } else if (!findNavigatorVisible) {
+    } else {
       _fullscreenController->ExitForceFullscreenMode(trigger);
     }
   }

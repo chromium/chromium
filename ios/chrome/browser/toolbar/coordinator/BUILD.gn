@@ -24,7 +24,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/default_browser/model",
-    "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/fullscreen/ui_bundled",
