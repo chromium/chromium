@@ -18,11 +18,11 @@
 #include <string_view>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "ui/base/resource/resource_handle.h"
@@ -57,16 +57,12 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 // pointers. This code currently depends on Chromium disabling strict aliasing.
 #pragma pack(push, 1)
   struct Entry {
-    static int CompareById(const void* void_key, const void* void_entry);
-
     // ID corresponding with each resources.
     uint16_t resource_id;
     // The offset of the resource in .pak file.
     uint32_t file_offset;
   };
   struct Alias {
-    static int CompareById(const void* void_key, const void* void_entry);
-
     // ID corresponding with each resources.
     uint16_t resource_id;
     // The index of the entry which has the same resource to `resource_id`'s
@@ -75,60 +71,11 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   };
 #pragma pack(pop)
 
-  // Pair of resource id and string view data.
-  struct ResourceData {
-    explicit ResourceData(uint16_t id, std::string_view data)
-        : id(id), data(data) {}
-
-    // Resource ID.
-    uint16_t id;
-    // Resource data.
-    std::string_view data;
-  };
-
-  // Iterator for ResourceData in `resource_table_`.
-  // Note that this Iterator doesn't include Alias members in `alias_table_`.
-  class Iterator {
-   public:
-    Iterator() = default;
-    ~Iterator() = default;
-    Iterator(const Iterator&) = default;
-    Iterator& operator=(const Iterator&) = default;
-
-    const ResourceData& operator*() { return *resource_data_; }
-    Iterator& operator++() {
-      UNSAFE_TODO(++entry_);  // Should be UNSAFE_BUFFER_USAGE, too.
-      UpdateResourceData();
-      return *this;
-    }
-    bool operator==(const Iterator& other) const {
-      return entry_ == other.entry_;
-    }
-
-   private:
-    friend class DataPack;
-    explicit Iterator(const uint8_t* data_source, const Entry* entry)
-        : data_source_(data_source), entry_(entry) {
-      UpdateResourceData();
-    }
-
-    void UpdateResourceData();
-
-    raw_ptr<const uint8_t> data_source_;
-    raw_ptr<ResourceData> resource_data_;
-    raw_ptr<const Entry, AllowPtrArithmetic> entry_;
-  };
-
-  Iterator begin() const;
-  Iterator end() const;
-
   // Abstraction of a data source (memory mapped file or in-memory buffer).
   class DataSource {
    public:
     virtual ~DataSource() = default;
 
-    size_t GetLength() const { return bytes().size(); }
-    const uint8_t* GetData() const { return bytes().data(); }
     virtual base::span<const uint8_t> bytes() const = 0;
   };
 
@@ -211,20 +158,13 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
       const std::vector<std::unique_ptr<ResourceHandle>>& packs) override;
 #endif
 
-  // Return Entry or Alias by index of resource or alias table.
-  const Entry* GetEntryByResourceTableIndex(size_t index) const {
-    return UNSAFE_TODO(&resource_table_[index]);
-  }
-  const Alias* GetAliasByAliasTableIndex(size_t index) const {
-    return UNSAFE_TODO(&alias_table_[index]);
-  }
   // Return the size of the alias table.
-  size_t GetAliasTableSize() const { return alias_count_; }
+  size_t GetAliasTableSize() const { return alias_table_.size(); }
 
   // Return the size of the resource Should only be used for unit-testing
   // (more specifically checking that alias table generation removes entries
   // for the resources table), as this is an implementation detail.
-  size_t GetResourceTableSizeForTesting() const { return resource_count_; }
+  size_t GetResourceTableSizeForTesting() const { return resource_count(); }
 
  private:
   class BufferDataSource;
@@ -235,31 +175,42 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   // Called by Load and LoadFromFile and LoadFromBuffer.
   base::expected<void, DataPack::FailureReason> LoadImpl(
       std::unique_ptr<DataSource> data_source);
-  const Entry* LookupEntryById(uint16_t resource_id) const;
+
+  // Returns the index into `resource_table_` of the entry for `resource_id`,
+  // resolving aliases, or std::nullopt if the pack has no such resource.
+  std::optional<size_t> LookupEntryIndexById(uint16_t resource_id) const;
+
+  // The resource table carries one extra sentinel entry at the end, which gives
+  // the end offset of the last resource; it is not itself a resource.
+  size_t resource_count() const {
+    return resource_table_.empty() ? 0u : resource_table_.size() - 1u;
+  }
+  // The resource table without its trailing sentinel entry. Only these entries
+  // are ordered by `resource_id`, so lookups must search this rather than the
+  // whole table.
+  base::span<const Entry> resource_entries() const {
+    return resource_table_.first(resource_count());
+  }
 
   // Sanity check the file. If it passed the check, register `resource_table_`
   // and `alias_table_`.
   // `margin_to_skip` represents the size of the margin in bytes before
   // resource_table information starts.
   // If there is no extra data in data pack, `margin_to_skip` is equal to the
-  // length of file header. Returns std::nullopt on success or a FailureReason
-  // on failure.
+  // length of file header. `resource_count` and `alias_count` are the table
+  // lengths declared by the file header.
   base::expected<void, DataPack::FailureReason>
   SanityCheckFileAndRegisterResources(size_t margin_to_skip,
-                                      const uint8_t* data,
-                                      size_t data_length);
+                                      base::span<const uint8_t> data,
+                                      size_t resource_count,
+                                      size_t alias_count);
 
-  // Returns the string between `target_offset` and `next_offset` in data pack.
-  static std::string_view GetStringViewFromOffset(uint32_t target_offset,
-                                                  uint32_t next_offset,
-                                                  const uint8_t* data_source);
-
+  // Owns the bytes that `resource_table_` and `alias_table_` view, so it must
+  // be declared before them.
   std::unique_ptr<DataSource> data_source_;
 
-  raw_ptr<const Entry, AllowPtrArithmetic> resource_table_;
-  size_t resource_count_;
-  raw_ptr<const Alias, AllowPtrArithmetic> alias_table_;
-  size_t alias_count_;
+  base::raw_span<const Entry> resource_table_;
+  base::raw_span<const Alias> alias_table_;
 
   // Type of encoding for text resources.
   TextEncodingType text_encoding_type_;
