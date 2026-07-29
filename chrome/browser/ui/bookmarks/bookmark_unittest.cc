@@ -336,40 +336,6 @@ TEST_F(BookmarkTest, SomeTabsInMultipleGroups) {
   }
 }
 
-TEST_F(BookmarkTest, GetURLsAndFoldersForTabGroup) {
-  // Deflake the test by setting TabGroupSyncService initialized.
-  tab_groups::TabGroupSyncService* service =
-      static_cast<tab_groups::TabGroupSyncService*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
-  if (service) {
-    service->SetIsInitializedForTesting(true);
-  }
-  const std::vector<GURL> urls = {GURL("http://localhost:8000/"),
-                                  GURL("http://localhost:8001/"),
-                                  GURL("http://localhost:8002/")};
-  for (const auto& url : urls) {
-    std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    content::NavigationSimulator::NavigateAndCommitFromBrowser(
-        web_contents.get(), url);
-    tab_strip_model_->AppendWebContents(std::move(web_contents),
-                                        /*foreground=*/true);
-  }
-  std::vector<int> tab_indices = {0, 1, 2};
-  tab_groups::TabGroupId group_id =
-      tab_strip_model_->AddToNewGroup(tab_indices);
-  const TabGroup* tab_group =
-      tab_strip_model_->group_model()->GetTabGroup(group_id);
-
-  std::vector<BookmarkEditor::EditDetails::BookmarkData> folder_data;
-  bookmarks::GetURLsAndFoldersForTabGroup(tab_strip_model_.get(), *tab_group,
-                                          &folder_data);
-
-  EXPECT_EQ(folder_data.size(), urls.size());
-  for (size_t i = 0; i < urls.size(); ++i) {
-    EXPECT_EQ(folder_data[i].url.value(), urls[i]);
-  }
-}
 
 TEST_F(BookmarkTest, SuggestsUniqueTabGroupName) {
   auto service = std::make_unique<tab_groups::FakeTabGroupSyncService>();

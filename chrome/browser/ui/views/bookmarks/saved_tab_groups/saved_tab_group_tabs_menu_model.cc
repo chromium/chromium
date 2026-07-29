@@ -33,8 +33,6 @@ static constexpr int kUIUpdateIconSize = 16;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kDeleteGroupMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kLeaveGroupMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
-                                      kConvertToBookmarkMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
                                       kMoveGroupToNewWindowMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kOpenGroup);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
@@ -152,24 +150,6 @@ void STGTabsMenuModel::Build(
                            sync_id_.value()});
   }
 
-  if (!saved_group.is_shared_tab_group() &&
-      features::IsBookmarkTabGroupConversionEnabled()) {
-    latest_command_id = get_next_command_id.Run();
-    AddItemWithStringIdAndIcon(
-        latest_command_id,
-        IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER,
-        ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled()
-                ? kHotelClassIcon
-                : kBookmarkAllTabsChromeRefreshOldIcon,
-            ui::kColorMenuIcon, kUIUpdateIconSize));
-    SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
-                           kConvertToBookmarkMenuItem);
-    command_id_to_action_.emplace(
-        latest_command_id,
-        TabGroupMenuAction{TabGroupMenuAction::Type::CONVERT_TO_BOOKMARK,
-                           sync_id_.value()});
-  }
 
   // Add a separator and title.
   AddSeparator(ui::NORMAL_SEPARATOR);

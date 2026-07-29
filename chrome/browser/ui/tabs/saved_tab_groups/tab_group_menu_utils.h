@@ -24,7 +24,6 @@ struct TabGroupMenuAction {
     PIN_OR_UNPIN_GROUP,
     DELETE_GROUP,
     LEAVE_GROUP,
-    CONVERT_TO_BOOKMARK,
     OPEN_URL,
   };
 

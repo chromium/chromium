@@ -68,9 +68,8 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
   TabGroupEditorBubbleViewDialogBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kBookmarkTabGroupConversion},
-        {data_sharing::features::kDataSharingFeature,
-         data_sharing::features::kDataSharingJoinOnly});
+        {}, {data_sharing::features::kDataSharingFeature,
+             data_sharing::features::kDataSharingJoinOnly});
   }
 
  protected:

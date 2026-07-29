@@ -904,12 +904,6 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
     case TabGroupMenuAction::Type::LEAVE_GROUP:
       SavedTabGroupUtils::LeaveSharedGroup(browser, uuid);
       break;
-    case TabGroupMenuAction::Type::CONVERT_TO_BOOKMARK:
-      if (std::optional<tab_groups::SavedTabGroup> group =
-              tab_group_service->GetGroup(uuid)) {
-        bookmarks::ShowBookmarkSavedTabGroupDialog(browser, group.value());
-      }
-      break;
     case TabGroupMenuAction::Type::OPEN_URL:
     case TabGroupMenuAction::Type::DEFAULT:
       break;
