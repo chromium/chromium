@@ -98,6 +98,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
         }
 
         mChipsFlow.setReferencedIds(toIntArray(chipViewIds));
+        mChipsContainer.setVisibility(chipViewIds.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     private void resetViews() {
