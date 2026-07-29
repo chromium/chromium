@@ -4,35 +4,20 @@
 
 #include "chrome/browser/devtools/protocol/target_handler_android.h"
 
-#include <memory>
-#include <utility>
-
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/devtools/protocol/browser_handler_android.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
-#include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 using content::WebContents;
 
-TargetHandlerAndroid::TargetHandlerAndroid(
-    protocol::UberDispatcher* dispatcher,
-    bool is_trusted,
-    bool may_read_local_files,
-    BrowserHandlerAndroid* browser_handler)
-    : is_trusted_(is_trusted),
-      may_read_local_files_(may_read_local_files),
-      browser_handler_(browser_handler) {
+TargetHandlerAndroid::TargetHandlerAndroid(protocol::UberDispatcher* dispatcher,
+                                           bool is_trusted,
+                                           bool may_read_local_files)
+    : is_trusted_(is_trusted), may_read_local_files_(may_read_local_files) {
   protocol::Target::Dispatcher::wire(dispatcher, this);
 }
 
@@ -102,52 +87,13 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
         "Creating a target with a local URL is not allowed");
   }
 
-  WebContents* web_contents = nullptr;
-  if (new_window.value_or(false)) {
-    Profile* profile = tab_model->GetProfile();
-    CHECK(profile);
-
-    std::unique_ptr<WebContents> owned_web_contents =
-        WebContents::Create(WebContents::CreateParams(profile));
-    web_contents = owned_web_contents.get();
-    DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
-
-    BrowserWindowCreateParams create_params(*profile,
-                                            /*from_user_gesture=*/false);
-    create_params.web_contents = std::move(owned_web_contents);
-
-    // Browser-level auto-attach can expose the detached tab before its Activity
-    // is registered. The synchronous overload provides the stable session id
-    // and predicted window state documented for pending windows; navigation
-    // continues through the supplied WebContents rather than BWI::OpenURL().
-    BrowserWindowInterface* browser_window =
-        CreateBrowserWindow(std::move(create_params));
-    if (!browser_window) {
-      return protocol::Response::ServerError(
-          "Could not create a browser window");
-    }
-    if (browser_handler_) {
-      // Pending Android windows are intentionally absent from the global
-      // browser-window iterator. Track the BWI returned to this DevTools
-      // session so Browser commands can address it while the Activity starts.
-      browser_handler_->TrackBrowserWindow(browser_window);
-    }
-
-    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-    CHECK(tab);
-    tab->SetWindowSessionID(browser_window->GetSessionID());
-
-    content::NavigationController::LoadURLParams load_params(gurl);
-    load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-    web_contents->GetController().LoadURLWithParams(load_params);
-  } else {
-    web_contents =
-        tab_model->CreateNewTabForDevTools(gurl, /*new_window=*/false);
-    if (!web_contents) {
-      return protocol::Response::ServerError("Could not create a Tab");
-    }
-    DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
+  WebContents* web_contents =
+      tab_model->CreateNewTabForDevTools(gurl, new_window.value_or(false));
+  if (!web_contents) {
+    return protocol::Response::ServerError("Could not create a Tab");
   }
+
+  DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
 
   if (for_tab.value_or(false)) {
     *out_target_id =

@@ -252,10 +252,7 @@ static_library("devtools") {
       "protocol/target_handler_android.h",
     ]
 
-    deps += [
-      "//chrome/android:chrome_jni_headers",
-      "//chrome/browser/ui/browser_window:create_browser_window",
-    ]
+    deps += [ "//chrome/android:chrome_jni_headers" ]
   } else {
     public_deps += [
       "//chrome/browser/ui:browser_tab_strip",
@@ -583,20 +580,6 @@ source_set("unit_tests") {
     if (enable_service_discovery) {
       sources += [ "device/cast_device_provider_unittest.cc" ]
     }
-  }
-
-  if (is_android) {
-    sources += [ "protocol/browser_handler_android_unittest.cc" ]
-
-    deps += [
-      "//chrome/browser/android:tabs_public",
-      "//chrome/browser/ui/android/tab_model:test_support",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
-      "//components/sessions:session_id",
-      "//content/public/browser",
-      "//ui/base",
-    ]
   }
 }
 
