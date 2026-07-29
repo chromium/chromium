@@ -545,12 +545,25 @@ void SqlPersistentStore::OnPendingEvictionFinished(
     std::vector<EvictionResult> results) {
   Error error = Error::kOk;
   size_t count = 0;
-  for (const auto& result : results) {
+  std::vector<SqlSharedCacheResourceId> all_deleted_resources;
+  for (auto& result : results) {
     if (result.error != Error::kOk) {
       error = result.error;
     }
     count += result.evicted_entry_count;
+    if (!result.deleted_shared_cache_resources.empty()) {
+      all_deleted_resources.insert(
+          all_deleted_resources.end(),
+          std::make_move_iterator(
+              result.deleted_shared_cache_resources.begin()),
+          std::make_move_iterator(result.deleted_shared_cache_resources.end()));
+    }
   }
+
+  if (!all_deleted_resources.empty()) {
+    OnSharedCacheResourcesDeleted(std::move(all_deleted_resources));
+  }
+
   RecordEvictionHistograms(
       is_idle_time_eviction ? "ResumeEvictionOnIdleTime" : "ResumeEviction",
       error, start_time, count, reduce_uma_);
@@ -605,11 +618,23 @@ void SqlPersistentStore::OnEvictionFinished(
     std::vector<EvictionResult> results) {
   Error error = Error::kOk;
   size_t count = 0;
-  for (const auto& result : results) {
+  std::vector<SqlSharedCacheResourceId> all_deleted_resources;
+  for (auto& result : results) {
     if (result.error != Error::kOk) {
       error = result.error;
     }
     count += result.evicted_entry_count;
+    if (!result.deleted_shared_cache_resources.empty()) {
+      all_deleted_resources.insert(
+          all_deleted_resources.end(),
+          std::make_move_iterator(
+              result.deleted_shared_cache_resources.begin()),
+          std::make_move_iterator(result.deleted_shared_cache_resources.end()));
+    }
+  }
+
+  if (!all_deleted_resources.empty()) {
+    OnSharedCacheResourcesDeleted(std::move(all_deleted_resources));
   }
 
   RecordEvictionHistograms(
@@ -1035,9 +1060,14 @@ SqlPersistentStore::EvictionTarget::operator=(const EvictionTarget&) = default;
 bool SqlPersistentStore::EvictionTarget::operator==(
     const EvictionTarget& other) const = default;
 
-SqlPersistentStore::EvictionResult::EvictionResult(Error error,
-                                                   size_t evicted_entry_count)
-    : error(error), evicted_entry_count(evicted_entry_count) {}
+SqlPersistentStore::EvictionResult::EvictionResult(
+    Error error,
+    size_t evicted_entry_count,
+    std::vector<SqlSharedCacheResourceId> deleted_shared_cache_resources)
+    : error(error),
+      evicted_entry_count(evicted_entry_count),
+      deleted_shared_cache_resources(
+          std::move(deleted_shared_cache_resources)) {}
 SqlPersistentStore::EvictionResult::~EvictionResult() = default;
 SqlPersistentStore::EvictionResult::EvictionResult(EvictionResult&&) = default;
 SqlPersistentStore::EvictionResult&

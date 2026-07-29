@@ -290,9 +290,15 @@ inline constexpr const char
         "DELETE FROM resources WHERE res_id=? RETURNING cache_key_hash, "
         "shared_cache_db_id, shared_cache_row_id";
 
-inline constexpr const char kDeleteLiveResourceByResIdReturnUsageAndHash[] =
-    "DELETE FROM resources WHERE res_id=? AND doomed=0 RETURNING bytes_usage, "
-    "cache_key_hash";
+inline constexpr const char
+    kDeleteLiveResourceByResIdReturnUsageAndHash_SharedCacheDisabled[] =
+        "DELETE FROM resources WHERE res_id=? AND doomed=0 RETURNING "
+        "bytes_usage, cache_key_hash";
+
+inline constexpr const char
+    kDeleteLiveResourceByResIdReturnUsageAndHash_SharedCacheEnabled[] =
+        "DELETE FROM resources WHERE res_id=? AND doomed=0 RETURNING "
+        "bytes_usage, cache_key_hash, shared_cache_db_id, shared_cache_row_id";
 
 inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
     // clang-format off
@@ -788,7 +794,12 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
       }
       return internal::kDeleteResourceByResIdReturnHash_SharedCacheDisabled;
     case Query::kDeleteLiveResourceByResIdReturnUsageAndHash:
-      return internal::kDeleteLiveResourceByResIdReturnUsageAndHash;
+      if (shared_cache_enabled) {
+        return internal::
+            kDeleteLiveResourceByResIdReturnUsageAndHash_SharedCacheEnabled;
+      }
+      return internal::
+          kDeleteLiveResourceByResIdReturnUsageAndHash_SharedCacheDisabled;
     case Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed:
       return internal::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed;
     case Query::kInsertIntoResources:

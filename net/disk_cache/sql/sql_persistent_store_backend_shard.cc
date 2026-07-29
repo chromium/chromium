@@ -355,7 +355,8 @@ void SqlPersistentStore::BackendShard::ResumePendingEviction(
     EvictionResultCallback callback) {
   if (pending_eviction_targets_.empty()) {
     std::move(callback).Run(
-        EvictionResult(Error::kOk, /*evicted_entry_count=*/0));
+        EvictionResult(Error::kOk, /*evicted_entry_count=*/0,
+                       /*deleted_shared_cache_resources=*/{}));
     return;
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::ResumePendingEviction)

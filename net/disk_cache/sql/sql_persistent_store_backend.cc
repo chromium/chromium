@@ -2222,9 +2222,15 @@ SqlPersistentStore::Backend::DeleteLiveResourceByResIdReturnUsageAndHash(
       GetQuery(Query::kDeleteLiveResourceByResIdReturnUsageAndHash)));
   delete_resource_stmt.BindInt64(0, res_id.value());
   if (delete_resource_stmt.Step()) {
-    return SqlPersistentStore::UsageAndHash{
+    UsageAndHash result{
         .bytes_usage = delete_resource_stmt.ColumnInt64(0),
-        .hash = CacheEntryKey::Hash(delete_resource_stmt.ColumnInt(1))};
+        .hash = CacheEntryKey::Hash(delete_resource_stmt.ColumnInt(1)),
+    };
+    if (shared_cache_enabled_) {
+      result.shared_cache_resource_id =
+          GetSharedCacheResourceIdFromStatement(delete_resource_stmt, 2, 3);
+    }
+    return result;
   }
   return base::unexpected(Error::kNotFound);
 }
@@ -2919,11 +2925,12 @@ void SqlPersistentStore::Backend::EvictEntries(
   // exact size from the database during deletion.
   const bool trust_target_size =
       !index || !index->IsConsolidatedInMemoryIndexEnabled();
+  std::vector<SqlSharedCacheResourceId> deleted_shared_resources;
   auto error = EvictEntriesHelper(
       eviction_targets, /*excluded_res_ids=*/{}, is_idle_time_eviction,
       std::move(abort_flag), std::move(remaining_mandatory_size),
       trust_target_size, corruption_detected, index_mismatch_detected,
-      evicted_entry_count, index);
+      evicted_entry_count, deleted_shared_resources, index);
 
   RecordTimeAndErrorResultHistogram(
       !is_idle_time_eviction ? "EvictEntries" : "EvictEntriesOnIdleTime",
@@ -2935,8 +2942,10 @@ void SqlPersistentStore::Backend::EvictEntries(
                   });
   MaybeCrashIfCorrupted(corruption_detected);
   std::move(callback).Run(EvictionResultWithMetadata(
-      EvictionResult(error, evicted_entry_count), std::move(eviction_targets),
-      std::move(index), store_status_, index_mismatch_detected));
+      EvictionResult(error, evicted_entry_count,
+                     std::move(deleted_shared_resources)),
+      std::move(eviction_targets), std::move(index), store_status_,
+      index_mismatch_detected));
 }
 
 SqlPersistentStore::EvictionResultWithMetadata
@@ -2960,11 +2969,12 @@ SqlPersistentStore::Backend::ResumePendingEviction(
   bool corruption_detected = false;
   bool index_mismatch_detected = false;
   size_t evicted_entry_count = 0;
+  std::vector<SqlSharedCacheResourceId> deleted_shared_resources;
   auto error = EvictEntriesHelper(
       eviction_targets, excluded_res_ids, is_idle_time_eviction,
       std::move(abort_flag), std::move(remaining_mandatory_size),
       /*trust_target_size=*/false, corruption_detected, index_mismatch_detected,
-      evicted_entry_count, index);
+      evicted_entry_count, deleted_shared_resources, index);
 
   RecordTimeAndErrorResultHistogram(
       !is_idle_time_eviction ? "ResumePendingEviction"
@@ -2976,8 +2986,10 @@ SqlPersistentStore::Backend::ResumePendingEviction(
                     PopulateTraceDetails(error, store_status_, dict);
                   });
   return EvictionResultWithMetadata(
-      EvictionResult(error, evicted_entry_count), std::move(eviction_targets),
-      std::move(index), store_status_, index_mismatch_detected);
+      EvictionResult(error, evicted_entry_count,
+                     std::move(deleted_shared_resources)),
+      std::move(eviction_targets), std::move(index), store_status_,
+      index_mismatch_detected);
 }
 
 SqlPersistentStore::Error SqlPersistentStore::Backend::EvictEntriesHelper(
@@ -2991,6 +3003,7 @@ SqlPersistentStore::Error SqlPersistentStore::Backend::EvictEntriesHelper(
     bool& corruption_detected,
     bool& index_mismatch_detected,
     size_t& evicted_entry_count,
+    std::vector<SqlSharedCacheResourceId>& deleted_shared_resources,
     std::optional<SqlPersistentStoreInMemoryIndex>& index) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return db_error;
@@ -3025,6 +3038,10 @@ SqlPersistentStore::Error SqlPersistentStore::Backend::EvictEntriesHelper(
         return hash_or_error.error();
       }
       cache_key_hash = hash_or_error->hash;
+      if (hash_or_error->shared_cache_resource_id.has_value()) {
+        deleted_shared_resources.push_back(
+            *hash_or_error->shared_cache_resource_id);
+      }
       // store_status_.total_size tracks payload only, so subtract overhead.
       deleted_byte = entry_size_with_overhead - kSqlBackendStaticResourceSize;
     } else {
@@ -3039,6 +3056,10 @@ SqlPersistentStore::Error SqlPersistentStore::Backend::EvictEntriesHelper(
       }
       deleted_byte = usage_and_hash_or_error->bytes_usage;
       cache_key_hash = usage_and_hash_or_error->hash;
+      if (usage_and_hash_or_error->shared_cache_resource_id.has_value()) {
+        deleted_shared_resources.push_back(
+            *usage_and_hash_or_error->shared_cache_resource_id);
+      }
     }
 
     if (auto error = DeleteBlobsByResId(res_id); error != Error::kOk) {

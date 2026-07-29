@@ -434,6 +434,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
       bool& corruption_detected,
       bool& index_mismatch_detected,
       size_t& evicted_entry_count,
+      std::vector<SqlSharedCacheResourceId>& deleted_shared_resources,
       std::optional<SqlPersistentStoreInMemoryIndex>& index);
 
   // Updates the in-memory `store_status_` by `entry_count_delta` and

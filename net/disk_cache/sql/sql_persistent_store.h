@@ -285,13 +285,17 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // The result of an eviction operation.
   struct EvictionResult {
-    EvictionResult(Error error, size_t evicted_entry_count);
+    EvictionResult(
+        Error error,
+        size_t evicted_entry_count,
+        std::vector<SqlSharedCacheResourceId> deleted_shared_cache_resources);
     ~EvictionResult();
     EvictionResult(EvictionResult&& other);
     EvictionResult& operator=(EvictionResult&& other);
 
     Error error;
     size_t evicted_entry_count;
+    std::vector<SqlSharedCacheResourceId> deleted_shared_cache_resources;
   };
 
   struct EvictionResultWithMetadata {
@@ -379,6 +383,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   struct UsageAndHash {
     int64_t bytes_usage;
     CacheEntryKey::Hash hash;
+    std::optional<SqlSharedCacheResourceId> shared_cache_resource_id;
   };
   using UsageAndHashOrError = base::expected<UsageAndHash, Error>;
   using EvictionResultCallback = base::OnceCallback<void(EvictionResult)>;
