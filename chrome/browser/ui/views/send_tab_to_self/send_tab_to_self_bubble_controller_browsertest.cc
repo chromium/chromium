@@ -59,6 +59,9 @@ namespace send_tab_to_self {
 
 namespace {
 
+using testing::AnyOf;
+using testing::HasSubstr;
+
 class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
  public:
   explicit TestSendTabToSelfModelObserver(SendTabToSelfModel* model) {
@@ -518,16 +521,18 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
 
-  // Scroll to the content so it's precisely in the center of the viewport.
-  EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      "new Promise(r => {"
-      "  document.getElementById('target').scrollIntoView("
-      "      {behavior: 'instant', block: 'center', inline: 'center'});"
-      "  requestAnimationFrame(() => "
-      "    requestAnimationFrame(r)"
-      "  );"
-      "});"));
+  // Scroll the page so the target element's vertical midpoint moves to 35% of
+  // the viewport height, where the reading position hit-test occurs.
+  EXPECT_TRUE(content::ExecJs(web_contents, R"(
+      new Promise(r => {
+        const target = document.getElementById('target');
+        const rect = target.getBoundingClientRect();
+        const currentMidpointY = rect.top + rect.height / 2;
+        const desiredMidpointY = window.innerHeight * 0.35;
+        window.scrollBy(0, currentMidpointY - desiredMidpointY);
+        requestAnimationFrame(() => requestAnimationFrame(r));
+      });
+    )"));
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
@@ -560,13 +565,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   // viewport.
   EXPECT_FALSE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
-  // Verify that the generated selector matches the expected text.
-  EXPECT_THAT(
-      observer.last_added_entry()
-          ->GetPageContext()
-          .scroll_position.text_fragment.text_start,
-      testing::AnyOf(testing::HasSubstr("fox"), testing::HasSubstr("jumps"),
-                     testing::HasSubstr("dog")));
+  // Verify that the generated selector matches the middle words from the
+  // target paragraph.
+  EXPECT_THAT(observer.last_added_entry()
+                  ->GetPageContext()
+                  .scroll_position.text_fragment.text_start,
+              AnyOf(HasSubstr("fox"), HasSubstr("jumps"), HasSubstr("dog")));
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,

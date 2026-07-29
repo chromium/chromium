@@ -22,18 +22,22 @@ function isValidElement(element: Element): boolean {
   return !isRootElement && !hasTooManyChildren;
 }
 
-/** Attempts to generate a text fragment for the viewport center. */
-function getLinkToTextForViewportCenter() {
+/**
+ * Attempts to generate a text fragment for the target reading position in the
+ * viewport.
+ */
+function getLinkToTextForReadingPosition() {
   // Use visualViewport if available to target the visible area (e.g. when
   // pinch-zoomed). Add offset because caretRangeFromPoint expects layout
   // viewport coordinates.
+  const kViewportYRatio = 0.35;
   const viewport = window.visualViewport;
   const centerX = viewport
       ? (viewport.width / 2 + viewport.offsetLeft)
       : window.innerWidth / 2;
-  const centerY = viewport
-      ? (viewport.height / 2 + viewport.offsetTop)
-      : window.innerHeight / 2;
+  const centerY = viewport ?
+      (viewport.height * kViewportYRatio + viewport.offsetTop) :
+      window.innerHeight * kViewportYRatio;
 
   const range = (document as Document & {
                   caretRangeFromPoint(x: number, y: number): Range,
@@ -149,7 +153,7 @@ async function scrollToTextFragment(fragment: string) {
 
 const sttsApi = new CrWebApi('stts');
 
-sttsApi.addFunction('getLinkToText', getLinkToTextForViewportCenter);
+sttsApi.addFunction('getLinkToText', getLinkToTextForReadingPosition);
 sttsApi.addFunction('scrollToTextFragment', scrollToTextFragment);
 gCrWeb.registerApi(sttsApi);
 

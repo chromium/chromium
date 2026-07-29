@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
@@ -1185,9 +1186,13 @@ TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenter) {
   Compositor().BeginFrame();
 
   String selector = RequestSelectorForViewportCenter();
-  EXPECT_EQ("Block-,3,-Block%204", selector);
+  // The selector is chosen at ~1/3 of the viewport height (210px), which hits
+  // "Block 2".
+  EXPECT_EQ("Block-,2,-Block%203", selector);
 }
 
+// Verifies that selector generation ignores an existing selection on the page
+// and generates a selector for the reading position (~1/3 of viewport height).
 TEST_F(TextFragmentHandlerTest,
        RequestSelectorForViewportCenterIgnoresSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1223,10 +1228,10 @@ TEST_F(TextFragmentHandlerTest,
           .Build(),
       SetSelectionOptions());
 
-  // Viewport center is at 300px, which hits "Block 3".
-  // Selection should be ignored.
   String selector = RequestSelectorForViewportCenter();
-  EXPECT_EQ("Block-,3,-Block%204", selector);
+  // The selector is chosen at ~1/3 of the viewport height (210px), which hits
+  // "Block 2".
+  EXPECT_EQ("Block-,2,-Block%203", selector);
 }
 
 TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterEmptyDocument) {
@@ -1452,7 +1457,9 @@ TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterWithDPR) {
   Compositor().BeginFrame();
 
   String selector = RequestSelectorForViewportCenter();
-  EXPECT_EQ("Block-,3,-Block%204", selector);
+  // The selector is chosen at ~1/3 of the viewport height (210px), which hits
+  // "Block 2".
+  EXPECT_EQ("Block-,2,-Block%203", selector);
 }
 
 TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterInSubframe) {
