@@ -1,0 +1,13 @@
+There should be six blue squares below. They should ideally be perfectly vertically aligned, but since Blink doesn't support subpixel rendering inside tables, off-by-one is acceptable. But there should be no blue lines below the squares.
+
+
+
+
+
+
+
+
+
+
+
+PASS
