@@ -1592,6 +1592,13 @@ void Canvas2DRecorderContext::DrawPathInternal(
   }
 
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType) {
+    // Zero-size bounds mean all path points are coincident — a degenerate
+    // segment that the spec requires to be pruned before stroking. Exact
+    // float equality is intentional: near-degenerate paths (non-zero but
+    // very small bounds) are not pruned, matching spec intent.
+    if (bounds.width() == 0 && bounds.height() == 0) {
+      return;
+    }
     InflateStrokeRect(bounds);
   }
 
