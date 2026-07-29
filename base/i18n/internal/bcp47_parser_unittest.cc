@@ -60,6 +60,12 @@ TEST(Bcp47ParserTest, Constexprness) {
     // known. "xx" is 2 alpha, so it is a valid language subtag.
     return parsed.has_value() && !AreSubtagsKnown(*parsed);
   }());
+
+  static_assert([] {
+    std::optional<ParsedBcp47Tag> parsed = ParseBcp47Tag("en-US-u-ca-gregory");
+    // Tags with extensions are not considered "known".
+    return parsed.has_value() && !AreSubtagsKnown(*parsed);
+  }());
 }
 
 TEST(Bcp47ParserTest, IsLanguageSubtag) {

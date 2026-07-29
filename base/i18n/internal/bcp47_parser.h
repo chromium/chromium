@@ -191,6 +191,9 @@ struct ParsedBcp47Tag {
 
 // Returns true if all subtags in `parsed_tag` are known in Chromium.
 constexpr bool AreSubtagsKnown(const ParsedBcp47Tag& parsed_tag) {
+  if (!parsed_tag.extensions.empty()) {
+    return false;
+  }
   if (!IsKnownLanguageSubtag(parsed_tag.language)) {
     return false;
   }
