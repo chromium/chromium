@@ -67,3 +67,7 @@ crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTap
 crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndResize [ Pass Failure ]
 crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testStatusBarTapToWindowedModeAndReturnToFullscreen [ Pass Failure ]
 crbug.com/508127830 [ iOS27 Device ] SearchEngineTestCase/testOpenSecondWindow [ Pass Failure ]
+
+# Gardening suppression 2026-07-29
+crbug.com/540429004 [ iPhone15 ] XCallbackURLEGTest/testIncognitoTextSearchWithProfileSwitch [ Skip ]
+
