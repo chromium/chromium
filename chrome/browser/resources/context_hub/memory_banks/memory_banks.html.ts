@@ -48,8 +48,63 @@ export function getHtml(this: MemoryBanksElement) {
                       @click="${this.onDeleteClick_}">
                     Delete selected
                   </cr-button>
+                  <cr-button ?disabled="${this.selectedIds.size === 0}"
+                      @click="${this.onAskGeminiClick_}">
+                    Ask Gemini with selected context
+                  </cr-button>
                 </div>
               </div>
+
+              ${
+              this.showGeminiPanel_ ? html`
+                <div class="gemini-panel">
+                  <div class="gemini-panel-header">
+                    <h3>Select an action for Gemini</h3>
+                    <cr-icon-button
+                        iron-icon="cr:clear"
+                        title="Close"
+                        @click="${this.onClosePanelClick_}">
+                    </cr-icon-button>
+                  </div>
+                  <div class="quick-options">
+                    <cr-button class="chip"
+                        data-option="Summarize selected memories"
+                        ?disabled="${this.isAskingGemini_}"
+                        @click="${this.onQuickOptionClick_}">
+                      Summarize
+                    </cr-button>
+                    <cr-button class="chip"
+                        data-option="Compare selected memories"
+                        ?disabled="${this.isAskingGemini_}"
+                        @click="${this.onQuickOptionClick_}">
+                      Compare
+                    </cr-button>
+                    <cr-button class="chip"
+                        data-option="Create an itinerary from selected memories"
+                        ?disabled="${this.isAskingGemini_}"
+                        @click="${this.onQuickOptionClick_}">
+                      Create an itinerary
+                    </cr-button>
+                  </div>
+                  ${
+                                          this.geminiResponse_ ? html`
+                    <div class="gemini-response">
+                      <div class="gemini-response-header">
+                        <strong>Gemini:</strong>
+                        <cr-icon-button
+                            iron-icon="cr:clear"
+                            title="Close"
+                            @click="${this.onCloseResponseClick_}">
+                        </cr-icon-button>
+                      </div>
+                      <p>${this.geminiResponse_}</p>
+                    </div>
+                  ` :
+                                                                 ''}
+                </div>
+              ` :
+                                      ''}
+
 
               ${
               this.searchQuery ?

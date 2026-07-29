@@ -57,6 +57,9 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
   void ClearTabGroups(ClearTabGroupsCallback callback) override;
   void ClearTabGroupChatHistory(
       ClearTabGroupChatHistoryCallback callback) override;
+  void AskGeminiWithContext(const std::string& user_command,
+                            const std::vector<int64_t>& memory_bank_entry_ids,
+                            AskGeminiWithContextCallback callback) override;
 
  private:
   void OnAutoTodosGenerated(

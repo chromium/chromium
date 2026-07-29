@@ -126,4 +126,10 @@ interface PageHandler {
   // Clears stored tab group chat history.
   [RuntimeFeature=kAutoTabGroups]
   ClearTabGroupChatHistory() => ();
+
+  // Sends a request to Gemini with the user command and selected memory bank
+  // entry IDs.
+  AskGeminiWithContext(
+      string user_command, array<int64> memory_bank_entry_ids)
+      => (ChatMessage response);
 };

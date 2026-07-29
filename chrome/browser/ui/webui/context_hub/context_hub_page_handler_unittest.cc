@@ -617,5 +617,20 @@ TEST_F(ContextHubPageHandlerTest, ClearTabGroups) {
   EXPECT_TRUE(stored_groups_future.Get().empty());
 }
 
+TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_Success) {
+  base::test::TestFuture<browser::context_hub::mojom::ChatMessagePtr> future;
+  handler_->AskGeminiWithContext("Summarize memories", {1, 2},
+                                 future.GetCallback());
+
+  browser::context_hub::mojom::ChatMessagePtr response = future.Take();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
+  EXPECT_TRUE(response->content.find(
+                  "Gemini response for prompt: \"Summarize memories\"") !=
+              std::string::npos);
+  EXPECT_TRUE(response->content.find("2 selected memory ID(s)") !=
+              std::string::npos);
+}
+
 }  // namespace
 }  // namespace context_hub
