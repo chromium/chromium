@@ -5559,9 +5559,10 @@
       // overlapping browser UI.
       // TODO(https://issues.chromium.org/issues/511869411): Remove this flag
       // after it has been shipped for long enough.
-      // Shipped in M150, changed slightly in M151, disabled in M151-M152.
+      // Shipped in M150, changed slightly in M151, disabled in M151-M152,
+      // re-enabled in M153, safe to remove in M155.
       name: "SelectAnchorInViewport",
-      status: "experimental",
+      status: "stable",
     },
     {
       // SelectAudioOutput API
