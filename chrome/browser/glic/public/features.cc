@@ -229,6 +229,8 @@ BASE_FEATURE(kGlicWebPasteEligibilityCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTabGroups, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicTabGroupsUseFullTabEmbedder{
+    &kGlicTabGroups, "use_full_tab_embedder", true};
 BASE_FEATURE(kGlicSparkSettingsAccessibleLabels,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -40,6 +40,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -1621,7 +1622,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   return new_entry;
 }
 
-void GlicInstanceImpl::ShowGlicTabInGroup(tab_groups::TabGroupId group_id) {
+void GlicInstanceImpl::ShowForTabGroup(tab_groups::TabGroupId group_id) {
   tab_group_id_ = group_id;
 
   BrowserWindowInterface* window = FindBrowserWithTabGroup(profile_, group_id);
@@ -1642,6 +1643,14 @@ void GlicInstanceImpl::ShowGlicTabInGroup(tab_groups::TabGroupId group_id) {
   for (tabs::TabInterface* tab : group_tabs) {
     BindTabWithoutShowing(tab, GlicPinTrigger::kTabGroupIntegration,
                           /*pin_on_bind=*/true);
+  }
+
+  if (!features::kGlicTabGroupsUseFullTabEmbedder.Get()) {
+    for (tabs::TabInterface* tab : group_tabs) {
+      Show(ShowOptions::ForSidePanel(*tab, GlicPinTrigger::kTabGroupIntegration,
+                                     mojom::InvocationSource::kUnsupported));
+    }
+    return;
   }
 
   EnsureHostContentsCreated();

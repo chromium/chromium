@@ -294,4 +294,61 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
   }
 }
 
+class GlicTabGroupNoFullTabEmbedderBrowserTest
+    : public GlicBrowserTestMixin<PlatformBrowserTest> {
+ public:
+  GlicTabGroupNoFullTabEmbedderBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicTabGroups, {{"use_full_tab_embedder", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicTabGroupNoFullTabEmbedderBrowserTest,
+                       BindAndObserveTabGroupNoFullTab) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  // Ensure we have at least 2 tabs in the group and 1 tab outside the group.
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab3 = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+  ASSERT_TRUE(tab3);
+
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_list->CreateTabGroup({tab1->GetHandle(), tab2->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+
+  ASSERT_TRUE(coordinator().ShowInstanceForTabGroup(group_id.value()));
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab1);
+  ASSERT_TRUE(instance);
+  EXPECT_EQ(instance->GetTabGroup(), group_id.value());
+
+  // Since use_full_tab_embedder is false, Glic should NOT create a Glic tab in
+  // the group. Tab count should remain 4 (1 default tab + 2 blank tabs in group
+  // + 1 blank tab outside).
+  EXPECT_EQ(tab_list->GetTabCount(), 4);
+
+  // There should be no full tab embedder
+  EXPECT_EQ(instance->GetGlicTab(), nullptr);
+
+  // Glic should be bound to both tabs in the group.
+  EXPECT_EQ(GetInstanceForTab(tab1), instance);
+  EXPECT_EQ(GetInstanceForTab(tab2), instance);
+
+  // Glic should not be bound to the tab outside the group.
+  EXPECT_EQ(GetInstanceForTab(tab3), nullptr);
+
+  // Glic sharing manager should still have pinned the tabs.
+  GlicSharingManagerInternal& sharing_manager =
+      instance->GetSharingManagerInternal();
+  EXPECT_TRUE(sharing_manager.IsTabPinned(tab1->GetHandle()));
+  EXPECT_TRUE(sharing_manager.IsTabPinned(tab2->GetHandle()));
+}
+
 }  // namespace glic

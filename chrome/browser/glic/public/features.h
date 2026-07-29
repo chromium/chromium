@@ -131,6 +131,7 @@ BASE_DECLARE_FEATURE(kGlicWebPasteEligibilityCheck);
 BASE_DECLARE_FEATURE(kGlicOptInDialogLinkA11yFix);
 
 BASE_DECLARE_FEATURE(kGlicTabGroups);
+extern const base::FeatureParam<bool> kGlicTabGroupsUseFullTabEmbedder;
 BASE_DECLARE_FEATURE(kGlicSparkSettingsAccessibleLabels);
 
 BASE_DECLARE_FEATURE(kGlicOptInDialogA11yFix);

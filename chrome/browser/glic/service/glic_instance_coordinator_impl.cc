@@ -390,12 +390,12 @@ GlicInstance* GlicInstanceCoordinatorImpl::ShowInstanceForTabGroup(
       existing_instance->Show(ShowOptions::ForTab(*glic_tab));
       return existing_instance;
     }
-    existing_instance->ShowGlicTabInGroup(group_id);
+    existing_instance->ShowForTabGroup(group_id);
     return existing_instance;
   }
 
   GlicInstanceImpl* instance = CreateGlicInstance();
-  instance->ShowGlicTabInGroup(group_id);
+  instance->ShowForTabGroup(group_id);
   return instance;
 }
 
