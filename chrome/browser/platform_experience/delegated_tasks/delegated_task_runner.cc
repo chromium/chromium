@@ -18,6 +18,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/platform_experience/delegated_tasks/peh_launcher.h"
@@ -47,8 +48,10 @@ DelegatedTaskRunner::DelegatedTaskRunner()
 
 DelegatedTaskRunner::DelegatedTaskRunner(
     std::unique_ptr<PehLauncher> peh_launcher)
-    : peh_launcher_(std::move(peh_launcher)) {
-  CHECK(peh_launcher_);
+    : peh_launcher_(base::ThreadPool::CreateSequencedTaskRunner(
+                        {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
+                    std::move(peh_launcher)) {
+  CHECK(!peh_launcher_.is_null());
 }
 
 DelegatedTaskRunner::~DelegatedTaskRunner() {
@@ -66,8 +69,23 @@ void DelegatedTaskRunner::Run(std::unique_ptr<DelegatedTask> task,
   task_start_time_ = base::TimeTicks::Now();
   completion_callback_ = std::move(callback);
 
+  // Start the timeout timer from task initialization so the timeout duration
+  // and recorded `execution_time` track the same time slice from task start.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DelegatedTaskRunner::CleanupAndReturnResult,
+                     weak_factory_.GetWeakPtr(),
+                     base::unexpected(DelegatedTaskStatus::kTaskTimeout)),
+      task_->GetTimeout());
+
   // TODO(b/525018453): Verify the binary after fetching the path.
-  base::FilePath peh_binary_path = peh_launcher_->GetBinaryPath();
+  peh_launcher_.AsyncCall(&PehLauncher::GetBinaryPath)
+      .Then(base::BindOnce(&DelegatedTaskRunner::OnBinaryPathRetrieved,
+                           weak_factory_.GetWeakPtr()));
+}
+
+void DelegatedTaskRunner::OnBinaryPathRetrieved(
+    const base::FilePath& peh_binary_path) {
   if (peh_binary_path.empty()) {
     CleanupAndReturnResult(base::unexpected(DelegatedTaskStatus::kPehNotFound));
     return;
@@ -77,7 +95,21 @@ void DelegatedTaskRunner::Run(std::unique_ptr<DelegatedTask> task,
   cmd_line.AppendSwitchASCII(kDelegatedTasksSwitch, task_->GetTaskName());
   task_->AppendCommandLineSwitches(cmd_line);
 
-  process_ = peh_launcher_->LaunchProcess(cmd_line, base::LaunchOptions());
+  peh_launcher_.AsyncCall(&PehLauncher::LaunchProcess)
+      .WithArgs(cmd_line, base::LaunchOptions())
+      .Then(base::BindOnce(
+          [](base::WeakPtr<DelegatedTaskRunner> runner, base::Process process) {
+            if (runner) {
+              runner->OnProcessLaunched(std::move(process));
+            } else if (process.IsValid()) {
+              process.Terminate(/*exit_code=*/1, /*wait=*/false);
+            }
+          },
+          weak_factory_.GetWeakPtr()));
+}
+
+void DelegatedTaskRunner::OnProcessLaunched(base::Process process) {
+  process_ = std::move(process);
   if (!process_.IsValid()) {
     CleanupAndReturnResult(
         base::unexpected(DelegatedTaskStatus::kProcessLaunchFailure));
@@ -89,13 +121,6 @@ void DelegatedTaskRunner::Run(std::unique_ptr<DelegatedTask> task,
         base::unexpected(DelegatedTaskStatus::kWatchProcessHandleFailure));
     return;
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DelegatedTaskRunner::CleanupAndReturnResult,
-                     weak_factory_.GetWeakPtr(),
-                     base::unexpected(DelegatedTaskStatus::kTaskTimeout)),
-      task_->GetTimeout());
 }
 
 void DelegatedTaskRunner::OnObjectSignaled(HANDLE object) {
