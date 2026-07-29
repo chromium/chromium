@@ -1399,6 +1399,7 @@ void CloseTab(BrowserWindowInterface* browser) {
     ToastParams params(ToastId::kClosePinnedTab);
     params.body_string_replacement_params.emplace_back(
         accelerator.GetShortcutText());
+    params.body_string_cardinality_param = selected_tabs.size();
     toast_controller->MaybeShowToast(std::move(params));
   } else {
     CloseSelectedTabAndRecordTabCountMetric(browser);
