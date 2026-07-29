@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -14,6 +15,9 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_helper.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -25,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/private_ai_service.h"
@@ -248,6 +253,84 @@ IN_PROC_BROWSER_TEST_F(GlicButtonPrewarmCancelledTest,
   // Transition back to STATE_NORMAL immediately, stopping the timer.
   glic_button()->SetState(views::Button::ButtonState::STATE_NORMAL);
   EXPECT_FALSE(glic_button()->IsPrewarmTimerRunningForTesting());
+}
+
+class FakeThemeService : public ThemeService {
+ public:
+  explicit FakeThemeService(Profile* profile)
+      : ThemeService(profile, GetFakeThemeHelper()) {}
+  bool UsingExtensionTheme() const override {
+    return is_using_extension_theme_;
+  }
+  void set_using_extension_theme(bool value) {
+    is_using_extension_theme_ = value;
+  }
+
+ private:
+  static const ThemeHelper& GetFakeThemeHelper() {
+    static base::NoDestructor<ThemeHelper> helper;
+    return *helper;
+  }
+
+  bool is_using_extension_theme_ = false;
+};
+
+class GlicButtonThemeTest : public GlicButtonTest {
+ public:
+  GlicButtonThemeTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicButtonPressedState, {{"custom-theme-fallback", "true"}});
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    GlicButtonTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  ThemeServiceFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+                        auto service = std::make_unique<FakeThemeService>(
+                            static_cast<Profile*>(context));
+                        service->Init();
+                        return service;
+                      }));
+                }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+// TODO(crbug.com/484258521): Resolve flakiness on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CustomThemeFallback DISABLED_CustomThemeFallback
+#else
+#define MAYBE_CustomThemeFallback CustomThemeFallback
+#endif
+IN_PROC_BROWSER_TEST_F(GlicButtonThemeTest, MAYBE_CustomThemeFallback) {
+  FakeThemeService* fake_theme_service = static_cast<FakeThemeService*>(
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile()));
+  ASSERT_TRUE(fake_theme_service);
+
+  // 1. By default, the button should not use the fallback text color.
+  EXPECT_NE(glic_button()->GetTextColorForTesting(views::Button::STATE_NORMAL),
+            glic_button()->GetColorProvider()->GetColor(
+                kColorTabSearchButtonCRForegroundFrameActive));
+
+  // 2. Enable the custom theme fallback in the fake theme service.
+  fake_theme_service->set_using_extension_theme(true);
+
+  // Trigger OnThemeChanged to update the button colors.
+  glic_button()->OnThemeChanged();
+
+  // 3. Verify that the button now uses the custom theme fallback color.
+  EXPECT_EQ(glic_button()->GetTextColorForTesting(views::Button::STATE_NORMAL),
+            glic_button()->GetColorProvider()->GetColor(
+                kColorTabSearchButtonCRForegroundFrameActive));
 }
 
 }  // namespace

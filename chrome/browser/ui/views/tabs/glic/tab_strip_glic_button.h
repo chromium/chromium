@@ -71,8 +71,14 @@ class TabStripGlicButton : public GlicButton<TabStripNudgeButton>,
   gfx::SlideAnimation* GetExpansionAnimationForTesting() override;
 
  private:
-  void OnLabelVisibilityChanged() override;
+  // GlicButton:
+  ui::ColorId GetCustomThemeForegroundId() const override;
+  ui::ColorId GetCustomThemeBackgroundActiveId() const override;
+  ui::ColorId GetCustomThemeBackgroundInactiveId() const override;
+  ui::ColorId GetCustomThemeForegroundActiveId() const override;
+  ui::ColorId GetCustomThemeForegroundInactiveId() const override;
 
+  void OnLabelVisibilityChanged() override;
   float GetWidthFactor() const override;
 
   base::WeakPtrFactory<TabStripGlicButton> weak_ptr_factory_{this};

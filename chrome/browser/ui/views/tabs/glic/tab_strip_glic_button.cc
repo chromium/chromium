@@ -145,6 +145,26 @@ float TabStripGlicButton::GetWidthFactor() const {
   return TabStripNudgeButton::GetWidthFactor();
 }
 
+ui::ColorId TabStripGlicButton::GetCustomThemeForegroundId() const {
+  return kColorTabSearchButtonCRForegroundFrameActive;
+}
+
+ui::ColorId TabStripGlicButton::GetCustomThemeBackgroundActiveId() const {
+  return kColorNewTabButtonCRBackgroundFrameActive;
+}
+
+ui::ColorId TabStripGlicButton::GetCustomThemeBackgroundInactiveId() const {
+  return kColorNewTabButtonCRBackgroundFrameInactive;
+}
+
+ui::ColorId TabStripGlicButton::GetCustomThemeForegroundActiveId() const {
+  return kColorTabSearchButtonCRForegroundFrameActive;
+}
+
+ui::ColorId TabStripGlicButton::GetCustomThemeForegroundInactiveId() const {
+  return kColorTabSearchButtonCRForegroundFrameInactive;
+}
+
 BEGIN_METADATA(TabStripGlicButton)
 END_METADATA
 

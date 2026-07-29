@@ -69,6 +69,11 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   float GetWidthFactor() const override;
   void SetWidthFactor(float factor) override;
 
+  // GlicButton:
+  ui::ColorId GetCustomThemeForegroundId() const override;
+  std::optional<SkColor> GetHighlightTextColor() const override;
+  void OnThemeChanged() override;
+
   std::optional<int> left_corner_radius_;
   std::optional<int> right_corner_radius_;
 
