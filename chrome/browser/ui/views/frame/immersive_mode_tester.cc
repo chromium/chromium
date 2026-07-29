@@ -26,7 +26,7 @@ BrowserView* ImmersiveModeTester::GetBrowserView() {
 
 void ImmersiveModeTester::RunCommand(int command, int expected_index) {
   reveal_started_ = reveal_ended_ = false;
-  browser_->command_controller()->ExecuteCommand(command);
+  chrome::BrowserCommandController::From(browser_)->ExecuteCommand(command);
   VerifyTabIndexAfterReveal(expected_index);
 }
 

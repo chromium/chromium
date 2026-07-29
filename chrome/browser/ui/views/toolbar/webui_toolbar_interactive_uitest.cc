@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusMinimalInteractiveUiTest,
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  browser()->command_controller()->ExecuteCommand(IDC_BACK);
+  chrome::BrowserCommandController::From(browser())->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
   RunTestSequence(
@@ -1827,7 +1827,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusMinimalInteractiveUiTest,
 
       // 2. Focus the toolbar using the browser command (Alt+Shift+T).
       Do(base::BindLambdaForTesting([this]() {
-        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
       })),
       ExpectFocusedWebUIElement("back"),
 
@@ -1973,7 +1974,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  browser()->command_controller()->ExecuteCommand(IDC_BACK);
+  chrome::BrowserCommandController::From(browser())->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
   RunTestSequence(
@@ -1994,7 +1995,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
 
       // 2. Focus the toolbar using the browser command (Alt+Shift+T).
       Do(base::BindLambdaForTesting([this]() {
-        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
       })),
       ExpectFocusedWebUIElement("back"),
 
@@ -2107,7 +2109,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullRtlInteractiveUiTest,
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  browser()->command_controller()->ExecuteCommand(IDC_BACK);
+  chrome::BrowserCommandController::From(browser())->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
   RunTestSequence(
@@ -2121,7 +2123,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullRtlInteractiveUiTest,
 
       // 2. Focus the toolbar using the browser command (Alt+Shift+T).
       Do(base::BindLambdaForTesting([this]() {
-        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
       })),
       ExpectFocusedWebUIElement("back"),
 

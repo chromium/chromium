@@ -2050,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleOverheadBrowserTest,
   observer.Wait();
 
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
   toolbar_view.reset();
 }
@@ -2067,7 +2067,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
   observer.Wait();
 
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
 
   auto widget = std::make_unique<views::Widget>();
@@ -2098,7 +2098,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
   auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
 
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
 
   auto widget = std::make_unique<views::Widget>();
@@ -2147,7 +2147,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
 
   // Create the view and set the back button state to enabled.
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
   toolbar_view->SetBackForwardEnabled(IDC_BACK, true);
 
@@ -2192,7 +2192,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleRendererOnlyPrewarmedBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
   toolbar_view->SetBackForwardEnabled(IDC_BACK, true);
 
@@ -2228,7 +2228,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleNonPrewarmedBrowserTest,
   auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
 
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
 
   auto widget = std::make_unique<views::Widget>();
@@ -2314,7 +2314,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedDeferredBrowserTest,
   // Construct the WebUIToolbarWebView. It should consume the prewarmed
   // contents.
   auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, browser()->command_controller(),
+      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
       /*location_bar=*/nullptr);
 
   // Add it to a widget. This should trigger the deferred navigation.
@@ -2521,7 +2521,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
                        NoRedundantNavigationOnReparenting) {
   // 1. Setup: Create the view.
   auto webui_toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      browser(), browser()->command_controller(), /*location_bar=*/nullptr);
+      browser(), chrome::BrowserCommandController::From(browser()),
+      /*location_bar=*/nullptr);
 
   content::WebContents* web_contents =
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
@@ -3646,13 +3647,18 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, NoCrashOnCommandUpdate) {
 
   // Trigger a command update that would affect the reload button if it were
   // there. This calls EnabledStateChangedForCommand under the hood.
-  bool enabled = browser()->command_controller()->IsCommandEnabled(IDC_RELOAD);
-  browser()->command_controller()->UpdateCommandEnabled(IDC_RELOAD, !enabled);
+  bool enabled =
+      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+          IDC_RELOAD);
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_RELOAD, !enabled);
 
   // Trigger a command update for something else in the list (e.g. Back)
   // to ensure iteration happens.
-  enabled = browser()->command_controller()->IsCommandEnabled(IDC_BACK);
-  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, !enabled);
+  enabled = chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+      IDC_BACK);
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
+      IDC_BACK, !enabled);
 
   // Verify no crash.
 }

@@ -18,9 +18,7 @@
 #include "ui/views/bubble/bubble_border.h"
 
 WebUIStubLocationBar::WebUIStubLocationBar(WebUIBrowserWindow* window)
-    : LocationBar(window->browser()
-                      ->GetBrowserForMigrationOnly()
-                      ->command_controller()),
+    : LocationBar(chrome::BrowserCommandController::From(window->browser())),
       window_(window) {
   permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
   permission_dashboard_controller_ =

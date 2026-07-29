@@ -235,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Install the app via the menu instead of the banner.
-  browser()->command_controller()->ExecuteCommand(IDC_INSTALL_PWA);
+  chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+      IDC_INSTALL_PWA);
   manager->AwaitAppInstall();
 
   EXPECT_FALSE(manager->IsPromptAvailableForTesting());
@@ -375,7 +376,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Install the app via the menu instead of the banner.
-  browser()->command_controller()->ExecuteCommand(IDC_INSTALL_PWA);
+  chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+      IDC_INSTALL_PWA);
   manager->AwaitAppInstall();
 
   EXPECT_FALSE(manager->IsPromptAvailableForTesting());

@@ -262,7 +262,8 @@ void BrowserDelegateImpl::ResetLocationBar() {
 void BrowserDelegateImpl::EnterLockedFullscreen(bool focus_toolbar) {
   CHECK(!IsLockedFullscreen());
   ash::PinWindow(GetNativeWindow(), /*trusted=*/true);
-  browser_->command_controller()->LockedFullscreenStateChanged();
+  chrome::BrowserCommandController::From(&browser_.get())
+      ->LockedFullscreenStateChanged();
   if (focus_toolbar) {
     BrowserWindow::FromBrowser(&*browser_)->FocusToolbar();
   }
@@ -271,7 +272,8 @@ void BrowserDelegateImpl::EnterLockedFullscreen(bool focus_toolbar) {
 void BrowserDelegateImpl::LeaveLockedFullscreen() {
   CHECK(IsLockedFullscreen());
   ash::UnpinWindow(GetNativeWindow());
-  browser_->command_controller()->LockedFullscreenStateChanged();
+  chrome::BrowserCommandController::From(&browser_.get())
+      ->LockedFullscreenStateChanged();
 }
 
 bool BrowserDelegateImpl::IsLockedFullscreen() const {
@@ -281,7 +283,7 @@ bool BrowserDelegateImpl::IsLockedFullscreen() const {
 
 void BrowserDelegateImpl::SetDevToolsCommandsEnabled(bool enabled) {
   chrome::BrowserCommandController* const command_controller =
-      browser_->command_controller();
+      chrome::BrowserCommandController::From(&browser_.get());
   command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS, enabled);
   command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS_CONSOLE, enabled);
   command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS_DEVICES, enabled);
@@ -291,7 +293,7 @@ void BrowserDelegateImpl::SetDevToolsCommandsEnabled(bool enabled) {
 
 void BrowserDelegateImpl::SetTabSwitchCommandsEnabled(bool enabled) {
   chrome::BrowserCommandController* const command_controller =
-      browser_->command_controller();
+      chrome::BrowserCommandController::From(&browser_.get());
   command_controller->UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB, enabled);
   command_controller->UpdateCommandEnabled(IDC_CYCLE_TO_NEXT_TAB, enabled);

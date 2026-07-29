@@ -152,8 +152,9 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
     if (features::IsWebUIBackForwardButtonEnabled()) {
       return Steps(CheckResult(
           [this, id]() {
-            return browser()->command_controller()->IsCommandEnabled(
-                id == kToolbarBackButtonElementId ? IDC_BACK : IDC_FORWARD);
+            return chrome::BrowserCommandController::From(browser())
+                ->IsCommandEnabled(
+                    id == kToolbarBackButtonElementId ? IDC_BACK : IDC_FORWARD);
           },
           enabled));
     } else {
@@ -206,7 +207,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
       browser->tab_strip_model()->GetActiveWebContents());
-  browser->command_controller()->ExecuteCommand(IDC_BACK);
+  chrome::BrowserCommandController::From(browser)->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
   gfx::NativeWindow window = browser->GetWindow()->GetNativeWindow();
@@ -230,7 +231,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
 
   // Send focus to the toolbar as if the user pressed Alt+Shift+T. This should
   // happen after the browser window activation.
-  CommandUpdater* updater = browser->command_controller();
+  CommandUpdater* updater = chrome::BrowserCommandController::From(browser);
   updater->ExecuteCommand(IDC_FOCUS_TOOLBAR);
 
   views::FocusManager* focus_manager = widget->GetFocusManager();
@@ -310,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, ToolbarCycleFocus) {
 }
 
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, ToolbarCycleFocusWithBookmarkBar) {
-  CommandUpdater* updater = browser()->command_controller();
+  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
   updater->ExecuteCommand(IDC_SHOW_BOOKMARK_BAR);
 
   BookmarkModel* model =
