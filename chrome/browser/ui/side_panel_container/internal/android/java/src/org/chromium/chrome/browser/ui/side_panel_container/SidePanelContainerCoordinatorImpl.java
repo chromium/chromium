@@ -327,9 +327,9 @@ final class SidePanelContainerCoordinatorImpl
                         availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp);
         @HeightType
         int heightType =
-                VerticalTabUtils.isVerticalTabsEnabled(mParentActivity)
-                        ? HeightType.WEB_CONTENTS
-                        : HeightType.TOOLBAR;
+                determineHeightType(
+                        showableWidthDp, VerticalTabUtils.isVerticalTabsEnabled(mParentActivity));
+
         return new SideUiSize(ViewUtils.dpToPx(mParentActivity, showableWidthDp), heightType);
     }
 
@@ -472,6 +472,15 @@ final class SidePanelContainerCoordinatorImpl
 
         // 4. Return 0 if available space can't accommodate the minimum side panel width.
         return 0;
+    }
+
+    @VisibleForTesting
+    static @HeightType int determineHeightType(int showableWidthDp, boolean isVerticalTabsEnabled) {
+        @HeightType int heightType = HeightType.NOT_APPLICABLE;
+        if (showableWidthDp != 0) {
+            heightType = isVerticalTabsEnabled ? HeightType.WEB_CONTENTS : HeightType.TOOLBAR;
+        }
+        return heightType;
     }
 
     private @Nullable ThinWebView findThinWebView(View view) {
