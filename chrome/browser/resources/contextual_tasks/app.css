@@ -905,7 +905,7 @@ error-page {
   inset: 0;
   pointer-events: none;
   position: absolute;
-  z-index: 10;
+  z-index: 101;
 }
 
 #iphMenuSmartTabSharingAnchor {
