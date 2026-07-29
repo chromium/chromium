@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities.h"
 
+#include "base/check.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_configuration.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/media_capabilities/fuzzer_media_configuration.pb.h"
+#include "third_party/blink/renderer/modules/media_capabilities/fuzzer_media_configuration_fuzzable.pb.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -169,7 +171,13 @@ void AddEncodingSpecificConfiguration(const mc_fuzzer::MediaConfigProto& proto,
   }
 }
 
-DEFINE_TEXT_PROTO_FUZZER(const mc_fuzzer::MediaConfigProto& proto) {
+DEFINE_TEXT_PROTO_FUZZER(
+    const fuzzable::mc_fuzzer::MediaConfigProto& fuzzable_proto) {
+  std::string serialized;
+  CHECK(fuzzable_proto.SerializeToString(&serialized));
+  mc_fuzzer::MediaConfigProto proto;
+  CHECK(proto.ParseFromString(serialized));
+
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>();

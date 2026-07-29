@@ -20,4 +20,5 @@ blink_modules_sources("media_capabilities") {
 
 fuzzable_proto_library("fuzzer_media_configuration_proto") {
   sources = [ "fuzzer_media_configuration.proto" ]
+  use_experimental_fuzzable_proto = true
 }
