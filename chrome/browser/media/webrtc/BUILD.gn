@@ -434,6 +434,7 @@ if (!is_android) {
         "capture_handle_app_window_browsertest.cc",
         "get_all_screens_media_browsertest.cc",
         "multi_capture/multi_capture_data_service_browsertest.cc",
+        "multi_capture/multi_capture_iframe_browsertest.cc",
         "multi_capture/multi_capture_session_controller_browsertest.cc",
         "multi_capture/multi_capture_usage_indicator_service_browsertest.cc",
       ]

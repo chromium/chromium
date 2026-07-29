@@ -2821,7 +2821,7 @@ bool ChromeContentBrowserClient::IsMultiCaptureAllowed(
              WebContents::FromRenderFrameHost(render_frame_host)
                  ->GetBrowserContext())
       ->IsMultiCaptureAllowed(
-          render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+          render_frame_host->GetLastCommittedOrigin().GetURL());
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)

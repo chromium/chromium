@@ -72,6 +72,8 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       RenderFrameHostExistsButNoPolicySetMultiCaptureNotAllowed);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamDispatcherHostMultiCaptureTest,
                            PolicySetMultiCaptureAllowed);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamDispatcherHostMultiCaptureTest,
+                           NotIsolatedContextMultiCaptureNotAllowed);
 
   using GenerateStreamsUIThreadCheckResult =
       ::base::expected<::content::MediaDeviceSaltAndOrigin,

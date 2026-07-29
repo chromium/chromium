@@ -46,6 +46,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_captured_surface_controller.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
@@ -53,11 +54,15 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -310,6 +315,23 @@ class MockContentBrowserClient : public ContentBrowserClient {
               IsMultiCaptureAllowed,
               (RenderFrameHost * render_frame_host),
               (override));
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
+    return url.host() == "isolated.app";
+  }
+  bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
+  bool SupportsBaselinePermissionsPolicyForIsolatedApp() override {
+    return true;
+  }
+  std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>
+  GetBaselinePermissionsPolicyForIsolatedApp(
+      BrowserContext* browser_context,
+      const url::Origin& app_origin) override {
+    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policy;
+    policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "cross-origin-isolated", std::vector<std::string>()));
+    return policy;
+  }
 };
 
 class MediaStreamDispatcherHostTest : public RenderViewHostTestHarness {
@@ -1494,6 +1516,24 @@ class MediaStreamDispatcherHostMultiCaptureTest
     RenderFrameHostTester::For(main_rfh())->InitializeRenderFrameIfNeeded();
   }
 
+  void NavigateToIsolatedApp() {
+    auto simulator = NavigationSimulator::CreateBrowserInitiated(
+        GURL("https://isolated.app"), web_contents());
+    auto headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    headers->AddHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    headers->AddHeader("Cross-Origin-Opener-Policy", "same-origin");
+    simulator->SetResponseHeaders(headers);
+    simulator->SetPermissionsPolicyHeader(
+        {network::ParsedPermissionsPolicyDeclaration(
+            network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+            /*allowed_origins=*/{},
+            /*self_if_matches=*/std::nullopt,
+            /*matches_all_origins=*/true,
+            /*matches_opaque_src=*/false)});
+    simulator->Commit();
+  }
+
  protected:
   GlobalRenderFrameHostId global_rfh_id() {
     return static_cast<RenderFrameHostImpl*>(main_rfh())->GetGlobalId();
@@ -1525,6 +1565,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
 
 TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
        RenderFrameHostExistsButNoPolicySetMultiCaptureNotAllowed) {
+  NavigateToIsolatedApp();
   EXPECT_CALL(content_browser_client_, IsMultiCaptureAllowed(_))
       .Times(1)
       .WillOnce(Return(false));
@@ -1543,6 +1584,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
 
 TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
        PolicySetMultiCaptureAllowed) {
+  NavigateToIsolatedApp();
   EXPECT_CALL(content_browser_client_, IsMultiCaptureAllowed(_))
       .Times(1)
       .WillOnce(Return(true));
@@ -1557,6 +1599,22 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
       future.GetCallback(), main_rfh());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get<GenerateStreamsUIThreadCheckResult>().has_value());
+}
+
+TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
+       NotIsolatedContextMultiCaptureNotAllowed) {
+  EXPECT_CALL(content_browser_client_, IsMultiCaptureAllowed(_)).Times(0);
+
+  base::test::TestFuture<GenerateStreamsUIThreadCheckResult> future;
+  MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
+      /*get_salt_and_origin_cb=*/
+      base::BindOnce([](MediaDeviceSaltAndOriginCallback callback) {
+        std::move(callback).Run(
+            MediaDeviceSaltAndOrigin(/*device_id_salt=*/"", url::Origin()));
+      }),
+      future.GetCallback(), main_rfh());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get<GenerateStreamsUIThreadCheckResult>().has_value());
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
