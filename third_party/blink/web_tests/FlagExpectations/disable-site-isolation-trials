@@ -79,7 +79,7 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/service-workers/service-worker/fetch-request-body-cancel.https.html [ Pass Timeout ]
+crbug.com/540322300 external/wpt/service-workers/service-worker/fetch-request-body-cancel.https.html [ Pass Timeout ]
 crbug.com/471016766 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 crbug.com/448454550 external/wpt/pointerevents/pointerevent_touch-propagates-when-target-is-video_touch.html [ Pass Timeout ]
 crbug.com/438873384 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1251.html?include=loading [ Timeout ]
