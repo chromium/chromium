@@ -41,11 +41,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-BLANK-OPENER&click=Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-BLANK-OPENER&click=Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -128,11 +127,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-NO_FRAME-OPENER&click=Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-NO_FRAME-OPENER&click=Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -383,11 +381,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-BLANK-OPENER&click=Middle"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-BLANK-OPENER&click=Middle" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -470,11 +467,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-NO_FRAME-OPENER&click=Middle"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-NO_FRAME-OPENER&click=Middle" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -725,11 +721,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-BLANK-OPENER&click=Shift%20Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-BLANK-OPENER&click=Shift%20Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -812,11 +807,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-NO_FRAME-OPENER&click=Shift%20Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-BTN-A_TO_A-NO_FRAME-OPENER&click=Shift%20Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -1067,11 +1061,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-OPENER&click=Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-OPENER&click=Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }
@@ -1154,11 +1147,10 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-OPENER&click=Left"
-                  } ],
-                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-OPENER&click=Left" ]
+                  } ]
                } ]
             } ],
-            "launch_metric_buckets": [ "kFromNavigationCapturing" ],
+            "launch_metric_buckets": [  ],
             "navigation_capturing_result": [ "AuxiliaryContextAppWindow" ],
             "redirection_result": [ "NotHandled" ]
          }

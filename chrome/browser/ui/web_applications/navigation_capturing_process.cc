@@ -1507,9 +1507,16 @@ void NavigationCapturingProcess::OnAttachedToNavigationHandle() {
   auto* navigation_handle_user_data =
       WebAppLaunchNavigationHandleUserData::GetOrCreateForNavigationHandle(
           *navigation_handle());
-  navigation_handle_user_data->SetLaunchParamsMetadata(
-      *launched_app_id_, navigation_handle()->GetURL(),
-      time_navigation_started_);
+  if (initial_nav_handling_result_ !=
+          NavigationCapturingInitialResult::kAuxiliaryContextAppBrowserTab &&
+      initial_nav_handling_result_ !=
+          NavigationCapturingInitialResult::kAuxiliaryContextAppWindow) {
+    // Omit launch params for auxiliary context - this isn't really a launch,
+    // but an extension of an existing app.
+    navigation_handle_user_data->SetLaunchParamsMetadata(
+        *launched_app_id_, navigation_handle()->GetURL(),
+        time_navigation_started_);
+  }
   navigation_handle_user_data->set_force_iph_off(force_iph_off_ ||
                                                  isolated_web_app_navigation_);
   navigation_handle_user_data->set_is_navigation_capturing(true);
@@ -2040,6 +2047,14 @@ void NavigationCapturingProcess::SetLaunchedAppIdAndUpdateLaunchParams(
     if (!navigation_handle()) {
       return std::nullopt;
     }
+    if (initial_nav_handling_result_ ==
+            NavigationCapturingInitialResult::kAuxiliaryContextAppBrowserTab ||
+        initial_nav_handling_result_ ==
+            NavigationCapturingInitialResult::kAuxiliaryContextAppWindow) {
+      // Auxiliary contexts don't set `user_data->GetLaunchParams()`.
+      return std::nullopt;
+    }
+
     auto* user_data =
         WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
             *navigation_handle());
