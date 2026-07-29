@@ -788,33 +788,34 @@ bool basic_shape_interpolation_functions::ShapesAreCompatible(
       To<BasicShapeNonInterpolableValue>(b));
 }
 
-BasicShape* basic_shape_interpolation_functions::CreateBasicShape(
+BasicShapeInfo basic_shape_interpolation_functions::CreateBasicShape(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue& untyped_non_interpolable_value,
     const CSSToLengthConversionData& conversion_data) {
   const auto& non_interpolable_value =
       To<BasicShapeNonInterpolableValue>(untyped_non_interpolable_value);
+  BasicShape* shape;
   switch (non_interpolable_value.GetShapeType()) {
     case BasicShape::kBasicShapeCircleType:
-      return circle_functions::CreateBasicShape(interpolable_value,
-                                                conversion_data);
-    case BasicShape::kBasicShapeEllipseType:
-      return ellipse_functions::CreateBasicShape(interpolable_value,
+      shape = circle_functions::CreateBasicShape(interpolable_value,
                                                  conversion_data);
+      break;
+    case BasicShape::kBasicShapeEllipseType:
+      shape = ellipse_functions::CreateBasicShape(interpolable_value,
+                                                  conversion_data);
+      break;
     case BasicShape::kBasicShapeInsetType:
-      return inset_functions::CreateBasicShape(interpolable_value,
-                                               conversion_data);
+      shape = inset_functions::CreateBasicShape(interpolable_value,
+                                                conversion_data);
+      break;
     case BasicShape::kBasicShapePolygonType:
-      return polygon_functions::CreateBasicShape(
+      shape = polygon_functions::CreateBasicShape(
           interpolable_value, non_interpolable_value, conversion_data);
+      break;
     default:
       NOTREACHED();
   }
-}
-
-ShapeReferenceBox basic_shape_interpolation_functions::GetBox(
-    const NonInterpolableValue& value) {
-  return To<BasicShapeNonInterpolableValue>(value).GetBox();
+  return {shape, non_interpolable_value.GetBox()};
 }
 
 }  // namespace blink

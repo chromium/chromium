@@ -177,14 +177,11 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   CHECK(non_interpolable_value);
-  BasicShape* shape = basic_shape_interpolation_functions::CreateBasicShape(
+  BasicShapeInfo info = basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, *non_interpolable_value,
       state.CssToLengthConversionData());
-  CHECK(shape);
-  shape_property_functions::SetBasicShape(
-      CssProperty(), *shape,
-      basic_shape_interpolation_functions::GetBox(*non_interpolable_value),
-      state.StyleBuilder());
+  shape_property_functions::SetBasicShape(CssProperty(), info,
+                                          state.StyleBuilder());
 }
 
 }  // namespace blink

@@ -66,9 +66,10 @@ InterpolableValue* CreateNeutralValue(
       non_interpolable);
 }
 
-BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
-                             const NonInterpolableValue& non_interpolable,
-                             const CSSToLengthConversionData& conversion_data) {
+BasicShapeInfo CreateBasicShape(
+    const InterpolableValue& interpolable_value,
+    const NonInterpolableValue& non_interpolable,
+    const CSSToLengthConversionData& conversion_data) {
   if (non_interpolable.GetType() ==
       CSSShapeInterpolationType::ShapeNonInterpolableValueType()) {
     return CSSShapeInterpolationType::CreateShape(
@@ -76,14 +77,6 @@ BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
   }
   return basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, non_interpolable, conversion_data);
-}
-
-ShapeReferenceBox GetBox(const NonInterpolableValue& value) {
-  if (value.GetType() ==
-      CSSShapeInterpolationType::ShapeNonInterpolableValueType()) {
-    return CSSShapeInterpolationType::GetBox(value);
-  }
-  return basic_shape_interpolation_functions::GetBox(value);
 }
 
 }  // namespace shape_interpolation_functions

@@ -193,14 +193,15 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   SkScalar dx_, dy_;
 };
 
-BasicShape* CreateBasicShape(
+const BasicShape* CreateBasicShape(
     BasicShape::ShapeType type,
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue& untyped_non_interpolable_value,
     const Element* element) {
   if (type == BasicShape::kStylePathType) {
     return PathInterpolationFunctions::AppliedValue(
-        interpolable_value, untyped_non_interpolable_value);
+               interpolable_value, untyped_non_interpolable_value)
+        .shape;
   }
 
   DCHECK(element);
@@ -210,11 +211,15 @@ BasicShape* CreateBasicShape(
       element->GetLayoutObject()->StyleRef().EffectiveZoom());
   if (type == BasicShape::kStyleShapeType) {
     return CSSShapeInterpolationType::CreateShape(
-        interpolable_value, untyped_non_interpolable_value, conversion_data);
+               interpolable_value, untyped_non_interpolable_value,
+               conversion_data)
+        .shape;
   }
 
   return basic_shape_interpolation_functions::CreateBasicShape(
-      interpolable_value, untyped_non_interpolable_value, conversion_data);
+             interpolable_value, untyped_non_interpolable_value,
+             conversion_data)
+      .shape;
 }
 
 bool CanExtractShapeOrPath(const CSSValue* computed_value) {
@@ -255,9 +260,10 @@ BasicShape* GetAnimatedShapeFromCSSValue(const CSSValue* computed_value,
 }
 
 // Returns the basic shape of a keyframe, or null if the keyframe has no path
-BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
-                                         const KeyframeEffectModelBase* model,
-                                         const Element* element) {
+const BasicShape* GetAnimatedShapeFromKeyframe(
+    const PropertySpecificKeyframe* frame,
+    const KeyframeEffectModelBase* model,
+    const Element* element) {
   if (model->IsStringKeyframeEffectModel()) {
     DCHECK(frame->IsCSSPropertySpecificKeyframe());
     const CSSValue* value =
@@ -587,7 +593,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   // class should be refactored to use the main thread machinery directly.
   std::optional<BasicShape::ShapeType> prev_type = std::nullopt;
   for (const auto& frame : *frames) {
-    BasicShape* basic_shape =
+    const BasicShape* basic_shape =
         GetAnimatedShapeFromKeyframe(frame, model, element);
 
     // No compatibility for the first shape.
@@ -661,11 +667,12 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
       model->GetPropertySpecificKeyframes(
           PropertyHandle(GetCSSPropertyClipPath()));
 
-  HeapVector<Member<BasicShape>> animated_shapes;
+  HeapVector<Member<const BasicShape>> animated_shapes;
   gfx::RectF clip_area;
 
   for (const auto& frame : *frames) {
-    BasicShape* shape = GetAnimatedShapeFromKeyframe(frame, model, element);
+    const BasicShape* shape =
+        GetAnimatedShapeFromKeyframe(frame, model, element);
     if (!shape) {
       // clip-path: none
       return std::nullopt;
@@ -703,7 +710,7 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
   effect_timing->Range(&min_total_progress, &max_total_progress);
 
   for (unsigned i = 0; i < frames->size(); i++) {
-    BasicShape* cur_shape = animated_shapes[i];
+    const BasicShape* cur_shape = animated_shapes[i];
     CHECK(cur_shape);
 
     const Path path = cur_shape->GetPath(reference_box, zoom, 1.f);
@@ -736,7 +743,7 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
     // this keyframe pair.
 
     if (min_progress < 0) {
-      BasicShape* next_shape = animated_shapes[i + 1];
+      const BasicShape* next_shape = animated_shapes[i + 1];
       Path toPath = next_shape->GetPath(reference_box, zoom, 1.f);
       SkPath interpolated =
           InterpolatePaths(cur_shape->GetType() == next_shape->GetType(),
@@ -744,7 +751,7 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
       clip_area.Union(gfx::SkRectToRectF(interpolated.getBounds()));
     }
     if (max_progress > 1) {
-      BasicShape* next_shape = animated_shapes[i + 1];
+      const BasicShape* next_shape = animated_shapes[i + 1];
       Path toPath = next_shape->GetPath(reference_box, zoom, 1.f);
       SkPath interpolated =
           InterpolatePaths(cur_shape->GetType() == next_shape->GetType(),

@@ -37,13 +37,10 @@ void CSSPathInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   CHECK(non_interpolable_value);
-  StylePath* path = PathInterpolationFunctions::AppliedValue(
+  BasicShapeInfo info = PathInterpolationFunctions::AppliedValue(
       interpolable_value, *non_interpolable_value);
-  CHECK(path);
-  shape_property_functions::SetBasicShape(
-      CssProperty(), *path,
-      PathInterpolationFunctions::GetBox(*non_interpolable_value),
-      state.StyleBuilder());
+  shape_property_functions::SetBasicShape(CssProperty(), info,
+                                          state.StyleBuilder());
 }
 
 void CSSPathInterpolationType::Composite(

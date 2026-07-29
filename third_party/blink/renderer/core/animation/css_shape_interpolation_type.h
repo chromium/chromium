@@ -32,9 +32,10 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
   // be reliably interpolated on the compositor.
   static CORE_EXPORT bool HasArcSegments(const NonInterpolableValue*);
 
-  static CORE_EXPORT BasicShape* CreateShape(const InterpolableValue&,
-                                             const NonInterpolableValue&,
-                                             const CSSToLengthConversionData&);
+  static CORE_EXPORT BasicShapeInfo
+  CreateShape(const InterpolableValue&,
+              const NonInterpolableValue&,
+              const CSSToLengthConversionData&);
 
   static InterpolationValue MaybeConvertCSSValue(const BasicShapeCssInfo& info,
                                                  const CSSProperty& property);

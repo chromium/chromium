@@ -18,8 +18,8 @@ class StyleBorderShape : public GarbageCollected<StyleBorderShape> {
  public:
   // A border shape always has an inner and outer shape, though in case they are
   // identical certain operations such as filling between them can be skipped.
-  explicit StyleBorderShape(BasicShape& outer,
-                            BasicShape* inner = nullptr,
+  explicit StyleBorderShape(const BasicShape& outer,
+                            const BasicShape* inner = nullptr,
                             GeometryBox outer_box = GeometryBox::kBorderBox,
                             GeometryBox inner_box = GeometryBox::kBorderBox)
       : outer_(&outer),
@@ -49,8 +49,8 @@ class StyleBorderShape : public GarbageCollected<StyleBorderShape> {
   }
 
  private:
-  Member<BasicShape> outer_;
-  Member<BasicShape> inner_;
+  Member<const BasicShape> outer_;
+  Member<const BasicShape> inner_;
   GeometryBox outer_box_;
   GeometryBox inner_box_;
 };

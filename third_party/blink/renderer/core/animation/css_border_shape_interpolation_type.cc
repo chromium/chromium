@@ -280,22 +280,20 @@ void CSSBorderShapeInterpolationType::ApplyStandardPropertyValue(
       To<NonInterpolableList>(*non_interpolable_value);
   CHECK_EQ(non_interpolable_list.length(), length);
 
-  BasicShape* outer_shape = shape_interpolation_functions::CreateBasicShape(
+  BasicShapeInfo outer_info = shape_interpolation_functions::CreateBasicShape(
       *interpolable_list.Get(0), *non_interpolable_list.Get(0),
       state.CssToLengthConversionData());
-  auto outer_box = std::get<GeometryBox>(
-      shape_interpolation_functions::GetBox(*non_interpolable_list.Get(0)));
-  CHECK(outer_shape);
+  CHECK(outer_info.shape);
 
-  BasicShape* inner_shape = shape_interpolation_functions::CreateBasicShape(
+  BasicShapeInfo inner_info = shape_interpolation_functions::CreateBasicShape(
       *interpolable_list.Get(1), *non_interpolable_list.Get(1),
       state.CssToLengthConversionData());
-  auto inner_box = std::get<GeometryBox>(
-      shape_interpolation_functions::GetBox(*non_interpolable_list.Get(1)));
-  CHECK(inner_shape);
+  CHECK(inner_info.shape);
 
   state.StyleBuilder().SetBorderShape(MakeGarbageCollected<StyleBorderShape>(
-      *outer_shape, inner_shape, outer_box, inner_box));
+      *outer_info.shape, inner_info.shape,
+      std::get<GeometryBox>(outer_info.box),
+      std::get<GeometryBox>(inner_info.box)));
 }
 
 }  // namespace blink

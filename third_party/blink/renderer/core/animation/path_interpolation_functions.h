@@ -12,16 +12,14 @@
 
 namespace blink {
 
-class StylePath;
-
 class CORE_EXPORT PathInterpolationFunctions {
   STATIC_ONLY(PathInterpolationFunctions);
 
  public:
   enum CoordinateConversion { kPreserveCoordinates, kForceAbsolute };
 
-  static StylePath* AppliedValue(const InterpolableValue&,
-                                 const NonInterpolableValue&);
+  static BasicShapeInfo AppliedValue(const InterpolableValue&,
+                                     const NonInterpolableValue&);
 
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,
@@ -39,8 +37,6 @@ class CORE_EXPORT PathInterpolationFunctions {
                                  const NonInterpolableValue& end);
 
   static bool IsPathNonInterpolableValue(const NonInterpolableValue& value);
-
-  static ShapeReferenceBox GetBox(const NonInterpolableValue&);
 
   static PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,

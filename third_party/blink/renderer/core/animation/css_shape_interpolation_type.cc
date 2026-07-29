@@ -503,7 +503,7 @@ bool CSSShapeInterpolationType::HasArcSegments(
 }
 
 // static
-BasicShape* CSSShapeInterpolationType::CreateShape(
+BasicShapeInfo CSSShapeInterpolationType::CreateShape(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue& non_interpolable_value,
     const CSSToLengthConversionData& conversion_data) {
@@ -569,9 +569,10 @@ BasicShape* CSSShapeInterpolationType::CreateShape(
             NOTREACHED();
         }
       });
-  return MakeGarbageCollected<StyleShape>(
-      shape_non_interpolable_value.GetWindRule(), reader.Origin(),
-      std::move(segments));
+  return {MakeGarbageCollected<StyleShape>(
+              shape_non_interpolable_value.GetWindRule(), reader.Origin(),
+              std::move(segments)),
+          shape_non_interpolable_value.GetBox()};
 }
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(ShapeNonInterpolableValue);
@@ -590,13 +591,10 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   CHECK(non_interpolable_value);
-  BasicShape* shape = CreateShape(interpolable_value, *non_interpolable_value,
-                                  state.CssToLengthConversionData());
-  CHECK(shape);
-  shape_property_functions::SetBasicShape(
-      CssProperty(), *shape,
-      To<ShapeNonInterpolableValue>(*non_interpolable_value).GetBox(),
-      state.StyleBuilder());
+  BasicShapeInfo info = CreateShape(interpolable_value, *non_interpolable_value,
+                                    state.CssToLengthConversionData());
+  shape_property_functions::SetBasicShape(CssProperty(), info,
+                                          state.StyleBuilder());
 }
 
 void CSSShapeInterpolationType::Composite(
