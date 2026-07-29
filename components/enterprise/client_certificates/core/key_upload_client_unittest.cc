@@ -186,6 +186,32 @@ TEST_F(KeyUploadClientTest, CreateCertificate_Success) {
   EXPECT_TRUE(test_cert->EqualsIncludingChain(certificate.get()));
 }
 
+TEST_F(KeyUploadClientTest, CreateCertificate_WrongFormat_Fail) {
+  auto test_cert = LoadTestCert();
+  ASSERT_TRUE(test_cert);
+
+  SetUpDMToken();
+  policy::DMServerJobResult result = CreateResult();
+  base::span<const uint8_t> der_cert =
+      net::x509_util::CryptoBufferAsSpan(test_cert->cert_buffer());
+  result.response.mutable_browser_public_key_upload_response()
+      ->set_pem_encoded_certificate(
+          std::string(der_cert.begin(), der_cert.end()));
+  SetUpUploadPublicKey(result, test_cert);
+  CreateUploadClient();
+  auto private_key = SetUpPrivateKey(test_cert.get());
+
+  base::test::TestFuture<HttpCodeOrClientError,
+                         scoped_refptr<net::X509Certificate>>
+      test_future;
+  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+
+  auto [response_code, certificate] = test_future.Take();
+
+  EXPECT_EQ(response_code, kSuccessCode);
+  EXPECT_FALSE(certificate);
+}
+
 TEST_F(KeyUploadClientTest, CreateCertificate_NoDMToken_Fail) {
   SetUpDMToken(std::nullopt);
   CreateUploadClient();

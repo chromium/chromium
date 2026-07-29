@@ -254,7 +254,7 @@ void KeyUploadClientImpl::OnCertificateResponseReceived(
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
             base::as_byte_span(pem_encoded_certificate),
-            net::X509Certificate::FORMAT_AUTO);
+            net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
     if (!certs.empty() && VerifySPKI(certs[0].get(), private_key.get())) {
       certificate = certs[0];
     }
