@@ -47,15 +47,9 @@ suite('OnboardingTooltipTest', () => {
     await microtasksFinished();
   });
 
-  test('shows and positions correctly when coins enabled', async () => {
-    tooltipElement.isCoinsEnabled = true;
+  test('shows and positions correctly', async () => {
 
-    const mockComposebox = document.createElement('div') as any;
-    mockComposebox.getHasAutomaticActiveTabChipToken = () => true;
-    mockComposebox.getContextEntrypointElement = () => target;
-    mockComposebox.getAutomaticActiveTabChipElement = () => null;
-
-    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    tooltipElement.updateTooltipVisibility(true, target, container);
     await microtasksFinished();
 
     assertTrue(tooltipElement.shouldShow);
@@ -67,48 +61,20 @@ suite('OnboardingTooltipTest', () => {
   });
 
   test('hides tooltip when auto tab chip is removed', async () => {
-    tooltipElement.isCoinsEnabled = true;
-
-    let hasToken = true;
-    const mockComposebox = document.createElement('div') as any;
-    mockComposebox.getHasAutomaticActiveTabChipToken = () => hasToken;
-    mockComposebox.getContextEntrypointElement = () => target;
-    mockComposebox.getAutomaticActiveTabChipElement = () => null;
 
     // Show tooltip.
-    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    tooltipElement.updateTooltipVisibility(true, target, container);
     await microtasksFinished();
     assertTrue(tooltipElement.shouldShow);
 
     // Remove auto tab chip.
-    hasToken = false;
-    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    tooltipElement.updateTooltipVisibility(false, target, container);
     await microtasksFinished();
 
     assertTrue(!tooltipElement.shouldShow);
   });
 
-  test('hides tooltip when auto tab chip is removed with coins disabled', async () => {
-    tooltipElement.isCoinsEnabled = false;
 
-    let hasToken = true;
-    const mockComposebox = document.createElement('div') as any;
-    mockComposebox.getHasAutomaticActiveTabChipToken = () => hasToken;
-    mockComposebox.getContextEntrypointElement = () => null;
-    mockComposebox.getAutomaticActiveTabChipElement = () => target;
-
-    // Show tooltip.
-    tooltipElement.updateTooltipVisibility(container, mockComposebox);
-    await microtasksFinished();
-    assertTrue(tooltipElement.shouldShow);
-
-    // Remove auto tab chip.
-    hasToken = false;
-    tooltipElement.updateTooltipVisibility(container, mockComposebox);
-    await microtasksFinished();
-
-    assertTrue(!tooltipElement.shouldShow);
-  });
 
   test('positions correctly and resets bottom', async () => {
     tooltipElement.target = target;

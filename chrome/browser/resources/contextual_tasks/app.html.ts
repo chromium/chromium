@@ -51,11 +51,6 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
 <if expr="not is_android">
-    ${this.showOnboardingTooltip_ ? html`
-      <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
-          @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
-      </contextual-tasks-onboarding-tooltip>
-    ` : ''}
     ${this.showLensSearchTooltip_ ? html`
       <contextual-tasks-lens-search-tooltip id="lensSearchTooltip"
           @lens-search-tooltip-dismissed="${this.onLensSearchTooltipDismissed_}">
@@ -108,6 +103,14 @@ export function getHtml(this: ContextualTasksAppElement) {
   </div>
   <error-page id="errorPage"></error-page>
   <div id="iphMenuSmartTabSharingAnchor"></div>
+<if expr="not is_android">
+  <!-- Placed at the top level to ensure it sits on top of all other elements in the z-order stacking context, avoiding confinement by container boundaries or lower z-index stacking contexts (like #flexCenterContainer). -->
+  ${this.showOnboardingTooltip_ ? html`
+    <contextual-tasks-onboarding-tooltip id="onboardingTooltip"
+        @onboarding-tooltip-dismissed="${this.onOnboardingTooltipDismissed_}">
+    </contextual-tasks-onboarding-tooltip>
+  ` : ''}
+</if>
   <!--_html_template_end_-->`;
 }
 // clang-format on

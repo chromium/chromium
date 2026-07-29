@@ -882,7 +882,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     }
 
     if (onboardingTooltip) {
-      onboardingTooltip.updateTooltipVisibility(composeboxContainer, crComposebox);
+      const hasToken = crComposebox.getHasAutomaticActiveTabChipToken();
+      const isCoinsEnabled = loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
+      const target = isCoinsEnabled ?
+          crComposebox.getContextEntrypointElement() :
+          crComposebox.getAutomaticActiveTabChipElement();
+
+      onboardingTooltip.updateTooltipVisibility(hasToken, target, composeboxContainer);
       this.onboardingTooltipShowing_ = onboardingTooltip.shouldShow;
     }
 

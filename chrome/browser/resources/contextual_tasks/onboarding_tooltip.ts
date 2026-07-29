@@ -6,7 +6,6 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
-import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import type {CrTooltipElement} from '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -119,22 +118,17 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
   }
 
   updateTooltipVisibility(
-      composeboxContainer: HTMLElement, composebox: ComposeboxElement) {
+      hasToken: boolean, target: Element|null, container?: HTMLElement) {
     if (!loadTimeData.getBoolean('showOnboardingTooltip')) {
       return;
     }
 
-    if (this.onboardingTooltipIsVisible_ &&
-        !composebox.getHasAutomaticActiveTabChipToken()) {
+    if (this.onboardingTooltipIsVisible_ && !hasToken) {
       this.hide();
       this.onboardingTooltipIsVisible_ = false;
       this.stopObservingTooltipResize_();
       this.clearTooltipImpressionTimer_();
-    } else if (composebox.getHasAutomaticActiveTabChipToken()) {
-       const target = this.isCoinsEnabled ?
-          composebox.getContextEntrypointElement() :
-          composebox.getAutomaticActiveTabChipElement();
-
+    } else if (hasToken) {
       if (target) {
         this.target = target;
       }
@@ -143,7 +137,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
         this.updatePosition();
       } else if (this.shouldShowOnboardingTooltip()) {
         this.show();
-        this.startObservingTooltipResize_(composeboxContainer, composebox, target);
+        this.startObservingTooltipResize_(target, container);
         this.onboardingTooltipIsVisible_ = true;
 
         this.tooltipImpressionTimer_ = setTimeout(() => {
@@ -169,22 +163,20 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
   }
 
   private startObservingTooltipResize_(
-      composeboxContainer: HTMLElement, composebox: ComposeboxElement, target: Element|null) {
+      target: Element|null, container?: HTMLElement) {
     this.stopObservingTooltipResize_();
 
-    // Observe the tooltip for any size changes.
+    // Observe the tooltip target for any size changes.
     this.tooltipResizeObserver_ = new ResizeObserver(() => {
       if (this.target) {
         this.updatePosition();
       }
     });
-    this.tooltipResizeObserver_.observe(composebox);
     if (target) {
       this.tooltipResizeObserver_.observe(target);
     }
 
-    // Observe the composebox container and composebox for any style or class
-    // changes that may affect the tooltip position.
+    // Observe container and target for any style or class changes.
     this.tooltipMutationObserver_ = new MutationObserver(() => {
       if (this.target) {
         this.updatePosition();
@@ -194,8 +186,9 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
       attributes: true,
       attributeFilter: ['style', 'class'],
     };
-    this.tooltipMutationObserver_.observe(composeboxContainer, mutationObserverOptions);
-    this.tooltipMutationObserver_.observe(composebox, mutationObserverOptions);
+    if (container) {
+      this.tooltipMutationObserver_.observe(container, mutationObserverOptions);
+    }
     if (target) {
       this.tooltipMutationObserver_.observe(target, mutationObserverOptions);
     }
