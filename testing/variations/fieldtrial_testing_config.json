@@ -9282,23 +9282,6 @@
             ]
         }
     ],
-    "DisableU18FeedbackDesktop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260403",
-                    "enable_features": [
-                        "DisableU18FeedbackDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableU18FeedbackIos": [
         {
             "platforms": [
