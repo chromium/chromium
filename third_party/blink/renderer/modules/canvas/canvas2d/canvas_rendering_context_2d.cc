@@ -838,9 +838,6 @@ CanvasRenderingContext2D::PaintRenderingResultsToSnapshot(
 
 const std::optional<cc::PaintRecord>&
 CanvasRenderingContext2D::GetLastRecording() {
-  if (!canvas()) {
-    return empty_recording_;
-  }
   if (shared_image_provider_) {
     return shared_image_provider_->LastRecording();
   }
