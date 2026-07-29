@@ -119,6 +119,21 @@ void AddBaselinePalette(ColorProvider* provider,
     mixer[kColorRefNeutral98] = {SkColorSetRGB(0xF7, 0xF8, 0xFA)};
     mixer[kColorRefNeutral99] = {SkColorSetRGB(0xF9, 0xFA, 0xFC)};
     mixer[kColorRefNeutral100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+
+    mixer[kColorRefNeutralVariant0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
+    mixer[kColorRefNeutralVariant10] = {SkColorSetRGB(0x18, 0x1C, 0x22)};
+    mixer[kColorRefNeutralVariant15] = {SkColorSetRGB(0x23, 0x26, 0x2C)};
+    mixer[kColorRefNeutralVariant20] = {SkColorSetRGB(0x2D, 0x30, 0x38)};
+    mixer[kColorRefNeutralVariant30] = {SkColorSetRGB(0x44, 0x47, 0x4E)};
+    mixer[kColorRefNeutralVariant40] = {SkColorSetRGB(0x5B, 0x5E, 0x66)};
+    mixer[kColorRefNeutralVariant50] = {SkColorSetRGB(0x74, 0x77, 0x7F)};
+    mixer[kColorRefNeutralVariant60] = {SkColorSetRGB(0x8E, 0x90, 0x99)};
+    mixer[kColorRefNeutralVariant70] = {SkColorSetRGB(0xA9, 0xAB, 0xB4)};
+    mixer[kColorRefNeutralVariant80] = {SkColorSetRGB(0xC4, 0xC6, 0xD0)};
+    mixer[kColorRefNeutralVariant90] = {SkColorSetRGB(0xEB, 0xED, 0xF7)};
+    mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xF9, 0xF9, 0xFF)};
+    mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFD, 0xFB, 0xFF)};
+    mixer[kColorRefNeutralVariant100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
   } else {
     mixer[kColorRefNeutral0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
     mixer[kColorRefNeutral4] = {SkColorSetRGB(0x0E, 0x0E, 0x0F)};
@@ -147,22 +162,22 @@ void AddBaselinePalette(ColorProvider* provider,
     mixer[kColorRefNeutral98] = {SkColorSetRGB(0xFA, 0xF9, 0xF8)};
     mixer[kColorRefNeutral99] = {SkColorSetRGB(0xFD, 0xFC, 0xFB)};
     mixer[kColorRefNeutral100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
-  }
 
-  mixer[kColorRefNeutralVariant0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
-  mixer[kColorRefNeutralVariant10] = {SkColorSetRGB(0x19, 0x1D, 0x1C)};
-  mixer[kColorRefNeutralVariant15] = {SkColorSetRGB(0x23, 0x27, 0x26)};
-  mixer[kColorRefNeutralVariant20] = {SkColorSetRGB(0x2D, 0x31, 0x2F)};
-  mixer[kColorRefNeutralVariant30] = {SkColorSetRGB(0x44, 0x47, 0x46)};
-  mixer[kColorRefNeutralVariant40] = {SkColorSetRGB(0x5C, 0x5F, 0x5E)};
-  mixer[kColorRefNeutralVariant50] = {SkColorSetRGB(0x74, 0x77, 0x75)};
-  mixer[kColorRefNeutralVariant60] = {SkColorSetRGB(0x8E, 0x91, 0x8F)};
-  mixer[kColorRefNeutralVariant70] = {SkColorSetRGB(0xA9, 0xAC, 0xAA)};
-  mixer[kColorRefNeutralVariant80] = {SkColorSetRGB(0xC4, 0xC7, 0xC5)};
-  mixer[kColorRefNeutralVariant90] = {SkColorSetRGB(0xE1, 0xE3, 0xE1)};
-  mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xEF, 0xF2, 0xEF)};
-  mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFA, 0xFD, 0xFB)};
-  mixer[kColorRefNeutralVariant100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+    mixer[kColorRefNeutralVariant0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
+    mixer[kColorRefNeutralVariant10] = {SkColorSetRGB(0x19, 0x1D, 0x1C)};
+    mixer[kColorRefNeutralVariant15] = {SkColorSetRGB(0x23, 0x27, 0x26)};
+    mixer[kColorRefNeutralVariant20] = {SkColorSetRGB(0x2D, 0x31, 0x2F)};
+    mixer[kColorRefNeutralVariant30] = {SkColorSetRGB(0x44, 0x47, 0x46)};
+    mixer[kColorRefNeutralVariant40] = {SkColorSetRGB(0x5C, 0x5F, 0x5E)};
+    mixer[kColorRefNeutralVariant50] = {SkColorSetRGB(0x74, 0x77, 0x75)};
+    mixer[kColorRefNeutralVariant60] = {SkColorSetRGB(0x8E, 0x91, 0x8F)};
+    mixer[kColorRefNeutralVariant70] = {SkColorSetRGB(0xA9, 0xAC, 0xAA)};
+    mixer[kColorRefNeutralVariant80] = {SkColorSetRGB(0xC4, 0xC7, 0xC5)};
+    mixer[kColorRefNeutralVariant90] = {SkColorSetRGB(0xE1, 0xE3, 0xE1)};
+    mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xEF, 0xF2, 0xEF)};
+    mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFA, 0xFD, 0xFB)};
+    mixer[kColorRefNeutralVariant100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+  }
 }
 
 // Adds the dynamic color palette tokens based on user_color. This is the base
