@@ -9282,21 +9282,6 @@
             ]
         }
     ],
-    "DisableU18FeedbackIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260403",
-                    "enable_features": [
-                        "DisableU18FeedbackIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableUrgentPageDiscarding": [
         {
             "platforms": [
@@ -11396,21 +11381,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FeedSignedOutViewDemotion"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FeedbackEntryPointsRequireCanSubmitFeedbackCapability": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260612",
-                    "enable_features": [
-                        "FeedbackEntryPointsRequireCanSubmitFeedbackCapability"
                     ]
                 }
             ]
