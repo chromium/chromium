@@ -72,11 +72,24 @@ password_manager::PasswordForm CreateTestForm(const GURL& url,
   form.url = url;
   form.signon_realm = url.spec();
   form.username_element_renderer_id = autofill::FieldRendererId(1);
+
+  autofill::FormFieldData username_field;
+  username_field.set_renderer_id(form.username_element_renderer_id);
+  username_field.set_is_focusable(true);
+
+  autofill::FormFieldData password_field;
   if (is_signup_form) {
     form.new_password_element_renderer_id = autofill::FieldRendererId(2);
+    password_field.set_renderer_id(form.new_password_element_renderer_id);
   } else {
     form.password_element_renderer_id = autofill::FieldRendererId(3);
+    password_field.set_renderer_id(form.password_element_renderer_id);
   }
+  password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+  password_field.set_is_focusable(true);
+
+  form.form_data.set_fields({username_field, password_field});
   return form;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -241,6 +254,38 @@ TEST_F(ChromePasswordChangeServiceTest,
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kNonPasswordLogin, 1);
+}
+
+TEST_F(ChromePasswordChangeServiceTest,
+       PasswordChangeNotSupportedForInvisiblePasswordField) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "us");
+
+  base::HistogramTester histogram_tester;
+  GURL url("https://test.com/");
+  EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(true));
+
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+
+  autofill::FormFieldData password_field;
+  password_field.set_renderer_id(form.password_element_renderer_id);
+  password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+  password_field.set_is_focusable(false);
+  form.form_data.set_fields({password_field});
+
+  EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeAvailability",
+      PasswordChangeAvailability::kInvisiblePasswordField, 1);
 }
 
 TEST_F(ChromePasswordChangeServiceTest,

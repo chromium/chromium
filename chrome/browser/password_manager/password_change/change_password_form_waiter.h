@@ -24,6 +24,15 @@ namespace content {
 class WebContents;
 }
 
+// Returns whether the field with `renderer_id` in `form_data` is focusable.
+bool FieldFocusable(autofill::FieldRendererId renderer_id,
+                    const autofill::FormData& form_data);
+
+// Returns whether the field with `renderer_id` in `form_data` is enabled and
+// not readonly.
+bool FieldEnabled(autofill::FieldRendererId renderer_id,
+                  const autofill::FormData& form_data);
+
 // Helper object which waits for change password parsing, invokes callback on
 // completion. If form isn't found withing
 // `kChangePasswordFormWaitingTimeout` after WebContents finished loading

@@ -31,6 +31,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
@@ -69,6 +70,22 @@ CreateLoggerPair(autofill::LogRouter* log_router) {
   }
   return {std::move(log_manager), std::move(logger)};
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool IsPasswordFieldVisible(const password_manager::PasswordForm& form) {
+  for (autofill::FieldRendererId renderer_id :
+       {form.password_element_renderer_id,
+        form.new_password_element_renderer_id}) {
+    if (!renderer_id) {
+      continue;
+    }
+    if (!FieldFocusable(renderer_id, form.form_data)) {
+      return false;
+    }
+  }
+  return true;
+}
+#endif
 
 }  // namespace
 
@@ -389,6 +406,13 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
                          true);
     }
     return PasswordChangeAvailability::kNonPasswordLogin;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kCheckPasswordFieldFocusableBeforeOffering) &&
+      !IsPasswordFieldVisible(form)) {
+    return PasswordChangeAvailability::kInvisiblePasswordField;
   }
 
   return PasswordChangeAvailability::kAvailable;

@@ -64,7 +64,8 @@ enum class PasswordChangeAvailability {
   kThrottled = 10,
   kSignupForm = 11,
   kNonPasswordLogin = 12,
-  kMaxValue = kNonPasswordLogin,
+  kInvisiblePasswordField = 13,
+  kMaxValue = kInvisiblePasswordField,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeAvailability)
 

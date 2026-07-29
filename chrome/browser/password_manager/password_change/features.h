@@ -16,6 +16,10 @@ namespace password_change::features {
 // password form.
 BASE_DECLARE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter);
 
+// Controls whether ChromePasswordChangeService checks whether the password
+// field is focusable (visible).
+BASE_DECLARE_FEATURE(kCheckPasswordFieldFocusableBeforeOffering);
+
 // Controls whether LOGIN_CHECK is executed before offering APC using Private
 // Inference.
 BASE_DECLARE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck);
