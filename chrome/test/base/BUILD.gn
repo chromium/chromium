@@ -83,6 +83,26 @@ source_set("web_ui_test_data_source") {
   }
 }
 
+if (is_chrome_branded && (is_mac || is_win || is_linux)) {
+  source_set("scoped_channel_override") {
+    testonly = true
+    sources = [ "scoped_channel_override.h" ]
+    public_deps = [ "//build:branding_buildflags" ]
+    if (is_mac) {
+      sources += [ "scoped_channel_override_mac.cc" ]
+      deps = [ "//chrome/common" ]
+    } else if (is_win) {
+      sources += [ "scoped_channel_override_win.cc" ]
+      public_deps += [ "//chrome/install_static/test:test_support" ]
+      deps = [ "//chrome/install_static:install_static_util" ]
+    } else {
+      sources += [ "scoped_channel_override_posix.cc" ]
+      public_deps += [ "//base/test:test_support" ]
+      deps = [ "//base" ]
+    }
+  }
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [
