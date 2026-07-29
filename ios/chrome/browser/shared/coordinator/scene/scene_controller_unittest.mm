@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -147,7 +148,7 @@ class SceneControllerTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());
@@ -242,8 +243,9 @@ class SceneControllerTest : public PlatformTest {
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestProfileManagerIOS profile_manager_;
 
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   InternalFakeSceneController* scene_controller_;
   id mock_scene_handler_;
@@ -382,6 +384,70 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentDisabled) {
                                         .identifier = "other-id"}];
 
   EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
+}
+
+// Tests that the -prefs property of SceneState is set when the profile is
+// fully loaded.
+TEST_F(SceneControllerTest, CreateSceneStatePrefsOnProfileLoad) {
+  SceneState* scene_state = [[SceneState alloc] init];
+  SceneController* scene_controller =
+      [[SceneController alloc] initWithSceneState:scene_state];
+  ASSERT_EQ(scene_state.prefs, nil);
+
+  // The profile is not yet loaded, so the -prefs property should still be nil.
+  ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
+  [scene_controller connectWithOptions:{.profile_state = profile_state,
+                                        .identifier = "other-id"}];
+  EXPECT_EQ(scene_state.prefs, nil);
+
+  // Pretend the profile is loaded, -prefs should be created.
+  profile_state.profile = profile_.get();
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kProfileLoaded);
+  EXPECT_NE(scene_state.prefs, nil);
+}
+
+// Tests that the -prefs property of SceneState is created immediately if
+// the profile is already loaded when the SceneController is connected.
+TEST_F(SceneControllerTest, CreateSceneStatePrefsOnConnectionIfProfileLoaded) {
+  ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kFinal);
+  profile_state.profile = profile_.get();
+
+  SceneState* scene_state = [[SceneState alloc] init];
+  SceneController* scene_controller =
+      [[SceneController alloc] initWithSceneState:scene_state];
+  ASSERT_EQ(scene_state.prefs, nil);
+
+  // The profile is already loaded, so the -prefs property should be created.
+  [scene_controller connectWithOptions:{.profile_state = profile_state,
+                                        .identifier = "other-id"}];
+  EXPECT_NE(scene_state.prefs, nil);
+}
+
+// Tests that the -prefs property of SceneState is not changed after the
+// ProfileState reaches kProfileLoaded stage.
+TEST_F(SceneControllerTest, SceneStatePrefsNotRecreatedAsProfileStageAdvance) {
+  SceneState* scene_state = [[SceneState alloc] init];
+  SceneController* scene_controller =
+      [[SceneController alloc] initWithSceneState:scene_state];
+  ASSERT_EQ(scene_state.prefs, nil);
+
+  // The profile is not yet loaded, so the -prefs property should still be nil.
+  ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
+  [scene_controller connectWithOptions:{.profile_state = profile_state,
+                                        .identifier = "other-id"}];
+  EXPECT_EQ(scene_state.prefs, nil);
+
+  // Pretend the profile is loaded, -prefs should be created.
+  profile_state.profile = profile_.get();
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kProfileLoaded);
+  SceneStatePrefs* prefs = scene_state.prefs;
+  EXPECT_NE(prefs, nil);
+
+  // Pretend the initialisation of the ProfileState progress to kFinal. The
+  // SceneStatePrefs should not be recreated.
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kFinal);
+  EXPECT_EQ(scene_state.prefs, prefs);
 }
 
 }  // namespace

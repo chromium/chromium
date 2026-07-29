@@ -111,6 +111,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
@@ -425,7 +426,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
 #pragma mark - Setters and Getters
 
-    - (BOOL)isIncognitoDisabled {
+- (BOOL)isIncognitoDisabled {
   return IsIncognitoModeDisabled(
       self.mainInterface.browser->GetProfile()->GetPrefs());
 }
@@ -881,6 +882,17 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage >= ProfileInitStage::kProfileLoaded && !_sceneState.prefs) {
+    CHECK(profileState.profile);
+    ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+    _sceneState.prefs = [[SceneStatePrefs alloc]
+        initWithProfileManager:manager
+                   profileName:profileState.profile->GetProfileName()
+             sessionIdentifier:_sceneState.sceneSessionID
+                  sceneSession:_sceneState.scene.session];
+    [_sceneState.incognitoState preferencesDidLoad];
+  }
+
   [self transitionToSceneActivationLevel:self.sceneState.activationLevel
                         profileInitStage:nextInitStage];
 }

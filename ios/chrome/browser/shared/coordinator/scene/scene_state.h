@@ -141,7 +141,7 @@ struct SceneStateOptions;
     LensOverlayStateNotifier* lensOverlayStateNotifier;
 
 // Object allowing access to the SceneState scoped preferences.
-@property(nonatomic, readonly) SceneStatePrefs* prefs;
+@property(nonatomic, strong) SceneStatePrefs* prefs;
 
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.

@@ -17,11 +17,13 @@
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -73,6 +75,11 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     [scene_state_ connectWithOptions:{.profile_state = profile_state_,
                                       .identifier = "scene"}];
     scene_state_.UIEnabled = YES;
+    scene_state_.prefs = [[SceneStatePrefs alloc]
+        initWithProfileManager:&profile_manager_
+                   profileName:profile_->GetProfileName()
+             sessionIdentifier:scene_state_.sceneSessionID
+                  sceneSession:nil];
 
     agent_ = [[StartSurfaceSceneAgent alloc] init];
     agent_.sceneState = scene_state_;
@@ -103,6 +110,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     app_state_ = nil;
     profile_state_ = nil;
     [scene_state_ shutdown];
+    scene_state_.prefs = nil;
     scene_state_ = nil;
     agent_ = nil;
     dispatcher_ = nil;

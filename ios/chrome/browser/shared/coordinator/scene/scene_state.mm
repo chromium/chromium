@@ -11,9 +11,6 @@
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/app/profile/profile_init_stage.h"
-#import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -36,7 +33,7 @@
 
 #pragma mark - SceneState
 
-@interface SceneState () <ProfileStateObserver, SignInInProgressAudience>
+@interface SceneState () <SignInInProgressAudience>
 
 @end
 
@@ -107,19 +104,9 @@
 }
 
 - (void)connectWithOptions:(SceneStateOptions)options {
-  if (ProfileState* profileState = _sceneStateOptions.profile_state) {
-    [profileState removeObserver:self];
-    _prefs = nil;
-  }
-
   _sceneStateOptions = std::move(options);
   ProfileState* profileState = _sceneStateOptions.profile_state;
   [_observers sceneState:self profileStateConnected:profileState];
-
-  if (profileState) {
-    [profileState addObserver:self];
-    [self createPrefsIfPossible];
-  }
 }
 
 #pragma mark - Setters & Getters.
@@ -267,45 +254,6 @@
   }
   _signinUIBlocker.reset();
   [_observers signinDidEnd:self];
-}
-
-#pragma mark - ProfileStateObserver
-
-- (void)profileState:(ProfileState*)profileState
-    didTransitionToInitStage:(ProfileInitStage)nextInitStage
-               fromInitStage:(ProfileInitStage)fromInitStage {
-  if (nextInitStage >= ProfileInitStage::kProfileLoaded) {
-    [self createPrefsIfPossible];
-  }
-}
-
-#pragma mark - Private methods
-
-// Will create the SceneStatePrefs if the object is ready. Can be called
-// when any condition controlling the creation of the object has changed.
-- (void)createPrefsIfPossible {
-  ProfileState* profileState = _sceneStateOptions.profile_state;
-  std::string_view identifier = _sceneStateOptions.identifier;
-  if (identifier.empty() ||
-      profileState.initStage < ProfileInitStage::kProfileLoaded) {
-    return;
-  }
-
-  // During unit tests, the profile or the profile manager may not be
-  // initialized. Avoid crashing by returning early.
-  ProfileIOS* profile = profileState.profile;
-  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
-  if (!profile || !manager) {
-    return;
-  }
-
-  [profileState removeObserver:self];
-  const std::string& profile_name = profile->GetProfileName();
-  _prefs = [[SceneStatePrefs alloc] initWithProfileManager:manager
-                                               profileName:profile_name
-                                         sessionIdentifier:identifier
-                                              sceneSession:_scene.session];
-  [_incognitoState preferencesDidLoad];
 }
 
 @end
