@@ -4726,9 +4726,10 @@ class LensOverlayControllerEntrypointsBrowserTest
     }));
 
     // Verify three dot menu entrypoint matches expected visibility.
-    EXPECT_EQ(expected_visible,
-              browser()->command_controller()->IsCommandEnabled(
-                  IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+    EXPECT_EQ(
+        expected_visible,
+        chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+            IDC_CONTENT_CONTEXT_LENS_OVERLAY));
 
     // Verify toolbar entrypoint is always enabled and visible.
     actions::ActionItem* toolbar_entry_point =
@@ -5287,8 +5288,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
           kActionSidePanelShowLensOverlayResults,
           browser()->browser_actions()->root_action_item());
   EXPECT_TRUE(toolbar_entry_point->GetEnabled());
-  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(
-      IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+  EXPECT_TRUE(
+      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+          IDC_CONTENT_CONTEXT_LENS_OVERLAY));
 
   // Enter into fullscreen mode.
   FullscreenController* fullscreen_controller = browser()
@@ -5304,7 +5306,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !toolbar_entry_point->GetEnabled(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !browser()->command_controller()->IsCommandEnabled(
+    return !chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
         IDC_CONTENT_CONTEXT_LENS_OVERLAY);
   }));
 
@@ -5315,7 +5317,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return toolbar_entry_point->GetEnabled(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->command_controller()->IsCommandEnabled(
+    return chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
         IDC_CONTENT_CONTEXT_LENS_OVERLAY);
   }));
 }

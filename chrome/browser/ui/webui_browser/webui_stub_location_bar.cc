@@ -15,9 +15,7 @@
 #include "ui/views/bubble/bubble_border.h"
 
 WebUIStubLocationBar::WebUIStubLocationBar(WebUIBrowserWindow* window)
-    : LocationBar(window->browser()
-                      ->GetBrowserForMigrationOnly()
-                      ->command_controller()),
+    : LocationBar(chrome::BrowserCommandController::From(window->browser())),
       window_(window) {}
 
 WebUIStubLocationBar::~WebUIStubLocationBar() = default;

@@ -352,7 +352,8 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
         break;
     }
 
-    browser_->command_controller()->ExecuteCommand(command_id);
+    chrome::BrowserCommandController::From(browser_)->ExecuteCommand(
+        command_id);
   } else {
     const auto group_id = GetTabGroupIdFromCommandId(command_id);
     if (!group_id.is_valid()) {

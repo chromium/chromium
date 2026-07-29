@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
   EXPECT_TRUE(
       [child_window validateUserInterfaceItem:show_bookmark_bar_menu_item]);
 
-  browser()->command_controller()->UpdateCommandEnabled(
+  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
       show_bookmark_bar_menu_item.tag, false);
 
   // Make sure both windows find the bookmark bar menu item invalid. The child

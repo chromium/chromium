@@ -82,10 +82,6 @@ namespace blink {
 enum class ProtocolHandlerSecurityLevel;
 }
 
-namespace chrome {
-class BrowserCommandController;
-}
-
 namespace content {
 class NavigationHandle;
 class SessionStorageNamespace;
@@ -337,11 +333,6 @@ class Browser : public TabStripModelObserver,
 
   BrowserActions* browser_actions() { return GetActions(); }
 
-  // TODO(crbug.com/434734349): Remove this method once callsites are migrated.
-  chrome::BrowserCommandController* command_controller() {
-    return GetCommandController();
-  }
-
   SessionID session_id() const { return session_id_; }
   BrowserWindowFeatures* browser_window_features() const {
     return features_.get();
@@ -581,8 +572,6 @@ class Browser : public TabStripModelObserver,
   // listed first.
   // TODO(beng): remove this.
   std::vector<StatusBubble*> GetStatusBubbles();
-
-  chrome::BrowserCommandController* GetCommandController();
 
 
 

@@ -44,7 +44,7 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
         std::make_unique<TemplateURLServiceFactoryTestUtil>(profile());
     template_service_util_->VerifyLoad();
 
-    command_updater_ = browser()->command_controller();
+    command_updater_ = chrome::BrowserCommandController::From(browser());
 
     browser()->tab_strip_model()->AppendWebContents(
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr),

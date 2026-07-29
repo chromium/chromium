@@ -502,8 +502,8 @@ bool BrowserNativeWidgetMac::WillExecuteCommand(
     // on macOS.
     input::NativeWebKeyboardEvent dummy_event(
         blink::WebInputEvent::Type::kKeyDown, 0, base::TimeTicks());
-    if (!browser->command_controller()->IsReservedCommandOrKey(command,
-                                                               dummy_event)) {
+    if (!chrome::BrowserCommandController::From(browser)
+             ->IsReservedCommandOrKey(command, dummy_event)) {
       return false;
     }
   }

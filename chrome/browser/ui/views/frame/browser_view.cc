@@ -3200,7 +3200,8 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
 
   // If it's a known browser command, we decide whether to consume it now, i.e.
   // reserved by browser.
-  chrome::BrowserCommandController* controller = browser_->command_controller();
+  chrome::BrowserCommandController* controller =
+      chrome::BrowserCommandController::From(browser_);
   // Executing the command may cause |this| object to be destroyed.
   if (controller->IsReservedCommandOrKey(id, event)) {
     UpdateAcceleratorMetrics(accelerator, id);
