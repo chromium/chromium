@@ -186,7 +186,8 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
                                         : POLICY_DOMAIN_EXTENSIONS;
 
   for (auto domains_it : *domains_dictionary) {
-    if (!supported_domains.contains(domains_it.first)) {
+    auto domain_it = supported_domains.find(domains_it.first);
+    if (domain_it == supported_domains.end()) {
       SYSLOG(WARNING) << "Unsupported 3rd party policy domain: "
                       << domains_it.first;
       continue;
@@ -200,7 +201,7 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
       continue;
     }
 
-    PolicyDomain domain = supported_domains[domains_it.first];
+    PolicyDomain domain = domain_it->second;
     for (auto components_it : *components_dictionary) {
       const base::DictValue* policy_dictionary =
           components_it.second.GetIfDict();
