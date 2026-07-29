@@ -135,12 +135,16 @@ public class LocationBarFocusScrimHandler {
 
     /** Controls the visibility of scrim overlay. */
     public void setVisibility(boolean shouldShow) {
+        setVisibility(shouldShow, /* animate= */ true);
+    }
+
+    public void setVisibility(boolean shouldShow, boolean animate) {
         if (shouldShow == mScrimShown) return;
 
         if (shouldShow) {
             mScrimManager.showScrim(mScrimModel);
         } else {
-            mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
+            mScrimManager.hideScrim(mScrimModel, animate);
         }
 
         mScrimShown = shouldShow;

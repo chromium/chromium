@@ -2902,7 +2902,10 @@ class LocationBarMediator
         mStatusCoordinator.endInput();
         mUrlCoordinator.endInput();
 
-        if (mScrimHandler != null) mScrimHandler.setVisibility(false);
+        if (mScrimHandler != null) {
+            mScrimHandler.setVisibility(
+                    false, /* animate= */ OmniboxCapabilities.areAnimationsEnabled());
+        }
         disconnectObservers(input);
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null) {
