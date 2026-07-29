@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_protection/coordinator/data_protection_scene_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_scene_agent.h"
 
 #import "base/values.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"

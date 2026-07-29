@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/enterprise/data_protection/coordinator/data_protection_scene_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_scene_agent.h"
 
 #import "base/scoped_observation.h"
 #import "base/values.h"
@@ -290,7 +290,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 // Returns the current Browser's active WebState, if any.
 - (web::WebState*)activeWebState {
-  return [self currentBrowser]->GetWebStateList()->GetActiveWebState();
+  return [self currentBrowser]->GetWebStateList() -> GetActiveWebState();
 }
 
 // Monitor for changes in the current Browser's active WebState.

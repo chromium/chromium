@@ -340,7 +340,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/enterprise/connectors/analysis:unit_tests",
     "//ios/chrome/browser/enterprise/connectors/device_trust:unit_tests",
     "//ios/chrome/browser/enterprise/connectors/reporting:unit_tests",
-    "//ios/chrome/browser/enterprise/data_protection/coordinator:unit_tests",
     "//ios/chrome/browser/enterprise/data_protection/model:unit_tests",
     "//ios/chrome/browser/enterprise/identifiers:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",
