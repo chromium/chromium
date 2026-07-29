@@ -66,6 +66,10 @@ CallStackProfileBuilder::CallStackProfileBuilder(
   // vector reallocations during collection.
   sample_timestamps_.reserve(
       base::StackSamplingProfiler::SamplingParams{}.samples_per_profile);
+  sampled_profile_.mutable_call_stack_profile()
+      ->mutable_stack_sample()
+      ->Reserve(
+          base::StackSamplingProfiler::SamplingParams{}.samples_per_profile);
   sampled_profile_.set_process(
       ToExecutionContextProcess(profile_params.process));
   sampled_profile_.set_thread(ToExecutionContextThread(profile_params.thread));
