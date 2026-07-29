@@ -214,6 +214,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(std::make_tuple("10s", base::Seconds(10)),
                     std::make_tuple("1000ms", base::Milliseconds(1000)),
                     std::make_tuple("500ms", kInvalidTimeout),  // too small
+                    std::make_tuple("3m", base::Minutes(3)),
                     std::make_tuple("10m", kInvalidTimeout),    // too large
                     std::make_tuple("foobar", kInvalidTimeout)),
     [](const testing::TestParamInfo<
