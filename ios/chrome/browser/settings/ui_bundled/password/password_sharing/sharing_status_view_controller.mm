@@ -55,6 +55,7 @@ const CGFloat kImagesSlidingInDuration = 0.5;
 const CGFloat kFaviconAppearingDelay = 0.1;
 const CGFloat kFaviconAppearingDuration = 0.15;
 const CGFloat kSharingCancelledDuration = 0.5;
+const CGFloat kStatusTransitionDuration = 0.25;
 
 // Distance by which the profile images x-center should be away from the middle
 // of the view in different parts of the animation.
@@ -132,6 +133,15 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   // The button that cancels the sharing process.
   UIButton* _cancelButton;
 
+  // Subtitle text view displayed inside stack view.
+  UITextView* _subtitleTextView;
+
+  // Footer text view displayed inside stack view.
+  UITextView* _footerTextView;
+
+  // The button that dismisses the sharing status view when done.
+  UIButton* _doneButton;
+
   // Url of the site for which the password is being shared.
   GURL _URL;
 
@@ -180,7 +190,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
         constraintGreaterThanOrEqualToAnchor:verticalStack.bottomAnchor
                                     constant:kVerticalSpacing],
     [_cancelButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                              constant:-kBottomPadding],
+                                               constant:-kBottomPadding],
     [_cancelButton.centerXAnchor
         constraintEqualToAnchor:verticalStack.centerXAnchor],
   ]];
@@ -619,6 +629,38 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   [self setImagesCenterXConstraint:0];
 }
 
+// Helper for animating displaying success status.
+- (void)animateDisplayingSuccessStatus {
+  _cancelButton.alpha = 0.0;
+  _subtitleTextView.alpha = 1.0;
+  _footerTextView.alpha = 1.0;
+  _doneButton.alpha = 1.0;
+}
+
+// Helper for animating displaying cancelled status.
+- (void)animateDisplayingCancelledStatus {
+  _cancelButton.alpha = 0.0;
+  _doneButton.alpha = 1.0;
+}
+
+// Helper called when status transition animation completes.
+- (void)onStatusTransitionCompleted {
+  _cancelButton.hidden = YES;
+}
+
+// Orchestrates sheet detent expansion and status view transition animations.
+- (void)animateStatusTransitionWithAnimations:(void (^)(void))animations {
+  __weak __typeof(self) weakSelf = self;
+  [self.sheetPresentationController animateChanges:^{
+    [weakSelf recalculatePreferredHeightDetentAndLayout];
+  }];
+  [UIView animateWithDuration:kStatusTransitionDuration
+      animations:animations
+      completion:^(BOOL finished) {
+        [weakSelf onStatusTransitionCompleted];
+      }];
+}
+
 // Helper for setting alpha of progress bar circle at `index` to 1.
 - (void)setProgressBarSubviewsAlphaAtIndex:(NSUInteger)index {
   if (index < _progressBarView.subviews.count) {
@@ -646,6 +688,12 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
     [self preferredHeightDetent],
     [UISheetPresentationControllerDetent largeDetent]
   ];
+}
+
+// Recalculates preferred height detent and lays out view inside animated block.
+- (void)recalculatePreferredHeightDetentAndLayout {
+  [self recalculatePreferredHeightDetent];
+  [self.view layoutIfNeeded];
 }
 
 // Creates a UITextView with subtitle and footer defaults.
@@ -732,49 +780,75 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   return doneButton;
 }
 
-// Creates done button, adds it to the view and sets its constraints.
+// Creates done button with 0 alpha, adds it to the view and sets its
+// constraints.
 - (void)addDoneButtonWithBottomPadding {
   UIView* view = self.view;
-  UIButton* doneButton = [self createDoneButton];
-  [view addSubview:doneButton];
+  _doneButton = [self createDoneButton];
+  _doneButton.alpha = 0.0;
+  [view addSubview:_doneButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    [doneButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                             constant:kHorizontalPadding],
-    [doneButton.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
-                                              constant:-kHorizontalPadding],
-    [doneButton.topAnchor
+    [_doneButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+                                              constant:kHorizontalPadding],
+    [_doneButton.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
+                                               constant:-kHorizontalPadding],
+    [_doneButton.topAnchor
         constraintGreaterThanOrEqualToAnchor:_stackView.bottomAnchor
                                     constant:kVerticalSpacing],
-    [doneButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                            constant:-kBottomPadding],
+    [_doneButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                             constant:-kBottomPadding],
   ]];
 }
 
-// Replaces text of the title label, cancel button with done button and adds a
-// subtitle and a footer.
+// Replaces text of the title label, hides cancel button, and makes subtitle,
+// footer, and done button visible while smoothly expanding the sheet detent.
 - (void)displaySuccessStatus {
+  if (_doneButton) {
+    return;
+  }
+
   _titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE);
-  _cancelButton.hidden = YES;
+  _cancelButton.userInteractionEnabled = NO;
 
-  [_stackView addArrangedSubview:[self createSubtitle]];
-  [_stackView addArrangedSubview:[self createFooter]];
+  _subtitleTextView = [self createSubtitle];
+  _subtitleTextView.alpha = 0.0;
+  [_stackView addArrangedSubview:_subtitleTextView];
+
+  _footerTextView = [self createFooter];
+  _footerTextView.alpha = 0.0;
+  [_stackView addArrangedSubview:_footerTextView];
 
   [self addDoneButtonWithBottomPadding];
-  [self recalculatePreferredHeightDetent];
+
+  __weak __typeof(self) weakSelf = self;
+  [self animateStatusTransitionWithAnimations:^{
+    [weakSelf animateDisplayingSuccessStatus];
+  }];
+
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   _titleLabel);
 }
 
-// Replaces text of the title label and adds a done button.
+// Replaces text of the title label, hides cancel button, and makes done button
+// visible while smoothly expanding the sheet detent.
 - (void)displayCancelledStatus {
+  if (_doneButton) {
+    return;
+  }
+
   _titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE);
-  _cancelButton.hidden = YES;
+  _cancelButton.userInteractionEnabled = NO;
 
   [self addDoneButtonWithBottomPadding];
-  [self recalculatePreferredHeightDetent];
+
+  __weak __typeof(self) weakSelf = self;
+  [self animateStatusTransitionWithAnimations:^{
+    [weakSelf animateDisplayingCancelledStatus];
+  }];
+
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   _titleLabel);
 }
