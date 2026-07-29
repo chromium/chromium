@@ -316,6 +316,7 @@ def _CommonChecks(input_api, output_api):
     results = []
     results.extend(_CheckNoContentUnitTestsInChrome(input_api, output_api))
     results.extend(_CheckNoIsAppleBuildFlagsInChrome(input_api, output_api))
+    results.extend(_CheckNoIsFuchsiaBuildFlagsInChrome(input_api, output_api))
     results.extend(_CheckNoIsIOSBuildFlagsInChrome(input_api, output_api))
     results.extend(
         _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api))
