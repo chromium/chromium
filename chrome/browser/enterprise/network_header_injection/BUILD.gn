@@ -42,6 +42,7 @@ source_set("unit_tests") {
     "http_header_injection_client_unittest.cc",
     "http_header_injection_proxying_url_loader_factory_unittest.cc",
     "http_header_injection_url_loader_header_client_unittest.cc",
+    "http_header_injection_utils_unittest.cc",
   ]
 
   deps = [

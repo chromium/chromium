@@ -25,7 +25,7 @@ void MaybeWrapTrustedURLLoaderHeaderClient(
 
   auto* service = HttpHeaderInjectionServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context));
-  if (!service) {
+  if (!service || !service->HasRules()) {
     return;
   }
 
