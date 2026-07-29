@@ -165,11 +165,12 @@ void SqlPersistentStore::BackendShard::DeleteDoomedEntry(
       .Then(WrapCallback(std::move(callback)));
 }
 
-void SqlPersistentStore::BackendShard::DeleteLiveEntry(const CacheEntryKey& key,
-                                                       ErrorCallback callback) {
+void SqlPersistentStore::BackendShard::DeleteLiveEntry(
+    const CacheEntryKey& key,
+    DeletedSharedCacheResourcesOrErrorCallback callback) {
   // If the entry is not in the in-memory index, we can skip the DB lookup.
   if (GetIndexStateForHash(key.hash()) == IndexState::kHashNotFound) {
-    std::move(callback).Run(Error::kNotFound);
+    std::move(callback).Run(base::unexpected(Error::kNotFound));
     return;
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::DeleteLiveEntry)
@@ -626,6 +627,38 @@ SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
           // We should not run the callback when `this` was deleted.
           std::move(callback).Run(
               std::move(result.result.error_or(Error::kOk)));
+        }
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback), location);
+}
+
+base::OnceCallback<
+    void(SqlPersistentStore::DeleteLiveEntryResultOrErrorAndStoreStatus)>
+SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
+    DeletedSharedCacheResourcesOrErrorCallback callback,
+    IndexMismatchLocation location) {
+  return base::BindOnce(
+      [](base::WeakPtr<BackendShard> weak_ptr,
+         DeletedSharedCacheResourcesOrErrorCallback callback,
+         IndexMismatchLocation location,
+         DeleteLiveEntryResultOrErrorAndStoreStatus result) {
+        if (weak_ptr) {
+          if (result.result.has_value() && weak_ptr->index_.has_value()) {
+            for (const auto& hash_and_res_id :
+                 result.result->deleted_hash_and_res_ids) {
+              if (!weak_ptr->index_->Remove(hash_and_res_id.hash,
+                                            hash_and_res_id.res_id)) {
+                weak_ptr->RecordIndexMismatch(location);
+              }
+            }
+          }
+          weak_ptr->store_status_ = result.store_status;
+          if (result.result.has_value()) {
+            std::move(callback).Run(
+                std::move(result.result->deleted_shared_cache_resources));
+          } else {
+            std::move(callback).Run(base::unexpected(result.result.error()));
+          }
         }
       },
       weak_factory_.GetWeakPtr(), std::move(callback), location);

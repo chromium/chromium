@@ -67,7 +67,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   DeletedSharedCacheResourcesOrError DeleteDoomedEntries(
       ResIdList res_ids_to_delete,
       base::TimeTicks start_time);
-  HashAndResIdListOrErrorAndStoreStatus DeleteLiveEntry(
+  DeleteLiveEntryResultOrErrorAndStoreStatus DeleteLiveEntry(
       const CacheEntryKey& key,
       base::TimeTicks start_time);
 
@@ -270,8 +270,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   DeletedSharedCacheResourcesOrError DeleteDoomedEntriesInternal(
       const ResIdList& res_ids_to_delete,
       bool& corruption_detected);
-  HashAndResIdListOrError DeleteLiveEntryInternal(const CacheEntryKey& key,
-                                                  bool& corruption_detected);
+  DeleteLiveEntryResultOrError DeleteLiveEntryInternal(
+      const CacheEntryKey& key,
+      bool& corruption_detected);
   Error DeleteAllEntriesInternal(bool& corruption_detected);
   HashAndResIdListOrError DeleteLiveEntriesBetweenInternal(
       base::Time initial_time,

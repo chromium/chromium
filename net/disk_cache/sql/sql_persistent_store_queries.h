@@ -226,8 +226,9 @@ inline constexpr const char
         "shared_cache_row_id";  // 1
 // clang-format on
 
-inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
-    // clang-format off
+inline constexpr const char
+    kDeleteLiveEntry_DeleteFromResources_SharedCacheDisabled[] =
+        // clang-format off
     "DELETE FROM resources "
     "WHERE "
         "cache_key_hash=? AND " // 0
@@ -236,6 +237,21 @@ inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
     "RETURNING "
         "res_id,"           // 0
         "bytes_usage";      // 1
+// clang-format on
+
+inline constexpr const char
+    kDeleteLiveEntry_DeleteFromResources_SharedCacheEnabled[] =
+        // clang-format off
+    "DELETE FROM resources "
+    "WHERE "
+        "cache_key_hash=? AND " // 0
+        "cache_key=? AND "      // 1
+        "doomed=0 "
+    "RETURNING "
+        "res_id,"               // 0
+        "bytes_usage,"          // 1
+        "shared_cache_db_id,"   // 2
+        "shared_cache_row_id";  // 3
 // clang-format on
 
 inline constexpr const char kDeleteAllEntries_DeleteFromResources[] =
@@ -742,7 +758,11 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
       return internal::
           kDeleteDoomedEntry_DeleteFromResources_SharedCacheDisabled;
     case Query::kDeleteLiveEntry_DeleteFromResources:
-      return internal::kDeleteLiveEntry_DeleteFromResources;
+      if (shared_cache_enabled) {
+        return internal::
+            kDeleteLiveEntry_DeleteFromResources_SharedCacheEnabled;
+      }
+      return internal::kDeleteLiveEntry_DeleteFromResources_SharedCacheDisabled;
     case Query::kDeleteAllEntries_DeleteFromResources:
       return internal::kDeleteAllEntries_DeleteFromResources;
     case Query::kDeleteAllEntries_DeleteFromBlobs:

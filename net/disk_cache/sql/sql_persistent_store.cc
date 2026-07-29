@@ -269,7 +269,8 @@ void SqlPersistentStore::DeleteDoomedEntry(const CacheEntryKey& key,
 
 void SqlPersistentStore::DeleteLiveEntry(const CacheEntryKey& key,
                                          ErrorCallback callback) {
-  GetShard(key).DeleteLiveEntry(key, std::move(callback));
+  GetShard(key).DeleteLiveEntry(
+      key, WrapCallbackWithSharedCacheDelete(std::move(callback)));
 }
 
 void SqlPersistentStore::DeleteAllEntries(ErrorCallback callback) {

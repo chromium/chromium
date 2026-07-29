@@ -386,6 +386,18 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       base::expected<std::vector<SqlSharedCacheResourceId>, Error>;
   using DeletedSharedCacheResourcesOrErrorCallback =
       base::OnceCallback<void(DeletedSharedCacheResourcesOrError)>;
+
+  struct DeleteLiveEntryResult {
+    HashAndResIdList deleted_hash_and_res_ids;
+    std::vector<SqlSharedCacheResourceId> deleted_shared_cache_resources;
+  };
+  using DeleteLiveEntryResultOrError =
+      base::expected<DeleteLiveEntryResult, Error>;
+  using DeleteLiveEntryResultOrErrorAndStoreStatus =
+      ResultAndStoreStatus<DeleteLiveEntryResultOrError>;
+  using DeleteLiveEntryResultOrErrorCallback =
+      base::OnceCallback<void(DeleteLiveEntryResultOrError)>;
+
   using InMemoryIndexAndDoomedResIdsOrError =
       base::expected<InMemoryIndexAndDoomedResIds, Error>;
 
