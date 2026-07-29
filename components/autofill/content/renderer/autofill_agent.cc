@@ -2319,8 +2319,9 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
 #endif
 }
 
-void AutofillAgent::DidReceiveLeftPointerDownBeforeDispatch() {
-  javascript_autofill_tracker_.HandleMousedown();
+void AutofillAgent::DidReceiveLeftPointerDownBeforeDispatch(
+    const blink::WebNode& target_node) {
+  javascript_autofill_tracker_.HandleMousedown(target_node);
 }
 
 void AutofillAgent::SelectControlSelectionChanged(

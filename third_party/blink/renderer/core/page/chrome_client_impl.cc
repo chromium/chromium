@@ -1309,9 +1309,10 @@ void ChromeClientImpl::DidDispatchMouseDown(Node& mouse_down_node) {
   }
 }
 
-void ChromeClientImpl::WillDispatchPointerDown(LocalFrame& frame) {
-  if (auto* fill_client = AutofillClientFromFrame(&frame)) {
-    fill_client->DidReceiveLeftPointerDownBeforeDispatch();
+void ChromeClientImpl::WillDispatchPointerDown(Node& node) {
+  if (auto* fill_client =
+          AutofillClientFromFrame(node.GetDocument().GetFrame())) {
+    fill_client->DidReceiveLeftPointerDownBeforeDispatch(WebNode(&node));
   }
 }
 

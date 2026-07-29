@@ -369,6 +369,71 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
   EXPECT_TRUE(logs.empty());
 }
 
+// Test that filling shipping form via dropdown, unticking same_as_shipping to
+// reveal billing section, focusing a billing field, and ticking
+// same_as_shipping again does NOT trigger JS autofill detection.
+TEST_F(JavaScriptAutofillTrackerTest,
+       IgnoreCopyOnCheckingSameAsShippingCheckbox) {
+  // 1. Load the billing and shipping form.
+  LoadBillingAndShippingForm();
+
+  AttachCustomDropdownOption("shipping_street", "shipping_option",
+                             {{"shipping_street", "1600 Amphitheatre Pkwy"},
+                              {"shipping_city", "Mountain View"},
+                              {"shipping_state", "CA"},
+                              {"shipping_zip", "94043"}});
+
+  // 2. Fill the shipping form using the dropdown.
+  SelectDropdownOption("shipping_street", "shipping_option");
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+
+  // 3. Untick the checkbox to reveal the billing section and empty it.
+  SimulateElementClickAndWait("same_as_shipping");
+
+  // 4. Focus on a field in the billing section.
+  SimulateElementClickAndWait("billing_street");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  // 5. Check the checkbox again. This causes a similar effect to clicking on a
+  // dropdown option, while a field in the form is focused, and causes fields to
+  // be filled by JS. However, this should not be detected by the tracker since
+  // it is obviously not a use case of selecting a dropdown item.
+  SimulateElementClickAndWait("same_as_shipping");
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+}
+
+// Test that clicking a reset/clear button that empties form fields via JS does
+// NOT trigger JS autofill detection.
+TEST_F(JavaScriptAutofillTrackerTest, IgnoreResetButtonClearingFields) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="text_1" value="initial 1">
+        <input id="text_2" value="initial 2">
+        <input id="text_3" value="initial 3">
+        <button id="reset_btn" type="button">Reset</button>
+      </form>)");
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('reset_btn').addEventListener('click', () => {
+      document.getElementById('text_1').value = '';
+      document.getElementById('text_2').value = '';
+      document.getElementById('text_3').value = '';
+    });
+  )");
+
+  // Focus on a field first so document.FocusedElement() is valid.
+  Focus("text_1");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  // Click the reset button to clear all 3 fields.
+  SimulateElementClickAndWait("reset_btn");
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+}
+
 }  // namespace
 
 }  // namespace autofill

@@ -300,7 +300,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   gfx::Transform GetDeviceEmulationTransform() const override;
 
-  void WillDispatchPointerDown(LocalFrame&) override;
+  void WillDispatchPointerDown(Node&) override;
   void DidDispatchMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
 

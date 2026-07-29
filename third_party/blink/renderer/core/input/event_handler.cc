@@ -929,8 +929,11 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   if (!mouse_event.FromTouch())
     frame_->Selection().SetCaretBlinkingSuspended(true);
 
-  if (mouse_event.button == WebPointerProperties::Button::kLeft) {
-    frame_->GetChromeClient().WillDispatchPointerDown(*frame_);
+  if (mev.GetHitTestResult().InnerNode() &&
+      mouse_event.button == WebPointerProperties::Button::kLeft) {
+    HitTestResult result = mev.GetHitTestResult();
+    result.SetToShadowHostIfInUAShadowRoot();
+    frame_->GetChromeClient().WillDispatchPointerDown(*result.InnerNode());
   }
 
   WebInputEventResult event_result = DispatchMousePointerEvent(

@@ -567,8 +567,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   }
 
   // Called immediately before initiating DOM event dispatch for a pointerdown
-  // event on `frame`.
-  virtual void WillDispatchPointerDown(LocalFrame&) {}
+  // event. This is called exactly once per event for the innermost hit-tested
+  // node (`pointer_down_node`) before DOM event propagation begins.
+  virtual void WillDispatchPointerDown(Node& pointer_down_node) {}
 
   // Called immediately after a mousedown event or gesture tap has been
   // dispatched to `mouse_down_node`.

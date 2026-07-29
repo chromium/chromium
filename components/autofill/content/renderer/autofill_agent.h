@@ -370,7 +370,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DidCompleteFocusChangeInFrame() override;
   void DidReceiveLeftMouseDownOrGestureTapInNode(
       const blink::WebNode& node) override;
-  void DidReceiveLeftPointerDownBeforeDispatch() override;
+  void DidReceiveLeftPointerDownBeforeDispatch(
+      const blink::WebNode& target_node) override;
   void SelectFieldOptionsChanged(
       const blink::WebFormControlElement& element) override;
   void SelectControlSelectionChanged(

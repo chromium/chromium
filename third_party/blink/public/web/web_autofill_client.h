@@ -108,10 +108,11 @@ class WebAutofillClient {
   virtual void DidReceiveLeftMouseDownOrGestureTapInNode(const WebNode&) {}
 
   // Called immediately before initiating DOM dispatch for a left
-  // pointerdown/mousedown event. This is guaranteed to run before any webpage
-  // JavaScript event listeners (such as pointerdown or mousedown handlers)
-  // execute or mutate form field values.
-  virtual void DidReceiveLeftPointerDownBeforeDispatch() {}
+  // pointerdown/mousedown event. This is called exactly once per event for the
+  // innermost hit-tested node (`target_node`) before DOM event propagation
+  // begins or webpage JavaScript event listeners execute.
+  virtual void DidReceiveLeftPointerDownBeforeDispatch(
+      const WebNode& target_node) {}
 
   // Called when the given form element is reset.
   virtual void FormElementReset(const WebFormElement&) {}
