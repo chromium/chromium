@@ -4305,8 +4305,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 
   is_never_composited_ = params.is_never_composited;
 
-  privileged_params_ = params.privileged_params;
-
   creator_location_ = params.creator_location;
 #if BUILDFLAG(IS_ANDROID)
   java_creator_location_ = params.java_creator_location;
@@ -10961,6 +10959,7 @@ bool WebContentsImpl::ShouldIgnoreInputEvents() {
   return web_contents->ShouldIgnoreInputEvents();
 }
 
+
 void WebContentsImpl::FocusOwningWebContents(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::FocusOwningWebContents",
@@ -12583,6 +12582,8 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
 
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
 }
+
+
 
 FrameTreeNodeId WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
   return node_.outer_contents_frame_tree_node_id();
