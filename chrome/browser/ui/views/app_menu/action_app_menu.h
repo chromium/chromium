@@ -43,6 +43,8 @@ class ActionAppMenu : public views::MenuDelegate {
   // views::MenuDelegate:
   void ExecuteCommand(int id, int mouse_event_flags) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
+  const gfx::FontList* GetLabelFontList(int id) const override;
+  std::optional<SkColor> GetLabelColor(int id) const override;
 
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
 

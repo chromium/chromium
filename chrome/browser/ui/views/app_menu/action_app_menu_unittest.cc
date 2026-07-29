@@ -20,6 +20,7 @@
 #include "ui/actions/actions.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/widget.h"
 
 class ActionAppMenuTest : public ChromeViewsTestBase {
@@ -34,14 +35,14 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
     // Create test ActionItems as children of a root ActionItem.
     auto root = actions::ActionItem::Builder().Build();
     root->AddChild(actions::ActionItem::Builder(base::DoNothing())
-                       .SetActionId(kActionNewTab)
-                       .SetText(u"New tab")
+                       .SetActionId(kActionShowPasswordManager)
+                       .SetText(u"Password Manager")
                        .SetEnabled(true)
                        .SetVisible(true)
                        .Build());
     root->AddChild(actions::ActionItem::Builder(base::DoNothing())
-                       .SetActionId(kActionClearBrowsingData)
-                       .SetText(u"Delete browsing data")
+                       .SetActionId(kActionPrint)
+                       .SetText(u"Print")
                        .SetEnabled(true)
                        .SetVisible(true)
                        .Build());
@@ -81,4 +82,34 @@ TEST_F(ActionAppMenuTest, RunAndCloseMenu) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
   EXPECT_FALSE(menu.IsShowing());
+}
+
+TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  auto action_manager = std::make_unique<AppMenuActionManager>();
+  action_manager->Initialize();
+
+  ActionAppMenu menu(&mock_window_interface_, std::move(action_manager),
+                     on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Check if the menu contains section menu items.
+  views::MenuItemView* password_item =
+      root->GetMenuItemByID(kActionShowPasswordManager);
+  ASSERT_TRUE(password_item);
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+
+  // Check if the styling is applied to the menu items.
+  EXPECT_TRUE(password_item->GetMenuItemBackground().has_value());
+  EXPECT_TRUE(print_item->GetMenuItemBackground().has_value());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
 }

@@ -63,6 +63,10 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenu) {
   views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
   ASSERT_TRUE(print_item);
 
+  // Check if the menu items have background styling
+  EXPECT_TRUE(password_item->GetMenuItemBackground().has_value());
+  EXPECT_TRUE(print_item->GetMenuItemBackground().has_value());
+
   menu_button->CloseMenu();
   EXPECT_FALSE(menu_button->IsMenuShowing());
 }
