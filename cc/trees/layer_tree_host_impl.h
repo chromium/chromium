@@ -200,6 +200,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   float CurrentTopControlsShownRatio() const override;
   float CurrentBottomControlsShownRatio() const override;
   gfx::PointF ViewportScrollOffset() const override;
+  float MaxViewportScrollOffsetY() const override;
   void DidChangeBrowserControlsPosition() override;
   void DidObserveScrollDelay(int source_frame_number,
                              base::TimeDelta scroll_delay,

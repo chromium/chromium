@@ -71,6 +71,7 @@ class CC_EXPORT Viewport {
                               base::TimeDelta delayed_by);
 
   gfx::PointF TotalScrollOffset() const;
+  float MaxUserReachableTotalScrollOffsetY() const;
 
   void PinchUpdate(float magnify_delta, const gfx::Point& anchor);
   void PinchEnd(const gfx::Point& anchor, bool snap_to_min);
@@ -118,8 +119,6 @@ class CC_EXPORT Viewport {
   // Sends the delta to the browser controls, returns the amount applied.
   gfx::Vector2dF ScrollBrowserControls(const gfx::Vector2dF& delta,
                                        bool is_inertial);
-
-  float MaxUserReachableTotalScrollOffsetY() const;
 
   ScrollNode* InnerScrollNode() const;
   ScrollNode* OuterScrollNode() const;

@@ -4723,6 +4723,10 @@ gfx::PointF LayerTreeHostImpl::ViewportScrollOffset() const {
   return viewport_->TotalScrollOffset();
 }
 
+float LayerTreeHostImpl::MaxViewportScrollOffsetY() const {
+  return viewport_->MaxUserReachableTotalScrollOffsetY();
+}
+
 void LayerTreeHostImpl::AutoScrollAnimationCreate(
     const ScrollNode& scroll_node,
     const gfx::PointF& target_offset,
