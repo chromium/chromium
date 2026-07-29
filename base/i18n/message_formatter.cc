@@ -46,7 +46,7 @@ MessageArg::MessageArg(int64_t i) : formattable(new icu::Formattable(i)) {}
 
 MessageArg::MessageArg(double d) : formattable(new icu::Formattable(d)) {}
 
-MessageArg::MessageArg(const Time& t)
+MessageArg::MessageArg(Time t)
     : formattable(new icu::Formattable(
           static_cast<UDate>(t.InMillisecondsFSinceUnixEpoch()))) {}
 

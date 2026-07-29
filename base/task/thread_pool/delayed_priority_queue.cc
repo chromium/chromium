@@ -20,7 +20,7 @@ class DelayedPriorityQueue::TaskSourceAndDelayedSortKey {
  public:
   TaskSourceAndDelayedSortKey() = default;
   TaskSourceAndDelayedSortKey(scoped_refptr<TaskSource> task_source,
-                              const TimeTicks& delayed_sort_key)
+                              TimeTicks delayed_sort_key)
       : task_source_(std::move(task_source)),
         delayed_sort_key_(delayed_sort_key) {
     DCHECK(task_source_);

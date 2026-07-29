@@ -226,7 +226,7 @@ class PreFreezeSelfCompactionTestWithParam
       public testing::WithParamInterface<int> {
  public:
   std::unique_ptr<SelfCompactionManager::CompactionState> GetState(
-      const base::TimeTicks& triggered_at) {
+      base::TimeTicks triggered_at) {
     auto task_runner = task_environment_.GetMainThreadTaskRunner();
     if (UseRunningCompact()) {
       return SelfCompactionManager::GetRunningCompactionStateForTesting(

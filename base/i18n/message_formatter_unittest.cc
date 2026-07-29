@@ -35,7 +35,7 @@ class MessageFormatterTest : public testing::Test {
 namespace {
 
 void AppendFormattedDateTime(const std::unique_ptr<icu::DateFormat>& df,
-                             const Time& now,
+                             Time now,
                              std::u16string* result) {
   icu::UnicodeString formatted;
   result->append(UnicodeStringToString16(df->format(

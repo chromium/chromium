@@ -484,7 +484,7 @@ using deviation_t = typename get_type_deviation<T>::type;
 // Specific template for TimeDelta.
 template <>
 struct DivideInternal<TimeDelta, TimeDelta> {
-  static TimeDelta Compute(const TimeDelta& sum, const size_t count) {
+  static TimeDelta Compute(TimeDelta sum, const size_t count) {
     return sum / count;
   }
 };
@@ -505,7 +505,7 @@ struct DeivationInternal<double, TimeDelta> {
 // Specific template for TimeDelta.
 template <>
 struct SquareInternal<TimeDelta, double> {
-  static double Compute(const TimeDelta& sample) {
+  static double Compute(TimeDelta sample) {
     return sample.InSecondsF() * sample.InSecondsF();
   }
 };

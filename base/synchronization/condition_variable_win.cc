@@ -33,7 +33,7 @@ void ConditionVariable::Wait(const Location& location) {
   TimedWait(TimeDelta::Max(), location);
 }
 
-void ConditionVariable::TimedWait(const TimeDelta& max_time,
+void ConditionVariable::TimedWait(TimeDelta max_time,
                                   const Location& location) {
   std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;

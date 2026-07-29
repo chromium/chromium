@@ -98,7 +98,7 @@ class MockMessagePump : public MessagePump {
   MOCK_METHOD(void, Run, (MessagePump::Delegate*), (override));
   MOCK_METHOD(void, Quit, (), (override));
   MOCK_METHOD(void, ScheduleWork, (), (override));
-  MOCK_METHOD(void, ScheduleDelayedWork_TimeTicks, (const TimeTicks&));
+  MOCK_METHOD(void, ScheduleDelayedWork_TimeTicks, (TimeTicks));
 
   void ScheduleDelayedWork(
       const MessagePump::Delegate::NextWorkInfo& next_work_info) override {

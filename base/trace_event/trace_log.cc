@@ -219,7 +219,7 @@ void OnUpdateLegacyTraceEventDuration(
     const char* name,
     PlatformThreadId thread_id,
     bool explicit_timestamps,
-    const TimeTicks& now,
+    TimeTicks now,
     const ThreadTicks& thread_now) {
   perfetto::DynamicCategory category(
       TRACE_EVENT_API_GET_CATEGORY_GROUP_NAME(category_group_enabled));
@@ -244,7 +244,7 @@ void AddTraceEventWithThreadIdAndTimestamps(
     const char* name,
     uint64_t id,
     base::PlatformThreadId thread_id,
-    const base::TimeTicks& timestamp,
+    base::TimeTicks timestamp,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
   if (!*category_group_enabled) {
@@ -645,7 +645,7 @@ void AddTraceEventWithThreadIdAndTimestamp(
     const char* name,
     uint64_t id,
     base::PlatformThreadId thread_id,
-    const base::TimeTicks& timestamp,
+    base::TimeTicks timestamp,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
   return base::trace_event::AddTraceEventWithThreadIdAndTimestamps(
@@ -659,7 +659,7 @@ void AddTraceEventWithThreadIdAndTimestamps(
     const char* name,
     uint64_t id,
     base::PlatformThreadId thread_id,
-    const base::TimeTicks& timestamp,
+    base::TimeTicks timestamp,
     unsigned int flags) {
   return base::trace_event::AddTraceEventWithThreadIdAndTimestamps(
       phase, category_group_enabled, name, id, thread_id, timestamp, nullptr,

@@ -32,7 +32,7 @@ constexpr Time::Exploded kTestDateTimeExploded = {.year = 2011,
 // Returns difference between the local time and GMT formatted as string.
 // This function gets |time| because the difference depends on time,
 // see https://en.wikipedia.org/wiki/Daylight_saving_time for details.
-std::u16string GetShortTimeZone(const Time& time) {
+std::u16string GetShortTimeZone(Time time) {
   UErrorCode status = U_ZERO_ERROR;
   std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   std::unique_ptr<icu::TimeZoneFormat> zone_formatter(
@@ -48,7 +48,7 @@ std::u16string GetShortTimeZone(const Time& time) {
 
 // Calls TimeDurationFormat() with |delta| and |width| and returns the resulting
 // string. On failure, adds a failed expectation and returns an empty string.
-std::u16string TimeDurationFormatString(const TimeDelta& delta,
+std::u16string TimeDurationFormatString(TimeDelta delta,
                                         DurationFormatWidth width) {
   std::u16string str;
   EXPECT_TRUE(TimeDurationFormat(delta, width, &str))
@@ -60,7 +60,7 @@ std::u16string TimeDurationFormatString(const TimeDelta& delta,
 // Calls TimeDurationFormatWithSeconds() with |delta| and |width| and returns
 // the resulting string. On failure, adds a failed expectation and returns an
 // empty string.
-std::u16string TimeDurationFormatWithSecondsString(const TimeDelta& delta,
+std::u16string TimeDurationFormatWithSecondsString(TimeDelta delta,
                                                    DurationFormatWidth width) {
   std::u16string str;
   EXPECT_TRUE(TimeDurationFormatWithSeconds(delta, width, &str))
@@ -73,7 +73,7 @@ std::u16string TimeDurationFormatWithSecondsString(const TimeDelta& delta,
 // returns the resulting string. On failure, adds a failed expectation and
 // returns an empty string.
 std::u16string TimeDurationCompactFormatWithSecondsString(
-    const TimeDelta& delta,
+    TimeDelta delta,
     DurationFormatWidth width) {
   std::u16string str;
   EXPECT_TRUE(TimeDurationCompactFormatWithSeconds(delta, width, &str))

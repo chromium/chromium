@@ -68,8 +68,7 @@ perfetto::ThreadTrack BASE_EXPORT ConvertThreadId(const int& thread);
 
 template <>
 struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
-  static TraceTimestamp ConvertTimestampToTraceTimeNs(
-      const ::base::TimeTicks& ticks);
+  static TraceTimestamp ConvertTimestampToTraceTimeNs(::base::TimeTicks ticks);
 };
 
 }  // namespace perfetto

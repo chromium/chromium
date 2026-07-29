@@ -134,11 +134,11 @@ bool HistogramBase::HasFlags(int32_t flags) const {
   return (this->flags() & flags) == flags;
 }
 
-void HistogramBase::AddTimeMillisecondsGranularity(const TimeDelta& time) {
+void HistogramBase::AddTimeMillisecondsGranularity(TimeDelta time) {
   Add(saturated_cast<Sample32>(time.InMilliseconds()));
 }
 
-void HistogramBase::AddTimeMicrosecondsGranularity(const TimeDelta& time) {
+void HistogramBase::AddTimeMicrosecondsGranularity(TimeDelta time) {
   // Intentionally drop high-resolution reports on clients with low-resolution
   // clocks. High-resolution metrics cannot make use of low-resolution data and
   // reporting it merely adds noise to the metric. https://crbug.com/807615#c16

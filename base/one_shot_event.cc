@@ -22,7 +22,7 @@ struct OneShotEvent::TaskInfo {
   TaskInfo(const Location& from_here,
            scoped_refptr<TaskRunner> runner,
            OnceClosure task,
-           const TimeDelta& delay)
+           TimeDelta delay)
       : from_here(from_here),
         runner(std::move(runner)),
         task(std::move(task)),
@@ -56,7 +56,7 @@ void OneShotEvent::Post(const Location& from_here,
 
 void OneShotEvent::PostDelayed(const Location& from_here,
                                OnceClosure task,
-                               const TimeDelta& delay,
+                               TimeDelta delay,
                                scoped_refptr<TaskRunner> runner) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

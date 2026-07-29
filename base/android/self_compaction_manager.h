@@ -181,10 +181,10 @@ class BASE_EXPORT SelfCompactionManager {
   static void ResetCompactionForTesting();
   static std::unique_ptr<CompactionState> GetSelfCompactionStateForTesting(
       scoped_refptr<SequencedTaskRunner> task_runner,
-      const TimeTicks& triggered_at);
+      TimeTicks triggered_at);
   static std::unique_ptr<CompactionState> GetRunningCompactionStateForTesting(
       scoped_refptr<SequencedTaskRunner> task_runner,
-      const TimeTicks& triggered_at);
+      TimeTicks triggered_at);
 
   // Whether or not we should continue self compaction. There are two reasons
   // why we would cancel:

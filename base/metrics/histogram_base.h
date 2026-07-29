@@ -170,11 +170,11 @@ class BASE_EXPORT HistogramBase {
   virtual void AddCount(Sample32 value, int count) = 0;
 
   // Convenient functions that call Add(Sample32).
-  void AddTime(const TimeDelta& time) { AddTimeMillisecondsGranularity(time); }
-  void AddTimeMillisecondsGranularity(const TimeDelta& time);
+  void AddTime(TimeDelta time) { AddTimeMillisecondsGranularity(time); }
+  void AddTimeMillisecondsGranularity(TimeDelta time);
   // Note: AddTimeMicrosecondsGranularity() drops the report if this client
   // doesn't have a high-resolution clock.
-  void AddTimeMicrosecondsGranularity(const TimeDelta& time);
+  void AddTimeMicrosecondsGranularity(TimeDelta time);
   void AddBoolean(bool value);
 
   virtual bool AddSamples(const HistogramSamples& samples) = 0;

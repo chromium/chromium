@@ -110,7 +110,7 @@ void RunTest_OneShotSelfDeletingTimer(
 
 void RunTest_RepeatingTimer(
     test::TaskEnvironment::MainThreadType main_thread_type,
-    const TimeDelta& delay) {
+    TimeDelta delay) {
   test::TaskEnvironment task_environment(
       test::TaskEnvironment::TimeSource::MOCK_TIME, main_thread_type);
 
@@ -126,7 +126,7 @@ void RunTest_RepeatingTimer(
 
 void RunTest_RepeatingTimer_Cancel(
     test::TaskEnvironment::MainThreadType main_thread_type,
-    const TimeDelta& delay) {
+    TimeDelta delay) {
   test::TaskEnvironment task_environment(
       test::TaskEnvironment::TimeSource::MOCK_TIME, main_thread_type);
 

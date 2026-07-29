@@ -123,7 +123,7 @@ LockMetricsRecorder* LockMetricsRecorder::GetForCurrentThread() {
 
 // static
 void LockMetricsRecorder::ReportLockHistogram(
-    const TimeDelta& sample,
+    TimeDelta sample,
     base::HistogramBase* histogram_pointer) {
   histogram_pointer->AddTimeMicrosecondsGranularity(sample);
 }

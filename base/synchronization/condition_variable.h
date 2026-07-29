@@ -97,7 +97,7 @@ class BASE_EXPORT ConditionVariable {
   // susceptible to spurious wakeups. (See usage note 1 for more details.)
   NOT_TAIL_CALLED void Wait(const Location& location = Location::Current());
   NOT_TAIL_CALLED void TimedWait(
-      const TimeDelta& max_time,
+      TimeDelta max_time,
       const Location& location = Location::Current());
 
   // Broadcast() revives all waiting threads. (See usage note 2 for more

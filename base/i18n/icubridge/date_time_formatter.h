@@ -62,11 +62,11 @@ class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
   // Formats date and time according to the provided options.
   // The formatting is locale-aware and uses the default locale set for the
   // process.
-  std::u16string Format(const base::Time& time,
+  std::u16string Format(base::Time time,
                         const DateTimeFormatterOptions& options) const;
 
   // Formats date and time according to the provided options and locale.
-  std::u16string Format(const base::Time& time,
+  std::u16string Format(base::Time time,
                         const LanguageTag& locale,
                         const DateTimeFormatterOptions& options) const;
 

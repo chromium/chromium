@@ -60,7 +60,7 @@ bool CheckEvent(const FilePath& signal_dir, const char* signal_file) {
 // Busy-wait for an event to be signaled, returning false for timeout.
 bool WaitForEventWithTimeout(const FilePath& signal_dir,
                              const char* signal_file,
-                             const base::TimeDelta& timeout) {
+                             base::TimeDelta timeout) {
   const base::Time finish_by = base::Time::Now() + timeout;
   while (!CheckEvent(signal_dir, signal_file)) {
     if (base::Time::Now() > finish_by) {

@@ -141,7 +141,7 @@ class BASE_EXPORT LockMetricsRecorder {
  private:
   constexpr static double kSamplingRatio = 0.001;
 
-  static void ReportLockHistogram(const TimeDelta& sample,
+  static void ReportLockHistogram(TimeDelta sample,
                                   base::HistogramBase* histogram_pointer);
 
   bool iterating_in_progress_ GUARDED_BY_CONTEXT(thread_checker_) = false;
