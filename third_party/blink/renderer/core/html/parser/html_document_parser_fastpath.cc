@@ -1401,12 +1401,19 @@ class HTMLFastPathParser {
       attribute_names_.push_back(attribute.LocalName().Impl());
       attribute_buffer_.push_back(std::move(attribute));
     }
-    std::sort(attribute_names_.begin(), attribute_names_.end());
-    if (std::adjacent_find(attribute_names_.begin(), attribute_names_.end()) !=
-        attribute_names_.end()) {
-      // Found duplicate attributes. We would have to ignore repeated
-      // attributes, but leave this to the general parser instead.
-      return Fail(HtmlFastPathResult::kFailedParsingAttributes);
+    if (attribute_names_.size() == 2) {
+      if (attribute_names_[0] == attribute_names_[1]) {
+        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
+      }
+    } else if (attribute_names_.size() > 2) {
+      std::sort(attribute_names_.begin(), attribute_names_.end());
+      if (std::adjacent_find(attribute_names_.begin(),
+                             attribute_names_.end()) !=
+          attribute_names_.end()) {
+        // Found duplicate attributes. We would have to ignore repeated
+        // attributes, but leave this to the general parser instead.
+        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
+      }
     }
     parent->ParserSetAttributes(attribute_buffer_);
     attribute_buffer_.clear();

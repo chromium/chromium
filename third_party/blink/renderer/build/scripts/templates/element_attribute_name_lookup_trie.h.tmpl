@@ -6,22 +6,66 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_{{namespace|upper}}_ELEMENT_ATTRIBUTE_NAME_LOOKUP_TRIE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_{{namespace|upper}}_ELEMENT_ATTRIBUTE_NAME_LOOKUP_TRIE_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
 class QualifiedName;
 
-// Returns the QualifiedName for the attribute whose name matches `data`.
-// Returns `g_null_name` if there is no match. It is expected this is only
-// called if `length` is > 0.
-CORE_EXPORT const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigned length);
+CORE_EXPORT const QualifiedName& LookupSlow{{namespace}}AttributeName(const UChar* data, unsigned length);
+CORE_EXPORT const QualifiedName& LookupSlow{{namespace}}AttributeName(const LChar* data, unsigned length);
 
-// Returns the QualifiedName for the attribute whose name matches `data`.
-// Returns `g_null_name` if there is no match. It is expected this is only
-// called if `length` is > 0.
-CORE_EXPORT const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigned length);
+template <typename CharType>
+ALWAYS_INLINE const QualifiedName& Lookup{{namespace}}AttributeName(const CharType* data, unsigned length) {
+{% if namespace == 'HTML' %}
+  switch (length) {
+    case 2:
+      if (data[0] == 'i' && data[1] == 'd') {
+        return html_names::kIdAttr;
+      }
+      break;
+    case 3:
+      if (data[0] == 's' && data[1] == 'r' && data[2] == 'c') {
+        return html_names::kSrcAttr;
+      }
+      break;
+    case 4:
+      if (data[0] == 't' && data[1] == 'y' && data[2] == 'p' && data[3] == 'e') {
+        return html_names::kTypeAttr;
+      }
+      if (data[0] == 'h' && data[1] == 'r' && data[2] == 'e' && data[3] == 'f') {
+        return html_names::kHrefAttr;
+      }
+      if (data[0] == 'n' && data[1] == 'a' && data[2] == 'm' && data[3] == 'e') {
+        return html_names::kNameAttr;
+      }
+      break;
+    case 5:
+      if (data[0] == 'c' && data[1] == 'l' && data[2] == 'a' && data[3] == 's' && data[4] == 's') {
+        return html_names::kClassAttr;
+      }
+      if (data[0] == 's' && data[1] == 't' && data[2] == 'y' && data[3] == 'l' && data[4] == 'e') {
+        return html_names::kStyleAttr;
+      }
+      if (data[0] == 'v' && data[1] == 'a' && data[2] == 'l' && data[3] == 'u' && data[4] == 'e') {
+        return html_names::kValueAttr;
+      }
+      break;
+  }
+{% endif %}
+  return LookupSlow{{namespace}}AttributeName(data, length);
+}
+
+ALWAYS_INLINE const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigned length) {
+  return Lookup{{namespace}}AttributeName<UChar>(data, length);
+}
+
+ALWAYS_INLINE const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigned length) {
+  return Lookup{{namespace}}AttributeName<LChar>(data, length);
+}
 
 }  // namespace blink
 

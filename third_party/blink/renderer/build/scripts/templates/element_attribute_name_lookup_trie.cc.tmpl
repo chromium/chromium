@@ -11,7 +11,7 @@
 
 namespace blink {
 
-const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigned length) {
+const QualifiedName& LookupSlow{{namespace}}AttributeName(const UChar* data, unsigned length) {
   DCHECK(data);
   DCHECK(length);
   {% macro trie_return_expression(tag) -%}
@@ -21,7 +21,7 @@ const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigne
   return g_null_name;
 }
 
-const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigned length) {
+const QualifiedName& LookupSlow{{namespace}}AttributeName(const LChar* data, unsigned length) {
   DCHECK(data);
   DCHECK(length);
   {% macro trie_return_expression(tag) -%}
