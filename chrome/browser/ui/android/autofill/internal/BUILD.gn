@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetIllustrationCardView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetNoticeView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetProperties.java",
@@ -179,16 +180,16 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable-night/at_memory_zero_state_illustration.xml",
+    "java/res/drawable-night/at_memory_illustration_card_illustration.xml",
     "java/res/drawable/at_memory_flyout_buttons_bg.xml",
+    "java/res/drawable/at_memory_illustration_card_illustration.xml",
     "java/res/drawable/at_memory_search_bar_background.xml",
     "java/res/drawable/at_memory_suggestions_bg.xml",
-    "java/res/drawable/at_memory_zero_state_illustration.xml",
     "java/res/layout/at_memory_bottom_sheet.xml",
+    "java/res/layout/at_memory_bottom_sheet_illustration_card_item.xml",
     "java/res/layout/at_memory_bottom_sheet_notice_item.xml",
     "java/res/layout/at_memory_bottom_sheet_suggestion_item.xml",
     "java/res/layout/at_memory_bottom_sheet_text_with_clickable_link_item.xml",
-    "java/res/layout/at_memory_bottom_sheet_zero_state_item.xml",
     "java/res/layout/at_memory_flyout_chip.xml",
     "java/res/layout/at_memory_flyout_screen.xml",
     "java/res/layout/at_memory_home_screen.xml",

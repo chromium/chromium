@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsRefe
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IllustrationCardItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
@@ -134,7 +135,9 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         sheetItems.clear();
 
         if (screenState.showZeroState) {
-            sheetItems.add(new ListItem(HomeProperties.ItemType.ZERO_STATE, new PropertyModel()));
+            sheetItems.add(
+                    new ListItem(
+                            HomeProperties.ItemType.ILLUSTRATION_CARD, createZeroStateModel()));
         }
         if (screenState.showAtMemorySuggestions) {
             for (int i = 0; i < suggestions.size(); i++) {
@@ -249,6 +252,17 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (hasFocus) {
             mDelegate.requestExpandSheet(/* expandInFullHeight= */ true);
         }
+    }
+
+    private PropertyModel createZeroStateModel() {
+        return new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                .with(
+                        IllustrationCardItemProperties.TITLE,
+                        mContext.getString(R.string.autofill_at_memory_zero_state_title))
+                .with(
+                        IllustrationCardItemProperties.SUBTITLE,
+                        mContext.getString(R.string.autofill_at_memory_zero_state_subtitle))
+                .build();
     }
 
     private PropertyModel createAiDisclosureModel() {

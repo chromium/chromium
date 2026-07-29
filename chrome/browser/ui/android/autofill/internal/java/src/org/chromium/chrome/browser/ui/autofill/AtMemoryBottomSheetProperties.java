@@ -62,7 +62,7 @@ class AtMemoryBottomSheetProperties {
         @IntDef({
             ItemType.SUGGESTION,
             ItemType.SUGGESTION_WITH_NO_BACKGROUND,
-            ItemType.ZERO_STATE,
+            ItemType.ILLUSTRATION_CARD,
             ItemType.NOTICE,
             ItemType.TEXT_WITH_CLICKABLE_LINK
         })
@@ -74,8 +74,8 @@ class AtMemoryBottomSheetProperties {
             /** A section containing suggestions with no background card. */
             int SUGGESTION_WITH_NO_BACKGROUND = 1;
 
-            /** A section containing no results. */
-            int ZERO_STATE = 2;
+            /** A section containing an illustration card (e.g. zero state or status message). */
+            int ILLUSTRATION_CARD = 2;
 
             /** A section containing onboarding notice. */
             int NOTICE = 3;
@@ -113,6 +113,20 @@ class AtMemoryBottomSheetProperties {
         };
 
         private FlyoutProperties() {}
+    }
+
+    /** Properties for the illustration card item displayed within the home screen. */
+    static class IllustrationCardItemProperties {
+        // Title to be displayed on the illustration card.
+        static final ReadableObjectPropertyKey<@Nullable String> TITLE =
+                new ReadableObjectPropertyKey<>();
+        // Subtitle to be displayed on the illustration card.
+        static final ReadableObjectPropertyKey<@Nullable String> SUBTITLE =
+                new ReadableObjectPropertyKey<>();
+
+        static final PropertyKey[] ALL_KEYS = {TITLE, SUBTITLE};
+
+        private IllustrationCardItemProperties() {}
     }
 
     /** Properties for the notice item displayed within the home screen. */

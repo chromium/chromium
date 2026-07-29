@@ -4,7 +4,7 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetIllustrationCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,28 +12,26 @@ found in the LICENSE file.
     android:gravity="center_horizontal">
 
     <ImageView
-        android:id="@+id/zero_state_illustration"
+        android:id="@+id/illustration_card_illustration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:src="@drawable/at_memory_zero_state_illustration"
+        android:src="@drawable/at_memory_illustration_card_illustration"
         android:importantForAccessibility="no" />
 
     <TextView
-        android:id="@+id/zero_state_title"
+        android:id="@+id/illustration_card_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/autofill_at_memory_zero_state_title"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.Headline2Thick.Primary" />
 
     <TextView
-        android:id="@+id/zero_state_subtitle"
+        android:id="@+id/illustration_card_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/autofill_at_memory_zero_state_subtitle"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-</LinearLayout>
+</org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetIllustrationCardView>

@@ -371,7 +371,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
         mMediator.show(List.of());
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
     }
 
     @Test
@@ -382,7 +382,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
         mMediator.show(List.of());
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
 
         mMediator.show(List.of(createSearchAffordance("a")));
         assertEquals(1, mModelList.size());
@@ -405,7 +405,7 @@ public class AtMemoryBottomSheetMediatorTest {
         mMediator.show(List.of());
 
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
     }
 
     @Test
@@ -519,7 +519,7 @@ public class AtMemoryBottomSheetMediatorTest {
         mMediator.show(List.of());
 
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
     }
 
     @Test

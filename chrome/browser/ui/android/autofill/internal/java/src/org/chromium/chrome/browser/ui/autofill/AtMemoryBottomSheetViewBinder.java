@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IllustrationCardItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties;
@@ -57,6 +58,28 @@ class AtMemoryBottomSheetViewBinder {
             view.setIsLoading(model.get(HomeProperties.IS_LOADING));
         } else if (propertyKey == HomeProperties.SHEET_ITEMS) {
             view.setUpSheetItems(model.get(HomeProperties.SHEET_ITEMS));
+        } else {
+            // Unhandled property.
+            assert false : "Unhandled property: " + propertyKey;
+        }
+    }
+
+    /**
+     * Called whenever the illustration card item property model changes. It updates the given view
+     * accordingly.
+     *
+     * @param model The model containing the illustration card item properties.
+     * @param view The view to update.
+     * @param propertyKey The property key that changed.
+     */
+    static void bindIllustrationCardItemView(
+            PropertyModel model,
+            AtMemoryBottomSheetIllustrationCardView view,
+            PropertyKey propertyKey) {
+        if (propertyKey == IllustrationCardItemProperties.TITLE) {
+            view.setTitle(model.get(IllustrationCardItemProperties.TITLE));
+        } else if (propertyKey == IllustrationCardItemProperties.SUBTITLE) {
+            view.setSubtitle(model.get(IllustrationCardItemProperties.SUBTITLE));
         } else {
             // Unhandled property.
             assert false : "Unhandled property: " + propertyKey;

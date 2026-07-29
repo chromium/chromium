@@ -25,7 +25,7 @@ public class AtMemoryBottomSheetCoordinator {
 
     public static final int ITEM_TYPE_SUGGESTION = 1;
     public static final int ITEM_TYPE_SEARCH_TILE = 2;
-    public static final int ITEM_TYPE_ZERO_STATE = 3;
+    public static final int ITEM_TYPE_ILLUSTRATION_CARD = 3;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {

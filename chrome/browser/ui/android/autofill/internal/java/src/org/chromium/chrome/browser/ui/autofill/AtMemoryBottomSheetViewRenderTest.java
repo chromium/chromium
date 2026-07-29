@@ -319,7 +319,23 @@ public class AtMemoryBottomSheetViewRenderTest {
 
                     ModelList modelList = new ModelList();
                     modelList.add(
-                            new ListItem(HomeProperties.ItemType.ZERO_STATE, new PropertyModel()));
+                            new ListItem(
+                                    HomeProperties.ItemType.ILLUSTRATION_CARD,
+                                    new PropertyModel.Builder(
+                                                    AtMemoryBottomSheetProperties
+                                                            .IllustrationCardItemProperties
+                                                            .ALL_KEYS)
+                                            .with(
+                                                    AtMemoryBottomSheetProperties
+                                                            .IllustrationCardItemProperties.TITLE,
+                                                    "Search your information")
+                                            .with(
+                                                    AtMemoryBottomSheetProperties
+                                                            .IllustrationCardItemProperties
+                                                            .SUBTITLE,
+                                                    "Check your saved information across Google"
+                                                            + " apps")
+                                            .build()));
 
                     mView.getHomeView().setUpSheetItems(modelList);
 

@@ -55,9 +55,9 @@ public class AtMemoryHomeView extends LinearLayout {
                 AtMemoryBottomSheetViewBinder::bindSuggestionItemView);
 
         adapter.registerType(
-                ItemType.ZERO_STATE,
-                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_zero_state_item),
-                (model, view, propertyKey) -> {});
+                ItemType.ILLUSTRATION_CARD,
+                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_illustration_card_item),
+                AtMemoryBottomSheetViewBinder::bindIllustrationCardItemView);
 
         adapter.registerType(
                 ItemType.NOTICE,
@@ -106,7 +106,7 @@ public class AtMemoryHomeView extends LinearLayout {
         @Override
         protected boolean shouldSkipItemType(@ItemType int type) {
             switch (type) {
-                case ItemType.ZERO_STATE:
+                case ItemType.ILLUSTRATION_CARD:
                 case ItemType.NOTICE:
                 case ItemType.SUGGESTION_WITH_NO_BACKGROUND:
                 case ItemType.TEXT_WITH_CLICKABLE_LINK:
