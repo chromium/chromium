@@ -223,6 +223,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"arrow.up.circle.fill", SymbolType::kSystem};
     case SymbolArrowUpTrash:
       return {@"arrow.up.trash", SymbolType::kSystem};
+    case SymbolArrowshapeUp:
+      return {@"arrowshape.up", SymbolType::kSystem};
     case SymbolAutofillData:
       return {@"wand.and.rays", SymbolType::kSystem};
     case SymbolBack:
@@ -373,6 +375,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"doc.text.magnifyingglass", SymbolType::kSystem};
     case SymbolFlag:
       return {@"flag", SymbolType::kSystem};
+    case SymbolFlagCheckered:
+      return {@"flag.checkered", SymbolType::kSystem};
     case SymbolFolder:
       return {@"folder", SymbolType::kSystem};
     case SymbolFolderBadgePlus:

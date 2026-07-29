@@ -160,7 +160,7 @@ constexpr CGFloat kArrowIconPointSize = 16.0;
       configurationWithPointSize:kArrowIconPointSize
                           weight:UIImageSymbolWeightBold];
   UIImage* arrowImage =
-      DefaultSymbolWithConfiguration(@"arrowshape.up", symbolConfig);
+      SymbolWithConfiguration(SymbolArrowshapeUp, symbolConfig);
   UIImageView* arrowImageView = [[UIImageView alloc] initWithImage:arrowImage];
   arrowImageView.translatesAutoresizingMaskIntoConstraints = NO;
   arrowImageView.tintColor = [UIColor whiteColor];

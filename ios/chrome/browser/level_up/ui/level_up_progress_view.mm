@@ -201,7 +201,7 @@ const CGFloat kCompletionRowSpacing = 16.0;
   completionBadgeIconView.tintColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
   completionBadgeIconView.image =
-      DefaultSymbolWithPointSize(@"flag.checkered", kCheckeredFlagIconSize);
+      SymbolWithPointSize(SymbolFlagCheckered, kCheckeredFlagIconSize);
   [badgeContainer addSubview:completionBadgeIconView];
 
   AddSameCenterConstraints(completionBadgeIconView, badgeContainer);
