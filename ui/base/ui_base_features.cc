@@ -90,7 +90,7 @@ BASE_FEATURE(kAsyncLiveResize, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Keeps the NSWindow invisible (via its `alphaValue`) until the first
 // compositor frame has been received.
-BASE_FEATURE(kAlphaInsteadOfCATransaction, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlphaInsteadOfCATransaction, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
