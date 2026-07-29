@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IllustrationCardItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -406,6 +407,26 @@ public class AtMemoryBottomSheetMediatorTest {
 
         assertEquals(1, mModelList.size());
         assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
+    }
+
+    @Test
+    public void testShow_fetchingSuggestionShowsIllustrationCard() {
+        AutofillSuggestion fetchingSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Find and fill with Gemini")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_FETCHING)
+                        .setIsAcceptable(false)
+                        .build();
+
+        mMediator.show(List.of(fetchingSuggestion));
+
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.ILLUSTRATION_CARD, mModelList.get(0).type);
+        assertEquals(
+                "Find and fill with Gemini",
+                mModelList.get(0).model.get(IllustrationCardItemProperties.TITLE));
+        assertEquals("", mModelList.get(0).model.get(IllustrationCardItemProperties.SUBTITLE));
     }
 
     @Test

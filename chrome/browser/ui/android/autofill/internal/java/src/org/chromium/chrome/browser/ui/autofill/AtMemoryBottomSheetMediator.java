@@ -169,6 +169,11 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             return new ListItem(
                     HomeProperties.ItemType.TEXT_WITH_CLICKABLE_LINK, createAiDisclosureModel());
         }
+        if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_FETCHING) {
+            return new ListItem(
+                    HomeProperties.ItemType.ILLUSTRATION_CARD,
+                    createIllustrationCardModel(suggestion));
+        }
         return new ListItem(
                 HomeProperties.ItemType.SUGGESTION, createSuggestionModel(suggestion, position));
     }
@@ -252,6 +257,13 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (hasFocus) {
             mDelegate.requestExpandSheet(/* expandInFullHeight= */ true);
         }
+    }
+
+    private PropertyModel createIllustrationCardModel(AutofillSuggestion suggestion) {
+        return new PropertyModel.Builder(IllustrationCardItemProperties.ALL_KEYS)
+                .with(IllustrationCardItemProperties.TITLE, suggestion.getLabel())
+                .with(IllustrationCardItemProperties.SUBTITLE, suggestion.getSublabel())
+                .build();
     }
 
     private PropertyModel createZeroStateModel() {
