@@ -107,6 +107,14 @@ id<GREYMatcher> IncognitoInterstitialView() {
   [ChromeEarlGrey tapWebStateElementWithID:@"create-passkey-btn"];
 }
 
+- (void)loadPasskeyAssertionPage {
+  GURL pageURL =
+      self.testServer->GetURL("localhost", "/navigator_credentials_get.html");
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Credential Get Test Page"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"get-passkey-btn"];
+}
+
 #pragma mark - Tests
 
 - (void)testModalPasskeyCreationInfobar {
@@ -196,6 +204,61 @@ id<GREYMatcher> IncognitoInterstitialView() {
 
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:IncognitoInterstitialView()];
+}
+
+// Tests that a passkey can be successfully created in Incognito mode.
+- (void)testIncognitoPasskeyRegistration {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadPasskeyCreationPage];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:IncognitoInterstitialView()];
+
+  [[EarlGrey selectElementWithMatcher:IncognitoContinueButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:IncognitoInterstitialView()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
+
+  [[EarlGrey selectElementWithMatcher:CreatePasskeyButton()]
+      performAction:grey_tap()];
+
+  std::u16string infobarTitleText =
+      l10n_util::GetStringUTF16(IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_SAVED);
+  [ChromeEarlGrey
+      waitForMatcher:grey_text(base::SysUTF16ToNSString(infobarTitleText))];
+}
+
+// Tests that a passkey can be successfully used/asserted in Incognito mode.
+- (void)testIncognitoPasskeyAssertion {
+  // Create a passkey in normal mode first.
+  [self loadPasskeyCreationPage];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
+  [[EarlGrey selectElementWithMatcher:CreatePasskeyButton()]
+      performAction:grey_tap()];
+  std::u16string infobarTitleText =
+      l10n_util::GetStringUTF16(IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_SAVED);
+  [ChromeEarlGrey
+      waitForMatcher:grey_text(base::SysUTF16ToNSString(infobarTitleText))];
+
+  // Open an Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  // Load the passkey assertion page.
+  [self loadPasskeyAssertionPage];
+
+  // The passkey suggestion bottom sheet should appear. Tap "Continue" on it.
+  id<GREYMatcher> suggestionContinueButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggestionContinueButton];
+  [[EarlGrey selectElementWithMatcher:suggestionContinueButton]
+      performAction:grey_tap()];
+
+  // Verify that the assertion is successful.
+  [ChromeEarlGrey waitForWebStateContainingText:"Assertion Success"];
 }
 
 @end
