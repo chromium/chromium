@@ -3133,7 +3133,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.IsolatedSplits.ClassLoaderReplaced.{AndroidFeatureModuleName}"
-    enum="BooleanYesNo" expires_after="2023-06-26">
+    enum="BooleanYesNo" expires_after="2027-07-26">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
