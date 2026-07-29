@@ -1457,9 +1457,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
     test_network_request_manager_->SetTestConfig(config);
   }
 
-  void CheckConsoleMessages(
-      FederatedRequestResult devtools_issue_status,
-      const std::optional<std::string>& standalone_console_message) {
+  std::vector<std::string> GetFilteredConsoleMessages() {
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
 
@@ -1467,14 +1465,20 @@ class RequestTest : public RenderViewHostImplTestHarness {
     // removed. Filter out known deprecation warnings
     std::vector<std::string> filtered_messages;
     for (const auto& message : messages) {
-      if (message.find("The \'nonce\' parameter should be passed within the "
-                       "\'params\' object") == std::string::npos &&
+      if (message.find("The 'nonce' parameter should be passed within the "
+                       "'params' object") == std::string::npos &&
           message.find("The FedCM configuration uses client_metadata") ==
               std::string::npos) {
         filtered_messages.push_back(message);
       }
     }
-    messages = std::move(filtered_messages);
+    return filtered_messages;
+  }
+
+  void CheckConsoleMessages(
+      FederatedRequestResult devtools_issue_status,
+      const std::optional<std::string>& standalone_console_message) {
+    std::vector<std::string> messages = GetFilteredConsoleMessages();
 
     bool did_expect_any_messages = false;
     size_t expected_message_index = messages.size() - 1;
@@ -3453,7 +3457,9 @@ TEST_F(RequestTest,
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedRequestResult::kSilentMediationFailure,
-      /*standalone_console_message=*/std::nullopt,
+      /*standalone_console_message=*/
+      GetConsoleErrorMessageFromResult(
+          FederatedRequestResult::kAccountsNoResponse),
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -4441,7 +4447,9 @@ TEST_F(RequestTest, IdpSigninStatusTestShowFailureUi) {
       IdpSigninStatusMismatchDialogAction::kClose;
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedRequestResult::kShouldEmbargo,
-      /*standalone_console_message=*/std::nullopt,
+      /*standalone_console_message=*/
+      GetConsoleErrorMessageFromResult(
+          FederatedRequestResult::kAccountsInvalidResponse),
       /*selected_idp_config_url=*/std::nullopt};
   RunTest(kDefaultRequestParameters, expectations, configuration);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
@@ -4550,7 +4558,10 @@ TEST_F(RequestTest, FailureUiThenSuccessfulSignin) {
   request_->OnIdpSigninStatusReceived(kIdpOrigin, /*idp_signin_status=*/true);
 
   WaitForCurrentRequest();
-  CheckExpectations(kConfigurationValid, kExpectationSuccess);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.standalone_console_message = GetConsoleErrorMessageFromResult(
+      FederatedRequestResult::kAccountsInvalidResponse);
+  CheckExpectations(kConfigurationValid, expectation);
 
   EXPECT_TRUE(did_show_accounts_dialog());
 
@@ -4601,7 +4612,10 @@ TEST_F(RequestTest, FailureUiThenSuccessfulSigninButHidden) {
   request_->OnIdpSigninStatusReceived(kIdpOrigin, /*idp_signin_status=*/true);
 
   WaitForCurrentRequest();
-  CheckExpectations(kConfigurationValid, kExpectationSuccess);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.standalone_console_message = GetConsoleErrorMessageFromResult(
+      FederatedRequestResult::kAccountsInvalidResponse);
+  CheckExpectations(kConfigurationValid, expectation);
 
   // The FedCM dialog should switch to the account picker. The user should
   // see a new dialog when they switch back to the FedCM tab.
@@ -5145,7 +5159,10 @@ TEST_F(RequestTest, MultiIdpWithOneIdpMismatch) {
   config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
       ParseStatus::kEmptyListError;
 
-  RunTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.standalone_console_message = GetConsoleErrorMessageFromResult(
+      FederatedRequestResult::kAccountsListEmpty);
+  RunTest(kDefaultMultiIdpRequestParameters, expectations, config);
 
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
   EXPECT_FALSE(all_accounts_for_display().empty());
@@ -5385,13 +5402,6 @@ TEST_F(RequestTest, MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
       .Times(3)
       .WillRepeatedly(Return(false));
 
-  RequestExpectations expectations = kExpectationSuccess;
-  expectations.selected_idp_config_url = kProviderTwoUrlFull;
-  expectations.is_auto_selected = true;
-  expectations.standalone_console_message =
-      "Silent mediation was requested, but the conditions to achieve it were "
-      "not met.";
-
   MockConfiguration configuration = kConfigurationMultiIdpValid;
   configuration.mediation_requirement = MediationRequirement::kSilent;
   // Let the first IDP accounts fetch fail.
@@ -5402,7 +5412,20 @@ TEST_F(RequestTest, MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
   EXPECT_FALSE(request_helper_->was_callback_called());
 
   WaitForCurrentRequest();
-  CheckExpectations(configuration, expectations);
+  ASSERT_EQ(RequestTokenStatus::kSuccess, request_helper_->status());
+  EXPECT_EQ(configuration.token, request_helper_->token());
+  EXPECT_TRUE(request_helper_->is_auto_selected());
+  EXPECT_EQ(kProviderTwoUrlFull, request_helper_->selected_idp_config_url());
+
+  std::vector<std::string> filtered_messages = GetFilteredConsoleMessages();
+  ASSERT_EQ(2u, filtered_messages.size());
+  EXPECT_EQ(GetConsoleErrorMessageFromResult(
+                FederatedRequestResult::kAccountsNoResponse),
+            filtered_messages[0]);
+  EXPECT_EQ(
+      "Silent mediation was requested, but the conditions to achieve it were "
+      "not met.",
+      filtered_messages[1]);
 
   // Accounts still need to be fetched since there could have been a single
   // returning account.
@@ -6828,6 +6851,11 @@ TEST_F(RequestTest, ActiveFlowWithUnknownLoginStatus) {
       ->SimulateUserActivation();
 
   RunDontWaitForCallback(parameters, configuration);
+
+  // The FedCM call is still pending (showing modal dialog), but we should have
+  // already received the accounts invalid response console message.
+  CheckConsoleMessages(FederatedRequestResult::kAccountsInvalidResponse,
+                       /*standalone_console_message=*/std::nullopt);
 }
 
 // Test that active flow can skip the mismatch UI.
@@ -7011,7 +7039,13 @@ TEST_F(RequestTest, MismatchDialogShownMetric) {
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       ParseStatus::kInvalidResponseError;
 
-  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kShouldEmbargo,
+      /*standalone_console_message=*/
+      GetConsoleErrorMessageFromResult(
+          FederatedRequestResult::kAccountsInvalidResponse),
+      /*selected_idp_config_url=*/std::nullopt};
+  RunTest(kDefaultRequestParameters, expectations, configuration);
 
   ukm_loop.Run();
 

@@ -32,6 +32,17 @@ bool IsFrameActive(RenderFrameHost* frame) {
   return frame && frame->IsActive();
 }
 
+void MaybeAddAccountParsingErrorToConsole(
+    RenderFrameHost& render_frame_host,
+    const FetchStatus& status,
+    blink::mojom::FederatedRequestResult result) {
+  if (status.parse_status != ParseStatus::kSuccess) {
+    render_frame_host.AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        GetConsoleErrorMessageFromResult(result));
+  }
+}
+
 bool ValidateWellKnownFormatForClientMetadata(
     const IdpNetworkRequestManager::WellKnown& well_known,
     bool has_client_metadata_endpoint) {
@@ -335,12 +346,12 @@ void AccountsFetcher::OnAccountsResponseReceived(
       permission_delegate_);
 
   if (status.parse_status != ParseStatus::kSuccess) {
-    std::pair<FederatedRequestResult, TokenStatus> resultAndTokenStatus =
+    auto [result, token_status] =
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
-    HandleAccountsFetchFailure(
-        std::move(idp_info), old_idp_signin_status, resultAndTokenStatus.first,
-        resultAndTokenStatus.second, status,
-        std::vector<IdentityRequestAccountPtr>(), accounts_fetched_time);
+    HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                               result, token_status, status,
+                               std::vector<IdentityRequestAccountPtr>(),
+                               accounts_fetched_time);
     return;
   }
   CHECK(fedcm_metrics_);
@@ -626,11 +637,16 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     std::vector<IdentityRequestAccountPtr> filtered_accounts,
     base::TimeTicks accounts_fetched_time) {
   if (status.parse_status != ParseStatus::kSuccess) {
+    // Log to console if response is not 200.
     MaybeAddResponseCodeToConsole(*render_frame_host_, "accounts endpoint",
                                   status.response_code);
   }
   if (!old_idp_signin_status.has_value()) {
     if (params_.rp_mode == blink::mojom::RpMode::kActive) {
+      // Account parsing failure is not a terminal error for active mode so we
+      // only add error details to the console instead of setting res.error.
+      MaybeAddAccountParsingErrorToConsole(*render_frame_host_, status, result);
+
       Result res;
       res.idp_config_url = idp_info->provider->config->config_url;
       res.show_active_mode_modal_dialog = true;
@@ -640,6 +656,8 @@ void AccountsFetcher::HandleAccountsFetchFailure(
       return;
     }
 
+    // Request will log the `result` error, so we do not call
+    // MaybeAddAccountParsingErrorToConsole here.
     Result res;
     res.idp_config_url = idp_info->provider->config->config_url;
     res.idp_info = std::move(idp_info);
@@ -652,6 +670,12 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     return;
   }
 
+  // Request will not duplicate this log because `result` is an accounts
+  // endpoint parse error (e.g., kAccountsInvalidResponse), whereas the
+  // subsequent branches return browser policy errors (kRpPageNotVisible,
+  // kSilentMediationFailure) or trigger mismatch UI without setting
+  // res.error.
+  MaybeAddAccountParsingErrorToConsole(*render_frame_host_, status, result);
   if (!IsFrameActive(render_frame_host_->GetMainFrame())) {
     Result res;
     res.idp_config_url = idp_info->provider->config->config_url;
