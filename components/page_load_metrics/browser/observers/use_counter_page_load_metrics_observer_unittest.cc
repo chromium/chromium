@@ -364,3 +364,17 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
            3},
       });
 }
+
+TEST_F(UseCounterPageLoadMetricsObserverTest, ModelContextUkmFeaturesAllowed) {
+  const auto& allowed_features =
+      UseCounterMetricsRecorder::GetAllowedUkmFeaturesForTesting();
+  EXPECT_TRUE(allowed_features.contains(WebFeature::kModelContextRegisterTool));
+  EXPECT_TRUE(allowed_features.contains(
+      WebFeature::kModelContextRegisterDeclarativeTool));
+  EXPECT_TRUE(allowed_features.contains(WebFeature::kModelContextExecuteTool));
+  EXPECT_TRUE(allowed_features.contains(
+      WebFeature::kModelContextExecuteDeclarativeTool));
+  EXPECT_TRUE(allowed_features.contains(
+      WebFeature::kModelContextExecuteDeclarativeAutosubmit));
+  EXPECT_TRUE(allowed_features.contains(WebFeature::kModelContextGetTools));
+}
