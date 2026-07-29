@@ -6,6 +6,8 @@ source_set("verification") {
   sources = [
     "filter_application_verifier.cc",
     "filter_application_verifier.h",
+    "suggestion_application_result.cc",
+    "suggestion_application_result.h",
   ]
   deps = [
     "//base",
@@ -15,7 +17,10 @@ source_set("verification") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "filter_application_verifier_unittest.cc" ]
+  sources = [
+    "filter_application_verifier_unittest.cc",
+    "suggestion_application_result_unittest.cc",
+  ]
   deps = [
     ":verification",
     "//base",

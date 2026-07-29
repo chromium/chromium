@@ -68,6 +68,20 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
       });
 }
 
+bool IsTechnicalFailureOutcome(SuggestionApplicationResult outcome) {
+  switch (outcome) {
+    case SuggestionApplicationResult::kNotAllFiltersApplied:
+    case SuggestionApplicationResult::kFailedErrorPage:
+    case SuggestionApplicationResult::kFailedNoExtractedAnnotations:
+    case SuggestionApplicationResult::kFailedCountMismatch:
+    case SuggestionApplicationResult::kFailedAttributeMismatch:
+      return true;
+    case SuggestionApplicationResult::kAllFiltersApplied:
+    case SuggestionApplicationResult::kAbandonedBeforeVerification:
+      return false;
+  }
+}
+
 // Logs the overall technical filter application outcome after a user accepts
 // a Multistep Filter suggestion.
 // "All filter facets successfully applied" (kAllFiltersApplied) means that
@@ -107,7 +121,7 @@ void LogApplicationOutcome(
       });
 
   const bool is_success =
-      session.outcome == MultistepFilterApplicationOutcome::kAllFiltersApplied;
+      session.outcome == SuggestionApplicationResult::kAllFiltersApplied;
 
   if (is_success) {
     size_t count = session.suggestion.attribute_ui_labels.size();
@@ -146,19 +160,21 @@ void LogApplicationOutcomeWhenSessionIsFlushed(
 
   switch (trigger) {
     case kApplicationFailure:
-      session.outcome = MultistepFilterApplicationOutcome::kNotAllFiltersApplied;
-      LogApplicationOutcome(session);
-      return;
+      // An application failure flush requires that a specific technical failure
+      // outcome was set on the session before flushing.
+      CHECK(IsTechnicalFailureOutcome(session.outcome));
+      break;
     case kTabClosed:
     case kSessionOverride:
     case kNavigationBack:
     case kNavigationFromBrowserContext:
     case kNavigationFromPageContext:
-      session.outcome = MultistepFilterApplicationOutcome::kAbandonedBeforeVerification;
-      LogApplicationOutcome(session);
-      return;
+      session.outcome =
+          SuggestionApplicationResult::kAbandonedBeforeVerification;
+      break;
   }
-  NOTREACHED();
+
+  LogApplicationOutcome(session);
 }
 
 void LogSuggestionUiShown(
@@ -363,7 +379,7 @@ void LogSuggestionApplicationSessionUkm(
           std::to_underlying(GetRetentionState(session.retention_snapshot)))
       .SetApplicationOutcome(std::to_underlying(session.outcome));
 
-  if (session.outcome == MultistepFilterApplicationOutcome::kAllFiltersApplied) {
+  if (session.outcome == SuggestionApplicationResult::kAllFiltersApplied) {
     builder.SetNumOfFilterFacetsAppliedSuccessfully(std::min<int64_t>(
         session.suggestion.attribute_ui_labels.size(),
         kMultistepFilterMaxFacetsShownUkmClampingLimit.Get()));
@@ -431,6 +447,8 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
             metadata.navigation_finish_time, suggestion_accepted_time),
     };
     if (current_application_session_->is_error_page) {
+      current_application_session_->outcome =
+          SuggestionApplicationResult::kFailedErrorPage;
       FlushSuggestionApplicationSession(
           SuggestionApplicationSessionFlushTrigger::kApplicationFailure,
           metadata.navigation_finish_time);
@@ -526,18 +544,18 @@ void MultistepFilterMetricsTracker::OnPreservedSuggestionCleared() {
   }
 }
 
-void MultistepFilterMetricsTracker::
-    OnSuggestionApplicationAnnotationExtractionFinished(
-        bool was_applied_successfully) {
+void MultistepFilterMetricsTracker::OnSuggestionApplicationFinished(
+    SuggestionApplicationResult result) {
   if (!current_application_session_.has_value()) {
     return;
   }
-  if (was_applied_successfully) {
-    current_application_session_->is_applied = true;
-    current_application_session_->outcome =
-        MultistepFilterApplicationOutcome::kAllFiltersApplied;
+  current_application_session_->outcome = result;
+  current_application_session_->is_applied =
+      result == SuggestionApplicationResult::kAllFiltersApplied;
+  if (current_application_session_->is_applied) {
     LogApplicationOutcome(*current_application_session_);
   } else {
+    // In case of application failure, flush the session immediately.
     FlushSuggestionApplicationSession(
         SuggestionApplicationSessionFlushTrigger::kApplicationFailure,
         base::TimeTicks::Now());

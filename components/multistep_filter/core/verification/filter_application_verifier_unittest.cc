@@ -14,6 +14,7 @@
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/verification/suggestion_application_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -60,8 +61,7 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_Success) {
       FilterApplicationVerifier::Verify(suggestion, annotation);
 
   EXPECT_TRUE(result.is_success());
-  EXPECT_EQ(result.outcome,
-            FilterApplicationVerifier::Result::Outcome::kSuccess);
+  EXPECT_EQ(result.outcome, SuggestionApplicationResult::kAllFiltersApplied);
   EXPECT_TRUE(result.missing_keys.empty());
 }
 
@@ -73,9 +73,19 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_NoExtractedAnnotations) {
       FilterApplicationVerifier::Verify(suggestion, empty_annotation);
 
   EXPECT_FALSE(result.is_success());
-  EXPECT_EQ(
-      result.outcome,
-      FilterApplicationVerifier::Result::Outcome::kNoExtractedAnnotations);
+  EXPECT_EQ(result.outcome,
+            SuggestionApplicationResult::kFailedNoExtractedAnnotations);
+}
+
+TEST(FilterApplicationVerifierTest, VerifyOutcome_NullAnnotation) {
+  UrlFilterSuggestion suggestion = CreateSuggestion({{"color", "red"}});
+
+  const FilterApplicationVerifier::Result result =
+      FilterApplicationVerifier::Verify(suggestion, std::nullopt);
+
+  EXPECT_FALSE(result.is_success());
+  EXPECT_EQ(result.outcome,
+            SuggestionApplicationResult::kFailedNoExtractedAnnotations);
 }
 
 TEST(FilterApplicationVerifierTest, VerifyOutcome_CountMismatch) {
@@ -87,8 +97,7 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_CountMismatch) {
       FilterApplicationVerifier::Verify(suggestion, annotation);
 
   EXPECT_FALSE(result.is_success());
-  EXPECT_EQ(result.outcome,
-            FilterApplicationVerifier::Result::Outcome::kCountMismatch);
+  EXPECT_EQ(result.outcome, SuggestionApplicationResult::kFailedCountMismatch);
   EXPECT_TRUE(result.missing_keys.empty());
 }
 
@@ -103,7 +112,7 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_AttributeMismatch) {
 
   EXPECT_FALSE(result.is_success());
   EXPECT_EQ(result.outcome,
-            FilterApplicationVerifier::Result::Outcome::kAttributeMismatch);
+            SuggestionApplicationResult::kFailedAttributeMismatch);
   ASSERT_EQ(result.missing_keys.size(), 1u);
   EXPECT_EQ(result.missing_keys[0], "size");
 }
@@ -119,7 +128,7 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_ValueMismatch) {
 
   EXPECT_FALSE(result.is_success());
   EXPECT_EQ(result.outcome,
-            FilterApplicationVerifier::Result::Outcome::kAttributeMismatch);
+            SuggestionApplicationResult::kFailedAttributeMismatch);
   ASSERT_EQ(result.missing_keys.size(), 1u);
   EXPECT_EQ(result.missing_keys[0], "color");
 }

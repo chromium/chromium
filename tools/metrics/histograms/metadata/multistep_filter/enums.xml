@@ -10,24 +10,6 @@ found in the LICENSE file.
 
 <enums>
 
-<!-- LINT.IfChange(MultistepFilterApplicationOutcome) -->
-
-<enum name="MultistepFilterApplicationOutcome">
-  <int value="0" label="AllFiltersApplied">
-    All filters were successfully applied and verified.
-  </int>
-  <int value="1" label="NotAllFiltersApplied">
-    Technical failure to apply the filters (e.g. extraction failed or landing
-    page was an error page).
-  </int>
-  <int value="2" label="AbandonedBeforeVerification">
-    The user navigated away, closed the tab, or accepted a new suggestion before
-    the application could be verified.
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterApplicationOutcome) -->
-
 <!-- LINT.IfChange(MultistepFilterPostSuggestionApplicationUserEngagement) -->
 
 <enum name="MultistepFilterPostSuggestionApplicationUserEngagement">
@@ -99,6 +81,36 @@ found in the LICENSE file.
 </enum>
 
 <!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterTaskType) -->
+
+<!-- LINT.IfChange(SuggestionApplicationResult) -->
+
+<enum name="SuggestionApplicationResult">
+  <int value="0" label="AllFiltersApplied">
+    All filters were successfully applied and verified.
+  </int>
+  <int value="1" label="NotAllFiltersAppliedDeprecated">
+    Kept for backward compatibility but replaced the by more fine-grained
+    failure states below. Represents any failure case that wasn't abandoned.
+  </int>
+  <int value="2" label="AbandonedBeforeVerification">
+    The user navigated away, closed the tab, or accepted a new suggestion before
+    the application could be verified.
+  </int>
+  <int value="3" label="FailedErrorPage">
+    The navigation to the landing page failed or was to an unsupported scheme.
+  </int>
+  <int value="4" label="FailedNoExtractedAnnotations">
+    No filter attributes could be extracted from the landing page.
+  </int>
+  <int value="5" label="FailedCountMismatch">
+    The number of extracted filters did not match the suggested count.
+  </int>
+  <int value="6" label="FailedAttributeMismatch">
+    There was a mismatch in the keys or values of the filters.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/data_models/suggestion_application_result.h:SuggestionApplicationResult) -->
 
 <!-- LINT.IfChange(SuggestionUserDecision) -->
 

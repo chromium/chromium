@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
@@ -24,6 +25,7 @@
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/multistep_filter/core/verification/filter_application_verifier.h"
+#include "components/multistep_filter/core/verification/suggestion_application_result.h"
 
 namespace multistep_filter {
 
@@ -96,6 +98,7 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
                        LogEventType::kSuggestionGenerationStarted,
                        metadata.url.GetHost());
 }
+
 void LogSuggestionApplicationOutcome(
     MultistepFilterLogRouter* log_router,
     MultistepFilterMetricsTracker& metrics_tracker,
@@ -116,53 +119,31 @@ void LogSuggestionApplicationOutcome(
         << LogDetail{"is_error_page", metadata.is_error_page_navigation}
         << LogDetail{"net_error_code", metadata.net_error_code}
         << LogDetail{"http_response_code", metadata.http_response_code};
-    metrics_tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-        /*was_applied_successfully=*/false);
+    metrics_tracker.OnSuggestionApplicationFinished(
+        SuggestionApplicationResult::kFailedErrorPage);
     return;
   }
 
-  if (!extracted_annotation) {
+  const FilterApplicationVerifier::Result result =
+      FilterApplicationVerifier::Verify(*suggested_filters,
+                                        extracted_annotation);
+
+  std::string_view outcome_str =
+      SuggestionApplicationResultToString(result.outcome);
+  if (result.outcome == SuggestionApplicationResult::kFailedAttributeMismatch) {
     MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
                          LogEventType::kSuggestionApplied,
                          metadata.url.GetHost())
-        << LogDetail{"application_outcome", "error_no_extracted_annotations"};
-    metrics_tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-        /*was_applied_successfully=*/false);
-    return;
+        << LogDetail{"application_outcome", outcome_str}
+        << LogDetail{"missing_filter_keys",
+                     base::JoinString(result.missing_keys, ", ")};
+  } else {
+    MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
+                         LogEventType::kSuggestionApplied,
+                         metadata.url.GetHost())
+        << LogDetail{"application_outcome", outcome_str};
   }
-  const FilterApplicationVerifier::Result result =
-      FilterApplicationVerifier::Verify(*suggested_filters,
-                                        *extracted_annotation);
-  switch (result.outcome) {
-    case FilterApplicationVerifier::Result::Outcome::kNoExtractedAnnotations:
-      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
-                           LogEventType::kSuggestionApplied,
-                           metadata.url.GetHost())
-          << LogDetail{"application_outcome", "error_no_extracted_annotations"};
-      break;
-    case FilterApplicationVerifier::Result::Outcome::kCountMismatch:
-      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
-                           LogEventType::kSuggestionApplied,
-                           metadata.url.GetHost())
-          << LogDetail{"application_outcome", "error_filter_count_mismatch"};
-      break;
-    case FilterApplicationVerifier::Result::Outcome::kSuccess:
-      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
-                           LogEventType::kSuggestionApplied,
-                           metadata.url.GetHost())
-          << LogDetail{"application_outcome", "success"};
-      break;
-    case FilterApplicationVerifier::Result::Outcome::kAttributeMismatch:
-      MULTISTEP_FILTER_LOG(log_router, metadata.navigation_id,
-                           LogEventType::kSuggestionApplied,
-                           metadata.url.GetHost())
-          << LogDetail{"application_outcome", "error_attribute_mismatch"}
-          << LogDetail{"missing_filter_keys",
-                       base::JoinString(result.missing_keys, ", ")};
-      break;
-  }
-  metrics_tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-      result.is_success());
+  metrics_tracker.OnSuggestionApplicationFinished(result.outcome);
 }
 }  // namespace
 

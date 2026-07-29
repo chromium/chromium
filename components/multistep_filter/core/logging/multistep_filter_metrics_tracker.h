@@ -14,6 +14,7 @@
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "components/multistep_filter/core/prefs/retention_state_snapshot.h"
+#include "components/multistep_filter/core/verification/suggestion_application_result.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace multistep_filter {
@@ -111,8 +112,8 @@ class MultistepFilterMetricsTracker {
     bool is_error_page = false;
     base::TimeTicks application_navigation_finish_time;
     base::TimeDelta suggestion_accepted_to_applied_latency;
-    MultistepFilterApplicationOutcome outcome =
-        MultistepFilterApplicationOutcome::kAbandonedBeforeVerification;
+    SuggestionApplicationResult outcome =
+        SuggestionApplicationResult::kAbandonedBeforeVerification;
     // True if the suggestion was successfully applied and we are now tracking
     // post-application user engagement.
     bool is_applied = false;
@@ -182,8 +183,9 @@ class MultistepFilterMetricsTracker {
   // If successful, this starts a post-application session to track behavior
   // within a session window (controlled by
   // `kMultistepFilterPostApplicationSessionDuration`).
-  void OnSuggestionApplicationAnnotationExtractionFinished(
-      bool was_applied_successfully);
+  // Triggered when suggestion application finishes (either successfully or with
+  // a failure).
+  void OnSuggestionApplicationFinished(SuggestionApplicationResult result);
 
  private:
   // Internal helper to calculate and flush metrics for pending suggestion UI

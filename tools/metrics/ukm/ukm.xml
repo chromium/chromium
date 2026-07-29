@@ -15372,20 +15372,21 @@ be describing additional metrics about the same event.
     application is unsuccessful, the session ends immediately. If successful,
     the session continues to track post-application user engagement, ending when
     the user navigates away or closes the tab. This event records the final
-    application outcome (AllApplied, NotAllApplied, or Abandoned) and any
-    post-application engagement metrics.
+    application outcome (represented by SuggestionApplicationResult enum) and
+    any post-application engagement metrics.
   </summary>
-  <metric name="ApplicationOutcome" enum="MultistepFilterApplicationOutcome">
+  <metric name="ApplicationOutcome" enum="SuggestionApplicationResult">
     <summary>
-      The overall technical filter application outcome after a user accepts a
-      Multistep Filter suggestion.
+      The overall technical filter application outcome (AllFiltersApplied,
+      AbandonedBeforeVerification, or various Failure reasons) after a user
+      accepts a Multistep Filter suggestion.
     </summary>
   </metric>
   <metric name="NumOfFilterFacetsAppliedSuccessfully">
     <summary>
       The number of filter facets successfully applied (clamped to
       multistep_filter::kMultistepFilterMaxFacetsShownUkmClampingLimit). Logged
-      only if outcome is AllApplied.
+      only if outcome is AllFiltersApplied.
     </summary>
   </metric>
   <metric name="PostApplicationUserEngagement"

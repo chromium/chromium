@@ -17,7 +17,10 @@ source_set("logging") {
     "multistep_filter_metrics_util.cc",
     "multistep_filter_metrics_util.h",
   ]
-  public_deps = [ "//components/multistep_filter/core/data_models" ]
+  public_deps = [
+    "//components/multistep_filter/core/data_models",
+    "//components/multistep_filter/core/verification",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/core",
