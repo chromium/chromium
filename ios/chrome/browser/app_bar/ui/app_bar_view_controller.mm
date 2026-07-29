@@ -1516,7 +1516,8 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (BOOL)shouldHideButtonLabels {
   return IsAppBarLabelsHidden() ||
-         (_geminiFloatyInvoked && IsAppBarHiddenInFullscreen());
+         (_geminiFloatyInvoked && IsAppBarHiddenInFullscreen()) ||
+         self.layoutState.appBarLockedInFullscreen;
 }
 
 @end
