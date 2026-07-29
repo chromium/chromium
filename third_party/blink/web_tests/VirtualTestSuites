@@ -1430,9 +1430,7 @@
     "prefix": "fragmented-oof-in-cb",
     "owners": [ "mstensho@chromium.org" ],
     "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
+      "Linux"
     ],
     "bases": [
       "external/wpt/css/css-anchor-position",
