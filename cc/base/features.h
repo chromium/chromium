@@ -316,6 +316,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResourcePoolPreferExactSizeReuse);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendEarlyFinalBeginMainFrame);
 CC_BASE_EXPORT bool SendEarlyFinalBeginMainFrameIsEnabled();
 
+// When enabled, rounded corner radii are populated in HitTestRegion
+// submissions (cc side) and used for point containment checks in HitTestQuery
+// (viz side).
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizHitTestRoundedCorners);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

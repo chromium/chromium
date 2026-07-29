@@ -286,4 +286,6 @@ bool SendEarlyFinalBeginMainFrameIsEnabled() {
   return base::FeatureList::IsEnabled(kSendEarlyFinalBeginMainFrame);
 }
 
+BASE_FEATURE(kVizHitTestRoundedCorners, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
