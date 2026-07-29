@@ -418,8 +418,10 @@ void SystemPdhMetricsProvider::PdhQueryHandler::ProcessCounter::Record() {
                              query_status);
   } else if (process_value.CStatus != PDH_CSTATUS_VALID_DATA &&
              process_value.CStatus != PDH_CSTATUS_NEW_DATA) {
-    base::UmaHistogramSparse(base::win::ScopedPdhQuery::kResultErrorHistogram,
-                             process_value.CStatus);
+    // This has never been observed to occur in months of real world data, so if
+    // it does, something is likely wrong with the query, and it can be
+    // discarded.
+    counter_handle_.reset();
   }
 }
 
@@ -494,8 +496,6 @@ bool SystemPdhMetricsProvider::PdhQueryHandler::VerifyPdhResult(
   // Only check `value` if it is present.
   if (value && value->CStatus != PDH_CSTATUS_VALID_DATA &&
       value->CStatus != PDH_CSTATUS_NEW_DATA) {
-    base::UmaHistogramSparse(base::win::ScopedPdhQuery::kResultErrorHistogram,
-                             value->CStatus);
     StopRecording();
     return false;
   }

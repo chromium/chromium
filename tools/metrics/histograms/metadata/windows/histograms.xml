@@ -433,17 +433,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.PdhQueryResultCStatus" enum="PDH_STATUS"
-    expires_after="2026-09-09">
-  <owner>spvm@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Records the CStatus inside PDH_FMT_COUNTERVALUE values which
-    ::PdhGetFormattedCounterValue() returned due to internal error.
-  </summary>
-</histogram>
-
 <histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.System"
     enum="SystemInstallerLaunchStatus" expires_after="2026-12-16">
   <owner>alsan@chromium.org</owner>

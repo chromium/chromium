@@ -48,8 +48,6 @@ class BASE_EXPORT ScopedPdhQuery
  public:
   static constexpr std::string_view kQueryErrorHistogram =
       "Windows.PdhQueryErrorCode";
-  static constexpr std::string_view kResultErrorHistogram =
-      "Windows.PdhQueryResultCStatus";
 
   // Constructs a ScopedPdhQuery from a PDH_HQUERY, and takes ownership of
   // `pdh_query` if it is not null.
