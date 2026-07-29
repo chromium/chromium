@@ -127,6 +127,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mWindowAndroid,
                         mAnchorView,
                         mHorizontalAlignmentView,
+                        mHorizontalAlignmentView::getMeasuredWidth,
+                        () -> 0,
                         false,
                         mContentView,
                         () -> mControlsPosition,
@@ -275,6 +277,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mWindowAndroid,
                         mAnchorView,
                         mHorizontalAlignmentView,
+                        () -> 0,
+                        () -> 0,
                         false,
                         mIntermediateView,
                         () -> mControlsPosition,
@@ -373,6 +377,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         mWindowAndroid,
                         mAnchorView,
                         mHorizontalAlignmentView,
+                        () -> 0,
+                        () -> 0,
                         false,
                         mContentView,
                         () -> mControlsPosition,
@@ -591,6 +597,50 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         expectedTop,
                         ALIGNMENT_WIDTH,
                         getExpectedHeight(expectedTop),
+                        0,
+                        0,
+                        0,
+                        0),
+                alignment);
+    }
+
+    @Test
+    @Config(qualifiers = "ldltr-sw600dp")
+    public void testRecalculateOmniboxAlignment_tablet_popoverSuppliers() {
+        int targetWidth = 504;
+        int leftOffset = -40;
+        OmniboxSuggestionsDropdownEmbedderImpl impl =
+                new OmniboxSuggestionsDropdownEmbedderImpl(
+                        mWindowAndroid,
+                        mAnchorView,
+                        mHorizontalAlignmentView,
+                        () -> targetWidth,
+                        () -> leftOffset,
+                        false,
+                        mContentView,
+                        () -> mControlsPosition,
+                        () -> 0,
+                        () -> mBottomWindowPadding,
+                        mFuseboxStateSupplier,
+                        mFuseboxLayoutModeSupplier,
+                        mTopInsetProvider);
+
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+
+        Configuration newConfig = getConfiguration();
+        newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
+        impl.onConfigurationChanged(newConfig);
+
+        OmniboxAlignment alignment = impl.getCurrentAlignment();
+
+        assertEquals(
+                new OmniboxAlignment(
+                        ALIGNMENT_LEFT + leftOffset,
+                        ANCHOR_TOP,
+                        targetWidth,
+                        getExpectedHeight(ANCHOR_TOP),
                         0,
                         0,
                         0,

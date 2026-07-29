@@ -53,6 +53,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final WindowAndroid mWindowAndroid;
     private final View mAnchorView;
     private final View mAlignmentView;
+    private final Supplier<Integer> mAlignmentViewTargetWidthSupplier;
+    private final Supplier<Integer> mAlignmentViewLeftOffsetSupplier;
     private final boolean mForcePhoneStyleOmnibox;
     private final Supplier<@ControlsPosition Integer> mControlsPositionSupplier;
     private final Supplier<Integer> mKeyboardHeightSupplier;
@@ -81,6 +83,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * @param alignmentView View to which: 1. The dropdown should be horizontally aligned to when
      *     its width is smaller than the anchor view. 2. The dropdown should vertically align to
      *     during animations. This must be a descendant of the anchor view.
+     * @param alignmentViewTargetWidthSupplier Supplier of the target width for the alignment view,
+     *     allowing popover mode to publish target width without mutating layout parameters on the
+     *     alignment view directly (which would cause double margin counting on focus).
+     * @param alignmentViewLeftOffsetSupplier Supplier of the left offset for the alignment view,
+     *     allowing popover mode to publish horizontal shifts.
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
@@ -100,6 +107,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             WindowAndroid windowAndroid,
             View anchorView,
             View alignmentView,
+            Supplier<Integer> alignmentViewTargetWidthSupplier,
+            Supplier<Integer> alignmentViewLeftOffsetSupplier,
             boolean forcePhoneStyleOmnibox,
             @Nullable View baseChromeLayout,
             Supplier<@ControlsPosition Integer> controlsPositionSupplier,
@@ -111,6 +120,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
         mAlignmentView = alignmentView;
+        mAlignmentViewTargetWidthSupplier = alignmentViewTargetWidthSupplier;
+        mAlignmentViewLeftOffsetSupplier = alignmentViewLeftOffsetSupplier;
         mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         mControlsPositionSupplier = controlsPositionSupplier;
         mKeyboardHeightSupplier = keyboardHeightSupplier;
@@ -318,12 +329,19 @@ class OmniboxSuggestionsDropdownEmbedderImpl
 
             // Tablet positioning logic common between fusebox and non-fusebox cases.
             ViewUtils.getRelativeLayoutPosition(mAnchorView, mAlignmentView, mPositionArray);
-            width = mAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
+            int targetWidth = mAlignmentViewTargetWidthSupplier.get();
+            width = targetWidth + 2 * sideSpacing;
+            int leftOffset = mAlignmentViewLeftOffsetSupplier.get();
             if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                 // The view will be shifted to the left, so the adjustment needs to be negative.
-                left = -(mAnchorView.getMeasuredWidth() - width - mPositionArray[0] + sideSpacing);
+                left =
+                        -(mAnchorView.getMeasuredWidth()
+                                - width
+                                - mPositionArray[0]
+                                + sideSpacing
+                                - leftOffset);
             } else {
-                left = mPositionArray[0] - sideSpacing;
+                left = mPositionArray[0] - sideSpacing + leftOffset;
             }
             // Ensures full-width dropdown on narrow windows with popover suggestions.
             if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.SUGGESTIONS_POPOVER

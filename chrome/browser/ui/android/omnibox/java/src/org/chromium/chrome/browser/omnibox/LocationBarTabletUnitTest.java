@@ -127,9 +127,7 @@ public class LocationBarTabletUnitTest {
     @Config(qualifiers = "w600dp-xhdpi")
     public void testFuseboxStateChange() {
         int prefocusWidth = 400;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.setOutlineProvider(mOutlineProvider);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         int expansionPx =
@@ -180,9 +178,7 @@ public class LocationBarTabletUnitTest {
     public void testFuseboxStateChange_marginCalcs() {
         // Below minimum width, expand by delta between min width and current width
         int prefocusWidth = 400;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         int minWidthPx =
                 mLocationBarTablet
@@ -199,9 +195,7 @@ public class LocationBarTabletUnitTest {
 
         // Above minimum width, only expand by 8 dp inset on either side
         prefocusWidth = 1100;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         int expansionPx =
                 mLocationBarTablet
                         .getResources()
@@ -232,10 +226,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(expectedMargin + delta, layoutParams.rightMargin, MathUtils.EPSILON);
 
         // Update width + position to reflect the newly expanded view
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(
-                        prefocusWidth - layoutParams.leftMargin, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth - layoutParams.leftMargin);
         mHolderView.setLeft(currentLeft + layoutParams.leftMargin);
 
         int initialLeftMargin = layoutParams.leftMargin;
@@ -418,9 +409,7 @@ public class LocationBarTabletUnitTest {
     @Config(qualifiers = "w800dp-xhdpi")
     public void testFuseboxBackground_noSuggestions() {
         int prefocusWidth = 400;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         mLocationBarTablet.onSuggestionsChanged(false);
 
@@ -460,9 +449,7 @@ public class LocationBarTabletUnitTest {
     @Config(qualifiers = "w800dp-xhdpi")
     public void testFuseboxBackground_listScrolled() {
         int prefocusWidth = 400;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         int expansionPx =
                 mLocationBarTablet
@@ -493,9 +480,7 @@ public class LocationBarTabletUnitTest {
     @Config(qualifiers = "w800dp-xhdpi")
     public void testHoverDrawable() {
         int prefocusWidth = 400;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         int inset =
                 mLocationBarTablet
@@ -549,9 +534,7 @@ public class LocationBarTabletUnitTest {
     @Config(qualifiers = "w800dp-mdpi")
     public void testWindowWidthChangedMarginCalcs() {
         int prefocusWidth = 400;
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         int minWidthPx =
                 mLocationBarTablet
@@ -566,9 +549,7 @@ public class LocationBarTabletUnitTest {
 
         int initialRightMargin = layoutParams.rightMargin;
         RuntimeEnvironment.setQualifiers("w599dp-mdpi");
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
         mLocationBarTablet.layout(
                 0,
                 0,
@@ -577,7 +558,7 @@ public class LocationBarTabletUnitTest {
         ShadowLooper.idleMainLooper();
         layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         int availableWidthPx = DisplayUtil.dpToPx(mDisplay, 599);
-        int unexpandedRightPx = mLocationBarTablet.getMeasuredWidth() + initialRightMargin;
+        int unexpandedRightPx = mHolderView.getMeasuredWidth() + initialRightMargin;
         assertEquals(0, layoutParams.leftMargin);
         assertEquals(
                 -(availableWidthPx - unexpandedRightPx),
@@ -709,6 +690,33 @@ public class LocationBarTabletUnitTest {
         assertEquals(expectedNormalColor, unfocusedRect.getColor().getDefaultColor());
     }
 
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "w800dp-xhdpi")
+    public void testPopoverMarginsAppliedOnceAcrossReparenting() {
+        int prefocusWidth = 400;
+        measureHolder(prefocusWidth);
+        mLocationBarTablet.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+
+        LinearLayout.LayoutParams popoverLayoutParams =
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        assertEquals(0, popoverLayoutParams.leftMargin);
+        assertEquals(0, popoverLayoutParams.rightMargin);
+
+        mLocationBarTablet.setReparentedToPopover(true);
+
+        // In popover mode, margins remain 0 and target popover geometry is published via getters.
+        assertEquals(0, popoverLayoutParams.leftMargin);
+        assertEquals(0, popoverLayoutParams.rightMargin);
+        int minWidthPx =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
+        assertEquals(minWidthPx, mLocationBarTablet.getAlignmentViewTargetWidth());
+    }
+
     private void setupContainerAndMeasure(int containerWidth, int prefocusWidth, int leftPosition) {
         mContainerView = new View(mActivity);
         mContainerView.measure(
@@ -717,13 +725,18 @@ public class LocationBarTabletUnitTest {
         mContainerView.layout(0, 0, containerWidth, 100);
 
         mLocationBarTablet.setHolderAndContainer(mHolderView, mContainerView);
-        mLocationBarTablet.measure(
-                MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        measureHolder(prefocusWidth);
 
         mLocationBarTablet.setOutlineProvider(mOutlineProvider);
 
         mHolderView.setLeft(leftPosition);
+    }
+
+    // Measuring mHolderView (FrameLayout) automatically measures child mLocationBarTablet.
+    private void measureHolder(int width) {
+        int widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+        int heightSpec = MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY);
+        mHolderView.measure(widthSpec, heightSpec);
     }
 
     private int toPx(int dp) {

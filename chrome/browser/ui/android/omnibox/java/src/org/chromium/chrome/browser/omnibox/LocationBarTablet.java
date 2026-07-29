@@ -100,6 +100,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private @Nullable View mContainerView;
     private @FuseboxLayoutMode int mLayoutMode;
     private boolean mIsReparentedToPopover;
+    // Target popover geometry, published directly to OmniboxSuggestionsDropdownEmbedderImpl
+    // instead of being applied as holder margins.
+    private int mTargetPopoverWidth;
+    private int mTargetPopoverLeftOffset;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private boolean mShowStandbyRing;
     private boolean mIsHovered;
@@ -589,6 +593,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    /* package */ int getAlignmentViewTargetWidth() {
+        return mTargetPopoverWidth > 0 ? mTargetPopoverWidth : super.getAlignmentViewTargetWidth();
+    }
+
+    @Override
+    /* package */ int getAlignmentViewLeftOffset() {
+        return mTargetPopoverLeftOffset;
+    }
+
+    @Override
     void setShowStandbyRing(boolean showStandbyRing) {
         if (showStandbyRing == mShowStandbyRing) return;
         mShowStandbyRing = showStandbyRing;
@@ -617,23 +631,22 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         Resources resources = getResources();
         LinearLayout.LayoutParams parentParams =
                 (LinearLayout.LayoutParams) mHolder.getLayoutParams();
-        boolean isPopover =
-            mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER && mIsReparentedToPopover;
+        boolean isPopoverMode = mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
         if (!mShowStandbyRing
                 && (mFuseboxState == FuseboxState.COMPACT
                         || mFuseboxState == FuseboxState.EXPANDED
-                        || isPopover)) {
+                        || mIsReparentedToPopover)) {
             parentParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx =
-                    isPopover
+                    isPopoverMode
                             ? 0
                             : resources.getDimensionPixelSize(
                                     R.dimen.location_bar_tablet_fusebox_popup_inset);
-            parentParams.topMargin = isPopover ? 0 : -expansionPx;
-            setMarginsForAvailableWidth(parentParams, expansionPx);
+            parentParams.topMargin = mIsReparentedToPopover ? 0 : -expansionPx;
+            setMarginsForAvailableWidth(parentParams, expansionPx, isPopoverMode);
             parentParams.gravity = Gravity.TOP;
             int topExpansionPx =
-                    isPopover
+                    mIsReparentedToPopover
                             ? resources.getDimensionPixelSize(
                                     R.dimen.location_bar_tablet_fusebox_popover_top_padding)
                             : expansionPx;
@@ -650,6 +663,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             parentParams.leftMargin = 0;
             parentParams.rightMargin = 0;
             parentParams.topMargin = 0;
+            mTargetPopoverWidth = 0;
+            mTargetPopoverLeftOffset = 0;
             parentParams.height =
                     resources.getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
             parentParams.gravity = Gravity.CENTER_VERTICAL;
@@ -719,7 +734,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     private void setMarginsForAvailableWidth(
-            MarginLayoutParams layoutParams, int minHorizontalExpansionPx) {
+            MarginLayoutParams layoutParams, int minHorizontalExpansionPx, boolean isPopoverMode) {
         Resources resources = getResources();
         int screenWidthDp = resources.getConfiguration().screenWidthDp;
 
@@ -731,7 +746,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                         ? mContainerView.getMeasuredWidth()
                         : DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
         int unexpandedWidth =
-                getMeasuredWidth() + layoutParams.leftMargin + layoutParams.rightMargin;
+                mHolder.getMeasuredWidth() + layoutParams.leftMargin + layoutParams.rightMargin;
         int unexpandedLeft = mPositionArray[0] - layoutParams.leftMargin;
         int unexpandedRight = unexpandedLeft + unexpandedWidth;
 
@@ -771,9 +786,18 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             finalLeft = Math.max(0, availableWidth - targetWidth);
         }
 
-        // Step 5: Apply deltas to parent margins
-        layoutParams.leftMargin = finalLeft - unexpandedLeft;
-        layoutParams.rightMargin = -(finalRight - unexpandedRight);
+        // Step 5: In popover mode, publish the target rect and leave the holder unexpanded, so its
+        // measured width and position are invariant across focus. Otherwise, apply deltas to parent
+        // margins.
+        if (isPopoverMode) {
+            mTargetPopoverWidth = finalRight - finalLeft;
+            mTargetPopoverLeftOffset = finalLeft - unexpandedLeft;
+            layoutParams.leftMargin = 0;
+            layoutParams.rightMargin = 0;
+        } else {
+            layoutParams.leftMargin = finalLeft - unexpandedLeft;
+            layoutParams.rightMargin = -(finalRight - unexpandedRight);
+        }
     }
 
     private void adjustBackgroundForSuggestions() {
