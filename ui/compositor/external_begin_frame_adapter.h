@@ -41,6 +41,8 @@ class COMPOSITOR_EXPORT ExternalBeginFrameAdapter
       base::TimeTicks deadline,
       base::TimeDelta interval,
       base::OnceCallback<void(bool has_damage)> ack_callback) override;
+  void OnVSyncIntervalChanged(base::TimeTicks timebase,
+                              base::TimeDelta interval) override;
 
   // ExternalBeginFrameControllerClientFactory implementation.
   mojo::PendingAssociatedRemote<viz::mojom::ExternalBeginFrameControllerClient>

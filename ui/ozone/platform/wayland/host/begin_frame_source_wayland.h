@@ -48,11 +48,17 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
   void OnPresentationFeedback(
       const gfx::PresentationFeedback& feedback) override;
 
+  static base::TimeDelta ComputeEffectiveInterval(
+      base::TimeDelta preferred_interval,
+      base::TimeDelta vsync_interval);
+
  private:
   void MaybeIssueBeginFrame();
   void OnBeginFrameAck(bool has_damage);
   void StartFrameCallbackTimer();
   void OnFrameCallbackTimeout();
+
+  base::TimeDelta GetEffectiveInterval() const;
 
   const raw_ptr<WaylandFrameManager> frame_manager_;
   const raw_ptr<PlatformWindow> window_;
@@ -61,6 +67,9 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
 
   // Default vsync interval, matches viz::BeginFrameArgs::DefaultInterval().
   static constexpr base::TimeDelta kDefaultInterval = base::Microseconds(16666);
+
+  // The largest allowed interval, caps lowest frame rate at 24fps.
+  static constexpr base::TimeDelta kMaxEffectiveInterval = base::Hertz(24);
 
   // The display's vsync interval, updated from Wayland presentation feedback.
   base::TimeDelta vsync_interval_ = kDefaultInterval;
@@ -72,6 +81,10 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
   // Last known frame presentation time if provided by the compositor,
   // used to align frame_time and deadline to the display's timing.
   base::TimeTicks last_presentation_time_;
+
+  // The last vsync interval reported over Mojo. Tracks what viz knows so may
+  // diverge from vsync_interval_.
+  base::TimeDelta last_sent_vsync_interval_;
 
   // Whether the delegate wants us to produce begin frames.
   bool needs_begin_frame_ = false;

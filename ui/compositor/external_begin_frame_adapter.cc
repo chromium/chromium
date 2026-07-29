@@ -50,6 +50,14 @@ void ExternalBeginFrameAdapter::OnBeginFrame(
                      weak_factory_.GetWeakPtr(), std::move(ack_callback)));
 }
 
+void ExternalBeginFrameAdapter::OnVSyncIntervalChanged(
+    base::TimeTicks timebase,
+    base::TimeDelta interval) {
+  TRACE_EVENT1("viz", "ExternalBeginFrameAdapter::OnVSyncIntervalChanged",
+               "interval_us", interval.InMicroseconds());
+  compositor_->SetDisplayVSyncParameters(timebase, interval);
+}
+
 mojo::PendingAssociatedRemote<viz::mojom::ExternalBeginFrameControllerClient>
 ExternalBeginFrameAdapter::CreateExternalBeginFrameControllerClient() {
   TRACE_EVENT0("ui", "ExternalBeginFrameAdapter::CreateClient");

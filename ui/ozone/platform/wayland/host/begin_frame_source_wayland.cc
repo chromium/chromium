@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/begin_frame_source_wayland.h"
 
+#include <algorithm>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -31,6 +33,7 @@ void BeginFrameSourceWayland::Reset() {
   frame_in_flight_ = false;
   ready_to_issue_begin_frame_ = false;
   last_frame_deadline_time_ = base::TimeTicks();
+  last_sent_vsync_interval_ = base::TimeDelta();
   frame_callback_timeout_timer_.Stop();
   deferred_issue_begin_frame_timer_.Stop();
 }
@@ -61,12 +64,36 @@ void BeginFrameSourceWayland::SetNeedsBeginFrame(bool needs) {
 }
 
 void BeginFrameSourceWayland::SetPreferredInterval(base::TimeDelta interval) {
+  TRACE_EVENT1("wayland", "BeginFrameSourceWayland::SetPreferredInterval",
+               "interval_us", interval.InMicroseconds());
   if (!interval.is_zero()) {
     DVLOG(1) << "SetPreferredInterval: preferred interval updated to "
              << interval.InMillisecondsF() << "ms";
-    // TODO(crbug.com/513613495): Unused until it is set correctly.
     preferred_interval_ = interval;
   }
+}
+
+// static
+base::TimeDelta BeginFrameSourceWayland::ComputeEffectiveInterval(
+    base::TimeDelta preferred_interval,
+    base::TimeDelta vsync_interval) {
+  if (preferred_interval.is_zero() || vsync_interval.is_zero()) {
+    return vsync_interval;
+  }
+  // Matches the vsync subsampling in
+  // ExternalBeginFrameSourceMac::SetPreferredInterval: pick the largest whole
+  // multiple of the vsync that doesn't exceed the (capped) preferred
+  // interval, allowing for a small margin of error for similar intervals.
+  constexpr base::TimeDelta kDeltaAlmostEqual = base::Microseconds(10);
+  const base::TimeDelta bounded_interval =
+      std::min(preferred_interval, kMaxEffectiveInterval);
+  const int64_t factor = std::max<int64_t>(
+      1, bounded_interval.IntDiv(vsync_interval - kDeltaAlmostEqual));
+  return factor * vsync_interval;
+}
+
+base::TimeDelta BeginFrameSourceWayland::GetEffectiveInterval() const {
+  return ComputeEffectiveInterval(preferred_interval_, vsync_interval_);
 }
 
 void BeginFrameSourceWayland::OnFrameCallback(base::TimeTicks callback_time) {
@@ -87,28 +114,42 @@ void BeginFrameSourceWayland::OnPresentationFeedback(
   TRACE_EVENT2("wayland", "BeginFrameSourceWayland::OnPresentationFeedback",
                "interval_us", feedback.interval.InMicroseconds(), "failed",
                feedback.failed());
-  if (!feedback.failed()) {
-    last_presentation_time_ = feedback.timestamp;
-    if (!feedback.interval.is_zero()) {
-      if (vsync_interval_ != feedback.interval) {
-        DVLOG(1) << "OnPresentationFeedback: vsync interval updated to "
-                 << feedback.interval.InMillisecondsF() << "ms";
-      }
-      vsync_interval_ = feedback.interval;
-    } else {
-      // Reset to the initial safe default of 60 fps in case the
-      // compositor started returning 0 after previously reporting a positive
-      // value, e.g. the window moved to a different display or VRR was enabled.
-      DVLOG(1) << "OnPresentationFeedback: feedback.interval=0, resetting to "
-                  "default "
-               << kDefaultInterval.InMillisecondsF() << "ms";
-      vsync_interval_ = kDefaultInterval;
+  if (feedback.failed()) {
+    return;
+  }
+
+  const base::TimeDelta previous_vsync_interval = vsync_interval_;
+  last_presentation_time_ = feedback.timestamp;
+  if (feedback.interval.is_positive()) {
+    if (vsync_interval_ != feedback.interval) {
+      DVLOG(1) << "OnPresentationFeedback: vsync interval updated to "
+               << feedback.interval.InMillisecondsF() << "ms";
     }
+    vsync_interval_ = feedback.interval;
+  } else {
+    // Reset to the initial safe default of 60 fps in case the
+    // compositor started returning 0 after previously reporting a positive
+    // value, e.g. the window moved to a different display or VRR was enabled.
+    DVLOG(1) << "OnPresentationFeedback: feedback.interval=0, resetting to "
+                "default "
+             << kDefaultInterval.InMillisecondsF() << "ms";
+    vsync_interval_ = kDefaultInterval;
+  }
+
+  // Invalidate the preferred interval from viz if the display's vsync changed.
+  if (vsync_interval_ != previous_vsync_interval) {
+    preferred_interval_ = base::TimeDelta();
+  }
+  if (delegate_ && vsync_interval_ != last_sent_vsync_interval_) {
+    last_sent_vsync_interval_ = vsync_interval_;
+    delegate_->OnVSyncIntervalChanged(last_presentation_time_, vsync_interval_);
   }
 }
 
 void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
-  TRACE_EVENT0("wayland", "BeginFrameSourceWayland::MaybeIssueBeginFrame");
+  TRACE_EVENT1("wayland", "BeginFrameSourceWayland::MaybeIssueBeginFrame",
+               "effective_interval_us",
+               GetEffectiveInterval().InMicroseconds());
   if (!needs_begin_frame_ || !ready_to_issue_begin_frame_ || frame_in_flight_ ||
       !delegate_) {
     return;
@@ -138,24 +179,30 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
     }
   }
 
-  base::TimeTicks deadline = now + vsync_interval_;
-  // The naive deadline of one vsync/refresh from now is too far in the
+  const base::TimeDelta effective_interval = GetEffectiveInterval();
+  base::TimeTicks deadline = now + effective_interval;
+  // The naive deadline of one interval from now is too far in the
   // future because "now" is some meaningful amount of time after the previous
   // frame was shown due to IPC delays, etc. If we have the last known
   // presentation time, we can calculate a deadline aligned to the
   // display's actual vsync/refresh cycle.
   if (!last_presentation_time_.is_null()) {
-    deadline = now.SnappedToNextTick(last_presentation_time_, vsync_interval_);
+    deadline =
+        now.SnappedToNextTick(last_presentation_time_, effective_interval);
   }
   // Likewise, we can determine the true frame time, which was immediately after
   // the previous frame was shown. This keeps the difference between frame time
-  // and deadline equal to the vsync interval. If we don't have presentation
-  // time, frame_time will resolve to "now" and still be consistent with the
-  // deadline of now + vsync, but both will be out of sync with the display.
-  base::TimeTicks frame_time = deadline - vsync_interval_;
+  // and deadline equal to the interval. If we don't have presentation time,
+  // frame_time will resolve to "now" and still be consistent with the deadline
+  // of now + interval, but both will be out of sync with the display.
+  base::TimeTicks frame_time = deadline - effective_interval;
 
   DVLOG(2) << "MaybeIssueBeginFrame:"
            << " vsync_interval=" << vsync_interval_.InMillisecondsF() << "ms"
+           << " preferred_interval=" << preferred_interval_.InMillisecondsF()
+           << "ms"
+           << " effective_interval=" << effective_interval.InMillisecondsF()
+           << "ms"
            << " frame_time began=" << (frame_time - now).InMillisecondsF()
            << "ms"
            << " deadline in=" << (deadline - now).InMillisecondsF() << "ms";
@@ -163,11 +210,9 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
   ready_to_issue_begin_frame_ = false;
   frame_in_flight_ = true;
 
-  // TODO(crbug.com/513613495): Once preferred_interval_ is set correctly, use
-  // a subsampling factor to scale the deadline and interval.
   last_frame_deadline_time_ = deadline;
   delegate_->OnBeginFrame(
-      frame_time, deadline, vsync_interval_,
+      frame_time, deadline, effective_interval,
       base::BindOnce(&BeginFrameSourceWayland::OnBeginFrameAck,
                      weak_factory_.GetWeakPtr()));
 }
@@ -199,7 +244,7 @@ void BeginFrameSourceWayland::OnBeginFrameAck(bool has_damage) {
 
 void BeginFrameSourceWayland::StartFrameCallbackTimer() {
   frame_callback_timeout_timer_.Start(
-      FROM_HERE, vsync_interval_ * 2,
+      FROM_HERE, GetEffectiveInterval() * 2,
       base::BindOnce(&BeginFrameSourceWayland::OnFrameCallbackTimeout,
                      weak_factory_.GetWeakPtr()));
 }

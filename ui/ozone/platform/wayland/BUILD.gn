@@ -529,6 +529,7 @@ source_set("wayland_unittests") {
   sources = [
     "common/wayland_util_unittest.cc",
     "gpu/wayland_overlay_manager_unittest.cc",
+    "host/begin_frame_source_wayland_unittest.cc",
     "host/wayland_clipboard_unittest.cc",
     "host/wayland_connection_unittest.cc",
     "host/wayland_cursor_factory_unittest.cc",
