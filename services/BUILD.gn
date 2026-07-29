@@ -99,6 +99,7 @@ test("services_unittests") {
       "//services/resource_coordinator:tests",
       "//services/shape_detection:tests",
       "//services/viz/privileged/mojom:unit_tests",
+      "//services/viz/public/cpp:tests",
       "//services/viz/public/cpp/compositing:tests",
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",

@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_FRAME_SINK_ID_MOJOM_TRAITS_H_
 
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "services/viz/public/cpp/crash_keys.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-shared.h"
 
 namespace mojo {
@@ -23,7 +24,11 @@ struct StructTraits<viz::mojom::FrameSinkIdDataView, viz::FrameSinkId> {
   static bool Read(viz::mojom::FrameSinkIdDataView data,
                    viz::FrameSinkId* out) {
     *out = viz::FrameSinkId(data.client_id(), data.sink_id());
-    return out->is_valid();
+    if (!out->is_valid()) {
+      viz::SetDeserializationCrashKeyString("Invalid FrameSinkId");
+      return false;
+    }
+    return true;
   }
 };
 

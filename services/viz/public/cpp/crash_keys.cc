@@ -6,13 +6,59 @@
 
 #include <string_view>
 
+#include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/synchronization/lock.h"
 #include "components/crash/core/common/crash_key.h"
 
 namespace viz {
 
+namespace {
+
+base::Lock& GetLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+// Count of crash keys set within the current deserialization context.
+size_t g_keys_set_count = 0;
+
+crash_reporter::CrashKeyString<128>& GetVizDeserializationCrashKey(
+    size_t index) {
+  // Process-global crash keys registered with the crash reporter.
+  // "viz_deserialization" is used for the 1st error for backward compatibility.
+  static crash_reporter::CrashKeyString<128> key1("viz_deserialization");
+  static crash_reporter::CrashKeyString<128> key2("viz_deserialization_2");
+  static crash_reporter::CrashKeyString<128> key3("viz_deserialization_3");
+  switch (index) {
+    case 0:
+      return key1;
+    case 1:
+      return key2;
+    case 2:
+      return key3;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 void SetDeserializationCrashKeyString(std::string_view str) {
-  static crash_reporter::CrashKeyString<128> key("viz_deserialization");
-  key.Set(str);
+  base::AutoLock lock(GetLock());
+  // Store up to 3 crash keys in order of invocation.
+  if (g_keys_set_count < 3) {
+    GetVizDeserializationCrashKey(g_keys_set_count).Set(str);
+    g_keys_set_count++;
+  }
+}
+
+void ClearDeserializationCrashKeys() {
+  base::AutoLock lock(GetLock());
+  GetVizDeserializationCrashKey(0).Clear();
+  GetVizDeserializationCrashKey(1).Clear();
+  GetVizDeserializationCrashKey(2).Clear();
+  g_keys_set_count = 0;
 }
 
 }  // namespace viz

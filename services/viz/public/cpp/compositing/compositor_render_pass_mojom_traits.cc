@@ -23,18 +23,61 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
   *out = viz::CompositorRenderPass::Create();
   std::optional<viz::ViewTransitionElementResourceId>
       opt_view_transition_element_resource_id;
-  if (!data.ReadOutputRect(&(*out)->output_rect) ||
-      !data.ReadDamageRect(&(*out)->damage_rect) ||
-      !data.ReadTransformToRootTarget(&(*out)->transform_to_root_target) ||
-      !data.ReadFilters(&(*out)->filters) ||
-      !data.ReadBackdropFilters(&(*out)->backdrop_filters) ||
-      !data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds) ||
-      !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
-      !data.ReadSubtreeSize(&(*out)->subtree_size) ||
-      !data.ReadCopyRequests(&(*out)->copy_requests) ||
-      !data.ReadViewTransitionElementResourceId(
-          &opt_view_transition_element_resource_id) ||
-      !data.ReadId(&(*out)->id)) {
+  if (!data.ReadOutputRect(&(*out)->output_rect)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::output_rect");
+    return false;
+  }
+  if (!data.ReadDamageRect(&(*out)->damage_rect)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::damage_rect");
+    return false;
+  }
+  if (!data.ReadTransformToRootTarget(&(*out)->transform_to_root_target)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::transform_to_root_target");
+    return false;
+  }
+  if (!data.ReadFilters(&(*out)->filters)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::filters");
+    return false;
+  }
+  if (!data.ReadBackdropFilters(&(*out)->backdrop_filters)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::backdrop_filters");
+    return false;
+  }
+  if (!data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::backdrop_filter_bounds");
+    return false;
+  }
+  if (!data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::subtree_capture_id");
+    return false;
+  }
+  if (!data.ReadSubtreeSize(&(*out)->subtree_size)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::subtree_size");
+    return false;
+  }
+  if (!data.ReadCopyRequests(&(*out)->copy_requests)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::copy_requests");
+    return false;
+  }
+  if (!data.ReadViewTransitionElementResourceId(
+          &opt_view_transition_element_resource_id)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read "
+        "CompositorRenderPass::view_transition_element_resource_id");
+    return false;
+  }
+  if (!data.ReadId(&(*out)->id)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorRenderPass::id");
     return false;
   }
 
@@ -50,6 +93,8 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
   }
   if ((*out)->subtree_size.width() > (*out)->output_rect.size().width() ||
       (*out)->subtree_size.height() > (*out)->output_rect.size().height()) {
+    viz::SetDeserializationCrashKeyString(
+        "Subtree size exceeds output rect size");
     return false;
   }
 
@@ -76,8 +121,11 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       viz::SetDeserializationCrashKeyString("AllocateAndConstruct quad failed");
       return false;
     }
-    if (!quads.Read(i, quad))
+    if (!quads.Read(i, quad)) {
+      viz::SetDeserializationCrashKeyString(
+          "Failed read CompositorRenderPass::quad");
       return false;
+    }
 
     // Read the SharedQuadState.
     viz::mojom::SharedQuadStateDataView sqs_data_view;
@@ -88,8 +136,10 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       using SqsTraits = StructTraits<viz::mojom::SharedQuadStateDataView,
                                      viz::SharedQuadState>;
       last_sqs = (*out)->CreateAndAppendSharedQuadState();
-      if (!SqsTraits::Read(sqs_data_view, last_sqs))
+      if (!SqsTraits::Read(sqs_data_view, last_sqs)) {
+        viz::SetDeserializationCrashKeyString("Failed read SharedQuadState");
         return false;
+      }
     }
     quad->shared_quad_state = last_sqs;
     if (!quad->shared_quad_state) {
