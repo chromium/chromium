@@ -2617,12 +2617,15 @@ TEST_F(RequestTest, LoginStateFailedSignUpNotGrantSharingPermission) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.token_response.parse_status =
       ParseStatus::kInvalidResponseError;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedRequestResult::kIdTokenInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
-  RunTest(kDefaultRequestParameters, expectations, configuration);
+  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+  WaitForCurrentRequest(/*should_fast_forward=*/false);
+  CheckExpectations(configuration, expectations);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
 }
 

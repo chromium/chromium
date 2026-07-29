@@ -1719,14 +1719,14 @@ void Request::OnTokenResponseReceived(
   // takes a long time due to latency etc. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // `kTokenRequestDelay` seconds for better UX.
-  // Note that for active flow or conditional flow we can complete without delay
-  // because there is no contextual UI displayed to users.
+  // Note that for active flow, conditional flow, or when an error occurs we can
+  // complete without delay.
   id_assertion_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time =
       id_assertion_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ || rp_mode_ == RpMode::kActive ||
       mediation_requirement_ == MediationRequirement::kConditional ||
-      fetch_time >= kTokenRequestDelay) {
+      should_show_error_ui || fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
     return;
   }
