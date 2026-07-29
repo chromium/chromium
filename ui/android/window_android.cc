@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
@@ -21,8 +22,12 @@
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_android.h"
 #include "ui/gfx/display_color_spaces.h"
+#include "ui/native_theme/native_theme.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/WindowAndroid_jni.h"
@@ -429,6 +434,47 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
     compositor_->OnUpdateSupportedRefreshRates(
         test_hooks_->GetSupportedRates());
   }
+}
+
+const ui::ColorProvider* WindowAndroid::GetColorProvider() const {
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      GetColorProviderKey());
+}
+
+ui::RendererColorMap WindowAndroid::GetRendererColorMap(
+    ui::ColorProviderKey::ColorMode color_mode,
+    ui::ColorProviderKey::ForcedColors forced_colors) const {
+  auto key = GetColorProviderKey();
+  key.color_mode = color_mode;
+  key.forced_colors = forced_colors;
+  const ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  CHECK(color_provider);
+  return ui::CreateRendererColorMap(*color_provider);
+}
+
+ui::ColorProviderKey WindowAndroid::GetColorProviderKey() const {
+  auto key = ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
+  key.context_hash = GetContextHash();
+  JNIEnv* env = AttachCurrentThread();
+  key.context = JavaObjectWeakGlobalRef(env, GetContext());
+  return key;
+}
+
+base::android::ScopedJavaLocalRef<jobject> WindowAndroid::GetContext() const {
+  if (java_window_.is_null()) {
+    return nullptr;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  return Java_WindowAndroid_getContextForNative(env, java_window_);
+}
+
+int64_t WindowAndroid::GetContextHash() const {
+  if (java_window_.is_null()) {
+    return 0;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  return Java_WindowAndroid_getContextHashId(env, java_window_);
 }
 
 // ----------------------------------------------------------------------------

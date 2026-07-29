@@ -12,6 +12,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
@@ -404,6 +405,20 @@ TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
 
   top.RemoveObserver(&top_observer);
   bottom.RemoveObserver(&bottom_observer);
+}
+
+TEST(ViewAndroidTest, WindowAndroidColorProviderSource) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ui::WindowAndroid* window_android = window->get();
+
+  // Test that color provider key holds the context from WindowAndroid.
+  ui::ColorProviderKey key = window_android->GetColorProviderKey();
+  EXPECT_NE(key.context_hash, 0);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> context = key.context.get(env);
+  EXPECT_FALSE(context.is_null());
 }
 
 }  // namespace ui

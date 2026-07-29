@@ -20,6 +20,7 @@
 #include "ui/android/ui_android_export.h"
 #include "ui/android/ui_android_jni_headers/WindowAndroid_shared_jni.h"
 #include "ui/android/view_android.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/overlay_transform.h"
@@ -39,8 +40,18 @@ class WindowAndroidObserver;
 
 // Android implementation of the activity window.
 // WindowAndroid is also the root of a ViewAndroid tree.
-class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
+class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
+                                        public ColorProviderSource {
  public:
+  // ui::ColorProviderSource:
+  const ColorProvider* GetColorProvider() const override;
+  RendererColorMap GetRendererColorMap(
+      ColorProviderKey::ColorMode color_mode,
+      ColorProviderKey::ForcedColors forced_colors) const override;
+  ColorProviderKey GetColorProviderKey() const override;
+
+  base::android::ScopedJavaLocalRef<jobject> GetContext() const;
+  int64_t GetContextHash() const;
   // Intended for unittests only.
   class ScopedWindowAndroidForTesting {
    public:

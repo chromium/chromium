@@ -22,6 +22,9 @@ void AddSysColorMixerAndroid(ColorProvider* provider,
                              const ColorProviderKey& key) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> j_context = key.context.get(env);
+  if (!j_context) {
+    return;
+  }
   std::vector<std::optional<SkColor>> colors =
       ColorProviderBridge::GetThemeColors(j_context);
   if (colors.empty()) {

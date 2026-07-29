@@ -1413,6 +1413,30 @@ public class WindowAndroid
         return mContextRef;
     }
 
+    /**
+     * Returns the raw Context object. This is a helper for native code to directly access the
+     * unwrapped Context instead of dealing with the WeakReference returned by getContext().
+     *
+     * @return The Context associated with this WindowAndroid, or null if it's been garbage
+     *     collected.
+     */
+    @CalledByNative
+    private @Nullable Object getContextForNative() {
+        return mContextRef.get();
+    }
+
+    /**
+     * Returns the System.identityHashCode of the Context. This is used by native code as a unique
+     * identifier for the Context, particularly for caching mechanisms like ColorProvider.
+     *
+     * @return The identity hash code of the Context, or 0 if the Context is null.
+     */
+    @CalledByNative
+    private long getContextHashId() {
+        Context context = mContextRef.get();
+        return context != null ? System.identityHashCode(context) : 0;
+    }
+
     /** Return the decor view, or null. */
     private @Nullable View getDecorView() {
         Window window = getWindow();

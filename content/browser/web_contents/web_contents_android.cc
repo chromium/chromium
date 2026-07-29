@@ -340,6 +340,8 @@ void WebContentsAndroid::SetTopLevelNativeWindow(
     view->RemoveFromParent();
   if (window)
     window->AddChild(view);
+
+  web_contents_->SetColorProviderSource(window);
 }
 
 void WebContentsAndroid::SetViewAndroidDelegate(

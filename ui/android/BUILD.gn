@@ -115,6 +115,7 @@ component("android") {
     "//ui/events/devices",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/native_theme",
     "//ui/touch_selection",
     "//url",
   ]
@@ -126,6 +127,7 @@ component("android") {
   public_deps = [
     ":ui_android_feature_map_jni",
     ":ui_android_jni_headers",
+    "//ui/color:color_headers",
   ]
 }
 

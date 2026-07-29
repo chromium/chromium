@@ -15,6 +15,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/android/window_android.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/android/drag_event_android.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -144,6 +146,36 @@ TEST_F(WebContentsViewAndroidTest, DropDataRestoredFromJava) {
   ASSERT_TRUE(restored_data);
   EXPECT_EQ(restored_data->custom_data[u"my-key"], u"my-value");
   EXPECT_EQ(restored_data->source_effect_allowed, u"move");
+}
+
+TEST_F(WebContentsViewAndroidTest, ColorProviderSourceFallback) {
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+
+  // Create a WindowAndroid for testing.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ui::WindowAndroid* window_android = window->get();
+
+  // 1. Initial State: No window attached. The source should be the default
+  // source (non-null).
+  const ui::ColorProviderSource* default_source =
+      web_contents_impl->GetColorProviderSourceForTesting();
+  EXPECT_NE(default_source, nullptr);
+  EXPECT_NE(default_source, window_android);
+  web_contents()->GetColorProvider();
+
+  // 2. Attach a WindowAndroid.
+  web_contents_impl->SetColorProviderSource(window_android);
+  EXPECT_EQ(web_contents_impl->GetColorProviderSourceForTesting(),
+            window_android);
+  web_contents()->GetColorProvider();
+
+  // 3. Detach window. Should fall back to the default source synchronously.
+  web_contents_impl->SetColorProviderSource(nullptr);
+  EXPECT_EQ(web_contents_impl->GetColorProviderSourceForTesting(),
+            default_source);
+  web_contents()->GetColorProvider();
 }
 
 }  // namespace
