@@ -74,9 +74,6 @@ const base::FeatureParam<double> kWaitForLateScrollEventsDeadlineRatio{
 BASE_FEATURE(kPreserveDiscardableImageMapQuality,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kScrollEndRepaintFollowsScrollUpdate,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCCSlimming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsCCSlimmingEnabled() {

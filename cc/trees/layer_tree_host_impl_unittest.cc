@@ -1907,12 +1907,7 @@ TEST_P(LayerTreeHostImplTest, ScrollUpdateReturnsCorrectValue) {
 #endif
 
 TEST_P(LayerTreeHostImplTest,
-       DISABLED_ON_ANDROID(
-           ScrollEndMainThreadRepaintFastPathScrollFeatureDisabled)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kScrollEndRepaintFollowsScrollUpdate);
-
+       DISABLED_ON_ANDROID(ScrollEndMainThreadRepaintFastPathScroll)) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   DrawFrame();
 
@@ -1930,58 +1925,7 @@ TEST_P(LayerTreeHostImplTest,
 }
 
 TEST_P(LayerTreeHostImplTest,
-       DISABLED_ON_ANDROID(
-           ScrollEndMainThreadRepaintFastPathScrollFeatureEnabled)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ::features::kScrollEndRepaintFollowsScrollUpdate);
-
-  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
-  DrawFrame();
-
-  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kNotScrollingOnMain;
-
-  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
-                                           ui::ScrollInputType::kTouchscreen)
-                                    .get(),
-                                ui::ScrollInputType::kTouchscreen);
-  EXPECT_FALSE(GetInputHandler()
-                   .ScrollEnd(/*should_snap=*/false,
-                              /*compensated_scroll_delta=*/std::nullopt)
-                   .updates_need_main_thread_repaint);
-}
-
-TEST_P(LayerTreeHostImplTest,
-       DISABLED_ON_ANDROID(
-           ScrollEndMainThreadRepaintSlowPathScrollFeatureDisabled)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kScrollEndRepaintFollowsScrollUpdate);
-
-  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
-  DrawFrame();
-
-  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
-
-  GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
-                                           ui::ScrollInputType::kTouchscreen)
-                                    .get(),
-                                ui::ScrollInputType::kTouchscreen);
-  EXPECT_FALSE(GetInputHandler()
-                   .ScrollEnd(/*should_snap=*/false,
-                              /*compensated_scroll_delta=*/std::nullopt)
-                   .updates_need_main_thread_repaint);
-}
-
-TEST_P(LayerTreeHostImplTest,
-       DISABLED_ON_ANDROID(
-           ScrollEndMainThreadRepaintSlowPathScrollFeatureEnabled)) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ::features::kScrollEndRepaintFollowsScrollUpdate);
-
+       DISABLED_ON_ANDROID(ScrollEndMainThreadRepaintSlowPathScroll)) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   DrawFrame();
 

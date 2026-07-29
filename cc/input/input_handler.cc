@@ -599,12 +599,9 @@ InputHandlerScrollEndResult InputHandler::ScrollEnd(
   ScrollNode* latched_node = CurrentlyScrollingNode();
 
   InputHandlerScrollEndResult result;
-  if (base::FeatureList::IsEnabled(
-          ::features::kScrollEndRepaintFollowsScrollUpdate)) {
-    if (auto* node_for_repaint = scroll_node ? scroll_node : latched_node) {
-      result.updates_need_main_thread_repaint =
-          GetScrollTree().ShouldRealizeScrollsOnMain(*node_for_repaint);
-    }
+  if (auto* node_for_repaint = scroll_node ? scroll_node : latched_node) {
+    result.updates_need_main_thread_repaint =
+        GetScrollTree().ShouldRealizeScrollsOnMain(*node_for_repaint);
   }
 
   auto end_of_scroll_cleanup = [&](const ScrollNode& cleanup_node) {
