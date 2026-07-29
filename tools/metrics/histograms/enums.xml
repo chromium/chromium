@@ -17426,6 +17426,7 @@ from previous Chrome versions.
   <int value="926227424" label="CCTToolbarRefactor:disabled"/>
   <int value="926844887" label="QuickDim:disabled"/>
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
+  <int value="926963134" label="LensBypassCompressionForC2pa:disabled"/>
   <int value="928466930" label="ContextualTasksContext:enabled"/>
   <int value="928840332" label="TrafficCountersForWiFiTesting:disabled"/>
   <int value="928900043" label="OmniboxLooseMaxLimitOnDedicatedRows:disabled"/>
@@ -20945,6 +20946,7 @@ from previous Chrome versions.
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2029145363"
       label="UnifiedPasswordManagerLocalPasswordsAndroidNoMigration:disabled"/>
+  <int value="2029179031" label="LensBypassCompressionForC2pa:enabled"/>
   <int value="2029804000" label="ClipboardContentsId:enabled"/>
   <int value="2030086360"
       label="EnableMachineLearningModelLoaderWebPlatformApi:disabled"/>

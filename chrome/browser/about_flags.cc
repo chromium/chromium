@@ -8743,6 +8743,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensEnableSendUrlsInComposeboxesDescription, kOsAll,
      FEATURE_VALUE_TYPE(lens::features::kLensSendUrlsInComposeboxes)},
 
+    {"lens-bypass-compression-for-c2pa",
+     flag_descriptions::kLensBypassCompressionForC2paName,
+     flag_descriptions::kLensBypassCompressionForC2paDescription, kOsAll,
+     FEATURE_VALUE_TYPE(lens::features::kLensBypassCompressionForC2pa)},
+
     {"enable-lens-standalone", flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensStandalone)},

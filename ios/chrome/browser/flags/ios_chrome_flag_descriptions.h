@@ -1223,6 +1223,12 @@ inline constexpr char
     kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeDescription[] =
         "When enabled, RPCs are blocked on separate handshake.";
 
+inline constexpr char kLensBypassCompressionForC2paName[] =
+    "Lens Bypass Compression for C2PA";
+inline constexpr char kLensBypassCompressionForC2paDescription[] =
+    "Bypasses image downscaling and compression if a C2PA metadata urn is "
+    "detected, ensuring provenance is preserved during upload. Works across all surfaces.";
+
 inline constexpr char kLensCameraNoStillOutputRequiredName[] =
     "Lens camera avoids creating unused outputs";
 inline constexpr char kLensCameraNoStillOutputRequiredDescription[] =

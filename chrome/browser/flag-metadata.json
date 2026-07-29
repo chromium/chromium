@@ -6513,6 +6513,13 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-bypass-compression-for-c2pa",
+    "owners": [
+      "hujasonx@google.com"
+    ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "lens-camera-no-still-output-required",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
     "expiry_milestone": 145
