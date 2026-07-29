@@ -1340,8 +1340,8 @@ void ProfileMenuView::BuildOtherProfilesSection(
               *BrowserWindow::FromBrowser(&browser())->GetColorProvider(),
               kOtherProfileImageSize));
       if (!name.empty()) {
-        extra_accessible_text = l10n_util::GetStringFUTF16(
-            IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, std::u16string());
+        extra_accessible_text =
+            l10n_util::GetStringUTF16(IDS_PROFILE_AVATAR_AI_MEMBERSHIP);
       }
     } else {
       avatar_image = ProfileMenuViewBase::GetCircularSizedImage(
