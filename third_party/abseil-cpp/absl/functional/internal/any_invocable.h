@@ -145,8 +145,8 @@ T&& ForwardImpl(std::false_type);
 // as a workaround for b/206991861 on MSVC versions < 1924.
 template <class T>
 struct ForwardedParameter {
-  using type = decltype((
-      ForwardImpl<T>)(std::integral_constant<bool, std::is_scalar_v<T>>()));
+  using type =
+      decltype((ForwardImpl<T>)(std::bool_constant<std::is_scalar_v<T>>()));
 };
 
 template <class T>
@@ -607,8 +607,7 @@ using UnwrapStdReferenceWrapper =
 // NOTE: We avoid std::void_t here to avoid a bug in GCC < 11:
 // https://godbolt.org/z/sxbfGMdcb
 template <class... T>
-using TrueAlias =
-    std::integral_constant<bool, sizeof(std::common_type<T...>*) != 0>;
+using TrueAlias = std::bool_constant<sizeof(std::common_type<T...>*) != 0>;
 
 /*SFINAE constraints for the conversion-constructor.*/
 template <class Sig, class F,

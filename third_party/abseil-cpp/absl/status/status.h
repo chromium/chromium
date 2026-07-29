@@ -319,22 +319,22 @@ enum class StatusToStringMode : int {
 
 // absl::StatusToStringMode is specified as a bitmask type, which means the
 // following operations must be provided:
-inline constexpr StatusToStringMode operator&(StatusToStringMode lhs,
-                                              StatusToStringMode rhs) {
+constexpr StatusToStringMode operator&(StatusToStringMode lhs,
+                                       StatusToStringMode rhs) {
   return static_cast<StatusToStringMode>(static_cast<int>(lhs) &
                                          static_cast<int>(rhs));
 }
-inline constexpr StatusToStringMode operator|(StatusToStringMode lhs,
-                                              StatusToStringMode rhs) {
+constexpr StatusToStringMode operator|(StatusToStringMode lhs,
+                                       StatusToStringMode rhs) {
   return static_cast<StatusToStringMode>(static_cast<int>(lhs) |
                                          static_cast<int>(rhs));
 }
-inline constexpr StatusToStringMode operator^(StatusToStringMode lhs,
-                                              StatusToStringMode rhs) {
+constexpr StatusToStringMode operator^(StatusToStringMode lhs,
+                                       StatusToStringMode rhs) {
   return static_cast<StatusToStringMode>(static_cast<int>(lhs) ^
                                          static_cast<int>(rhs));
 }
-inline constexpr StatusToStringMode operator~(StatusToStringMode arg) {
+constexpr StatusToStringMode operator~(StatusToStringMode arg) {
   return static_cast<StatusToStringMode>(~static_cast<int>(arg));
 }
 inline StatusToStringMode& operator&=(StatusToStringMode& lhs,
@@ -769,9 +769,9 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
 
   // Converts between StatusRep* and the external uintptr_t representation used
   // by rep_. See rep_ for details.
-  static uintptr_t PointerToRep(status_internal::StatusRep* absl_nonnull r);
+  static uintptr_t PointerToRep(status_internal::StatusRep* absl_nonnull rep);
   static const status_internal::StatusRep* absl_nonnull RepToPointer(
-      uintptr_t r);
+      uintptr_t rep);
 
   static std::string ToStringSlow(uintptr_t rep, StatusToStringMode mode);
 

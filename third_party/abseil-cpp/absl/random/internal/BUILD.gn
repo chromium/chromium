@@ -81,6 +81,7 @@ absl_source_set("entropy_pool") {
     ":platform",
     ":randen",
     ":seed_material",
+    "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -246,8 +247,9 @@ absl_source_set("randen") {
   deps = [
     ":platform",
     ":randen_hwaes",
+    ":randen_hwaes_impl",
     ":randen_slow",
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 
@@ -269,26 +271,20 @@ absl_source_set("randen_slow") {
 
 absl_source_set("randen_hwaes") {
   sources = [ "randen_detect.cc" ]
-  public = [
-    "randen_detect.h",
-    "randen_hwaes.h",
-  ]
+  public = [ "randen_detect.h" ]
   visibility = [
     ":*",
     "//third_party/abseil-cpp/absl/random:*",
   ]
   deps = [
     ":platform",
-    ":randen_hwaes_impl",
     "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 
 absl_source_set("randen_hwaes_impl") {
-  sources = [
-    "randen_hwaes.cc",
-    "randen_hwaes.h",
-  ]
+  sources = [ "randen_hwaes.cc" ]
+  public = [ "randen_hwaes.h" ]
   visibility = [
     ":*",
     "//third_party/abseil-cpp/absl/random:*",
@@ -296,7 +292,6 @@ absl_source_set("randen_hwaes_impl") {
   deps = [
     ":platform",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }
@@ -354,26 +349,35 @@ absl_test("explicit_seed_seq_test") {
   sources = [ "explicit_seed_seq_test.cc" ]
   deps = [
     ":explicit_seed_seq",
-    "//third_party/abseil-cpp/absl/random:seed_sequences",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
   ]
 }
 
 absl_test("salted_seed_seq_test") {
   sources = [ "salted_seed_seq_test.cc" ]
-  deps = [ ":salted_seed_seq" ]
+  deps = [
+    ":salted_seed_seq",
+    ":seed_material",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+  ]
 }
 
 absl_test("chi_square_test") {
   sources = [ "chi_square_test.cc" ]
   deps = [
     ":distribution_test_util",
+    "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]
 }
 
 absl_test("fast_uniform_bits_test") {
   sources = [ "fast_uniform_bits_test.cc" ]
-  deps = [ ":fast_uniform_bits" ]
+  deps = [
+    ":fast_uniform_bits",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
 }
 
 absl_source_set("mock_helpers") {
@@ -409,8 +413,8 @@ absl_test("nonsecure_base_test") {
   sources = [ "nonsecure_base_test.cc" ]
   deps = [
     ":nonsecure_base",
+    "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/container:flat_hash_set",
-    "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/random:distributions",
     "//third_party/abseil-cpp/absl/synchronization",
@@ -439,7 +443,6 @@ absl_test("pcg_engine_test") {
   deps = [
     ":explicit_seed_seq",
     ":pcg_engine",
-    "//third_party/abseil-cpp/absl/time",
   ]
 }
 
@@ -449,17 +452,13 @@ absl_test("randen_engine_test") {
     ":explicit_seed_seq",
     ":randen_engine",
     "//third_party/abseil-cpp/absl/log",
-    "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/time",
   ]
 }
 
 absl_test("randen_test") {
   sources = [ "randen_test.cc" ]
-  deps = [
-    ":randen",
-    "//third_party/abseil-cpp/absl/meta:type_traits",
-  ]
+  deps = [ ":randen" ]
 }
 
 absl_test("randen_slow_test") {
@@ -467,7 +466,6 @@ absl_test("randen_slow_test") {
   deps = [
     ":platform",
     ":randen_slow",
-    "//third_party/abseil-cpp/absl/base:endian",
   ]
 }
 
@@ -477,6 +475,7 @@ absl_test("randen_slow_test") {
 absl_test("wide_multiply_test") {
   sources = [ "wide_multiply_test.cc" ]
   deps = [
+    ":traits",
     ":wide_multiply",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]

@@ -22,6 +22,7 @@
 #include <limits>
 #include <string>
 
+#include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/random/gaussian_distribution.h"
 

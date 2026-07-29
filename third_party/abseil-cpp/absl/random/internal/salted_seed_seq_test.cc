@@ -14,6 +14,8 @@
 
 #include "absl/random/internal/salted_seed_seq.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <random>
 #include <utility>
@@ -21,6 +23,8 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/macros.h"
+#include "absl/random/internal/seed_material.h"
 
 using absl::random_internal::GetSaltMaterial;
 using absl::random_internal::MakeSaltedSeedSeq;

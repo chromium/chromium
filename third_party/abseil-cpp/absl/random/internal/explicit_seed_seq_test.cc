@@ -14,13 +14,17 @@
 
 #include "absl/random/internal/explicit_seed_seq.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <random>
 #include <utility>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/random/seed_sequences.h"
+#include "absl/base/config.h"
+#include "absl/base/macros.h"
 
 namespace {
 

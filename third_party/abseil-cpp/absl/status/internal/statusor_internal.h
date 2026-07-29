@@ -621,7 +621,7 @@ class StringifyRandom {
   }
 
  public:
-  static inline absl::string_view OpenBrackets() {
+  static absl::string_view OpenBrackets() {
     switch (RandomBraces()) {
       case kBareParens:
         return "(";
@@ -635,7 +635,7 @@ class StringifyRandom {
     return "(";
   }
 
-  static inline absl::string_view CloseBrackets() {
+  static absl::string_view CloseBrackets() {
     switch (RandomBraces()) {
       case kBareParens:
         return ")";

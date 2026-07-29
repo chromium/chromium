@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "absl/algorithm/container.h"
 #include "absl/base/macros.h"
 
 using absl::random_internal::ChiSquare;
@@ -176,8 +177,8 @@ TEST(ChiSquareTest, CalcChiSquareInt64) {
   // $ python -c "import scipy.stats
   // > print scipy.stats.chisquare([910293487, 910292491, 910216780])[0]"
   // 4.25410123524
-  double sum = std::accumulate(std::begin(data), std::end(data), double{0});
-  size_t n = std::distance(std::begin(data), std::end(data));
+  double sum = absl::c_accumulate(data, double{0});
+  size_t n = absl::c_distance(data);
   double a = ChiSquareWithExpected(std::begin(data), std::end(data), sum / n);
   EXPECT_NEAR(4.254101, a, 1e-6);
 
@@ -343,8 +344,8 @@ TEST(ChiSquareTest, DiceRolls) {
   // The dof value of 4, @95% = 9.488 (see above test)
   // The dof value of 5, @95% = 11.070
   const int rolls[6] = {22, 11, 17, 14, 20, 18};
-  double sum = std::accumulate(std::begin(rolls), std::end(rolls), double{0});
-  size_t n = std::distance(std::begin(rolls), std::end(rolls));
+  double sum = absl::c_accumulate(rolls, double{0});
+  size_t n = absl::c_distance(rolls);
 
   double a = ChiSquareWithExpected(std::begin(rolls), std::end(rolls), sum / n);
   EXPECT_NEAR(a, 4.70588, 1e-5);

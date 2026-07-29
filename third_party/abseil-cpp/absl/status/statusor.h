@@ -362,8 +362,8 @@ class StatusOr : private internal_statusor::OperatorBase<T>,
   // of passing absl::StatusCode::kInternal as a fallback.
   template <typename U = absl::Status,
             std::enable_if_t<internal_statusor::IsConstructionFromStatusValid<
-                                  false, T, U>::value,
-                              int> = 0>
+                                 false, T, U>::value,
+                             int> = 0>
   StatusOr(U&& v) : Base(std::forward<U>(v)) {}
 
   template <typename U = absl::Status,

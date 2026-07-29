@@ -84,7 +84,7 @@ constexpr auto IsDestructionTrivial() {
       std::is_same_v<typename std::allocator_traits<
                          Allocator>::template rebind_alloc<char>,
                      std::allocator<char>>;
-  return std::integral_constant<bool, result>();
+  return std::bool_constant<result>();
 }
 
 // The pointer must have been previously obtained by calling

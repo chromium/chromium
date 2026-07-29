@@ -421,7 +421,7 @@ using IsMemberSwappable = IsMemberSwappableImpl<T>;
 
 template <class T>
 using IsNothrowMemberSwappable =
-    std::integral_constant<bool, IsMemberSwappableImpl<T>::kIsNothrow>;
+    std::bool_constant<IsMemberSwappableImpl<T>::kIsNothrow>;
 
 template <class T>
 class AnyInvTestBasic : public ::testing::Test {};

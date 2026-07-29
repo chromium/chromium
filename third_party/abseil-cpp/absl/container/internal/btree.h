@@ -411,7 +411,7 @@ struct common_params : common_policy_traits<SlotPolicy> {
       std::conditional_t<IsMap,
                           map_value_compare<original_key_compare, value_type>,
                           original_key_compare>;
-  using is_map_container = std::integral_constant<bool, IsMap>;
+  using is_map_container = std::bool_constant<IsMap>;
 
   // For the given lookup key type, returns whether we can have multiple
   // equivalent keys in the btree. If this is a multi-container, then we can.

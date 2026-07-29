@@ -397,7 +397,7 @@ struct is_uniquely_represented<unsigned __int128> : std::true_type {};
 #endif  // ABSL_HAVE_INTRINSIC_INT128
 
 template <typename T>
-struct FitsIn64Bits : std::integral_constant<bool, sizeof(T) <= 8> {};
+struct FitsIn64Bits : std::bool_constant<sizeof(T) <= 8> {};
 
 struct CombineRaw {
   template <typename H>
@@ -809,6 +809,9 @@ AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
     for (size_t j = 0; j < 64; ++j) {
       word |= static_cast<uint64_t>(vector[i + j]) << j;
     }
+    if constexpr (absl::endian::native == absl::endian::big) {
+      word = absl::byteswap(word);
+    }
     hash_state = combiner.add_buffer(
         std::move(hash_state), reinterpret_cast<const unsigned char*>(&word),
         sizeof(word));
@@ -820,6 +823,9 @@ AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
     const size_t rem = size - i;
     for (size_t j = 0; j < rem; ++j) {
       word |= static_cast<uint64_t>(vector[i + j]) << j;
+    }
+    if constexpr (absl::endian::native == absl::endian::big) {
+      word = absl::byteswap(word);
     }
     hash_state = combiner.add_buffer(
         std::move(hash_state), reinterpret_cast<const unsigned char*>(&word),
@@ -988,6 +994,9 @@ H AbslHashValue(H hash_state, const std::bitset<N>& set) {
     for (size_t j = 0; j < 64; ++j) {
       word |= static_cast<uint64_t>(set[i + j]) << j;
     }
+    if constexpr (absl::endian::native == absl::endian::big) {
+      word = absl::byteswap(word);
+    }
     hash_state = combiner.add_buffer(
         std::move(hash_state), reinterpret_cast<const unsigned char*>(&word),
         sizeof(word));
@@ -999,6 +1008,9 @@ H AbslHashValue(H hash_state, const std::bitset<N>& set) {
     const size_t rem = N - i;
     for (size_t j = 0; j < rem; ++j) {
       word |= static_cast<uint64_t>(set[i + j]) << j;
+    }
+    if constexpr (absl::endian::native == absl::endian::big) {
+      word = absl::byteswap(word);
     }
     hash_state = combiner.add_buffer(
         std::move(hash_state), reinterpret_cast<const unsigned char*>(&word),
@@ -1416,8 +1428,8 @@ struct HashSelect {
 };
 
 template <typename T>
-struct is_hashable
-    : std::integral_constant<bool, HashSelect::template Apply<T>::value> {};
+struct is_hashable : std::bool_constant<HashSelect::template Apply<T>::value> {
+};
 
 class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   template <typename T>

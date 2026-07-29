@@ -299,9 +299,8 @@ constexpr FlagDefaultArg DefaultArg(char) {
 
 template <typename T>
 using FlagUseValueAndInitBitStorage =
-    std::integral_constant<bool, std::is_trivially_copyable_v<T> &&
-                                     std::is_default_constructible_v<T> &&
-                                     (sizeof(T) < 8)>;
+    std::bool_constant<std::is_trivially_copyable_v<T> &&
+                       std::is_default_constructible_v<T> && (sizeof(T) < 8)>;
 
 template <typename T>
 using FlagUseOneWordStorage =

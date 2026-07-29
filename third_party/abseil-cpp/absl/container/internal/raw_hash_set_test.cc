@@ -919,8 +919,9 @@ struct ValuePolicy {
   }
 
   template <class Allocator>
-  static std::integral_constant<bool, kTransferable> transfer(
-      Allocator* alloc, slot_type* new_slot, slot_type* old_slot) {
+  static std::bool_constant<kTransferable> transfer(Allocator* alloc,
+                                                    slot_type* new_slot,
+                                                    slot_type* old_slot) {
     construct(alloc, new_slot, std::move(*old_slot));
     destroy(alloc, old_slot);
     return {};

@@ -16,7 +16,7 @@
 
 #include <cmath>
 #include <cstdint>
-#include <random>
+#include <limits>
 #include <type_traits>
 
 #include "gtest/gtest.h"
