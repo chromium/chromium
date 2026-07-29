@@ -135,8 +135,8 @@ crbug.com/426594100 [ arch-x86_64 graphite-enabled nvidia-0x2184 nvidia_lt_32.0.
 crbug.com/509789253 [ mac intel ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 # Flakily timeout even when marked as slow.
-crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
-crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/535697669 [ apple-angle-metal-renderer:-apple-m2 asan macos26 no-clang-coverage ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
+crbug.com/535697669 [ apple-angle-metal-renderer:-apple-m2 asan macos26 no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 
 #######################################################################
