@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time_container.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
@@ -514,6 +515,49 @@ TEST_F(SVGImageTest, NestedSVGWithSmilAnimationIsAnimated) {
        kShouldPause);
 
   EXPECT_TRUE(GetImage().MaybeAnimated());
+}
+
+TEST_F(SVGImageTest, ContainerScaleChangeNoLayoutWithoutNSS) {
+  const bool kShouldPause = true;
+  Load(base::span_from_cstring(R"SVG(
+         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+           <g>
+             <rect width="10" height="10"/>
+           </g>
+         </svg>)SVG"),
+       kShouldPause);
+  auto* local_frame =
+      To<LocalFrame>(GetImage().GetPageForTesting()->MainFrame());
+  auto* svg_root = DynamicTo<LayoutSVGRoot>(
+      local_frame->View()->GetLayoutView()->FirstChild());
+  ASSERT_TRUE(svg_root);
+  ASSERT_EQ(svg_root->GetContainerScale(), gfx::Vector2dF(1, 1));
+  svg_root->SetContainerScale(gfx::Vector2dF(2, 2));
+  // Since the document does not have an non-scaling-stroke content, layout
+  // should not be triggered.
+  ASSERT_FALSE(svg_root->NeedsLayout());
+}
+
+TEST_F(SVGImageTest, ContainerScaleChangeLayoutWithNSS) {
+  const bool kShouldPause = true;
+  Load(base::span_from_cstring(R"SVG(
+         <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+           <g>
+             <rect width="10" height="10" stroke="blue"
+                   vector-effect="non-scaling-stroke"/>
+           </g>
+         </svg>)SVG"),
+       kShouldPause);
+  auto* local_frame =
+      To<LocalFrame>(GetImage().GetPageForTesting()->MainFrame());
+  auto* svg_root = DynamicTo<LayoutSVGRoot>(
+      local_frame->View()->GetLayoutView()->FirstChild());
+  ASSERT_TRUE(svg_root);
+  ASSERT_EQ(svg_root->GetContainerScale(), gfx::Vector2dF(1, 1));
+  svg_root->SetContainerScale(gfx::Vector2dF(2, 2));
+  // Since the document has non-scaling-stroke content, layout should be
+  // triggered.
+  ASSERT_TRUE(svg_root->NeedsLayout());
 }
 
 class SVGImageSimTest : public SimTest, private ScopedMockOverlayScrollbars {

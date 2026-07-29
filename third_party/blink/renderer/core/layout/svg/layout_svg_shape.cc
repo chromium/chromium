@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -134,7 +135,11 @@ void LayoutSVGShape::StyleDidChange(
     }
   }
 
-  SetTransformAffectsVectorEffect(HasNonScalingStroke());
+  const bool has_non_scaling_stroke = HasNonScalingStroke();
+  SetTransformAffectsVectorEffect(has_non_scaling_stroke);
+  if (has_non_scaling_stroke) {
+    View()->SetContainsNonScalingStroke();
+  }
 }
 
 void LayoutSVGShape::WillBeDestroyed() {

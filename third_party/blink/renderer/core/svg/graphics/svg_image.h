@@ -307,6 +307,9 @@ class CORE_EXPORT SVGImage final : public Image {
   FRIEND_TEST_ALL_PREFIXES(
       SVGImageTest,
       ResetAnimationRestoresPlaybackForFinishedFiniteCssAnimation);
+  FRIEND_TEST_ALL_PREFIXES(SVGImageTest,
+                           ContainerScaleChangeNoLayoutWithoutNSS);
+  FRIEND_TEST_ALL_PREFIXES(SVGImageTest, ContainerScaleChangeLayoutWithNSS);
   FRIEND_TEST_ALL_PREFIXES(SVGImageSimTest,
                            CachedFiniteCssAnimationResetWhileDetached);
 };

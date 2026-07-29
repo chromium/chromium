@@ -468,6 +468,24 @@ AffineTransform LayoutSVGRoot::LocalToSVGParentTransform() const {
          local_to_border_box_transform_;
 }
 
+void LayoutSVGRoot::SetContainerScale(const gfx::Vector2dF& container_scale) {
+  NOT_DESTROYED();
+  // Only update the scale factors and trigger relayout if descendants use
+  // non-scaling-stroke. The flag is computed during layout and reflects the
+  // previous layout pass; style changes that add/remove non-scaling-stroke
+  // trigger layout independently via style invalidation.
+  if (!View()->ContainsNonScalingStroke()) {
+    return;
+  }
+  if (container_scale_ == container_scale) {
+    return;
+  }
+  container_scale_ = container_scale;
+  container_scale_changed_ = true;
+  SetNeedsLayoutAndFullPaintInvalidation(
+      layout_invalidation_reason::kSvgChanged);
+}
+
 gfx::RectF LayoutSVGRoot::ViewBoxRect() const {
   return To<SVGSVGElement>(*GetNode())
       .CurrentViewBoxRect(NoZoomWillBeSvgObjectZoom(StyleRef()));

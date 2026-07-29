@@ -102,15 +102,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   // preserveAspectRatio="none" is used in an SVG image container).
   // This is set by SVGImage before layout so that
   // vector-effect:non-scaling-stroke can account for the full CTM.
-  void SetContainerScale(const gfx::Vector2dF& container_scale) {
-    NOT_DESTROYED();
-    if (container_scale_ != container_scale) {
-      container_scale_changed_ = true;
-      SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kSvgChanged);
-    }
-    container_scale_ = container_scale;
-  }
+  void SetContainerScale(const gfx::Vector2dF& container_scale);
 
   const gfx::Vector2dF& GetContainerScale() const {
     NOT_DESTROYED();

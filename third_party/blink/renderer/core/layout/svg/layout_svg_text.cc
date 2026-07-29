@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -274,6 +275,9 @@ bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
   }
 
   UpdateTransformAffectsVectorEffect();
+  if (TransformAffectsVectorEffect()) {
+    View()->SetContainsNonScalingStroke();
+  }
   return UpdateTransformAfterLayout(layout_info, bounds_changed);
 }
 

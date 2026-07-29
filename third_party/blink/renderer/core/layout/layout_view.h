@@ -246,6 +246,17 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // ruby annotations or text-emphasis marks.
   void SetContainsAnnotations();
 
+  // Called when the style of an SVG LayoutObject has
+  // 'vector-effect: non-scaling-stroke'.
+  void SetContainsNonScalingStroke() {
+    NOT_DESTROYED();
+    contains_non_scaling_stroke_ = true;
+  }
+  bool ContainsNonScalingStroke() {
+    NOT_DESTROYED();
+    return contains_non_scaling_stroke_;
+  }
+
   // Return true if re-laying out the specified node (as a cached layout result)
   // with a new initial containing block size. Subsequent calls for the same
   // node within the same lifecycle update will return false.
@@ -435,6 +446,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   //   annotations.
   // * The flag should be moved to flow-roots for better scoping.
   bool contains_annotations_ = false;
+
+  // True if the document contains any (SVG) 'vector-effect:
+  // non-scaling-stroke' elements. Used to optimize invalidation for SVGImage.
+  bool contains_non_scaling_stroke_ = false;
 };
 
 template <>
