@@ -15,6 +15,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -2424,11 +2425,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (transitionCoordinator != null) {
             transitionCoordinator.addObserver(
                     success -> {
-                        if (!success) return;
+                        if (!success || mVerticalTabsSideUiCoordinator == null) return;
 
                         boolean active = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
-                        assumeNonNull(mVerticalTabsSideUiCoordinator)
-                                .setVisible(active, /* suppressAnimations= */ false);
+                        // Defer the request here to let SideUiCoordinatorImpl finish processing
+                        // other events also triggered by tab strip transition - namely
+                        // BrowserControlsStateProvider.Observer#onTopControlsHeightChanged/
+                        // onControlsOffsetChanged. Otherwise these event cancel the animation
+                        // started by the request in the middle, causing the regression.
+                        new Handler().post(() -> showVerticalTabs(active));
                     });
         }
 
@@ -2486,6 +2491,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             /* menuWidth= */ 0f);
                     return true;
                 });
+    }
+
+    private void showVerticalTabs(boolean show) {
+        assumeNonNull(mVerticalTabsSideUiCoordinator)
+                .setVisible(show, /* suppressAnimations= */ false);
     }
 
     /** Toggle the visibility between horizontal tab strip and vertical tab list. */
