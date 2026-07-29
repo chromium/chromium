@@ -27,30 +27,18 @@ struct ContentIDs {
 };
 
 // Returns the string id of the body text for the Docking promo notification.
-int DockingBodyID(TipsNotificationsAlternativeStringVersion alternative) {
+int DockingBodyID(bool isAlternativeStringEnabled) {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    switch (alternative) {
-      case TipsNotificationsAlternativeStringVersion::kAlternative1:
-        return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPAD;
-      case TipsNotificationsAlternativeStringVersion::kAlternative2:
-        return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT2_BODY_IPAD;
-      case TipsNotificationsAlternativeStringVersion::kAlternative3:
-        return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT3_BODY_IPAD;
-      case TipsNotificationsAlternativeStringVersion::kDefault:
-        return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPAD;
+    if (isAlternativeStringEnabled) {
+      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPAD;
     }
+    return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPAD;
   }
 
-  switch (alternative) {
-    case TipsNotificationsAlternativeStringVersion::kAlternative1:
-      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPHONE;
-    case TipsNotificationsAlternativeStringVersion::kAlternative2:
-      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT2_BODY_IPHONE;
-    case TipsNotificationsAlternativeStringVersion::kAlternative3:
-      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT3_BODY_IPHONE;
-    case TipsNotificationsAlternativeStringVersion::kDefault:
-      return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPHONE;
+  if (isAlternativeStringEnabled) {
+    return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_BODY_IPHONE;
   }
+  return IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_BODY_IPHONE;
 }
 
 // Returns the string id of the body text for the setup list promo notification.
@@ -107,22 +95,13 @@ ContentIDs SetupListContentIDsForAlternative(bool isAlternativeStringEnabled) {
 }
 
 // Returns the title and the body text ids for the dockingpromo notification.
-ContentIDs DockingContentIDsForAlternative(
-    TipsNotificationsAlternativeStringVersion alternative) {
-  switch (alternative) {
-    case TipsNotificationsAlternativeStringVersion::kAlternative1:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_TITLE,
-              DockingBodyID(alternative)};
-    case TipsNotificationsAlternativeStringVersion::kAlternative2:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE,
-              DockingBodyID(alternative)};
-    case TipsNotificationsAlternativeStringVersion::kAlternative3:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT3_TITLE,
-              DockingBodyID(alternative)};
-    case TipsNotificationsAlternativeStringVersion::kDefault:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE,
-              DockingBodyID(alternative)};
+ContentIDs DockingContentIDsForAlternative(bool isAlternativeStringEnabled) {
+  if (isAlternativeStringEnabled) {
+    return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_ALT1_TITLE,
+            DockingBodyID(isAlternativeStringEnabled)};
   }
+  return {IDS_IOS_NOTIFICATIONS_TIPS_DOCKING_TITLE,
+          DockingBodyID(isAlternativeStringEnabled)};
 }
 
 // Returns the title and the body text ids for the omnibox position promo
@@ -191,7 +170,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kSetUpListContinuation:
       return SetupListContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kDocking:
-      return DockingContentIDsForAlternative(alternative);
+      return DockingContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kOmniboxPosition:
       return OmniboxPositionContentIDsForAlternative(alternative);
     case TipsNotificationType::kLens:
