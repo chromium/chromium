@@ -26159,21 +26159,6 @@
             ]
         }
     ],
-    "WaylandExternalBeginFrameSource": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WaylandExternalBeginFrameSource"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [
