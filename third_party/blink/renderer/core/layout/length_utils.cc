@@ -1981,4 +1981,24 @@ void AddScrollbarFreeze(const BoxStrut& scrollbars_before,
                       (!physical_before.right && physical_after.right);
 }
 
+LayoutUnit CalculateReverseChildOffset(
+    LayoutUnit offset,
+    LayoutUnit fragment_size,
+    LayoutUnit container_size,
+    LayoutUnit border_scrollbar_padding_start,
+    LayoutUnit margin_start,
+    LayoutUnit margin_end) {
+  // `container_size` is the content-box size, while `offset` is measured from
+  // the border-box start. Convert the offset to the content-box coordinate
+  // space before reflecting it, then convert the result back.
+  const LayoutUnit content_offset = offset - border_scrollbar_padding_start;
+  LayoutUnit reversed_offset = container_size - content_offset - fragment_size;
+  reversed_offset += border_scrollbar_padding_start;
+
+  // Margins keep their physical sides under reversal (e.g., margin-bottom stays
+  // on the bottom of the box). Leave room for both physical-side margins.
+  reversed_offset += margin_start - margin_end;
+  return reversed_offset;
+}
+
 }  // namespace blink

@@ -34,8 +34,8 @@ struct CORE_EXPORT LogicalFragmentLink {
   // - `writing_direction`: writing mode + direction of the container.
   // - `is_block_direction`: when true the block-axis offset is reversed;
   //   otherwise the inline-axis offset is reversed.
-  // - `container_size_in_reversal_axis`: the container's available size
-  //   (excluding border, scrollbar, and padding) along the reversal axis.
+  // - `container_size`: the container's available size (excluding border,
+  //   scrollbar, and padding) along the reversal axis.
   // - `border_scrollbar_padding_start`: the size of border, scrollbar, and
   //   padding before the container at the start of the reversal axis.
   //
@@ -44,7 +44,7 @@ struct CORE_EXPORT LogicalFragmentLink {
   // the fill direction.
   void ReverseChildOffset(const WritingDirectionMode& writing_direction,
                           bool is_block_direction,
-                          LayoutUnit container_size_in_reversal_axis,
+                          LayoutUnit container_size,
                           LayoutUnit border_scrollbar_padding_start);
 
   explicit operator bool() const { return fragment != nullptr; }

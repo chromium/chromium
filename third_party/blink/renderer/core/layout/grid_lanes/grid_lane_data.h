@@ -109,10 +109,13 @@ GridLanesItemPlacementData* FindGridLanesItemPlacementData(
     GridTrackSizingDirection grid_axis_direction,
     const GridLanesDataVector* grid_lanes);
 
-// Applies a content-alignment offset once to each shared item placement record.
-void ApplyContentAlignmentToGridLanesData(LayoutUnit offset_adjustment,
-                                          bool is_block_direction,
-                                          GridLanesDataVector& grid_lanes);
+// Applies an offset adjustment once to each shared item placement record.
+void AdjustGridLanesItemPlacementOffsets(LayoutUnit offset_adjustment,
+                                         bool is_block_direction,
+                                         GridLanesDataVector& grid_lanes);
+
+// Reverses the direct and packed item order within each lane.
+void ReverseGridLanesItemOrder(GridLanesDataVector& grid_lanes);
 
 }  // namespace blink
 

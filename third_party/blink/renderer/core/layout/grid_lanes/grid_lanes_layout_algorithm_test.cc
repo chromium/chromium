@@ -3881,4 +3881,135 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateRowContentAlignedBreakTokenData) {
             (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest,
+       PopulateColumnFillAndTrackReverseBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-lanes-direction: column fill-reverse track-reverse;
+        grid-template-columns: repeat(3, 100px); grid-auto-flow: dense;
+        grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="width: 20px; height: 20px; justify-self: end;"></div>
+      <div style="grid-column: 2 / span 2; height: 20px;"></div>
+      <div style="grid-column: 2; width: 20px; height: 10px;
+          justify-self: end; align-self: end;"></div>
+      <div style="grid-column: 2; height: 5px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // Track reverse auto-places the first item in column 3. The column 2 / 3
+  // spanner is therefore placed below it, leaving an opening in column 2 for
+  // the final two items.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  EXPECT_FALSE(grid_lanes[0]);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[2]->item_data.size(), 2u);
+
+  // Column fill-reverse reverses each lane's direct entries. The spanner
+  // continuation precedes the first item, whose inline offset also includes
+  // its end alignment within column 3.
+  EXPECT_EQ(grid_lanes[2]->item_data[0]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+  EXPECT_EQ(grid_lanes[2]->item_data[1]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(280), LayoutUnit(180)}));
+
+  // Packed entries are reversed with their containing lane, while retaining
+  // their final inline alignment offsets.
+  const auto& spanner = *grid_lanes[1]->item_data[0];
+  ASSERT_EQ(spanner.items_packed_above.size(), 2u);
+  EXPECT_EQ(spanner.PlacementData().offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+  EXPECT_EQ(spanner.items_packed_above[0]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit(180)}));
+  EXPECT_EQ(spanner.items_packed_above[1]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(180), LayoutUnit(190)}));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       PopulateRowFillAndTrackReverseBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-lanes-direction: row fill-reverse track-reverse;
+        grid-template-rows: repeat(3, 50px); width: 200px;
+        grid-auto-flow: dense; grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="width: 20px; height: 20px; align-self: end;"></div>
+      <div style="grid-row: 2 / span 2; width: 20px;"></div>
+      <div style="grid-row: 2; width: 10px; height: 20px;
+          justify-self: end; align-self: end;"></div>
+      <div style="grid-row: 2; width: 5px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // Track reverse auto-places the first item in row 3. The row 2 / 3 spanner is
+  // placed after it, leaving an opening in row 2 for the final two items.
+  // Track reverse affects placement order, but each lane remains stored at its
+  // track index.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  EXPECT_FALSE(grid_lanes[0]);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[2]->item_data.size(), 2u);
+
+  // Row fill-reverse affects the inline axis, so it does not reverse entries
+  // within a lane. Both items retain their final inline and block alignment.
+  EXPECT_EQ(grid_lanes[2]->item_data[0]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(180), LayoutUnit(130)}));
+  EXPECT_EQ(grid_lanes[2]->item_data[1]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(50)}));
+
+  // The packed vector likewise remains in placement order. The first packed
+  // item is aligned to both the inline and block ends of its opening.
+  const auto& spanner = *grid_lanes[1]->item_data[0];
+  ASSERT_EQ(spanner.items_packed_above.size(), 2u);
+  EXPECT_EQ(spanner.PlacementData().offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(50)}));
+  EXPECT_EQ(spanner.items_packed_above[0]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(190), LayoutUnit(80)}));
+  EXPECT_EQ(spanner.items_packed_above[1]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(180), LayoutUnit(50)}));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       PopulateIndefiniteFillReverseBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes;
+        grid-lanes-direction: column fill-reverse;
+        grid-template-columns: repeat(3, 100px); min-height: 200px;
+        grid-auto-flow: dense; grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="grid-column: 2; height: 20px;"></div>
+      <div style="grid-column: 1 / span 2; height: 20px;"></div>
+      <div style="grid-column: 1; height: 10px; align-self: end;"></div>
+      <div style="grid-column: 1; height: 5px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // The first item advances column 2, so the column 1 / 2 spanner creates an
+  // opening in column 1 for the final two items.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
+  EXPECT_FALSE(grid_lanes[2]);
+
+  // Once intrinsic sizing resolves the 200px block size, fill-reverse updates
+  // every offset and reverses the two packed entries with their lane.
+  const auto& spanner = *grid_lanes[0]->item_data[0];
+  ASSERT_EQ(spanner.items_packed_above.size(), 2u);
+  EXPECT_EQ(spanner.PlacementData().offset, LogicalOffset());
+  EXPECT_EQ(spanner.items_packed_above[0]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
+  EXPECT_EQ(spanner.items_packed_above[1]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(30)}));
+
+  // The spanner's shared placement record appears first in column 2, followed
+  // by the initial item at its reflected block offset.
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->PlacementData().offset,
+            LogicalOffset());
+  EXPECT_EQ(grid_lanes[1]->item_data[1]->PlacementData().offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit(20)}));
+}
+
 }  // namespace blink

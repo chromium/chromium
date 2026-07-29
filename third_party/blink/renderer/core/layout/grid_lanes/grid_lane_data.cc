@@ -10,9 +10,9 @@ namespace blink {
 
 namespace {
 
-void ApplyContentAlignmentToItemData(LayoutUnit offset_adjustment,
-                                     bool is_block_direction,
-                                     GridLanesItemData& item_data) {
+void AdjustItemPlacementOffset(LayoutUnit offset_adjustment,
+                               bool is_block_direction,
+                               GridLanesItemData& item_data) {
   if (item_data.is_item_start) {
     auto& item_offset =
         item_data.grid_lanes_placement_data->placement_data.offset;
@@ -24,8 +24,8 @@ void ApplyContentAlignmentToItemData(LayoutUnit offset_adjustment,
   }
 
   for (GridLanesItemData* packed_item : item_data.items_packed_above) {
-    ApplyContentAlignmentToItemData(offset_adjustment, is_block_direction,
-                                    *packed_item);
+    AdjustItemPlacementOffset(offset_adjustment, is_block_direction,
+                              *packed_item);
   }
 }
 
@@ -106,16 +106,32 @@ GridLanesItemPlacementData* FindGridLanesItemPlacementData(
   NOTREACHED();
 }
 
-void ApplyContentAlignmentToGridLanesData(LayoutUnit offset_adjustment,
-                                          bool is_block_direction,
-                                          GridLanesDataVector& grid_lanes) {
+void AdjustGridLanesItemPlacementOffsets(LayoutUnit offset_adjustment,
+                                         bool is_block_direction,
+                                         GridLanesDataVector& grid_lanes) {
+  if (!offset_adjustment) {
+    return;
+  }
+
   for (GridLaneData* lane_data : grid_lanes) {
     if (!lane_data) {
       continue;
     }
     for (GridLanesItemData* item_data : lane_data->item_data) {
-      ApplyContentAlignmentToItemData(offset_adjustment, is_block_direction,
-                                      *item_data);
+      AdjustItemPlacementOffset(offset_adjustment, is_block_direction,
+                                *item_data);
+    }
+  }
+}
+
+void ReverseGridLanesItemOrder(GridLanesDataVector& grid_lanes) {
+  for (GridLaneData* lane_data : grid_lanes) {
+    if (!lane_data) {
+      continue;
+    }
+    lane_data->item_data.Reverse();
+    for (GridLanesItemData* item_data : lane_data->item_data) {
+      item_data->items_packed_above.Reverse();
     }
   }
 }

@@ -764,6 +764,15 @@ void AddScrollbarFreeze(const BoxStrut& scrollbars_before,
                         bool* freeze_horizontal,
                         bool* freeze_vertical);
 
+// Returns the offset that reflects a fragment across its container in one axis.
+LayoutUnit CalculateReverseChildOffset(
+    LayoutUnit offset,
+    LayoutUnit fragment_size,
+    LayoutUnit container_size,
+    LayoutUnit border_scrollbar_padding_start,
+    LayoutUnit margin_start,
+    LayoutUnit margin_end);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LENGTH_UTILS_H_

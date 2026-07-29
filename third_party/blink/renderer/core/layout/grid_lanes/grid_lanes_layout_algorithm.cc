@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/stacking_baseline_accumulator.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -336,6 +337,13 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
 namespace {
 
+bool ShouldDeferFillReverse(const ComputedStyle& style,
+                            bool is_for_columns,
+                            const LogicalSize& child_available_size) {
+  return is_for_columns && style.IsReverseGridLanesFillDirection() &&
+         child_available_size.block_size == kIndefiniteSize;
+}
+
 LayoutUnit AlignContentOffset(
     LayoutUnit intrinsic_size,
     LayoutUnit container_size,
@@ -603,18 +611,15 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   // block direction. Every other case of fill-reverse will have been handled
   // earlier in `RunGridLanesPlacementPhase`.
   const bool is_fill_reverse = style.IsReverseGridLanesFillDirection();
-  // TODO(almaher): When collecting lane data, persist fill-reverse offsets and
-  // order each lane's items from the container's physical top.
-  const bool apply_fill_reverse_to_children =
-      !out_grid_lanes && is_fill_reverse && is_for_columns &&
-      child_available_size.block_size == kIndefiniteSize;
+  const bool is_deferred_fill_reverse =
+      ShouldDeferFillReverse(style, is_for_columns, child_available_size);
 
   // Apply content alignment/justification. This is an additional offset
   // determined by the intrinsic inline or block size of the grid-lanes
   // container, so it must occur after that has been determined. This must also
   // occur after the container baselines have been set.
   if (content_alignment != ComputedStyleInitialValues::InitialAlignContent() ||
-      apply_fill_reverse_to_children) {
+      is_deferred_fill_reverse) {
     const LayoutUnit intrinsic_inline_size =
         is_for_columns ? grid_axis_size : stacking_axis_size_;
     const LayoutUnit content_stacking_axis_size =
@@ -634,7 +639,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
                        : BorderScrollbarPadding().inline_start;
     std::optional<BoxFragmentBuilder::AdditionalOffsetAdjustment>
         additional_offset_adjustment;
-    if (apply_fill_reverse_to_children) {
+    if (is_deferred_fill_reverse) {
       additional_offset_adjustment.emplace(blink::BindRepeating(
           [](WritingDirectionMode writing_direction, bool is_block_direction,
              LayoutUnit stacking_axis_size,
@@ -652,15 +657,19 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     if (out_grid_lanes) {
       // When `out_grid_lanes` is provided, this is the pre-fragmentation
       // collection pass that computes stitched-container placement without
-      // adding child results to the builder. Persist the content-alignment
+      // adding child results to the builder. Persist the final offset
       // adjustment so it is applied during each item's per-fragment layout.
       //
       // TODO(almaher): Fragmented OOF placement will need to apply this
       // adjustment separately because `out_grid_lanes` only stores in-flow
       // items.
-      ApplyContentAlignmentToGridLanesData(
-          align_content_offset, /*is_block_direction=*/is_for_columns,
-          *out_grid_lanes);
+      const LayoutUnit offset_adjustment =
+          align_content_offset + (is_deferred_fill_reverse
+                                      ? effective_stacking_axis_size
+                                      : LayoutUnit());
+      AdjustGridLanesItemPlacementOffsets(offset_adjustment,
+                                          /*is_block_direction=*/is_for_columns,
+                                          *out_grid_lanes);
     } else {
       container_builder_.MoveChildrenInDirection(
           align_content_offset, /*is_block_direction=*/is_for_columns,
@@ -670,6 +679,10 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
 
   ApplyStackingAxisAlignment(running_positions, effective_stacking_axis_size,
                              stacking_axis_gap, out_grid_lanes);
+
+  if (out_grid_lanes && is_for_columns && is_fill_reverse) {
+    ReverseGridLanesItemOrder(*out_grid_lanes);
+  }
 }
 
 void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
@@ -885,6 +898,11 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
   const bool is_for_columns = grid_axis_direction == kForColumns;
   const wtf_size_t grid_axis_start_offset =
       Node().CachedPlacementData().StartOffset(grid_axis_direction);
+
+  // An indefinite column size prevents fill-reverse from being completed until
+  // placement determines the container's intrinsic block size.
+  const bool is_deferred_fill_reverse =
+      ShouldDeferFillReverse(style, is_for_columns, ChildAvailableSize());
 
   // During the `kCalculateBaselines` pass, subgrid layout is skipped to
   // avoid corrupting cached placement data. The sibling iterator is only
@@ -1221,10 +1239,34 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         // When `out_grid_lanes` is provided, the container is fragmented. This
         // pass only collects initial item offsets; items will run their actual
         // fragmentation layout pass later using the data aggregated here.
+        LogicalOffset placement_offset = containing_grid_area.offset;
+        if (is_deferred_fill_reverse) {
+          // Fill-reverse changes an item's block offset from its distance to
+          // the container's block start to the equivalent distance from block
+          // end:
+          //
+          //   container block size - original offset - item block size
+          //       + border, padding, and margin adjustments
+          //
+          // Non-fragmented layout retains each child result in the fragment
+          // builder, so it can evaluate the complete expression after intrinsic
+          // sizing determines the container block size. This collection pass
+          // does not retain child results. Capture the item-specific terms
+          // while the item's size and margins are available, passing zero for
+          // the unknown container block size. The final container block size
+          // will be added later to all collected offsets once the intrinsic
+          // block size is known.
+          LayoutUnit& stacking_axis_offset = placement_offset.block_offset;
+          stacking_axis_offset = CalculateReverseChildOffset(
+              stacking_axis_offset, fragment.BlockSize(),
+              /*container_size=*/LayoutUnit(),
+              border_scrollbar_padding.block_start, margins.block_start,
+              margins.block_end);
+        }
         auto* grid_lanes_placement_data =
             MakeGarbageCollected<GridLanesItemPlacementData>(
                 GridItemPlacementData(
-                    containing_grid_area.offset,
+                    placement_offset,
                     result->HasDescendantThatDependsOnPercentageBlockSize()));
         AddItemToGridLanesData(grid_lanes_item, grid_lanes_placement_data,
                                spanner_indices_below_opening,
