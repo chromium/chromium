@@ -357,6 +357,12 @@ enum class ICUCreateInstance {
 // There are multiple exposed InitializeIcu* functions. This should be called
 // as at the end of (the last functions in the sequence of) these functions.
 bool DoCommonInitialization() {
+#if BUILDFLAG(IS_IOS)
+  UErrorCode status = U_ZERO_ERROR;
+  u_init(&status);
+  DCHECK(U_SUCCESS(status));
+#endif
+
   // TODO(jungshik): Some callers do not care about tz at all. If necessary,
   // add a boolean argument to this function to init the default tz only
   // when requested.
