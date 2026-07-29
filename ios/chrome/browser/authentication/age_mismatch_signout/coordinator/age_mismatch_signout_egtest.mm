@@ -73,6 +73,8 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
   // Ensure the app is running without `BuildExternalPrivacyContext` enabled
   // initially.
   AppLaunchConfiguration initConfig;
+  initConfig.features_disabled.push_back(
+      switches::kBuildExternalPrivacyContext);
   initConfig.features_enabled.push_back(
       switches::kEnforceCanSignInToChromeCapability);
   [[AppLaunchManager sharedManager]

@@ -175,6 +175,19 @@ class AuthenticationFlowTest : public PlatformTest {
     OCMExpect([performer_mock_ initWithDelegate:[OCMArg any]
                            changeProfileHandler:[OCMArg any]])
         .andReturn(performer_mock_);
+    AuthenticationFlow* authentication_flow = authentication_flow_;
+    AuthenticationFlowPerformer* performer_mock = performer_mock_;
+    signin::Tribool can_sign_in_to_chrome_capability =
+        can_sign_in_to_chrome_capability_;
+    OCMExpect(
+        [performer_mock_
+            fetchCanSignInToChromeCapability:[OCMArg any]
+                                     profile:(ProfileIOS*)[OCMArg anyPointer]])
+        .andDo(^(NSInvocation*) {
+          [authentication_flow authenticationFlowPerformer:performer_mock
+                       didFetchCanSignInToChromeCapability:
+                           can_sign_in_to_chrome_capability];
+        });
     if (shouldHandOverToFlowInProfile) {
       // Once the flow progresses into AuthenticationFlowInProfile, that class
       // creates its own performer. For simplicity, reuse the same mock object
@@ -445,6 +458,9 @@ class AuthenticationFlowTest : public PlatformTest {
   UIViewController* view_controller_mock_;
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
+
+  // Capability result returned by default during tests.
+  signin::Tribool can_sign_in_to_chrome_capability_ = signin::Tribool::kTrue;
 
   // Number of times the management confirmation dialog has been displayed.
   int managed_confirmation_dialog_shown_count_ = 0;
@@ -791,6 +807,31 @@ TEST_F(AuthenticationFlowTest, TestConfirmChangeProfileCancel) {
   CheckSignInCompletion(/*expected_signed_in=*/false);
 
   EXPECT_TRUE(confirmChangeProfileCalled);
+}
+
+// Tests age mismatch cancellation.
+TEST_F(AuthenticationFlowTest, TestAgeMismatchCancel) {
+  can_sign_in_to_chrome_capability_ = signin::Tribool::kFalse;
+  CreateAuthenticationFlow(PostSignInActionSet(), identity1_,
+                           signin_metrics::AccessPoint::kStartPage,
+                           /*shouldHandOverToFlowInProfile=*/NO);
+
+  AuthenticationFlow* authentication_flow = authentication_flow_;
+  OCMExpect([performer_mock_
+                showAgeMismatchDialogForIdentity:identity1_
+                                  viewController:view_controller_mock_
+                                         browser:personal_browser_.get()])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow
+            didDismissAgeMismatchDialogWithCancelationReason:
+                signin_ui::CancelationReason::kAgeMismatchCanceled];
+      });
+
+  [authentication_flow_ startSignIn];
+
+  CheckSignInCompletion(/*expected_signed_in=*/false);
+  EXPECT_EQ(signin_ui::CancelationReason::kAgeMismatchCanceled,
+            cancelation_reason_);
 }
 
 }  // namespace
