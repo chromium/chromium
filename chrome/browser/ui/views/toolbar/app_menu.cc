@@ -872,13 +872,13 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
       decrement_button_->SetEnabled(zoom > contents->GetMinimumZoomPercent());
     }
     zoom_label_->SetText(base::FormatPercent(zoom));
+    zoom_label_max_width_.reset();
     if (!on_construction) {
       // An alert notification will ensure that the zoom label is always
       // announced even if is not focusable.
       zoom_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
                                                       true);
     }
-    zoom_label_max_width_.reset();
   }
 
   void UpdateFullScreenButton() {
