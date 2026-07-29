@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,6 +77,34 @@ constexpr int kProgressDelaySteps = 100;
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
 #endif
 
+// Helper function to show the web app installation dialog. This is called
+// once the folder icon has been resolved (asynchronously on Mac, or
+// immediately on other platforms).
+void ShowWebAppInstallFlowDialog(
+    base::WeakPtr<content::WebContents> initiator_web_contents,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    WebAppInstallationAcceptanceCallback web_app_acceptance_callback,
+    PwaInProductHelpState iph_state,
+    base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
+    bool show_initiating_origin,
+    InstallDialogType install_type,
+    InstallOsType os_type,
+    std::optional<ui::ImageModel> folder_image_model,
+    std::optional<std::u16string> folder_label) {
+  if (!initiator_web_contents) {
+    return;
+  }
+  auto progress_delay =
+      std::make_unique<ProgressDelay>(kProgressDelay, kProgressDelaySteps);
+  WebAppInstallFlowDialogDelegate::Show(
+      initiator_web_contents.get(), std::move(web_app_info),
+      std::move(install_tracker), std::move(web_app_acceptance_callback),
+      iph_state, std::move(screenshot_fetcher), show_initiating_origin,
+      install_type, os_type, std::move(progress_delay), folder_image_model,
+      folder_label);
+}
+
 void OnWebAppInstallShowInstallDialog(
     WebAppInstallFlow flow,
     webapps::WebappInstallSource install_source,
@@ -118,23 +147,34 @@ void OnWebAppInstallShowInstallDialog(
           install_type = kDiy;
         }
 
-        std::optional<ui::ImageModel> folder_image_model;
-        std::optional<std::u16string> folder_label;
+        // Bind the standard dialog showing function. This callback accepts the
+        // folder image and label, which may be computed asynchronously on Mac.
+        auto show_dialog = base::BindOnce(
+            &ShowWebAppInstallFlowDialog, initiator_web_contents->GetWeakPtr(),
+            std::move(web_app_info), std::move(install_tracker),
+            std::move(web_app_acceptance_callback), iph_state,
+            screenshot_fetcher, show_initiating_origin, install_type, os_type);
+
 #if BUILDFLAG(IS_MAC)
-        // TODO(crbug.com/513676704): Move image manipulation to the thread
-        // pool.
-        folder_image_model = ui::ImageModel::FromImageSkia(
-            GetMacAppsFolderImage(kLargeImageSize).AsImageSkia());
-        folder_label = shell_integration::GetAppShortcutsSubdirName();
+        // On macOS, generating the folder icon involves heavy image
+        // manipulation (overlaying the Chrome Apps launcher icon onto the
+        // system folder icon). To avoid blocking the UI thread, we fetch this
+        // icon asynchronously on the thread pool.
+        auto show_dialog_with_image = base::BindOnce(
+            [](base::OnceCallback<void(std::optional<ui::ImageModel>,
+                                       std::optional<std::u16string>)>
+                   show_dialog_callback,
+               gfx::Image folder_image) {
+              std::move(show_dialog_callback)
+                  .Run(ui::ImageModel::FromImage(folder_image),
+                       shell_integration::GetAppShortcutsSubdirName());
+            },
+            std::move(show_dialog));
+        GetMacAppsFolderImageAsync(kLargeImageSize,
+                                   std::move(show_dialog_with_image));
+#else
+        std::move(show_dialog).Run(std::nullopt, std::nullopt);
 #endif
-        auto progress_delay = std::make_unique<ProgressDelay>(
-            kProgressDelay, kProgressDelaySteps);
-        WebAppInstallFlowDialogDelegate::Show(
-            initiator_web_contents, std::move(web_app_info),
-            std::move(install_tracker), std::move(web_app_acceptance_callback),
-            iph_state, std::move(screenshot_fetcher), show_initiating_origin,
-            install_type, os_type, std::move(progress_delay),
-            folder_image_model, folder_label);
         return;
       }
 

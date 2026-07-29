@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <atomic>
+
 #import "base/apple/foundation_util.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
@@ -33,7 +35,7 @@ namespace {
 
 // Set to true the first time the localized name of the chrome apps dir has been
 // updated successfully, as this only needs to be done once.
-bool g_have_localized_app_dir_name = false;
+std::atomic<bool> g_have_localized_app_dir_name{false};
 
 base::FilePath GetLocalizableAppShortcutsSubdirName() {
   static const char kChromiumAppDirName[] = "Chromium Apps.localized";
@@ -88,69 +90,13 @@ base::FilePath GetChromeAppsFolderImpl() {
   return path.Append(GetLocalizableAppShortcutsSubdirName());
 }
 
-// Helper function to extract the single NSImageRep held in a resource bundle
-// image.
-NSImageRep* ImageRepForGFXImage(const gfx::Image& image) {
-  NSArray* image_reps = image.AsNSImage().representations;
-  DCHECK_EQ(1u, image_reps.count);
-  return image_reps[0];
-}
-
-using ResourceIDToImage = std::map<int, NSImageRep*>;
-
-// Generates a map of NSImageReps used by SetWorkspaceIconOnWorkerThread and
-// passes it to |io_task|. Since ui::ResourceBundle can only be used on UI
-// thread, this function also needs to run on UI thread, and the gfx::Images
-// need to be converted to NSImageReps on the UI thread due to non-thread-safety
-// of gfx::Image.
-ResourceIDToImage GetImageResourcesOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  ResourceIDToImage result;
-
-  // These resource ID should match to the ones used by
-  // SetWorkspaceIconOnWorkerThread below.
-  for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32,
-                 IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
-    gfx::Image image = resource_bundle.GetNativeImageNamed(id);
-    result[id] = ImageRepForGFXImage(image);
-  }
-
-  return result;
-}
-
 void SetWorkspaceIconOnWorkerThread(const base::FilePath& apps_directory,
                                     const ResourceIDToImage& images) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  NSImage* folder_icon_image = [[NSImage alloc] init];
-  // Use complete assets for the small icon sizes. -[NSWorkspace setIcon:] has a
-  // bug when dealing with named NSImages where it incorrectly handles alpha
-  // premultiplication. This is most noticeable with small assets since the 1px
-  // border is a much larger component of the small icons.
-  // See http://crbug.com/40336190 for details.
-  for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32}) {
-    const auto& found = images.find(id);
-    DCHECK(found != images.end());
-    [folder_icon_image addRepresentation:found->second];
-  }
+  NSImage* folder_icon_image = CreateMacAppsFolderIcon(images);
 
-  // Brand larger folder assets with an embossed app launcher logo to
-  // conserve distro size and for better consistency with changing hue
-  // across macOS versions. The folder is textured, so compresses poorly
-  // without this.
-  NSImage* base_image = [NSImage imageNamed:NSImageNameFolder];
-  for (int id : {IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
-    const auto& found = images.find(id);
-    DCHECK(found != images.end());
-    NSImageRep* with_overlay = OverlayImageRep(base_image, found->second);
-    DCHECK(with_overlay);
-    if (with_overlay) {
-      [folder_icon_image addRepresentation:with_overlay];
-    }
-  }
   shortcuts::SetIconForFile(folder_icon_image, apps_directory,
                             base::DoNothing());
 }
@@ -201,10 +147,11 @@ base::FilePath GetChromeAppsFolder() {
 
   // Only set folder icons and a localized name once, as nothing should be
   // changing the folder icon and name.
-  if (!g_have_localized_app_dir_name) {
-    g_have_localized_app_dir_name = UpdateAppShortcutsSubdirLocalizedName(path);
+  if (!g_have_localized_app_dir_name.load()) {
+    g_have_localized_app_dir_name.store(
+        UpdateAppShortcutsSubdirLocalizedName(path));
   }
-  if (!g_have_localized_app_dir_name) {
+  if (!g_have_localized_app_dir_name.load()) {
     LOG(ERROR) << "Failed to localize " << path;
   }
 
@@ -212,7 +159,7 @@ base::FilePath GetChromeAppsFolder() {
 }
 
 void ResetHaveLocalizedAppDirNameForTesting() {
-  g_have_localized_app_dir_name = false;
+  g_have_localized_app_dir_name.store(false);
 }
 
 }  // namespace web_app

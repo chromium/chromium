@@ -9,7 +9,10 @@
 #include <array>
 #include <queue>
 
+#include "base/functional/callback.h"
+#include "base/task/thread_pool.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -335,22 +338,80 @@ gfx::Image MaskDiyAppIcon(const gfx::Image& icon) {
   }
 }
 
-gfx::Image GetMacAppsFolderImage(int size) {
-  NSImage* base_image = [NSImage imageNamed:NSImageNameFolder];
+namespace {
+
+NSImageRep* GetImageRepFromResourceBundle(int resource_id) {
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+  gfx::Image image = resource_bundle.GetNativeImageNamed(resource_id);
+  NSArray* image_reps = image.AsNSImage().representations;
+  DCHECK_EQ(1u, image_reps.count);
+  return image_reps[0];
+}
+
+}  // namespace
+
+ResourceIDToImage GetImageResourcesOnUIThread() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  ResourceIDToImage result;
+  for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32,
+                 IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
+    result[id] = GetImageRepFromResourceBundle(id);
+  }
+
+  return result;
+}
+
+NSImage* CreateMacAppsFolderIcon(const ResourceIDToImage& images) {
   NSImage* folder_icon_image = [[NSImage alloc] init];
-  [folder_icon_image setSize:NSMakeSize(size, size)];
-  for (int id : {IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
-    gfx::Image overlay_image = resource_bundle.GetNativeImageNamed(id);
-    NSArray* image_reps = overlay_image.AsNSImage().representations;
-    DCHECK_EQ(1u, image_reps.count);
-    NSImageRep* overlay_rep = image_reps[0];
-    NSImageRep* with_overlay = OverlayImageRep(base_image, overlay_rep);
+  const auto& img_16 = images.find(IDR_APPS_FOLDER_16);
+  if (img_16 != images.end() && img_16->second) {
+    [folder_icon_image addRepresentation:img_16->second];
+  }
+  const auto& img_32 = images.find(IDR_APPS_FOLDER_32);
+  if (img_32 != images.end() && img_32->second) {
+    [folder_icon_image addRepresentation:img_32->second];
+  }
+
+  // System NSImage objects are thread-safe on macOS 10.13+ and can be retrieved
+  // on background threads.
+  NSImage* base_image = [NSImage imageNamed:NSImageNameFolder];
+  const auto& img_128 = images.find(IDR_APPS_FOLDER_OVERLAY_128);
+  if (img_128 != images.end() && img_128->second) {
+    NSImageRep* with_overlay = OverlayImageRep(base_image, img_128->second);
+    DCHECK(with_overlay);
     if (with_overlay) {
       [folder_icon_image addRepresentation:with_overlay];
     }
   }
-  return gfx::Image(folder_icon_image);
+  const auto& img_512 = images.find(IDR_APPS_FOLDER_OVERLAY_512);
+  if (img_512 != images.end() && img_512->second) {
+    NSImageRep* with_overlay = OverlayImageRep(base_image, img_512->second);
+    DCHECK(with_overlay);
+    if (with_overlay) {
+      [folder_icon_image addRepresentation:with_overlay];
+    }
+  }
+
+  return folder_icon_image;
+}
+
+void GetMacAppsFolderImageAsync(int size,
+                                base::OnceCallback<void(gfx::Image)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  ResourceIDToImage images = GetImageResourcesOnUIThread();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](const ResourceIDToImage& images, int size) {
+            NSImage* icon = CreateMacAppsFolderIcon(images);
+            [icon setSize:NSMakeSize(size, size)];
+            return gfx::Image(icon);
+          },
+          images, size),
+      std::move(callback));
 }
 
 }  // namespace web_app
