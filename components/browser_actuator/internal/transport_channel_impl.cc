@@ -72,9 +72,9 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   if (!session) {
     return;
   }
-  // The session owns the advance-only / ignore-non-positive rule: the
-  // sequence number lives on the session, so the invariant does too.
-  session->RecordServerSequenceNumber(downstream.sequence_number());
+  if (!session->RecordServerSequenceNumber(downstream.sequence_number())) {
+    return;
+  }
 
   // TODO(crbug.com/532660606): route downstream.typed_payloads() to the
   // handler for each payload_type.

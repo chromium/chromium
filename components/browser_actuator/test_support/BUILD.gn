@@ -10,6 +10,8 @@ source_set("test_support") {
     "mock_browser_actuator_service.h",
     "mock_transport_channel.cc",
     "mock_transport_channel.h",
+    "mock_transport_handler.cc",
+    "mock_transport_handler.h",
     "mock_transport_handler_factory.cc",
     "mock_transport_handler_factory.h",
     "test_constants.h",
