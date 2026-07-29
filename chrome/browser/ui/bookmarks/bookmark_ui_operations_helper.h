@@ -108,8 +108,7 @@ class BookmarkUIOperationsHelper {
                           base::OnceClosure callback,
                           std::unique_ptr<bookmarks::BookmarkNodeData> data);
 
-  void OnReadTextComplete(std::unique_ptr<bookmarks::BookmarkNodeData> data,
-                          size_t index,
+  void OnReadTextComplete(size_t index,
                           base::OnceClosure callback,
                           std::u16string text);
 

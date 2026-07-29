@@ -13,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,18 +39,46 @@ using ::ui::mojom::DragOperation;
 
 namespace {
 
-// Runs `callback` with the URL from the clipboard. If there is no URL an empty
-// URL is passed to the callback.
-void GetUrlFromClipboard(bool notify_if_restricted,
-                         base::OnceCallback<void(GURL)> callback) {
+std::unique_ptr<BookmarkNodeData> BookmarkNodeDataFromText(
+    std::u16string_view text) {
+  std::vector<std::u16string_view> lines = base::SplitStringPiece(
+      text, u"\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (lines.empty()) {
+    return nullptr;
+  }
+
+  auto data = std::make_unique<BookmarkNodeData>();
+  for (std::u16string_view line : lines) {
+    GURL url{std::u16string(line)};
+    if (!url.is_valid()) {
+      return nullptr;
+    }
+
+    BookmarkNodeData::Element element;
+    element.is_url = true;
+    element.url = url;
+    element.title = base::UTF8ToUTF16(url.spec());
+    data->elements.push_back(std::move(element));
+  }
+
+  return data->is_valid() ? std::move(data) : nullptr;
+}
+
+// Runs `callback` with bookmark data parsed from clipboard text. If there is no
+// valid plain-text URL data, null is passed to the callback.
+void GetBookmarkNodeDataFromClipboard(
+    bool notify_if_restricted,
+    base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback) {
   ui::DataTransferEndpoint data_dst =
       ui::DataTransferEndpoint(ui::EndpointType::kDefault,
                                {.notify_if_restricted = notify_if_restricted});
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
       base::BindOnce(
-          [](base::OnceCallback<void(GURL)> callback, std::u16string url_text) {
-            std::move(callback).Run(GURL(url_text));
+          [](base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)>
+                 callback,
+             std::u16string text) {
+            std::move(callback).Run(BookmarkNodeDataFromText(text));
           },
           std::move(callback)));
 }
@@ -208,11 +237,12 @@ void BookmarkUIOperationsHelper::CanPasteFromClipboard(
           std::move(callback).Run(true);
           return;
         }
-        GetUrlFromClipboard(
+        GetBookmarkNodeDataFromClipboard(
             /*notify_if_restricted=*/false,
             base::BindOnce(
-                [](base::OnceCallback<void(bool)> callback, GURL url) {
-                  std::move(callback).Run(url.is_valid());
+                [](base::OnceCallback<void(bool)> callback,
+                   std::unique_ptr<BookmarkNodeData> data) {
+                  std::move(callback).Run(data != nullptr);
                 },
                 std::move(callback)));
       },
@@ -244,8 +274,7 @@ void BookmarkUIOperationsHelper::OnReadBookmarkData(
     ui::Clipboard::GetForCurrentThread()->ReadText(
         ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
         base::BindOnce(&BookmarkUIOperationsHelper::OnReadTextComplete,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::make_unique<BookmarkNodeData>(), index,
+                       weak_ptr_factory_.GetWeakPtr(), index,
                        std::move(callback)));
     return;
   }
@@ -267,18 +296,15 @@ void BookmarkUIOperationsHelper::OnReadBookmarkData(
 }
 
 void BookmarkUIOperationsHelper::OnReadTextComplete(
-    std::unique_ptr<bookmarks::BookmarkNodeData> bookmark_data,
     size_t index,
     base::OnceClosure callback,
     std::u16string text) {
-  GURL url(text);
-  if (!url.is_valid()) {
+  std::unique_ptr<BookmarkNodeData> bookmark_data =
+      BookmarkNodeDataFromText(text);
+  if (!bookmark_data) {
     std::move(callback).Run();
     return;
   }
-  BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
-  node.SetTitle(base::ASCIIToUTF16(url.spec()));
-  *bookmark_data = BookmarkNodeData(&node);
 
   if (!target_parent()) {
     std::move(callback).Run();
@@ -286,12 +312,16 @@ void BookmarkUIOperationsHelper::OnReadTextComplete(
   }
 
   CHECK_LE(index, target_parent()->GetChildrenCount());
-  if (model()->IsBookmarked(bookmark_data->elements[0].url)) {
-    MakeTitleUnique(bookmark_data->elements[0].url,
-                    &bookmark_data->elements[0].title);
+  for (BookmarkNodeData::Element& element : bookmark_data->elements) {
+    if (element.is_url && model()->IsBookmarked(element.url)) {
+      MakeTitleUnique(element.url, &element.title);
+    }
+    BookmarkNodeData single_node_data;
+    single_node_data.elements.push_back(element);
+    AddNodesAsCopiesOfNodeData(single_node_data, index);
+    ++index;
   }
 
-  AddNodesAsCopiesOfNodeData(*bookmark_data, index);
   std::move(callback).Run();
 }
 
