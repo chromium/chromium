@@ -23,6 +23,7 @@ ProductMessagingPolicyImpl::~ProductMessagingPolicyImpl() = default;
 std::unique_ptr<ProductMessagingPolicyImpl>
 ProductMessagingPolicyImpl::CreateDefault() {
   auto result = base::WrapUnique(new ProductMessagingPolicyImpl);
+  result->SetSelfBlocking(ProductMessageType::kAnchoredMessage, false);
   result->SetSelfBlocking(ProductMessageType::kLowPriorityIph, false);
   result->SetSelfBlocking(ProductMessageType::kHighPriorityIph, false);
   result->SetEquivalent(ProductMessageType::kHighPriorityIph,

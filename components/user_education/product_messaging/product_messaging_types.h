@@ -28,6 +28,7 @@ enum class ProductMessageType {
   // This value is only for filtering and must be first on the list.
   kNone = 0,
   kLowPriorityForTesting,  // IN-TEST
+  kAnchoredMessage,
   kLowPriorityIph,
   kHighPriorityIph,
   kLegalOrComplianceNotice,

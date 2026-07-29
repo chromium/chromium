@@ -32,6 +32,7 @@ std::string ProductMessageKey::ToString() const {
   static constexpr auto kTypeNames = std::to_array<std::string_view>({
       "[none]",
       "LowPriorityForTesting",
+      "AnchoredMessage",
       "LowPriorityIph",
       "HighPriorityIph",
       "LegalOrComplianceNotice",
