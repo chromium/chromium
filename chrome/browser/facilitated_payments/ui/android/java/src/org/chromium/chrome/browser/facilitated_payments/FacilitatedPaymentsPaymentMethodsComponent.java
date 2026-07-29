@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.pm.ResolveInfo;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -15,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.facilitated_payments.core.metrics.AccountLinkingPromptUserAction;
 import org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -76,6 +78,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     void initialize(
             Context context,
             BottomSheetController bottomSheetController,
+            @Nullable WindowAndroid windowAndroid,
             Delegate delegate,
             Profile profile);
 
@@ -113,4 +116,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     /** Show the account linking prompt in a bottom sheet. */
     void showAccountLinkingPrompt(
             @FacilitatedPaymentsType int fopType, String fopDisplayName, int strikeCount);
+
+    /** Show the account linking failure notification in a snackbar. */
+    void showAccountLinkingFailureNotification(@FacilitatedPaymentsType int fopType);
 }

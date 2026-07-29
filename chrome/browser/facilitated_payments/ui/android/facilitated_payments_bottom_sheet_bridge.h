@@ -72,6 +72,11 @@ class FacilitatedPaymentsBottomSheetBridge {
   // tests.
   virtual bool ShowAccountLinkingPrompt(const AccountLinkingParams& params);
 
+  // Triggers showing the account linking failure notification. Virtual for
+  // overriding in tests.
+  virtual void ShowAccountLinkingFailureNotification(
+      FacilitatedPaymentsType fop_type);
+
   // Closes the bottom sheet. Virtual for overriding in tests.
   virtual void Dismiss();
 

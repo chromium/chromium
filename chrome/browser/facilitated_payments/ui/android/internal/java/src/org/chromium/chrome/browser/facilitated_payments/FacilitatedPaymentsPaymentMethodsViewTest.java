@@ -225,7 +225,8 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             ContextUtils.getApplicationContext(),
                             mModel,
                             mDelegateMock,
-                            mActivityTestRule.getProfile(false));
+                            mActivityTestRule.getProfile(false),
+                            null);
                     PropertyModelChangeProcessor.create(
                             mModel,
                             mView,

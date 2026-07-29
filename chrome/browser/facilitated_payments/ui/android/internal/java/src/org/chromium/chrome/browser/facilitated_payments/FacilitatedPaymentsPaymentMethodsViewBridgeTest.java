@@ -38,6 +38,9 @@ import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -110,6 +113,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private Context mApplicationContext;
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
@@ -123,6 +127,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         mApplicationContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = new WindowAndroid(mApplicationContext, /* occlusionTrackingAllowed= */ false);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
+        SnackbarManagerProvider.attach(mWindow, mSnackbarManager);
         mViewBridge =
                 FacilitatedPaymentsPaymentMethodsViewBridge.create(
                         mDelegateMock, mWindow, mProfile);
@@ -130,6 +135,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @After
     public void tearDown() {
+        SnackbarManagerProvider.detach(mSnackbarManager);
         BottomSheetControllerFactory.detach(mBottomSheetController);
         mWindow.destroy();
     }
@@ -275,5 +281,15 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         verify(mBottomSheetController)
                 .requestShowContent(
                         any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void showAccountLinkingFailureNotification_showsSnackbar() {
+        mViewBridge.showAccountLinkingFailureNotification(
+                org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType
+                        .PIX);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
 }

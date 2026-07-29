@@ -224,6 +224,12 @@ void ChromeFacilitatedPaymentsClient::ShowAccountLinkingPrompt(
       std::move(on_dismissed));
 }
 
+void ChromeFacilitatedPaymentsClient::ShowAccountLinkingFailureNotification(
+    payments::facilitated::FacilitatedPaymentsType fop_type) {
+  facilitated_payments_controller_->ShowAccountLinkingFailureNotification(
+      fop_type);
+}
+
 bool ChromeFacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);

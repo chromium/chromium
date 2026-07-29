@@ -111,6 +111,11 @@ class FacilitatedPaymentsController {
       base::OnceCallback<void()> on_declined,
       base::OnceCallback<void()> on_dismissed);
 
+  // Asks the `view_` to show the account linking failure notification. Virtual
+  // for overriding in tests.
+  virtual void ShowAccountLinkingFailureNotification(
+      payments::facilitated::FacilitatedPaymentsType fop_type);
+
   // Called by the Java view to communicate acceptance of Pix account linking
   // prompt.
   void OnPixAccountLinkingPromptAccepted(JNIEnv* env);

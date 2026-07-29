@@ -173,6 +173,11 @@ void FacilitatedPaymentsController::ShowAccountLinkingPrompt(
   }
 }
 
+void FacilitatedPaymentsController::ShowAccountLinkingFailureNotification(
+    payments::facilitated::FacilitatedPaymentsType fop_type) {
+  view_->ShowAccountLinkingFailureNotification(fop_type);
+}
+
 void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(
     JNIEnv* env) {
   if (on_pix_account_linking_prompt_accepted_) {

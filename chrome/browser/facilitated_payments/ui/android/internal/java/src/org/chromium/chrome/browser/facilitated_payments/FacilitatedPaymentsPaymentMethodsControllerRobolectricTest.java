@@ -98,6 +98,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -217,6 +219,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
     @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private final Context mContext;
     private final FacilitatedPaymentsPaymentMethodsCoordinator mCoordinator;
@@ -236,7 +239,13 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .thenReturn(true);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         AutofillImageFetcherFactory.setInstanceForTesting(mAutofillImageFetcher);
-        mCoordinator.initialize(mContext, mBottomSheetController, mDelegateMock, mProfile);
+        mCoordinator.initialize(
+                mContext,
+                mBottomSheetController,
+                /* windowAndroid= */ null,
+                mDelegateMock,
+                mProfile);
+        mCoordinator.getMediatorForTesting().setSnackbarManagerForTesting(mSnackbarManager);
         mFacilitatedPaymentsPaymentMethodsModel = mCoordinator.getModelForTesting();
         mCoordinator
                 .getMediatorForTesting()
@@ -1866,6 +1875,13 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .findFirst()
                 .map(item -> item.model)
                 .orElse(null);
+    }
+
+    @Test
+    public void testShowAccountLinkingFailureNotification() {
+        mCoordinator.showAccountLinkingFailureNotification(FacilitatedPaymentsType.PIX);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
 
     private static ResolveInfo createPaymentApp(String packageName, String activityName) {

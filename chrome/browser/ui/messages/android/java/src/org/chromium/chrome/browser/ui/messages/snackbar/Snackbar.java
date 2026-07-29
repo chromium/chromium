@@ -149,6 +149,7 @@ public class Snackbar {
     public static final int UMA_TIPS_OPT_IN = 91;
     public static final int UMA_NTP_THEME_TIP = 92;
     public static final int UMA_SEND_TAB_TO_SELF = 93;
+    public static final int UMA_FACILITATED_PAYMENTS_PIX_ACCOUNT_LINKING_ERROR = 94;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:SnackbarIdentifier)
 
     private final @Nullable SnackbarController mController;

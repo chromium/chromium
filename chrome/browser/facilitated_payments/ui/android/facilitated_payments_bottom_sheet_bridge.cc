@@ -153,6 +153,17 @@ bool FacilitatedPaymentsBottomSheetBridge::ShowAccountLinkingPrompt(
   return true;
 }
 
+void FacilitatedPaymentsBottomSheetBridge::
+    ShowAccountLinkingFailureNotification(FacilitatedPaymentsType fop_type) {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_showAccountLinkingFailureNotification(
+      env, GetJavaBridge(), static_cast<int>(fop_type));
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsBottomSheetBridge::GetJavaBridge() {
   if (!java_bridge_) {

@@ -168,7 +168,6 @@
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_SETTINGS_LINK" desc="Text for the settings link in the bottom sheet showing Pix account linking prompt." formatter_data="android_java">
     To turn off Pix code detection, go to <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Chrome settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
-
   <!-- Pix account linking success screen strings -->
   <message name="IDS_PIX_ACCOUNT_LINKING_SUCCESS_SCREEN_TITLE" desc="Title for the bottom sheet showing Pix account linking success screen." formatter_data="android_java">
     Your Pix account is successfully linked to Google Pay
@@ -198,6 +197,10 @@
   <message name="IDS_EWALLET_ACCOUNT_LINKING_PROMPT_ACTION_NOT_NOW" desc="Text for the decline button in the bottom sheet showing eWallet account linking prompt. This string is used for the first two times the prompt is shown, where we show 'Not now' instead of 'No thanks'." formatter_data="android_java">
     Not now
   </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_ERROR_FOOTER_MESSAGE" desc="Error message shown in a snackbar at the bottom of the screen when Pix account linking fails." formatter_data="android_java">
+    Linking failed, try again later
+  </message>
 </if>
+
 
 </grit-part>

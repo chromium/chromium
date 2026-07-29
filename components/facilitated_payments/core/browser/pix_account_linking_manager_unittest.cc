@@ -41,14 +41,7 @@ class PixAccountLinkingManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  PixAccountLinkingManagerTest() {
-    api_client_ = std::make_unique<MockFacilitatedPaymentsApiClient>();
-    api_client_ptr_ = api_client_.get();
-    manager_ = std::make_unique<PixAccountLinkingManager>(
-        &client_,
-        base::BindRepeating(&PixAccountLinkingManagerTest::CreateApiClient,
-                            base::Unretained(this)));
-  }
+  PixAccountLinkingManagerTest() = default;
 
   std::unique_ptr<FacilitatedPaymentsApiClient> CreateApiClient() {
     return std::move(api_client_);
@@ -79,14 +72,22 @@ class PixAccountLinkingManagerTest : public testing::Test {
     ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(payments_network_interface_.get()));
 
-    // Success path setup. The Pix account linking user pref is default enabled.
-    ON_CALL(client_, GetLastCommittedOrigin)
-        .WillByDefault(testing::ReturnRef(kPixPaymentPageOrigin));
+    api_client_ = std::make_unique<MockFacilitatedPaymentsApiClient>();
+    api_client_ptr_ = api_client_.get();
     ON_CALL(*api_client_ptr_, GetClientToken(testing::_))
         .WillByDefault(
             [](base::OnceCallback<void(std::vector<uint8_t>)> callback) {
               std::move(callback).Run(std::vector<uint8_t>{1, 2, 3});
             });
+
+    manager_ = std::make_unique<PixAccountLinkingManager>(
+        &client_,
+        base::BindRepeating(&PixAccountLinkingManagerTest::CreateApiClient,
+                            base::Unretained(this)));
+
+    // Success path setup. The Pix account linking user pref is default enabled.
+    ON_CALL(client_, GetLastCommittedOrigin)
+        .WillByDefault(testing::ReturnRef(kPixPaymentPageOrigin));
     ON_CALL(client(), IsWebContentsVisibleOrOccluded)
         .WillByDefault(testing::Return(true));
     // Simulate the payments server returns that the user is eligible for Pix
@@ -392,7 +393,7 @@ TEST_F(PixAccountLinkingManagerTest,
   // Set account info to empty.
   payments_data_manager_->SetAccountInfoForPayments(CoreAccountInfo());
   EXPECT_CALL(client(), GetCoreAccountInfo)
-      .WillOnce(testing::Return(CoreAccountInfo()));
+      .WillRepeatedly(testing::Return(std::nullopt));
 
   EXPECT_CALL(client(), DismissPrompt);
   EXPECT_CALL(*api_client_ptr_, InvokeInstrumentManager).Times(0);
@@ -921,6 +922,8 @@ TEST_F(PixAccountLinkingManagerTest,
 
   EXPECT_CALL(client(), DismissPrompt());
   EXPECT_CALL(client(), ShowPixAccountLinkingSuccessScreen()).Times(0);
+  EXPECT_CALL(client(), ShowAccountLinkingFailureNotification(
+                            FacilitatedPaymentsType::kPix));
 
   test_api().DoOnAccountLinkingResult(
       AccountLinkingResult{/*is_successful=*/true, /*instrument_id=*/0,
@@ -953,7 +956,7 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
       "FacilitatedPayments.Pix.AccountLinking.Result",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
       /*sample=*/AccountLinkingFlowExitedReason::kUserCanceledInGmsCore,
       /*expected_bucket_count=*/1);
@@ -965,6 +968,8 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Failure) {
   task_environment_.FastForwardBy(kShowPromptDelay);
 
   EXPECT_CALL(client(), DismissPrompt());
+  EXPECT_CALL(client(), ShowAccountLinkingFailureNotification(
+                            FacilitatedPaymentsType::kPix));
 
   test_api().DoOnAccountLinkingResult(AccountLinkingResult{
       /*is_successful=*/false, 0, AccountLinkingResultCode::kResultError});

@@ -60,6 +60,9 @@ class PixAccountLinkingManagerTestApi {
   const std::vector<uint8_t>& client_token() const {
     return manager_->client_token_;
   }
+  FacilitatedPaymentsApiClient* GetApiClient() {
+    return manager_->GetApiClient();
+  }
 
  private:
   const raw_ref<PixAccountLinkingManager> manager_;

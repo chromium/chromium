@@ -66,6 +66,10 @@ class MockFacilitatedPaymentsBottomSheetBridge
               ShowAccountLinkingPrompt,
               (const payments::facilitated::AccountLinkingParams& params),
               (override));
+  MOCK_METHOD(void,
+              ShowAccountLinkingFailureNotification,
+              (payments::facilitated::FacilitatedPaymentsType),
+              (override));
 };
 
 constexpr int kTestStrikeCount = 2;
@@ -578,4 +582,16 @@ TEST_P(FacilitatedPaymentsControllerTestForAccountLinkingAction,
 
   histogram_tester.ExpectTotalCount(duration_histogram, 1);
   histogram_tester.ExpectTotalCount(segmented_duration_histogram, 1);
+}
+
+// Test controller forwards call for showing the Pix account linking failure
+// notification to the view.
+TEST_F(FacilitatedPaymentsControllerTest,
+       ShowAccountLinkingFailureNotification) {
+  EXPECT_CALL(*mock_view_,
+              ShowAccountLinkingFailureNotification(
+                  payments::facilitated::FacilitatedPaymentsType::kPix));
+
+  controller_->ShowAccountLinkingFailureNotification(
+      payments::facilitated::FacilitatedPaymentsType::kPix);
 }

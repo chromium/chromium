@@ -22,6 +22,7 @@ import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -42,10 +43,12 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     public void initialize(
             Context context,
             BottomSheetController bottomSheetController,
+            @Nullable WindowAndroid windowAndroid,
             Delegate delegate,
             Profile profile) {
         mFacilitatedPaymentsPaymentMethodsModel = createModel(mMediator);
-        mMediator.initialize(context, mFacilitatedPaymentsPaymentMethodsModel, delegate, profile);
+        mMediator.initialize(
+                context, mFacilitatedPaymentsPaymentMethodsModel, delegate, profile, windowAndroid);
         setUpModelChangeProcessors(
                 mFacilitatedPaymentsPaymentMethodsModel,
                 new FacilitatedPaymentsPaymentMethodsView(context, bottomSheetController));
@@ -95,6 +98,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     public void showAccountLinkingPrompt(
             @FacilitatedPaymentsType int fopType, String fopDisplayName, int strikeCount) {
         mMediator.showAccountLinkingPrompt(fopType, fopDisplayName, strikeCount);
+    }
+
+    @Override
+    public void showAccountLinkingFailureNotification(@FacilitatedPaymentsType int fopType) {
+        mMediator.showAccountLinkingFailureNotification(fopType);
     }
 
     /**

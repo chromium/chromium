@@ -71,7 +71,8 @@ void PixAccountLinkingManager::DoOnAccountLinkingResult(
         LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
         LogAccountLinkingFlowExitedReason(
             kPixFopSuffix, AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
-        // TODO(crbug.com/532367369): Trigger error notification.
+        client()->ShowAccountLinkingFailureNotification(
+            FacilitatedPaymentsType::kPix);
       }
       break;
     case AccountLinkingResultCode::kResultCanceled:
@@ -86,7 +87,8 @@ void PixAccountLinkingManager::DoOnAccountLinkingResult(
       LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
       LogAccountLinkingFlowExitedReason(
           kPixFopSuffix, AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
-      // TODO(crbug.com/532367369): Trigger error notification.
+      client()->ShowAccountLinkingFailureNotification(
+          FacilitatedPaymentsType::kPix);
       break;
     case AccountLinkingResultCode::kCouldNotInvoke:
       // Default result passed during early exit paths in the base class. The

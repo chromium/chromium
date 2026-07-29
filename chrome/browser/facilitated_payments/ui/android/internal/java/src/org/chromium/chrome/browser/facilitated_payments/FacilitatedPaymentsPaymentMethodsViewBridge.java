@@ -39,10 +39,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     private FacilitatedPaymentsPaymentMethodsViewBridge(
             Context context,
             BottomSheetController bottomSheetController,
+            WindowAndroid windowAndroid,
             Delegate delegate,
             Profile profile) {
         mComponent = new FacilitatedPaymentsPaymentMethodsCoordinator();
-        mComponent.initialize(context, bottomSheetController, delegate, profile);
+        mComponent.initialize(context, bottomSheetController, windowAndroid, delegate, profile);
     }
 
     @CalledByNative
@@ -69,7 +70,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
         }
 
         return new FacilitatedPaymentsPaymentMethodsViewBridge(
-                context, bottomSheetController, delegate, profile);
+                context, bottomSheetController, windowAndroid, delegate, profile);
     }
 
     /**
@@ -158,5 +159,11 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
             @JniType("std::u16string") String fopDisplayName,
             int strikeCount) {
         mComponent.showAccountLinkingPrompt(fopType, fopDisplayName, strikeCount);
+    }
+
+    /** Requests to show the account linking failure notification. */
+    @CalledByNative
+    public void showAccountLinkingFailureNotification(@FacilitatedPaymentsType int fopType) {
+        mComponent.showAccountLinkingFailureNotification(fopType);
     }
 }
