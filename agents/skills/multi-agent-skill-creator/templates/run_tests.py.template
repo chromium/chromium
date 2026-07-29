@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Template for a test runner for multi-agent skills.
+
+Adapt this script to run unit tests for your specific skill stages.
+"""
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+
+def run_test_case(case, base_inputs, skill_dir, temp_dir):
+    print(f"Running test case: {case['name']}")
+
+    # 1. Setup inputs
+    inputs = base_inputs.copy()
+    inputs.update(case.get('override_inputs', {}))
+
+    # Write inputs to a temp project spec file
+    project_spec_path = os.path.join(temp_dir, 'project.json')
+    with open(project_spec_path, 'w', encoding='utf-8') as f:
+        json.dump(inputs, f, indent=2)
+
+    # Seed additional files if specified
+    for seed_file, content in case.get('seed_files', {}).items():
+        seed_path = os.path.join(temp_dir, seed_file)
+        os.makedirs(os.path.dirname(seed_path), exist_ok=True)
+        with open(seed_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+    # 2. Construct the prompt for the agent
+    stage = case.get('stage')
+    prompt = f"Execute stage {stage} using project.json in {temp_dir}"
+
+    # 3. Invoke the agent
+    print(f"Invoking agent for stage {stage}...")
+    try:
+        result = subprocess.run(['agentapi', 'new-conversation', prompt],
+                                capture_output=True,
+                                text=True,
+                                check=True,
+                                timeout=300)
+        print("Agent invocation finished.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error invoking agent: {e.stderr}")
+        if e.stdout:
+            print(f"Agent stdout: {e.stdout}")
+        return False
+    except subprocess.TimeoutExpired as e:
+        print(f"Timeout invoking agent: {e}")
+        if e.stderr:
+            print(f"Agent stderr: {e.stderr}")
+        if e.stdout:
+            print(f"Agent stdout: {e.stdout}")
+        return False
+    except FileNotFoundError:
+        print(
+            "Error: agentapi not found. "
+            "Make sure you are in the correct environment."
+        )
+        return False
+
+    # 4. Verify outputs
+    expected = case.get('expected_outputs', {})
+    success = True
+
+    # Check created files
+    for expected_file in expected.get('files_created', []):
+        full_path = os.path.join(temp_dir, expected_file)
+        if not os.path.exists(full_path):
+            print(f"  FAIL: Expected file not created: {expected_file}")
+            success = False
+
+    # Check content patterns
+    for file_name, pattern in expected.get('content_patterns', {}).items():
+        full_path = os.path.join(temp_dir, file_name)
+        if os.path.exists(full_path):
+            try:
+                with open(full_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if not re.search(pattern, content):
+                    print(
+                        f"  FAIL: Content of {file_name} "
+                        f"does not match pattern: {pattern}"
+                    )
+                    success = False
+            except (OSError, ValueError) as e:
+                print(f"  FAIL: Failed to read {file_name} for content check: {e}")
+                success = False
+        else:
+            print(
+                f"  FAIL: Expected file for content check "
+                f"does not exist: {file_name}"
+            )
+            success = False
+
+    return success
+
+def main():
+    parser = argparse.ArgumentParser(description='Run skill unit tests.')
+    parser.add_argument('--tests', required=True, help='Path to the test JSON file')
+    args = parser.parse_args()
+
+    skill_dir = os.path.dirname(os.path.abspath(__file__))
+
+    try:
+        with open(args.tests, 'r', encoding='utf-8') as f:
+            test_suite = json.load(f)
+    except (OSError, ValueError) as e:
+        print(f"Error loading test file: {e}")
+        sys.exit(1)
+
+    base_inputs = test_suite.get('base_inputs', {})
+    cases = test_suite.get('cases', [])
+
+    temp_base = os.path.join(skill_dir, '.temp')
+    if os.path.exists(temp_base):
+        shutil.rmtree(temp_base)
+    os.makedirs(temp_base, exist_ok=True)
+
+    passed = 0
+    failed = 0
+
+    for case in cases:
+        # Create a clean temp directory for each test case
+        with tempfile.TemporaryDirectory(dir=temp_base) as temp_dir:
+            try:
+                if run_test_case(case, base_inputs, skill_dir, temp_dir):
+                    print(f"Result: PASS\n")
+                    passed += 1
+                else:
+                    print(f"Result: FAIL\n")
+                    failed += 1
+            except Exception as e:
+                print(f"Result: ERROR (Test case crashed: {e})\n")
+                failed += 1
+
+    print(f"Test Summary: {passed} passed, {failed} failed")
+    if failed > 0:
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
