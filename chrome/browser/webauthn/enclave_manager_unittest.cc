@@ -2300,6 +2300,24 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsUnusable) {
             EnclaveManager::GpmPinAvailability::kGpmPinSetButNotUsable);
 }
 
+TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenWrappedPinIsInvalid) {
+  const std::string pin = "123456";
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.IsReady());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  security_domain_service_->SetPinMemberWrappedPin("invalid wrapped pin");
+
+  base::test::TestFuture<EnclaveManager::GpmPinAvailability> future;
+  auto request = manager_.CheckGpmPinAvailability(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(),
+            EnclaveManager::GpmPinAvailability::kGpmPinSetButNotUsable);
+}
+
 TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsNotAvailable) {
   ASSERT_TRUE(Register());
 

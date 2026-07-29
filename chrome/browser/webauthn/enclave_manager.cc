@@ -3911,10 +3911,19 @@ EnclaveManager::CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) {
               std::move(callback).Run(GpmPinAvailability::kGpmPinUnset);
               return;
             }
+            if (!result.gpm_pin_metadata->usable_pin_metadata) {
+              std::move(callback).Run(
+                  GpmPinAvailability::kGpmPinSetButNotUsable);
+              return;
+            }
+            EnclaveLocalState::WrappedPIN wrapped_pin;
+            bool pin_is_usable = wrapped_pin.ParseFromString(
+                                     result.gpm_pin_metadata
+                                         ->usable_pin_metadata->wrapped_pin) &&
+                                 !CheckPINInvariants(wrapped_pin).has_value();
             std::move(callback).Run(
-                result.gpm_pin_metadata->usable_pin_metadata
-                    ? GpmPinAvailability::kGpmPinSetAndUsable
-                    : GpmPinAvailability::kGpmPinSetButNotUsable);
+                pin_is_usable ? GpmPinAvailability::kGpmPinSetAndUsable
+                              : GpmPinAvailability::kGpmPinSetButNotUsable);
           },
           std::move(callback)),
       base::DoNothing());
