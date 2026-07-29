@@ -3539,6 +3539,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-device-bound-sessions-dse-prewarmer",
+    "owners": [ "santosls@google.com", "jdoerrie@chromium.org", "alexilin@chromium.org" ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "enable-devtools-deep-link-via-extensibility-api",
     "owners": [ "finnur@chromium.org", "//components/ui_devtools/OWNERS" ],
     "expiry_milestone": 180

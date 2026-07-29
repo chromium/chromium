@@ -8,6 +8,11 @@
 
 namespace features {
 
+// This feature enables preemptive refreshes for device bound sessions
+// registered in the same site as the default search engine when the user is not
+// actively navigating.
+BASE_FEATURE(kDeviceBoundSessionsDsePrewarmer, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A holdback that prevents the preconnect to measure benefit of the feature.
 BASE_FEATURE(kNavigationPredictorPreconnectHoldback,
 #if BUILDFLAG(IS_ANDROID)
