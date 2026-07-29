@@ -511,17 +511,13 @@ Once it is built, you can simply run the browser:
 $ out/Default/chrome
 ```
 
-If you're using a remote machine that supports Chrome Remote Desktop, you can
-add this to your .bashrc / .bash_profile.
+If you're SSH-ing into a remote machine that supports Chrome Remote Desktop
+(and is not connected to a physical display), you can add this to your .bashrc /
+.bash_profile.
 
 ```shell
-if [[ -z "${DISPLAY}" ]]; then
-  # In reality, Chrome Remote Desktop starts with 20 and increases until it
-  # finds an available ID [1]. So this isn't guaranteed to always work, but
-  # should work on the vast majoriy of cases.
-  #
-  # [1] https://source.chromium.org/chromium/chromium/src/+/main:remoting/host/linux/linux_me2me_host.py;l=112;drc=464a632e21bcec76c743930d4db8556613e21fd8
-  export DISPLAY=:20
+if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+    export $(systemctl --user show-environment | /usr/bin/grep -E '^(DISPLAY|WAYLAND_DISPLAY|XAUTHORITY|XDG_RUNTIME_DIR)=')
 fi
 ```
 
