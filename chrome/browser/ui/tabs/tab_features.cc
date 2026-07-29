@@ -336,11 +336,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
               tab_group_sync_service, &tab);
 
-      if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
-        saved_tab_group_on_close_helper_ =
-            std::make_unique<tab_groups::SavedTabGroupOnCloseHelper>(
-                tab_group_sync_service, &tab);
-      }
     }
 
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {

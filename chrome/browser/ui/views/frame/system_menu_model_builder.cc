@@ -150,10 +150,6 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
       model->GetIndexOfCommandId(IDC_RESTORE_TAB).value(),
       kSystemMenuRestoreTabElementId);
 
-  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
-    model->AddItemWithStringId(IDC_GROUP_UNGROUPED_TABS,
-                               IDS_GROUP_UNGROUPED_TABS);
-  }
 
 #if BUILDFLAG(IS_MAC)
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
