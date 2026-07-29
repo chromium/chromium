@@ -104,6 +104,10 @@ class TestDelegate : public GlicEnablingDelegate {
     return session_country_code_;
   }
   std::string GetLocale() const override { return locale_; }
+
+  // Grants test access to protected base class method.
+  using GlicEnablingDelegate::GetCountryEnablement;
+
   void SetPermanentCountryCode(const std::string& country_code) {
     permanent_country_code_ = country_code;
   }
@@ -205,8 +209,7 @@ TEST_F(GlicEnablingTest, IneligibleProfileDoesNotLogIsConsentedMetrics) {
 TEST_F(GlicEnablingTest, CountryFilteringNotEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGlicCountryFiltering);
-  delegate_.SetBothCountryCodes("zz");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("zz", "zz"));
   histogram_tester_->ExpectUniqueSample(
       "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedFilteringDisabled, 1);
@@ -217,13 +220,9 @@ TEST_F(GlicEnablingTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(features::kGlicCountryFiltering,
                                               {});
-  delegate_.SetSessionCountryCode("");
-  delegate_.SetPermanentCountryCode("us");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetPermanentCountryCode("US");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetPermanentCountryCode("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", ""));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("US", ""));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", ""));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -239,13 +238,9 @@ TEST_F(GlicEnablingTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(features::kGlicCountryFiltering,
                                               {});
-  delegate_.SetPermanentCountryCode("");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetSessionCountryCode("US");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("", "US"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("", "zz"));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -263,15 +258,10 @@ TEST_F(GlicEnablingTest,
       features::kGlicCountryFiltering,
       {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk,zz"}});
 
-  delegate_.SetSessionCountryCode("");
-  delegate_.SetPermanentCountryCode("us");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetPermanentCountryCode("UK");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetPermanentCountryCode("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetPermanentCountryCode("qq");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", ""));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("UK", ""));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", ""));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", ""));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -291,15 +281,10 @@ TEST_F(GlicEnablingTest, CountryFilteringEnabledWithLists_SessionCountryCode) {
       features::kGlicCountryFiltering,
       {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk,zz"}});
 
-  delegate_.SetPermanentCountryCode("");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetSessionCountryCode("UK");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetSessionCountryCode("qq");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("", "UK"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("", "zz"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("", "qq"));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -320,24 +305,11 @@ TEST_F(GlicEnablingTest,
       features::kGlicCountryFiltering,
       {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk,zz"}});
 
-  delegate_.SetPermanentCountryCode("zz");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("us");
-  delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("qq");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("us");
-  delegate_.SetSessionCountryCode("qq");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetBothCountryCodes("qq");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", "us"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("us", "zz"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("qq", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "qq"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "qq"));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -359,24 +331,11 @@ TEST_F(GlicEnablingTest,
         {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk,zz"}}}},
       {features::kGlicUseSessionCountryForFiltering});
 
-  delegate_.SetPermanentCountryCode("zz");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("us");
-  delegate_.SetSessionCountryCode("zz");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("qq");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("us");
-  delegate_.SetSessionCountryCode("qq");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetBothCountryCodes("qq");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "zz"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "qq"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "qq"));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -396,20 +355,11 @@ TEST_F(GlicEnablingTest, CountryFilteringEnabledWithStar) {
       features::kGlicCountryFiltering,
       {{"disabled_countries", "zz"}, {"enabled_countries", "*"}});
 
-  delegate_.SetBothCountryCodes("us");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetBothCountryCodes("ru");
-  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
-  delegate_.SetBothCountryCodes("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("zz");
-  delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
-
-  delegate_.SetPermanentCountryCode("us");
-  delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("ru", "ru"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", "zz"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", "us"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablement("us", "zz"));
 
   histogram_tester_->ExpectBucketCount(
       "Glic.CountryFilteringResult2",
@@ -637,6 +587,55 @@ TEST_F(GlicEnablingProfileEligibilityTest, WasPreviouslyNotAllowedTest) {
   // 8. Even after signing out, WasPreviouslyNotAllowed should remain false.
   EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
 #endif
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       IsEnabledForFirstRunProfile_Eligible) {
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  EXPECT_TRUE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "us", "us",
+                                                        account_info));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       IsEnabledForFirstRunProfile_IneligibleAccount) {
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  EXPECT_FALSE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "us", "us",
+                                                         account_info));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       IsEnabledForFirstRunProfile_BlockedCountry) {
+  base::test::ScopedFeatureList country_features;
+  country_features.InitAndEnableFeatureWithParameters(
+      features::kGlicCountryFiltering,
+      {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk"}});
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  EXPECT_FALSE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "zz", "zz",
+                                                         account_info));
+  EXPECT_TRUE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "us", "us",
+                                                        account_info));
 }
 
 class GlicEnablingProfileReadyStateTestBase
