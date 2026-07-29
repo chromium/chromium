@@ -212,7 +212,6 @@ class NetworkTasksTest : public testing::Test {
 };
 
 TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
-#if BUILDFLAG(IS_ANDROID)
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -223,13 +222,9 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
   scoped_ncn_->mock_network_change_notifier()->NotifyNetworkDisconnected(
       kNetwork);
   CheckURLRequestContextExistence(kNetwork, false);
-#else
-  GTEST_SKIP() << "Network binding is supported only on Android";
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
-#if BUILDFLAG(IS_ANDROID)
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -250,9 +245,6 @@ TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
   ReleaseURLRequest();
   MaybeDestroyURLRequestContext(kNetwork);
   CheckURLRequestContextExistence(kNetwork, false);
-#else
-  GTEST_SKIP() << "Network binding is supported only on Android";
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

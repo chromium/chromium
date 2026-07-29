@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/android/rules.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
@@ -24,13 +25,9 @@ proto_library("request_context_config_proto") {
   sources = [ "proto/request_context_config.proto" ]
 }
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  proto_java_library("request_context_config_java_proto") {
-    proto_path = "."
-    sources = [ "proto/request_context_config.proto" ]
-  }
+proto_java_library("request_context_config_java_proto") {
+  proto_path = "."
+  sources = [ "proto/request_context_config.proto" ]
 }
 
 # Cronet common implementation.
@@ -57,13 +54,10 @@ source_set("cronet_common") {
     ":metrics_util",
     ":request_context_config_proto",
     "//base",
+    "//components/cronet/android:cronet_jni_headers",
     "//components/prefs",
     "//net",
   ]
-
-  if (is_android) {
-    deps += [ "//components/cronet/android:cronet_jni_headers" ]
-  }
 
   public_deps = [ "//components/metrics:library_support" ]
 }
@@ -97,9 +91,7 @@ source_set("cronet_common_unittests") {
   ]
 }
 
-if (is_android) {
-  group("cronet_package") {
-    testonly = true
-    deps = [ "//components/cronet/android:cronet_package_android" ]
-  }
+group("cronet_package") {
+  testonly = true
+  deps = [ "//components/cronet/android:cronet_package_android" ]
 }

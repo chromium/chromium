@@ -1947,9 +1947,7 @@ cronet_test("cronet_unittests_android") {
 
   data = [ "//components/cronet/android/test/test_server/data/" ]
 
-  if (is_android) {
-    shard_timeout = 180
-  }
+  shard_timeout = 180
 }
 
 _test_deps = cronet_javatests_deps_to_package + [
