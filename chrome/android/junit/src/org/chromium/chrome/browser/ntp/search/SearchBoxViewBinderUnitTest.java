@@ -118,7 +118,7 @@ public class SearchBoxViewBinderUnitTest {
 
     @Test
     public void testApplyWhiteBackground() {
-        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, true);
+        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW, true);
         Drawable background = mSearchBoxView.getBackground();
         assertTrue(background instanceof GradientDrawable);
         assertEquals(Color.WHITE, ((GradientDrawable) background).getColor().getDefaultColor());

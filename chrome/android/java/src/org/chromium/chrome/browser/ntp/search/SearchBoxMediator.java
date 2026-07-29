@@ -185,7 +185,7 @@ class SearchBoxMediator implements DestroyObserver {
 
     private @Nullable ColorStateList getIconTint() {
         return ComposeplateUtils.getSearchBoxIconColorTint(
-                mContext, mModel.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));
+                mContext, mModel.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW));
     }
 
     private boolean isGoogleDseOnDesktop() {
@@ -253,7 +253,7 @@ class SearchBoxMediator implements DestroyObserver {
                 ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
 
-        mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, apply);
+        mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW, apply);
 
         @StyleRes
         int resId =

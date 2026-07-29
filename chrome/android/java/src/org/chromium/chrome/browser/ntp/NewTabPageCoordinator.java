@@ -224,6 +224,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private @Nullable NtpSigninPromoCoordinator mSigninPromoCoordinator;
 
     private @Nullable Boolean mIsWhiteBackgroundOnSearchBoxApplied;
+    private @Nullable Boolean mIsWhiteBackgroundOnComposeplateApplied;
 
     /**
      * Constructor of the NewTabPageCoordinator.
@@ -1521,39 +1522,46 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /** Called when a customized background image is selected or deselected. */
     void onCustomizedBackgroundChanged() {
-        boolean applyWhiteBackgroundOnSearchBox = shouldApplyWhiteBackgroundOnSearchBox();
-
-        // If shouldn't apply a white background and the background hasn't been updated before,
-        // returns now.
-        if (mIsWhiteBackgroundOnSearchBoxApplied == null && !applyWhiteBackgroundOnSearchBox) {
-            return;
-        }
-
-        // If composeplate view flags haven't been initialized yet, returns now.
-        if (mCanShowComposeplateButton == null) {
-            return;
-        }
-
-        // If the background has been updated before and it should remain the same, returns now.
-        if (mIsWhiteBackgroundOnSearchBoxApplied != null
-                && mIsWhiteBackgroundOnSearchBoxApplied == applyWhiteBackgroundOnSearchBox) {
-            return;
-        }
-
-        // If the fake search box hasn't been initialized, returns now. It is fine to skip here
+        // If composeplate view flags haven't been initialized yet or the fake search box hasn't
+        // been initialized, returns now.
+        // It is fine to skip applyWhiteBackground() on the search box
         // because applyWhiteBackground() will be called immediately after the mNtpSearchBox
         // is initialized.
-        if (mNtpSearchBox == null) return;
-
-        mIsWhiteBackgroundOnSearchBoxApplied = applyWhiteBackgroundOnSearchBox;
-
-        if (mNtpSearchBox != null) {
-            mNtpSearchBox.applyWhiteBackground(applyWhiteBackgroundOnSearchBox);
+        if (mCanShowComposeplateButton == null || mNtpSearchBox == null) {
+            return;
         }
 
-        if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.applyWhiteBackground(applyWhiteBackgroundOnSearchBox);
+        updateSearchBoxBackground();
+        updateComposeplateBackground();
+    }
+
+    private void updateSearchBoxBackground() {
+        boolean desiredState = shouldApplyWhiteBackgroundOnSearchBox();
+        if (shouldUpdateBackground(desiredState, mIsWhiteBackgroundOnSearchBoxApplied)) {
+            mIsWhiteBackgroundOnSearchBoxApplied = desiredState;
+            assertNonNull(mNtpSearchBox);
+            mNtpSearchBox.applyWhiteBackground(desiredState);
         }
+    }
+
+    private void updateComposeplateBackground() {
+        if (mComposeplateCoordinator == null) return;
+
+        boolean desiredState = NtpCustomizationUtils.shouldApplyWhiteBackgroundOnComposeplate();
+        if (shouldUpdateBackground(desiredState, mIsWhiteBackgroundOnComposeplateApplied)) {
+            mIsWhiteBackgroundOnComposeplateApplied = desiredState;
+            mComposeplateCoordinator.applyWhiteBackground(desiredState);
+        }
+    }
+
+    private boolean shouldUpdateBackground(boolean desiredState, @Nullable Boolean currentState) {
+        // If shouldn't apply a white background and the background hasn't been updated before,
+        // returns false.
+        if (currentState == null) {
+            return desiredState;
+        }
+        // If the background has been updated before and it should remain the same, returns false.
+        return desiredState != currentState;
     }
 
     /** Returns the top inset of the NTP. */
@@ -1607,7 +1615,19 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mCanShowComposeplateButton = enabled;
     }
 
+    @Nullable Boolean getIsComposeplateEnabledForTesting() {
+        return mCanShowComposeplateButton;
+    }
+
     @Nullable ComposeplateCoordinator getComposeplateCoordinatorForTesting() {
         return mComposeplateCoordinator;
+    }
+
+    void setIsWhiteBackgroundOnSearchBoxApplied(Boolean applied) {
+        mIsWhiteBackgroundOnSearchBoxApplied = applied;
+    }
+
+    void setIsWhiteBackgroundOnComposeplateApplied(Boolean applied) {
+        mIsWhiteBackgroundOnComposeplateApplied = applied;
     }
 }

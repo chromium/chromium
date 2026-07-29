@@ -14,6 +14,7 @@ found in the LICENSE file.
     <dimen name="ntp_search_box_height">64dp</dimen>
     <dimen name="ntp_search_box_height_tall">72dp</dimen>
 
+    <dimen name="search_box_padding_for_shadow_lateral">3dp</dimen>
     <dimen name="search_box_padding_for_shadow_vertical">4dp</dimen>
 
     <!-- Tab group context menu on tablet tab strip -->

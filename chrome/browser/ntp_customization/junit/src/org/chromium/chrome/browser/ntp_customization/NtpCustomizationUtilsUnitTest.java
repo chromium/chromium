@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -1090,6 +1091,7 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldApplyWhiteBackgroundOnSearchBox_disabledByPolicy() {
         // TODO(crbug.com/525121661): Failing on Desktop Android.
         assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
@@ -1111,21 +1113,30 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldApplyWhiteBackgroundOnSearchBox_withType() {
         assertFalse(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
                         NtpBackgroundType.DEFAULT));
         assertFalse(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
                         NtpBackgroundType.CHROME_COLOR));
         assertFalse(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
                         NtpBackgroundType.COLOR_FROM_HEX));
 
         assertTrue(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
                         NtpBackgroundType.IMAGE_FROM_DISK));
         assertTrue(
-                NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox(
+                NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
                         NtpBackgroundType.THEME_COLLECTION));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testShouldApplyWhiteBackgroundOnSearchBox_NtpAuroraEnabled() {
+        assumeFalse(OmniboxCapabilities.isDesktopPlatform());
+
+        // When NTP Aurora is enabled and not on desktop, should always return true.
+        assertTrue(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
     }
 
     @Test

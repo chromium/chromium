@@ -36,8 +36,9 @@ class SearchBoxViewBinder
             view.setAlpha(model.get(SearchBoxProperties.ALPHA));
         } else if (SearchBoxProperties.APPLY_ELEVATION == propertyKey) {
             view.applyElevation(model.get(SearchBoxProperties.APPLY_ELEVATION));
-        } else if (SearchBoxProperties.APPLY_WHITE_BACKGROUND == propertyKey) {
-            view.applyWhiteBackground(model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));
+        } else if (SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW == propertyKey) {
+            view.applyWhiteBackgroundAndShadow(
+                    model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW));
         } else if (SearchBoxProperties.DSE_ICON_DRAWABLE == propertyKey) {
             view.setDseIconDrawable(model.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
         } else if (SearchBoxProperties.DSE_ICON_TINT == propertyKey) {

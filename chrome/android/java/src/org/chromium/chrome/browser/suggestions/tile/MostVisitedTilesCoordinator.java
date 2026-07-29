@@ -169,8 +169,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      * Updates the margins for the most visited tiles layout based on what is shown above it.
      *
      * @param shouldShowLogo Whether the logo is shown.
-     * @param isWhiteBackgroundOnSearchBoxApplied Whether a white background is applied to the fake
-     *     search box.
      * @param isLff Whether the device is a large form factor.
      */
     public void updateTilesLayoutMargins(boolean shouldShowLogo, boolean isLff) {

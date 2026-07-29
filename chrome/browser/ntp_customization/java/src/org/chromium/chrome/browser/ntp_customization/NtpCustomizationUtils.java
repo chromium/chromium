@@ -108,6 +108,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -594,17 +595,26 @@ public class NtpCustomizationUtils {
 
     /** Returns whether a white background should be applied on fake search box. */
     public static boolean shouldApplyWhiteBackgroundOnSearchBox() {
+        if (ChromeFeatureList.sNtpAurora.isEnabled() && !OmniboxCapabilities.isDesktopPlatform())
+            return true;
+
+        return shouldApplyWhiteBackgroundOnComposeplate();
+    }
+
+    /** Returns whether a white background should be applied on the composeplate. */
+    public static boolean shouldApplyWhiteBackgroundOnComposeplate() {
         if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return false;
 
-        return shouldApplyWhiteBackgroundOnSearchBox(
+        return shouldApplyWhiteBackgroundForNtpBackgroundType(
                 NtpCustomizationConfigManager.getInstance().getBackgroundType());
     }
 
     /**
-     * Returns whether a white background should be applied on fake search box based on the provided
-     * background image type.
+     * Returns whether a white background should be applied based on the provided background image
+     * type.
      */
-    public static boolean shouldApplyWhiteBackgroundOnSearchBox(@NtpBackgroundType int type) {
+    @VisibleForTesting
+    static boolean shouldApplyWhiteBackgroundForNtpBackgroundType(@NtpBackgroundType int type) {
         return type == NtpBackgroundType.IMAGE_FROM_DISK
                 || type == NtpBackgroundType.THEME_COLLECTION;
     }
@@ -1873,5 +1883,26 @@ public class NtpCustomizationUtils {
     @NativeMethods
     public interface Natives {
         void decodeImage(@JniType("std::vector<uint8_t>") byte[] data, Callback<Bitmap> callback);
+    }
+
+    /**
+     * Applies or removes a drop shadow on the given view. When enabled, sets elevation and tints
+     * the shadow with the primary theme color at 30% opacity.
+     *
+     * @param context Context used to retrieve color and dimension resources.
+     * @param view The target view to apply or remove the shadow from.
+     * @param enableShadow Whether the drop shadow should be applied.
+     */
+    public static void applyShadow(Context context, View view, boolean enableShadow) {
+        if (enableShadow) {
+            float elevation =
+                    context.getResources().getDimensionPixelSize(R.dimen.fake_search_box_elevation);
+            view.setElevation(elevation);
+            int shadowColor = context.getColor(R.color.color_primary_with_alpha_30);
+            view.setOutlineAmbientShadowColor(shadowColor);
+            view.setOutlineSpotShadowColor(shadowColor);
+        } else {
+            view.setElevation(0f);
+        }
     }
 }

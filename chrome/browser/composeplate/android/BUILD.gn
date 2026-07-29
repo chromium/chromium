@@ -25,6 +25,7 @@ android_library("java") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/util:java",
+    "//components/browser_ui/styles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/jni_zero:gendeps_java",
