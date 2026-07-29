@@ -96,10 +96,6 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
     presenter->is_deferred_ = is_deferred;
   }
 
-  void SetHasLogged(OmniboxPopupPresenterBase* presenter, bool has_logged) {
-    presenter->has_logged_content_ready_since_open_ = has_logged;
-  }
-
   void CallOnVisualStateReady(OmniboxPopupPresenterBase* presenter,
                               base::TimeTicks time,
                               base::TimeTicks result_ready_time,
@@ -113,15 +109,16 @@ class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {
     presenter_->OnWidgetClosed(views::Widget::ClosedReason::kUnspecified);
   }
 
-  base::WeakPtr<OmniboxPopupPresenterBase> GetVisualStateWeakPtr() {
-    return presenter_->visual_state_weak_factory_.GetWeakPtr();
+  base::WeakPtr<OmniboxPopupPresenterBase> GetVisualStateWeakPtr(
+      OmniboxPopupPresenterBase* presenter) {
+    return presenter->visual_state_weak_factory_.GetWeakPtr();
   }
 };
 
 TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnClose) {
   presenter_->Show();
   // Get weak pointers to simulate pending callbacks
-  auto weak_ptr = GetVisualStateWeakPtr();
+  auto weak_ptr = GetVisualStateWeakPtr(presenter_.get());
 
   EXPECT_TRUE(weak_ptr);
 
@@ -138,7 +135,7 @@ TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnClose) {
 TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnHide) {
   presenter_->Show();
   // Get weak pointers to simulate pending callbacks.
-  auto weak_ptr = GetVisualStateWeakPtr();
+  auto weak_ptr = GetVisualStateWeakPtr(presenter_.get());
 
   EXPECT_TRUE(weak_ptr);
 
@@ -150,7 +147,7 @@ TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnHide) {
 
 TEST_F(OmniboxPopupPresenterBaseTest, InvalidatesCallbacksOnShow) {
   // Grab weak pointers while the widget is currently hidden.
-  auto weak_ptr = GetVisualStateWeakPtr();
+  auto weak_ptr = GetVisualStateWeakPtr(presenter_.get());
 
   EXPECT_TRUE(weak_ptr);
 
@@ -218,7 +215,10 @@ TEST_F(OmniboxPopupPresenterBaseTest,
   deferred_presenter->set_widget_for_testing(
       CreateTestWidget(std::move(params)));
   SetIsDeferred(deferred_presenter.get(), true);
-  SetHasLogged(deferred_presenter.get(), false);
+
+  auto weak_ptr = GetVisualStateWeakPtr(deferred_presenter.get());
+  EXPECT_TRUE(weak_ptr);
+
   base::HistogramTester histogram_tester;
 
   base::TimeTicks request_time = base::TimeTicks::Now();
@@ -229,34 +229,30 @@ TEST_F(OmniboxPopupPresenterBaseTest,
   CallOnVisualStateReady(deferred_presenter.get(), request_time, ready_time,
                          /*from_fallback=*/false, /*success=*/true);
 
+  // Assert that the pending callbacks were invalidated.
+  EXPECT_FALSE(weak_ptr);
+
   // Assert that we logged a successful visual state display (not from a
   // timeout).
+  histogram_tester.ExpectBucketCount("TestPrefix.ContentReady.FromTimeout",
+                                     false, 1);
   histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", false, 1);
+      "TestPrefix.ContentReady.FromTimeout.FirstShow", false, 1);
   // Assert that no timeout was logged.
+  histogram_tester.ExpectBucketCount("TestPrefix.ContentReady.FromTimeout",
+                                     true, 0);
   histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", true, 0);
+      "TestPrefix.ContentReady.FromTimeout.FirstShow", true, 0);
+  histogram_tester.ExpectTotalCount("TestPrefix.ContentReady.Duration", 1);
+  histogram_tester.ExpectTotalCount(
+      "TestPrefix.ContentReady.Duration.FirstShow", 1);
   histogram_tester.ExpectTotalCount(
       "TestPrefix.ResultToContentReadyEarlyExitReason", 0);
   // Assert that we successfully logged the true telemetry latency!
   histogram_tester.ExpectTotalCount("TestPrefix.ResultToContentReadyPerShow",
                                     1);
-
-  // 2) The fallback timer eventually fires, but its task is effectively
-  // ignored.
-  CallOnVisualStateReady(deferred_presenter.get(), request_time, ready_time,
-                         /*from_fallback=*/true, /*success=*/false);
-
-  // Assert that the late fallback timer safely aborted without overriding the UI
-  // state or logging duplicate metrics.
-  histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", false, 1);
-  histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", true, 0);
   histogram_tester.ExpectTotalCount(
-      "TestPrefix.ResultToContentReadyEarlyExitReason", 0);
-  histogram_tester.ExpectTotalCount("TestPrefix.ResultToContentReadyPerShow",
-                                    1);
+      "TestPrefix.ResultToContentReadyOnFirstShow", 1);
 }
 
 TEST_F(OmniboxPopupPresenterBaseTest,
@@ -270,7 +266,10 @@ TEST_F(OmniboxPopupPresenterBaseTest,
   deferred_presenter->set_widget_for_testing(
       CreateTestWidget(std::move(params)));
   SetIsDeferred(deferred_presenter.get(), true);
-  SetHasLogged(deferred_presenter.get(), false);
+
+  auto weak_ptr = GetVisualStateWeakPtr(deferred_presenter.get());
+  EXPECT_TRUE(weak_ptr);
+
   base::HistogramTester histogram_tester;
 
   base::TimeTicks request_time = base::TimeTicks::Now();
@@ -281,26 +280,23 @@ TEST_F(OmniboxPopupPresenterBaseTest,
   CallOnVisualStateReady(deferred_presenter.get(), request_time, ready_time,
                          /*from_fallback=*/true, /*success=*/false);
 
+  // Assert that the pending callbacks were invalidated.
+  EXPECT_FALSE(weak_ptr);
+
   // Assert that we logged the fallback timeout triggering.
+  histogram_tester.ExpectBucketCount("TestPrefix.ContentReady.FromTimeout",
+                                     true, 1);
   histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", true, 1);
+      "TestPrefix.ContentReady.FromTimeout.FirstShow", true, 1);
+  histogram_tester.ExpectBucketCount("TestPrefix.ContentReady.FromTimeout",
+                                     false, 0);
   histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", false, 0);
-  // Assert that we logged the telemetry latency (as overflow).
+      "TestPrefix.ContentReady.FromTimeout.FirstShow", false, 0);
+  histogram_tester.ExpectTotalCount("TestPrefix.ContentReady.Duration", 1);
+  histogram_tester.ExpectTotalCount(
+      "TestPrefix.ContentReady.Duration.FirstShow", 1);
   histogram_tester.ExpectTotalCount("TestPrefix.ResultToContentReadyPerShow",
                                     1);
-
-  // 2) Later the real graphics pipeline finally finishes.
-  CallOnVisualStateReady(deferred_presenter.get(), request_time, ready_time,
-                         /*from_fallback=*/false, /*success=*/true);
-
-  // Assert that the lagging graphics callback safely aborted without
-  // redundantly overriding the UI state or logging duplicate timeout metrics.
-  histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", true, 1);
-  histogram_tester.ExpectBucketCount(
-      "TestPrefix.DeferredShowVisualStateReadyFromTimeout", false, 0);
-  // Assert that we did not log duplicate telemetry latency.
-  histogram_tester.ExpectTotalCount("TestPrefix.ResultToContentReadyPerShow",
-                                    1);
+  histogram_tester.ExpectTotalCount(
+      "TestPrefix.ResultToContentReadyOnFirstShow", 1);
 }

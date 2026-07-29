@@ -3668,20 +3668,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Popup.Aim.PresenterShowLatency.ToPaint" units="ms"
-    expires_after="2026-12-22">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>kylixrd@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Record the time between the request of the AIM popup widget to show and when
-    the first frame is painted by the widget on the screen.
-
-    Recorded every time the native widget hosting the AIM popup is shown.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.Popup.Aim.RendererProcessGoneStatus"
     enum="OmniboxWebUIRendererProcessGoneStatus" expires_after="2026-12-22">
   <owner>avivkiss@chromium.org</owner>
@@ -3725,21 +3711,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     reloaded before showing the Full WebUI Omnibox popup.
 
     Recorded every time the full WebUI Omnibox popup web content is shown.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.Popup.FullWebUI.PresenterShowLatency.ToPaint"
-    units="ms" expires_after="2026-12-22">
-  <owner>khalidpeer@chromium.org</owner>
-  <owner>mahmadi@chromium.org</owner>
-  <owner>kylixrd@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Record the time between the request of the Full WebUI popup widget to show
-    and when the first frame is painted by the widget on the screen.
-
-    Recorded every time the native widget hosting the full WebUI popup is shown.
   </summary>
 </histogram>
 
@@ -3842,20 +3813,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Popup.WebUI.PresenterShowLatency.ToPaint" units="ms"
-    expires_after="2027-01-17">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>kylixrd@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Record the time between the request of the classic popup widget to show and
-    when the first frame is painted by the widget on the screen.
-
-    Recorded every time the native widget hosting the classic popup is shown.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.Popup.WebUI.RendererProcessGoneStatus"
     enum="OmniboxWebUIRendererProcessGoneStatus" expires_after="2026-12-22">
   <owner>avivkiss@chromium.org</owner>
@@ -3884,30 +3841,50 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram
-    name="Omnibox.Popup.{WebUIType}.DeferredShowVisualStateReadyDuration"
-    units="ms" expires_after="2026-12-22">
-  <owner>avivkiss@chromium.org</owner>
-  <owner>khalidpeer@chromium.org</owner>
+<histogram name="Omnibox.Popup.{WebUIType}.ContentReady.Duration" units="ms"
+    expires_after="2026-12-22">
+  <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records the duration it took for the visual state callback to be called (or
     fallback timeout to be reached) during a deferred show of the {WebUIType}
-    popup. Logged every time the popup show is triggered.
+    popup, for every show of the popup.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
 
-<histogram
-    name="Omnibox.Popup.{WebUIType}.DeferredShowVisualStateReadyFromTimeout"
+<histogram name="Omnibox.Popup.{WebUIType}.ContentReady.Duration.FirstShow"
+    units="ms" expires_after="2026-12-22">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the duration it took for the visual state callback to be called (or
+    fallback timeout to be reached) during a deferred show of the {WebUIType}
+    popup, for the first show of the popup.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ContentReady.FromTimeout"
     enum="Boolean" expires_after="2026-12-22">
-  <owner>avivkiss@chromium.org</owner>
-  <owner>khalidpeer@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records whether the deferred show of the {WebUIType} popup was triggered by
-    the fallback timer task (True) or the visual state callback (False). Logged
-    every time the popup show is triggered.
+    the fallback timer task (True) or the visual state callback (False), for
+    every show of the popup.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ContentReady.FromTimeout.FirstShow"
+    enum="Boolean" expires_after="2026-12-22">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the deferred show of the {WebUIType} popup was triggered by
+    the fallback timer task (True) or the visual state callback (False), for the
+    first show of the popup.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
@@ -3944,6 +3921,34 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Records the latency from when the popup results are updated to the first
     visual state change of the {WebUIType} popup.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ShowToPaint.Duration" units="ms"
+    expires_after="2027-01-17">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Record the time between the request of the {WebUIType} widget to show and
+    when the first frame is painted by the widget on the screen, for every show
+    of the popup.
+  </summary>
+  <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
+</histogram>
+
+<histogram name="Omnibox.Popup.{WebUIType}.ShowToPaint.Duration.FirstShow"
+    units="ms" expires_after="2027-01-17">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>ryanakiyama@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Record the time between the first request of the {WebUIType} widget to show
+    and when the first frame is painted by the widget on the screen, for the
+    first show of the popup.
   </summary>
   <token key="WebUIType" variants="OmniboxPopupWebUIType"/>
 </histogram>
