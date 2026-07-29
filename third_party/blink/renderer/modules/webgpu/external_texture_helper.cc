@@ -416,20 +416,19 @@ ExternalTexture CreateExternalTexture(
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
   if (use_copy_to_shared_image) {
-    gpu::SyncToken sync_token;
-
     // The size of the shared image wrapper here is the VideoFrame's natural
     // size, which is guaranteed to be the same size as its visible rect since
     // `use_copy_to_shared_image` is true. Below we are going to copy the
     // contents of that visible rect into the shared image wrapper's
     // SharedImage, completely overwriting the SharedImage.
-    auto client_si = shared_image_wrapper->BeginExternalOverwrite(sync_token);
-
-    // The returned sync token is from the SharedGpuContext.
-    sync_token = video_renderer->CopyVideoFrameToSharedImage(
-        raster_context_provider, std::move(media_video_frame), client_si,
-        sync_token, /*use_visible_rect=*/true);
-    shared_image_wrapper->EndExternalWrite(sync_token);
+    shared_image_wrapper->WriteToBackingSharedImage(
+        [&](const scoped_refptr<gpu::ClientSharedImage>& client_si,
+            const gpu::SyncToken& begin_sync_token) {
+          // The returned sync token is from the SharedGpuContext.
+          return video_renderer->CopyVideoFrameToSharedImage(
+              raster_context_provider, std::move(media_video_frame), client_si,
+              begin_sync_token, /*use_visible_rect=*/true);
+        });
   } else {
     // Delegate video transformation to Dawn.
     if (media_video_frame->HasSharedImage()) {

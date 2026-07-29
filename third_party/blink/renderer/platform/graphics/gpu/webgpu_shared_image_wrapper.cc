@@ -182,11 +182,12 @@ bool WebGpuSharedImageWrapper::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-WebGpuSharedImageWrapper::BeginExternalOverwrite(
-    gpu::SyncToken& internal_access_sync_token) {
+void WebGpuSharedImageWrapper::WriteToBackingSharedImage(
+    base::FunctionRef<
+        gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
+                       const gpu::SyncToken&)> overwrite_callback) {
   if (IsGpuContextLost()) {
-    return nullptr;
+    return;
   }
 
   // NOTE: Invoking BeginRasterAccess() ensures that this invocation of
@@ -197,12 +198,10 @@ WebGpuSharedImageWrapper::BeginExternalOverwrite(
   auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
   release_sync_token_ = sync_token;
   shared_image_->UpdateDestructionSyncToken(sync_token);
-  internal_access_sync_token = release_sync_token_;
-  return shared_image_;
-}
 
-void WebGpuSharedImageWrapper::EndExternalWrite(
-    const gpu::SyncToken& external_write_sync_token) {
+  gpu::SyncToken external_write_sync_token =
+      overwrite_callback(shared_image_, release_sync_token_);
+
   if (IsGpuContextLost()) {
     return;
   }
@@ -215,9 +214,9 @@ void WebGpuSharedImageWrapper::EndExternalWrite(
   // write to complete by ensuring that a new sync token is generated on the
   // internal interface. This new sync token will be chained after
   // `external_write_sync_token` thanks to the wait above.
-  auto access = shared_image_->BeginRasterAccess(
+  access = shared_image_->BeginRasterAccess(
       RasterInterface(), acquire_sync_token_, /*readonly=*/true);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+  sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
   release_sync_token_ = sync_token;
   shared_image_->UpdateDestructionSyncToken(sync_token);
 }

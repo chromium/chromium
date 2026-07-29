@@ -85,13 +85,15 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
     release_sync_token_ = token;
   }
 
-  // Returns the ClientSharedImage backing this WebGpuSharedImageWrapper, if one
-  // exists, after flushing the resource and signaling that an external write
-  // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents. When the external write is complete, the
-  // caller should call `EndExternalWrite()`.
-  scoped_refptr<gpu::ClientSharedImage> BeginExternalOverwrite(
-      gpu::SyncToken& internal_access_sync_token);
+  // Invokes `overwrite_callback` with the ClientSharedImage backing this
+  // this instance and a SyncToken that should be
+  // waited on before writing to the contents. When the callback finishes,
+  // it should return the SyncToken that should be waited on to ensure that
+  // the service-side operations of the overwrite have completed.
+  void WriteToBackingSharedImage(
+      base::FunctionRef<
+          gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
+                         const gpu::SyncToken&)> overwrite_callback);
 
   // Copies the contents of the passed-in SharedImage at `copy_rect` into this
   // instance's SharedImage. Waits on `ready_sync_token` before copying; pass
@@ -105,11 +107,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
       const gpu::SyncToken& ready_sync_token,
       gpu::SyncToken& completion_sync_token);
 
-  // Signals that an external write has completed, passing the token that should
-  // be waited on to ensure that the service-side operations of the external
-  // write have completed. Ensures that the next read of this resource (whether
-  // via raster or the compositor) waits on this token.
-  void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
  private:
