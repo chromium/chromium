@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/settings/manage_sync/public/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -531,6 +532,118 @@ enum class QuickActionsVisibility {
   // Verify the error badge on the ADP disappears.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kNTPFeedHeaderIdentityDiscBadge)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self.name containsString:@"testPremiumAvatarRingWithAiTier"]) {
+    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.additional_args.push_back("--force-ai-subscription-tier=1");
+  } else if ([self.name containsString:@"testPremiumAvatarRingWithoutAiTier"]) {
+    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.additional_args.push_back("--force-ai-subscription-tier=0");
+  } else if ([self.name containsString:@"testPremiumAvatarRingWithError"]) {
+    config.features_enabled.push_back(kAiAvatarRingIos);
+    config.additional_args.push_back("--force-ai-subscription-tier=1");
+  } else if ([self.name containsString:
+                            @"testPremiumAvatarRingWithDynamicTierChange"]) {
+    config.features_enabled.push_back(kAiAvatarRingIos);
+  }
+  return config;
+}
+
+// Tests that the premium avatar ring is displayed on the NTP when the user
+// has an AI tier.
+- (void)testPremiumAvatarRingWithAiTier {
+  [ChromeEarlGrey openNewTab];
+  // Sign in.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+
+  // Verify that the premium ring is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the premium avatar ring is NOT displayed on the NTP when the user
+// does not have an AI tier.
+- (void)testPremiumAvatarRingWithoutAiTier {
+  [ChromeEarlGrey openNewTab];
+  // Sign in.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+
+  // Verify that the premium ring is not visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the premium avatar ring is NOT displayed and the error badge is
+// displayed when the user has an AI tier but also has an account error.
+- (void)testPremiumAvatarRingWithError {
+  [ChromeEarlGrey openNewTab];
+  // Sign in.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+
+  // Verify that the premium ring is visible initially.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Trigger a persistent auth error.
+  [SigninEarlGrey
+      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                           kPrimaryIdentity.gaiaId)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the error badge is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kNTPFeedHeaderIdentityDiscBadge)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the premium ring is no longer visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the premium avatar ring appears and disappears dynamically when
+// the AI subscription tier pref changes.
+- (void)testPremiumAvatarRingWithDynamicTierChange {
+  [ChromeEarlGrey openNewTab];
+  // Ensure the pref is 0 initially.
+  [ChromeEarlGrey setIntegerValue:0 forUserPref:"sync.ai_subscription_tier"];
+
+  // Sign in.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+
+  // Verify that the premium ring is NOT visible initially.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Change the pref to 1 (AI tier active).
+  [ChromeEarlGrey setIntegerValue:1 forUserPref:"sync.ai_subscription_tier"];
+
+  // Verify that the premium ring becomes visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Change the pref back to 0.
+  [ChromeEarlGrey setIntegerValue:0 forUserPref:"sync.ai_subscription_tier"];
+
+  // Verify that the premium ring is no longer visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 }
 

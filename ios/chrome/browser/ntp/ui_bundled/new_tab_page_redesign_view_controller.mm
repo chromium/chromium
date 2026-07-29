@@ -123,6 +123,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   NTPIdentityDiscButton* _identityDiscButton;
 
   UIImage* _avatarImage;
+  UIImage* _avatarImageWithRing;
   NSString* _avatarName;
   NSString* _avatarEmail;
   BOOL _avatarImageLoaded;
@@ -277,9 +278,10 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 
   if (_avatarImageLoaded) {
     if (_avatarImage) {
-      [_identityDiscButton updateAccountImage:_avatarImage
-                                         name:_avatarName
-                                        email:_avatarEmail];
+      [_identityDiscButton updateAccountWithName:_avatarName
+                                           email:_avatarEmail
+                             avatarWithoutAITier:_avatarImage
+                                 avatarForAITier:_avatarImageWithRing];
     } else {
       [_identityDiscButton setSignedOutAccountImage];
     }
@@ -630,15 +632,20 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   }
 }
 
-- (void)updateAccountImage:(UIImage*)image
-                      name:(NSString*)name
-                     email:(NSString*)email {
-  _avatarImage = image;
+- (void)updateAccountWithName:(NSString*)name
+                        email:(NSString*)email
+          avatarWithoutAITier:(UIImage*)avatarWithoutAITier
+              avatarForAITier:(UIImage*)avatarForAITier {
+  _avatarImage = avatarWithoutAITier;
+  _avatarImageWithRing = avatarForAITier;
   _avatarName = name;
   _avatarEmail = email;
   _avatarImageLoaded = YES;
   if (_identityDiscButton) {
-    [_identityDiscButton updateAccountImage:image name:name email:email];
+    [_identityDiscButton updateAccountWithName:name
+                                         email:email
+                           avatarWithoutAITier:avatarWithoutAITier
+                               avatarForAITier:avatarForAITier];
   }
 }
 

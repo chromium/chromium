@@ -36,6 +36,8 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
@@ -87,11 +89,14 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -294,6 +299,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
                                   PlaceholderServiceObserving,
                                   PrefObserverDelegate,
                                   SearchEngineObserving,
+                                  SubscriptionEligibilityServiceObserving,
                                   SyncObserverModelBridge>
 
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
@@ -318,6 +324,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   // Observes changes in identity and updates the Identity Disc.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
+  // Observes changes in AI subscription tier.
+  std::unique_ptr<
+      subscription_eligibility::SubscriptionEligibilityObserverBridge>
+      _subscriptionEligibilityObserverBridge;
   // Observes changes of the browser view visibility state.
   raw_ptr<BrowserViewVisibilityNotifierBrowserAgent, DanglingUntriaged>
       _browserViewVisibilityNotifierBrowserAgent;
@@ -376,6 +386,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   uint64_t _fetchSequenceNumber;
   // Holds whether the omnibox should be pinned to the bottom position.
   PrefBackedBoolean* _bottomOmniboxEnabled;
+  raw_ptr<subscription_eligibility::SubscriptionEligibilityService>
+      _subscriptionEligibilityService;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -392,6 +404,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
                   (id<UserAccountImageUpdateDelegate>)imageUpdater
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
                            prefService:(PrefService*)prefService
+        subscriptionEligibilityService:
+            (subscription_eligibility::SubscriptionEligibilityService*)
+                subscriptionEligibilityService
                            syncService:(syncer::SyncService*)syncService
            regionalCapabilitiesService:
                (regional_capabilities::RegionalCapabilitiesService*)
@@ -426,6 +441,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     _identityObserverBridge =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    CHECK(subscriptionEligibilityService);
+    _subscriptionEligibilityObserverBridge = std::make_unique<
+        subscription_eligibility::SubscriptionEligibilityObserverBridge>(
+        subscriptionEligibilityService, self);
     _browserViewVisibilityNotifierBrowserAgent =
         browserViewVisibilityNotifierBrowserAgent;
     // Listen for default search engine changes.
@@ -437,6 +456,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     _discoverFeedService = discoverFeedService;
     _discoverFeedVisibilityBrowserAgent = discoverFeedVisibilityBrowserAgent;
     _prefService = prefService;
+    _subscriptionEligibilityService = subscriptionEligibilityService;
     _regionalCapabilitiesService = regionalCapabilitiesService;
     _backgroundCustomizationService = backgroundCustomizationService;
     _backgroundImageCacheService = backgroundImageCacheService;
@@ -578,11 +598,13 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       self.feedVisibilityObserver);
   _searchEngineObserver.reset();
   _identityObserverBridge.reset();
+  _subscriptionEligibilityObserverBridge.reset();
   self.accountManagerService = nil;
   self.discoverFeedService = nullptr;
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
   _prefService = nullptr;
+  _subscriptionEligibilityService = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
   _regionalCapabilitiesService = nullptr;
@@ -853,9 +875,22 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     UIImage* image =
         GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             _signedInIdentity, IdentityAvatarSize::SmallSize);
-    [self.imageUpdater updateAccountImage:image
-                                     name:_signedInIdentity.userFullName
-                                    email:_signedInIdentity.userEmail];
+
+    UIImage* avatarWithRing = nil;
+    if (IsAiAvatarRingIosEnabled() &&
+        _subscriptionEligibilityService->GetAiSubscriptionTier() > 0) {
+      CGFloat smallerSize =
+          GetSizeForIdentityAvatarSize(IdentityAvatarSize::SmallSize,
+                                       AITierRingSize::kViewSize)
+              .width;
+      avatarWithRing = ResizeImage(image, CGSizeMake(smallerSize, smallerSize),
+                                   ProjectionMode::kAspectFill);
+    }
+
+    [self.imageUpdater updateAccountWithName:_signedInIdentity.userFullName
+                                       email:_signedInIdentity.userEmail
+                         avatarWithoutAITier:image
+                             avatarForAITier:avatarWithRing];
   } else {
     [self.imageUpdater setSignedOutAccountImage];
     signin_metrics::LogSignInOffered(
@@ -1111,6 +1146,12 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
 - (image_fetcher::ImageFetcherService*)imageFetcherService {
   return _imageFetcherService;
+}
+
+#pragma mark - SubscriptionEligibilityServiceObserving
+
+- (void)aiSubscriptionTierDidUpdate:(int32_t)newSubscriptionTier {
+  [self updateAccountImage];
 }
 
 @end

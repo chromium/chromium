@@ -16,9 +16,13 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/intelligence/signin/signin_ai_logo.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -55,7 +59,12 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   UIImageView* _accountDiscParticleBadgeImageView;
   BOOL _isSignedIn;
   BOOL _hasAccountError;
+  // The avatar image to be displayed when the AI tier ring is not shown.
   UIImage* _identityDiscImage;
+  // The smaller avatar image to be displayed when the AI tier ring is shown,
+  // so that the ring fits within the button's bounds.
+  UIImage* _avatarWithRingImage;
+  AITierAvatarView* _avatarViewWithRing;
   NSString* _identityDiscAccessibilityLabel;
   NSLayoutConstraint* _widthConstraint;
   NSLayoutConstraint* _heightConstraint;
@@ -123,19 +132,28 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   [self updateIdentityDiscConstraints];
 }
 
-- (void)updateAccountImage:(UIImage*)image
-                      name:(NSString*)name
-                     email:(NSString*)email {
-  DCHECK(image && image.size.width == ntp_home::kIdentityAvatarDimension &&
-         image.size.height == ntp_home::kIdentityAvatarDimension)
-      << base::SysNSStringToUTF8([image description]);
+// Updates current signed-in user account avatar with the supplied images.
+// `avatarWithoutAITier` is the normal-sized avatar image to be displayed when
+// the AI tier ring is not shown.
+// `avatarForAITier` is the smaller-sized avatar image to be displayed when
+// the AI tier ring is shown, so that the ring fits within the normal bounds.
+- (void)updateAccountWithName:(NSString*)name
+                        email:(NSString*)email
+          avatarWithoutAITier:(UIImage*)avatarWithoutAITier
+              avatarForAITier:(UIImage*)avatarForAITier {
+  DCHECK(avatarWithoutAITier &&
+         avatarWithoutAITier.size.width == ntp_home::kIdentityAvatarDimension &&
+         avatarWithoutAITier.size.height == ntp_home::kIdentityAvatarDimension)
+      << base::SysNSStringToUTF8([avatarWithoutAITier description]);
   DCHECK(email);
 
-  _identityDiscImage = image;
+  _identityDiscImage = avatarWithoutAITier;
+  _avatarWithRingImage = avatarForAITier;
 
   _isSignedIn = YES;
 
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
+  [self updateIdentityDiscState];
   [self updateIdentityDiscConstraints];
 }
 
@@ -157,6 +175,7 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   if (email.length > 0) {
     [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
   }
+  [self updateIdentityDiscState];
 }
 
 - (void)updateIdentityDiscConstraints {
@@ -199,18 +218,43 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   self.clipsToBounds = YES;
 
   if (_isSignedIn) {
-    UIImage* image = _identityDiscImage;
+    // Clear the button's own image.
+    [self setImage:nil forState:UIControlStateNormal];
     self.configuration = nil;
-    [self setImage:image forState:UIControlStateNormal];
     self.backgroundColor = nil;
-    self.imageView.layer.cornerRadius = image.size.width / 2;
-    self.imageView.layer.masksToBounds = YES;
-    self.layer.cornerRadius = image.size.width;
+
+    if (_avatarViewWithRing) {
+      [_avatarViewWithRing removeFromSuperview];
+    }
+
+    BOOL showRing = _avatarWithRingImage && !_hasAccountError;
+    UIImage* avatarToDisplay =
+        showRing ? _avatarWithRingImage : _identityDiscImage;
+    _avatarViewWithRing = [[AITierAvatarView alloc]
+        initWithAvatarImage:avatarToDisplay
+                  outerSize:ntp_home::kIdentityAvatarDimension
+            showsAITierRing:showRing];
+    _avatarViewWithRing.userInteractionEnabled = NO;
+
+    [self insertSubview:_avatarViewWithRing atIndex:0];
+    [NSLayoutConstraint activateConstraints:@[
+      [_avatarViewWithRing.centerXAnchor
+          constraintEqualToAnchor:self.centerXAnchor],
+      [_avatarViewWithRing.centerYAnchor
+          constraintEqualToAnchor:self.centerYAnchor],
+      [_avatarViewWithRing.widthAnchor
+          constraintEqualToConstant:ntp_home::kIdentityAvatarDimension],
+      [_avatarViewWithRing.heightAnchor
+          constraintEqualToConstant:ntp_home::kIdentityAvatarDimension],
+    ]];
     [self updateBadgeBackgroundColor];
     return;
   }
 
   // Signed out state styling.
+  if (_avatarViewWithRing) {
+    _avatarViewWithRing.hidden = YES;
+  }
   [self updateIdentityDiscStateWithPalette:nil];
 }
 

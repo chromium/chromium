@@ -21,6 +21,9 @@ class RegionalCapabilitiesService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+namespace subscription_eligibility {
+class SubscriptionEligibilityService;
+}  // namespace subscription_eligibility
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -65,6 +68,9 @@ class UserUploadedImageManager;
                   (id<UserAccountImageUpdateDelegate>)imageUpdater
                    discoverFeedService:(DiscoverFeedService*)discoverFeedService
                            prefService:(PrefService*)prefService
+        subscriptionEligibilityService:
+            (subscription_eligibility::SubscriptionEligibilityService*)
+                subscriptionEligibilityService
                            syncService:(syncer::SyncService*)syncService
            regionalCapabilitiesService:
                (regional_capabilities::RegionalCapabilitiesService*)

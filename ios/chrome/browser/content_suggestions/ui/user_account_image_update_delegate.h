@@ -10,11 +10,16 @@
 
 // Sets up an avatar for signed-out state.
 - (void)setSignedOutAccountImage;
-// Updates current signed-in user account avatar with supplied image.
-// `image` and `email` must not be nil. `name` may be nil.
-- (void)updateAccountImage:(UIImage*)image
-                      name:(NSString*)name
-                     email:(NSString*)email;
+// Updates current signed-in user account avatar with the supplied images.
+// `avatarWithoutAITier` is the normal-sized avatar image to be displayed when
+// the AI tier ring is not shown.
+// `avatarForAITier` is the smaller-sized avatar image to be displayed when
+// the AI tier ring is shown, so that the ring fits within the normal bounds.
+// `name` and `email` must not be nil.
+- (void)updateAccountWithName:(NSString*)name
+                        email:(NSString*)email
+          avatarWithoutAITier:(UIImage*)avatarWithoutAITier
+              avatarForAITier:(UIImage*)avatarForAITier;
 
 @end
 

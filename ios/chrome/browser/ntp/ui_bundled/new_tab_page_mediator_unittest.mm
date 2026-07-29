@@ -17,6 +17,7 @@
 #import "components/image_fetcher/core/mock_image_fetcher.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/test/toolbar_test_navigation_manager.h"
@@ -200,6 +202,9 @@ class NewTabPageMediatorTest : public PlatformTest {
                   identityDiscImageUpdater:image_updater_
                        discoverFeedService:test_discover_feed_service_
                                prefService:prefs_
+            subscriptionEligibilityService:
+                SubscriptionEligibilityServiceFactory::GetForProfile(
+                    profile_.get())
                                syncService:&test_sync_service_
                regionalCapabilitiesService:
                    ios::RegionalCapabilitiesServiceFactory::GetForProfile(

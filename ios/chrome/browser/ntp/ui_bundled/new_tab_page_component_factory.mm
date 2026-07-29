@@ -12,6 +12,7 @@
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
@@ -42,6 +43,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
@@ -130,6 +132,8 @@
                 identityDiscImageUpdater:imageUpdater
                      discoverFeedService:discoverFeedService
                              prefService:prefService
+          subscriptionEligibilityService:SubscriptionEligibilityServiceFactory::
+                                             GetForProfile(profile)
                              syncService:syncService
              regionalCapabilitiesService:regionalCapabilitiesService
           backgroundCustomizationService:backgroundCustomizationService
