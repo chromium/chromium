@@ -42,6 +42,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
     "//chrome/test:test_support",
   ]
 }

@@ -1,0 +1,66 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+if (is_win || is_mac || is_linux) {
+  # ProfilePickerView and the flow controllers this helper drives are only
+  # compiled into //chrome/browser/ui on Windows, Mac and Linux, so the helper
+  # (whose object file is always linked in, unlike when it lived in the
+  # //chrome/test:test_support static library) must match that condition.
+  source_set("profile_picker_view_test_utils") {
+    testonly = true
+
+    sources = [
+      "profile_picker_view_test_utils.cc",
+      "profile_picker_view_test_utils.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//content/public/browser",
+      "//testing/gmock",
+      "//ui/views",
+    ]
+
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_test_util",
+      "//chrome/browser/ui/profiles:test_support",
+      "//chrome/browser/ui/webui/signin:profile",
+      "//chrome/test/base:ui_test_utils",
+      "//content/public/common",
+      "//url",
+    ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("profiles_pixel_test_utils") {
+    testonly = true
+
+    sources = [
+      "profiles_pixel_test_utils.cc",
+      "profiles_pixel_test_utils.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/signin:signin_browser_test_base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+    ]
+
+    deps = [
+      "//chrome/browser/signin",
+      "//components/signin/public/base",
+      "//content/test:test_support",
+      "//ui/base",
+      "//ui/gfx:test_support",
+    ]
+  }
+}

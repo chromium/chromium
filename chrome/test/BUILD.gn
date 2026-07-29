@@ -835,10 +835,6 @@ static_library("test_support") {
     sources += [
       "../browser/ui/chooser_bubble_testapi.h",
       "../browser/ui/views/chooser_bubble_testapi_views.cc",
-      "../browser/ui/views/profiles/profile_picker_view_test_utils.cc",
-      "../browser/ui/views/profiles/profile_picker_view_test_utils.h",
-      "../browser/ui/views/profiles/profiles_pixel_test_utils.cc",
-      "../browser/ui/views/profiles/profiles_pixel_test_utils.h",
     ]
     public_deps += [
       "//chrome/browser/media/router:media_router_feature",
@@ -3230,6 +3226,7 @@ if (!is_android) {
         "//chrome/browser/enterprise/profile_management:browser_tests",
         "//chrome/browser/enterprise/signin:browser_tests",
         "//chrome/browser/ui/views/media_preview/mic_preview:browser_tests",
+        "//chrome/browser/ui/views/profiles:profile_picker_view_test_utils",
         "//chrome/browser/ui/webui:profile_helper",
       ]
     }
@@ -3718,6 +3715,7 @@ if (!is_android) {
     if (toolkit_views) {
       deps += [
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
+        "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
         "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
         "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests",
       ]
@@ -8351,7 +8349,10 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_test_base.h",
       ]
       public_deps += [ "//chrome/browser/ui/profiles" ]
-      deps += [ "//chrome/browser/ui/profiles:test_support" ]
+      deps += [
+        "//chrome/browser/ui/profiles:test_support",
+        "//chrome/browser/ui/views/profiles:profile_picker_view_test_utils",
+      ]
     }
 
     if (is_win || is_mac || is_linux) {
