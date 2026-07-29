@@ -73,6 +73,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -5120,21 +5121,19 @@ bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
         this);
   }
 
+  actions::ActionInvocationContext context;
+  context.SetProperty(chrome::kActionInvocationSourceKey,
+                      chrome::ActionInvocationSource::kKeyboardShortcut);
+
   if (command_id == IDC_SHOW_READING_MODE_SIDE_PANEL) {
-    actions::ActionInvocationContext context =
-        actions::ActionInvocationContext::Builder()
-            .SetProperty(
-                kSidePanelOpenTriggerKey,
-                static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                    SidePanelOpenTrigger::kReadAnythingKeyboardShortcut))
-            .Build();
-    return chrome::ExecuteCommandWithContext(browser_.get(), command_id,
-                                             std::move(context),
-                                             accelerator.time_stamp());
+    context.SetProperty(
+        kSidePanelOpenTriggerKey,
+        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+            SidePanelOpenTrigger::kReadAnythingKeyboardShortcut));
   }
 
-  return chrome::ExecuteCommand(browser_.get(), command_id,
-                                accelerator.time_stamp());
+  return chrome::ExecuteCommandWithContext(
+      browser_.get(), command_id, std::move(context), accelerator.time_stamp());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -168,4 +169,70 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
   EXPECT_EQ(static_cast<SidePanelOpenTrigger>(
                 last_context_.GetProperty(kSidePanelOpenTriggerKey)),
             SidePanelOpenTrigger::kUnknown);
+}
+
+IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
+                       ExecuteCommandPreservesInvocationSourceContext) {
+  EXPECT_FALSE(action_invoked_);
+
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
+  actions::ActionInvocationContext context =
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(chrome::kActionInvocationSourceKey,
+                       chrome::ActionInvocationSource::kKeyboardShortcut)
+          .Build();
+  EXPECT_TRUE(chrome::ExecuteCommandWithContext(browser(), IDC_BACK,
+                                                std::move(context)));
+  EXPECT_TRUE(action_invoked_);
+  EXPECT_EQ(last_context_.GetProperty(chrome::kActionInvocationSourceKey),
+            chrome::ActionInvocationSource::kKeyboardShortcut);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CommandActionUpdaterBrowserTest,
+    ExecuteToggleVerticalTabsCollapsePreservesKeyboardShortcutSource) {
+  actions::ActionItem* root = browser()->GetActions()->root_action_item();
+  ASSERT_TRUE(root);
+  actions::ActionItem* toggle_action = actions::ActionManager::Get().FindAction(
+      kActionToggleCollapseVertical, root);
+  ASSERT_TRUE(toggle_action);
+
+  actions::ActionInvocationContext last_context;
+  bool toggle_invoked = false;
+  toggle_action->SetInvokeActionCallback(base::BindRepeating(
+      [](bool* invoked, actions::ActionInvocationContext* ctx,
+         actions::ActionItem* action,
+         actions::ActionInvocationContext context) {
+        *invoked = true;
+        *ctx = std::move(context);
+      },
+      &toggle_invoked, &last_context));
+
+  browser()->command_controller()->UpdateCommandEnabled(
+      IDC_TOGGLE_VERTICAL_TABS_COLLAPSE, true);
+
+  // When executed via shortcut (passing kKeyboardShortcut in context):
+  actions::ActionInvocationContext shortcut_context =
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(chrome::kActionInvocationSourceKey,
+                       chrome::ActionInvocationSource::kKeyboardShortcut)
+          .Build();
+  EXPECT_TRUE(chrome::ExecuteCommandWithContext(
+      browser(), IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
+      std::move(shortcut_context)));
+  EXPECT_TRUE(toggle_invoked);
+  EXPECT_EQ(last_context.GetProperty(chrome::kActionInvocationSourceKey),
+            chrome::ActionInvocationSource::kKeyboardShortcut);
+
+  // When executed without shortcut context (e.g., from a menu click):
+  toggle_invoked = false;
+  last_context = actions::ActionInvocationContext();
+  EXPECT_TRUE(browser()->command_controller()->ExecuteCommand(
+      IDC_TOGGLE_VERTICAL_TABS_COLLAPSE));
+  EXPECT_TRUE(toggle_invoked);
+  EXPECT_EQ(last_context.GetProperty(chrome::kActionInvocationSourceKey),
+            chrome::ActionInvocationSource::kUnknown);
+
+  toggle_action->SetInvokeActionCallback(
+      actions::ActionItem::InvokeActionCallback());
 }
