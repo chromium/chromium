@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2015 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+
+<ldmlBCP47>
+    <version number="$Revision$"/>
+    <keyword>
+        <key name="ca" description="Calendar algorithm key" valueType="incremental" alias="calendar">
+            <type name="buddhist" description="Thai Buddhist calendar"/>
+            <type name="chinese" description="Traditional Chinese calendar"/>
+            <type name="coptic" description="Coptic calendar"/>
+            <type name="dangi" description="Traditional Korean calendar" since="22.1"/>
+            <type name="ethioaa" description="Ethiopic calendar, Amete Alem (epoch approx. 5493 B.C.E)" alias="ethiopic-amete-alem"/>
+            <type name="ethiopic" description="Ethiopic calendar, Amete Mihret (epoch approx, 8 C.E.)"/>
+            <type name="gregory" description="Gregorian calendar" alias="gregorian"/>
+            <type name="hebrew" description="Traditional Hebrew calendar"/>
+            <type name="indian" description="Indian calendar"/>
+            <type name="islamic" description="Hijri calendar"/>
+            <type name="islamic-umalqura" description="Hijri calendar, Umm al-Qura" since="24"/>
+            <type name="islamic-tbla" description="Hijri calendar, tabular (intercalary years [2,5,7,10,13,16,18,21,24,26,29] - astronomical epoch)" since="24"/>
+            <type name="islamic-civil" description="Hijri calendar, tabular (intercalary years [2,5,7,10,13,16,18,21,24,26,29] - civil epoch)" since="24"/>
+            <type name="islamic-rgsa" description="Hijri calendar, Saudi Arabia sighting" since="24"/>
+            <type name="iso8601" description="ISO calendar (Gregorian calendar using the ISO 8601 calendar week rules)" since="2.0"/>
+            <type name="japanese" description="Japanese Imperial calendar"/>
+            <type name="persian" description="Persian calendar"/>
+            <type name="roc" description="Republic of China calendar"/>
+
+            <type name="islamicc" description="Civil (algorithmic) Arabic calendar" deprecated="true" preferred="islamic-civil"  alias="islamic-civil"/>
+        </key>
+		<key name="fw" description="First day of week" since="28">
+			<type name="sun" description="Sunday" since="28" />
+			<type name="mon" description="Monday" since="28" />
+			<type name="tue" description="Tuesday" since="28" />
+			<type name="wed" description="Wednesday" since="28" />
+			<type name="thu" description="Thursday" since="28" />
+			<type name="fri" description="Friday" since="28" />
+			<type name="sat" description="Saturday" since="28" />
+		</key>
+		<key name="hc" description="Hour cycle (12 vs 24)" alias="hours" since="28">
+			<type name="h12" description="Hour system using 1–12; 'h' in patterns" since="28" />
+			<type name="h23" description="Hour system using 0–23; 'H' in patterns" since="28" />
+			<type name="h11" description="Hour system using 0–11; 'K' in patterns" since="28" />
+			<type name="h24" description="Hour system using 1–24; 'k' in patterns" since="28" />
+		</key>
+    </keyword>
+</ldmlBCP47>

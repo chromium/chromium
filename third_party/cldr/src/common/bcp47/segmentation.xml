@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2020 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+
+<ldmlBCP47>
+    <version number="$Revision$"/>
+    <keyword>
+        <key name="dx" description="Scripts to exclude from dictionary break" valueType="multiple" since="38">
+            <type name="SCRIPT_CODE" description="ISO 15924 script code" since="38"/>
+        </key>
+
+        <key name="lb" description="Line break type key" since="27">
+            <type name="strict" description="CSS level 3 line-break=strict, e.g. treat CJ as NS" since="27"/>
+            <type name="normal" description="CSS level 3 line-break=normal, e.g. treat CJ as ID, break before hyphens for ja,zh" since="27"/>
+            <type name="loose" description="CSS lev 3 line-break=loose" since="27"/>
+        </key>
+
+        <key name="lw" description="Line break key for CSS lev 3 word-break options" since="28">
+            <type name="normal" description="CSS lev 3 word-break=normal, normal script/language behavior for midword breaks" since="28"/>
+            <type name="breakall" description="CSS lev 3 word-break=break-all, allow midword breaks unless forbidden by lb setting" since="28"/>
+            <type name="keepall" description="CSS lev 3 word-break=keep-all, prohibit midword breaks except for dictionary breaks" since="28"/>
+            <type name="phrase" description="Prioritize keeping natural phrases (of multiple words) together when breaking, used in short text like title and headline" since="41"/>
+        </key>
+
+        <key name="ss" description="Sentence break parameter key to control use of suppressions data" since="28">
+            <type name="none" description="Don't use segmentation suppressions data" since="28"/>
+            <type name="standard" description="Use segmentation suppressions data of type standard" since="28"/>
+        </key>
+
+    </keyword>
+</ldmlBCP47>

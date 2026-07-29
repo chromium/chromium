@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2013 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+<ldmlBCP47>
+    <version number="$Revision$" />
+    <keyword>
+        <key extension="t" name="t0" description="Machine Translation: 
+        Used to indicate content that has been machine translated, or a request for a particular type of machine translation of content.
+        The first subfield in a sequence would typically be a 'platform' or vendor designation." since="21.0.2">
+            <type name="und" description="The choice of machine translation is not specified. Used when the only information known (or requested) is that the text was machine translated." since="21.0.2" />
+        </key>
+    </keyword>
+</ldmlBCP47>

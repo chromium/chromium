@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2013 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+
+<ldmlBCP47>
+	<version number="$Revision$" />
+	<keyword>
+		<key extension="t" name="m0" description="Transform extension mechanism:
+			to reference an authority or rules for a type of transformation" since="21">
+			<type name="alaloc" description="American Library Association-Library of Congress" since="21"/>
+			<type name="bgn" description="US Board on Geographic Names" since="21"/>
+			<type name="buckwalt" description="Buckwalter Arabic transliteration system" since="22.1"/>
+			<type name="din" description="Deutsches Institut für Normung" since="21"/>
+			<type name="gost" description="Euro-Asian Council for Standardization, Metrology and Certification" since="21"/>
+			<type name="iso" description="International Organization for Standardization" since="21"/>
+			<type name="mcst" description="Korean Ministry of Culture, Sports and Tourism" since="21"/>
+			<type name="mns" description="Mongolian National Standard" since="29"/>
+			<type name="satts" description="Standard Arabic Technical Transliteration System (SATTS)" since="22.1"/>
+			<type name="ungegn" description="United Nations Group of Experts on Geographical Names" since="21"/>
+			<type name="c11" description="for hex transforms, using the C11 syntax: \u0061\U0001F4D6" since="29" alias="c"/>
+			<type name="css" description="for hex transforms, using the CSS syntax: \61 \01F4D6, spacing where necessary" since="29"/>
+			<type name="java" description="for hex transforms, using the Java syntax: \u0061\uD83D\uDCD6" since="29"/>
+			<type name="percent" description="for hex transforms, using the percent syntax: %61%F0%9F%93%96" since="29"/>
+			<type name="perl" description="for hex transforms, using the perl syntax: \x{61}\x{1F4D6}" since="29"/>
+			<type name="plain" description="for hex transforms, with no surrounding syntax, spacing where necessary: 0061 1F4D6" since="29"/>
+			<type name="unicode" description="to hex with the Unicode syntax: U+0061 U+1F4D6, spacing where necessary" since="29"/>
+			<type name="xml" description="for hex transforms, using the xml syntax: &amp;#x61;&amp;#x1F4D6;" since="29"/>
+			<type name="xml10" description="for hex transforms, using the xml decimal syntax: &amp;#97;&amp;#128214;" since="29"/>
+			<type name="prprname" description="transform variant for proper names" since="29" alias="names"/>
+			<type name="iast" description="International Alphabet of Sanskrit Transliteration" since="35"/>
+			<type name="ewts" description="Extended Wylie Transliteration Scheme" since="35"/>
+			<type name="aethiopi" description="Encylopedia Aethiopica Transliteration" since="41"/>
+			<type name="betamets" description="Beta Maṣāḥǝft Transliteration" since="41" alias="beta-metsehaf"/>
+			<type name="iesjes" description="IES/JES Amharic Transliteration" since="41" alias="ies-jes"/>
+			<type name="es3842" description="Ethiopian Standards Agency ES 3842:2014 Ethiopic-Latin Transliteration" since="41"/>
+			<type name="lambdin" description="Thomas Oden Lambdin Ethiopic-Latin Transliteration" since="41"/>
+			<type name="gurage" description="Gurage Legacy to Modern Transliteration" since="41"/>
+			<type name="gutgarts" description="Yaros Gutgarts Ethiopic-Cyrillic Transliteration" since="41"/>
+			<type name="sera" description="System for Ethiopic Representation in ASCII" since="41"/>
+			<type name="tekieali" description="Tekie Alibekit Blin-Latin Transliteration" since="41" alias="tekie-alibekit"/>
+			<type name="xaleget" description="Eritrean Ministry of Education Blin-Latin Transliteration" since="41"/>
+		</key>
+	</keyword>
+</ldmlBCP47>

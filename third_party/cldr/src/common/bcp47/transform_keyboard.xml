@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2013 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+<ldmlBCP47>
+	<version number="$Revision$" />
+	<keyword>
+		<key extension="t" name="k0" description="Keyboard transform: 
+		Used to indicate a keyboard transformation, such as one used by a client-side virtual keyboard. 
+		The first subfield in a sequence would typically be a 'platform' designation, 
+		representing the platform that the keyboard is intended for.
+		The keyboard might or might not correspond to a keyboard mapping shipped by the vendor for the platform.
+		One or more subsequent fields may occur, but are only added where needed to distinguish from others." since="21.0.2">
+			<type name="osx" description="Mac OSX keyboard." since="21.0.2" />
+			<type name="windows" description="Windows keyboard." since="21.0.2" />
+			<type name="chromeos" description="ChromeOS keyboard." since="21.0.2" />
+			<type name="android" description="Android keyboard." since="21.0.2" />
+			<type name="googlevk" description="Google virtual keyboard." since="21.0.2" />
+			<type name="101key" description="101 key layout." since="21.0.2" />
+			<type name="102key" description="102 key layout." since="21.0.2" />
+			<type name="dvorak" description="Dvorak keyboard layout. See also http://en.wikipedia.org/wiki/Dvorak_Simplified_Keyboard." since="21.0.2" />
+			<type name="dvorakl" description="Dvorak left-handed keyboard layout. See also http://en.wikipedia.org/wiki/File:KB_Dvorak_Left.svg." since="21.0.2" />
+			<type name="dvorakr" description="Dvorak right-handed keyboard layout. See also http://en.wikipedia.org/wiki/File:KB_Dvorak_Right.svg." since="21.0.2" />
+			<type name="el220" description="Greek 220 keyboard. See also http://www.microsoft.com/resources/msdn/goglobal/keyboards/kbdhela2.html." since="21.0.2" />
+			<type name="el319" description="Greek 319 keyboard. See also ftp://ftp.software.ibm.com/software/globalization/keyboards/KBD319.pdf." since="21.0.2" />
+			<type name="extended" description="A keyboard that has been enhanced with a large number of extra characters." since="21.0.2" />
+			<type name="isiri" description="Persian ISIRI keyboard. Based on ISIRI 2901:1994 standard. See also http://behdad.org/download/Publications/persiancomputing/a007.pdf." since="21.0.2" />
+			<type name="nutaaq" description="Inuktitut Nutaaq keyboard. See also http://www.pirurvik.ca/en/webfm_send/15." since="21.0.2" />
+			<type name="legacy" description="A keyboard that has been replaced with a newer standard but is kept for legacy purposes." since="21.0.2" />
+			<type name="lt1205" description="Lithuanian standard keyboard, based on the LST 1205:1992 standard. See also http://www.kada.lt/litwin/." since="21.0.2" />
+			<type name="lt1582" description="Lithuanian standard keyboard, based on the LST 1582:2000 standard. See also http://www.kada.lt/litwin/." since="21.0.2" />
+			<type name="patta" description="Thai Pattachote keyboard. This is a less frequently used layout in Thai (Kedmanee layout is more popular). See also http://www.nectec.or.th/it-standards/keyboard_layout/thai-key.htm." since="21.0.2" />
+			<type name="qwerty" description="QWERTY-based keyboard or one that approximates QWERTY in a different script." since="21.0.2" />
+			<type name="qwertz" description="QWERTZ-based keyboard or one that approximates QWERTZ in a different script." since="21.0.2" />
+			<type name="var" description="A keyboard layout with small variations from the default." since="21.0.2" />
+			<type name="viqr" description="Vietnamese VIQR layout, based on http://tools.ietf.org/html/rfc1456." since="21.0.2" />
+			<type name="ta99" description="Tamil 99 keyboard. See also http://www.tamilvu.org/Tamilnet99/annex1.htm." since="21.0.2" />
+			<type name="colemak" description="Colemak keyboard layout. The Colemak keyboard is an alternative to the QWERTY and dvorak keyboards. http://colemak.com/." since="21.0.2" />
+			<type name="600dpi" description="Keyboard for a 600 dpi device." since="21.0.2" />
+			<type name="768dpi" description="Keyboard for a 768 dpi device." since="21.0.2" />
+			<type name="azerty" description="A AZERTY-based keyboard or one that approximates AZERTY in a different script." since="21.0.2" />
+			<type name="und" description="The vender for the keyboard is not specified. Used when the only information known (or requested) is that the text was (or is to be) converted using an keyboard." since="21.0.2" />
+		</key>
+	</keyword>
+</ldmlBCP47>

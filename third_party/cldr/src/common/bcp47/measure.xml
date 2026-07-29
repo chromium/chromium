@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!-- Copyright © 1991-2015 Unicode, Inc. CLDR data files are interpreted according to the LDML specification 
+	(http://unicode.org/reports/tr35/) For terms of use, see http://www.unicode.org/copyright.html -->
+
+<ldmlBCP47>
+	<version number="$Revision$" />
+	<keyword>
+		<key name="ms" description="Measurement System" alias="measure" since="28">
+			<type name="metric" description="Metric System" since="28" />
+			<type name="ussystem" description="US System of measurement: feet, pints, etc.; pints are 16oz"
+				since="28" />
+			<type name="uksystem" description="UK System of measurement: feet, pints, etc.; pints are 20oz"
+				alias="imperial" since="28" />
+		</key>
+		<key name="mu" since="42" description="Allows setting overrides for measurement units. Currently limited to quantity=temperature, and no provision for usage or size.">
+			<type name="celsius" description="temperature unit is Celsius" since="42" />
+			<type name="kelvin" description="temperature unit is Kelvin" since="42" />
+			<type name="fahrenhe" description="temperature unit is Fahrenheit" since="42" />
+		</key>
+	</keyword>
+</ldmlBCP47>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2016 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+
+<ldmlBCP47>
+    <version number="$Revision$"/>
+    <keyword>
+        <key name="nu" description="Numbering system type key" alias="numbers">
+            <type name="adlm" description="Adlam digits" since="30"/>
+            <type name="ahom" description="Ahom digits" since="28"/>
+            <type name="arab" description="Arabic-Indic digits"/>
+            <type name="arabext" description="Extended Arabic-Indic digits"/>
+            <type name="armn" description="Armenian upper case numerals — algorithmic"/>
+            <type name="armnlow" description="Armenian lower case numerals — algorithmic"/>
+            <type name="bali" description="Balinese digits" since="21"/>
+            <type name="beng" description="Bengali digits"/>
+            <type name="bhks" description="Bhaiksuki digits" since="30"/>
+            <type name="brah" description="Brahmi digits" since="21"/>
+            <type name="cakm" description="Chakma digits" since="21"/>
+            <type name="cham" description="Cham digits" since="21"/>
+            <type name="cyrl" description="Cyrillic numerals — algorithmic" since="28"/>
+            <type name="deva" description="Devanagari digits"/>
+            <type name="diak" description="Dives Akuru digits" since="36.1"/>
+            <type name="ethi" description="Ethiopic numerals — algorithmic"/>
+            <type name="finance" description="Financial numerals — may be algorithmic" since="21"/>
+            <type name="fullwide" description="Full width digits"/>
+            <type name="geor" description="Georgian numerals — algorithmic"/>
+            <type name="gong" description="Gunjala Gondi digits" since="33.1"/>
+            <type name="gonm" description="Masaram Gondi digits" since="32"/>
+            <type name="grek" description="Greek upper case numerals — algorithmic"/>
+            <type name="greklow" description="Greek lower case numerals — algorithmic"/>
+            <type name="gujr" description="Gujarati digits"/>
+            <type name="guru" description="Gurmukhi digits"/>
+            <type name="hanidays" description="Han-character day-of-month numbering for lunar/other traditional calendars" since="25"/>
+            <type name="hanidec" description="Positional decimal system using Chinese number ideographs as digits" since="1.9"/>
+            <type name="hans" description="Simplified Chinese numerals — algorithmic"/>
+            <type name="hansfin" description="Simplified Chinese financial numerals — algorithmic"/>
+            <type name="hant" description="Traditional Chinese numerals — algorithmic"/>
+            <type name="hantfin" description="Traditional Chinese financial numerals — algorithmic"/>
+            <type name="hebr" description="Hebrew numerals — algorithmic"/>
+            <type name="hmng" description="Pahawh Hmong digits" since="28"/>
+            <type name="hmnp" description="Nyiakeng Puachue Hmong digits" since="35"/>
+            <type name="java" description="Javanese digits" since="21"/>
+            <type name="jpan" description="Japanese numerals — algorithmic"/>
+            <type name="jpanfin" description="Japanese financial numerals — algorithmic"/>
+            <type name="jpanyear" description="Japanese first-year Gannen numbering for Japanese calendar" since="35"/>
+            <type name="kali" description="Kayah Li digits" since="21"/>
+            <type name="kawi" description="Kawi digits" since="42"/>
+            <type name="khmr" description="Khmer digits"/>
+            <type name="knda" description="Kannada digits"/>
+            <type name="lana" description="Tai Tham Hora (secular) digits" since="21"/>
+            <type name="lanatham" description="Tai Tham Tham (ecclesiastical) digits" since="21"/>
+            <type name="laoo" description="Lao digits"/>
+            <type name="latn" description="Latin digits"/>
+            <type name="lepc" description="Lepcha digits" since="21"/>
+            <type name="limb" description="Limbu digits" since="21"/>
+            <type name="mathbold" description="Mathematical bold digits" since="28"/>
+            <type name="mathdbl" description="Mathematical double-struck digits" since="28"/>
+            <type name="mathmono" description="Mathematical monospace digits" since="28"/>
+            <type name="mathsanb" description="Mathematical sans-serif bold digits" since="28"/>
+            <type name="mathsans" description="Mathematical sans-serif digits" since="28"/>
+            <type name="mlym" description="Malayalam digits"/>
+            <type name="modi" description="Modi digits" since="28"/>
+            <type name="mong" description="Mongolian digits"/>
+            <type name="mroo" description="Mro digits" since="28"/>
+            <type name="mtei" description="Meetei Mayek digits" since="21"/>
+            <type name="mymr" description="Myanmar digits"/>
+            <type name="mymrshan" description="Myanmar Shan digits" since="21"/>
+            <type name="mymrtlng" description="Myanmar Tai Laing digits" since="28"/>
+            <type name="nagm" description="Nag Mundari digits" since="42"/>
+            <type name="native" description="Native digits" since="21"/>
+            <type name="newa" description="Newa digits" since="30"/>
+            <type name="nkoo" description="N'Ko digits" since="21"/>
+            <type name="olck" description="Ol Chiki digits" since="21"/>
+            <type name="orya" description="Oriya digits"/>
+            <type name="osma" description="Osmanya digits" since="21"/>
+            <type name="rohg" description="Hanifi Rohingya digits" since="33.1"/>
+            <type name="roman" description="Roman upper case numerals — algorithmic"/>
+            <type name="romanlow" description="Roman lowercase numerals — algorithmic"/>
+            <type name="saur" description="Saurashtra digits" since="21"/>
+            <type name="segment" description="Legacy computing segmented digits" since="37"/>
+            <type name="shrd" description="Sharada digits" since="21"/>
+            <type name="sind" description="Khudawadi digits" since="28"/>
+            <type name="sinh" description="Sinhala Lith digits" since="28"/>
+            <type name="sora" description="Sora_Sompeng digits" since="21"/>
+            <type name="sund" description="Sundanese digits" since="21"/>
+            <type name="takr" description="Takri digits" since="21"/>
+            <type name="talu" description="New Tai Lue digits" since="21"/>
+            <type name="taml" description="Tamil numerals — algorithmic"/>
+            <type name="tamldec" description="Modern Tamil decimal digits" since="2.0.1"/>
+            <type name="tnsa" description="Tangsa digits" since="40"/>
+            <type name="telu" description="Telugu digits"/>
+            <type name="thai" description="Thai digits"/>
+            <type name="tirh" description="Tirhuta digits" since="28"/>
+            <type name="tibt" description="Tibetan digits"/>
+            <type name="traditio" description="Traditional numerals — may be algorithmic" alias="traditional" since="21"/>
+            <type name="vaii" description="Vai digits" since="21"/>
+            <type name="wara" description="Warang Citi digits" since="28"/>
+            <type name="wcho" description="Wancho digits" since="35"/>
+        </key>
+    </keyword>
+</ldmlBCP47>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2013 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+<ldmlBCP47>
+    <version number="$Revision$" />
+    <keyword>
+        <key extension="t" name="x0" valueType="any" description="Private use transform type key." since="21.0.2">
+            <type name="PRIVATE_USE" description="Private use transform identifier. All subfields consistent with rfc6497 (that is, subtags of 3-8 alphanum characters) are valid, and do not require registration." since="21.0.2"/>
+        </key>
+    </keyword>
+</ldmlBCP47>

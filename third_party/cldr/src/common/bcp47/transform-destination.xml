@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!-- Copyright © 1991-2015 Unicode, Inc. 
+	CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+	For terms of use, see http://www.unicode.org/copyright.html
+-->
+<ldmlBCP47>
+	<version number="$Revision$"/>
+	<keyword>
+		<key extension="t" name="d0" description="Transform destination for non-languages/scripts." since="29">
+			<type name="ascii" description="map as many characters to the closest ASCII character as possible" since="29"/>
+			<type name="accents" description="map base + punctuation, etc to accented characters" since="29"/>
+			<type name="publish" description="map to preferred forms for publishing, such as “, ”, —" since="29" alias="publishing"/>
+			<type name="casefold" description="apply Unicode case folding" since="29"/>
+			<type name="lower" description="apply Unicode full lowercase mapping" since="29"/>
+			<type name="upper" description="apply Unicode full uppercase mapping" since="29"/>
+			<type name="title" description="apply Unicode full titlecase mapping" since="29"/>
+			<type name="digit" description="convert to digit form of accent" since="29"/>
+			<type name="fwidth" description="map characters to their fullwidth equivalents" since="29" alias="fullwidth"/>
+			<type name="hwidth" description="map characters to their halfwidth equivalents" since="29" alias="halfwidth"/>
+			<type name="hex" description="map characters to a hex equivalents, eg 'a' to '\u0061'; for hex variants see transform.xml" since="29"/>
+			<type name="nfc" description="map string to the Unicode NFC format" since="29"/>
+			<type name="nfd" description="map string to the Unicode NFD format" since="29"/>
+			<type name="nfkc" description="map string to the Unicode NFKC format" since="29"/>
+			<type name="nfkd" description="map string to the Unicode NFKD format" since="29"/>
+			<type name="fcd" description="map string to the FCD format; http://unicode.org/notes/tn5" since="29"/>
+			<type name="fcc" description="map string to the FCC format; http://unicode.org/notes/tn5" since="29"/>
+			<type name="charname" description="map each character to its Unicode name" since="29" alias="name"/>
+			<type name="npinyin" description="map pinyin written with tones to the numeric form" since="29" alias="numericPinyin"/>
+			<type name="null" description="make no change in the string" since="29"/>
+			<type name="remove" description="remove every character in the string" since="29"/>
+			<type name="zawgyi" description="map Unicode to Zawgyi Myanmar encoding" since="34"/>
+			<type name="morse" description="map Unicode to Morse Code encoding" since="41"/>
+		</key>
+		<key extension="t" name="s0" description="Transform source for non-languages/scripts."  since="29">
+			<type name="accents" description="accented characters to map base + punctuation, etc" since="29"/>
+			<type name="ascii" description="map from ASCII to the target, perhaps using different conventions" since="29"/>
+			<type name="publish" description="map publishing characters, such as “, ”, —, to from vanilla characters" since="29" alias="publishing"/>
+			<type name="hex" description="map characters from hex equivalents, trying all variants, eg 'U+0061' to 'a'; for hex variants see transform.xml" since="29"/>
+			<type name="npinyin" description="map the numeric form of pinyin to the tone format" since="29" alias="numericPinyin"/>
+			<type name="zawgyi" description="map Zawgyi Myanmar encoding to Unicode" since="30"/>
+			<type name="morse" description="map Morse Code to Unicode encoding" since="41"/>
+		</key>
+	</keyword>
+</ldmlBCP47>

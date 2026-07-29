@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2014 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+
+<ldmlBCP47>
+    <version number="$Revision$"/>
+    <keyword>
+        <key name="co" description="Collation type key" alias="collation">
+            <type name="big5han" description="Pinyin ordering for Latin, big5 charset ordering for CJK characters (used in Chinese)"/>
+            <type name="compat" description="A previous version of the ordering, for compatibility" since="26"/>
+            <type name="dict" description="Dictionary style ordering (such as in Sinhala)" alias="dictionary"/>
+            <type name="direct" description="Binary code point order (used in Hindi)" deprecated="true"/>
+            <type name="ducet" description="The default Unicode collation element table order" since="2.0.1"/>
+            <type name="emoji" description="Recommended ordering for emoji characters" since="27"/>
+            <type name="eor" description="European ordering rules" since="24"/>
+            <type name="gb2312" description="Pinyin ordering for Latin, gb2312han charset ordering for CJK characters (used in Chinese)" alias="gb2312han"/>
+            <type name="phonebk" description="Phonebook style ordering (such as in German)" alias="phonebook"/>
+            <type name="phonetic" description="Phonetic ordering (sorting based on pronunciation)"/>
+            <type name="pinyin" description="Pinyin ordering for Latin and for CJK characters (used in Chinese)"/>
+            <type name="reformed" description="Reformed ordering (such as in Swedish)"/>
+            <type name="search" description="Special collation type for string search" since="1.9"/>
+            <type name="searchjl" description="Special collation type for Korean initial consonant search" since="2.0.1"/>
+            <type name="standard" description="Default ordering for each language"/>
+            <type name="stroke" description="Pinyin ordering for Latin, stroke order for CJK characters (used in Chinese)"/>
+            <type name="trad" description="Traditional style ordering (such as in Spanish)" alias="traditional"/>
+            <type name="unihan" description="Pinyin ordering for Latin, Unihan radical-stroke ordering for CJK characters (used in Chinese)"/>
+            <type name="zhuyin" description="Pinyin ordering for Latin, zhuyin order for Bopomofo and CJK characters (used in Chinese)" since="22"/>
+        </key>
+
+        <key name="ka" description="Collation parameter key for alternate handling" alias="colAlternate">
+            <type name="noignore" description="Variable collation elements are not reset to ignorable" alias="non-ignorable"/>
+            <type name="shifted" description="Variable collation elements are reset to zero at levels one through three"/>
+        </key>
+
+        <key name="kb" description="Collation parameter key for backward collation weight" alias="colBackwards">
+            <type name="true" description="The second level to be backwards" alias="yes"/>
+            <type name="false" description="No backwards (the second level to be forwards)" alias="no"/>
+        </key>
+
+        <key name="kc" description="Collation parameter key for case level" alias="colCaseLevel">
+            <type name="true" description="The case level is inserted in front of tertiary" alias="yes"/>
+            <type name="false" description="No special case level handling" alias="no"/>
+        </key>
+
+        <key name="kf" description="Collation parameter key for ordering by case" alias="colCaseFirst">
+            <type name="upper" description="Upper case to be sorted before lower case"/>
+            <type name="lower" description="Lower case to be sorted before upper case"/>
+            <type name="false" description="No special case ordering" alias="no"/>
+        </key>
+
+        <key name="kh" deprecated="true" description="Collation parameter key for special Hiragana handling" alias="colHiraganaQuaternary">
+            <type name="true" description="Hiragana to be sorted before all non-variable on quaternary level" alias="yes"/>
+            <type name="false" description="No special handling for Hiragana" alias="no"/>
+        </key>
+
+        <key name="kk" description="Collation parameter key for normalization" alias="colNormalization">
+            <type name="true" description="Convert text into Normalization Form D before calculating collation weights" alias="yes"/>
+            <type name="false" description="Skip normalization" alias="no"/>
+        </key>
+
+        <key name="kn" description="Collation parameter key for numeric handling" alias="colNumeric">
+            <type name="true" description="A sequence of decimal digits is sorted at primary level with its numeric value" alias="yes"/>
+            <type name="false" description="No special handling for numeric ordering" alias="no"/>
+        </key>
+
+        <key name="kr" description="Collation reorder codes" valueType="multiple" alias="colReorder" since="21">
+            <type name="space" description="Whitespace reordering code, see LDML Part 5: Collation" since="21"/>
+            <type name="punct" description="Punctuation reordering code, see LDML Part 5: Collation" since="21"/>
+            <type name="symbol" description="Symbol reordering code (other than currency), see LDML Part 5: Collation" since="21"/>
+            <type name="currency" description="Currency reordering code, see LDML Part 5: Collation" since="21"/>
+            <type name="digit" description="Digit (number) reordering code, see LDML Part 5: Collation" since="21"/>
+            <type name="REORDER_CODE" description="Other collation reorder code — for script, see LDML Part 5: Collation" since="21"/>
+        </key>
+
+        <key name="ks" description="Collation parameter key for collation strength" alias="colStrength">
+            <type name="level1" description="The primary level" alias="primary"/>
+            <type name="level2" description="The secondary level" alias="secondary"/>
+            <type name="level3" description="The tertiary level" alias="tertiary"/>
+            <type name="level4" description="The quaternary level" alias="quaternary quarternary"/>
+            <type name="identic" description="The identical level" alias="identical"/>
+        </key>
+
+        <key name="kv" description="Collation parameter key for maxVariable, the last reordering group to be affected by ka-shifted" since="25">
+            <type name="space" description="Only spaces are affected by ka-shifted" since="25"/>
+            <type name="punct" description="Spaces and punctuation are affected by ka-shifted (CLDR default)" since="25"/>
+            <type name="symbol" description="Spaces, punctuation and symbols except for currency symbols are affected by ka-shifted (UCA default)" since="25"/>
+            <type name="currency" description="Spaces, punctuation and all symbols are affected by ka-shifted" since="25"/>
+        </key>
+        <key name="vt" deprecated="true" description="Collation parameter key for variable top" valueType="multiple" alias="variableTop">
+            <type name="CODEPOINTS" description="The variable top (one or more Unicode code points: LDML Appendix Q)"/>
+        </key>
+    </keyword>
+</ldmlBCP47>

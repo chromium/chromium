@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!--
+Copyright © 1991-2013 Unicode, Inc.
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+For terms of use, see http://www.unicode.org/copyright.html
+-->
+<ldmlBCP47>
+	<version number="$Revision$" />
+	<keyword>
+		<key extension="t" name="i0" description="Input Method Engine transform:
+		Used to indicate an input method transformation, such as one used by
+		a client-side input method. The first subfield in a sequence would
+		typically be a 'platform' or vendor designation." since="21.0.2">
+			<type name="handwrit" description="Handwriting input: Used when the only information known (or requested) is that the text was (or is to be) converted using an handwriting input." since="21.0.2" />
+			<type name="pinyin" description="Pinyin input: for simplified Chinese characters. See also http://en.wikipedia.org/wiki/Pinyin_method." since="21.0.2" />
+			<type name="wubi" description="Wubi input: for simplified Chinese characters. For background information, see http://en.wikipedia.org/wiki/Wubi_method" since="21.0.2" />
+			<type name="und" description="The choice of input method is not specified. Used when the only information known (or requested) is that the text was (or is to be) converted using an input method engine" since="21.0.2" />
+		</key>
+	</keyword>
+</ldmlBCP47>

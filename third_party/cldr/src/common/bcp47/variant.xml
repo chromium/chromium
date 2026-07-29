@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldmlBCP47 SYSTEM "../../common/dtd/ldmlBCP47.dtd">
+<!-- Copyright © 1991-2016 Unicode, Inc. CLDR data files are interpreted according to the LDML specification 
+	(http://unicode.org/reports/tr35/) For terms of use, see http://www.unicode.org/copyright.html -->
+
+<ldmlBCP47>
+	<version number="$Revision$" />
+	<keyword>
+		<key name="em" description="Emoji presentation style request" since="29">
+			<type name="emoji" description="use an emoji presentation for emoji characters if possible" since="29"/>
+			<type name="text" description="use a text presentation for emoji characters if possible" since="29"/>
+			<type name="default" description="use the default presentation as specified in UTR #51" since="29"/>
+		</key>
+
+		<key name="rg" description="Alternate region for determining certain data values (e.g. default currency and units) specified by rgScope" since="29">
+			<type name="RG_KEY_VALUE" description="A region code from idValidity/id[type='region'][idStatus='regular'], suffixed with 'ZZZZ'" since="29"/>
+		</key>
+
+		<key name="sd" description="Region subdivision" since="28">
+			<type name="SUBDIVISION_CODE"
+				description="Valid unicode_subdivision_subtag for the region subtag as specified in LDML, based on subdivisionContainment data in supplementalData, prefixed by the associated unicode_region_subtag" since="28"/>
+		</key>
+
+		<key name="va" description="Common locale variant type key">
+			<type name="posix" description="POSIX style locale variant" />
+		</key>
+	</keyword>
+</ldmlBCP47>
