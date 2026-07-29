@@ -50,6 +50,13 @@ namespace {
 // To save typing ValueStore::DEFAULTS everywhere.
 const ValueStore::WriteOptions DEFAULTS = ValueStore::DEFAULTS;
 
+// Valid extension IDs for use as test data.
+constexpr char kId1[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+constexpr char kId2[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+constexpr char kId3[] = "cccccccccccccccccccccccccccccccc";
+constexpr char kId4[] = "dddddddddddddddddddddddddddddddd";
+constexpr char kId5[] = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+
 // More saving typing. Maps extension IDs to a list of sync changes for that
 // extension.
 using SettingSyncDataMultimap =
@@ -313,7 +320,7 @@ TEST_F(ExtensionSettingsSyncTest, NoDataDoesNotInvokeSync) {
   });
 
   // Have one extension created before sync is set up, the other created after.
-  AddExtensionAndGetStorage("s1", type);
+  AddExtensionAndGetStorage(kId1, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     EXPECT_EQ(0u, GetAllSyncData(data_type).size());
@@ -322,7 +329,7 @@ TEST_F(ExtensionSettingsSyncTest, NoDataDoesNotInvokeSync) {
         data_type, syncer::SyncDataList(), std::move(sync_processor_wrapper_));
   });
 
-  AddExtensionAndGetStorage("s2", type);
+  AddExtensionAndGetStorage(kId2, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     EXPECT_EQ(0u, GetAllSyncData(data_type).size());
@@ -342,8 +349,8 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
   base::Value value2(base::Value::Type::LIST);
   value2.GetList().Append("barValue");
 
-  ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
-  ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
+  ValueStore* storage1 = AddExtensionAndGetStorage(kId1, type);
+  ValueStore* storage2 = AddExtensionAndGetStorage(kId2, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     storage1->Set(DEFAULTS, "foo", value1);
@@ -351,16 +358,16 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
 
     SettingSyncDataMultimap all_sync_data = GetAllSyncData(data_type);
     EXPECT_EQ(2u, all_sync_data.size());
-    EXPECT_EQ(1u, all_sync_data["s1"]->size());
-    EXPECT_PRED_FORMAT2(ValuesEq, &value1, &(*all_sync_data["s1"])[0]->value());
-    EXPECT_EQ(1u, all_sync_data["s2"]->size());
-    EXPECT_PRED_FORMAT2(ValuesEq, &value2, &(*all_sync_data["s2"])[0]->value());
+    EXPECT_EQ(1u, all_sync_data[kId1]->size());
+    EXPECT_PRED_FORMAT2(ValuesEq, &value1, &(*all_sync_data[kId1])[0]->value());
+    EXPECT_EQ(1u, all_sync_data[kId2]->size());
+    EXPECT_PRED_FORMAT2(ValuesEq, &value2, &(*all_sync_data[kId2])[0]->value());
 
     syncer::SyncDataList sync_data;
     sync_data.push_back(
-        settings_sync_util::CreateData("s1", "foo", value1, data_type));
+        settings_sync_util::CreateData(kId1, "foo", value1, data_type));
     sync_data.push_back(
-        settings_sync_util::CreateData("s2", "bar", value2, data_type));
+        settings_sync_util::CreateData(kId2, "bar", value2, data_type));
 
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, sync_data, std::move(sync_processor_wrapper_));
@@ -375,7 +382,7 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
 
     storage1->Set(DEFAULTS, "foo", value2);
     EXPECT_EQ(1u, sync_processor_->changes().size());
-    SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "foo");
+    SettingSyncData* change = sync_processor_->GetOnlyChange(kId1, "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
     EXPECT_EQ(value2, change->value());
 
@@ -391,8 +398,8 @@ TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
   base::Value value2(base::Value::Type::LIST);
   value2.GetList().Append("barValue");
 
-  ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
-  ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
+  ValueStore* storage1 = AddExtensionAndGetStorage(kId1, type);
+  ValueStore* storage2 = AddExtensionAndGetStorage(kId2, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     storage1->Set(DEFAULTS, "foo", value1);
@@ -403,10 +410,10 @@ TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
 
     // All settings should have been pushed to sync.
     EXPECT_EQ(2u, sync_processor_->changes().size());
-    SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "foo");
+    SettingSyncData* change = sync_processor_->GetOnlyChange(kId1, "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
     EXPECT_EQ(value1, change->value());
-    change = sync_processor_->GetOnlyChange("s2", "bar");
+    change = sync_processor_->GetOnlyChange(kId2, "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
     EXPECT_EQ(value2, change->value());
 
@@ -427,23 +434,23 @@ TEST_F(ExtensionSettingsSyncTest, AnySyncDataOverwritesLocalData) {
   base::DictValue expected1, expected2;
 
   // Pre-populate one of the storage areas.
-  ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
+  ValueStore* storage1 = AddExtensionAndGetStorage(kId1, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     storage1->Set(DEFAULTS, "overwriteMe", value1);
 
     syncer::SyncDataList sync_data;
     sync_data.push_back(
-        settings_sync_util::CreateData("s1", "foo", value1, data_type));
+        settings_sync_util::CreateData(kId1, "foo", value1, data_type));
     sync_data.push_back(
-        settings_sync_util::CreateData("s2", "bar", value2, data_type));
+        settings_sync_util::CreateData(kId2, "bar", value2, data_type));
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, sync_data, std::move(sync_processor_wrapper_));
     expected1.Set("foo", value1.Clone());
     expected2.Set("bar", value2.Clone());
   });
 
-  ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
+  ValueStore* storage2 = AddExtensionAndGetStorage(kId2, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // All changes should be local, so no sync changes.
@@ -466,8 +473,8 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
   value2.GetList().Append("barValue");
 
   // Make storage1 initialised from local data, storage2 initialised from sync.
-  ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
-  ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
+  ValueStore* storage1 = AddExtensionAndGetStorage(kId1, type);
+  ValueStore* storage2 = AddExtensionAndGetStorage(kId2, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // Maintain dictionaries mirrored to the expected values of the settings in
@@ -479,7 +486,7 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
 
     syncer::SyncDataList sync_data;
     sync_data.push_back(
-        settings_sync_util::CreateData("s2", "bar", value2, data_type));
+        settings_sync_util::CreateData(kId2, "bar", value2, data_type));
 
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, sync_data, std::move(sync_processor_wrapper_));
@@ -488,9 +495,9 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
     // Make sync add some settings.
     syncer::SyncChangeList change_list;
     change_list.push_back(
-        settings_sync_util::CreateAdd("s1", "bar", value2, data_type));
+        settings_sync_util::CreateAdd(kId1, "bar", value2, data_type));
     change_list.push_back(
-        settings_sync_util::CreateAdd("s2", "foo", value1, data_type));
+        settings_sync_util::CreateAdd(kId2, "foo", value1, data_type));
     GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     expected1.Set("bar", value2.Clone());
     expected2.Set("foo", value1.Clone());
@@ -502,9 +509,9 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
     // initial setting.
     change_list.clear();
     change_list.push_back(
-        settings_sync_util::CreateUpdate("s1", "bar", value2, data_type));
+        settings_sync_util::CreateUpdate(kId1, "bar", value2, data_type));
     change_list.push_back(
-        settings_sync_util::CreateUpdate("s2", "bar", value1, data_type));
+        settings_sync_util::CreateUpdate(kId2, "bar", value1, data_type));
     GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     expected1.Set("bar", value2.Clone());
     expected2.Set("bar", value1.Clone());
@@ -516,9 +523,9 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
     // the new setting.
     change_list.clear();
     change_list.push_back(
-        settings_sync_util::CreateDelete("s1", "foo", data_type));
+        settings_sync_util::CreateDelete(kId1, "foo", data_type));
     change_list.push_back(
-        settings_sync_util::CreateDelete("s2", "foo", data_type));
+        settings_sync_util::CreateDelete(kId2, "foo", data_type));
     GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     expected1.Remove("foo");
     expected2.Remove("foo");
@@ -540,10 +547,10 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
   // Make storage1/2 initialised from local data, storage3/4 initialised from
   // sync.
-  ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
-  ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
-  ValueStore* storage3 = AddExtensionAndGetStorage("s3", type);
-  ValueStore* storage4 = AddExtensionAndGetStorage("s4", type);
+  ValueStore* storage1 = AddExtensionAndGetStorage(kId1, type);
+  ValueStore* storage2 = AddExtensionAndGetStorage(kId2, type);
+  ValueStore* storage3 = AddExtensionAndGetStorage(kId3, type);
+  ValueStore* storage4 = AddExtensionAndGetStorage(kId4, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     storage1->Set(DEFAULTS, "foo", value1);
@@ -551,9 +558,9 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
     syncer::SyncDataList sync_data;
     sync_data.push_back(
-        settings_sync_util::CreateData("s3", "bar", value2, data_type));
+        settings_sync_util::CreateData(kId3, "bar", value2, data_type));
     sync_data.push_back(
-        settings_sync_util::CreateData("s4", "bar", value2, data_type));
+        settings_sync_util::CreateData(kId4, "bar", value2, data_type));
 
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, sync_data, std::move(sync_processor_wrapper_));
@@ -564,16 +571,16 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
     storage3->Set(DEFAULTS, "foo", value1);
     storage4->Set(DEFAULTS, "foo", value1);
 
-    SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "bar");
+    SettingSyncData* change = sync_processor_->GetOnlyChange(kId1, "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
     EXPECT_EQ(value2, change->value());
-    sync_processor_->GetOnlyChange("s2", "bar");
+    sync_processor_->GetOnlyChange(kId2, "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
     EXPECT_EQ(value2, change->value());
-    change = sync_processor_->GetOnlyChange("s3", "foo");
+    change = sync_processor_->GetOnlyChange(kId3, "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
     EXPECT_EQ(value1, change->value());
-    change = sync_processor_->GetOnlyChange("s4", "foo");
+    change = sync_processor_->GetOnlyChange(kId4, "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
     EXPECT_EQ(value1, change->value());
 
@@ -586,16 +593,16 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
     storage3->Set(DEFAULTS, "bar", value1);
     storage4->Set(DEFAULTS, "foo", value2);
 
-    change = sync_processor_->GetOnlyChange("s1", "bar");
+    change = sync_processor_->GetOnlyChange(kId1, "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
     EXPECT_EQ(value1, change->value());
-    change = sync_processor_->GetOnlyChange("s2", "foo");
+    change = sync_processor_->GetOnlyChange(kId2, "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
     EXPECT_EQ(value2, change->value());
-    change = sync_processor_->GetOnlyChange("s3", "bar");
+    change = sync_processor_->GetOnlyChange(kId3, "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
     EXPECT_EQ(value1, change->value());
-    change = sync_processor_->GetOnlyChange("s4", "foo");
+    change = sync_processor_->GetOnlyChange(kId4, "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
     EXPECT_EQ(value2, change->value());
 
@@ -609,13 +616,13 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
     storage4->Remove("bar");
 
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s1", "foo")->change_type());
+              sync_processor_->GetOnlyChange(kId1, "foo")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s2", "bar")->change_type());
+              sync_processor_->GetOnlyChange(kId2, "bar")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s3", "foo")->change_type());
+              sync_processor_->GetOnlyChange(kId3, "foo")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s4", "bar")->change_type());
+              sync_processor_->GetOnlyChange(kId4, "bar")->change_type());
 
     // Remove some nonexistent settings.
     sync_processor_->ClearChanges();
@@ -640,21 +647,21 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
     storage4->Clear();
 
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s1", "foo")->change_type());
+              sync_processor_->GetOnlyChange(kId1, "foo")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s1", "bar")->change_type());
+              sync_processor_->GetOnlyChange(kId1, "bar")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s2", "foo")->change_type());
+              sync_processor_->GetOnlyChange(kId2, "foo")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s2", "bar")->change_type());
+              sync_processor_->GetOnlyChange(kId2, "bar")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s3", "foo")->change_type());
+              sync_processor_->GetOnlyChange(kId3, "foo")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s3", "bar")->change_type());
+              sync_processor_->GetOnlyChange(kId3, "bar")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s4", "foo")->change_type());
+              sync_processor_->GetOnlyChange(kId4, "foo")->change_type());
     EXPECT_EQ(syncer::SyncChange::ACTION_DELETE,
-              sync_processor_->GetOnlyChange("s4", "bar")->change_type());
+              sync_processor_->GetOnlyChange(kId4, "bar")->change_type());
 
     GetSyncableService(data_type)->StopSyncing(data_type);
   });
@@ -667,9 +674,9 @@ TEST_F(ExtensionSettingsSyncTest, ExtensionAndAppSettingsSyncSeparately) {
 
   // storage1 is an extension, storage2 is an app.
   ValueStore* storage1 =
-      AddExtensionAndGetStorage("s1", Manifest::Type::kExtension);
+      AddExtensionAndGetStorage(kId1, Manifest::Type::kExtension);
   ValueStore* storage2 =
-      AddExtensionAndGetStorage("s2", Manifest::Type::kLegacyPackagedApp);
+      AddExtensionAndGetStorage(kId2, Manifest::Type::kLegacyPackagedApp);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     storage1->Set(DEFAULTS, "foo", value1);
@@ -678,20 +685,20 @@ TEST_F(ExtensionSettingsSyncTest, ExtensionAndAppSettingsSyncSeparately) {
     SettingSyncDataMultimap extension_sync_data =
         GetAllSyncData(syncer::EXTENSION_SETTINGS);
     EXPECT_EQ(1u, extension_sync_data.size());
-    EXPECT_EQ(1u, extension_sync_data["s1"]->size());
+    EXPECT_EQ(1u, extension_sync_data[kId1]->size());
     EXPECT_PRED_FORMAT2(ValuesEq, &value1,
-                        &(*extension_sync_data["s1"])[0]->value());
+                        &(*extension_sync_data[kId1])[0]->value());
 
     SettingSyncDataMultimap app_sync_data =
         GetAllSyncData(syncer::APP_SETTINGS);
     EXPECT_EQ(1u, app_sync_data.size());
-    EXPECT_EQ(1u, app_sync_data["s2"]->size());
-    EXPECT_PRED_FORMAT2(ValuesEq, &value2, &(*app_sync_data["s2"])[0]->value());
+    EXPECT_EQ(1u, app_sync_data[kId2]->size());
+    EXPECT_PRED_FORMAT2(ValuesEq, &value2, &(*app_sync_data[kId2])[0]->value());
 
     // Stop each separately, there should be no changes either time.
     syncer::SyncDataList sync_data;
     sync_data.push_back(settings_sync_util::CreateData(
-        "s1", "foo", value1, syncer::EXTENSION_SETTINGS));
+        kId1, "foo", value1, syncer::EXTENSION_SETTINGS));
 
     GetSyncableService(syncer::EXTENSION_SETTINGS)
         ->MergeDataAndStartSyncing(syncer::EXTENSION_SETTINGS, sync_data,
@@ -701,7 +708,7 @@ TEST_F(ExtensionSettingsSyncTest, ExtensionAndAppSettingsSyncSeparately) {
     EXPECT_EQ(0u, sync_processor_->changes().size());
 
     sync_data.clear();
-    sync_data.push_back(settings_sync_util::CreateData("s2", "bar", value2,
+    sync_data.push_back(settings_sync_util::CreateData(kId2, "bar", value2,
                                                        syncer::APP_SETTINGS));
 
     std::unique_ptr<syncer::SyncChangeProcessorWrapperForTest>
@@ -725,23 +732,26 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
   // There is a bit of a convoluted method to get storage areas that can fail;
   // hand out TestingValueStore object then toggle them failing/succeeding
   // as necessary.
+  const char* kGoodExtension = kId1;
+  const char* kBadExtension = kId2;
 
-  ValueStore* good = AddExtensionAndGetStorage("good", type);
-  ValueStore* bad = AddExtensionAndGetStorage("bad", type);
+  ValueStore* good = AddExtensionAndGetStorage(kGoodExtension, type);
+  ValueStore* bad = AddExtensionAndGetStorage(kBadExtension, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // Make bad fail for incoming sync changes.
-    GetExisting("bad", data_type)->set_status_code(ValueStore::CORRUPTION);
+    GetExisting(kBadExtension, data_type)
+        ->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncDataList sync_data;
-      sync_data.push_back(
-          settings_sync_util::CreateData("good", "foo", fooValue, data_type));
-      sync_data.push_back(
-          settings_sync_util::CreateData("bad", "foo", fooValue, data_type));
+      sync_data.push_back(settings_sync_util::CreateData(kGoodExtension, "foo",
+                                                         fooValue, data_type));
+      sync_data.push_back(settings_sync_util::CreateData(kBadExtension, "foo",
+                                                         fooValue, data_type));
       GetSyncableService(data_type)->MergeDataAndStartSyncing(
           data_type, sync_data, std::move(sync_processor_wrapper_));
     }
-    GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
+    GetExisting(kBadExtension, data_type)->set_status_code(ValueStore::OK);
 
     {
       base::DictValue dict;
@@ -758,8 +768,9 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     good->Set(DEFAULTS, "bar", barValue);
     bad->Set(DEFAULTS, "bar", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     {
@@ -778,12 +789,12 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     // not failing).
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("good", "foo", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kGoodExtension, "foo", barValue, data_type));
       // (Sending UPDATE here even though it's adding, since that's what the
       // state of sync is.  In any case, it won't work.)
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("bad", "foo", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kBadExtension, "foo", barValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
 
@@ -805,8 +816,9 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     good->Set(DEFAULTS, "bar", fooValue);
     bad->Set(DEFAULTS, "bar", fooValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     {
@@ -822,17 +834,18 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     }
 
     // Failing ProcessSyncChanges shouldn't go to the storage.
-    GetExisting("bad", data_type)->set_status_code(ValueStore::CORRUPTION);
+    GetExisting(kBadExtension, data_type)
+        ->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("good", "foo", fooValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kGoodExtension, "foo", fooValue, data_type));
       // (Ditto.)
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("bad", "foo", fooValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kBadExtension, "foo", fooValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
-    GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
+    GetExisting(kBadExtension, data_type)->set_status_code(ValueStore::OK);
 
     {
       base::DictValue dict;
@@ -857,12 +870,15 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
 
     // Local settings will have been pushed to sync, since it's empty (in this
     // test; presumably it wouldn't be live, since we've been getting changes).
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "bar")->change_type());
     EXPECT_EQ(3u, sync_processor_->changes().size());
 
     // Live local changes now get pushed, too.
@@ -870,19 +886,21 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     good->Set(DEFAULTS, "bar", barValue);
     bad->Set(DEFAULTS, "bar", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("bad", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kBadExtension, "bar")->change_type());
     EXPECT_EQ(2u, sync_processor_->changes().size());
 
     // And ProcessSyncChanges work, too.
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("good", "bar", fooValue, data_type));
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("bad", "bar", fooValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kGoodExtension, "bar", fooValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kBadExtension, "bar", fooValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
 
@@ -909,17 +927,20 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
 
-  ValueStore* good = AddExtensionAndGetStorage("good", type);
-  ValueStore* bad = AddExtensionAndGetStorage("bad", type);
+  const char* kGoodExtension = kId1;
+  const char* kBadExtension = kId2;
+
+  ValueStore* good = AddExtensionAndGetStorage(kGoodExtension, type);
+  ValueStore* bad = AddExtensionAndGetStorage(kBadExtension, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // Unlike before, initially succeeding MergeDataAndStartSyncing.
     {
       syncer::SyncDataList sync_data;
-      sync_data.push_back(
-          settings_sync_util::CreateData("good", "foo", fooValue, data_type));
-      sync_data.push_back(
-          settings_sync_util::CreateData("bad", "foo", fooValue, data_type));
+      sync_data.push_back(settings_sync_util::CreateData(kGoodExtension, "foo",
+                                                         fooValue, data_type));
+      sync_data.push_back(settings_sync_util::CreateData(kBadExtension, "foo",
+                                                         fooValue, data_type));
       GetSyncableService(data_type)->MergeDataAndStartSyncing(
           data_type, sync_data, std::move(sync_processor_wrapper_));
     }
@@ -938,16 +959,17 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
     }
 
     // Now fail ProcessSyncChanges for bad.
-    GetExisting("bad", data_type)->set_status_code(ValueStore::CORRUPTION);
+    GetExisting(kBadExtension, data_type)
+        ->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateAdd("good", "bar", barValue, data_type));
-      change_list.push_back(
-          settings_sync_util::CreateAdd("bad", "bar", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kGoodExtension, "bar",
+                                                          barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kBadExtension, "bar",
+                                                          barValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
-    GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
+    GetExisting(kBadExtension, data_type)->set_status_code(ValueStore::OK);
 
     {
       base::DictValue dict;
@@ -966,17 +988,18 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
     good->Set(DEFAULTS, "foo", barValue);
     bad->Set(DEFAULTS, "foo", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     // No more changes received from sync should go to bad.
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateAdd("good", "foo", fooValue, data_type));
-      change_list.push_back(
-          settings_sync_util::CreateAdd("bad", "foo", fooValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kGoodExtension, "foo",
+                                                          fooValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kBadExtension, "foo",
+                                                          fooValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
 
@@ -1001,8 +1024,11 @@ TEST_F(ExtensionSettingsSyncTest, FailingGetAllSyncDataDoesntStopSync) {
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
 
-  ValueStore* good = AddExtensionAndGetStorage("good", type);
-  ValueStore* bad = AddExtensionAndGetStorage("bad", type);
+  const char* kGoodExtension = kId1;
+  const char* kBadExtension = kId2;
+
+  ValueStore* good = AddExtensionAndGetStorage(kGoodExtension, type);
+  ValueStore* bad = AddExtensionAndGetStorage(kBadExtension, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     good->Set(DEFAULTS, "foo", fooValue);
@@ -1010,34 +1036,41 @@ TEST_F(ExtensionSettingsSyncTest, FailingGetAllSyncDataDoesntStopSync) {
 
     // Even though bad will fail to get all sync data, sync data should still
     // include that from good.
-    GetExisting("bad", data_type)->set_status_code(ValueStore::CORRUPTION);
+    GetExisting(kBadExtension, data_type)
+        ->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncDataList all_sync_data =
           GetSyncableService(data_type)->GetAllSyncDataForTesting(data_type);
       EXPECT_EQ(1u, all_sync_data.size());
-      EXPECT_EQ(syncer::ClientTagHash::FromUnhashed(data_type, "good/foo"),
+      EXPECT_EQ(syncer::ClientTagHash::FromUnhashed(
+                    data_type, settings_sync_util::ConstructClientTag(
+                                   kGoodExtension, "foo")),
                 all_sync_data[0].GetClientTagHash());
     }
-    GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
+    GetExisting(kBadExtension, data_type)->set_status_code(ValueStore::OK);
 
     // Sync shouldn't be disabled for good (nor bad -- but this is unimportant).
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, syncer::SyncDataList(), std::move(sync_processor_wrapper_));
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "foo")->change_type());
     EXPECT_EQ(2u, sync_processor_->changes().size());
 
     sync_processor_->ClearChanges();
     good->Set(DEFAULTS, "bar", barValue);
     bad->Set(DEFAULTS, "bar", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "bar")->change_type());
     EXPECT_EQ(2u, sync_processor_->changes().size());
   });
 }
@@ -1049,8 +1082,11 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
 
-  ValueStore* good = AddExtensionAndGetStorage("good", type);
-  ValueStore* bad = AddExtensionAndGetStorage("bad", type);
+  const char* kGoodExtension = kId1;
+  const char* kBadExtension = kId2;
+
+  ValueStore* good = AddExtensionAndGetStorage(kGoodExtension, type);
+  ValueStore* bad = AddExtensionAndGetStorage(kBadExtension, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     good->Set(DEFAULTS, "foo", fooValue);
@@ -1058,13 +1094,15 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
 
     // good will successfully push foo:fooValue to sync, but bad will fail to
     // get them so won't.
-    GetExisting("bad", data_type)->set_status_code(ValueStore::CORRUPTION);
+    GetExisting(kBadExtension, data_type)
+        ->set_status_code(ValueStore::CORRUPTION);
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, syncer::SyncDataList(), std::move(sync_processor_wrapper_));
-    GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
+    GetExisting(kBadExtension, data_type)->set_status_code(ValueStore::OK);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     // bad should now be disabled for sync.
@@ -1072,18 +1110,19 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
     good->Set(DEFAULTS, "bar", barValue);
     bad->Set(DEFAULTS, "bar", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateUpdate("good", "foo", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateUpdate(
+          kGoodExtension, "foo", barValue, data_type));
       // (Sending ADD here even though it's updating, since that's what the
       // state of sync is.  In any case, it won't work.)
-      change_list.push_back(
-          settings_sync_util::CreateAdd("bad", "foo", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kBadExtension, "foo",
+                                                          barValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
 
@@ -1110,24 +1149,30 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, syncer::SyncDataList(), std::move(sync_processor_wrapper_));
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "bar")->change_type());
     EXPECT_EQ(4u, sync_processor_->changes().size());
 
     sync_processor_->ClearChanges();
     good->Set(DEFAULTS, "bar", fooValue);
     bad->Set(DEFAULTS, "bar", fooValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
     EXPECT_EQ(2u, sync_processor_->changes().size());
   });
 }
@@ -1139,8 +1184,11 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
 
-  ValueStore* good = AddExtensionAndGetStorage("good", type);
-  ValueStore* bad = AddExtensionAndGetStorage("bad", type);
+  const char* kGoodExtension = kId1;
+  const char* kBadExtension = kId2;
+
+  ValueStore* good = AddExtensionAndGetStorage(kGoodExtension, type);
+  ValueStore* bad = AddExtensionAndGetStorage(kBadExtension, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // Only set bad; setting good will cause it to fail below.
@@ -1156,17 +1204,18 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
     good->Set(DEFAULTS, "foo", barValue);
     bad->Set(DEFAULTS, "foo", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     // Changes from sync will be sent to good, not to bad.
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateAdd("good", "bar", barValue, data_type));
-      change_list.push_back(
-          settings_sync_util::CreateAdd("bad", "bar", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kGoodExtension, "bar",
+                                                          barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kBadExtension, "bar",
+                                                          barValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
 
@@ -1191,22 +1240,27 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, syncer::SyncDataList(), std::move(sync_processor_wrapper_));
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "foo")->change_type());
     EXPECT_EQ(3u, sync_processor_->changes().size());
 
     sync_processor_->ClearChanges();
     good->Set(DEFAULTS, "foo", fooValue);
     bad->Set(DEFAULTS, "foo", fooValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(2u, sync_processor_->changes().size());
   });
 }
@@ -1218,8 +1272,11 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
 
-  ValueStore* good = AddExtensionAndGetStorage("good", type);
-  ValueStore* bad = AddExtensionAndGetStorage("bad", type);
+  const char* kGoodExtension = kId1;
+  const char* kBadExtension = kId2;
+
+  ValueStore* good = AddExtensionAndGetStorage(kGoodExtension, type);
+  ValueStore* bad = AddExtensionAndGetStorage(kBadExtension, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
@@ -1231,8 +1288,9 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
     bad->Set(DEFAULTS, "foo", fooValue);
     sync_processor_->set_fail_all_requests(false);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     // No further changes should be sent from bad.
@@ -1240,17 +1298,18 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
     good->Set(DEFAULTS, "foo", barValue);
     bad->Set(DEFAULTS, "foo", barValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     // Changes from sync will be sent to good, not to bad.
     {
       syncer::SyncChangeList change_list;
-      change_list.push_back(
-          settings_sync_util::CreateAdd("good", "bar", barValue, data_type));
-      change_list.push_back(
-          settings_sync_util::CreateAdd("bad", "bar", barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kGoodExtension, "bar",
+                                                          barValue, data_type));
+      change_list.push_back(settings_sync_util::CreateAdd(kBadExtension, "bar",
+                                                          barValue, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
 
@@ -1275,22 +1334,27 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
     GetSyncableService(data_type)->MergeDataAndStartSyncing(
         data_type, syncer::SyncDataList(), std::move(sync_processor_wrapper_));
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("good", "bar")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
-              sync_processor_->GetOnlyChange("bad", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kGoodExtension, "bar")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_ADD,
+        sync_processor_->GetOnlyChange(kBadExtension, "foo")->change_type());
     EXPECT_EQ(3u, sync_processor_->changes().size());
 
     sync_processor_->ClearChanges();
     good->Set(DEFAULTS, "foo", fooValue);
     bad->Set(DEFAULTS, "foo", fooValue);
 
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
-    EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE,
-              sync_processor_->GetOnlyChange("good", "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
+    EXPECT_EQ(
+        syncer::SyncChange::ACTION_UPDATE,
+        sync_processor_->GetOnlyChange(kGoodExtension, "foo")->change_type());
     EXPECT_EQ(2u, sync_processor_->changes().size());
   });
 }
@@ -1309,7 +1373,7 @@ TEST_F(ExtensionSettingsSyncTest,
   });
 
   // Large local change rejected and doesn't get sent out.
-  ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
+  ValueStore* storage1 = AddExtensionAndGetStorage(kId1, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     EXPECT_FALSE(
@@ -1318,15 +1382,15 @@ TEST_F(ExtensionSettingsSyncTest,
   });
 
   // Large incoming change should still get accepted.
-  ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
+  ValueStore* storage2 = AddExtensionAndGetStorage(kId2, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     {
       syncer::SyncChangeList change_list;
       change_list.push_back(settings_sync_util::CreateAdd(
-          "s1", "large_value", large_value, data_type));
+          kId1, "large_value", large_value, data_type));
       change_list.push_back(settings_sync_util::CreateAdd(
-          "s2", "large_value", large_value, data_type));
+          kId2, "large_value", large_value, data_type));
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
     {
@@ -1344,14 +1408,14 @@ TEST_F(ExtensionSettingsSyncTest, Dots) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
   Manifest::Type type = Manifest::Type::kExtension;
 
-  ValueStore* storage = AddExtensionAndGetStorage("ext", type);
+  ValueStore* storage = AddExtensionAndGetStorage(kId5, type);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     {
       syncer::SyncDataList sync_data_list;
       std::unique_ptr<base::Value> string_value(new base::Value("value"));
       sync_data_list.push_back(settings_sync_util::CreateData(
-          "ext", "key.with.dot", *string_value, data_type));
+          kId5, "key.with.dot", *string_value, data_type));
 
       GetSyncableService(data_type)->MergeDataAndStartSyncing(
           data_type, sync_data_list, std::move(sync_processor_wrapper_));
@@ -1375,10 +1439,64 @@ TEST_F(ExtensionSettingsSyncTest, Dots) {
       ASSERT_EQ(1u, sync_processor_->changes().size());
       SettingSyncData* sync_data = sync_processor_->changes()[0].get();
       EXPECT_EQ(syncer::SyncChange::ACTION_ADD, sync_data->change_type());
-      EXPECT_EQ("ext", sync_data->extension_id());
+      EXPECT_EQ(kId5, sync_data->extension_id());
       EXPECT_EQ("key.with.spot", sync_data->key());
       EXPECT_EQ(sync_data->value(), *string_value);
     }
+  });
+}
+
+TEST_F(ExtensionSettingsSyncTest, SyncDataWithInvalidExtensionIdIsIgnored) {
+  syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
+  Manifest::Type type = Manifest::Type::kExtension;
+
+  base::Value value("fooValue");
+
+  const std::string invalid_ids[] = {"../../escaped", "bad/id", "x",
+                                     std::string(32, 'z')};
+
+  ValueStore* storage = AddExtensionAndGetStorage(kId1, type);
+
+  PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
+    // Initial sync data mixing a valid extension ID with invalid ones.
+    syncer::SyncDataList sync_data;
+    sync_data.push_back(
+        settings_sync_util::CreateData(kId1, "foo", value, data_type));
+    for (const auto& id : invalid_ids) {
+      sync_data.push_back(
+          settings_sync_util::CreateData(id, "foo", value, data_type));
+    }
+    GetSyncableService(data_type)->MergeDataAndStartSyncing(
+        data_type, sync_data, std::move(sync_processor_wrapper_));
+
+    // Data for the valid ID is applied; entries with invalid IDs are dropped
+    // and no storage areas are created for them.
+    base::DictValue expected;
+    expected.Set("foo", value.Clone());
+    EXPECT_PRED_FORMAT2(SettingsEq, expected, storage->Get());
+
+    SettingSyncDataMultimap all_sync_data = GetAllSyncData(data_type);
+    EXPECT_EQ(1u, all_sync_data.size());
+    EXPECT_TRUE(all_sync_data.contains(kId1));
+    for (const auto& id : invalid_ids) {
+      EXPECT_FALSE(all_sync_data.contains(id)) << id;
+    }
+
+    // Incremental sync changes with invalid IDs are also dropped.
+    syncer::SyncChangeList change_list;
+    for (const auto& id : invalid_ids) {
+      change_list.push_back(
+          settings_sync_util::CreateAdd(id, "bar", value, data_type));
+    }
+    GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
+
+    all_sync_data = GetAllSyncData(data_type);
+    EXPECT_EQ(1u, all_sync_data.size());
+    for (const auto& id : invalid_ids) {
+      EXPECT_FALSE(all_sync_data.contains(id)) << id;
+    }
+
+    GetSyncableService(data_type)->StopSyncing(data_type);
   });
 }
 
@@ -1418,7 +1536,7 @@ static void UnlimitedLocalStorageTestCallback(ValueStore* local_storage) {
 }  // namespace
 
 TEST_F(ExtensionSettingsSyncTest, UnlimitedStorageForLocalButNotSync) {
-  const ExtensionId id = "ext";
+  const ExtensionId id = kId5;
   std::set<std::string> permissions;
   permissions.insert("unlimitedStorage");
   scoped_refptr<const Extension> extension =
