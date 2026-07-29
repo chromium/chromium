@@ -44,6 +44,15 @@ public class ChromeMessageAutodismissDurationProviderTest {
         AccessibilityState.uninitializeForTesting();
     }
 
+    private void setAccessibilityServices(int capabilities) {
+        AccessibilityServiceInfo service =
+                new AccessibilityStateTestHelper.BuilderForTests()
+                        .setCapabilities(capabilities)
+                        .build();
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(service));
+        AccessibilityStateTestHelper.updateAccessibilityServices();
+    }
+
     @Test
     public void testDefaultNonA11yDuration() {
         ChromeMessageAutodismissDurationProvider provider =
@@ -59,12 +68,7 @@ public class ChromeMessageAutodismissDurationProviderTest {
 
     @Test
     public void testA11yDuration() {
-        AccessibilityServiceInfo service =
-                new AccessibilityStateTestHelper.BuilderForTests()
-                        .setCapabilities(AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
-                        .build();
-        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(service));
-        AccessibilityStateTestHelper.updateAccessibilityServices();
+        setAccessibilityServices(AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES);
 
         ChromeMessageAutodismissDurationProvider provider =
                 new ChromeMessageAutodismissDurationProvider();
@@ -79,6 +83,8 @@ public class ChromeMessageAutodismissDurationProviderTest {
 
     @Test
     public void testCustomDuration() {
+        setAccessibilityServices(/* capabilities= */ 0);
+
         ChromeMessageAutodismissDurationProvider provider =
                 new ChromeMessageAutodismissDurationProvider();
         provider.setDefaultAutodismissDurationMsForTesting(500);
@@ -92,7 +98,9 @@ public class ChromeMessageAutodismissDurationProviderTest {
                 "Provider should return default non-a11y duration if custom duration is too short",
                 500,
                 provider.get(MessageIdentifier.TEST_MESSAGE, 250));
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+
+        setAccessibilityServices(AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES);
+
         Assert.assertEquals(
                 "Provider should return custom a11y duration if any gesture performing "
                         + "a11y services are running.",
