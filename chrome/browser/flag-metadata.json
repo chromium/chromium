@@ -506,6 +506,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-yuv-overlay-even-alignment",
+    "owners": [ "philyan@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-zoom-immersive",
     "owners": [
       "hitarthkothari@google.com",

@@ -35,6 +35,13 @@ GL_EXPORT BASE_DECLARE_FEATURE(kFallbackToSWIfGLES3NotSupported);
 GL_EXPORT BASE_DECLARE_FEATURE(kUseCompositorClockVSyncInterval);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether 2-pixel even boundary alignment is enforced for YUV 4:2:0
+// and 4:2:2 SurfaceControl overlays to prevent odd-coordinate hardware scaler
+// rejections.
+GL_EXPORT BASE_DECLARE_FEATURE(kAndroidYuvOverlayEvenAlignment);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
 
 GL_EXPORT bool UsePassthroughCommandDecoder();

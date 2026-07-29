@@ -11,7 +11,9 @@
 
 #include "base/android/apk_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,6 +40,16 @@ gfx::Size GetBufferSize(const AHardwareBuffer* buffer) {
   AHardwareBuffer_Desc desc;
   AHardwareBuffer_describe(buffer, &desc);
   return gfx::Size(desc.width, desc.height);
+}
+
+// https://developer.android.com/reference/android/graphics/ImageFormat#YV12
+constexpr unsigned int AHARDWAREBUFFER_FORMAT_YV12 = 0x32315659;
+
+bool IsYuvHardwareBufferFormat(uint32_t format) {
+  return format == AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420 ||
+         format == AHARDWAREBUFFER_FORMAT_YV12 ||
+         format == AHARDWAREBUFFER_FORMAT_YCbCr_P010 ||
+         format == AHARDWAREBUFFER_FORMAT_YCbCr_P210;
 }
 
 std::string BuildSurfaceName(const char* suffix) {
@@ -82,7 +94,9 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
       gpu_task_runner_(std::move(task_runner)),
       use_target_deadline_(features::IsAndroidFrameDeadlineEnabled()),
       using_on_commit_callback_(!use_target_deadline_ &&
-                                gfx::SurfaceControl::SupportsOnCommit()) {}
+                                gfx::SurfaceControl::SupportsOnCommit()),
+      is_yuv_alignment_enabled_(base::FeatureList::IsEnabled(
+          features::kAndroidYuvOverlayEvenAlignment)) {}
 
 GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
   Destroy();
@@ -235,6 +249,65 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_transaction_.reset();
 }
 
+// static
+gfx::Rect GLSurfaceEGLSurfaceControl::CalculateSourceCrop(
+    const gfx::RectF& scaled_rect,
+    const gfx::Size& buffer_size,
+    uint32_t hardware_buffer_format,
+    bool is_yuv_alignment_enabled) {
+  gfx::Rect src = gfx::ToEnclosedRect(scaled_rect);
+
+  // When the video is being scrolled offscreen DisplayCompositor will crop it
+  // to only visible portion and adjust crop_rect accordingly. When the video
+  // is smaller than the surface is can lead to the crop rect being less than
+  // a pixel in size. This adjusts the crop rect size to at least 1 pixel as
+  // we want to stretch last visible pixel line/column in this case.
+  // Note: We will do it even if crop_rect width/height is exact 0.0f. In
+  // reality this should never happen and there is no way to display video
+  // with empty crop rect, so display compositor should not request this.
+  if (src.width() == 0) {
+    src.set_width(1);
+    if (src.right() > buffer_size.width()) {
+      src.set_x(buffer_size.width() - 1);
+    }
+  }
+  if (src.height() == 0) {
+    src.set_height(1);
+    if (src.bottom() > buffer_size.height()) {
+      src.set_y(buffer_size.height() - 1);
+    }
+  }
+
+  // Enforce 2-pixel even boundary alignment for YUV 4:2:0 and 4:2:2 video
+  // buffers. Fractional display DPI densities and scaling across Android
+  // devices can drift normalized video crops by <1px (e.g. src.x = 0.666 -> 1).
+  // Certain hardware overlay scalers (such as Intel DRM Hardware Composer on
+  // x86 Android desktop platforms) strictly reject YUV overlay candidates with
+  // odd crop starting positions or odd dimensions due to 2x2 chroma subsampling
+  // rules, forcing 100% fallback to GPU client composition.
+  if (is_yuv_alignment_enabled &&
+      IsYuvHardwareBufferFormat(hardware_buffer_format)) {
+    int orig_right = src.right();
+    int orig_bottom = src.bottom();
+    src.set_x(src.x() & ~1);
+    src.set_y(src.y() & ~1);
+    src.set_width((orig_right - src.x() + 1) & ~1);
+    src.set_height((orig_bottom - src.y() + 1) & ~1);
+  }
+
+  // When display compositor rounds up destination rect to integer coordinates
+  // it becomes slightly bigger. After we adjust source rect accordingly, it
+  // can become larger than a buffer so we clip it here. See crbug.com/1083412.
+  // Note: Intersecting AFTER our YUV even-coordinate alignment is mandatory to
+  // guarantee zero out-of-bounds scanout requests across the Android NDK
+  // boundary. In almost all real scenarios this intersection will not revert
+  // coordinates back to odd numbers because physical Android Gralloc YUV media
+  // buffers (buffer_size) are natively allocated with even dimensions by
+  // hardware decoders.
+  src.Intersect(gfx::Rect(buffer_size));
+  return src;
+}
+
 bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
@@ -323,32 +396,10 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
                        buffer_size.height());
 
     gfx::Rect dst = gfx::ToNearestRect(overlay_plane_data.display_bounds);
-    gfx::Rect src = gfx::ToEnclosedRect(scaled_rect);
-
-    // When the video is being scrolled offscreen DisplayCompositor will crop it
-    // to only visible portion and adjust crop_rect accordingly. When the video
-    // is smaller than the surface is can lead to the crop rect being less than
-    // a pixel in size. This adjusts the crop rect size to at least 1 pixel as
-    // we want to stretch last visible pixel line/column in this case.
-    // Note: We will do it even if crop_rect width/height is exact 0.0f. In
-    // reality this should never happen and there is no way to display video
-    // with empty crop rect, so display compositor should not request this.
-
-    if (src.width() == 0) {
-      src.set_width(1);
-      if (src.right() > buffer_size.width())
-        src.set_x(buffer_size.width() - 1);
-    }
-    if (src.height() == 0) {
-      src.set_height(1);
-      if (src.bottom() > buffer_size.height())
-        src.set_y(buffer_size.height() - 1);
-    }
-
-    // When display compositor rounds up destination rect to integer coordinates
-    // it becomes slightly bigger. After we adjust source rect accordingly, it
-    // can become larger then a buffer so we clip it here. See crbug.com/1083412
-    src.Intersect(gfx::Rect(buffer_size));
+    AHardwareBuffer_Desc desc = {};
+    AHardwareBuffer_describe(hardware_buffer, &desc);
+    gfx::Rect src = CalculateSourceCrop(scaled_rect, buffer_size, desc.format,
+                                        is_yuv_alignment_enabled_);
 
     auto transform =
         std::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform);

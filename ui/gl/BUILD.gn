@@ -618,6 +618,10 @@ test("gl_unittests") {
     ]
   }
 
+  if (is_android) {
+    sources += [ "gl_surface_egl_surface_control_unittest.cc" ]
+  }
+
   deps = [
     ":gl",
     ":gl_headers",

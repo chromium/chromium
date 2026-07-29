@@ -71,6 +71,12 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
   void SetChoreographerVsyncIdForNextFrame(
       std::optional<int64_t> choreographer_vsync_id) override;
 
+  // Exposed for unit testing. Computes the surface source crop.
+  static gfx::Rect CalculateSourceCrop(const gfx::RectF& scaled_rect,
+                                       const gfx::Size& buffer_size,
+                                       uint32_t hardware_buffer_format,
+                                       bool is_yuv_alignment_enabled);
+
  private:
   GLSurfaceEGLSurfaceControl(
       scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
@@ -280,6 +286,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
   // after previous transaction is ack-ed.
   const bool use_target_deadline_;
   const bool using_on_commit_callback_;
+  const bool is_yuv_alignment_enabled_;
 
   std::optional<int64_t> choreographer_vsync_id_for_next_frame_;
 

@@ -160,6 +160,12 @@ bool UseCompositorClockVSyncInterval() {
 BASE_FEATURE(kDCompOnD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables 2-pixel even boundary alignment for YUV SurfaceControl overlays.
+BASE_FEATURE(kAndroidYuvOverlayEvenAlignment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool UseGpuVsync() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableGpuVsync) &&

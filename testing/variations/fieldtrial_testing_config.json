@@ -1671,6 +1671,21 @@
             ]
         }
     ],
+    "AndroidYuvOverlayEvenAlignment": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidYuvOverlayEvenAlignment"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidZeroCopyVideoCapture": [
         {
             "platforms": [

@@ -5144,6 +5144,12 @@ inline constexpr char kShowTabGroupsMacSystemMenuDescription[] =
     "Show tab group colours of tabs that are in tab groups in the 'tabs' and"
     "'windows' menu' of the Mac OS menu bar";
 
+inline constexpr char kAndroidYuvOverlayEvenAlignmentName[] =
+    "Android YUV Overlay Even Alignment";
+inline constexpr char kAndroidYuvOverlayEvenAlignmentDescription[] =
+    "Enforces 2-pixel even boundary alignment for YUV hardware video overlays "
+    "in SurfaceControl to prevent odd-coordinate display scaling rejections.";
+
 inline constexpr char kUsePassthroughCommandDecoderName[] =
     "Use passthrough command decoder";
 inline constexpr char kUsePassthroughCommandDecoderDescription[] =
