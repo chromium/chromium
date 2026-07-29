@@ -290,6 +290,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
   constexpr wgpu::FeatureName kOptionalFeatures[] = {
       wgpu::FeatureName::BGRA8UnormStorage,
       wgpu::FeatureName::BufferMapExtendedUsages,
+      wgpu::FeatureName::DawnAllowUndefinedLoadStoreOp,
       wgpu::FeatureName::DawnMultiPlanarFormats,
       wgpu::FeatureName::DualSourceBlending,
       wgpu::FeatureName::FramebufferFetch,
