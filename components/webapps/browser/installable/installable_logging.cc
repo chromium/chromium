@@ -25,7 +25,7 @@ static const char kNotFromSecureOriginMessage[] =
 static const char kNoManifestMessage[] = "Page has no manifest <link> URL";
 static const char kManifestParsingOrNetworkErrorMessage[] =
     "The manifest could not be fetched, parsed, or the document is on an "
-    "opaque origin.";
+    "opaque origin";
 static const char kStartUrlNotValidMessage[] =
     "Manifest start URL is not valid";
 static const char kManifestMissingNameOrShortNameMessage[] =
@@ -36,7 +36,7 @@ static const char kManifestDisplayNotSupportedMessage[] =
 static const char kManifestMissingSuitableIconMessage[] =
     "Manifest does not contain a suitable icon - PNG, SVG or WebP format of at "
     "least %dpx is required, the sizes attribute must be set, and the purpose "
-    "attribute, if set, must include \"any\" or \"maskable\".";
+    "attribute, if set, must include \"any\" or \"maskable\"";
 static const char kNoAcceptableIconMessage[] =
     "No supplied icon is at least %dpx square in PNG, SVG or WebP format";
 static const char kCannotDownloadIconMessage[] =
@@ -57,7 +57,7 @@ static const char kPreferRelatedApplications[] =
     "Manifest specifies prefer_related_applications: true";
 static const char kPreferRelatedApplicationsSupportedOnlyBetaStable[] =
     "prefer_related_applications is only supported on Chrome Beta and Stable "
-    "channels on Android.";
+    "channels on Android";
 static const char kManifestLocationChanged[] =
     "Manifest location changed during fetch";
 static const char kManifestDisplayOverrideNotSupportedMessage[] =
