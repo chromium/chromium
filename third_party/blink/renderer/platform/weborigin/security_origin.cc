@@ -482,6 +482,11 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
   return network::IsOriginPotentiallyTrustworthy(ToUrlOrigin());
 }
 
+bool SecurityOrigin::IsWebUI() const {
+  return protocol_ == "chrome" || protocol_ == "chrome-untrusted" ||
+         SchemeRegistry::IsWebUIScheme(protocol_);
+}
+
 // static
 String SecurityOrigin::IsPotentiallyTrustworthyErrorMessage() {
   return "Only secure origins are allowed (see: https://goo.gl/Y0ZkNV).";

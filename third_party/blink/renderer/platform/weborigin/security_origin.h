@@ -209,6 +209,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy
   bool IsPotentiallyTrustworthy() const;
 
+  // Returns true if this origin's protocol is a WebUI scheme (e.g. chrome://,
+  // chrome-untrusted://, or registered as WebUI).
+  bool IsWebUI() const;
+
   // Returns a human-readable error message describing that a non-secure
   // origin's access to a feature is denied.
   static String IsPotentiallyTrustworthyErrorMessage();

@@ -4856,6 +4856,19 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
   }
 
   if (world_id == ISOLATED_WORLD_ID_GLOBAL &&
+      base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
+    bool is_unbounded_allowed =
+        base::FeatureList::IsEnabled(
+            blink::features::kUnboundedElementOnTheOpenWeb) ||
+        enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
+        (GetWebFrame() && !GetWebFrame()->GetSecurityOrigin().IsNull() &&
+         GetWebFrame()->GetSecurityOrigin().IsWebUI());
+    if (is_unbounded_allowed) {
+      blink::WebV8Features::EnableUnboundedElement(context, true);
+    }
+  }
+
+  if (world_id == ISOLATED_WORLD_ID_GLOBAL &&
       mojo_js_interface_broker_.is_valid()) {
     // MojoJS interface broker can be enabled on subframes, and will limit the
     // interfaces JavaScript can request to those provided in the broker.

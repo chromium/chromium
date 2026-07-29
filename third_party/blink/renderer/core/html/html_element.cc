@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_togglepopoveroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -1598,25 +1599,14 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
     return promise;
   }
 
-  // If you change the preconditions/permissions for unbounded elements, be sure
-  // to update the corresponding browser-side checks in
-  // RenderFrameHostImpl::RequestUnboundedSurface.
-  const SecurityOrigin* security_origin =
-      GetDocument().GetExecutionContext()->GetSecurityOrigin();
-  bool is_privileged =
-      security_origin &&
-      (security_origin->Protocol() == "chrome" ||
-       security_origin->Protocol() == "chrome-untrusted" ||
-       SchemeRegistry::IsWebUIScheme(security_origin->Protocol()));
-  if (!is_privileged &&
-      !RuntimeEnabledFeatures::UnboundedElementOnTheOpenWebEnabled()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kSecurityError,
-        "showUnboundedElement is only supported from privileged contexts."));
-    return promise;
-  }
+  ContextFeatureSettings::UnboundedElementAuth auth =
+      ContextFeatureSettings::GetUnboundedElementAuth(
+          GetDocument().GetExecutionContext());
+  CHECK_NE(auth, ContextFeatureSettings::UnboundedElementAuth::kDenied);
 
-  if (!is_privileged && !LocalFrame::HasTransientUserActivation(frame)) {
+  if (auth !=
+          ContextFeatureSettings::UnboundedElementAuth::kAllowedPrivileged &&
+      !LocalFrame::HasTransientUserActivation(frame)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "API can only be initiated by a user gesture."));

@@ -68,6 +68,10 @@ class BLINK_PLATFORM_EXPORT WebSecurityOrigin {
   WebString Protocol() const;
   WebString Host() const;
 
+  // Returns true if this origin's protocol is a WebUI scheme (e.g., chrome://,
+  // chrome-untrusted://, or a scheme registered as WebUI).
+  bool IsWebUI() const;
+
   // Like url::Origin::port, this returns the default port for standard URLs
   // with no explicit port set.
   uint16_t Port() const;

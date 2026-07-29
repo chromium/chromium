@@ -33,6 +33,8 @@ class BLINK_EXPORT WebV8Features {
 
   static void EnableMojoJSFileSystemAccessHelper(v8::Local<v8::Context>, bool);
 
+  static void EnableUnboundedElement(v8::Local<v8::Context>, bool);
+
   // Protected memory values require initialization before they can be used.
   // This method is used to perform that initialization of the static protected
   // memory bool is used to track if MojoJS has been properly enabled for a

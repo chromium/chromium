@@ -67,12 +67,28 @@ class CORE_EXPORT ContextFeatureSettings final
     return enable_private_aggregation_in_shared_storage_;
   }
 
+  enum class UnboundedElementAuth {
+    kDenied,
+    kAllowedOpenWeb,
+    kAllowedPrivileged,
+  };
+
+  static UnboundedElementAuth GetUnboundedElementAuth(
+      const ExecutionContext* context);
+
+  // ContextEnabled=UnboundedElement
+  void EnableUnboundedElement(bool enable) {
+    enable_unbounded_element_ = enable;
+  }
+  bool isUnboundedElementEnabled() const;
+
   void Trace(Visitor*) const override;
 
  private:
   bool enable_mojo_js_ = false;
   bool enable_mojo_js_file_system_access_helper_ = false;
   bool enable_private_aggregation_in_shared_storage_ = false;
+  bool enable_unbounded_element_ = false;
 
   // Protected memory bool that indicates if MojoJS bindings are allowed to be
   // enabled for any given context of the process. Should be set to true by

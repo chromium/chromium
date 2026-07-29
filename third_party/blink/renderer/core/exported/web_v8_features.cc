@@ -93,6 +93,19 @@ void WebV8Features::EnableMojoJSFileSystemAccessHelper(
 }
 
 // static
+void WebV8Features::EnableUnboundedElement(v8::Local<v8::Context> context,
+                                           bool enable) {
+  ExecutionContext* execution_context = ExecutionContext::From(context);
+  if (!execution_context) {
+    return;
+  }
+  ContextFeatureSettings::From(
+      execution_context,
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableUnboundedElement(enable);
+}
+
+// static
 void WebV8Features::InitializeMojoJSAllowedProtectedMemory() {
   ContextFeatureSettings::InitializeMojoJSAllowedProtectedMemory();
 }

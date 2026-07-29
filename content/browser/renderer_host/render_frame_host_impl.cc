@@ -11322,6 +11322,27 @@ void RenderFrameHostImpl::InitializeCrashReportContext(
   std::move(callback).Run(std::move(region));
 }
 
+// Preconditions/permissions for unbounded elements are checked in:
+// - RenderFrameHostImpl::GetUnboundedElementAuth (browser side)
+// - ContextFeatureSettings::GetUnboundedElementAuth (renderer side)
+//
+// Permissions require UnboundedElement to be enabled AND either:
+// 1) UnboundedElementOnTheOpenWeb is enabled, or
+// 2) The context/origin is a privileged WebUI scheme (or has WebUI bindings).
+RenderFrameHostImpl::UnboundedElementAuth
+RenderFrameHostImpl::GetUnboundedElementAuth() const {
+  if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
+    return UnboundedElementAuth::kDenied;
+  }
+  if (web_ui() != nullptr || HasWebUIOrigin(GetLastCommittedOrigin())) {
+    return UnboundedElementAuth::kAllowedPrivileged;
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUnboundedElementOnTheOpenWeb)) {
+    return UnboundedElementAuth::kAllowedOpenWeb;
+  }
+  return UnboundedElementAuth::kDenied;
+}
 
 void RenderFrameHostImpl::RequestUnboundedSurface(
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
@@ -11339,25 +11360,20 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
     }
     return;
   }
-  // If you change the preconditions/permissions for unbounded elements, be sure
-  // to update the corresponding Blink-side checks in
-  // HTMLElement::showUnboundedElement.
-  // Only allow unbounded elements to be used by WebUI and other chrome://
-  // scheme callers.
-  bool is_privileged = GetWebUI() != nullptr ||
-                       GetLastCommittedOrigin().scheme() == kChromeUIScheme;
-  if (!is_privileged && !HasTransientUserActivation()) {
+  UnboundedElementAuth auth = GetUnboundedElementAuth();
+  if (auth == UnboundedElementAuth::kDenied) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "RequestUnboundedSurface is only supported from privileged contexts.");
+    return;
+  }
+  if (auth != UnboundedElementAuth::kAllowedPrivileged &&
+      !HasTransientUserActivation()) {
     local_frame_host_receiver_.ReportBadMessage(
         "RequestUnboundedSurface should not be called without user "
         "activation.");
     return;
   }
-  if (!is_privileged && !base::FeatureList::IsEnabled(
-                            blink::features::kUnboundedElementOnTheOpenWeb)) {
-    local_frame_host_receiver_.ReportBadMessage(
-        "RequestUnboundedSurface is only supported from privileged contexts.");
-    return;
-  }
+
   if (bounds.IsEmpty()) {
     local_frame_host_receiver_.ReportBadMessage(
         "RequestUnboundedSurface called with empty bounds.");

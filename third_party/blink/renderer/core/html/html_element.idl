@@ -79,9 +79,9 @@
     [RuntimeEnabled=OverscrollGestures,CEReactions,Reflect,ReflectOnly=("auto"),ReflectEmpty="auto",ReflectInvalid="auto"] attribute DOMString? overscrollarea;
 
     // Unbounded Element API
-    [RuntimeEnabled=UnboundedElement,CEReactions,Reflect] attribute boolean unbounded;
-    [RuntimeEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> showUnboundedElement();
-    [RuntimeEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> hideUnboundedElement();
+    [ContextEnabled=UnboundedElement,CEReactions,Reflect] attribute boolean unbounded;
+    [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> showUnboundedElement();
+    [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> hideUnboundedElement();
 
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
