@@ -233,6 +233,10 @@ public class TabProperties {
     /** The {@link org.chromium.chrome.browser.tab.TabImpl.MediaState} indicator of the tab. */
     public static final WritableIntPropertyKey MEDIA_INDICATOR = new WritableIntPropertyKey();
 
+    /** Whether Glic context sharing is active for the tab. */
+    public static final WritableBooleanPropertyKey IS_GLIC_ACTIVE =
+            new WritableBooleanPropertyKey();
+
     /** The {@link ActorUiTabController.UiTabState} indicator of the tab. */
     public static final WritableObjectPropertyKey<UiTabState> ACTOR_UI_STATE =
             new WritableObjectPropertyKey<>();
@@ -286,6 +290,7 @@ public class TabProperties {
                         HIGHLIGHT_STATE,
                         IS_PINNED,
                         IS_COLLAPSED,
+                        IS_GLIC_ACTIVE,
                         TAB_GROUP_ID,
                         TAB_GROUP_HEADER_ID,
                         MEDIA_INDICATOR,
@@ -336,6 +341,7 @@ public class TabProperties {
                 DRAGGING_Y,
                 FAVICON_FETCHER,
                 IS_COLLAPSED,
+                IS_GLIC_ACTIVE,
                 IS_INCOGNITO,
                 IS_LOADING,
                 IS_PINNED,

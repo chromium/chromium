@@ -272,6 +272,57 @@ public class VerticalTabListRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testStandardTab_GlicIndicator_Active() throws IOException {
+        if (mIsIncognito) return;
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
+                    PropertyModel model =
+                            createTabListItemModelBuilder("Glic Tab", /* groupId= */ null)
+                                    .with(TabProperties.IS_GLIC_ACTIVE, true)
+                                    .with(
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.CLOSE, null))
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, view[0], TabVerticalViewBinder::bindTab);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        mRenderTestRule.render(mRenderView, "standard_tab_glic_indicator_active");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testChildTab_GlicIndicator_Active() throws IOException {
+        if (mIsIncognito) return;
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
+                    PropertyModel model =
+                            createTabListItemModelBuilder(
+                                            "Child Glic Tab", /* groupId= */ Token.createRandom())
+                                    .with(TabProperties.IS_GLIC_ACTIVE, true)
+                                    .with(
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.CLOSE, null))
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, view[0], TabVerticalViewBinder::bindTab);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        mRenderTestRule.render(mRenderView, "child_tab_glic_indicator_active");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testStandardTab_Active_ActorIndicator_Dynamic() throws IOException {
         if (mIsIncognito) return;
         ViewGroup[] view = new ViewGroup[1];
@@ -408,6 +459,36 @@ public class VerticalTabListRenderTest {
                 /* isLoading= */ false,
                 /* isHovered= */ true,
                 "pinned_tab_hovered");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPinnedTab_GlicIndicator_Active() throws IOException {
+        if (mIsIncognito) {
+            mActivity.setTheme(R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito);
+        }
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] = inflateAndAttachView(R.layout.vertical_tab_pinned_item);
+                    PropertyModel model =
+                            createTabListItemModelBuilder(
+                                            (mIsIncognito ? "Incognito " : "") + "Pinned Tab",
+                                            /* groupId= */ null)
+                                    .with(TabProperties.IS_PINNED, true)
+                                    .with(TabProperties.IS_GLIC_ACTIVE, true)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, view[0], TabVerticalViewBinder::bindPinnedTab);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        String finalGoldenName =
+                mIsIncognito
+                        ? "pinned_tab_glic_indicator_active_incognito"
+                        : "pinned_tab_glic_indicator_active";
+        mRenderTestRule.render(view[0], finalGoldenName);
     }
 
     @Test

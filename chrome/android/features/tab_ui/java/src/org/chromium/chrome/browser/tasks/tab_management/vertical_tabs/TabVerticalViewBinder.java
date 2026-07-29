@@ -111,6 +111,9 @@ class TabVerticalViewBinder {
         } else if (TabProperties.ACTOR_UI_STATE == propertyKey) {
             TabListViewBinderUtils.setupActorIndicator(model, view);
             updateIcons(model, view);
+        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
+            boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);
+            updateGlicIndicatorBar(isGlicActive, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             updateTabItemSize(
                     model,
@@ -149,6 +152,9 @@ class TabVerticalViewBinder {
                     resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width),
                     resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height));
             updateChildRowPadding(model, view);
+        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
+            boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);
+            updateGlicIndicatorBar(isGlicActive, view);
         }
     }
 
@@ -234,7 +240,6 @@ class TabVerticalViewBinder {
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
 
         View actionButton = view.findViewById(R.id.action_button);
-        View aiIndicatorLine = view.findViewById(R.id.ai_indicator);
         View actuationSpark = view.findViewById(R.id.actuation_spark);
         ImageView actuationSpinner = view.findViewById(R.id.actuation_spinner);
         ImageView mediaIndicator = view.findViewById(R.id.media_indicator_icon);
@@ -250,9 +255,8 @@ class TabVerticalViewBinder {
                                 ? (isSelected && isHovered)
                                 : (isSelected || isHovered));
         @Nullable UiTabState actorState = model.get(TabProperties.ACTOR_UI_STATE);
-        boolean aiWanted =
-                aiIndicatorLine != null
-                        && actuationSpark != null
+        boolean actorActuationWanted =
+                actuationSpark != null
                         && actuationSpinner != null
                         && actorState != null
                         && actorState.tabIndicator != TabIndicatorStatus.NONE;
@@ -267,11 +271,11 @@ class TabVerticalViewBinder {
         // 2. Apply priority rules for collapsed state
         if (isRailCollapsed) {
             if (actionWanted) {
-                aiWanted = false;
+                actorActuationWanted = false;
                 mediaWanted = false;
                 loadingWanted = false;
                 faviconWanted = false;
-            } else if (aiWanted) {
+            } else if (actorActuationWanted) {
                 mediaWanted = false;
                 loadingWanted = false;
                 faviconWanted = false;
@@ -299,9 +303,9 @@ class TabVerticalViewBinder {
             }
         }
 
-        // AI Indicator
-        if (aiIndicatorLine != null && actuationSpark != null && actuationSpinner != null) {
-            updateAiAnimations(model, actuationSpark, actuationSpinner, aiWanted);
+        // Actor Actuation Indicator Icons
+        if (actuationSpark != null && actuationSpinner != null) {
+            updateActorAnimations(model, actuationSpark, actuationSpinner, actorActuationWanted);
             updateViewConstraints(
                     actuationSpark,
                     isRailCollapsed,
@@ -310,7 +314,6 @@ class TabVerticalViewBinder {
                     UNSET,
                     /* marginStartDimenId= */ 0,
                     /* marginEndDimenId= */ R.dimen.vertical_tab_item_media_indicator_margin_end);
-            aiIndicatorLine.setVisibility(aiWanted ? View.VISIBLE : View.GONE);
         }
 
         // Media Indicator
@@ -394,14 +397,24 @@ class TabVerticalViewBinder {
                 });
     }
 
-    private static void updateAiAnimations(
+    /** Updates the visibility of the Glic indicator bar on the tab row. */
+    private static void updateGlicIndicatorBar(boolean isGlicActive, View view) {
+        View glicIndicatorView = view.findViewById(R.id.ai_indicator);
+        if (glicIndicatorView == null) return;
+
+        glicIndicatorView.setVisibility(isGlicActive ? View.VISIBLE : View.GONE);
+    }
+
+    private static void updateActorAnimations(
             PropertyModel model,
             View actuationSpark,
             ImageView actuationSpinner,
-            boolean aiWanted) {
+            boolean actorActuationWanted) {
         @Nullable UiTabState state = model.get(TabProperties.ACTOR_UI_STATE);
         boolean isDynamic =
-                aiWanted && state != null && state.tabIndicator == TabIndicatorStatus.DYNAMIC;
+                actorActuationWanted
+                        && state != null
+                        && state.tabIndicator == TabIndicatorStatus.DYNAMIC;
 
         ObjectAnimator animator = (ObjectAnimator) actuationSpinner.getTag(R.id.actuation_spinner);
 

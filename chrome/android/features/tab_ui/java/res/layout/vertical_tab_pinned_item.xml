@@ -15,6 +15,19 @@ found in the LICENSE file.
     android:clickable="true"
     android:focusable="true">
 
+    <!-- AI Indicator -->
+    <View
+        android:id="@+id/ai_indicator"
+        android:layout_width="@dimen/vertical_tab_item_ai_indicator_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginTop="@dimen/vertical_tab_item_corner_radius"
+        android:layout_marginBottom="@dimen/vertical_tab_item_corner_radius"
+        android:layout_marginStart="@dimen/vertical_tab_pinned_item_ai_indicator_margin_start"
+        android:background="@drawable/vertical_tab_ai_indicator_background"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
+
     <!-- Centered Tab Favicon -->
     <ImageView
         android:id="@+id/tab_favicon"
