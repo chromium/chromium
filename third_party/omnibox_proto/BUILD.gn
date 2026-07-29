@@ -53,7 +53,7 @@ _proto_files = [
   "url_param.proto",
 ]
 
-fuzzable_proto_library("omnibox_proto") {
+proto_library("omnibox_proto") {
   sources = _proto_files
   proto_in_dir = "."
 }
