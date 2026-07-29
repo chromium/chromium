@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -27,6 +28,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::FullscreenSigninPrimaryButtonMatcher;
 using chrome_test_util::GREYAssertErrorNil;
+using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using signin_metrics::CrossDeviceInitialState;
 
@@ -369,6 +371,39 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
   CheckAccountSwitch(fakeIdentity1, fakeIdentity2, 2,
                      CrossDeviceInitialState::
                          kSignedInWithDifferentAccountTargetAccountOnDevice);
+}
+
+// Tests that users changing target account to signed-in account in fullscreen
+// signin screen view dismisses the flow. Regression test for:
+// crbug.com/537715404.
+- (void)testCrossDeviceSigninChangeToSignedInAccount {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  // Sign in with `fakeIdentity1`.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  // Simulate opening the URL from an external app with `fakeIdentity2` email.
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningWithURL:GetDeepLinkURLForEmail(
+                                               fakeIdentity2.userEmail)];
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SigninScreenPromoMatcher()];
+
+  // Open the identity chooser and sign-in with `fakeIdentity1`.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity1.userEmail)]
+      performAction:grey_tap()];
+  id<GREYMatcher> primaryButton =
+      FullscreenSigninPrimaryButtonMatcher(fakeIdentity1);
+  [[EarlGrey selectElementWithMatcher:primaryButton] performAction:grey_tap()];
+
+  // Verify that `fakeIdentity1` is still signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
 }
 
 // Tests that opening a cross-device sign-in deep link with an unknown entry

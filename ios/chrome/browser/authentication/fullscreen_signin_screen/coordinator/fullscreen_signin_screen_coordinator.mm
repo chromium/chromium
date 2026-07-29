@@ -275,7 +275,16 @@
     // See crbug.com/478202195.
     return;
   }
+
   DCHECK(self.mediator.selectedIdentity);
+  if ([self.mediator.selectedIdentity
+          isEqual:self.authenticationService->GetPrimaryIdentity()]) {
+    // Dismiss the signin screen if user tries to sign-in with an account
+    // already signed in. See crbug.com/537715404.
+    [self finishPresentingWithSignIn:NO];
+    return;
+  }
+
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.mediator.selectedIdentity
