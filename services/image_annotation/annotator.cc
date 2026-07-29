@@ -649,8 +649,8 @@ void Annotator::AnnotateImage(
   local_processors_.insert(
       {request_key, &request_info_list.back().image_processor});
 
-  // TODO(crbug.com/41432508): first query the public result cache by URL to
-  // improve latency.
+  // Note: We could query the public result cache by URL first to improve
+  // latency.
 
   request_info_list.back().image_processor->GetJpgImageData(base::BindOnce(
       &Annotator::OnJpgImageDataReceived, weak_factory_.GetWeakPtr(),
@@ -703,8 +703,6 @@ std::string Annotator::FormatJsonRequest(
         std::string_view(reinterpret_cast<const char*>(it->image_bytes.data()),
                          it->image_bytes.size()));
 
-    // TODO(crbug.com/41432508): accept and propagate page language info to
-    //                         improve OCR accuracy.
     base::DictValue ocr_engine_params;
     ocr_engine_params.Set("ocrParameters", base::DictValue());
 
@@ -1024,7 +1022,6 @@ void Annotator::ProcessResult(
                                  : ClientResult::kFailed;
 
   // Notify clients of success or failure.
-  // TODO(crbug.com/41432508): explore server retry strategies.
   for (auto& info : request_info_it->second) {
     std::move(info.callback).Run(image_result.Clone());
     ReportClientResult(client_result);
