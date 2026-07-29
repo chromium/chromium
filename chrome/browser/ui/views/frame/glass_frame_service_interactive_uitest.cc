@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -16,12 +18,12 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -340,4 +342,30 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, BatterySaverMode) {
   // Wait until BSM is inactive and browser1 is eligible again.
   ASSERT_TRUE(base::test::RunUntil([&] { return browser1_eligible; }));
   EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
+}
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       DanglingBrowserWindowPointerOnActivation) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+  BrowserWindowInterface* const browser1 = browser();
+
+  // Allocate a browser pointer.
+  BrowserWindowInterface* deleted_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  // Register a callback referencing the browser pointer before it is destroyed.
+  base::CallbackListSubscription sub =
+      glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+          deleted_browser, base::BindRepeating([](bool is_eligible) {}));
+
+  // Delete browser to simulate a destroyed window while subscription is active.
+  CloseBrowserSynchronously(deleted_browser);
+
+  // Trigger OnBrowserActivated to invoke callbacks_.Notify().
+  glass_frame_service->OnBrowserActivated(browser1);
 }

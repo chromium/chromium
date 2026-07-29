@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_FRAME_SERVICE_H_
 
 #include <deque>
+#include <map>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
@@ -77,9 +78,10 @@ class GlassFrameService : public BrowserCollectionObserver,
 
   void LogGlassFramePreferredLook();
 
-  base::RepeatingCallbackList<void(
-      const base::flat_set<BrowserWindowInterface*>&)>
-      callbacks_;
+  void NotifyEligibilityChanged();
+
+  std::map<BrowserWindowInterface*, base::RepeatingCallbackList<void(bool)>>
+      window_callbacks_;
   // Deque of tracked browsers, ordered from most recently activated to
   // least recently activated.
   std::deque<BrowserWindowInterface*> activated_browsers_;

@@ -91,13 +91,7 @@ base::CallbackListSubscription
 GlassFrameService::RegisterGlassFrameEligibilityChangedCallback(
     BrowserWindowInterface* browser_window_interface,
     GlassFrameEligibilityChangedCallback callback) {
-  return callbacks_.Add(base::BindRepeating(
-      [](BrowserWindowInterface* target_browser,
-         GlassFrameEligibilityChangedCallback target_callback,
-         const base::flat_set<BrowserWindowInterface*>& eligible) {
-        target_callback.Run(eligible.contains(target_browser));
-      },
-      browser_window_interface, std::move(callback)));
+  return window_callbacks_[browser_window_interface].Add(std::move(callback));
 }
 
 bool GlassFrameService::IsBrowserWindowEligible(
@@ -125,9 +119,7 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
 
   activated_browsers_.push_front(browser);
 
-  const base::flat_set<BrowserWindowInterface*> new_eligible =
-      GetEligibleBrowserWindowInterfaces();
-  callbacks_.Notify(new_eligible);
+  NotifyEligibilityChanged();
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
@@ -135,8 +127,7 @@ void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
     return;
   }
 
-  const base::flat_set<BrowserWindowInterface*> old_eligible =
-      GetEligibleBrowserWindowInterfaces();
+  window_callbacks_.erase(browser);
 
   auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
                       browser);
@@ -144,11 +135,7 @@ void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
     activated_browsers_.erase(it);
   }
 
-  const base::flat_set<BrowserWindowInterface*> new_eligible =
-      GetEligibleBrowserWindowInterfaces();
-  if (old_eligible != new_eligible) {
-    callbacks_.Notify(new_eligible);
-  }
+  NotifyEligibilityChanged();
 }
 
 void GlassFrameService::OnBatterySaverActiveChanged(bool is_active) {
@@ -156,7 +143,7 @@ void GlassFrameService::OnBatterySaverActiveChanged(bool is_active) {
     return;
   }
   is_battery_saver_mode_active_ = is_active;
-  callbacks_.Notify(GetEligibleBrowserWindowInterfaces());
+  NotifyEligibilityChanged();
 }
 
 void GlassFrameService::OnBatterySaverModeManagerDestroyed() {
@@ -192,7 +179,15 @@ GlassFrameService::GetEligibleBrowserWindowInterfaces() {
 }
 
 void GlassFrameService::OnGlassFrameEnabledPrefChanged() {
-  callbacks_.Notify(GetEligibleBrowserWindowInterfaces());
+  NotifyEligibilityChanged();
+}
+
+void GlassFrameService::NotifyEligibilityChanged() {
+  const base::flat_set<BrowserWindowInterface*> eligible =
+      GetEligibleBrowserWindowInterfaces();
+  for (auto& [browser, callback_list] : window_callbacks_) {
+    callback_list.Notify(eligible.contains(browser));
+  }
 }
 
 void GlassFrameService::LogGlassFramePreferredLook() {
