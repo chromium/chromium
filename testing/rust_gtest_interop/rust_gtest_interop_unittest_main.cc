@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <iostream>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -17,8 +16,6 @@
 #include "base/test/test_switches.h"
 #include "build/blink_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <iostream>
 
 // Update this when adding a new test to rust_test_interop_unittest.rs.
 int kNumTests = 10;
@@ -60,10 +57,10 @@ int main(int argc, char** argv) {
   // test suites/names.
   std::string filter = "--gtest_filter=Test.*:ExactSuite.ExactTest";
 
-  auto my_argv = std::vector<char*>();
-  for (int i = 0; i < argc; ++i) {
-    my_argv.push_back(argv[i]);
-  }
+  // SAFETY: argv has size argc, guaranteed by the OS.
+  auto args = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
+
+  auto my_argv = base::ToVector(args);
   my_argv.push_back(single_process.data());
   my_argv.push_back(filter.data());
   my_argv.push_back(nullptr);  // GTest reads past argc until null.
