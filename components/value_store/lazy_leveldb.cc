@@ -148,8 +148,13 @@ ValueStore::BackingStoreRestoreStatus LazyLevelDb::FixCorruption(
 
   if (!s.ok()) {
     if (DeleteDbFile()) {
-      restore_status = ValueStore::DB_RESTORE_DELETE_SUCCESS;
       s = leveldb_env::OpenDB(open_options_, db_path_.AsUTF8Unsafe(), &db_);
+      // Deleting the corrupt database only counts as a successful restore if
+      // the fresh database could actually be reopened. If the reopen fails
+      // (e.g. an I/O error) `db_` is left null and `db_unrecoverable_` is set
+      // below, so report the failure rather than a misleading delete "success".
+      restore_status = s.ok() ? ValueStore::DB_RESTORE_DELETE_SUCCESS
+                              : ValueStore::DB_RESTORE_DELETE_FAILURE;
     } else {
       restore_status = ValueStore::DB_RESTORE_DELETE_FAILURE;
     }
@@ -192,6 +197,7 @@ ValueStore::Status LazyLevelDb::EnsureDbIsOpen() {
   if (ldb_status.IsCorruption()) {
     status.restore_status = FixCorruption(nullptr);
     if (status.restore_status != ValueStore::DB_RESTORE_DELETE_FAILURE) {
+      CHECK(db_);
       status.code = ValueStore::OK;
       status.message = kRestoredDuringOpen;
     }
