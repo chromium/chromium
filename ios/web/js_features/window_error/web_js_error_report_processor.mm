@@ -424,7 +424,7 @@ bool WebJsErrorReportProcessor::ShouldUploadErrorReport(
     return true;
   }
 
-  base::Time& last_error_report = insert_result.first->second;
+  base::Time last_error_report = insert_result.first->second;
   if (now - kTimeBetweenDuplicateReports > last_error_report ||
       now < last_error_report) {
     // It's been long enough, send the report. (Or, the clock has been adjusted

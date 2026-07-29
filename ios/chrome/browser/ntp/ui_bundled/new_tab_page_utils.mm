@@ -23,7 +23,7 @@ bool ShouldShowTopOfFeedSyncPromo() {
 }
 
 GURL GetUrlForAim(TemplateURLService* turl_service,
-                  const base::Time& query_start_time) {
+                  base::Time query_start_time) {
   return GetUrlForAim(turl_service,
                       omnibox::IOS_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT,
                       query_start_time, /*query_text=*/u"",

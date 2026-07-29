@@ -22,7 +22,7 @@ bool ShouldShowTopOfFeedSyncPromo();
 // Retrieves the URL for the AIM web page. `query_start_time` is the time that
 // the user clicked the submit button.
 GURL GetUrlForAim(TemplateURLService* turl_service,
-                  const base::Time& query_start_time);
+                  base::Time query_start_time);
 
 /// Generates a `UIButtonConfigurationUpdateHandler` that will color its button
 /// correctly for the current NTP theming status.

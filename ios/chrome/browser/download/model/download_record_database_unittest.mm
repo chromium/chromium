@@ -475,7 +475,7 @@ namespace {
 std::vector<DownloadRecord> InsertSequentialRecords(
     DownloadRecordDatabase* db,
     int count,
-    const base::Time& base_time,
+    base::Time base_time,
     const std::string& mime = "application/pdf",
     int start_index = 0) {
   std::vector<DownloadRecord> inserted;
@@ -753,7 +753,7 @@ namespace {
 // to later entries so a default page returns names back-to-front.
 void InsertNamedRecords(DownloadRecordDatabase* db,
                         const std::vector<std::string>& names,
-                        const base::Time& base_time) {
+                        base::Time base_time) {
   int i = 0;
   for (const std::string& name : names) {
     DownloadRecord record;

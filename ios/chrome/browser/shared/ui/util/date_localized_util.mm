@@ -12,7 +12,7 @@
 
 namespace date_localized {
 
-std::u16string GetRelativeDateLocalized(const base::Time& visit_time) {
+std::u16string GetRelativeDateLocalized(base::Time visit_time) {
   std::u16string date_str = ui::TimeFormat::RelativeDate(
       visit_time, base::Time::Now().LocalMidnight());
   if (date_str.empty()) {

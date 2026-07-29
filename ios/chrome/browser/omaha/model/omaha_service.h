@@ -193,7 +193,7 @@ class OmahaService {
                              const std::string& sessionId,
                              const std::string& versionName,
                              const std::string& channelName,
-                             const base::Time& installationTime,
+                             base::Time installationTime,
                              PingContent pingContent);
 
   // Returns the xml representation of the ping message to send to the Omaha

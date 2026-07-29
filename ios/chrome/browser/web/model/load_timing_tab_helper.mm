@@ -50,7 +50,7 @@ void LoadTimingTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_ = nullptr;
 }
 
-void LoadTimingTabHelper::ReportLoadTime(const base::TimeDelta& elapsed) {
+void LoadTimingTabHelper::ReportLoadTime(base::TimeDelta elapsed) {
   UMA_HISTOGRAM_TIMES(kOmnibarToPageLoadedMetric, elapsed);
 }
 

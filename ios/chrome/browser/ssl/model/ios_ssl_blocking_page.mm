@@ -38,7 +38,7 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     int options_mask,
-    const base::Time& time_triggered,
+    base::Time time_triggered,
     std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
         client)
     : IOSSecurityInterstitialPage(web_state, request_url, client.get()),

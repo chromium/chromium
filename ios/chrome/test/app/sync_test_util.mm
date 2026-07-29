@@ -99,7 +99,7 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
 // Returns CollaborationGroupSpecifics for the given `group_id`
 sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
     const data_sharing::GroupId& group_id,
-    const base::Time& changed_at = base::Time::Now()) {
+    base::Time changed_at = base::Time::Now()) {
   sync_pb::CollaborationGroupSpecifics result;
   result.set_collaboration_id(group_id.value());
   result.set_changed_at_timestamp_millis_since_unix_epoch(

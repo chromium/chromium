@@ -222,7 +222,7 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
                     LoginReputationClientResponse::VerdictType verdict,
                     int cache_duration_sec,
                     const std::string& cache_expression,
-                    const base::Time& verdict_received_time) {
+                    base::Time verdict_received_time) {
     ASSERT_FALSE(cache_expression.empty());
     LoginReputationClientResponse response(
         CreateVerdictProto(verdict, cache_duration_sec, cache_expression));

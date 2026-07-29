@@ -14,7 +14,7 @@ BOOL IsFirstRun() {
          experimental_flags::AlwaysDisplayFirstRun();
 }
 
-BOOL IsFirstRunRecent(const base::TimeDelta& time_delta) {
+BOOL IsFirstRunRecent(base::TimeDelta time_delta) {
   // Use the first_run age to determine the user is new on this device.
   if (IsFirstRun()) {
     return YES;

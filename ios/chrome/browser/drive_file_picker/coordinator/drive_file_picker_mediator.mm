@@ -1061,7 +1061,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
       _shouldShowSearchItems, _searchText, _nextPageToken);
 
   auto completion = base::BindOnce(
-      [](DriveFilePickerMediator* mediator, const base::TimeDelta& delayToRetry,
+      [](DriveFilePickerMediator* mediator, base::TimeDelta delayToRetry,
          BOOL animated, const DriveListResult& result) {
         [mediator handleListItemsResponse:result
                              delayToRetry:delayToRetry

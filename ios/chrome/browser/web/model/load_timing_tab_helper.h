@@ -47,7 +47,7 @@ class LoadTimingTabHelper : public web::WebStateUserData<LoadTimingTabHelper>,
  private:
   friend class web::WebStateUserData<LoadTimingTabHelper>;
 
-  void ReportLoadTime(const base::TimeDelta& elapsed);
+  void ReportLoadTime(base::TimeDelta elapsed);
   void ResetTimer();
 
   // The WebState this instance is observing. Will be null after

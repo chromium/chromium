@@ -11,7 +11,7 @@
 BOOL IsFirstRun();
 
 // Returns whether first run was more recent than `timeDelta`.
-BOOL IsFirstRunRecent(const base::TimeDelta& timeDelta);
+BOOL IsFirstRunRecent(base::TimeDelta timeDelta);
 
 // Returns the time since first run.
 base::TimeDelta ClientAge();

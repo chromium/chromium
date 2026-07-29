@@ -31,7 +31,7 @@ class IOSChromeMain {
 
   // Returns the time that main() started.  Used for performance tests.
   // InitStartTime() must has been called before.
-  static const base::TimeTicks& StartTime();
+  static base::TimeTicks StartTime();
 
  private:
   IOSChromeMainDelegate main_delegate_;

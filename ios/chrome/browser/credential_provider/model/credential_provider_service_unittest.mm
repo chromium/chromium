@@ -213,8 +213,7 @@ class CredentialProviderServiceTest : public PlatformTest {
         });
   }
 
-  bool WaitForCredentialTimestamp(const base::Time& timestamp,
-                                  NSUInteger index) {
+  bool WaitForCredentialTimestamp(base::Time timestamp, NSUInteger index) {
     // For add and remove operations to propagate to the credential store, both
     // the message loop and the NSRunLoop need to spin.
     const int64_t lastUsedTime =

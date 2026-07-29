@@ -34,8 +34,8 @@ void PostCallback(const scoped_refptr<base::TaskRunner>& task_runner,
 
 // Clears the disk_cache::Backend on the IO thread.
 void DoomHttpCache(const scoped_refptr<base::TaskRunner>& client_task_runner,
-                   const base::Time& delete_begin,
-                   const base::Time& delete_end,
+                   base::Time delete_begin,
+                   base::Time delete_end,
                    net::CompletionOnceCallback callback,
                    net::HttpCache::GetBackendResult backend_result) {
   auto [error, backend] = backend_result;
@@ -62,8 +62,8 @@ void DoomHttpCache(const scoped_refptr<base::TaskRunner>& client_task_runner,
 void ClearHttpCacheOnIOThread(
     const scoped_refptr<net::URLRequestContextGetter>& getter,
     const scoped_refptr<base::TaskRunner>& client_task_runner,
-    const base::Time& delete_begin,
-    const base::Time& delete_end,
+    base::Time delete_begin,
+    base::Time delete_end,
     net::CompletionOnceCallback callback) {
   net::HttpCache* http_cache =
       getter->GetURLRequestContext()->http_transaction_factory()->GetCache();
@@ -93,8 +93,8 @@ namespace net {
 
 void ClearHttpCache(const scoped_refptr<net::URLRequestContextGetter>& getter,
                     const scoped_refptr<base::TaskRunner>& network_task_runner,
-                    const base::Time& delete_begin,
-                    const base::Time& delete_end,
+                    base::Time delete_begin,
+                    base::Time delete_end,
                     net::CompletionOnceCallback callback) {
   DCHECK(delete_end != base::Time());
   network_task_runner->PostTask(

@@ -15,7 +15,7 @@ namespace date_localized {
 
 // Returns a localized version of `visit_time` including a relative
 // indicator (e.g. today, yesterday).
-std::u16string GetRelativeDateLocalized(const base::Time& visit_time);
+std::u16string GetRelativeDateLocalized(base::Time visit_time);
 
 }  // namespace date_localized
 

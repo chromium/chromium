@@ -646,7 +646,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
                                          const std::string& sessionId,
                                          const std::string& versionName,
                                          const std::string& channelName,
-                                         const base::Time& installationTime,
+                                         base::Time installationTime,
                                          PingContent pingContent) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   XmlWrapper xml_wrapper;

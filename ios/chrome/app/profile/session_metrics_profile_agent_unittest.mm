@@ -121,7 +121,7 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
     SimulateActiveDayForTime(time, scene_state, activation_level);
   }
 
-  void SimulateActiveDayForTime(const base::Time& time,
+  void SimulateActiveDayForTime(base::Time time,
                                 SceneState* scene_state,
                                 SceneActivationLevel activation_level =
                                     SceneActivationLevelForegroundInactive) {

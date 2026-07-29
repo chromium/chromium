@@ -49,8 +49,8 @@ class PageContentCacheService : public KeyedService {
   // Caches page content for a specific tab.
   void CachePageContent(int64_t tab_id,
                         const GURL& url,
-                        const base::Time& visit_timestamp,
-                        const base::Time& extraction_timestamp,
+                        base::Time visit_timestamp,
+                        base::Time extraction_timestamp,
                         optimization_guide::proto::PageContext page_context);
 
   // Removes content associated with the given tab.

@@ -30,10 +30,10 @@ class CookieCreationTimeManager {
   ~CookieCreationTimeManager();
   // Sets the creation time for |cookie|.
   // |creation_time| must be unique (not used by another cookie).
-  void SetCreationTime(NSHTTPCookie* cookie, const base::Time& creation_time);
+  void SetCreationTime(NSHTTPCookie* cookie, base::Time creation_time);
   // Creates a unique creation time (to be used in SetCreationTime()) that is
   // as close as possible to |creation_time|.
-  base::Time MakeUniqueCreationTime(const base::Time& creation_time);
+  base::Time MakeUniqueCreationTime(base::Time creation_time);
   // Gets the creation time for |cookie|.
   base::Time GetCreationTime(NSHTTPCookie* cookie);
   // Deletes the creation time for |cookie|.

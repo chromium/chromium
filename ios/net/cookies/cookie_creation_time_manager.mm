@@ -54,9 +54,8 @@ CookieCreationTimeManager::CookieCreationTimeManager() : weak_factory_(this) {
 
 CookieCreationTimeManager::~CookieCreationTimeManager() {}
 
-void CookieCreationTimeManager::SetCreationTime(
-    NSHTTPCookie* cookie,
-    const base::Time& creation_time) {
+void CookieCreationTimeManager::SetCreationTime(NSHTTPCookie* cookie,
+                                                base::Time creation_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!unique_times_.contains(creation_time));
 
@@ -72,7 +71,7 @@ void CookieCreationTimeManager::SetCreationTime(
 }
 
 base::Time CookieCreationTimeManager::MakeUniqueCreationTime(
-    const base::Time& creation_time) {
+    base::Time creation_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = unique_times_.find(creation_time);
 

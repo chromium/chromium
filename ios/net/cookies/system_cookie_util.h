@@ -23,7 +23,7 @@ namespace net {
 // Converts NSHTTPCookie to net::CanonicalCookie.
 std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
     NSHTTPCookie* cookie,
-    const base::Time& ceation_time);
+    base::Time ceation_time);
 
 // Converts net::CanonicalCookie to NSHTTPCookie.
 NSHTTPCookie* SystemCookieFromCanonicalCookie(

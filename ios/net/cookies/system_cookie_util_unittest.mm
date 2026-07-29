@@ -25,7 +25,7 @@ const char kCookiePath[] = "path/";
 const char kCookieValue[] = "value";
 const char kCookieValueInvalidUtf8[] = "\x81r\xe4\xbd\xa0\xe5\xa5\xbd";
 
-void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
+void CheckSystemCookie(base::Time expires, bool secure, bool httponly) {
   net::CookieSameSite same_site = net::CookieSameSite::LAX_MODE;
   // Generate a canonical cookie.
   std::unique_ptr<net::CanonicalCookie> canonical_cookie =

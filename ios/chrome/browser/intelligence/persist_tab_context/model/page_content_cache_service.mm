@@ -65,8 +65,8 @@ void PageContentCacheService::GetPageContentForTab(
 void PageContentCacheService::CachePageContent(
     int64_t tab_id,
     const GURL& url,
-    const base::Time& visit_timestamp,
-    const base::Time& extraction_timestamp,
+    base::Time visit_timestamp,
+    base::Time extraction_timestamp,
     optimization_guide::proto::PageContext page_context) {
   if (IsCacheInitialized()) {
     page_content_cache_->CachePageContent(tab_id, url, visit_timestamp,

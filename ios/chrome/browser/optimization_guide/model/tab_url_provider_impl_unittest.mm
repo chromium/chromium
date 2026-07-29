@@ -53,7 +53,7 @@ class TabUrlProviderImplTest : public PlatformTest {
 
   // Add a fake web state with certain URL and timestamp to be the last
   // committed navigation.
-  void AddURL(Browser* browser, const GURL& url, const base::Time& timestamp) {
+  void AddURL(Browser* browser, const GURL& url, base::Time timestamp) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     fake_web_state->SetCurrentURL(url);
     fake_web_state->SetLastActiveTime(timestamp);
@@ -63,7 +63,7 @@ class TabUrlProviderImplTest : public PlatformTest {
   }
 
   const std::vector<GURL> GetUrlsOfActiveTabs(
-      const base::TimeDelta& duration_since_last_shown) {
+      base::TimeDelta duration_since_last_shown) {
     return tab_url_provider_->GetUrlsOfActiveTabs(duration_since_last_shown);
   }
 

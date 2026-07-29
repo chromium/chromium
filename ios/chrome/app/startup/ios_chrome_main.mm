@@ -43,7 +43,7 @@ void IOSChromeMain::InitStartTime() {
 }
 
 // static
-const base::TimeTicks& IOSChromeMain::StartTime() {
+base::TimeTicks IOSChromeMain::StartTime() {
   CHECK(g_start_time);
   return *g_start_time;
 }

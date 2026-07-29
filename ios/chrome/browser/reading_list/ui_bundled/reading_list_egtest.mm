@@ -321,7 +321,7 @@ void AddCurrentPageToReadingList() {
 // If `distillable`, result is can be distilled for offline display.
 std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
     const bool& responds_with_content,
-    const base::TimeDelta& delay,
+    base::TimeDelta delay,
     bool distillable,
     const net::test_server::HttpRequest& request) {
   if (!responds_with_content) {
