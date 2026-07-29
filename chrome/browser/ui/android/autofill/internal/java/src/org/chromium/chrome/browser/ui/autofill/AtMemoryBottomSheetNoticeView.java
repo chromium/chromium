@@ -11,6 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
@@ -39,9 +41,16 @@ public class AtMemoryBottomSheetNoticeView extends LinearLayout {
         mNoticeOkButton.setOnClickListener(v -> listener.run());
     }
 
-    public void setSettingsClickListener(Runnable listener) {
+    public void setNoticeTextAndSettingsClickListener(Runnable listener, boolean isLoggingAllowed) {
         Context context = getContext();
-        String rawText = context.getString(R.string.at_memory_notice_text);
+        // TODO(b/524157152): Implement solution to the corner case when user accepted the no
+        // logging variant and admin has changed the policy to allow logging afterwards.
+        @StringRes
+        int textResId =
+                isLoggingAllowed
+                        ? R.string.at_memory_notice_text
+                        : R.string.at_memory_notice_text_no_logging;
+        String rawText = context.getString(textResId);
         ChromeClickableSpan settingsSpan =
                 new ChromeClickableSpan(context, (widget) -> listener.run());
 

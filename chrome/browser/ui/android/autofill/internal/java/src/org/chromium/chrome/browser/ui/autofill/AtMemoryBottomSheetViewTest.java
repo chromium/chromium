@@ -234,6 +234,74 @@ public class AtMemoryBottomSheetViewTest {
     }
 
     @Test
+    public void testNoticeItemViewBinding_isLoggingDisabled() {
+        View noticeView =
+                android.view.LayoutInflater.from(mContext)
+                        .inflate(R.layout.at_memory_bottom_sheet_notice_item, null);
+
+        Runnable settingsClicked = mock(Runnable.class);
+        PropertyModel model =
+                new PropertyModel.Builder(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties.ALL_KEYS)
+                        .with(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .IS_LOGGING_ALLOWED,
+                                false)
+                        .with(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .ON_SETTINGS_CLICKED,
+                                settingsClicked)
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                model,
+                (AtMemoryBottomSheetNoticeView) noticeView,
+                AtMemoryBottomSheetViewBinder::bindNoticeItemView);
+
+        TextView noticeTextView = noticeView.findViewById(R.id.notice_text);
+        assertNotNull(noticeTextView);
+        String expectedTextWithoutSpan =
+                mContext.getString(R.string.at_memory_notice_text_no_logging)
+                        .replace("<link>", "")
+                        .replace("</link>", "");
+        assertEquals(expectedTextWithoutSpan, noticeTextView.getText().toString());
+    }
+
+    @Test
+    public void testNoticeItemViewBinding_isLoggingEnabled() {
+        View noticeView =
+                android.view.LayoutInflater.from(mContext)
+                        .inflate(R.layout.at_memory_bottom_sheet_notice_item, null);
+
+        Runnable settingsClicked = mock(Runnable.class);
+        PropertyModel model =
+                new PropertyModel.Builder(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties.ALL_KEYS)
+                        .with(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .IS_LOGGING_ALLOWED,
+                                true)
+                        .with(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .ON_SETTINGS_CLICKED,
+                                settingsClicked)
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                model,
+                (AtMemoryBottomSheetNoticeView) noticeView,
+                AtMemoryBottomSheetViewBinder::bindNoticeItemView);
+
+        TextView noticeTextView = noticeView.findViewById(R.id.notice_text);
+        assertNotNull(noticeTextView);
+        String expectedTextWithoutSpan =
+                mContext.getString(R.string.at_memory_notice_text)
+                        .replace("<link>", "")
+                        .replace("</link>", "");
+        assertEquals(expectedTextWithoutSpan, noticeTextView.getText().toString());
+    }
+
+    @Test
     public void testFlyoutBackClickNotifiesCallback() {
         PropertyModel model =
                 new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)

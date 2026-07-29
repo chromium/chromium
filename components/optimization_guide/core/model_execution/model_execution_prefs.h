@@ -23,7 +23,10 @@ enum class ModelExecutionEnterprisePolicyValue {
   kAllowWithoutLogging = 1,
   kDisable = 2,
 };
-// LINT.ThenChange(/chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue)
+// LINT.ThenChange(
+//    //chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue,
+//    //chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:AllowLogging
+// )
 
 enum class GenAILocalFoundationalModelEnterprisePolicySettings {
   kAllowed = 0,

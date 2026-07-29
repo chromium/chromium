@@ -75,8 +75,11 @@ class AtMemoryBottomSheetViewBinder {
             PropertyModel model, AtMemoryBottomSheetNoticeView view, PropertyKey propertyKey) {
         if (propertyKey == NoticeItemProperties.ON_OK_CLICKED) {
             view.setOkClickListener(model.get(NoticeItemProperties.ON_OK_CLICKED));
-        } else if (propertyKey == NoticeItemProperties.ON_SETTINGS_CLICKED) {
-            view.setSettingsClickListener(model.get(NoticeItemProperties.ON_SETTINGS_CLICKED));
+        } else if (propertyKey == NoticeItemProperties.ON_SETTINGS_CLICKED
+                || propertyKey == NoticeItemProperties.IS_LOGGING_ALLOWED) {
+            view.setNoticeTextAndSettingsClickListener(
+                    model.get(NoticeItemProperties.ON_SETTINGS_CLICKED),
+                    model.get(NoticeItemProperties.IS_LOGGING_ALLOWED));
         } else {
             assert false : "Unhandled property: " + propertyKey;
         }

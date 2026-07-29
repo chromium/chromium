@@ -63,8 +63,10 @@ const char kChromeSuggestionsSettings[] =
 
 const char kGeminiSettings[] = "browser.gemini_settings";
 
+// LINT.IfChange(FindAndFillWithGeminiSettings)
 const char kFindAndFillWithGeminiSettings[] =
     "autofill.personal_context.find_and_fill_with_gemini_settings";
+// LINT.ThenChange(//chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:FindAndFillWithGeminiSettings)
 }  // namespace prefs
 
 namespace features {

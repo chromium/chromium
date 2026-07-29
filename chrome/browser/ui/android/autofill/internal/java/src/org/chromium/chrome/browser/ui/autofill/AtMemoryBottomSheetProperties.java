@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -116,6 +117,9 @@ class AtMemoryBottomSheetProperties {
 
     /** Properties for the notice item displayed within the home screen. */
     static class NoticeItemProperties {
+        // Indicates whether logging is allowed.
+        static final ReadableBooleanPropertyKey IS_LOGGING_ALLOWED =
+                new ReadableBooleanPropertyKey();
         // Invoked when the user acknowledges the onboarding notice.
         static final ReadableObjectPropertyKey<Runnable> ON_OK_CLICKED =
                 new ReadableObjectPropertyKey<>();
@@ -123,7 +127,9 @@ class AtMemoryBottomSheetProperties {
         static final ReadableObjectPropertyKey<Runnable> ON_SETTINGS_CLICKED =
                 new ReadableObjectPropertyKey<>();
 
-        static final PropertyKey[] ALL_KEYS = {ON_OK_CLICKED, ON_SETTINGS_CLICKED};
+        static final PropertyKey[] ALL_KEYS = {
+            IS_LOGGING_ALLOWED, ON_OK_CLICKED, ON_SETTINGS_CLICKED
+        };
 
         private NoticeItemProperties() {}
     }

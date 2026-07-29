@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPe
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
 import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunServiceJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
@@ -56,6 +57,9 @@ import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -71,6 +75,9 @@ public class AtMemoryBottomSheetMediatorTest {
     @Mock private HomeProperties.SearchDelegate mSearchDelegate;
     @Mock private PersonalContextFirstRunService.Natives mFirstRunServiceJniMock;
     @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
+    @Mock private Profile mProfile;
 
     private PropertyModel mModel;
     private PropertyModel mHomeModel;
@@ -81,9 +88,15 @@ public class AtMemoryBottomSheetMediatorTest {
     public void setUp() {
         PersonalContextFirstRunServiceJni.setInstanceForTesting(mFirstRunServiceJniMock);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+
         mMediator =
                 new AtMemoryBottomSheetMediator(
-                        ApplicationProvider.getApplicationContext(), mDelegate, mSearchDelegate);
+                        ApplicationProvider.getApplicationContext(),
+                        mDelegate,
+                        mSearchDelegate,
+                        mProfile);
         mModel = mMediator.getModel();
         mHomeModel = mMediator.getHomeModel();
         mModelList = mHomeModel.get(HomeProperties.SHEET_ITEMS);
@@ -598,5 +611,55 @@ public class AtMemoryBottomSheetMediatorTest {
                 userActionTester
                         .getActions()
                         .contains("PersonalContext.AtMemory.Notice.SettingsLinkClick"));
+    }
+
+    @Test
+    public void testNoticeIsLoggingDisallowed_whenPolicyIsAllowWithoutLogging() {
+        when(mPrefService.getInteger(
+                        AtMemoryBottomSheetMediator.FIND_AND_FILL_WITH_GEMINI_SETTINGS))
+                .thenReturn(1); // 1 = kAllowWithoutLogging
+
+        AutofillSuggestion noticeSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setSuggestionType(SuggestionType.PERSONAL_CONTEXT_NOTICE)
+                        .setSubLabel("")
+                        .build();
+
+        mMediator.show(List.of(noticeSuggestion));
+
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.NOTICE, mModelList.get(0).type);
+        assertFalse(
+                mModelList
+                        .get(0)
+                        .model
+                        .get(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .IS_LOGGING_ALLOWED));
+    }
+
+    @Test
+    public void testNoticeIsLoggingAllowed_whenPolicyIsAllowed() {
+        when(mPrefService.getInteger(
+                        AtMemoryBottomSheetMediator.FIND_AND_FILL_WITH_GEMINI_SETTINGS))
+                .thenReturn(0); // 0 = kAllow
+
+        AutofillSuggestion noticeSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setSuggestionType(SuggestionType.PERSONAL_CONTEXT_NOTICE)
+                        .setSubLabel("")
+                        .build();
+
+        mMediator.show(List.of(noticeSuggestion));
+
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.NOTICE, mModelList.get(0).type);
+        assertTrue(
+                mModelList
+                        .get(0)
+                        .model
+                        .get(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .IS_LOGGING_ALLOWED));
     }
 }

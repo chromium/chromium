@@ -11,12 +11,14 @@ import android.content.Context;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.settings.PersonalContextSettingsLauncher;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
@@ -26,6 +28,8 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Tex
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,6 +43,18 @@ import java.util.List;
 class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     static final String NOTICE_INTERACTIONS_HISTOGRAM =
             "PersonalContext.AtMemory.NoticeInteractions";
+
+    // LINT.IfChange(FindAndFillWithGeminiSettings)
+    @VisibleForTesting
+    static final String FIND_AND_FILL_WITH_GEMINI_SETTINGS =
+            "autofill.personal_context.find_and_fill_with_gemini_settings";
+
+    // LINT.ThenChange(//components/optimization_guide/core/feature_registry/feature_registration.cc:FindAndFillWithGeminiSettings)
+
+    // LINT.IfChange(AllowLogging)
+    private static final int ALLOW_LOGGING = 0;
+
+    // LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_prefs.h:ModelExecutionEnterprisePolicyValue)
 
     // Interactions with the AtMemory notice.
     // LINT.IfChange(NoticeInteraction)
@@ -58,16 +74,19 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     private final PropertyModel mFlyoutModel;
     private final AtMemoryBottomSheetCoordinator.Delegate mDelegate;
     private final HomeProperties.SearchDelegate mSearchDelegate;
+    private final Profile mProfile;
 
     private boolean mWasNoticeShownRecorded;
 
     AtMemoryBottomSheetMediator(
             Context context,
             AtMemoryBottomSheetCoordinator.Delegate delegate,
-            HomeProperties.SearchDelegate searchDelegate) {
+            HomeProperties.SearchDelegate searchDelegate,
+            Profile profile) {
         mContext = context;
         mDelegate = delegate;
         mSearchDelegate = searchDelegate;
+        mProfile = profile;
 
         mModel = createModel();
         mHomeModel = createHomeModel();
@@ -242,8 +261,15 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .build();
     }
 
+    private boolean isLoggingAllowedByPolicy() {
+        PrefService prefService = UserPrefs.get(mProfile);
+        if (prefService == null) return true;
+        return prefService.getInteger(FIND_AND_FILL_WITH_GEMINI_SETTINGS) == ALLOW_LOGGING;
+    }
+
     private PropertyModel createNoticeModel(int position) {
         return new PropertyModel.Builder(NoticeItemProperties.ALL_KEYS)
+                .with(NoticeItemProperties.IS_LOGGING_ALLOWED, isLoggingAllowedByPolicy())
                 .with(NoticeItemProperties.ON_OK_CLICKED, () -> onNoticeAcknowledged(position))
                 .with(NoticeItemProperties.ON_SETTINGS_CLICKED, this::onNoticeSettingsClicked)
                 .build();
