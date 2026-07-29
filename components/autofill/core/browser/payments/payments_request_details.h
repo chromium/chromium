@@ -510,13 +510,13 @@ struct GetBnplPaymentInstrumentForFetchingUrlRequestDetails {
   // The instrument ID is used by the server to identify a specific BNPL issuer.
   std::string_view instrument_id;
   // The fingerprint data for the user and the device.
-  std::string_view risk_data;
+  std::string risk_data;
   // The merchant domain (including the scheme).
   GURL merchant_domain;
   // The total purchase amount (in micros) from the merchant checkout page.
   int64_t total_amount = 0;
   // Currency of the amount represented by a three-letter currency code.
-  std::string_view currency;
+  std::string currency;
 };
 
 // Information retrieved from a BNPL FetchUrlRequest.
