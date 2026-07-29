@@ -878,12 +878,15 @@ void TextControlElement::SelectionChanged(bool user_triggered) {
   if (!GetLayoutObject() || !IsTextControl())
     return;
 
-  // selectionStart() or selectionEnd() will return cached selection when this
-  // node doesn't have focus.
-  ComputedSelection computed_selection;
-  ComputeSelection(kStart | kEnd | kDirection, computed_selection);
-  CacheSelection(computed_selection.start, computed_selection.end,
-                 computed_selection.direction);
+  // The cached selection is authoritative while unfocused, so only refresh it
+  // from the live DOM selection when focused.
+  if (IsFocused() ||
+      !RuntimeEnabledFeatures::PreserveUnfocusedSelectionCacheEnabled()) {
+    ComputedSelection computed_selection;
+    ComputeSelection(kStart | kEnd | kDirection, computed_selection);
+    CacheSelection(computed_selection.start, computed_selection.end,
+                   computed_selection.direction);
+  }
 
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame || !user_triggered)

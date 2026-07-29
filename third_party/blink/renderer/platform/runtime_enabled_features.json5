@@ -4886,6 +4886,14 @@
       status: "stable",
     },
     {
+      // When enabled, a text control's cached selection is preserved while the
+      // control is not focused instead of being refreshed from the live DOM
+      // selection. Kill switch for https://crbug.com/40884623. This feature
+      // ships in M153 and can be removed in M155.
+      name: "PreserveUnfocusedSelectionCache",
+      status: "stable",
+    },
+    {
       // When enabled, fixes selection jumping when drag-selecting out of
       // a float box boundary.
       // See https://crbug.com/41340914
