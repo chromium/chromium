@@ -103,7 +103,7 @@ BASE_FEATURE(kWinSboxHighGPUJobMemoryLimits, base::FEATURE_ENABLED_BY_DEFAULT);
 // loader remaps a clean main image if IAT tampering is detected, preventing
 // process startup failures caused by injected non-Microsoft-signed imports.
 BASE_FEATURE(kWinSboxModuleTamperingProtection,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_WIN)
 

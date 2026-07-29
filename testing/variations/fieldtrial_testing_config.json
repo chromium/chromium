@@ -27955,21 +27955,6 @@
             ]
         }
     ],
-    "WinSboxModuleTamperingProtection": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinSboxModuleTamperingProtection"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [
