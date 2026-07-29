@@ -1,0 +1,8 @@
+specific_include_rules = {
+    # No-Vary-Search hint matching for renderer-side interaction heuristics
+    # reuses net's matcher, which operates on GURLs.
+    "document_speculation_rules.cc": [
+        "+net/http/http_no_vary_search_data.h",
+        "+url/gurl.h",
+    ],
+}

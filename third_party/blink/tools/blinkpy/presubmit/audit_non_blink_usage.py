@@ -494,6 +494,16 @@ _CONFIG = [
         'allowed': ['base::EqualsCaseInsensitiveASCII'],
     },
     {
+        # Renderer-side speculation-rules link-selection heuristics reuse
+        # net's canonical No-Vary-Search URL-equivalence matcher rather than
+        # reimplementing it, matching the browser-side PreloadingDecider.
+        'paths': [
+            'third_party/blink/renderer/core/speculation_rules/'
+            'document_speculation_rules.cc',
+        ],
+        'allowed': ['net::HttpNoVarySearchData'],
+    },
+    {
         'paths': [
             'third_party/blink/common/page/content_to_visible_time_reporter.cc',
         ],

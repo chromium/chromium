@@ -51,6 +51,11 @@ class CORE_EXPORT SpeculationCandidate
   }
   bool form_submission() const { return form_submission_; }
   mojom::blink::SpeculationEagerness eagerness() const { return eagerness_; }
+  // The No-Vary-Search hint (may be null), used for URL-equivalence matching
+  // by the renderer-side link-selection heuristics.
+  const network::mojom::blink::NoVarySearchPtr& no_vary_search() const {
+    return no_vary_search_;
+  }
   SpeculationRuleSet* rule_set() const { return rule_set_.Get(); }
   // Only set for candidates derived from a document rule (is null for
   // candidates derived from list rules).

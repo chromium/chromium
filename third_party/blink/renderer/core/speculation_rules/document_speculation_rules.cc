@@ -6,9 +6,12 @@
 
 #include <algorithm>
 
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
+#include "net/http/http_no_vary_search_data.h"
+#include "services/network/public/mojom/no_vary_search.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -39,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -189,6 +193,43 @@ enum class UpdateSpeculationCandidatesReason {
   kRestoredFromBFCache = 1,
   kMaxValue = kRestoredFromBFCache,
 };
+
+// Converts a blink-variant No-Vary-Search hint into net's matcher type. This
+// mirrors content's no_vary_search::ParseHttpNoVarySearchDataFromMojom for the
+// blink mojom variant.
+net::HttpNoVarySearchData ToNetNoVarySearch(
+    const network::mojom::blink::NoVarySearchPtr& nvs) {
+  const network::mojom::blink::SearchParamsVariancePtr& variance =
+      nvs->search_variance;
+  auto to_utf8 = [](const String& param) { return param.Utf8(); };
+  if (variance->is_vary_params()) {
+    return net::HttpNoVarySearchData::CreateFromVaryParams(
+        base::ToVector(variance->get_vary_params(), to_utf8),
+        nvs->vary_on_key_order);
+  }
+  return net::HttpNoVarySearchData::CreateFromNoVaryParams(
+      base::ToVector(variance->get_no_vary_params(), to_utf8),
+      nvs->vary_on_key_order);
+}
+
+// Returns true if `candidate` should be enacted for an interaction on
+// `interaction_url`: either an exact URL match, or a No-Vary-Search-hint
+// match (the candidate declares that the differing query params don't vary
+// the response). Mirrors PreloadingDecider's exact +
+// EnumerateNoVarySearchMatchedCandidates matching.
+bool CandidateMatchesInteractionUrl(const KURL& interaction_url,
+                                    const SpeculationCandidate& candidate) {
+  if (candidate.url() == interaction_url) {
+    return true;
+  }
+  const network::mojom::blink::NoVarySearchPtr& hint =
+      candidate.no_vary_search();
+  if (!hint) {
+    return false;
+  }
+  return ToNetNoVarySearch(hint).AreEquivalent(GURL(interaction_url),
+                                               GURL(candidate.url()));
+}
 
 }  // namespace
 
@@ -700,14 +741,12 @@ void DocumentSpeculationRules::EnactMatchingCandidates(
   // `immediate` candidates are enacted when candidates are updated, not via
   // these interaction heuristics, so callers never pass `immediate` here.
   CHECK(!eagernesses.Contains(mojom::blink::SpeculationEagerness::kImmediate));
-  // TODO(crbug.com/532860179): Add No-Vary-Search matching (currently
-  // exact-URL only), matching PreloadingDecider's NVS-hint standby logic.
   for (SpeculationCandidate* candidate : sent_candidates_) {
-    if (candidate->url() != url) {
-      continue;
-    }
     // Skip candidates not selected by this heuristic.
     if (!eagernesses.Contains(candidate->eagerness())) {
+      continue;
+    }
+    if (!CandidateMatchesInteractionUrl(url, *candidate)) {
       continue;
     }
     host->EnactCandidate(candidate->ToMojom(), heuristic);
