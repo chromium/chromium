@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -26,6 +28,14 @@ constexpr int kGroupLineWidth = 2;
 constexpr int kGroupLineCollapsedLeadingPadding = 6;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kGroupHeaderVerticalMargin = 4;
+
+bool IsGroupFocused(const TabGroupView* tab_group_view) {
+  return tab_group_view && tab_group_view->collection_node() &&
+         tab_group_view->collection_node()->GetController() &&
+         tab_group_view->collection_node()
+                 ->GetController()
+                 ->GetFocusedGroup() == tab_group_view->GetTabGroup().id();
+}
 }  // namespace
 
 TabGroupViewLayout::TabGroupViewLayout(TabStripOrientation orientation)
@@ -148,10 +158,21 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
     height += kTabVerticalPadding;
   }
 
+  // If the group is focused and we are handling a drag, we need to account for
+  // the dragged views' bottom bound.
+  int dragged_view_bottom = 0;
+  if (IsGroupFocused(tab_group_view) && tab_group_view->IsHandlingDrag()) {
+    dragged_view_bottom = tab_group_view->GetDraggingViewsBounds().bottom();
+    if (size_bounds.height().is_bounded()) {
+      dragged_view_bottom =
+          std::min(dragged_view_bottom, size_bounds.height().value());
+    }
+  }
+
   layouts.host_size = gfx::Size(
       width, is_group_collapsed
                  ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
-                 : height);
+                 : std::max(height, dragged_view_bottom));
   return layouts;
 }
 

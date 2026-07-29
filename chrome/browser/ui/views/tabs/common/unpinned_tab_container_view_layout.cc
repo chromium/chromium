@@ -172,11 +172,21 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateVerticalLayout(
                 collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
             ? 0
             : horizontal_padding;
+    views::SizeBound child_height_bound = size_bounds.height();
+    // In focused mode, pass the scroll viewport height constraint to the child
+    // focused group if the incoming size bounds height is unbounded, so that
+    // TabGroupView can clamp dragged view bounds during a drag operation.
+    if (focused_group_id.has_value() && !child_height_bound.is_bounded()) {
+      if (const auto* scroll_view =
+              tab_container_view->GetScrollViewForContainer()) {
+        child_height_bound = scroll_view->height();
+      }
+    }
     views::SizeBounds child_size_bounds =
         views::SizeBounds(size_bounds.width().is_bounded()
                               ? (size_bounds.width() - (x + horizontal_padding))
                               : size_bounds.width(),
-                          {});
+                          child_height_bound);
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_size_bounds));
     bounds.set_x(x);
 
