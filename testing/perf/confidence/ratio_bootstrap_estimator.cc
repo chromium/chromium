@@ -10,19 +10,14 @@
 #include <math.h>
 
 #include <algorithm>
-#include <memory>
 #include <vector>
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// Not used with untrusted inputs.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 
-using std::lower_bound;
 using std::min;
 using std::numeric_limits;
-using std::sort;
-using std::unique_ptr;
 using std::vector;
 
 // Inverse normal CDF, e.g. InverseNormalCDF(0.975) ~= 1.96
@@ -95,8 +90,7 @@ double NormalCDF(double q) {
 // We estimate G by Ĝ, the bootstrap estimate of G (text above eq. 2.9
 // in the paper). Note that unlike bcajack, we interpolate between values
 // to get slightly better accuracy.
-double ComputeBCa(const double* estimates,
-                  size_t num_estimates,
+double ComputeBCa(base::span<const double> estimates,
                   double alpha,
                   double z0,
                   double a) {
@@ -105,9 +99,9 @@ double ComputeBCa(const double* estimates,
   // Eq. (2.2); the basic BCa formula.
   double q = NormalCDF(z0 + (z0 + z_alpha) / (1 - a * (z0 + z_alpha)));
 
-  double index = q * (num_estimates - 1);
+  double index = q * (estimates.size() - 1);
   int base_index = index;
-  if (base_index == static_cast<int>(num_estimates - 1)) {
+  if (base_index == static_cast<int>(estimates.size() - 1)) {
     // The edge of the CDF; note that R would warn in this case.
     return estimates[base_index];
   }
@@ -117,18 +111,16 @@ double ComputeBCa(const double* estimates,
 }
 
 // Calculate Ĝ (the fraction of estimates that are less than search-value).
-double FindCDF(const double* estimates,
-               size_t num_estimates,
-               double search_val) {
+double FindCDF(base::span<const double> estimates, double search_val) {
   // Find first x where x >= search_val.
-  auto it = lower_bound(estimates, estimates + num_estimates, search_val);
-  if (it == estimates + num_estimates) {
+  auto it = std::ranges::lower_bound(estimates, search_val);
+  if (it == estimates.end()) {
     // All values are less than search_val.
     // Note that R warns in this case.
     return 1.0;
   }
 
-  unsigned index = std::distance(estimates, it);
+  unsigned index = std::distance(estimates.begin(), it);
   if (index == 0) {
     // All values are >= search_val.
     // Note that R warns in this case.
@@ -137,7 +129,7 @@ double FindCDF(const double* estimates,
 
   // TODO(sesse): Consider whether we should interpolate here, like in
   // compute_bca().
-  return index / double(num_estimates);
+  return index / double(estimates.size());
 }
 
 }  // namespace
@@ -188,10 +180,10 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
 
   // Allocate some memory for temporaries that we need.
   unsigned num_dimensions = data.size();
-  unique_ptr<double[]> before(new double[num_dimensions]);
-  unique_ptr<double[]> after(new double[num_dimensions]);
-  unique_ptr<double[]> all_estimates(
-      new double[(num_dimensions + compute_geometric_mean) * num_resamples]);
+  std::vector<double> before(num_dimensions);
+  std::vector<double> after(num_dimensions);
+  std::vector<double> all_estimates((num_dimensions + compute_geometric_mean) *
+                                    num_resamples);
 
   // Do our bootstrap resampling. Note that we can sample independently
   // from the numerator and denumerator (which the R packages cannot do);
@@ -235,10 +227,11 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
   for (unsigned d = 0; d < num_dimensions + compute_geometric_mean; ++d) {
     bool is_geometric_mean = (d == num_dimensions);
 
-    double* estimates = &all_estimates[d * num_resamples];
+    auto estimates =
+        base::span(all_estimates).subspan(d * num_resamples, num_resamples);
 
     // FindCDF() and others expect sorted data.
-    sort(estimates, estimates + num_resamples);
+    std::ranges::sort(estimates);
 
     // Make our point estimate.
     double point_estimate = is_geometric_mean
@@ -246,8 +239,7 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
                                 : EstimateRatioExcept(data[d], -1);
 
     // Compute bias correction, Eq. (2.9).
-    double z0 =
-        InverseNormalCDF(FindCDF(estimates, num_resamples, point_estimate));
+    double z0 = InverseNormalCDF(FindCDF(estimates, point_estimate));
 
     // Compute acceleration. This is Eq. (3.11), except that there seems
     // to be a typo; the sign seems to be flipped compared to bcajack,
@@ -280,8 +272,8 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
 
     Estimate est;
     est.point_estimate = point_estimate;
-    est.lower = ComputeBCa(estimates, num_resamples, alpha, z0, a);
-    est.upper = ComputeBCa(estimates, num_resamples, 1.0 - alpha, z0, a);
+    est.lower = ComputeBCa(estimates, alpha, z0, a);
+    est.upper = ComputeBCa(estimates, 1.0 - alpha, z0, a);
     result.push_back(est);
   }
   return result;

@@ -12,6 +12,7 @@ group("confidence") {
 
 static_library("ratio_bootstrap_estimator") {
   sources = [ "ratio_bootstrap_estimator.cc" ]
+  deps = [ "//base" ]
 }
 
 executable("pinpoint_ci") {
