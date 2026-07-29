@@ -301,6 +301,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
     return false;
   }
 
+  virtual void DidFlushRecording(const cc::PaintRecord& recording,
+                                 bool clear_frame,
+                                 FlushReason reason) {}
+
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
 

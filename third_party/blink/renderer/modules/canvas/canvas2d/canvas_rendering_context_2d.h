@@ -230,6 +230,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
+ protected:
+  void DidFlushRecording(const cc::PaintRecord& recording,
+                         bool clear_frame,
+                         FlushReason reason) override;
+
+ public:
   void Trace(Visitor*) const override;
 
   ImageData* getImageDataInternal(int sx,

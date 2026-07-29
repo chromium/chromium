@@ -599,6 +599,28 @@ std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
                              bitmap_provider_.get(), reason);
 }
 
+void CanvasRenderingContext2D::DidFlushRecording(
+    const cc::PaintRecord& recording,
+    bool clear_frame,
+    FlushReason reason) {
+  bool want_to_print = (Host() && Host()->IsPrinting()) ||
+                       reason == FlushReason::kPrinting ||
+                       reason == FlushReason::kCanvasPushFrameWhilePrinting;
+  if (shared_image_provider_) {
+    if (want_to_print && clear_frame) {
+      shared_image_provider_->SetLastRecording(recording);
+    } else {
+      shared_image_provider_->ClearLastRecording();
+    }
+  } else if (bitmap_provider_) {
+    if (want_to_print && clear_frame) {
+      bitmap_provider_->SetLastRecording(recording);
+    } else {
+      bitmap_provider_->ClearLastRecording();
+    }
+  }
+}
+
 void CanvasRenderingContext2D::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {

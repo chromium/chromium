@@ -746,29 +746,18 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   }
 
   cc::PaintRecord recording = recorder->ReleaseMainRecording();
-  bool want_to_print = (Host() && Host()->IsPrinting()) ||
-                       reason == FlushReason::kPrinting ||
-                       reason == FlushReason::kCanvasPushFrameWhilePrinting;
   if (shared_image_provider) {
     ScopedRasterTimer timer(shared_image_provider->IsAccelerated()
                                 ? shared_image_provider->RasterInterface()
                                 : nullptr,
                             *shared_image_provider);
-    if (want_to_print && shared_image_provider->clear_frame()) {
-      shared_image_provider->SetLastRecording(recording);
-    } else {
-      shared_image_provider->ClearLastRecording();
-    }
+    DidFlushRecording(recording, shared_image_provider->clear_frame(), reason);
     shared_image_provider->set_clear_frame(false);
     shared_image_provider->RasterRecord(recording);
     shared_image_provider->ReleaseImageProviderImages();
   } else if (bitmap_provider) {
     ScopedRasterTimer timer(nullptr, *bitmap_provider);
-    if (want_to_print && bitmap_provider->clear_frame()) {
-      bitmap_provider->SetLastRecording(recording);
-    } else {
-      bitmap_provider->ClearLastRecording();
-    }
+    DidFlushRecording(recording, bitmap_provider->clear_frame(), reason);
     bitmap_provider->set_clear_frame(false);
     bitmap_provider->RasterRecord(recording);
     bitmap_provider->ReleaseImageProviderImages();
