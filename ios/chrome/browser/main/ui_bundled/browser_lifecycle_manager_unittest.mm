@@ -105,8 +105,8 @@ class BrowserLifecycleManagerTest : public PlatformTest {
     profile_state_.profile = profile_.get();
 
     scene_state_ = [[SceneState alloc] init];
-    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
-                                      .identifier = "scene"}];
+    scene_state_.profileState = profile_state_;
+    scene_state_.sceneSessionID = "scene";
 
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];

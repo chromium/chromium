@@ -75,8 +75,8 @@ class SceneCoordinatorTest : public PlatformTest {
     profile_state_.profile = profile_.get();
 
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
-    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
-                                      .identifier = "scene"}];
+    scene_state_.profileState = profile_state_;
+    scene_state_.sceneSessionID = "scene";
 
     profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

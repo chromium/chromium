@@ -72,8 +72,8 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.activationLevel = SceneActivationLevelUnattached;
-    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
-                                      .identifier = "scene"}];
+    scene_state_.profileState = profile_state_;
+    scene_state_.sceneSessionID = "scene";
     scene_state_.UIEnabled = YES;
     scene_state_.prefs = [[SceneStatePrefs alloc]
         initWithProfileManager:&profile_manager_

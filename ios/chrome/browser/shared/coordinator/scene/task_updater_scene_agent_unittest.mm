@@ -89,8 +89,8 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
     profile_state_.profile = profile_.get();
 
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
-    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
-                                      .identifier = "scene-1"}];
+    scene_state_.profileState = profile_state_;
+    scene_state_.sceneSessionID = "scene-1";
 
     agent_ = [[TaskUpdaterSceneAgent alloc] init];
     [scene_state_ addAgent:agent_];
@@ -160,8 +160,8 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIBlocker) {
   // Set a UI blocker before becoming active.
   FakeSceneState* blocker_target =
       [[FakeSceneState alloc] initWithProfile:profile_.get()];
-  [scene_state_ connectWithOptions:{.profile_state = profile_state_,
-                                    .identifier = "scene-2"}];
+  scene_state_.profileState = profile_state_;
+  scene_state_.sceneSessionID = "scene-2";
   [profile_state_ incrementBlockingUICounterForTarget:blocker_target];
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

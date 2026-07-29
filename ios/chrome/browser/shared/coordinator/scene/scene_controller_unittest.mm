@@ -106,12 +106,12 @@ class SceneControllerTest : public PlatformTest {
 
     profile_state_ = CreateProfileState(ProfileInitStage::kFinal);
     scene_state_ = [[SceneState alloc] init];
-    [scene_state_ connectWithOptions:{.profile_state = profile_state_,
-                                      .identifier = "scene-id"}];
 
     scene_controller_ =
         [[InternalFakeSceneController alloc] initWithSceneState:scene_state_];
     scene_state_.controller = scene_controller_;
+    scene_state_.profileState = profile_state_;
+    scene_state_.sceneSessionID = "scene-id";
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
