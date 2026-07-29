@@ -42,20 +42,20 @@ class BackwardsCharacterIteratorAlgorithm {
       const EphemeralRangeTemplate<Strategy>&,
       const TextIteratorBehavior& = TextIteratorBehavior());
 
-  void Advance(int);
+  void Advance(wtf_size_t);
 
   bool AtEnd() const { return text_iterator_.AtEnd(); }
 
-  int length() const { return text_iterator_.length() - run_offset_; }
-  UChar CharacterAt(unsigned index) const {
+  wtf_size_t length() const { return text_iterator_.length() - run_offset_; }
+  UChar CharacterAt(wtf_size_t index) const {
     return text_iterator_.CharacterAt(run_offset_ + index);
   }
 
   PositionTemplate<Strategy> EndPosition() const;
 
  private:
-  int offset_;
-  int run_offset_;
+  wtf_size_t offset_ = 0;
+  wtf_size_t run_offset_ = 0;
   bool at_break_;
 
   SimplifiedBackwardsTextIteratorAlgorithm<Strategy> text_iterator_;

@@ -296,8 +296,9 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
           ? TextIteratorBehavior::
                 AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
           : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
-  const int start_index = TextIterator::RangeLength(start_range, behavior);
-  const int end_index = TextIterator::RangeLength(end_range, behavior);
+  const wtf_size_t start_index =
+      TextIterator::RangeLength(start_range, behavior);
+  const wtf_size_t end_index = TextIterator::RangeLength(end_range, behavior);
 
   VisiblePosition paragraph_start(StartOfParagraph(visible_start));
   RelocatablePosition* relocatable_beyond_end =

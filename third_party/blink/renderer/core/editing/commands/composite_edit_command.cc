@@ -1685,7 +1685,7 @@ bool CompositeEditCommand::DestinationStillEditableForPaste(
          EndingVisibleSelection().RootEditableElement();
 }
 
-int CompositeEditCommand::ComputeDestinationIndex(
+wtf_size_t CompositeEditCommand::ComputeDestinationIndex(
     const VisiblePosition& destination) {
   const TextIteratorBehavior behavior =
       RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
@@ -1816,7 +1816,7 @@ bool CompositeEditCommand::IsPreservedSelectionEndpointUsable(
   return position.IsNotNull() && position.IsValidFor(GetDocument());
 }
 
-std::optional<std::pair<int, int>>
+std::optional<std::pair<wtf_size_t, wtf_size_t>>
 CompositeEditCommand::ComputePreservedSelectionIndices(
     const Position& start_of_paragraph,
     const Position& end_of_paragraph,
@@ -1840,14 +1840,14 @@ CompositeEditCommand::ComputePreservedSelectionIndices(
                 AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
           : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
 
-  int start_index = 0;
+  wtf_size_t start_index = 0;
   if (start_in_paragraph) {
     start_index = TextIterator::RangeLength(
         start_of_paragraph.ParentAnchoredEquivalent(),
         selection_start.ParentAnchoredEquivalent(), behavior);
   }
 
-  int end_index = 0;
+  wtf_size_t end_index = 0;
   if (end_in_paragraph) {
     end_index = TextIterator::RangeLength(
         start_of_paragraph.ParentAnchoredEquivalent(),
@@ -1886,8 +1886,7 @@ void CompositeEditCommand::MoveParagraphs(
     return;
   }
 
-  std::optional<std::pair<int, int>> preserved_selection_indices;
-  int destination_index = -1;
+  std::optional<std::pair<wtf_size_t, wtf_size_t>> preserved_selection_indices;
   // VP overload: preserve endpoints from the VP lane.
   if (const std::optional<std::pair<Position, Position>> selection_endpoints =
           ComputePreservedVisibleSelectionEndpoints(
@@ -1975,7 +1974,7 @@ void CompositeEditCommand::MoveParagraphs(
 
   // TextIterator::rangeLength requires clean layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  destination_index = ComputeDestinationIndex(destination);
+  wtf_size_t destination_index = ComputeDestinationIndex(destination);
 
   if (!SetDestinationSelectionAndPasteFragment(
           destination, fragment, should_preserve_style, editing_state)) {

@@ -219,7 +219,7 @@ bool TextSearcherIcu::ShouldSkipCurrentMatch(
     const MatchResultIcu& result) const {
   int32_t text_length_i32;
   const UChar* text = usearch_getText(searcher_, &text_length_i32);
-  unsigned text_length = text_length_i32;
+  wtf_size_t text_length = text_length_i32;
   DCHECK_LE(result.start + result.length, text_length);
   DCHECK_GT(result.length, 0u);
   // SAFETY: Making a span same as the SetText() argument.

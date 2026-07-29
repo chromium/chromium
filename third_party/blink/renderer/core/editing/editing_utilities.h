@@ -314,8 +314,8 @@ Position PositionAfterNode(const Node&);
 
 int16_t ComparePositions(const VisiblePosition&, const VisiblePosition&);
 
-CORE_EXPORT int IndexForVisiblePosition(const VisiblePosition&,
-                                        ContainerNode*& scope);
+CORE_EXPORT wtf_size_t IndexForVisiblePosition(const VisiblePosition&,
+                                               ContainerNode*& scope);
 EphemeralRange MakeRange(const VisiblePosition&, const VisiblePosition&);
 EphemeralRange NormalizeRange(const EphemeralRange&);
 EphemeralRangeInFlatTree NormalizeRange(const EphemeralRangeInFlatTree&);

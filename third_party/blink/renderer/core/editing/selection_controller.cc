@@ -112,8 +112,8 @@ SelectionInFlatTree ExpandSelectionToRespectUserSelectAll(
       .Build();
 }
 
-static int TextDistance(const PositionInFlatTree& start,
-                        const PositionInFlatTree& end) {
+static wtf_size_t TextDistance(const PositionInFlatTree& start,
+                               const PositionInFlatTree& end) {
   return TextIteratorInFlatTree::RangeLength(
       start, end,
       TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
@@ -395,8 +395,8 @@ static SelectionInFlatTree ExtendSelectionAsNonDirectional(
                 start, PositionInFlatTreeWithAffinity(position), granularity))
         .Build();
   }
-  const int distance_to_start = TextDistance(start, position);
-  const int distance_to_end = TextDistance(position, end);
+  const wtf_size_t distance_to_start = TextDistance(start, position);
+  const wtf_size_t distance_to_end = TextDistance(position, end);
   if (distance_to_start <= distance_to_end) {
     return SelectionInFlatTree::Builder()
         .SetBaseAndExtent(

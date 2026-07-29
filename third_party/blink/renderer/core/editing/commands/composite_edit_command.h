@@ -285,7 +285,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   // Returns the plain-text offset of `destination` from the document root,
   // selecting the TextIteratorBehavior based on the EnterInOpenShadowRoots
   // flag. Requires clean layout.
-  int ComputeDestinationIndex(const VisiblePosition& destination);
+  wtf_size_t ComputeDestinationIndex(const VisiblePosition& destination);
 
   // Sets the ending selection to `destination` (mirroring into the raw-DOM
   // lane when EditingUseDomPositionApi is enabled) and runs the
@@ -330,11 +330,11 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   bool IsPreservedSelectionEndpointUsable(const Position& position) const;
   // Computes selection offsets relative to paragraph start, or std::nullopt
   // when selection is entirely outside the moved paragraph.
-  std::optional<std::pair<int, int>> ComputePreservedSelectionIndices(
-      const Position& start_of_paragraph,
-      const Position& end_of_paragraph,
-      const Position& selection_start,
-      const Position& selection_end);
+  std::optional<std::pair<wtf_size_t, wtf_size_t>>
+  ComputePreservedSelectionIndices(const Position& start_of_paragraph,
+                                   const Position& end_of_paragraph,
+                                   const Position& selection_start,
+                                   const Position& selection_end);
   EditingStyle* CaptureStyleInEmptyParagraph(
       const Position& start_of_paragraph);
   // Sets the ending selection to the delete range [start, end]. Mirrors into

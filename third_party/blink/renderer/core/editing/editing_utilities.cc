@@ -1535,8 +1535,8 @@ bool ElementCannotHaveEndTag(const Node& node) {
 // VisiblePositions.
 // FIXME: Deploy these functions everywhere that TextIterators are used to
 // convert between VisiblePositions and indices.
-int IndexForVisiblePosition(const VisiblePosition& visible_position,
-                            ContainerNode*& scope) {
+wtf_size_t IndexForVisiblePosition(const VisiblePosition& visible_position,
+                                   ContainerNode*& scope) {
   if (visible_position.IsNull())
     return 0;
 

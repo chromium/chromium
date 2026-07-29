@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 bool ShouldSkipInvisibleTextAt(const Text& text,
-                               unsigned offset,
+                               wtf_size_t offset,
                                bool ignores_visibility) {
   const LayoutObject* layout_object = AssociatedLayoutObjectOf(text, offset);
   if (!layout_object)
@@ -55,8 +55,8 @@ String TextIgnoringCssTextTransforms(const LayoutText& layout_text,
 
 struct StringAndOffsetRange {
   String string;
-  unsigned start;
-  unsigned end;
+  wtf_size_t start;
+  wtf_size_t end;
 };
 
 StringAndOffsetRange ComputeTextAndOffsetsForEmission(
@@ -140,7 +140,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
       mapping_units_index_ = 0;
     }
 
-    const unsigned initial_offset = offset_;
+    const wtf_size_t initial_offset = offset_;
     for (; mapping_units_index_ < mapping_units_.size();
          ++mapping_units_index_) {
       const auto& unit = mapping_units_[mapping_units_index_];
@@ -154,8 +154,8 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
       auto string_and_offsets =
           ComputeTextAndOffsetsForEmission(*mapping, unit, behavior_);
       const String& string = string_and_offsets.string;
-      const unsigned text_content_start = string_and_offsets.start;
-      const unsigned text_content_end = string_and_offsets.end;
+      const wtf_size_t text_content_start = string_and_offsets.start;
+      const wtf_size_t text_content_end = string_and_offsets.end;
       text_state_.EmitText(*text_node_, unit.DOMStart(), unit.DOMEnd(), string,
                            text_content_start, text_content_end);
       offset_ = unit.DOMEnd();
@@ -174,8 +174,8 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
 }
 
 void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
-                                                        unsigned start_offset,
-                                                        unsigned end_offset) {
+                                                        wtf_size_t start_offset,
+                                                        wtf_size_t end_offset) {
   DCHECK(node);
 
   // TODO(editing-dev): Stop passing in |start_offset == end_offset|.
@@ -203,12 +203,12 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
 
 void TextIteratorTextNodeHandler::HandleTextNodeStartFrom(
     const Text* node,
-    unsigned start_offset) {
+    wtf_size_t start_offset) {
   HandleTextNodeInRange(node, start_offset, node->data().length());
 }
 
 void TextIteratorTextNodeHandler::HandleTextNodeEndAt(const Text* node,
-                                                      unsigned end_offset) {
+                                                      wtf_size_t end_offset) {
   HandleTextNodeInRange(node, 0, end_offset);
 }
 

@@ -38,11 +38,11 @@ class TextIteratorTextNodeHandler {
   void HandleTextNodeWhole(const Text*);
 
   // Variants that emit plain text within the given DOM offset range.
-  void HandleTextNodeStartFrom(const Text*, unsigned start_offset);
-  void HandleTextNodeEndAt(const Text*, unsigned end_offset);
+  void HandleTextNodeStartFrom(const Text*, wtf_size_t start_offset);
+  void HandleTextNodeEndAt(const Text*, wtf_size_t end_offset);
   void HandleTextNodeInRange(const Text*,
-                             unsigned start_offset,
-                             unsigned end_offset);
+                             wtf_size_t start_offset,
+                             wtf_size_t end_offset);
 
  private:
   void HandleTextNodeWithLayoutNG();
@@ -54,8 +54,8 @@ class TextIteratorTextNodeHandler {
 
   // The current text node and offset range, from which text should be emitted.
   const Text* text_node_ = nullptr;
-  unsigned offset_ = 0;
-  unsigned end_offset_ = 0;
+  wtf_size_t offset_ = 0;
+  wtf_size_t end_offset_ = 0;
 
   // UnitVector for text_node_. This is available only if uses_layout_ng_.
   OffsetMapping::UnitVector mapping_units_;

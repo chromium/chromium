@@ -32,8 +32,8 @@ inline bool IgnoresContainerClip(const Node* node) {
 }
 
 template <typename Strategy>
-unsigned DepthCrossingShadowBoundaries(const Node& node) {
-  unsigned depth = 0;
+wtf_size_t DepthCrossingShadowBoundaries(const Node& node) {
+  wtf_size_t depth = 0;
   for (ContainerNode* parent = ParentCrossingShadowBoundaries<Strategy>(node);
        parent; parent = ParentCrossingShadowBoundaries<Strategy>(*parent))
     ++depth;

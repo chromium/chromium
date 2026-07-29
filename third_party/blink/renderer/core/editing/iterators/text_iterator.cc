@@ -103,7 +103,7 @@ static bool NotSkipping(const Node& node) {
 }
 
 template <typename Strategy>
-const Node* StartNode(const Node* start_container, unsigned start_offset) {
+const Node* StartNode(const Node* start_container, wtf_size_t start_offset) {
   if (start_container->IsCharacterDataNode())
     return start_container;
   if (Node* child = Strategy::ChildAt(*start_container, start_offset))
@@ -114,7 +114,7 @@ const Node* StartNode(const Node* start_container, unsigned start_offset) {
 }
 
 template <typename Strategy>
-const Node* EndNode(const Node& end_container, unsigned end_offset) {
+const Node* EndNode(const Node& end_container, wtf_size_t end_offset) {
   if (!end_container.IsCharacterDataNode() && end_offset)
     return Strategy::ChildAt(end_container, end_offset - 1);
   return nullptr;
@@ -125,7 +125,7 @@ const Node* EndNode(const Node& end_container, unsigned end_offset) {
 // |advance()|.
 template <typename Strategy>
 const Node* PastLastNode(const Node& range_end_container,
-                         unsigned range_end_offset) {
+                         wtf_size_t range_end_offset) {
   if (!range_end_container.IsCharacterDataNode() &&
       NotSkipping(range_end_container)) {
     for (Node* next = Strategy::ChildAt(range_end_container, range_end_offset);
@@ -148,16 +148,17 @@ const Node* PastLastNode(const Node& range_end_container,
 // Figure out the initial value of shadow_depth_: the depth of start_container's
 // tree scope from the common ancestor tree scope.
 template <typename Strategy>
-unsigned ShadowDepthOf(const Node& start_container, const Node& end_container);
+wtf_size_t ShadowDepthOf(const Node& start_container,
+                         const Node& end_container);
 
 template <>
-unsigned ShadowDepthOf<EditingStrategy>(const Node& start_container,
-                                        const Node& end_container) {
+wtf_size_t ShadowDepthOf<EditingStrategy>(const Node& start_container,
+                                          const Node& end_container) {
   const TreeScope* common_ancestor_tree_scope =
       start_container.GetTreeScope().CommonAncestorTreeScope(
           end_container.GetTreeScope());
   DCHECK(common_ancestor_tree_scope);
-  unsigned shadow_depth = 0;
+  wtf_size_t shadow_depth = 0;
   for (const TreeScope* tree_scope = &start_container.GetTreeScope();
        tree_scope != common_ancestor_tree_scope;
        tree_scope = tree_scope->ParentTreeScope())
@@ -166,8 +167,8 @@ unsigned ShadowDepthOf<EditingStrategy>(const Node& start_container,
 }
 
 template <>
-unsigned ShadowDepthOf<EditingInFlatTreeStrategy>(const Node& start_container,
-                                                  const Node& end_container) {
+wtf_size_t ShadowDepthOf<EditingInFlatTreeStrategy>(const Node& start_container,
+                                                    const Node& end_container) {
   return 0;
 }
 
@@ -948,7 +949,8 @@ const Node* TextIteratorAlgorithm<Strategy>::GetNode() const {
 }
 
 template <typename Strategy>
-int TextIteratorAlgorithm<Strategy>::StartOffsetInCurrentContainer() const {
+wtf_size_t TextIteratorAlgorithm<Strategy>::StartOffsetInCurrentContainer()
+    const {
   if (!text_state_.PositionNode())
     return end_offset_;
   EnsurePositionContainer();
@@ -956,7 +958,8 @@ int TextIteratorAlgorithm<Strategy>::StartOffsetInCurrentContainer() const {
 }
 
 template <typename Strategy>
-int TextIteratorAlgorithm<Strategy>::EndOffsetInCurrentContainer() const {
+wtf_size_t TextIteratorAlgorithm<Strategy>::EndOffsetInCurrentContainer()
+    const {
   if (!text_state_.PositionNode())
     return end_offset_;
   EnsurePositionContainer();
@@ -984,15 +987,14 @@ void TextIteratorAlgorithm<Strategy>::EnsurePositionContainer() const {
 
 template <typename Strategy>
 PositionTemplate<Strategy> TextIteratorAlgorithm<Strategy>::GetPositionBefore(
-    int char16_offset) const {
+    wtf_size_t char16_offset) const {
   if (AtEnd()) {
-    DCHECK_EQ(char16_offset, 0);
+    DCHECK_EQ(char16_offset, 0u);
     return PositionTemplate<Strategy>(CurrentContainer(),
                                       StartOffsetInCurrentContainer());
   }
-  DCHECK_GE(char16_offset, 0);
   DCHECK_LT(char16_offset, length());
-  DCHECK_GE(length(), 1);
+  DCHECK_GE(length(), 1u);
   const Node& node = *text_state_.PositionNode();
   if (text_state_.IsInTextNode() || text_state_.IsBeforeCharacter()) {
     return PositionTemplate<Strategy>(
@@ -1011,15 +1013,14 @@ PositionTemplate<Strategy> TextIteratorAlgorithm<Strategy>::GetPositionBefore(
 
 template <typename Strategy>
 PositionTemplate<Strategy> TextIteratorAlgorithm<Strategy>::GetPositionAfter(
-    int char16_offset) const {
+    wtf_size_t char16_offset) const {
   if (AtEnd()) {
-    DCHECK_EQ(char16_offset, 0);
+    DCHECK_EQ(char16_offset, 0u);
     return PositionTemplate<Strategy>(CurrentContainer(),
                                       EndOffsetInCurrentContainer());
   }
-  DCHECK_GE(char16_offset, 0);
   DCHECK_LT(char16_offset, length());
-  DCHECK_GE(length(), 1);
+  DCHECK_GE(length(), 1u);
   const Node& node = *text_state_.PositionNode();
   if (text_state_.IsBeforeCharacter()) {
     return PositionTemplate<Strategy>(
@@ -1055,7 +1056,7 @@ TextIteratorAlgorithm<Strategy>::EndPositionInCurrentContainer() const {
 }
 
 template <typename Strategy>
-int TextIteratorAlgorithm<Strategy>::RangeLength(
+wtf_size_t TextIteratorAlgorithm<Strategy>::RangeLength(
     const PositionTemplate<Strategy>& start,
     const PositionTemplate<Strategy>& end,
     const TextIteratorBehavior& behavior) {
@@ -1063,7 +1064,7 @@ int TextIteratorAlgorithm<Strategy>::RangeLength(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       start.GetDocument()->Lifecycle());
 
-  int length = 0;
+  wtf_size_t length = 0;
   for (TextIteratorAlgorithm<Strategy> it(start, end, behavior); !it.AtEnd();
        it.Advance())
     length += it.length();
@@ -1072,7 +1073,7 @@ int TextIteratorAlgorithm<Strategy>::RangeLength(
 }
 
 template <typename Strategy>
-int TextIteratorAlgorithm<Strategy>::RangeLength(
+wtf_size_t TextIteratorAlgorithm<Strategy>::RangeLength(
     const EphemeralRangeTemplate<Strategy>& range,
     const TextIteratorBehavior& behavior) {
   return RangeLength(range.StartPosition(), range.EndPosition(), behavior);
@@ -1097,7 +1098,7 @@ static String CreatePlainText(const EphemeralRangeTemplate<Strategy>& range,
 
   // The initial buffer size can be critical for performance:
   // https://bugs.webkit.org/show_bug.cgi?id=81192
-  static const unsigned kInitialCapacity = 1 << 15;
+  static const wtf_size_t kInitialCapacity = 1 << 15;
 
   StringBuilder builder;
   builder.ReserveCapacity(kInitialCapacity);

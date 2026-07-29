@@ -262,9 +262,7 @@ wtf_size_t CachedTextInputInfo::RangeLength(const EphemeralRange& range) const {
 // TODO(crbug.com/1256635): Revert https://crrev.com/c/3221041 to re-enable this
 // DCHECK on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-      DCHECK_EQ(
-          static_cast<wtf_size_t>(TextIterator::RangeLength(range, Behavior())),
-          length)
+      DCHECK_EQ(TextIterator::RangeLength(range, Behavior()), length)
           << it->value << " " << range;
 #endif
       return length;

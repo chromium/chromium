@@ -49,17 +49,17 @@ TextIteratorTextState::TextIteratorTextState(
     const TextIteratorBehavior& behavior)
     : behavior_(behavior) {}
 
-unsigned TextIteratorTextState::PositionStartOffset() const {
+wtf_size_t TextIteratorTextState::PositionStartOffset() const {
   DCHECK(position_container_node_);
   return position_start_offset_.value();
 }
 
-unsigned TextIteratorTextState::PositionEndOffset() const {
+wtf_size_t TextIteratorTextState::PositionEndOffset() const {
   DCHECK(position_container_node_);
   return position_end_offset_.value();
 }
 
-UChar TextIteratorTextState::CharacterAt(unsigned index) const {
+UChar TextIteratorTextState::CharacterAt(wtf_size_t index) const {
   SECURITY_DCHECK(index < length());
   if (!(index < length()))
     return 0;
@@ -111,7 +111,7 @@ void TextIteratorTextState::ResetPositionContainerNode(
 
 void TextIteratorTextState::UpdatePositionOffsets(
     const ContainerNode& container_node,
-    unsigned node_index) const {
+    wtf_size_t node_index) const {
   DCHECK(!position_container_node_);
   DCHECK(!position_start_offset_.has_value());
   DCHECK(!position_end_offset_.has_value());
@@ -178,7 +178,7 @@ void TextIteratorTextState::EmitChar16BeforeNode(UChar code_unit,
 
 void TextIteratorTextState::EmitChar16Before(UChar code_unit,
                                              const Text& text_node,
-                                             unsigned offset) {
+                                             wtf_size_t offset) {
   // TODO(editing-dev): text-transform:uppercase can make text longer, e.g.
   // "U+00DF" to "SS". See "fast/css/case-transform.html"
   // DCHECK_LE(offset, text_node.length());
@@ -192,7 +192,7 @@ void TextIteratorTextState::EmitChar16Before(UChar code_unit,
 
 void TextIteratorTextState::EmitReplacmentCodeUnit(UChar code_unit,
                                                    const Text& text_node,
-                                                   unsigned offset) {
+                                                   wtf_size_t offset) {
   SetTextNodePosition(text_node, offset, offset + 1);
   PopulateStringBufferFromChar16(code_unit);
 }
@@ -211,11 +211,11 @@ void TextIteratorTextState::PopulateStringBufferFromChar16(UChar code_unit) {
 }
 
 void TextIteratorTextState::EmitText(const Text& text_node,
-                                     unsigned position_start_offset,
-                                     unsigned position_end_offset,
+                                     wtf_size_t position_start_offset,
+                                     wtf_size_t position_end_offset,
                                      const String& string,
-                                     unsigned text_start_offset,
-                                     unsigned text_end_offset) {
+                                     wtf_size_t text_start_offset,
+                                     wtf_size_t text_end_offset) {
   DCHECK_LE(position_start_offset, position_end_offset);
   const String text =
       behavior_.EmitsSmallXForTextSecurity() && IsTextSecurityNode(text_node)
@@ -232,8 +232,8 @@ void TextIteratorTextState::EmitText(const Text& text_node,
 }
 
 void TextIteratorTextState::PopulateStringBuffer(const String& text,
-                                                 unsigned text_start_offset,
-                                                 unsigned text_end_offset) {
+                                                 wtf_size_t text_start_offset,
+                                                 wtf_size_t text_end_offset) {
   DCHECK_LE(text_start_offset, text_end_offset);
   DCHECK_LE(text_end_offset, text.length());
   text_ = text;
@@ -245,9 +245,10 @@ void TextIteratorTextState::PopulateStringBuffer(const String& text,
   has_emitted_ = true;
 }
 
-void TextIteratorTextState::SetTextNodePosition(const Text& text_node,
-                                                unsigned position_start_offset,
-                                                unsigned position_end_offset) {
+void TextIteratorTextState::SetTextNodePosition(
+    const Text& text_node,
+    wtf_size_t position_start_offset,
+    wtf_size_t position_end_offset) {
   DCHECK_LT(position_start_offset, position_end_offset);
   // TODO(editing-dev): text-transform:uppercase can make text longer, e.g.
   // "U+00DF" to "SS". See "fast/css/case-transform.html"

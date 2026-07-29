@@ -40,10 +40,11 @@
 
 namespace blink {
 
-static int CollapsedSpaceLength(LayoutText* layout_text, int text_end) {
+static wtf_size_t CollapsedSpaceLength(LayoutText* layout_text,
+                                       wtf_size_t text_end) {
   const String& text = layout_text->TransformedText();
-  int length = text.length();
-  for (int i = text_end; i < length; ++i) {
+  wtf_size_t length = text.length();
+  for (wtf_size_t i = text_end; i < length; ++i) {
     if (!layout_text->StyleRef().IsCollapsibleWhiteSpace(text[i])) {
       return i - text_end;
     }
@@ -52,8 +53,8 @@ static int CollapsedSpaceLength(LayoutText* layout_text, int text_end) {
   return length - text_end;
 }
 
-static int MaxOffsetIncludingCollapsedSpaces(const Node* node) {
-  int offset = CaretMaxOffset(node);
+static wtf_size_t MaxOffsetIncludingCollapsedSpaces(const Node* node) {
+  wtf_size_t offset = CaretMaxOffset(node);
   if (auto* text = DynamicTo<LayoutText>(node->GetLayoutObject()))
     offset += CollapsedSpaceLength(text, offset) + text->TextStartOffset();
   return offset;
@@ -67,7 +68,8 @@ static int MaxOffsetIncludingCollapsedSpaces(const Node* node) {
 // Layout representation: "••"
 // AdjustedOffsetForSecureText(node, 3) returns 1.
 // AdjustedOffsetForSecureText(node, 4) returns 2.
-static int AdjustedOffsetForSecureText(const Node* node, int offset) {
+static wtf_size_t AdjustedOffsetForSecureText(const Node* node,
+                                              wtf_size_t offset) {
   if (!node || !node->IsCharacterDataNode()) {
     return offset;
   }
@@ -86,9 +88,9 @@ static int AdjustedOffsetForSecureText(const Node* node, int offset) {
   // OffsetMapping gives offsets relative to the whole text in the layout, so
   // subtract the node's start offset to get the offset relative to this node
   // only.
-  std::optional<unsigned> current_offset =
+  std::optional<wtf_size_t> current_offset =
       mapping->GetTextContentOffset(current);
-  std::optional<unsigned> node_start_offset =
+  std::optional<wtf_size_t> node_start_offset =
       mapping->GetTextContentOffset(node_start);
   if (!current_offset || !node_start_offset) {
     return offset;
@@ -104,13 +106,10 @@ SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::
     : behavior_(behavior),
       text_state_(behavior),
       node_(nullptr),
-      offset_(0),
       handled_node_(false),
       handled_children_(false),
       start_node_(nullptr),
-      start_offset_(0),
       end_node_(nullptr),
-      end_offset_(0),
       have_passed_start_node_(false),
       should_handle_first_letter_(false),
       should_stop_(false) {
@@ -118,8 +117,8 @@ SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::
   if (!start_node)
     return;
   const Node* end_node = range.EndPosition().AnchorNode();
-  int start_offset = range.StartPosition().ComputeEditingOffset();
-  int end_offset = range.EndPosition().ComputeEditingOffset();
+  wtf_size_t start_offset = range.StartPosition().ComputeEditingOffset();
+  wtf_size_t end_offset = range.EndPosition().ComputeEditingOffset();
 
   Init(start_node, end_node, start_offset, end_offset);
 }
@@ -128,11 +127,11 @@ template <typename Strategy>
 void SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::Init(
     const Node* start_node,
     const Node* end_node,
-    int start_offset,
-    int end_offset) {
-  if (!start_node->IsCharacterDataNode() && start_offset >= 0) {
-    // |Strategy::childAt()| will return 0 if the offset is out of range. We
-    // rely on this behavior instead of calling |countChildren()| to avoid
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) {
+  if (!start_node->IsCharacterDataNode()) {
+    // |Strategy::ChildAt()| will return 0 if the offset is out of range. We
+    // rely on this behavior instead of calling |CountChildren()| to avoid
     // traversing the children twice.
     if (Node* child_at_offset = Strategy::ChildAt(*start_node, start_offset)) {
       start_node = child_at_offset;
@@ -141,8 +140,8 @@ void SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::Init(
   }
 
   if (!end_node->IsCharacterDataNode() && end_offset > 0) {
-    // |Strategy::childAt()| will return 0 if the offset is out of range. We
-    // rely on this behavior instead of calling |countChildren()| to avoid
+    // |Strategy::ChildAt()| will return 0 if the offset is out of range. We
+    // rely on this behavior instead of calling |CountChildren()| to avoid
     // traversing the children twice.
     if (Node* child_at_offset = Strategy::ChildAt(*end_node, end_offset - 1)) {
       end_node = child_at_offset;
@@ -260,8 +259,8 @@ void SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::Advance() {
 
 template <typename Strategy>
 bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
-  int start_offset;
-  int offset_in_node;
+  wtf_size_t start_offset;
+  wtf_size_t offset_in_node;
   LayoutText* layout_object = HandleFirstLetter(start_offset, offset_in_node);
   if (!layout_object)
     return true;
@@ -274,20 +273,18 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
   if (!layout_object->HasInlineFragments() && text.length() > 0)
     return true;
 
-  const int position_end_offset = offset_;
+  const wtf_size_t position_end_offset = offset_;
   offset_ = start_offset;
-  const int position_start_offset = start_offset;
-  DCHECK_LE(0, position_start_offset - offset_in_node);
-  DCHECK_LE(position_start_offset - offset_in_node,
-            static_cast<int>(text.length()));
-  DCHECK_LE(1, position_end_offset - offset_in_node);
-  DCHECK_LE(position_end_offset - offset_in_node,
-            static_cast<int>(text.length()));
+  const wtf_size_t position_start_offset = start_offset;
+  DCHECK_LE(0u, position_start_offset - offset_in_node);
+  DCHECK_LE(position_start_offset - offset_in_node, text.length());
+  DCHECK_LE(1u, position_end_offset - offset_in_node);
+  DCHECK_LE(position_end_offset - offset_in_node, text.length());
   DCHECK_LE(position_start_offset, position_end_offset);
 
-  const int text_length = position_end_offset - position_start_offset;
-  const int text_offset = position_start_offset - offset_in_node;
-  CHECK_LE(static_cast<unsigned>(text_offset + text_length), text.length());
+  const wtf_size_t text_length = position_end_offset - position_start_offset;
+  const wtf_size_t text_offset = position_start_offset - offset_in_node;
+  CHECK_LE(text_offset + text_length, text.length());
   text_state_.EmitText(To<Text>(*node_), position_start_offset,
                        position_end_offset, text, text_offset,
                        text_offset + text_length);
@@ -295,8 +292,10 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
 }
 
 template <typename Strategy>
-LayoutText* SimplifiedBackwardsTextIteratorAlgorithm<
-    Strategy>::HandleFirstLetter(int& start_offset, int& offset_in_node) {
+LayoutText*
+SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleFirstLetter(
+    wtf_size_t& start_offset,
+    wtf_size_t& offset_in_node) {
   auto* layout_object = To<LayoutText>(node_->GetLayoutObject());
   start_offset = (node_ == start_node_) ? start_offset_ : 0;
 
@@ -306,7 +305,7 @@ LayoutText* SimplifiedBackwardsTextIteratorAlgorithm<
   }
 
   auto* fragment = To<LayoutTextFragment>(layout_object);
-  int offset_after_first_letter = fragment->Start();
+  wtf_size_t offset_after_first_letter = fragment->Start();
   if (start_offset >= offset_after_first_letter) {
     // We'll stop in remaining part.
     DCHECK(!should_handle_first_letter_);
@@ -454,7 +453,7 @@ SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::EndPosition() const {
 
 template <typename Strategy>
 UChar SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::CharacterAt(
-    unsigned index) const {
+    wtf_size_t index) const {
   if (index >= text_state_.length())
     return 0;
   return text_state_.CharacterAt(text_state_.length() - index - 1);

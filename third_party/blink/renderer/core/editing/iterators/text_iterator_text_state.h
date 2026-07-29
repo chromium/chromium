@@ -50,8 +50,8 @@ class CORE_EXPORT TextIteratorTextState {
   TextIteratorTextState& operator=(const TextIteratorTextState&) = delete;
 
   // Return properties of the current text.
-  unsigned length() const { return text_length_; }
-  UChar CharacterAt(unsigned index) const;
+  wtf_size_t length() const { return text_length_; }
+  UChar CharacterAt(wtf_size_t index) const;
   // TODO(xiaochengh): Rename to |GetText()| as it's used in production code.
   String GetTextForTesting() const;
   void AppendTextToStringBuilder(StringBuilder&) const;
@@ -66,25 +66,25 @@ class CORE_EXPORT TextIteratorTextState {
   // Emits |code_unit| before |offset| in |text_node|.
   void EmitChar16Before(UChar code_unit,
                         const Text& text_node,
-                        unsigned offset);
+                        wtf_size_t offset);
   // Emits |code_unit| as replacement of code unit at |offset| in |text_node|.
   void EmitReplacmentCodeUnit(UChar code_unit,
                               const Text& text_node,
-                              unsigned offset);
+                              wtf_size_t offset);
   void EmitText(const Text&,
-                unsigned position_start_offset,
-                unsigned position_end_offset,
+                wtf_size_t position_start_offset,
+                wtf_size_t position_end_offset,
                 const String&,
-                unsigned text_start_offset,
-                unsigned text_end_offset);
+                wtf_size_t text_start_offset,
+                wtf_size_t text_end_offset);
   void EmitAltText(const HTMLElement&);
   void UpdateForReplacedElement(const Node& node);
 
   // Return position of the current text.
   void UpdatePositionOffsets(const ContainerNode& container_node,
-                             unsigned index) const;
-  unsigned PositionStartOffset() const;
-  unsigned PositionEndOffset() const;
+                             wtf_size_t index) const;
+  wtf_size_t PositionStartOffset() const;
+  wtf_size_t PositionEndOffset() const;
   const Node* PositionNode() const { return position_node_; }
   const Node* PositionContainerNode() const { return position_container_node_; }
   bool IsAfterPositionNode() const {
@@ -125,13 +125,15 @@ class CORE_EXPORT TextIteratorTextState {
 
   void ResetPositionContainerNode(PositionNodeType node_type, const Node& node);
   void SetTextNodePosition(const Text& text_node,
-                           unsigned start_offset,
-                           unsigned end_offset);
-  void PopulateStringBuffer(const String& text, unsigned start, unsigned end);
+                           wtf_size_t start_offset,
+                           wtf_size_t end_offset);
+  void PopulateStringBuffer(const String& text,
+                            wtf_size_t start,
+                            wtf_size_t end);
   void PopulateStringBufferFromChar16(UChar code_unit);
 
   const TextIteratorBehavior behavior_;
-  unsigned text_length_ = 0;
+  wtf_size_t text_length_ = 0;
 
   // TODO(editing-dev): We should integrate single character buffer and
   // string buffer.
@@ -145,14 +147,14 @@ class CORE_EXPORT TextIteratorTextState {
   String text_;
   // TODO(editing-dev): We should make |text_| to hold substring instead of
   // entire string with |text_start_offset_| and |text_length_|.
-  unsigned text_start_offset_ = 0;
+  wtf_size_t text_start_offset_ = 0;
 
   // Position of the current text, in the form to be returned from the iterator.
   const Node* position_node_ = nullptr;
   // |Text| node when |position_node_type_ == kInText| or |ContainerNode|.
   mutable const Node* position_container_node_ = nullptr;
-  mutable std::optional<unsigned> position_start_offset_;
-  mutable std::optional<unsigned> position_end_offset_;
+  mutable std::optional<wtf_size_t> position_start_offset_;
+  mutable std::optional<wtf_size_t> position_end_offset_;
   PositionNodeType position_node_type_ = PositionNodeType::kNone;
 
   // Used when deciding whether to emit a "positioning" (e.g. newline) before

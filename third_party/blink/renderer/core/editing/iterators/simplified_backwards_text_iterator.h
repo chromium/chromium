@@ -56,13 +56,13 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
   bool AtEnd() const { return !text_state_.PositionNode() || should_stop_; }
   void Advance();
 
-  int length() const { return text_state_.length(); }
+  wtf_size_t length() const { return text_state_.length(); }
   const TextIteratorTextState& GetTextState() const { return text_state_; }
 
   // Note: |characterAt()| returns characters in the reversed order, since
   // the iterator is backwards. For example, if the current text is "abc",
   // then |characterAt(0)| returns 'c'.
-  UChar CharacterAt(unsigned index) const;
+  UChar CharacterAt(wtf_size_t index) const;
 
   const Node* GetNode() const { return node_; }
 
@@ -82,11 +82,12 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
  private:
   void Init(const Node* start_node,
             const Node* end_node,
-            int start_offset,
-            int end_offset);
+            wtf_size_t start_offset,
+            wtf_size_t end_offset);
   void ExitNode();
   bool HandleTextNode();
-  LayoutText* HandleFirstLetter(int& start_offset, int& offset_in_node);
+  LayoutText* HandleFirstLetter(wtf_size_t& start_offset,
+                                wtf_size_t& offset_in_node);
   bool HandleReplacedElement();
   bool HandleNonTextNode();
   bool AdvanceRespectingRange(const Node*);
@@ -106,17 +107,17 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
   // Current position, not necessarily of the text being returned, but position
   // as we walk through the DOM tree.
   const Node* node_;
-  int offset_;
+  wtf_size_t offset_ = 0;
   bool handled_node_;
   bool handled_children_;
   FullyClippedStateStackAlgorithm<Strategy> fully_clipped_stack_;
 
   // End of the range.
   const Node* start_node_;
-  int start_offset_;
+  wtf_size_t start_offset_ = 0;
   // Start of the range.
   const Node* end_node_;
-  int end_offset_;
+  wtf_size_t end_offset_ = 0;
 
   // Whether |node_| has advanced beyond the iteration range (i.e. start_node_).
   bool have_passed_start_node_;
