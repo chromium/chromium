@@ -201,6 +201,7 @@
 #include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
+#include "content/common/lazy_shared_url_loader_factory.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
@@ -279,6 +280,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -13176,8 +13178,24 @@ void RenderFrameHostImpl::CommitNavigation(
           std::move(subresource_loader_factories));
       subresource_loader_factories = CloneFactoryBundle(bundle);
 
-      subresource_proxying_factory_bundle =
-          network::SharedURLLoaderFactory::Create(CloneFactoryBundle(bundle));
+      if (base::FeatureList::IsEnabled(
+              features::kReduceMojoURLLoaderFactoryCloning) &&
+          features::kUseLazyURLLoaderFactoryForSubresourceProxying.Get()) {
+        subresource_proxying_factory_bundle =
+            network::SharedURLLoaderFactory::Create(
+                std::make_unique<content::LazyPendingSharedURLLoaderFactory>(
+                    GetUIThreadTaskRunner({}),
+                    base::BindRepeating(
+                        [](scoped_refptr<blink::URLLoaderFactoryBundle> b)
+                            -> std::unique_ptr<
+                                network::PendingSharedURLLoaderFactory> {
+                          return CloneFactoryBundle(b);
+                        },
+                        bundle)));
+      } else {
+        subresource_proxying_factory_bundle =
+            network::SharedURLLoaderFactory::Create(CloneFactoryBundle(bundle));
+      }
     }
 
     // Set up the subresource loader factory to be passed to the renderer. It is

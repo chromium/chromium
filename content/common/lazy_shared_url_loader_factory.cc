@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/lazy_shared_url_loader_factory.h"
+#include "content/common/lazy_shared_url_loader_factory.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

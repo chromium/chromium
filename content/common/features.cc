@@ -635,6 +635,13 @@ BASE_FEATURE_PARAM(bool,
                    &kReduceMojoURLLoaderFactoryCloning,
                    false);
 
+// Controls whether lazy URLLoaderFactory cloning is used for subresource
+// proxying factory bundle during navigation commit.
+BASE_FEATURE_PARAM(bool,
+                   kUseLazyURLLoaderFactoryForSubresourceProxying,
+                   &kReduceMojoURLLoaderFactoryCloning,
+                   false);
+
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

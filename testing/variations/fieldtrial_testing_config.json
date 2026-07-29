@@ -21378,7 +21378,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "UseLazyURLLoaderFactoryForServiceWorkerFallback": "true"
+                        "UseLazyURLLoaderFactoryForServiceWorkerFallback": "true",
+                        "UseLazyURLLoaderFactoryForSubresourceProxying": "true"
                     },
                     "enable_features": [
                         "ReduceMojoURLLoaderFactoryCloning"
