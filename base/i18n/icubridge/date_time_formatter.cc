@@ -14,6 +14,7 @@
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/icubridge/icu_bridge_helpers.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -532,10 +533,9 @@ std::u16string IcuBridge::DateTimeFormatter::Format(
     base::Time time,
     const LanguageTag& locale,
     const DateTimeFormatterOptions& options) const {
-  UErrorCode status = U_ZERO_ERROR;
-  icu::Locale icu_locale = icu::Locale::forLanguageTag(
-      std::string(locale.tag_string()).c_str(), status);
-  if (U_FAILURE(status) || icu_locale.isBogus()) {
+  icu::Locale icu_locale =
+      IcuLocaleConverter::GetInstance().FromLanguageTag(locale);
+  if (icu_locale.isBogus()) {
     icu_locale = icu::Locale::getDefault();
   }
   return FormatWithLocale(time, options, icu_locale);
