@@ -108,8 +108,7 @@ class ModelBrokerAndroidTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  OnDeviceBaseModelSpec spec_{
-      "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED};
+  OnDeviceBaseModelSpec spec_{.model_name = "Test", .model_version = "0.0.1"};
   FakeModelBrokerAndroid fake_broker_{{
       .metadata = MatchingMetadata(spec_),
       .preinstall_base_model = false,

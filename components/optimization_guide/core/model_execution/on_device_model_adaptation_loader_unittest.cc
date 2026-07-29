@@ -77,7 +77,10 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   OptimizationGuideLogger logger_;
   OnDeviceBaseModelSpec spec_{
-      "Test", "0.0.1", proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
+      .model_name = "Test",
+      .model_version = "0.0.1",
+      .selected_performance_hint =
+          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY};
   AdaptationMetadataMap metadata_;
   ModelProviderRegistry provider_{&logger_};
   AdaptationLoaderMap loaders_{

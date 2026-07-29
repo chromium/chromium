@@ -23,8 +23,10 @@ namespace {
 
 using base::test::ErrorIs;
 
-const struct OnDeviceBaseModelSpec kModelSpec = {"test", "0.0.1", {}};
-const struct OnDeviceBaseModelSpec kModelSpecNew = {"test", "0.0.2", {}};
+const OnDeviceBaseModelSpec kModelSpec = {.model_name = "test",
+                                          .model_version = "0.0.1"};
+const OnDeviceBaseModelSpec kModelSpecNew = {.model_name = "test",
+                                             .model_version = "0.0.2"};
 
 class OnDeviceModelMetadataTest : public testing::Test {
  public:

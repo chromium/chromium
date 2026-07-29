@@ -147,7 +147,11 @@ std::optional<OnDeviceBaseModelSpec> GetOnDeviceBaseModelSpecFromManifest(
   if (!selected_performance_hint) {
     return std::nullopt;
   }
-  return OnDeviceBaseModelSpec(*name, *version, *selected_performance_hint);
+  return OnDeviceBaseModelSpec{
+      .model_name = *name,
+      .model_version = *version,
+      .selected_performance_hint = *selected_performance_hint,
+  };
 }
 
 base::DictValue MakeOverrideManifest() {
@@ -205,17 +209,6 @@ std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status) {
       return out << "No On-device Feature Used";
   }
 }
-
-OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(
-    const std::string& model_name,
-    const std::string& model_version,
-    proto::OnDeviceModelPerformanceHint selected_performance_hint)
-    : model_name(model_name),
-      model_version(model_version),
-      selected_performance_hint(selected_performance_hint) {}
-OnDeviceBaseModelSpec::~OnDeviceBaseModelSpec() = default;
-OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&) =
-    default;
 
 bool OnDeviceBaseModelSpec::operator==(
     const OnDeviceBaseModelSpec& other) const {
