@@ -1452,7 +1452,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="keepalive"/>
   <int value="28" label="browsing_topics"/>
   <int value="29" label="ad_auction_headers (deprecated)"/>
-  <int value="30" label="shared_storage_writable_eligible"/>
+  <int value="30" label="shared_storage_writable_eligible (deprecated)"/>
   <int value="31" label="has_user_gesture"/>
   <int value="32" label="enable_load_timing"/>
   <int value="33" label="enable_upload_progress"/>

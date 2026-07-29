@@ -33,7 +33,6 @@ NavigationRequestInfo::NavigationRequestInfo(
     std::optional<blink::DocumentToken> initiator_document_token,
     bool allow_cookies_from_browser,
     int64_t navigation_id,
-    bool shared_storage_writable_eligible,
     bool is_ad_tagged,
     bool force_no_https_upgrade)
     : common_params(std::move(common_params)),
@@ -57,7 +56,6 @@ NavigationRequestInfo::NavigationRequestInfo(
       initiator_document_token(std::move(initiator_document_token)),
       allow_cookies_from_browser(allow_cookies_from_browser),
       navigation_id(navigation_id),
-      shared_storage_writable_eligible(shared_storage_writable_eligible),
       is_ad_tagged(is_ad_tagged),
       force_no_https_upgrade(force_no_https_upgrade) {}
 

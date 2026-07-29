@@ -82,7 +82,6 @@ namespace {
   DO_FIELD(request_body) __VA_ARGS__                               \
   DO_FIELD(keepalive) __VA_ARGS__                                  \
   DO_FIELD(browsing_topics) __VA_ARGS__                            \
-  DO_FIELD(shared_storage_writable_eligible) __VA_ARGS__           \
   DO_FIELD(has_user_gesture) __VA_ARGS__                           \
   DO_FIELD(enable_load_timing) __VA_ARGS__                         \
   DO_FIELD(enable_upload_progress) __VA_ARGS__                     \
@@ -179,7 +178,7 @@ enum class FieldsForUma {
   kKeepalive = 27,
   kBrowsingTopics = 28,
   // DEPRECATED: kAdAuctionHeaders = 29,
-  kSharedStorageWritableEligible = 30,
+  // DEPRECATED: kSharedStorageWritableEligible = 30,
   kHasUserGesture = 31,
   kEnableLoadTiming = 32,
   kEnableUploadProgress = 33,
@@ -254,8 +253,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::krequest_body, FieldsForUma::kRequestBody},
     {Fields::kkeepalive, FieldsForUma::kKeepalive},
     {Fields::kbrowsing_topics, FieldsForUma::kBrowsingTopics},
-    {Fields::kshared_storage_writable_eligible,
-     FieldsForUma::kSharedStorageWritableEligible},
     {Fields::khas_user_gesture, FieldsForUma::kHasUserGesture},
     {Fields::kenable_load_timing, FieldsForUma::kEnableLoadTiming},
     {Fields::kenable_upload_progress, FieldsForUma::kEnableUploadProgress},

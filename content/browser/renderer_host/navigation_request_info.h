@@ -52,7 +52,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       std::optional<blink::DocumentToken> initiator_document_token,
       bool allow_cookies_from_browser,
       int64_t navigation_id,
-      bool shared_storage_writable,
       bool is_ad_tagged,
       bool force_no_https_upgrade);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
@@ -147,11 +146,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   // Unique id that identifies the navigation.
   const int64_t navigation_id;
-
-  // Whether or not the request is eligible to write to shared storage from
-  // response headers. See
-  // https://github.com/WICG/shared-storage#from-response-headers.
-  bool shared_storage_writable_eligible;
 
   // Whether the embedder indicated this navigation is being used for
   // advertising purposes.

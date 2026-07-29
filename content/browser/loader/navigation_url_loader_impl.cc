@@ -347,8 +347,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
           ? net::StorageAccessApiStatus::kAccessViaAPI
           : net::StorageAccessApiStatus::kNone;
 
-  new_request->shared_storage_writable_eligible =
-      request_info.shared_storage_writable_eligible;
   new_request->is_ad_tagged = request_info.is_ad_tagged;
 
   new_request->skip_service_worker =

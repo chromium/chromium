@@ -1184,9 +1184,6 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
     request.SetFetchRetryOptions(fetch_request_data_->RetryOptions().value());
   }
 
-  request.SetSharedStorageWritableOptedIn(
-      fetch_request_data_->SharedStorageWritable());
-
   request.SetOriginalDestination(fetch_request_data_->OriginalDestination());
 
   request.SetServiceWorkerRaceNetworkRequestToken(

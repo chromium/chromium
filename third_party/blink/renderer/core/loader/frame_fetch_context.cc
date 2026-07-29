@@ -442,19 +442,6 @@ void FrameFetchContext::PrepareRequest(
   request.SetStorageAccessApiStatus(
       document_->GetExecutionContext()->GetStorageAccessApiStatus());
 
-  // If the original request included the attribute to opt-in to shared storage,
-  // then update eligibility for the current (possibly redirected) request. Note
-  // that if the original request didn't opt-in, then the original request and
-  // any subsequent redirects are ineligible for shared storage writing by
-  // response header.
-  if (request.GetSharedStorageWritableOptedIn()) {
-    auto* policy = GetPermissionsPolicy();
-    request.SetSharedStorageWritableEligible(
-        policy &&
-        request.IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-            policy, network::mojom::PermissionsPolicyFeature::kSharedStorage,
-            SecurityOrigin::Create(request.Url())->ToUrlOrigin()));
-  }
 
   request.SetSharedDictionaryWriterEnabled(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(

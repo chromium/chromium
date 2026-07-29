@@ -38,7 +38,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -334,15 +333,6 @@ void NetworkServiceClient::OnDataUseUpdate(
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
       GlobalRenderFrameHostId(), network_traffic_annotation_id_hash, recv_bytes,
       sent_bytes);
-}
-
-void NetworkServiceClient::OnSharedStorageHeaderReceived(
-    const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-        methods_with_options,
-    const std::optional<std::string>& with_lock,
-    OnSharedStorageHeaderReceivedCallback callback) {
-  std::move(callback).Run();
 }
 
 void NetworkServiceClient::Clone(

@@ -74,7 +74,6 @@ network::ResourceRequest CreateResourceRequest() {
   request.expected_public_keys = {};
   request.keepalive = true;
   request.browsing_topics = true;
-  request.shared_storage_writable_eligible = true;
   request.has_user_gesture = false;
   request.enable_load_timing = true;
   request.enable_upload_progress = false;

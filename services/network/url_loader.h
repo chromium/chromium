@@ -65,7 +65,6 @@
 #include "services/network/resource_scheduler/resource_scheduler.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
-#include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/upload_progress_tracker.h"
 #include "services/network/url_loader_context.h"
@@ -183,7 +182,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           device_bound_session_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      bool shared_storage_writable_eligible,
       SharedResourceChecker& shared_resource_checker,
       std::unique_ptr<DevtoolsDurableMessageWriter>
           maybe_durable_message_writer,
@@ -291,10 +289,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return devtools_request_id_;
   }
 
-  SharedStorageRequestHelper* shared_storage_request_helper() const {
-    return shared_storage_request_helper_.get();
-  }
-
   void set_partial_decoder_decoding_buffer_size_for_testing(
       int partial_decoder_decoding_buffer_size) {
     partial_decoder_decoding_buffer_size_ =
@@ -361,70 +355,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   int ProcessAcceptCHFrameOnConnected(const net::TransportInfo& info,
                                       net::CompletionOnceCallback callback);
 
-  // A `ResourceRequest` where `shared_storage_writable_eligible` is true, is
-  // eligible for shared storage operations via response headers.
-  //
-  // Outbound control flow:
-  //
-  // Start in `ProcessOutboundSharedStorageInterceptor()`
-  // - Execute `SharedStorageRequestHelper::ProcessOutgoingRequest`, which will
-  // add the `kSecSharedStorageWritableHeader` request header to the
-  // `URLRequest` if `ResourceRequest::shared_storage_writable_eligible` is true
-  // and there is a `mojom::URLLoaderNetworkServiceObserver*` available to
-  // forward processed headers to.
-  // - `ScheduleStart` immediately afterwards regardless of eligibility for
-  // shared storage
-  //
-  // Outbound redirection control flow:
-  //
-  // Start in `FollowRedirect`
-  // - Execute
-  // `SharedStorageRequestHelper::UpdateSharedStorageWritableEligible`
-  // to remove or restore the `kSecSharedStorageWritableHeader` request header
-  // if eligibility has been lost or regained
-  //
-  // Inbound redirection control flow:
-  //
-  // Start in `ProcessInboundSharedStorageInterceptorOnReceivedRedirect`
-  // - Execute `SharedStorageRequestHelper::ProcessIncomingResponse`
-  // - If the request has received the `kSharedStorageWriteHeader` response
-  // header and if it is currently eligible for shared storage (i.e., in
-  // particular, the `kSecSharedStorageWritableHeader` has not been removed on a
-  // redirect), the helper will parse the header value into a vector of Shared
-  // Storage operations to call
-  // - If the request has not received the `kSharedStorageWriteHeader` response
-  // header, or if parsing fails to produce any valid operations, then
-  // immediately call `ContinueOnReceiveRedirect`
-  // - Otherwise, `ContinueOnReceiveRedirect` will be run asynchronously after
-  // forwarding the operations to `URLLoaderNetworkServiceObserver` to queue via
-  // Mojo
-  //
-  // Inbound control flow:
-  //
-  // Start in `ProcessInboundSharedStorageInterceptorOnResponseStarted`
-  // - Execute `SharedStorageRequestHelper::ProcessIncomingResponse`
-  // - If the request has received the `kSharedStorageWriteHeader` response
-  // header and if it is currently eligible for shared storage (i.e., in
-  // particular, the `kSecSharedStorageWritableHeader` has not been removed on a
-  // redirect), the helper will parse the header value into a vector of Shared
-  // Storage operations to call
-  // - If the request has not received the `kSharedStorageWriteHeader` response
-  // header, or if parsing fails to produce any valid operations, then
-  // immediately call `ContinueOnResponseStarted`
-  // - Otherwise, `ContinueOnResponseStarted` will be run asynchronously after
-  // forwarding the operations to `URLLoaderNetworkServiceObserver` to queue via
-  // Mojo
-  void ProcessOutboundSharedStorageInterceptor();
-  void ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
-      const net::RedirectInfo& redirect_info,
-      mojom::URLResponseHeadPtr response);
-  void ProcessInboundSharedStorageInterceptorOnResponseStarted();
-
-  // Continuation of `OnReceivedRedirect` after possibly asynchronously
-  // concluding the request's Shared Storage operations.
-  void ContinueOnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                                 mojom::URLResponseHeadPtr response);
-
   // If Trust Tokens parameters are present, delegates Trust Token handling
   // to `trust_token_interceptor_`.
   // The interceptor manages the asynchronous Begin (outbound, adding headers)
@@ -441,7 +371,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void OnDoneFinalizingTrustTokenOperation(net::Error error);
 
   // Continuation of `OnResponseStarted` after possibly asynchronously
-  // concluding the request's Trust Tokens, and/or Shared Storage operations.
+  // concluding the request's Trust Tokens operations.
   void ContinueOnResponseStarted();
 
   void ScheduleStart();
@@ -708,10 +638,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   ObserverWrapper<mojom::DevToolsObserver> devtools_observer_;
   const scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
       device_bound_session_observer_shared_remote_;
-
-  // Request helper responsible for processing Shared Storage headers
-  // (https://github.com/WICG/shared-storage#from-response-headers).
-  std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper_;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.

@@ -118,18 +118,6 @@ Resource* PreloadRequest::Start(Document* document) {
   resource_request.SetExpectedPublicKeys(integrity_metadata_);
   resource_request.SetFetchPriorityHint(fetch_priority_hint_);
 
-  bool shared_storage_writable_opted_in =
-      shared_storage_writable_opted_in_ &&
-      RuntimeEnabledFeatures::SharedStorageAPIEnabled(document->domWindow()) &&
-      document->domWindow()->IsSecureContext() &&
-      !document->domWindow()->GetSecurityOrigin()->IsOpaque();
-  resource_request.SetSharedStorageWritableOptedIn(
-      shared_storage_writable_opted_in);
-  if (shared_storage_writable_opted_in) {
-    CHECK_EQ(resource_type_, ResourceType::kImage);
-    UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);
-  }
-
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
   FetchParameters params(std::move(resource_request), options);

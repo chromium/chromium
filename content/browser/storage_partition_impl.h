@@ -362,12 +362,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
                        base::ByteSize recv_bytes,
                        base::ByteSize sent_bytes) override;
-  void OnSharedStorageHeaderReceived(
-      const url::Origin& request_origin,
-      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-          methods_with_options,
-      const std::optional<std::string>& with_lock,
-      OnSharedStorageHeaderReceivedCallback callback) override;
 
   // performance_scenarios::MatchingScenarioObserver overrides:
   void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,

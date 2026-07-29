@@ -100,8 +100,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       download_to_blob_(false),
       use_stream_on_response_(false),
       keepalive_(false),
-      shared_storage_writable_opted_in_(false),
-      shared_storage_writable_eligible_(false),
       allow_stale_response_(false),
       skip_service_worker_(false),
       download_to_cache_only_(false),
@@ -221,7 +219,6 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetTargetAddressSpace(GetTargetAddressSpace());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());
-  request->SetSharedStorageWritableOptedIn(GetSharedStorageWritableOptedIn());
   request->SetPriority(Priority());
   request->SetPriorityIncremental(PriorityIncremental());
 
@@ -494,24 +491,5 @@ bool ResourceRequestHead::NeedsHTTPOrigin() const {
   return true;
 }
 
-bool ResourceRequest::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-    const network::PermissionsPolicy* policy,
-    network::mojom::PermissionsPolicyFeature feature,
-    const url::Origin& origin) {
-  if (!policy) {
-    return false;
-  }
-
-  bool shared_storage_opted_in =
-      feature == network::mojom::PermissionsPolicyFeature::kSharedStorage &&
-      GetSharedStorageWritableOptedIn();
-
-  if (!shared_storage_opted_in) {
-    return false;
-  }
-
-  return policy->IsFeatureEnabledForOrigin(
-      feature, origin, /*override_default_policy_to_all=*/true);
-}
 
 }  // namespace blink

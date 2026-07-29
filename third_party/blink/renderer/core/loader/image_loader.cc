@@ -502,17 +502,6 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
 
     DCHECK(document.GetFrame());
     auto* frame = document.GetFrame();
-    if (IsA<HTMLImageElement>(GetElement())) {
-      bool shared_storage_writable_opted_in =
-          GetElement()->FastHasAttribute(
-              html_names::kSharedstoragewritableAttr) &&
-          RuntimeEnabledFeatures::SharedStorageAPIEnabled(
-              GetElement()->GetExecutionContext()) &&
-          GetElement()->GetExecutionContext()->IsSecureContext() &&
-          !SecurityOrigin::Create(url)->IsOpaque();
-      resource_request.SetSharedStorageWritableOptedIn(
-          shared_storage_writable_opted_in);
-    }
 
     bool page_is_being_dismissed =
         document.PageDismissalEventBeingDispatched() != Document::kNoDismissal;

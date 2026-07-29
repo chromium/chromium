@@ -59,10 +59,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
-namespace network {
-class PermissionsPolicy;
-}  // namespace network
-
 namespace blink {
 
 class FeatureContext;
@@ -302,25 +298,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
 
-  // True if the original request included the required attribute for the
-  // response to be eligible to write to shared storage, pending a
-  // `PermissionsPolicy` check.
-  bool GetSharedStorageWritableOptedIn() const {
-    return shared_storage_writable_opted_in_;
-  }
-  void SetSharedStorageWritableOptedIn(bool shared_storage_writable_opted_in) {
-    shared_storage_writable_opted_in_ = shared_storage_writable_opted_in;
-  }
-
-  // True if the current request should have the
-  // `http_names::kSecSharedStorageWritable` header attached and is eligible to
-  // write to shared storage from response headers.
-  bool GetSharedStorageWritableEligible() const {
-    return shared_storage_writable_eligible_;
-  }
-  void SetSharedStorageWritableEligible(bool shared_storage_writable_eligible) {
-    shared_storage_writable_eligible_ = shared_storage_writable_eligible;
-  }
 
   // True if service workers should not get events for the request.
   bool GetSkipServiceWorker() const { return skip_service_worker_; }
@@ -690,8 +667,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool download_to_blob_ : 1;
   bool use_stream_on_response_ : 1;
   bool keepalive_ : 1;
-  bool shared_storage_writable_opted_in_ : 1;
-  bool shared_storage_writable_eligible_ : 1;
   bool allow_stale_response_ : 1;
   bool skip_service_worker_ : 1;
   bool download_to_cache_only_ : 1;
@@ -892,15 +867,6 @@ class PLATFORM_EXPORT ResourceRequest final : public ResourceRequestHead {
 
   ResourceRequestBody& MutableBody() { return body_; }
 
-  // `PermissionsPolicy` is in blink/public and hence cannot access
-  // `ResourceRequest`. We implement this method here and make `ResourceRequest`
-  // a forward-declared friend class to `PermissionsPolicy` in order to keep
-  // `PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn()`
-  // private for safety.
-  bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-      const network::PermissionsPolicy* policy,
-      network::mojom::PermissionsPolicyFeature feature,
-      const url::Origin& origin);
 
  private:
   ResourceRequestBody body_;

@@ -125,7 +125,6 @@
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
-#include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/slop_bucket.h"
 #include "services/network/ssl_private_key_proxy.h"
 #include "services/network/throttling/scoped_throttling_token.h"
@@ -342,7 +341,6 @@ URLLoader::URLLoader(
     ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    bool shared_storage_writable_eligible,
     SharedResourceChecker& shared_resource_checker,
     std::unique_ptr<DevtoolsDurableMessageWriter> maybe_durable_message_writer,
     mojo::ScopedDataPipeProducerHandle response_body_stream)
@@ -401,10 +399,6 @@ URLLoader::URLLoader(
           InitializeDeviceBoundSessionAccessObserverSharedRemote(
               std::move(device_bound_session_observer),
               context)),
-      shared_storage_request_helper_(
-          std::make_unique<SharedStorageRequestHelper>(
-              shared_storage_writable_eligible,
-              url_loader_network_observer_.get())),
       has_fetch_streaming_upload_body_(
           url_loader_util::HasFetchStreamingUploadBody(request)),
       accept_ch_frame_interceptor_(AcceptCHFrameInterceptor::MaybeCreate(
@@ -673,7 +667,7 @@ void URLLoader::ProcessOutboundTrustTokenInterceptor(
   // If no Trust Token parameters are specified, proceed to the next
   // interceptor.
   if (!request.trust_token_params) {
-    ProcessOutboundSharedStorageInterceptor();
+    ScheduleStart();
     return;
   }
   // If trust_token_params exist, the interceptor MUST have been created in the
@@ -738,13 +732,7 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
     url_request_->SetExtraRequestHeaderByName(
         header_pair.key, header_pair.value, /*overwrite=*/true);
   }
-  // Trust Token outbound processing is done, proceed to the next interceptor.
-  ProcessOutboundSharedStorageInterceptor();
-}
-
-void URLLoader::ProcessOutboundSharedStorageInterceptor() {
-  DCHECK(shared_storage_request_helper_);
-  shared_storage_request_helper_->ProcessOutgoingRequest(*url_request_);
+  // Trust Token outbound processing is done, proceed to ScheduleStart.
   ScheduleStart();
 }
 
@@ -835,14 +823,6 @@ void URLLoader::FollowRedirect(
   // requests by the same client.
   local_network_access_interceptor_.ResetForRedirect(
       new_url ? *new_url : *deferred_redirect_url_);
-
-  // Propagate removal or restoration of shared storage eligiblity to the helper
-  // if the "Sec-Shared-Storage-Writable" request header has been removed or
-  // restored.
-  DCHECK(shared_storage_request_helper_);
-  shared_storage_request_helper_->UpdateSharedStorageWritableEligible(
-      headers_update_params.removed_headers,
-      headers_update_params.modified_headers);
 
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
@@ -1057,27 +1037,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
     return;
   }
 
-  ProcessInboundSharedStorageInterceptorOnReceivedRedirect(redirect_info,
-                                                           std::move(response));
-}
-
-void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
-    const net::RedirectInfo& redirect_info,
-    mojom::URLResponseHeadPtr response) {
-  DCHECK(shared_storage_request_helper_);
-
-  auto split = base::SplitOnceCallback(base::BindOnce(
-      &URLLoader::ContinueOnReceiveRedirect, weak_ptr_factory_.GetWeakPtr(),
-      redirect_info, std::move(response)));
-  if (!shared_storage_request_helper_->ProcessIncomingResponse(
-          *url_request_, std::move(split.first))) {
-    std::move(split.second).Run();
-  }
-}
-
-void URLLoader::ContinueOnReceiveRedirect(
-    const net::RedirectInfo& redirect_info,
-    mojom::URLResponseHeadPtr response) {
   DCHECK(response);
   url_loader_client_.Get()->OnReceiveRedirect(redirect_info,
                                               std::move(response));
@@ -1169,14 +1128,6 @@ void URLLoader::OnSSLCertificateError(net::URLRequest* request,
                      weak_ptr_factory_.GetWeakPtr(), ssl_info));
 }
 
-void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
-  DCHECK(shared_storage_request_helper_);
-  if (!shared_storage_request_helper_->ProcessIncomingResponse(
-          *url_request_, base::BindOnce(&URLLoader::ContinueOnResponseStarted,
-                                        weak_ptr_factory_.GetWeakPtr()))) {
-    ContinueOnResponseStarted();
-  }
-}
 
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   DCHECK(url_request == url_request_.get());
@@ -1229,7 +1180,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
-  ProcessInboundSharedStorageInterceptorOnResponseStarted();
+  ContinueOnResponseStarted();
 }
 
 void URLLoader::OnDoneFinalizingTrustTokenOperation(net::Error error) {
@@ -1238,7 +1189,7 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(net::Error error) {
     // |this| may have been deleted.
     return;
   }
-  ProcessInboundSharedStorageInterceptorOnResponseStarted();
+  ContinueOnResponseStarted();
 }
 
 void URLLoader::ContinueOnResponseStarted() {

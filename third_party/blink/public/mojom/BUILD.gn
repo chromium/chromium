@@ -1481,7 +1481,6 @@ mojom("mojom_modules") {
     ":mojom_core",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_permissions_policy",
-    "//services/network/public/mojom:mojom_shared_storage",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
@@ -1489,7 +1488,6 @@ mojom("mojom_modules") {
   overridden_deps_blink = [
     ":android_mojo_bindings",
     ":mojom_core",
-    "//services/network/public/mojom:mojom_shared_storage",
   ]
   component_deps_blink = [ "//third_party/blink/renderer/core" ]
 

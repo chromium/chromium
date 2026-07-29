@@ -204,7 +204,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             false /* is_pdf */, ChildProcessId() /* initiator_process_id */,
             std::nullopt /* initiator_document_token */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
-            false /* shared_storage_writable */,
             is_ad_tagged /* is_ad_tagged */,
             false /* force_no_https_upgrade */));
 

@@ -90,7 +90,6 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.expected_public_keys = {};
   original.keepalive = true;
   original.browsing_topics = true;
-  original.shared_storage_writable_eligible = true;
   original.has_user_gesture = false;
   original.enable_load_timing = true;
   original.enable_upload_progress = false;

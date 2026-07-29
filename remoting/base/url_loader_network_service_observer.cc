@@ -18,7 +18,6 @@
 #include "remoting/base/logging.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "url/gurl.h"
 
 namespace remoting {
@@ -151,14 +150,6 @@ void UrlLoaderNetworkServiceObserver::OnDataUseUpdate(
     base::ByteSize recv_bytes,
     base::ByteSize sent_bytes) {}
 
-void UrlLoaderNetworkServiceObserver::OnSharedStorageHeaderReceived(
-    const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-        methods_with_options,
-    const std::optional<std::string>& with_lock,
-    OnSharedStorageHeaderReceivedCallback callback) {
-  std::move(callback).Run();
-}
 
 void UrlLoaderNetworkServiceObserver::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>

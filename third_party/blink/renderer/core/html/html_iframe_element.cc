@@ -392,9 +392,6 @@ void HTMLIFrameElement::ParseAttribute(
           String("sharedStorageWritable: sharedStorage operations "
                  "are only available in secure contexts.")));
     } else {
-      if (params.new_value.IsNull() != params.old_value.IsNull()) {
-        should_call_did_change_attributes = true;
-      }
       if (!params.new_value.IsNull()) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kSharedStorageAPI_Iframe_Attribute);
@@ -712,12 +709,6 @@ void HTMLIFrameElement::DidChangeAttributes() {
       ParseConnectionAllowlistAttribute(required_connection_allowlist_);
   attributes->credentialless = credentialless_;
 
-
-  if (RuntimeEnabledFeatures::SharedStorageAPIEnabled(GetExecutionContext()) &&
-      GetExecutionContext()->IsSecureContext()) {
-    attributes->shared_storage_writable_opted_in =
-        FastHasAttribute(html_names::kSharedstoragewritableAttr);
-  }
 
   attributes->id = ConvertToReportValue(id_);
   attributes->name = ConvertToReportValue(name_);

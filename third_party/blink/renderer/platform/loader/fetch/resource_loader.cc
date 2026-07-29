@@ -675,21 +675,6 @@ bool ResourceLoader::WillFollowRedirect(
   DCHECK_EQ(new_request->GetMode(), request_mode);
   DCHECK_EQ(new_request->GetCredentialsMode(), credentials_mode);
 
-  // If `Shared-Storage-Writable` eligibity has changed, update the headers.
-  bool previous_shared_storage_writable_eligible =
-      resource_->LastResourceRequest().GetSharedStorageWritableEligible();
-  bool new_shared_storage_writable_eligible =
-      new_request->GetSharedStorageWritableEligible();
-  if (new_shared_storage_writable_eligible !=
-      previous_shared_storage_writable_eligible) {
-    if (new_shared_storage_writable_eligible) {
-      CHECK(new_request->GetSharedStorageWritableOptedIn());
-      modified_headers.SetHeader(http_names::kSecSharedStorageWritable.Ascii(),
-                                 "?1");
-    } else if (removed_headers) {
-      removed_headers->push_back(http_names::kSecSharedStorageWritable.Ascii());
-    }
-  }
 
   if (new_request->Url() != KURL(new_url)) {
     CancelForRedirectAccessCheckError(new_request->Url(),

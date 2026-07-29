@@ -463,9 +463,6 @@ NOINLINE void ValidateResourceRequestForPrePrefetch(
                         resource_request_for_validation.request_body);
   DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.keepalive,
                         resource_request_for_validation.keepalive);
-  DUMP_WILL_BE_CHECK_EQ(
-      resource_request_for_pre_prefetch.shared_storage_writable_eligible,
-      resource_request_for_validation.shared_storage_writable_eligible);
   DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.has_user_gesture,
                         resource_request_for_validation.has_user_gesture);
   DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.enable_load_timing,

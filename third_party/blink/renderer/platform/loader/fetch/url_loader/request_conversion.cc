@@ -357,8 +357,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   }
 
   dest->keepalive = src.GetKeepalive();
-  dest->shared_storage_writable_eligible =
-      src.GetSharedStorageWritableEligible();
   dest->has_user_gesture = src.HasUserGesture();
   dest->enable_load_timing = true;
   dest->enable_upload_progress = src.ReportUploadProgress();

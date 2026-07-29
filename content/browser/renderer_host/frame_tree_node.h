@@ -317,15 +317,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // `Sec-Browsing-Topics` header.
   bool browsing_topics() const { return attributes_->browsing_topics; }
 
-  // Tracks iframe's 'sharedstoragewritable' attribute, indicating what value
-  // the the corresponding
-  // `network::ResourceRequest::shared_storage_writable_eligible` should take
-  // for the navigation(s) on this frame, pending a permissions policy check. If
-  // true, and if the permissions policy check returns "enabled", the network
-  // service will send the `Shared-Storage-Write` request header.
-  bool shared_storage_writable_opted_in() const {
-    return attributes_->shared_storage_writable_opted_in;
-  }
   const std::optional<std::string> html_id() const { return attributes_->id; }
   // This tracks iframe's 'name' attribute instead of window.name, which is
   // tracked in FrameReplicationState. See the comment for frame_name() for

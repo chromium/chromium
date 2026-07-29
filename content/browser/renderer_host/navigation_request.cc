@@ -271,9 +271,6 @@ base::TimeDelta g_commit_timeout = kDefaultCommitTimeout;
 constexpr base::TimeDelta kCompositorLockTimeout = base::Milliseconds(150);
 #endif
 
-const char kSecSharedStorageWritableRequestHeaderKey[] =
-    "Sec-Shared-Storage-Writable";
-
 // Flag to control whether redirect URLs are being sanitized before sending
 // them to the renderer process as part of the navigation.
 // See https://crbug.com/40095391.
@@ -899,47 +896,6 @@ ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
 
 bool IsMhtmlMimeType(const std::string& mime_type) {
   return mime_type == "multipart/related" || mime_type == "message/rfc822";
-}
-
-bool IsSharedStorageWritableEligibleForNavigationRequest(
-    FrameTreeNode* frame_tree_node,
-    const GURL& url) {
-  // False if the <iframe> does not have the "sharedstoragewritable" opt-in
-  // attribute.
-  if (!frame_tree_node->shared_storage_writable_opted_in()) {
-    return false;
-  }
-
-  // Only child frames should have the `sharedstoragewritable` attribute set to
-  // true.
-  CHECK(!frame_tree_node->IsMainFrame());
-
-  // Apart from fenced frames' frame trees, skip non-primary pages (e.g.
-  // prerendered pages).
-  if (frame_tree_node->fenced_frame_status() !=
-          RenderFrameHostImpl::FencedFrameStatus::
-              kIframeNestedWithinFencedFrame &&
-      (!frame_tree_node->frame_tree().is_primary() ||
-       !frame_tree_node->frame_tree().root()->IsOutermostMainFrame())) {
-    return false;
-  }
-
-  url::Origin origin = url::Origin::Create(url);
-  if (origin.opaque()) {
-    return false;
-  }
-
-  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    return false;
-  }
-
-  CHECK(frame_tree_node->parent());
-  const network::PermissionsPolicy* parent_policy =
-      frame_tree_node->parent()->GetPermissionsPolicy();
-
-  CHECK(parent_policy);
-  return parent_policy->IsFeatureEnabledForOrigin(
-      network::mojom::PermissionsPolicyFeature::kSharedStorage, origin);
 }
 
 std::optional<base::SafeRef<RenderFrameHostImpl>>
@@ -1912,14 +1868,6 @@ NavigationRequest::NavigationRequest(
   if (frame_tree_node_->IsInFencedFrameTree()) {
     commit_params_->frame_policy.sandbox_flags |=
         blink::kFencedFrameForcedSandboxFlags;
-  }
-
-  if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
-    shared_storage_writable_opted_in_ =
-        frame_tree_node_->shared_storage_writable_opted_in();
-    shared_storage_writable_eligible_ =
-        IsSharedStorageWritableEligibleForNavigationRequest(
-            frame_tree_node_, common_params_->url);
   }
 
   if (from_begin_navigation_) {
@@ -6084,8 +6032,7 @@ void NavigationRequest::OnStartChecksComplete(
           BuildClientSecurityStateForNavigationFetch(),
           devtools_accepted_stream_types, IsPdf(), GetInitiatorProcessId(),
           initiator_document_token_, allow_cookies_from_browser_,
-          navigation_id_, shared_storage_writable_eligible_, is_ad_tagged_,
-          force_no_https_upgrade_),
+          navigation_id_, is_ad_tagged_, force_no_https_upgrade_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),
@@ -6338,26 +6285,6 @@ void NavigationRequest::OnRedirectChecksComplete(
     nav_entry->SetRemoveExtraHeadersOnCrossOriginRedirect(false);
   }
 
-  if (shared_storage_writable_opted_in_) {
-    // On a redirect, the PermissionsPolicy may change the status of this
-    // request's Shared Storage eligibility, so we need to re-compute it.
-    bool previous_shared_storage_writable_eligible =
-        shared_storage_writable_eligible_;
-    shared_storage_writable_eligible_ =
-        IsSharedStorageWritableEligibleForNavigationRequest(
-            frame_tree_node_, common_params_->url);
-
-    if (shared_storage_writable_eligible_ !=
-        previous_shared_storage_writable_eligible) {
-      if (shared_storage_writable_eligible_) {
-        headers_update_params.modified_headers.SetHeader(
-            kSecSharedStorageWritableRequestHeaderKey, "?1");
-      } else {
-        headers_update_params.removed_headers.push_back(
-            kSecSharedStorageWritableRequestHeaderKey);
-      }
-    }
-  }
 
   // Removes all Client Hints from the request, that were passed on from the
   // previous one.

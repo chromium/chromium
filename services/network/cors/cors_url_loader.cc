@@ -57,7 +57,6 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
-#include "services/network/shared_storage/shared_storage_header_utils.h"
 #include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
@@ -500,14 +499,6 @@ void CorsURLLoader::FollowRedirect(
 
   request_.headers.MergeFrom(headers_update_params.modified_headers);
 
-  if (GetSecSharedStorageWritableHeader(
-          headers_update_params.modified_headers)) {
-    request_.shared_storage_writable_eligible = true;
-  } else if (std::ranges::contains(headers_update_params.removed_headers,
-                                   kSecSharedStorageWritableHeader)) {
-    request_.shared_storage_writable_eligible = false;
-  }
-
   if (!CorsURLLoaderFactory::IsValidCorsExemptHeaders(
           *context_->cors_exempt_header_list(),
           headers_update_params.modified_cors_exempt_headers)) {
@@ -632,18 +623,6 @@ void CorsURLLoader::OnReceiveResponse(
         tainted_ ? url::Origin() : *request_.request_initiator);
     if (!result.has_value()) {
       HandleComplete(URLLoaderCompletionStatus(result.error()));
-      return;
-    }
-  }
-
-  if (request_.destination ==
-      mojom::RequestDestination::kSharedStorageWorklet) {
-    CHECK(request_.request_initiator);
-
-    if (!request_.request_initiator->IsSameOriginWith(request_.url) &&
-        !CheckSharedStorageCrossOriginWorkletAllowedResponseHeaderIfNeeded(
-            *response_head)) {
-      HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
       return;
     }
   }
@@ -1335,52 +1314,5 @@ std::optional<std::string> CorsURLLoader::GetHeaderString(
   return response.headers->GetNormalizedHeader(header_name);
 }
 
-bool CorsURLLoader::
-    CheckSharedStorageCrossOriginWorkletAllowedResponseHeaderIfNeeded(
-        const mojom::URLResponseHead& response) {
-  // We currently only set the "Sec-Shared-Storage-Data-Origin" request header
-  // for requests of cross-origin shared storage worklet module script where the
-  // script origin is used as the data origin. Moreover, the request header is a
-  // forbidden request header (non-modifiable by regular JavaScript), and it is
-  // set in the browser process, using the serialized script origin (which is
-  // not allowed to be opaque) as the value.
-  //
-  // Extensions could have modified or removed the
-  // "Sec-Shared-Storage-Data-Origin" request header before the request was sent
-  // to the server, but the `CorsURLLoader` still sees the original header, if
-  // any, set by `SharedStorageURLLoaderFactoryProxy`.
-  std::optional<std::string> request_header =
-      request_.headers.GetHeader("Sec-Shared-Storage-Data-Origin");
-  if (!request_header) {
-    // The data partition origin used is the invoking context's origin, so we
-    // don't require the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
-    // header.
-    return true;
-  }
-
-  GURL data_origin_url(*request_header);
-  CHECK(data_origin_url.is_valid());
-
-  if (!url::Origin::Create(data_origin_url).IsSameOriginWith(request_.url)) {
-    // The data origin used is not the worklet script's origin, so we don't
-    // require the "Shared-Storage-Cross-Origin-Worklet-Allowed" response
-    // header. Instead, a separate request is sent in parallel to the origin of
-    // `data_origin_url`, with path
-    // "/.well-known/shared-storage/trusted-origins", to confirm whether or not
-    // this worklet script is allowed to process that origin's data.
-    return true;
-  }
-
-  std::optional<std::string> response_header =
-      GetHeaderString(response, "Shared-Storage-Cross-Origin-Worklet-Allowed");
-  if (!response_header) {
-    return false;
-  }
-
-  std::optional<net::structured_headers::ParameterizedItem> item =
-      net::structured_headers::ParseItem(*response_header);
-
-  return item && item->item.is_boolean() && item->item.GetBoolean();
-}
 
 }  // namespace network::cors
