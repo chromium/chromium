@@ -29,6 +29,9 @@ export class OmniboxFullAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    // Force an initial refresh to avoid the race condition where the profile
+    // theme loads after the page, but before the listener is ready.
+    ColorChangeUpdater.forDocument().refreshColorsCss();
   }
 
   override disconnectedCallback() {

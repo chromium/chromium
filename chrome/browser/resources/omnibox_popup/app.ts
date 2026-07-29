@@ -180,6 +180,10 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
   override async connectedCallback() {
     super.connectedCallback();
+    // Force an initial refresh to avoid the race condition where the profile
+    // theme loads after the page, but before the listener is ready.
+    ColorChangeUpdater.forDocument().refreshColorsCss();
+
     // TODO(b/468113419): The handlers and their definitions are not ordered the
     // same as the mojom file.
     this.popupListenerIds_ = [
