@@ -11,6 +11,43 @@
 
 namespace blink {
 
+namespace {
+
+bool IsStyleDependent(const CSSValue* css_value) {
+  if (!css_value) {
+    return false;
+  }
+
+  // Check for CSS Custom Properties (e.g. var(), env() references)
+  if (css_value->IsUnparsedDeclaration() ||
+      css_value->IsPendingSubstitutionValue()) {
+    return true;
+  }
+
+  // Check computational independence for primitive/numeric values.
+  // Returns true if the value has relative lengths (em, rem, ch, lh, cqw, etc.)
+  // that depend on the element's font-size or parent container size.
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(css_value)) {
+    if (!primitive_value->IsComputationallyIndependent()) {
+      return true;
+    }
+  }
+
+  // Check for keyword identifiers that depend on style/theme (e.g.,
+  // currentcolor, system colors)
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(css_value)) {
+    CSSValueID value_id = identifier_value->GetValueID();
+    if (value_id == CSSValueID::kCurrentcolor ||
+        StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+}  // end anonymous namespace
+
 bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
                                                  ValueFilter value_filter) {
   const KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
@@ -24,16 +61,14 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
     if (frame->IsCSSPropertySpecificKeyframe()) {
       const CSSValue* css_value =
           To<CSSPropertySpecificKeyframe>(frame.Get())->Value();
-      const CSSValue* computed_value = StyleResolver::ComputeValue(
-          effect->EffectTarget(), property_name_, *css_value);
-      // TODO(crbug.com/41491098): Conditionally store the css_value as well as
-      // the resolved value if style dependent (e.g. contains var substitution).
-      // This allows the snapshot update for the curve to be handled outside of
-      // CSSAniamtions::CalculateCompositorAnimationUpdate, which is called too
-      // late in the pipeline.
-      if (!value_filter(element, computed_value, nullptr)) {
+      if (!value_filter(element, css_value, nullptr)) {
         return false;
       }
+      if (IsStyleDependent(css_value)) {
+        style_dependent_keyframe_indices_.push_back(Size());
+      }
+      const CSSValue* computed_value = StyleResolver::ComputeValue(
+          effect->EffectTarget(), property_name_, *css_value);
       AddKeyframe(offset, timing_function, computed_value);
     } else {
       DCHECK(frame->IsTransitionPropertySpecificKeyframe());
@@ -48,6 +83,33 @@ bool CompositorAnimationCurve::PopulateKeyframes(Animation* animation,
     }
   }
   return true;
+}
+
+scoped_refptr<CompositorAnimationCurve>
+CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
+  if (!HasStyleDependency()) {
+    return base::WrapRefCounted(this);
+  }
+
+  KeyframeEffect* effect = To<KeyframeEffect>(animation->effect());
+  const KeyframeEffectModelBase* model = effect->Model();
+  const PropertySpecificKeyframeVector* frames =
+      model->GetPropertySpecificKeyframes(PropertyHandle(PropertyName()));
+  Element* element = effect->EffectTarget();
+  scoped_refptr<CompositorAnimationCurve> maybe_copy = nullptr;
+  for (wtf_size_t index : style_dependent_keyframe_indices_) {
+    const CSSValue* css_value =
+        To<CSSPropertySpecificKeyframe>(frames->at(index).Get())->Value();
+    const CSSValue* computed_value =
+        StyleResolver::ComputeValue(element, property_name_, *css_value);
+    UpdateKeyframe(maybe_copy, index, computed_value);
+  }
+
+  if (maybe_copy) {
+    return maybe_copy;
+  }
+
+  return base::WrapRefCounted(this);
 }
 
 wtf_size_t CompositorAnimationCurve::ComputeKeyframeIndex(double progress) {

@@ -34,14 +34,19 @@ class CORE_EXPORT CompositorAnimationColorCurve
   bool IsOpaque() { return is_opaque_; }
 
  protected:
+  scoped_refptr<CompositorAnimationCurve> Clone() override;
+
   Color ConvertCssValue(const CSSValue* value) override;
   Color ConvertTypedInterpolationValue(
       const TypedInterpolationValue* value) override;
-  Color InterpolateKeyframes(unsigned index, double progress) override;
+  Color InterpolateKeyframes(wtf_size_t index, double progress) override;
 
  private:
   explicit CompositorAnimationColorCurve(CSSPropertyName property_name)
       : TypedCompositorAnimationCurve<Color>(property_name) {}
+  CompositorAnimationColorCurve(const CompositorAnimationColorCurve& other)
+      : TypedCompositorAnimationCurve<Color>(other),
+        is_opaque_(other.is_opaque_) {}  // NOLINT(modernize-use-equals-default)
 
   bool is_opaque_ = true;
 };

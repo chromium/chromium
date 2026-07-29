@@ -93,10 +93,14 @@ CompositorAnimationColorCurve::CreateForTesting(
     CSSPropertyName name) {
   scoped_refptr<CompositorAnimationColorCurve> curve =
       base::AdoptRef(new CompositorAnimationColorCurve(name));
-  for (unsigned i = 0; i < animated_colors.size(); i++) {
+  for (wtf_size_t i = 0; i < animated_colors.size(); i++) {
     curve->AddKeyframeForTesting(offsets[i], animated_colors[i]);
   }
   return curve;
+}
+
+scoped_refptr<CompositorAnimationCurve> CompositorAnimationColorCurve::Clone() {
+  return base::AdoptRef(new CompositorAnimationColorCurve(*this));
 }
 
 Color CompositorAnimationColorCurve::ConvertCssValue(const CSSValue* value) {
@@ -113,7 +117,7 @@ Color CompositorAnimationColorCurve::ConvertTypedInterpolationValue(
   return CSSColorInterpolationType::GetColor(*(list.Get(0)));
 }
 
-Color CompositorAnimationColorCurve::InterpolateKeyframes(unsigned index,
+Color CompositorAnimationColorCurve::InterpolateKeyframes(wtf_size_t index,
                                                           double progress) {
   auto& keyframes = GetKeyframes();
   Color first = keyframes[index].value;
