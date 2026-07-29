@@ -309,10 +309,10 @@ class MediaFoundationVideoEncodeAcceleratorKeyedMutexTimeoutTest
             mock_d3d11_device_->AddRef();
             *ppv = static_cast<ID3D11Device*>(mock_d3d11_device_.Get());
             return S_OK;
-          } else if (riid == __uuidof(ID3D11VideoDevice)) {
+          } else if (riid == __uuidof(ID3D11VideoDevice1)) {
             mock_d3d11_video_device_->AddRef();
-            *ppv =
-                static_cast<ID3D11VideoDevice*>(mock_d3d11_video_device_.Get());
+            *ppv = static_cast<ID3D11VideoDevice1*>(
+                mock_d3d11_video_device_.Get());
             return S_OK;
           }
           return mock_d3d11_device_->RuntimeClass::QueryInterface(riid, ppv);
@@ -340,9 +340,9 @@ class MediaFoundationVideoEncodeAcceleratorKeyedMutexTimeoutTest
         });
     ON_CALL(*mock_d3d11_device_context_.Get(), QueryInterface)
         .WillByDefault([this](REFIID riid, void** ppv) {
-          if (riid == __uuidof(ID3D11VideoContext)) {
+          if (riid == __uuidof(ID3D11VideoContext1)) {
             mock_d3d11_video_context_->AddRef();
-            *ppv = static_cast<ID3D11VideoContext*>(
+            *ppv = static_cast<ID3D11VideoContext1*>(
                 mock_d3d11_video_context_.Get());
             return S_OK;
           }

@@ -21,7 +21,7 @@ namespace media {
 
 TextureSelector::TextureSelector(VideoPixelFormat pixfmt,
                                  viz::SharedImageFormat output_si_format,
-                                 ComD3D11VideoDevice video_device,
+                                 ComD3D11VideoDevice1 video_device,
                                  ComD3D11DeviceContext device_context,
                                  bool shared_image_use_shared_handle)
     : pixel_format_(pixfmt),
@@ -64,7 +64,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     DXGI_FORMAT decoder_output_format,
     const FormatSupportChecker* format_checker,
-    ComD3D11VideoDevice video_device,
+    ComD3D11VideoDevice1 video_device,
     ComD3D11DeviceContext device_context,
     MediaLog* media_log,
     gfx::ColorSpace input_color_space,
@@ -233,7 +233,7 @@ bool TextureSelector::WillCopyForTesting() const {
 CopyTextureSelector::CopyTextureSelector(
     VideoPixelFormat pixfmt,
     viz::SharedImageFormat output_si_format,
-    ComD3D11VideoDevice video_device,
+    ComD3D11VideoDevice1 video_device,
     ComD3D11DeviceContext device_context,
     bool shared_image_use_shared_handle)
     : TextureSelector(pixfmt,

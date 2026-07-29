@@ -151,7 +151,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
 }
 
 bool D3D11DecoderConfigurator::SupportsDevice(
-    ComD3D11VideoDevice video_device) {
+    ComD3D11VideoDevice1 video_device) {
   for (UINT i = video_device->GetVideoDecoderProfileCount(); i--;) {
     GUID profile = {};
     if (SUCCEEDED(video_device->GetVideoDecoderProfile(i, &profile))) {

@@ -594,7 +594,8 @@ class DXGIOutput6Mock
 class D3D11VideoDeviceMock
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          ID3D11VideoDevice> {
+          Microsoft::WRL::ChainInterfaces<ID3D11VideoDevice1,
+                                          ID3D11VideoDevice>> {
  public:
   D3D11VideoDeviceMock();
   ~D3D11VideoDeviceMock() override;
@@ -660,6 +661,32 @@ class D3D11VideoDeviceMock
   MOCK_STDCALL_METHOD3(SetPrivateData, HRESULT(const GUID&, UINT, const void*));
   MOCK_STDCALL_METHOD2(SetPrivateDataInterface,
                        HRESULT(const GUID&, const IUnknown*));
+
+  MOCK_STDCALL_METHOD5(
+      GetCryptoSessionPrivateDataSize,
+      HRESULT(const GUID*, const GUID*, const GUID*, UINT*, UINT*));
+  MOCK_STDCALL_METHOD7(GetVideoDecoderCaps,
+                       HRESULT(const GUID*,
+                               UINT,
+                               UINT,
+                               const DXGI_RATIONAL*,
+                               UINT,
+                               const GUID*,
+                               UINT*));
+  MOCK_STDCALL_METHOD7(CheckVideoDecoderDownsampling,
+                       HRESULT(const D3D11_VIDEO_DECODER_DESC*,
+                               DXGI_COLOR_SPACE_TYPE,
+                               const D3D11_VIDEO_DECODER_CONFIG*,
+                               const DXGI_RATIONAL*,
+                               const D3D11_VIDEO_SAMPLE_DESC*,
+                               BOOL*,
+                               BOOL*));
+  MOCK_STDCALL_METHOD5(RecommendVideoDecoderDownsampleParameters,
+                       HRESULT(const D3D11_VIDEO_DECODER_DESC*,
+                               DXGI_COLOR_SPACE_TYPE,
+                               const D3D11_VIDEO_DECODER_CONFIG*,
+                               const DXGI_RATIONAL*,
+                               D3D11_VIDEO_SAMPLE_DESC*));
 };
 
 class D3D11VideoProcessorEnumeratorMock
@@ -720,7 +747,8 @@ class D3D11VideoProcessorMock
 class D3D11VideoContextMock
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          ID3D11VideoContext> {
+          Microsoft::WRL::ChainInterfaces<ID3D11VideoContext1,
+                                          ID3D11VideoContext>> {
  public:
   D3D11VideoContextMock();
   ~D3D11VideoContextMock() override;
@@ -939,6 +967,54 @@ class D3D11VideoContextMock
                             UINT,
                             BOOL*,
                             D3D11_VIDEO_PROCESSOR_ROTATION*));
+
+  MOCK_STDCALL_METHOD3(SubmitDecoderBuffers1,
+                       HRESULT(ID3D11VideoDecoder*,
+                               UINT,
+                               const D3D11_VIDEO_DECODER_BUFFER_DESC1*));
+  MOCK_STDCALL_METHOD4(
+      GetDataForNewHardwareKey,
+      HRESULT(ID3D11CryptoSession*, UINT, const void*, UINT64*));
+  MOCK_STDCALL_METHOD2(CheckCryptoSessionStatus,
+                       HRESULT(ID3D11CryptoSession*,
+                               D3D11_CRYPTO_SESSION_STATUS*));
+  MOCK_STDCALL_METHOD4(DecoderEnableDownsampling,
+                       HRESULT(ID3D11VideoDecoder*,
+                               DXGI_COLOR_SPACE_TYPE,
+                               const D3D11_VIDEO_SAMPLE_DESC*,
+                               UINT));
+  MOCK_STDCALL_METHOD2(DecoderUpdateDownsampling,
+                       HRESULT(ID3D11VideoDecoder*,
+                               const D3D11_VIDEO_SAMPLE_DESC*));
+  MOCK_STDCALL_METHOD2(VideoProcessorSetOutputColorSpace1,
+                       void(ID3D11VideoProcessor*, DXGI_COLOR_SPACE_TYPE));
+  MOCK_STDCALL_METHOD2(VideoProcessorSetOutputShaderUsage,
+                       void(ID3D11VideoProcessor*, BOOL));
+  MOCK_STDCALL_METHOD2(VideoProcessorGetOutputColorSpace1,
+                       void(ID3D11VideoProcessor*, DXGI_COLOR_SPACE_TYPE*));
+  MOCK_STDCALL_METHOD2(VideoProcessorGetOutputShaderUsage,
+                       void(ID3D11VideoProcessor*, BOOL*));
+  MOCK_STDCALL_METHOD3(VideoProcessorSetStreamColorSpace1,
+                       void(ID3D11VideoProcessor*,
+                            UINT,
+                            DXGI_COLOR_SPACE_TYPE));
+  MOCK_STDCALL_METHOD5(VideoProcessorSetStreamMirror,
+                       void(ID3D11VideoProcessor*, UINT, BOOL, BOOL, BOOL));
+  MOCK_STDCALL_METHOD3(VideoProcessorGetStreamColorSpace1,
+                       void(ID3D11VideoProcessor*,
+                            UINT,
+                            DXGI_COLOR_SPACE_TYPE*));
+  MOCK_STDCALL_METHOD5(VideoProcessorGetStreamMirror,
+                       void(ID3D11VideoProcessor*, UINT, BOOL*, BOOL*, BOOL*));
+  MOCK_STDCALL_METHOD7(
+      VideoProcessorGetBehaviorHints,
+      HRESULT(ID3D11VideoProcessor*,
+              UINT,
+              UINT,
+              DXGI_FORMAT,
+              UINT,
+              const D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT*,
+              UINT*));
 };
 
 class D3D11VideoDecoderMock

@@ -186,7 +186,7 @@ const RGBQUAD MFVideoProcessorAcceleratorTest::kMagenta = {255, 0, 255, 0};
 // This is unpleasant, but GTEST_SKIP must be run inside the actual
 // test call or the test will not get skipped.
 #define CheckForVideoDevice()                                                  \
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> d3d11_video_device;                \
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice1> d3d11_video_device;               \
   HRESULT hr_has_video_device = d3d11_device_.As(&d3d11_video_device);         \
   if (FAILED(hr_has_video_device)) {                                           \
     GTEST_SKIP()                                                               \

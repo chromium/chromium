@@ -226,10 +226,10 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   auto& video_processor_wrapper = is_hdr_output ? video_processor_wrapper_hdr_
                                                 : video_processor_wrapper_sdr_;
   if (!video_processor_wrapper.video_device) {
-    // This can fail if the D3D device is "Microsoft Basic Display Adapter".
+    // This can fail for software devices such as WARP or Microsoft Basic
+    // Display Adapter.
     if (FAILED(d3d11_device_.As(&video_processor_wrapper.video_device))) {
       LOG(ERROR) << "Failed to retrieve video device from D3D11 device";
-      DCHECK(false);
       DisableDirectCompositionOverlays();
       return nullptr;
     }
@@ -238,8 +238,7 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     d3d11_device_->GetImmediateContext(&context);
     DCHECK(context);
-    context.As(&video_processor_wrapper.video_context);
-    DCHECK(video_processor_wrapper.video_context);
+    CHECK_EQ(context.As(&video_processor_wrapper.video_context), S_OK);
   }
 
   // Calculate input and output size to be maximum in a sliding window.

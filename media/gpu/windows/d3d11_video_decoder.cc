@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -316,11 +317,15 @@ D3D11VideoDecoder::CreateD3DVideoDecoderWrapper(
         GetMaxDecodeRequests());
   } else {
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using D3D11 backend";
-    ComD3D11VideoContext video_context;
+    ComD3D11VideoContext1 video_context;
     CHECK_EQ(device_context_.As(&video_context), S_OK);
+    // API revisions are independent of feature level. Use the base submission
+    // API only for devices covered by the driver workaround.
+    const bool use_submit_decoder_buffers1 =
+        !gpu_workarounds_.limit_d3d11_video_decoder_to_11_0;
     video_decoder_wrapper = D3D11VideoDecoderWrapper::Create(
         media_log_.get(), video_device_, std::move(video_context),
-        decoder_configurator, usable_feature_level_, config_);
+        decoder_configurator, use_submit_decoder_buffers1, config_);
   }
 
   if (!video_decoder_wrapper) {
@@ -414,8 +419,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
   CHECK_EQ(d3d_device.As(&device_), S_OK);
 
-  if (!GetD3D11FeatureLevel(device_, gpu_workarounds_,
-                            &usable_feature_level_)) {
+  if (!IsD3D11FeatureLevelSupported(device_)) {
     return NotifyError(D3D11Status::Codes::kUnsupportedFeatureLevel);
   }
 
@@ -975,6 +979,16 @@ D3DVideoDecoderWrapper* D3D11VideoDecoder::GetWrapper() {
   return d3d_video_decoder_wrapper_.get();
 }
 
+bool D3D11VideoDecoder::SubmitBitstreamBufferForTesting(  // IN-TEST
+    base::span<const uint8_t> bitstream) {
+  CHECK_IS_TEST();
+  CHECK(d3d_video_decoder_wrapper_);
+  ScopedSequenceD3DInputBuffer& buffer =
+      d3d_video_decoder_wrapper_->GetBitstreamBuffer(bitstream.size());
+  return buffer.Write(bitstream) == bitstream.size() &&
+         d3d_video_decoder_wrapper_->SubmitSlice();
+}
+
 void D3D11VideoDecoder::NotifyError(D3D11Status reason,
                                     DecoderStatus::Codes opt_decoder_code) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
@@ -1070,21 +1084,8 @@ void D3D11VideoDecoder::LogDecoderAdapterLUID() {
 }
 
 // static
-bool D3D11VideoDecoder::GetD3D11FeatureLevel(
-    ComD3D11Device dev,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    D3D_FEATURE_LEVEL* feature_level) {
-  if (!dev || !feature_level)
-    return false;
-
-  *feature_level = dev->GetFeatureLevel();
-  if (*feature_level < D3D_FEATURE_LEVEL_11_0)
-    return false;
-
-  if (gpu_workarounds.limit_d3d11_video_decoder_to_11_0)
-    *feature_level = D3D_FEATURE_LEVEL_11_0;
-
-  return true;
+bool D3D11VideoDecoder::IsD3D11FeatureLevelSupported(ComD3D11Device device) {
+  return device && device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0;
 }
 
 // static
@@ -1136,9 +1137,7 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     ComD3D11Device d3d11_device;
     CHECK_EQ(d3d_device.As(&d3d11_device), S_OK);
 
-    D3D_FEATURE_LEVEL usable_feature_level;
-    if (!GetD3D11FeatureLevel(d3d11_device, gpu_workarounds,
-                              &usable_feature_level)) {
+    if (!IsD3D11FeatureLevelSupported(d3d11_device)) {
       return {};
     }
 

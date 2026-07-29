@@ -248,8 +248,9 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
 
-  // This will fail if the D3D device is "Microsoft Basic Display Adapter".
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  // This will fail for software devices such as WARP or Microsoft Basic
+  // Display Adapter.
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device;
   if (FAILED(d3d11_device.As(&video_device))) {
     LOG(ERROR) << __func__ << ": Failed to retrieve video device";
     return;
@@ -556,17 +557,16 @@ void QueryVideoProcessorCustomExtForHDR() {
     return;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> d3d11_video_context;
-  if (FAILED(d3d11_context.As(&d3d11_video_context))) {
-    LOG(ERROR) << __func__ << ": Failed to retrieve video context";
-    return;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> d3d11_video_device;
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice1> d3d11_video_device;
   if (FAILED(d3d11_device.As(&d3d11_video_device))) {
     LOG(ERROR) << __func__ << ": Failed to retrieve video device";
     return;
   }
+
+  // QueryInterface for ID3D11VideoContext1 always succeeds on all Windows
+  // versions supported by Chrome if ID3D11VideoDevice1 QueryInterface succeeds.
+  Microsoft::WRL::ComPtr<ID3D11VideoContext1> d3d11_video_context;
+  CHECK_EQ(d3d11_context.As(&d3d11_video_context), S_OK);
 
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC desc = {};
   desc.InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE;
@@ -935,7 +935,7 @@ bool CheckVideoProcessorFormatSupport(DXGI_FORMAT dxgi_format) {
     return false;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device;
   if (FAILED(d3d11_device.As(&video_device))) {
     LOG(ERROR) << __func__ << ": Failed to retrieve video device";
     return false;

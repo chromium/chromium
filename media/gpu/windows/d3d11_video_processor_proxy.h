@@ -22,7 +22,7 @@ class MEDIA_GPU_EXPORT VideoProcessorProxy
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  VideoProcessorProxy(ComD3D11VideoDevice video_device,
+  VideoProcessorProxy(ComD3D11VideoDevice1 video_device,
                       ComD3D11DeviceContext d3d11_device_context);
 
   virtual D3D11Status Init(uint32_t width, uint32_t height);
@@ -55,11 +55,11 @@ class MEDIA_GPU_EXPORT VideoProcessorProxy
   friend class base::RefCounted<VideoProcessorProxy>;
 
  private:
-  ComD3D11VideoDevice video_device_;
+  ComD3D11VideoDevice1 video_device_;
   ComD3D11VideoProcessorEnumerator processor_enumerator_;
   ComD3D11VideoProcessor video_processor_;
   ComD3D11DeviceContext device_context_;
-  ComD3D11VideoContext video_context_;
+  ComD3D11VideoContext1 video_context_;
 };
 
 }  // namespace media

@@ -1512,7 +1512,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
   if (!video_processor_wrapper)
     return false;
 
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
+  Microsoft::WRL::ComPtr<ID3D11VideoContext1> video_context =
       video_processor_wrapper->video_context;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
       video_processor_wrapper->video_processor;
@@ -1525,45 +1525,27 @@ bool SwapChainPresenter::VideoProcessorBlt(
   bool driver_supports_vp_auto_hdr =
       video_processor_wrapper->GetDriverSupportsVpAutoHdr();
 
-  Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
-  if (SUCCEEDED(video_context.As(&context1))) {
-    DCHECK(context1);
-    // Set input color space.
-    context1->VideoProcessorSetStreamColorSpace1(
-        video_processor.Get(), 0,
-        gfx::ColorSpaceWin::GetDXGIColorSpace(src_color_space));
-    // Set output color space.
-    DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
-        gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space,
-                                              /*force_yuv=*/is_yuv_swapchain);
-    DXGI_COLOR_SPACE_TYPE swap_dxgi_color_space =
-        use_vp_auto_hdr ? gfx::ColorSpaceWin::GetDXGIColorSpace(
-                              gfx::ColorSpace::CreateHDR10())
-                        : output_dxgi_color_space;
+  video_context->VideoProcessorSetStreamColorSpace1(
+      video_processor.Get(), 0,
+      gfx::ColorSpaceWin::GetDXGIColorSpace(src_color_space));
+  DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
+      gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space,
+                                            /*force_yuv=*/is_yuv_swapchain);
+  video_context->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
+                                                    output_dxgi_color_space);
+  DXGI_COLOR_SPACE_TYPE swap_dxgi_color_space =
+      use_vp_auto_hdr ? gfx::ColorSpaceWin::GetDXGIColorSpace(
+                            gfx::ColorSpace::CreateHDR10())
+                      : output_dxgi_color_space;
 
-    // Can fail with E_INVALIDARG if the swap chain does not support the
-    // DXGI color space. We should still set the output color space as
-    // best effort.
-    HRESULT hr = swap_chain_->SetColorSpace1(swap_dxgi_color_space);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "SetColorSpace1 failed: "
-                  << logging::SystemErrorCodeToString(hr);
-    }
-    context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
-                                                 output_dxgi_color_space);
-  } else {
-    // This can't handle as many different types of color spaces, so use it
-    // only if ID3D11VideoContext1 isn't available.
-    D3D11_VIDEO_PROCESSOR_COLOR_SPACE src_d3d11_color_space =
-        gfx::ColorSpaceWin::GetD3D11ColorSpace(src_color_space);
-    video_context->VideoProcessorSetStreamColorSpace(video_processor.Get(), 0,
-                                                     &src_d3d11_color_space);
-    D3D11_VIDEO_PROCESSOR_COLOR_SPACE output_d3d11_color_space =
-        gfx::ColorSpaceWin::GetD3D11ColorSpace(output_color_space);
-    video_context->VideoProcessorSetOutputColorSpace(video_processor.Get(),
-                                                     &output_d3d11_color_space);
+  // Can fail with E_INVALIDARG if the swap chain does not support the
+  // DXGI color space. We should still set the output color space as
+  // best effort.
+  HRESULT hr = swap_chain_->SetColorSpace1(swap_dxgi_color_space);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "SetColorSpace1 failed: "
+                << logging::SystemErrorCodeToString(hr);
   }
-
   Microsoft::WRL::ComPtr<ID3D11VideoContext2> context2;
   std::optional<DXGI_HDR_METADATA_HDR10> display_metadata =
       layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata(
@@ -1581,7 +1563,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
   }
 
   {
-    Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device =
+    Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device =
         video_processor_wrapper->video_device;
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
         video_processor_enumerator =
@@ -1592,7 +1574,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     input_desc.Texture2D.ArraySlice = input_level;
 
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorInputView> input_view;
-    HRESULT hr = video_device->CreateVideoProcessorInputView(
+    hr = video_device->CreateVideoProcessorInputView(
         input_texture.Get(), video_processor_enumerator.Get(), &input_desc,
         &input_view);
     if (FAILED(hr)) {
@@ -1643,7 +1625,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
       if (FAILED(hr)) {
         if (use_vp_auto_hdr) {
           if (!RevertSwapChainToSDR(video_device, video_processor,
-                                    video_processor_enumerator, context1,
+                                    video_processor_enumerator, video_context,
                                     src_color_space)) {
             return false;
           }
@@ -1702,7 +1684,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
                       video_context.Get(), video_processor.Get(), false);
 
       if (!RevertSwapChainToSDR(video_device, video_processor,
-                                video_processor_enumerator, context1,
+                                video_processor_enumerator, video_context,
                                 src_color_space)) {
         return false;
       }
@@ -1964,7 +1946,7 @@ SwapChainPresenter::GetSwapChainMedia() const {
 }
 
 bool SwapChainPresenter::RevertSwapChainToSDR(
-    Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device,
+    Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device,
     Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
         video_processor_enumerator,

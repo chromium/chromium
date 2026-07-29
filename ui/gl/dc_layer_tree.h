@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <d3d12.h>
 #include <dcomp.h>
 #include <dxgi.h>
@@ -83,8 +83,8 @@ struct VideoProcessorWrapper {
 
   // The video processor is cached so SwapChains don't have to recreate it
   // whenever they're created.
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context;
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device;
+  Microsoft::WRL::ComPtr<ID3D11VideoContext1> video_context;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
       video_processor_enumerator;

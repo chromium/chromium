@@ -34,7 +34,7 @@ TEST_F(FormatSupportCheckerUnittest, CheckInitializationCantCast) {
   auto vdevice = MakeComPtr<NiceMock<D3D11VideoDeviceMock>>();
   auto enumerator = MakeComPtr<NiceMock<D3D11VideoProcessorEnumeratorMock>>();
 
-  ON_CALL(*device.Get(), QueryInterface(IID_ID3D11VideoDevice, _))
+  ON_CALL(*device.Get(), QueryInterface(IID_ID3D11VideoDevice1, _))
       .WillByDefault(SetComPointeeAndReturnOk<1>(vdevice.Get()));
 
   EXPECT_CALL(*vdevice.Get(), CreateVideoProcessorEnumerator(_, _))
@@ -54,7 +54,7 @@ TEST_F(FormatSupportCheckerUnittest, CheckFormatSupportWorks) {
   auto vdevice = MakeComPtr<NiceMock<D3D11VideoDeviceMock>>();
   auto enumerator = MakeComPtr<NiceMock<D3D11VideoProcessorEnumeratorMock>>();
 
-  ON_CALL(*device.Get(), QueryInterface(IID_ID3D11VideoDevice, _))
+  ON_CALL(*device.Get(), QueryInterface(IID_ID3D11VideoDevice1, _))
       .WillByDefault(SetComPointeeAndReturnOk<1>(vdevice.Get()));
 
   EXPECT_CALL(*vdevice.Get(), CreateVideoProcessorEnumerator(_, _))
@@ -83,7 +83,7 @@ TEST_F(FormatSupportCheckerUnittest, CheckFormatSupportRequiresBoth) {
   auto vdevice = MakeComPtr<NiceMock<D3D11VideoDeviceMock>>();
   auto enumerator = MakeComPtr<NiceMock<D3D11VideoProcessorEnumeratorMock>>();
 
-  ON_CALL(*device.Get(), QueryInterface(IID_ID3D11VideoDevice, _))
+  ON_CALL(*device.Get(), QueryInterface(IID_ID3D11VideoDevice1, _))
       .WillByDefault(SetComPointeeAndReturnOk<1>(vdevice.Get()));
 
   EXPECT_CALL(*vdevice.Get(), CreateVideoProcessorEnumerator(_, _))

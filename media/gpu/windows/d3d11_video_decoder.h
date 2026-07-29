@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -97,10 +98,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   bool ResetD3DVideoDecoder();
 
-  static bool GetD3D11FeatureLevel(
-      ComD3D11Device dev,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      D3D_FEATURE_LEVEL* feature_level);
+  bool SubmitBitstreamBufferForTesting(base::span<const uint8_t> bitstream);
+
+  static bool IsD3D11FeatureLevelSupported(ComD3D11Device device);
 
   // Return the set of video decoder configs that we support.
   static std::vector<SupportedVideoDecoderConfig>
@@ -227,10 +227,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // is in multi-threaded mode.  Just be sure not to set any global state.
   ComD3D11Device device_;
   ComD3D11DeviceContext device_context_;
-  ComD3D11VideoDevice video_device_;
-
-  // D3D11 version on this device.
-  D3D_FEATURE_LEVEL usable_feature_level_;
+  ComD3D11VideoDevice1 video_device_;
 
   std::unique_ptr<AcceleratedVideoDecoder> accelerated_video_decoder_;
 

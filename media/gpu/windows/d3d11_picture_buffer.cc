@@ -35,7 +35,7 @@ D3D11PictureBuffer::~D3D11PictureBuffer() = default;
 D3D11Status D3D11PictureBuffer::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
-    ComD3D11VideoDevice video_device,
+    ComD3D11VideoDevice1 video_device,
     const GUID& decoder_guid,
     std::unique_ptr<MediaLog> media_log,
     PictureBufferGPUResourceInitDoneCB

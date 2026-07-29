@@ -4,10 +4,12 @@
 
 #include "media/gpu/windows/d3d11_video_decoder.h"
 
-#include <d3d11.h>
-#include <d3d11_1.h>
 #include <initguid.h>
 
+#include <d3d11.h>
+#include <d3d11_1.h>
+
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -70,11 +72,9 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     ON_CALL(*mock_d3d11_device_.Get(), GetImmediateContext(_))
         .WillByDefault(SetComPointee<0>(mock_d3d11_device_context_.Get()));
 
-    // Set up an D3D11VideoDevice rather than ...Device1, since Initialize uses
-    // Device for checking decoder GUIDs.
-    // TODO(liberato): Try to use Device1 more often.
     mock_d3d11_video_device_ = MakeComPtr<NiceMock<D3D11VideoDeviceMock>>();
-    ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11VideoDevice, _))
+    ON_CALL(*mock_d3d11_device_.Get(),
+            QueryInterface(IID_ID3D11VideoDevice1, _))
         .WillByDefault(
             SetComPointeeAndReturnOk<1>(mock_d3d11_video_device_.Get()));
 
@@ -91,7 +91,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
     mock_d3d11_video_context_ = MakeComPtr<D3D11VideoContextMock>();
     ON_CALL(*mock_d3d11_device_context_.Get(),
-            QueryInterface(IID_ID3D11VideoContext, _))
+            QueryInterface(IID_ID3D11VideoContext1, _))
         .WillByDefault(
             SetComPointeeAndReturnOk<1>(mock_d3d11_video_context_.Get()));
 
@@ -216,6 +216,41 @@ class D3D11VideoDecoderTest : public ::testing::Test {
                                         base::Unretained(this), expect_success),
                          base::DoNothing(), base::DoNothing());
     task_environment_.RunUntilIdle();
+  }
+
+  void SubmitBitstreamBuffer(bool use_submit_decoder_buffers1) {
+    std::array<uint8_t, 1> decoder_buffer;
+    EXPECT_CALL(*mock_d3d11_video_context_.Get(),
+                GetDecoderBuffer(_, D3D11_VIDEO_DECODER_BUFFER_BITSTREAM, _, _))
+        .WillOnce([&decoder_buffer](ID3D11VideoDecoder*,
+                                    D3D11_VIDEO_DECODER_BUFFER_TYPE,
+                                    UINT* buffer_size, void** buffer) {
+          *buffer_size = decoder_buffer.size();
+          *buffer = decoder_buffer.data();
+          return S_OK;
+        });
+    EXPECT_CALL(*mock_d3d11_video_context_.Get(),
+                ReleaseDecoderBuffer(_, D3D11_VIDEO_DECODER_BUFFER_BITSTREAM))
+        .WillOnce(Return(S_OK));
+
+    if (use_submit_decoder_buffers1) {
+      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
+                  SubmitDecoderBuffers(_, _, _))
+          .Times(0);
+      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
+                  SubmitDecoderBuffers1(_, 1, _))
+          .WillOnce(Return(S_OK));
+    } else {
+      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
+                  SubmitDecoderBuffers1(_, _, _))
+          .Times(0);
+      EXPECT_CALL(*mock_d3d11_video_context_.Get(),
+                  SubmitDecoderBuffers(_, 1, _))
+          .WillOnce(Return(S_OK));
+    }
+
+    const std::array<uint8_t, 1> bitstream = {0};
+    EXPECT_TRUE(d3d11_decoder_raw_->SubmitBitstreamBufferForTesting(bitstream));
   }
 
   void CheckStatus(bool expect_success, DecoderStatus actual) {
@@ -343,6 +378,25 @@ TEST_F(D3D11VideoDecoderTest, CanReadWithoutStalling) {
 
   // Should be true prior to picture buffers being assigned.
   EXPECT_TRUE(decoder_->CanReadWithoutStalling());
+}
+
+TEST_F(D3D11VideoDecoderTest, SubmitsDecoderBuffersWithWorkaround) {
+  gpu_workarounds_.limit_d3d11_video_decoder_to_11_0 = true;
+  CreateDecoder();
+  InitializeDecoder(
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
+      true);
+
+  SubmitBitstreamBuffer(/*use_submit_decoder_buffers1=*/false);
+}
+
+TEST_F(D3D11VideoDecoderTest, SubmitsDecoderBuffers1WithoutWorkaround) {
+  CreateDecoder();
+  InitializeDecoder(
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
+      true);
+
+  SubmitBitstreamBuffer(/*use_submit_decoder_buffers1=*/true);
 }
 
 }  // namespace media

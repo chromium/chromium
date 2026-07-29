@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
@@ -28,7 +29,8 @@ namespace media {
 
 class MockVideoProcessorProxy : public VideoProcessorProxy {
  public:
-  MockVideoProcessorProxy() : VideoProcessorProxy(nullptr, nullptr) {}
+  MockVideoProcessorProxy()
+      : VideoProcessorProxy(MakeComPtr<D3D11VideoDeviceMock>(), nullptr) {}
 
   D3D11Status Init(uint32_t width, uint32_t height) override {
     return MockInit(width, height);

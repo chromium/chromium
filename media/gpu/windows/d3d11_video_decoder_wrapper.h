@@ -19,10 +19,10 @@ class D3D11VideoDecoderWrapper : public D3DVideoDecoderWrapper {
  public:
   static std::unique_ptr<D3D11VideoDecoderWrapper> Create(
       MediaLog* media_log,
-      ComD3D11VideoDevice video_device,
-      ComD3D11VideoContext video_context,
+      ComD3D11VideoDevice1 video_device,
+      ComD3D11VideoContext1 video_context,
       const D3D11DecoderConfigurator* decoder_configurator,
-      D3D_FEATURE_LEVEL supported_d3d11_version,
+      bool use_submit_decoder_buffers1,
       VideoDecoderConfig config);
   ~D3D11VideoDecoderWrapper() override;
 

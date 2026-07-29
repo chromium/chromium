@@ -2875,9 +2875,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
 
   ComD3D11Device texture_device;
   input_texture->GetDevice(&texture_device);
-  ComD3D11VideoDevice video_device;
+  ComD3D11VideoDevice1 video_device;
   HRESULT hr = texture_device.As(&video_device);
-  RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoDevice", hr);
+  RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoDevice1", hr);
 
   ComD3D11VideoProcessorEnumerator video_processor_enumerator;
   hr = video_device->CreateVideoProcessorEnumerator(
@@ -2891,9 +2891,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
 
   ComD3D11DeviceContext device_context;
   texture_device->GetImmediateContext(&device_context);
-  ComD3D11VideoContext video_context;
-  hr = device_context.As(&video_context);
-  RETURN_ON_HR_FAILURE(hr, "Failed to query for ID3D11VideoContext", hr);
+  ComD3D11VideoContext1 video_context;
+  CHECK_EQ(device_context.As(&video_context), S_OK);
 
   // Auto stream processing (the default) can hurt power consumption.
   video_context->VideoProcessorSetStreamAutoProcessingMode(

@@ -44,7 +44,7 @@ class D3DVideoDeviceWrapper {
 
 class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
  public:
-  explicit D3D11VideoDeviceWrapper(ComD3D11VideoDevice video_device)
+  explicit D3D11VideoDeviceWrapper(ComD3D11VideoDevice1 video_device)
       : video_device_(video_device) {
     CHECK(video_device);
   }
@@ -87,7 +87,7 @@ class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
   }
 
  private:
-  ComD3D11VideoDevice video_device_;
+  ComD3D11VideoDevice1 video_device_;
 };
 
 class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
@@ -303,7 +303,7 @@ GUID GetHEVCRangeExtensionGUID(uint8_t bitdepth,
 }
 
 bool SupportsHEVCRangeExtensionDXVAProfile(ComD3D11Device device) {
-  ComD3D11VideoDevice video_device;
+  ComD3D11VideoDevice1 video_device;
   if (device && SUCCEEDED(device.As(&video_device))) {
     for (UINT i = video_device->GetVideoDecoderProfileCount(); i--;) {
       GUID profile = {};
@@ -536,11 +536,11 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  ComD3D11VideoDevice video_device;
+  ComD3D11VideoDevice1 video_device;
   std::unique_ptr<D3D11VideoDeviceWrapper> video_device_wrapper;
   if (device && SUCCEEDED(device.As(&video_device))) {
     video_device_wrapper =
-        std::make_unique<D3D11VideoDeviceWrapper>(video_device);
+        std::make_unique<D3D11VideoDeviceWrapper>(std::move(video_device));
   }
   return GetSupportedD3DVideoDecoderResolutions(video_device_wrapper.get(),
                                                 workarounds);

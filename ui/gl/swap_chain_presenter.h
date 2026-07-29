@@ -227,7 +227,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   void ReleaseDCOMPSurfaceResourcesIfNeeded();
 
   bool RevertSwapChainToSDR(
-      Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device,
+      Microsoft::WRL::ComPtr<ID3D11VideoDevice1> video_device,
       Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
       Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
           video_processor_enumerator,

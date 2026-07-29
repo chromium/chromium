@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/windows/d3d11_video_processor_proxy.h"
+
 #include <random>
 #include <utility>
 
@@ -9,9 +11,9 @@
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
-#include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space_win.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -48,7 +50,7 @@ class D3D11VideoProcessorProxyUnittest : public ::testing::Test {
     EXPECT_CALL(*dev_.Get(), CreateVideoProcessor(_, _, _))
         .WillOnce(SetComPointeeAndReturnOk<2>(proc_.Get()));
 
-    EXPECT_CALL(*ctx_.Get(), QueryInterface(_, _))
+    EXPECT_CALL(*ctx_.Get(), QueryInterface(IID_ID3D11VideoContext1, _))
         .WillOnce(SetComPointeeAndReturnOk<1>(vctx_.Get()));
 
     return base::MakeRefCounted<VideoProcessorProxy>(dev_, ctx_);
@@ -87,8 +89,17 @@ TEST_F(D3D11VideoProcessorProxyUnittest, EnsureMethodPassthrough) {
               VideoProcessorBlt(proc_.Get(), out_view, 6, 7, streams));
 
   EXPECT_TRUE(proxy->Init(0, 0).is_ok());
+  const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  const DXGI_COLOR_SPACE_TYPE dxgi_color_space =
+      gfx::ColorSpaceWin::GetDXGIColorSpace(color_space);
+  EXPECT_CALL(*vctx_.Get(), VideoProcessorSetStreamColorSpace1(
+                                proc_.Get(), 0, dxgi_color_space));
+  EXPECT_CALL(*vctx_.Get(), VideoProcessorSetOutputColorSpace1(
+                                proc_.Get(), dxgi_color_space));
   proxy->CreateVideoProcessorOutputView(texture, out_desc, nullptr);
   proxy->CreateVideoProcessorInputView(texture, in_desc, nullptr);
+  proxy->SetStreamColorSpace(color_space);
+  proxy->SetOutputColorSpace(color_space);
   proxy->VideoProcessorBlt(out_view, 6, 7, streams);
 }
 

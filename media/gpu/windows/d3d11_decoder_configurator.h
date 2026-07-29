@@ -42,7 +42,7 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
       bool use_shared_handle,
       ComD3D11Device device);
 
-  bool SupportsDevice(ComD3D11VideoDevice video_device);
+  bool SupportsDevice(ComD3D11VideoDevice1 video_device);
 
   // Create the decoder's output texture.
   D3D11Status::Or<ComD3D11Texture2D> CreateOutputTexture(
