@@ -10,6 +10,7 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minHeight="36dp"
+    app:textAlignStart="true"
     app:textArrangement="vertical"
     app:chipColor="@macro/default_bg_color"
     app:primaryTextAppearance="@style/TextAppearance.TextAccentMediumThick"

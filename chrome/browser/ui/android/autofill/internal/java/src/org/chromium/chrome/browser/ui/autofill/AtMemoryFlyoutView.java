@@ -157,6 +157,8 @@ public class AtMemoryFlyoutView extends LinearLayout {
         chip.setId(View.generateViewId());
 
         TextView primaryTextView = chip.getPrimaryTextView();
+        primaryTextView.setMaxLines(2);
+        primaryTextView.setEllipsize(TextUtils.TruncateAt.END);
         primaryTextView.setText(suggestion.getLabel());
 
         TextView secondaryTextView = chip.getSecondaryTextView();
