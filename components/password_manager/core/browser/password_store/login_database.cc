@@ -179,7 +179,9 @@ enum LoginDatabaseTableColumns {
 
 enum class HistogramSize { SMALL, LARGE };
 
-// An enum for UMA reporting. Add values to the end only.
+// LINT.IfChange(DatabaseInitError)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum DatabaseInitError {
   INIT_OK = 0,
   OPEN_FILE_ERROR = 1,
@@ -197,6 +199,7 @@ enum DatabaseInitError {
 
   DATABASE_INIT_ERROR_COUNT,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:LoginDatabaseInitError)
 
 // Represents the encryption issues of the login database. Entries should
 // not be renumbered and numeric values should never be reused. Always keep this

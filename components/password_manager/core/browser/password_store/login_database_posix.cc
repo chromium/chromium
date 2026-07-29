@@ -15,6 +15,9 @@ namespace password_manager {
 
 namespace {
 
+// LINT.IfChange(PasswordDecryptionResult)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class PasswordDecryptionResult {
   kFailed = 0,
   kSucceeded = 1,
@@ -22,6 +25,7 @@ enum class PasswordDecryptionResult {
   kSucceededByIgnoringFailure = 3,
   kMaxValue = kSucceededByIgnoringFailure
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:PasswordDecryptionResult)
 
 void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.StoreDecryptionResult", result);

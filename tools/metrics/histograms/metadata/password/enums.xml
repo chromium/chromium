@@ -582,6 +582,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Encryption is not available"/>
 </enum>
 
+<!-- LINT.IfChange(LoginDatabaseInitError) -->
+
 <enum name="LoginDatabaseInitError">
   <int value="0" label="Init success"/>
   <int value="1" label="Can't open file"/>
@@ -597,6 +599,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Foreign key init error"/>
   <int value="12" label="Password notes table failed initialization"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_store/login_database.cc:DatabaseInitError) -->
 
 <enum name="LoginsChangedTrigger">
   <summary>
@@ -936,12 +940,16 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Deleted password"/>
 </enum>
 
+<!-- LINT.IfChange(PasswordDecryptionResult) -->
+
 <enum name="PasswordDecryptionResult">
   <int value="0" label="Failed"/>
   <int value="1" label="Succeeded"/>
   <int value="2" label="Succeeded by skipping"/>
   <int value="3" label="Succeeded by ignoring failure"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_store/login_database_posix.cc:PasswordDecryptionResult) -->
 
 <enum name="PasswordDropdownDuplicateCredentialsType">
   <summary>
