@@ -1463,8 +1463,8 @@ void WindowPerformance::AddContainerTiming(
   }
 
   PerformanceContainerTiming* entry = PerformanceContainerTiming::Create(
-      AtomicString("container-paints"), paint_timing_info.presentation_time,
-      rect, size, root_element, identifier, last_painted_element,
+      g_empty_atom, paint_timing_info.presentation_time, rect, size,
+      root_element, identifier, last_painted_element,
       first_paint_timing_info.presentation_time, DomWindow(), NavigationId());
   TRACE_EVENT2("loading", "PerformanceContainerTiming", "data",
                entry->ToTracedValue(), "frame",
