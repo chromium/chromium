@@ -495,15 +495,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // Set an error-handling callback.  On errors, the error number (and
   // statement, if available) will be passed to the callback.
   //
-  // If no callback is set, the default error-handling behavior is invoked. The
-  // default behavior is to LOGs the error and propagate the failure.
-  //
-  // In DCHECK-enabled builds, the default error-handling behavior currently
-  // DCHECKs on errors. This is not correct, because DCHECKs are supposed to
-  // cover invariants and never fail, whereas SQLite errors can surface even on
-  // correct usage, due to I/O errors and data corruption. At some point in the
-  // future, errors will not result in DCHECKs.
-  //
   // The callback will be called on the sequence used for database operations.
   // The callback will never be called after the `Database` instance is
   // destroyed. The callback must never destroy the `Database` instance.
