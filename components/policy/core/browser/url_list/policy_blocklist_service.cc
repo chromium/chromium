@@ -18,6 +18,12 @@ constexpr char kAllTrafficWildcard[] = "*";
 base::ListValue GetAllTrafficFilter() {
   base::ListValue all_traffic;
   all_traffic.Append(kAllTrafficWildcard);
+  // URLBlocklistManager excludes chrome:// and chrome-untrusted:// URLs by
+  // default, see b/483966539. However in the Always-on VPN in strict mode with
+  // lockdown enabled case, they should be blocked by default and only allowed
+  // if explicitly allowlisted by the Administrator.
+  all_traffic.Append("chrome://*");
+  all_traffic.Append("chrome-untrusted://*");
   return all_traffic;
 }
 

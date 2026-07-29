@@ -1,6 +1,6 @@
 caption: Allow user browser access to a list of URLs while Always-on VPN is active in strict mode with lockdown enabled and the VPN is not connected
 desc: |-
-  This policy only applies to browser traffic; the Play Store, Android apps web navigation and other user traffic like Linux VM traffic or print jobs, still honor the restrictions imposed by the Always-on VPN. This policy is only enforced while the VPN is not connected and only for user browser traffic. While this policy is enforced, system traffic can also bypass the Always-on VPN to perform tasks like policy fetches and synchronizing the system clock.
+  Warning: Configuring this policy relaxes the Always-on VPN lockdown before the VPN connects. URL-level filtering is only guaranteed for Chrome browser traffic and does not apply to internal system applications or other traffic types. While this policy is enforced, system traffic can also bypass the Always-on VPN to perform tasks like policy fetches and synchronizing the system clock.
 
   Use this policy to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at https://support.google.com/chrome/a?p=url_blocklist_filter_format. The most specific filter determines if a URL is blocked or allowed.
 

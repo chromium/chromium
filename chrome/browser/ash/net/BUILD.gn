@@ -189,6 +189,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/system_proxy",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/policy/policy_blocklist_service",
     "//components/account_id",
     "//components/device_event_log",
     "//components/policy/core/browser",
