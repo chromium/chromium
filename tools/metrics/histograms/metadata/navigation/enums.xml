@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Omnibox Default Search Engine"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/chrome_initiator_location.h:NavigationInitiatorType) -->
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/chrome_initiator_location.h:ChromeInitiatorLocation) -->
 
 <enum name="NavigationIsGuest">
   <int value="0" label="Not a guest navigation"/>
