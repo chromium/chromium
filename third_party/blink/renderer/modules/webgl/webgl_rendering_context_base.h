@@ -904,7 +904,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
       device::mojom::blink::XrCompatibleResult xr_compatible_result);
   void CompleteXrCompatiblePromiseIfPending(DOMExceptionCode exception_code);
   bool xr_compatible_;
-  Member<ScriptPromiseResolver<IDLUndefined>> make_xr_compatible_resolver_;
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
+      make_xr_compatible_resolvers_;
 
   HeapVector<TextureUnitState> texture_units_;
   wtf_size_t active_texture_unit_;
