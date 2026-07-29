@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_STATE_OPTIONS_H_
 #define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_STATE_OPTIONS_H_
 
-#include <string>
+#include <string_view>
 
 @class ProfileState;
 
 // Options passed when connecting a SceneState.
 struct SceneStateOptions {
   ProfileState* profile_state;
-  std::string identifier;
+  std::string_view identifier;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_STATE_OPTIONS_H_

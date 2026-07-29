@@ -1727,11 +1727,16 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
 - (void)connectWithOptions:(SceneStateOptions)options {
   DCHECK(!_sceneState.profileState);
+
+  ProfileState* profileState = options.profile_state;
+  DCHECK(profileState);
+
+  // Set the properties to SceneState.
   DCHECK(!options.identifier.empty());
+  _sceneState.profileState = profileState;
+  _sceneState.sceneSessionID = options.identifier;
 
   // Connect the ProfileState with the SceneState.
-  ProfileState* profileState = options.profile_state;
-  [_sceneState connectWithOptions:std::move(options)];
   [profileState sceneStateConnected:_sceneState];
 
   // Add agents. They may depend on the ProfileState, so they need to be

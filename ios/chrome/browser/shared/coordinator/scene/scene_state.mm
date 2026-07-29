@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
@@ -39,7 +38,8 @@
 
 @implementation SceneState {
   // Cache the connection informations.
-  SceneStateOptions _sceneStateOptions;
+  std::string _sceneSessionID;
+  ProfileState* _profileState;
 
   // Container for this object's observers.
   SceneStateObserverList* _observers;
@@ -103,21 +103,14 @@
   return std::make_unique<SigninInProgress>(self);
 }
 
-- (void)connectWithOptions:(SceneStateOptions)options {
-  _sceneStateOptions = std::move(options);
-  ProfileState* profileState = _sceneStateOptions.profile_state;
-  [_observers sceneState:self profileStateConnected:profileState];
-}
-
 #pragma mark - Setters & Getters.
 
 - (std::string_view)sceneSessionID {
-  return _sceneStateOptions.identifier;
+  return _sceneSessionID;
 }
 
 - (void)setSceneSessionID:(std::string_view)sceneSessionID {
-  [self connectWithOptions:{.profile_state = _sceneStateOptions.profile_state,
-                            .identifier = std::string(sceneSessionID)}];
+  _sceneSessionID = std::string(sceneSessionID);
 }
 
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
@@ -169,12 +162,12 @@
 }
 
 - (ProfileState*)profileState {
-  return _sceneStateOptions.profile_state;
+  return _profileState;
 }
 
 - (void)setProfileState:(ProfileState*)profileState {
-  [self connectWithOptions:{.profile_state = profileState,
-                            .identifier = _sceneStateOptions.identifier}];
+  _profileState = profileState;
+  [_observers sceneState:self profileStateConnected:_profileState];
 }
 
 #pragma mark - UIBlockerTarget
