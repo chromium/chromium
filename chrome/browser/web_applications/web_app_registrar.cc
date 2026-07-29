@@ -2053,6 +2053,15 @@ std::optional<std::string> WebAppRegistrar::GetParentAppShortName(
   return GetAppShortName(sub_app->parent_app_id().value());
 }
 
+std::optional<webapps::AppId> WebAppRegistrar::GetParentAppId(
+    const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id, WebAppFilter::IsIsolatedSubApp());
+  if (!web_app) {
+    return std::nullopt;
+  }
+  return *web_app->parent_app_id();
+}
+
 bool IsRegistryEqual(const Registry& registry,
                      const Registry& registry2,
                      bool exclude_current_os_integration) {

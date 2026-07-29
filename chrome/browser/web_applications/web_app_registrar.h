@@ -420,6 +420,12 @@ class WebAppRegistrar {
   std::optional<std::string> GetParentAppShortName(
       const webapps::AppId& app_id) const;
 
+  // Gets the AppId of the Parent App.
+  // The function returns std::nullopt if the given app_id does not
+  // have a parent app.
+  std::optional<webapps::AppId> GetParentAppId(
+      const webapps::AppId& app_id) const;
+
   // Maps all app IDs to their parent apps' IDs. Maps that do not have a parent
   // are omitted. This query should only be called with an AllAppsLock since all
   // apps are queried for their parent.

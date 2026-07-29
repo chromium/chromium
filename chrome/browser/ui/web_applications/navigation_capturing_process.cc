@@ -281,10 +281,10 @@ void LaunchIsolatedWebAppInNewWindow(web_app::WebAppProvider* provider,
 }
 
 bool IsCrossIwaNavigation(
+    const web_app::WebAppRegistrar& registrar,
     const NavigateParams& params,
     const webapps::AppId& iwa_id,
-    const std::optional<webapps::AppId>& source_browser_app_id,
-    const std::optional<webapps::AppId>& parent_app_id) {
+    const std::optional<webapps::AppId>& source_browser_app_id) {
   // Service worker `clients.openWindow()` arrives with no source browser and a
   // non-link transition, so the link-based source check below does not apply.
   // Use the initiator origin to enforce the same cross-IWA restriction.
@@ -293,16 +293,18 @@ bool IsCrossIwaNavigation(
     return true;
   }
 
-  // Any links: same-IWA or cross-IWA window.open(), same-IWA or cross-IWA
-  // anchor link, cross-IWA meta tag redirect. Cancel navigations that do not
-  // originate from a browser for the target app (or its parent app), regardless
-  // of disposition, before falling through to the disposition-specific handling
-  // below.
+  // Any links: window.open(), anchor link, meta tag redirect. Cancel
+  // navigations that do not originate from a browser belonging to the target
+  // app's family (the app itself, its parent app, or a sibling sub-app),
+  // regardless of disposition, before falling through to the
+  // disposition-specific handling. With sub-apps, navigations are allowed in
+  // all directions as long as both apps are in the same family.
   if (ui::PageTransitionCoreTypeIs(params.transition,
                                    ui::PAGE_TRANSITION_LINK) &&
-      source_browser_app_id != iwa_id &&
-      (!parent_app_id.has_value() ||
-       source_browser_app_id != parent_app_id.value())) {
+      (!source_browser_app_id ||
+       registrar.GetParentAppId(*source_browser_app_id)
+               .value_or(*source_browser_app_id) !=
+           registrar.GetParentAppId(iwa_id).value_or(iwa_id))) {
     return true;
   }
 
@@ -462,15 +464,6 @@ NavigationCapturingProcess::NavigationCapturingProcess(
     CHECK(registrar.GetAppById(*first_navigation_app_id_));
     first_navigation_app_display_mode_ =
         registrar.GetAppEffectiveDisplayMode(*first_navigation_app_id_);
-
-    first_navigation_parent_app_id_ =
-        registrar.GetAppById(*first_navigation_app_id_)->parent_app_id();
-
-    CHECK(
-        !first_navigation_parent_app_id_ ||
-        url::IsSameOriginWith(
-            params.url, registrar.GetAppById(*first_navigation_parent_app_id_)
-                            ->start_url()));
   }
 
   isolated_web_app_navigation_ =
@@ -922,8 +915,11 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   const webapps::AppId& iwa_id = *first_navigation_app_id_;
   const DisplayMode& app_display_mode = *first_navigation_app_display_mode_;
 
-  if (IsCrossIwaNavigation(params, iwa_id, source_browser_app_id_,
-                           first_navigation_parent_app_id_)) {
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(&*profile_);
+  CHECK(provider);
+  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+
+  if (IsCrossIwaNavigation(registrar, params, iwa_id, source_browser_app_id_)) {
     // TODO(crbug.com/424422466): Support cross-IWA navigations to start_url.
     return CancelInitialNavigation(
         NavigationCapturingInitialResult::kNavigationCanceled);
@@ -934,7 +930,7 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
       params.browser &&
       (web_app::AppBrowserController::IsForWebApp(params.browser, iwa_id) ||
        web_app::AppBrowserController::IsForIsolatedSubApp(
-           params.browser, first_navigation_parent_app_id_));
+           params.browser, registrar.GetParentAppId(iwa_id)));
 
   bool capturing_disabled = [&]() {
     switch (disposition_) {
