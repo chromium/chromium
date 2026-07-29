@@ -8,7 +8,6 @@
 #include <list>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -25,9 +24,6 @@ namespace gpu {
 // GLCommonImageBackingFactory
 
 namespace {
-// Kill switch for allowing using core ES3 format types for half float format.
-BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi, base::FEATURE_ENABLED_BY_DEFAULT);
-
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,
     const GLFormatCaps& caps) {
@@ -135,9 +131,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     const GLenum gl_type = format_desc.data_type;
 
     // kRGBA_F16 is a core part of ES3.
-    const bool at_least_es3 =
-        gl::g_current_gl_version->IsAtLeastGLES(3, 0) &&
-        base::FeatureList::IsEnabled(kAllowEs3F16CoreTypeForGlSi);
+    const bool at_least_es3 = gl::g_current_gl_version->IsAtLeastGLES(3, 0);
     const bool supports_data_type =
         (gl_type == GL_HALF_FLOAT && at_least_es3) ||
         validators->pixel_type.IsValid(gl_type);

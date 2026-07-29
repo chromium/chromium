@@ -286,7 +286,7 @@ class D3DImageBackingFactoryTest
   void RunOverlayTest(bool use_shared_handle, bool use_factory);
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
   void RunCreateFromSharedMemoryMultiplanarTest(bool use_async_copy);
-  void RunMultiplanarUploadAndReadback(bool use_upload_subresource);
+  void RunMultiplanarUploadAndReadback();
 
   static constexpr wgpu::FeatureName kRequiredFeatures[] = {
       // We need to request internal usage to be able to do operations with
@@ -1910,23 +1910,7 @@ TEST_P(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanarAsyncCopy) {
 
 // Verifies that a multi-planar NV12 image can be created without DXGI handle
 // for use with software GMBs.
-void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
-    bool use_update_subresource) {
-  base::test::ScopedFeatureList feature_list;
-  if (use_update_subresource) {
-    feature_list.InitAndEnableFeature(
-        features::kD3DBackingUploadWithUpdateSubresource);
-  } else {
-    feature_list.InitAndDisableFeature(
-        features::kD3DBackingUploadWithUpdateSubresource);
-  }
-
-  // Recreate a new share image factory which will pick up the
-  // kD3DBackingUploadWithUpdateSubresource feature.
-  shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
-      gl::QueryD3D11DeviceObjectFromANGLE(),
-      shared_image_manager_.dxgi_shared_handle_manager(), GLFormatCaps());
-
+void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback() {
   constexpr gfx::Size size(32, 32);
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
   constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
@@ -1976,11 +1960,6 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
   // Upload initial data into the image.
   backing->UploadFromMemory(pixmaps);
   backing->SetCleared();
-
-  // If UpdateSubresource() is used, the staging texture shouldn't be created.
-  EXPECT_EQ(
-      !static_cast<D3DImageBacking*>(backing)->HasStagingTextureForTesting(),
-      use_update_subresource);
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       mailbox, context_state_);
@@ -2064,12 +2043,7 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
 }
 
 TEST_P(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
-  RunMultiplanarUploadAndReadback(/*use_update_subresource=*/false);
-}
-
-TEST_P(D3DImageBackingFactoryTest,
-       MultiplanarUploadAndReadbackWithUpdateSubresource) {
-  RunMultiplanarUploadAndReadback(/*use_update_subresource=*/true);
+  RunMultiplanarUploadAndReadback();
 }
 
 // Verifies that UploadFromMemory flushes pending Graphite commands. Draws blue

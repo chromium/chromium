@@ -490,13 +490,6 @@ BASE_FEATURE(kDeferredOverlaysRelease,
              "DeferredOverlayRelease",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use d3d11 UpdateSubresource() (instead of a staging texture) to upload pixels
-// to textures.
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // This feature allows enabling specific entries in
 // software_rendering_list.json, via experimentation. The entries must have
 // test_group property and test_group feature parameter should be set in the

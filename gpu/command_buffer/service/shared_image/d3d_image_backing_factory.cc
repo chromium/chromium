@@ -22,7 +22,6 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
@@ -231,12 +230,6 @@ DXGI_FORMAT GetDXGITypelessFormat(viz::SharedImageFormat format) {
   return DXGI_FORMAT_UNKNOWN;
 }
 
-bool UseUpdateSubresource1(const GpuDriverBugWorkarounds& workarounds) {
-  return base::FeatureList::IsEnabled(
-             features::kD3DBackingUploadWithUpdateSubresource) &&
-         !workarounds.disable_d3d11_update_subresource1;
-}
-
 // CPU_READ is needed for RenderableGMBVideoFramePool case where the DXGI handle
 // is mapped on GPU process.
 constexpr SharedImageUsageSet kSupportedUsage =
@@ -270,7 +263,7 @@ D3DImageBackingFactory::D3DImageBackingFactory(
       dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)),
       angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()),
       gl_format_caps_(gl_format_caps),
-      use_update_subresource1_(UseUpdateSubresource1(workarounds)),
+      use_update_subresource1_(!workarounds.disable_d3d11_update_subresource1),
       enable_webnn_only_d3d_factory_(enable_webnn_only_d3d_factory) {
   CHECK(angle_d3d11_device_ || enable_webnn_only_d3d_factory)
       << "D3DImageBackingFactory requires a D3D11 device.";
