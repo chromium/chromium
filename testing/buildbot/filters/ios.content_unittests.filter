@@ -13,3 +13,7 @@
 -PermissionServiceImplTest.RequestPermission
 -PermissionServiceImplTest.RequestPermissions
 -PermissionServiceImplTest.RevokePermission
+
+#TODO(crbug.com/539754134): The test has been failing since
+# https://crrev.com/c/8145304.
+-BrowserAccessibilityTest.NonWebContentBoundsResolveWithinTheirOwnTree
