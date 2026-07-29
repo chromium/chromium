@@ -23606,24 +23606,6 @@
             ]
         }
     ],
-    "SplitViewTabRestore": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SplitViewTabRestore"
-                    ]
-                }
-            ]
-        }
-    ],
     "SplitscreenVersusFullScreenForNewWindows": [
         {
             "platforms": [
