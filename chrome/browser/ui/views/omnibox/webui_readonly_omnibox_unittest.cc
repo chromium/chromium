@@ -13,7 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -99,6 +101,13 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
 
   EXPECT_CALL(*omnibox_client_, GetPrefs())
       .WillRepeatedly(testing::Return(profile_->GetPrefs()));
+
+  omnibox::RegisterProfilePrefs(
+      static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+          omnibox_controller_->autocomplete_controller()
+              ->autocomplete_provider_client()
+              ->GetPrefs())
+          ->registry());
 
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
       /*location_bar=*/nullptr, /*toolbar_delegate=*/nullptr,
@@ -411,6 +420,24 @@ TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
     ASSERT_TRUE(mojo_state);
     EXPECT_FALSE(mojo_state->user_input_in_progress);
   }
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, OnPointer) {
+  // Sending pointer down action should succeed.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewPointer(
+              toolbar_ui_api::mojom::OmniboxActionPointer::New(
+                  /*is_pointer_down=*/true, /*start_zero_suggest=*/false)))
+          .has_value());
+
+  // Sending pointer up action with start_zero_suggest=true should succeed.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewPointer(
+              toolbar_ui_api::mojom::OmniboxActionPointer::New(
+                  /*is_pointer_down=*/false, /*start_zero_suggest=*/true)))
+          .has_value());
 }
 
 }  // namespace

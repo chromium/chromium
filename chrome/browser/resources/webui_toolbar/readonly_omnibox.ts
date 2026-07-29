@@ -49,6 +49,15 @@ function copyMaybeSelection(selection: MojomRange|null): MojomRange|null {
   }
 }
 
+// Movement threshold (in pixels) for touch and pen pointer events to
+// distinguish a single tap from a drag-select gesture. Set to 10px to align
+// with: 1) Chrome's native stylus click slop (10px in
+//    ui/events/gesture_detection/gesture_configuration_aura.cc),
+// 2) Chrome's touch slop range (6px on ChromeOS in
+//    ui/events/gesture_detection/gesture_configuration_aura.cc up to 15px
+//    default in ui/events/gesture_detection/gesture_configuration.h).
+const POINTER_DRAG_THRESHOLD_PX = 10;
+
 // TODO(crbug.com/500653057): Rename since it's no longer readonly.
 export class ReadonlyOmniboxElement extends CrLitElement {
   static get is() {
@@ -139,6 +148,18 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private clientXAtMouseDown_: number = 0;
   private clientYAtMouseDown_: number = 0;
 
+  // If this is true, the sequence of events thus far suggests that the next
+  // touch release should select all.
+  private selectAllOnTouchRelease_: boolean = false;
+  private clientXAtTouchDown_: number = 0;
+  private clientYAtTouchDown_: number = 0;
+  // Tracks active touch/pen pointer IDs to detect multi-finger gestures.
+  private activeTouchIds_: Set<number> = new Set();
+  // Remembers if the current touch sequence involved multiple touch points at
+  // any time, ensuring that release of the final finger does not trigger
+  // single-tap select-all.
+  private wasMultiTouch_: boolean = false;
+
   constructor() {
     super();
     this.maybeForwardKeys = new Set([
@@ -200,8 +221,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     const textInput = this.$.textInput;
     textInput.addEventListener('focus', this.onInputFocus.bind(this));
     textInput.addEventListener('blur', this.onInputBlur.bind(this));
-    // TODO(crbug.com/503784990): we need to handle gesture events; perhaps
-    // in part by switching these to pointer versions.
+    // Handle gesture/pointer events for touch interactions.
+    textInput.addEventListener(
+        'pointerdown', this.onInputPointerDown_.bind(this));
+    textInput.addEventListener('pointerup', this.onInputPointerUp_.bind(this));
+    textInput.addEventListener(
+        'pointermove', this.onInputPointerMove_.bind(this));
+    textInput.addEventListener(
+        'pointercancel', this.onInputPointerCancel_.bind(this));
     textInput.addEventListener('mousedown', this.onInputMouseDown.bind(this));
     textInput.addEventListener('mouseup', this.onInputMouseUp.bind(this));
     textInput.addEventListener('mousemove', this.onInputMouseMove_.bind(this));
@@ -451,8 +478,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
 
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      mouse: {
-        isMouseDown: true,
+      pointer: {
+        isPointerDown: true,
         startZeroSuggest: false,
       },
     });
@@ -495,8 +522,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     const zeroSuggest = isOnlyLeftButton(event) &&
         (this.selectAllOnMouseRelease_ || this.userText.length === 0);
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      mouse: {
-        isMouseDown: false,
+      pointer: {
+        isPointerDown: false,
         startZeroSuggest: zeroSuggest,
       },
     });
@@ -516,6 +543,119 @@ export class ReadonlyOmniboxElement extends CrLitElement {
          (Math.abs(event.clientY - this.clientYAtMouseDown_) > 3))) {
       this.selectAllOnMouseRelease_ = false;
     }
+  }
+
+  private isTouchOrPen_(event: PointerEvent): boolean {
+    return event.pointerType === 'touch' || event.pointerType === 'pen';
+  }
+
+  private onInputPointerDown_(event: PointerEvent): void {
+    if (!this.isTouchOrPen_(event)) {
+      return;
+    }
+
+    this.activeTouchIds_.add(event.pointerId);
+    if (this.activeTouchIds_.size > 1) {
+      // More than one finger touches the screen (e.g. pinch-to-zoom or
+      // two-finger tap). Mark sequence as multi-touch and cancel select-all.
+      this.wasMultiTouch_ = true;
+      this.selectAllOnTouchRelease_ = false;
+      return;
+    }
+
+    let wasAlreadyFocused = this.hasFocus();
+
+    if (wasAlreadyFocused && this.lastFocusAcquisition_ !== null &&
+        (performance.now() - this.lastFocusAcquisition_ < 100)) {
+      wasAlreadyFocused = false;
+    }
+
+    this.selectAllOnTouchRelease_ = !wasAlreadyFocused;
+    if (this.selectAllOnTouchRelease_) {
+      this.clientXAtTouchDown_ = event.clientX;
+      this.clientYAtTouchDown_ = event.clientY;
+    }
+
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      pointer: {
+        isPointerDown: true,
+        startZeroSuggest: false,
+      },
+    });
+  }
+
+  private onInputPointerUp_(event: PointerEvent): void {
+    if (!this.isTouchOrPen_(event)) {
+      return;
+    }
+
+    this.activeTouchIds_.delete(event.pointerId);
+    const isMultiTouch = this.wasMultiTouch_;
+    if (this.activeTouchIds_.size === 0) {
+      this.wasMultiTouch_ = false;
+    }
+
+    if (isMultiTouch || this.activeTouchIds_.size > 0) {
+      // Any finger release during or after a multi-touch sequence must not
+      // trigger single-tap select-all.
+      this.selectAllOnTouchRelease_ = false;
+      if (isMultiTouch && this.activeTouchIds_.size === 0) {
+        this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+          pointer: {
+            isPointerDown: false,
+            startZeroSuggest: false,
+          },
+        });
+      }
+      return;
+    }
+
+    const willSelectAll = this.selectAllOnTouchRelease_;
+
+    if (willSelectAll) {
+      this.selectAllBackwards();
+    }
+
+    ++this.omniboxViewState.uiVersion;
+    this.sendInputToBrowser();
+
+    const zeroSuggest = willSelectAll || this.userText.length === 0;
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      pointer: {
+        isPointerDown: false,
+        startZeroSuggest: zeroSuggest,
+      },
+    });
+
+    this.selectAllOnTouchRelease_ = false;
+  }
+
+  private onInputPointerMove_(event: PointerEvent): void {
+    if (!this.isTouchOrPen_(event)) {
+      return;
+    }
+
+    if (this.selectAllOnTouchRelease_ &&
+        ((Math.abs(event.clientX - this.clientXAtTouchDown_) >
+          POINTER_DRAG_THRESHOLD_PX) ||
+         (Math.abs(event.clientY - this.clientYAtTouchDown_) >
+          POINTER_DRAG_THRESHOLD_PX))) {
+      this.selectAllOnTouchRelease_ = false;
+    }
+  }
+
+  // Fallback in case multi-finger gesture detection fails: if the system or
+  // browser cancels the pointer interaction (e.g. system gesture takeover like
+  // pinch-to-zoom or scroll begin), reset touch selection and active touches.
+  private onInputPointerCancel_(event: PointerEvent): void {
+    if (!this.isTouchOrPen_(event)) {
+      return;
+    }
+    this.activeTouchIds_.delete(event.pointerId);
+    if (this.activeTouchIds_.size === 0) {
+      this.wasMultiTouch_ = false;
+    }
+    this.selectAllOnTouchRelease_ = false;
   }
 
   // Sync ups the textPieces to be an unhighlighted version of `userText`.

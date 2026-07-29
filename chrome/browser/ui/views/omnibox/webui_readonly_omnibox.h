@@ -164,8 +164,9 @@ class WebUIReadOnlyOmnibox
       const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnKey(
       const toolbar_ui_api::mojom::OmniboxActionKey& key);
-  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnMouse(
-      const toolbar_ui_api::mojom::OmniboxActionMouse& mouse);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnPointer(
+      bool is_down,
+      bool start_zero_suggest);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropText(
       const toolbar_ui_api::mojom::OmniboxActionDropText& drop_text);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropFile(

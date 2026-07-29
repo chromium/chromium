@@ -133,8 +133,9 @@ WebUIReadOnlyOmnibox::OnOmniboxAction(
     case toolbar_ui_api::mojom::OmniboxAction::Tag::kKey:
       return OnKey(*action->get_key());
 
-    case toolbar_ui_api::mojom::OmniboxAction::Tag::kMouse:
-      return OnMouse(*action->get_mouse());
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kPointer:
+      return OnPointer(action->get_pointer()->is_pointer_down,
+                       action->get_pointer()->start_zero_suggest);
 
     case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropText:
       return OnDropText(*action->get_drop_text());
@@ -739,13 +740,12 @@ WebUIReadOnlyOmnibox::OnKey(
 }
 
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
-WebUIReadOnlyOmnibox::OnMouse(
-    const toolbar_ui_api::mojom::OmniboxActionMouse& mouse) {
-  // Either mouse up or mouse down permit launches.
+WebUIReadOnlyOmnibox::OnPointer(bool is_down, bool start_zero_suggest) {
+  // Either pointer up or pointer down permit launches.
   ExternalProtocolHandler::PermitLaunchUrl();
 
-  if (mouse.is_mouse_down) {
-    // Mouse down clears the pseudo-focus the popup has.
+  if (is_down) {
+    // Pointer down clears the pseudo-focus the popup has.
     if (controller()->IsPopupOpen()) {
       OmniboxPopupSelection selection =
           controller()->edit_model()->GetPopupSelection();
@@ -755,8 +755,8 @@ WebUIReadOnlyOmnibox::OnMouse(
       }
     }
   } else {
-    // Mouse up may start zero-suggest.
-    if (mouse.start_zero_suggest) {
+    // Pointer up may start zero-suggest.
+    if (start_zero_suggest) {
       controller()->edit_model()->StartZeroSuggestRequest();
     }
   }

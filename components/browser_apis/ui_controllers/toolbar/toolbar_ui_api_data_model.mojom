@@ -136,12 +136,12 @@ struct OmniboxActionKey {
 };
 
 // Used to notify the browser process that the user has either pressed or
-// released the mouse on the omnibox.
-struct OmniboxActionMouse {
-  bool is_mouse_down = false;
+// released a pointer (mouse, touch, or pen) on the omnibox.
+struct OmniboxActionPointer {
+  bool is_pointer_down = false;
 
   // If true, asks for zero-suggest completion to start. Applies only if
-  // `is_mouse_down` is false.
+  // `is_pointer_down` is false.
   bool start_zero_suggest = false;
 };
 
@@ -173,7 +173,7 @@ union OmniboxAction {
   OmniboxActionFocusChange focus_change;
   OmniboxActionTextInput text_input;
   OmniboxActionKey key;
-  OmniboxActionMouse mouse;
+  OmniboxActionPointer pointer;
   OmniboxActionDropText drop_text;
   OmniboxActionDropFile drop_file;
 };

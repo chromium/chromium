@@ -128,6 +128,42 @@ suite('ReadonlyOmnibox', function() {
     getTextInput().dispatchEvent(evUp);
   }
 
+  function fakePointerDown(
+      pointerId: number, pointerType: string, clientX = 0, clientY = 0) {
+    const evDown = new PointerEvent('pointerdown', {
+      pointerId,
+      pointerType,
+      clientX,
+      clientY,
+      bubbles: true,
+      cancelable: true,
+    });
+    getTextInput().dispatchEvent(evDown);
+  }
+
+  function fakePointerUp(
+      pointerId: number, pointerType: string, clientX = 0, clientY = 0) {
+    const evUp = new PointerEvent('pointerup', {
+      pointerId,
+      pointerType,
+      clientX,
+      clientY,
+      bubbles: true,
+      cancelable: true,
+    });
+    getTextInput().dispatchEvent(evUp);
+  }
+
+  function fakePointerCancel(pointerId: number, pointerType: string) {
+    const evCancel = new PointerEvent('pointercancel', {
+      pointerId,
+      pointerType,
+      bubbles: true,
+      cancelable: true,
+    });
+    getTextInput().dispatchEvent(evCancel);
+  }
+
   setup(() => {
     const browserProxy = new MockBrowserProxy();
     uiHandler = browserProxy.toolbarUIHandler;
@@ -1043,6 +1079,128 @@ suite('ReadonlyOmnibox', function() {
     // And it's selecting the second copy, not the first one.
     assertEquals(9, input.selectionStart);
     assertEquals(13, input.selectionEnd);
+  });
+
+  test('Single touch tap selects all and triggers zero-suggest', async () => {
+    uiHandler.reset();
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      selection: {start: 0, end: 0},
+    };
+    await microtasksFinished();
+    const input = getTextInput();
+    assertEquals('example.com', input.value);
+    assertEquals('', getStringSelection());
+
+    fakePointerDown(/*pointerId=*/ 1, 'touch');
+    fakePointerUp(/*pointerId=*/ 1, 'touch');
+    await microtasksFinished();
+
+    assertEquals('example.com', getStringSelection());
+    assertEquals(3, uiHandler.getCallCount('onOmniboxAction'));
+    const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+    assertTrue(!!lastArgs.pointer);
+    assertEquals(false, lastArgs.pointer.isPointerDown);
+    assertEquals(true, lastArgs.pointer.startZeroSuggest);
+  });
+
+  test('Single pen tap selects all and triggers zero-suggest', async () => {
+    uiHandler.reset();
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      selection: {start: 0, end: 0},
+    };
+    await microtasksFinished();
+    const input = getTextInput();
+    assertEquals('example.com', input.value);
+    assertEquals('', getStringSelection());
+
+    fakePointerDown(/*pointerId=*/ 1, 'pen');
+    fakePointerUp(/*pointerId=*/ 1, 'pen');
+    await microtasksFinished();
+
+    assertEquals('example.com', getStringSelection());
+    assertEquals(3, uiHandler.getCallCount('onOmniboxAction'));
+    const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+    assertTrue(!!lastArgs.pointer);
+    assertEquals(false, lastArgs.pointer.isPointerDown);
+    assertEquals(true, lastArgs.pointer.startZeroSuggest);
+  });
+
+  test('Multi-finger touch sequence cancels automatic select-all', async () => {
+    uiHandler.reset();
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      selection: {start: 0, end: 0},
+    };
+    await microtasksFinished();
+
+    // First finger touches down.
+    fakePointerDown(/*pointerId=*/ 1, 'touch');
+    // Second finger touches down (multi-finger pinch/tap gesture).
+    fakePointerDown(/*pointerId=*/ 2, 'touch');
+
+    // First finger lifts.
+    fakePointerUp(/*pointerId=*/ 1, 'touch');
+    await microtasksFinished();
+    // Second finger remains on screen, so select-all should not happen yet.
+    assertEquals('', getStringSelection());
+
+    // Second finger lifts.
+    fakePointerUp(/*pointerId=*/ 2, 'touch');
+    await microtasksFinished();
+
+    // Multi-finger sequence must not trigger automatic select-all.
+    assertEquals('', getStringSelection());
+    const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+    assertTrue(!!lastArgs.pointer);
+    assertEquals(false, lastArgs.pointer.startZeroSuggest);
+  });
+
+  test('Pointercancel fallback cancels touch selection', async () => {
+    uiHandler.reset();
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      selection: {start: 0, end: 0},
+    };
+    await microtasksFinished();
+
+    fakePointerDown(/*pointerId=*/ 1, 'touch');
+    // System cancels pointer (e.g. gesture scroll or pinch takeover).
+    fakePointerCancel(/*pointerId=*/ 1, 'touch');
+    fakePointerUp(/*pointerId=*/ 1, 'touch');
+    await microtasksFinished();
+
+    // Select-all should be cancelled by pointercancel fallback.
+    assertEquals('', getStringSelection());
   });
 
 });
