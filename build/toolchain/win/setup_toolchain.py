@@ -21,7 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 import gn_helpers
 
 SCRIPT_DIR = os.path.dirname(__file__)
-SDK_VERSION = '10.0.26100.0'
+SDK_VERSION = '10.0.28000.0'
 MSVC_DIR = re.compile('^.*/VC/Tools/MSVC/[^/]+/include$')
 WINDOWS_KITS_DIR = re.compile(r'^(.*/Windows Kits/\d+/Include/[^/]+)/.*')
 

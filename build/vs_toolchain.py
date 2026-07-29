@@ -17,7 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2026 18 with 10.0.26100.7705 SDK with ARM64 libraries and UWP support.
+# VS 2026 18 with 10.0.28000.2270 SDK with ARM64 libraries and UWP support.
 # See go/win-toolchain-reference for instructions about how to update the
 # toolchain.
 #
@@ -59,8 +59,8 @@ from gn_helpers import ToGNString
 # * docs/windows_build_instructions.md
 #   Make sure any version numbers in the documentation match the code.
 #
-TOOLCHAIN_HASH = 'e66617bc68'
-SDK_VERSION = '10.0.26100.0'
+TOOLCHAIN_HASH = '3bfcb536c8'
+SDK_VERSION = '10.0.28000.0'
 
 # Visual Studio versions are listed in descending order of priority.
 # The first version is assumed by this script to be the one that is packaged,

@@ -24,7 +24,7 @@ Are you a Google employee? See
 ### Visual Studio
 
 Chromium requires [Visual Studio 2026](https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-notes)
-(>=17.0.0) to build. Visual Studio can also be used to debug Chromium.
+(>=18.0.0) to build. Visual Studio can also be used to debug Chromium.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
 license is appropriate for you. You must install the "Desktop development with
@@ -52,7 +52,7 @@ $ PATH_TO_INSTALLER.EXE ^
 Required
 
 * [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
-version 10.0.26100.7705. This can be installed separately or by checking the
+version 10.0.28000.2270. This can be installed separately or by checking the
 appropriate box in the Visual Studio Installer.
 * (Windows 11) SDK Debugging Tools 10.0.26100.3323 or higher. This version of the
 Debugging tools is needed in order to support reading the large-page PDBs that
@@ -65,7 +65,7 @@ it does not get installed on ARM64 and is needed, whether you are building Chrom
 for x64 or ARM64 on ARM64.
 
 WARNING: On sufficiently old versions of Windows (1909 or earlier), dawn or
-related components may fail with a D3d-related error when using the 26100 SDK.
+related components may fail with a D3d-related error when using an >=26100 SDK.
 This is because the d3dcompiler_47.dll file in the new SDK attempts to
 dynamically link versions of the Universal C Runtime which are not present by
 default on older systems. If you experience these errors, you can either update
