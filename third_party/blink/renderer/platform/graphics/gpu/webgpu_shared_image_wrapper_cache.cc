@@ -27,6 +27,55 @@ WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
   }
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+WebGpuSharedImageWrapperLease::GetSharedImage() const {
+  return shared_image_wrapper_->GetSharedImage();
+}
+
+gpu::SyncToken WebGpuSharedImageWrapperLease::GetSyncToken() const {
+  return shared_image_wrapper_->GetSyncToken();
+}
+
+bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
+    const SkPixmap& pixmap,
+    uint32_t src_x,
+    uint32_t src_y) {
+  return shared_image_wrapper_->UploadToBackingSharedImage(pixmap, src_x,
+                                                           src_y);
+}
+
+void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
+  shared_image_wrapper_->DrawToBackingSharedImage(draw_callback);
+}
+
+const gpu::SyncToken& WebGpuSharedImageWrapperLease::acquire_sync_token()
+    const {
+  return shared_image_wrapper_->acquire_sync_token();
+}
+
+void WebGpuSharedImageWrapperLease::set_release_sync_token(
+    const gpu::SyncToken& token) {
+  shared_image_wrapper_->set_release_sync_token(token);
+}
+
+void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
+    base::FunctionRef<
+        gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
+                       const gpu::SyncToken&)> overwrite_callback) {
+  shared_image_wrapper_->WriteToBackingSharedImage(overwrite_callback);
+}
+
+bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+    uint32_t src_x,
+    uint32_t src_y,
+    const gpu::SyncToken& ready_sync_token,
+    gpu::SyncToken& completion_sync_token) {
+  return shared_image_wrapper_->CopyToBackingSharedImage(
+      shared_image, src_x, src_y, ready_sync_token, completion_sync_token);
+}
+
 WebGpuSharedImageWrapperCache::WebGpuSharedImageWrapperCache(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)

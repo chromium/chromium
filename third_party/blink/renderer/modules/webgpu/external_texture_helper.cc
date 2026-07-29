@@ -408,10 +408,6 @@ ExternalTexture CreateExternalTexture(
     return external_texture;
   }
 
-  WebGpuSharedImageWrapper* shared_image_wrapper =
-      wrapper_lease->shared_image_wrapper();
-  DCHECK(shared_image_wrapper);
-
   viz::RasterContextProvider* raster_context_provider =
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
@@ -421,7 +417,7 @@ ExternalTexture CreateExternalTexture(
     // `use_copy_to_shared_image` is true. Below we are going to copy the
     // contents of that visible rect into the shared image wrapper's
     // SharedImage, completely overwriting the SharedImage.
-    shared_image_wrapper->WriteToBackingSharedImage(
+    wrapper_lease->WriteToBackingSharedImage(
         [&](const scoped_refptr<gpu::ClientSharedImage>& client_si,
             const gpu::SyncToken& begin_sync_token) {
           // The returned sync token is from the SharedGpuContext.
@@ -445,25 +441,26 @@ ExternalTexture CreateExternalTexture(
     media_flags.setBlendMode(SkBlendMode::kSrc);
 
     media::PaintCanvasVideoRenderer::PaintParams params;
-    params.dest_rect = gfx::RectF(shared_image_wrapper->Size());
-    shared_image_wrapper->DrawToBackingSharedImage(
-        [&](cc::PaintCanvas& canvas) {
-          video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
-                                params, raster_context_provider);
-        });
+    params.dest_rect = gfx::RectF(wrapper_lease->GetSharedImage()->size());
+    wrapper_lease->DrawToBackingSharedImage([&](cc::PaintCanvas& canvas) {
+      video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
+                            params, raster_context_provider);
+    });
   }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      shared_image_wrapper->GetSharedImage();
+      wrapper_lease->GetSharedImage();
   if (!shared_image) {
     return {};
   }
+
+  gpu::SyncToken sync_token = wrapper_lease->GetSyncToken();
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
           wgpu::TextureUsage::TextureBinding, std::move(shared_image),
-          shared_image_wrapper->GetSyncToken(), std::move(wrapper_lease));
+          sync_token, std::move(wrapper_lease));
 
   wgpu::TextureViewDescriptor view_desc = {};
   wgpu::TextureView plane0 =
