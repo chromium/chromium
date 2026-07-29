@@ -283,10 +283,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   VideoDecoderConfig high10 = TestVideoConfig::NormalCodecProfile(
       VideoCodec::kH264, H264PROFILE_HIGH10PROFILE);
 
-  // When the codec is built in this should fail without H264 decoding being
-  // attempted. If H264 isn't built-in, we should at least attempt initialize.
-  const bool expect_success = !IsDecoderBuiltInVideoCodec(VideoCodec::kH264);
-  InitializeDecoder(high10, expect_success);
+  InitializeDecoder(high10, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
