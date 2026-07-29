@@ -137,8 +137,11 @@ suite('GoogleAccountFooter', function() {
     assertTrue(isGoogleAccountFooterVisible());
 
     const expectedGmaAndGaaMessage =
+        loadTimeData.getBoolean('isCriticalActionsEnabled') ?
         'Your Google Account may have other forms of browsing history at ' +
-        'myactivity.google.com, such as your Gemini Apps Activity';
+            'myactivity.google.com, such as auto browse visits in your Gemini Apps Activity' :
+        'Your Google Account may have other forms of browsing history at ' +
+            'myactivity.google.com, such as your Gemini Apps Activity';
     assertEquals(getGoogleAccountFooterMessageHTML(), expectedGmaAndGaaMessage);
 
     // Verify that metric is recorded when the link is clicked and the correct
