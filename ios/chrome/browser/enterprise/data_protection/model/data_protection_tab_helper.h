@@ -29,7 +29,7 @@ class IOSRulesService;
 
 namespace enterprise_data_protection {
 class DataProtectionUrlLookupService;
-}
+}  // namespace enterprise_data_protection
 
 namespace safe_browsing {
 class RealTimeUrlLookupServiceBase;
@@ -89,23 +89,27 @@ class DataProtectionTabHelper
         committed_navigation_.protection_state);
   }
 
+  // Returns the current watermark text for the tab.
+  const std::string& GetWatermarkText() const {
+    return committed_navigation_.watermark_text;
+  }
+
+  // Sets the watermark text for the tab for testing.
+  void SetWatermarkTextForTesting(const std::string& watermark_text) {
+    committed_navigation_.watermark_text = watermark_text;
+  }
+
   // web::WebStateObserver:
-  // Notifies that a navigation has started.
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
-
-  // Notifies that a navigation has redirected. Re-evaluates policy checks
-  // for the new URL if protection is not already latched.
   void DidRedirectNavigation(
       web::WebState* web_state,
       web::NavigationContext* navigation_context) override;
-
-  // Notifies that a navigation has finished. Commits the protection state
-  // if the navigation successfully committed.
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
-
-  // Called when the WebState is being destroyed.
+  void DidStopLoading(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
@@ -121,6 +125,7 @@ class DataProtectionTabHelper
 
     std::optional<int64_t> navigation_id;
     ProtectionState protection_state = Disabled{};
+    std::string watermark_text;
   };
 
   // Initiates policy checks for the initial URL (the one visible when the
@@ -145,11 +150,14 @@ class DataProtectionTabHelper
       std::unique_ptr<safe_browsing::RTLookupResponse> response);
 
   // Updates the protection state for the given `navigation`.
-  void SetProtectionState(NavigationState& navigation, ProtectionState state);
+  void SetProtectionState(NavigationState& navigation,
+                          ProtectionState state,
+                          const std::string& watermark_text);
 
   // Updates the tab's screenshot protection state and notifies observers
   // if the overall protection (IsScreenshotProtectionEnabled()) changes.
-  void SetCommittedProtectionState(ProtectionState new_state);
+  void SetCommittedProtectionState(ProtectionState new_state,
+                                   const std::string& watermark_text);
 
   // Helper methods to access services from the Profile.
   ProfileIOS* GetProfile() const;

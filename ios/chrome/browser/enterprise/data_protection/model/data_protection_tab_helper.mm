@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -115,6 +116,18 @@ void DataProtectionTabHelper::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void DataProtectionTabHelper::WasShown(web::WebState* web_state) {
+  for (auto& observer : observers_) {
+    observer.OnWatermarkViewNeedsUpdate(web_state);
+  }
+}
+
+void DataProtectionTabHelper::WasHidden(web::WebState* web_state) {
+  for (auto& observer : observers_) {
+    observer.OnWatermarkViewNeedsUpdate(web_state);
+  }
+}
+
 void DataProtectionTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -137,8 +150,10 @@ void DataProtectionTabHelper::DidRedirectNavigation(
   }
 
   // Once screenshot protection is enabled for a navigation, it stays enabled
-  // for all subsequent redirects. No further checks are needed.
-  if (std::holds_alternative<Enabled>(pending_navigation_.protection_state)) {
+  // for all subsequent redirects. No further checks are needed unless
+  // watermarking feature is enabled.
+  if (std::holds_alternative<Enabled>(pending_navigation_.protection_state) &&
+      !IsEnableEnterpriseWatermarkingIOS()) {
     return;
   }
 
@@ -162,7 +177,8 @@ void DataProtectionTabHelper::DidFinishNavigation(
   if (navigation_context->HasCommitted()) {
     // This navigation is now committed.
     committed_navigation_.navigation_id = nav_id;
-    SetCommittedProtectionState(pending_navigation_.protection_state);
+    SetCommittedProtectionState(pending_navigation_.protection_state,
+                                pending_navigation_.watermark_text);
   }
 
   // Reset pending state now that the navigation has finished.
@@ -176,18 +192,33 @@ void DataProtectionTabHelper::CheckPolicyForInitialURL() {
 
 void DataProtectionTabHelper::PerformChecks(const GURL& url,
                                             NavigationState& navigation) {
-  // If protection is already explicitly enabled, no further checks are needed.
-  CHECK(!std::holds_alternative<Enabled>(navigation.protection_state));
+  // If protection is already explicitly enabled, no further checks are needed
+  // unless enterprise watermarking is enabled.
+  if (!IsEnableEnterpriseWatermarkingIOS()) {
+    CHECK(!std::holds_alternative<Enabled>(navigation.protection_state));
+  }
 
+  navigation.watermark_text.clear();
   if (SkipUrl(url)) {
+    // Force a committed state update if we are checking the committed
+    // navigation.
+    if (&navigation == &committed_navigation_) {
+      SetCommittedProtectionState(Disabled{}, "");
+    }
     return;
   }
 
   if (GetRulesService()->BlockScreenshots(url)) {
     base::UmaHistogramEnumeration(kScreenshotBlockSourceHistogram,
                                   ScreenshotBlockSource::kDataControls);
-    SetProtectionState(navigation, ProtectionState(Enabled{}));
-    return;
+    SetProtectionState(navigation, ProtectionState(Enabled{}), "");
+
+    // If watermarking is enabled, we still need to perform the real-time lookup
+    // to fetch the watermark text, even if screenshot protection is already
+    // enabled by a Data Controls policy.
+    if (!IsEnableEnterpriseWatermarkingIOS()) {
+      return;
+    }
   }
 
   EvaluateRealTimePolicy(url, navigation);
@@ -214,8 +245,9 @@ void DataProtectionTabHelper::EvaluateRealTimePolicy(
     return;
   }
 
-  SetProtectionState(
-      navigation, ComputeNextStateOnLookupStart(navigation.protection_state));
+  SetProtectionState(navigation,
+                     ComputeNextStateOnLookupStart(navigation.protection_state),
+                     "");
 
   GetLookupService()->DoLookup(
       GetRealTimeLookupService(), url,
@@ -229,14 +261,26 @@ void DataProtectionTabHelper::OnRealTimeLookupResult(
     std::unique_ptr<safe_browsing::RTLookupResponse> response) {
   // If the lookup failed, we default to the enabled state (fail-closed).
   bool protection_enabled = true;
+  std::string watermark_text;
+  std::string identifier;
   base::UmaHistogramBoolean(kScreenshotBlockLookupSuccessHistogram,
                             response != nullptr);
+
+  enterprise_connectors::ConnectorsService* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(
+          GetProfile());
+  if (connectors_service) {
+    identifier = connectors_service->GetRealTimeUrlCheckIdentifier();
+  }
+
   if (response) {
     enterprise_data_protection::UrlSettings settings =
-        enterprise_data_protection::GetUrlSettings(std::string(),
-                                                   response.get());
+        enterprise_data_protection::GetUrlSettings(identifier, response.get());
     protection_enabled = !settings.allow_screenshots;
+    watermark_text =
+        IsEnableEnterpriseWatermarkingIOS() ? settings.watermark_text : "";
 
+    // TODO(crbug.com/538614118): Add histogram for watermarking.
     if (protection_enabled) {
       base::UmaHistogramEnumeration(kScreenshotBlockSourceHistogram,
                                     ScreenshotBlockSource::kRealtimeLookup);
@@ -246,35 +290,58 @@ void DataProtectionTabHelper::OnRealTimeLookupResult(
   if (navigation_id == pending_navigation_.navigation_id) {
     pending_navigation_.protection_state = ComputeNextStateOnLookupResponse(
         pending_navigation_.protection_state, protection_enabled);
+    pending_navigation_.watermark_text = watermark_text;
   }
 
   if (navigation_id == committed_navigation_.navigation_id) {
-    SetCommittedProtectionState(ComputeNextStateOnLookupResponse(
-        committed_navigation_.protection_state, protection_enabled));
+    SetCommittedProtectionState(
+        ComputeNextStateOnLookupResponse(committed_navigation_.protection_state,
+                                         protection_enabled),
+        watermark_text);
   }
 }
 
-void DataProtectionTabHelper::SetProtectionState(NavigationState& navigation,
-                                                 ProtectionState state) {
+void DataProtectionTabHelper::SetProtectionState(
+    NavigationState& navigation,
+    ProtectionState state,
+    const std::string& watermark_text) {
   if (&navigation == &committed_navigation_) {
-    SetCommittedProtectionState(state);
+    SetCommittedProtectionState(state, watermark_text);
   } else {
     navigation.protection_state = state;
+    navigation.watermark_text = watermark_text;
   }
 }
 
 void DataProtectionTabHelper::SetCommittedProtectionState(
-    ProtectionState new_state) {
-  bool old_value = IsScreenshotProtectionEnabled();
-  committed_navigation_.protection_state = new_state;
+    ProtectionState new_state,
+    const std::string& watermark_text) {
+  bool previous_screenshot_protection = IsScreenshotProtectionEnabled();
+  std::string previous_watermark = GetWatermarkText();
 
-  if (old_value == IsScreenshotProtectionEnabled()) {
-    return;
+  committed_navigation_.protection_state = new_state;
+  committed_navigation_.watermark_text = watermark_text;
+
+  if (previous_screenshot_protection != IsScreenshotProtectionEnabled()) {
+    for (auto& observer : observers_) {
+      observer.ScreenshotProtectionDidChange(web_state_,
+                                             IsScreenshotProtectionEnabled());
+    }
   }
 
+  if (previous_watermark != watermark_text) {
+    for (auto& observer : observers_) {
+      observer.WatermarkTextDidChange(web_state_, watermark_text);
+    }
+
+    // TODO(crbug.com/533013176): Record the webstate_id to the prefs map
+    // kDataProtectionWatermarkedTabs for tab-grid.
+  }
+}
+
+void DataProtectionTabHelper::DidStopLoading(web::WebState* web_state) {
   for (auto& observer : observers_) {
-    observer.ScreenshotProtectionDidChange(web_state_,
-                                           IsScreenshotProtectionEnabled());
+    observer.OnWatermarkViewNeedsUpdate(web_state);
   }
 }
 

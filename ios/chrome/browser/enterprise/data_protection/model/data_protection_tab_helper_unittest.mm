@@ -10,6 +10,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -123,11 +125,26 @@ class TestDataProtectionTabHelperObserver
     future_.SetValue(screenshot_protection_enabled);
   }
 
+  void WatermarkTextDidChange(web::WebState* web_state,
+                              const std::string& watermark_text) override {
+    watermark_text_ = watermark_text;
+  }
+
+  void OnWatermarkViewNeedsUpdate(web::WebState* web_state) override {
+    state_changed_called_ = true;
+  }
+
   // Waits for the notification and returns the reported protection state.
   bool Wait() { return future_.Take(); }
 
+  const std::string& watermark_text() const { return watermark_text_; }
+  bool state_changed_called() const { return state_changed_called_; }
+  void reset_state_changed_called() { state_changed_called_ = false; }
+
  private:
   base::test::TestFuture<bool> future_;
+  std::string watermark_text_;
+  bool state_changed_called_ = false;
 };
 
 std::unique_ptr<KeyedService> CreateDataProtectionUrlLookupService(
@@ -316,6 +333,156 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupBlock) {
   histogram_tester.ExpectUniqueSample(
       DataProtectionTabHelper::kScreenshotBlockSourceHistogram,
       ScreenshotBlockSource::kRealtimeLookup, 1);
+}
+
+// Tests that the watermark text is correctly updated when the real-time lookup
+// returns a matched rule with a watermark message.
+TEST_F(DataProtectionTabHelperTest, RealTimeLookupWatermark) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  GURL protected_url(kProtectedUrl);
+  auto context = CreateNavigationContext(protected_url);
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+
+  EXPECT_TRUE(tab_helper()->GetWatermarkText().empty());
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+
+  // Wait for lookup to be pending.
+  EXPECT_TRUE(observer_.Wait());
+  auto response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* threat_info = response->add_threat_info();
+  auto* matched_url_rule = threat_info->mutable_matched_url_navigation_rule();
+  matched_url_rule->mutable_watermark_message()->set_watermark_message(
+      "Test Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(response));
+
+  // The watermark text should be updated with the text from the lookup
+  // response.
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Test Watermark"));
+  EXPECT_THAT(observer_.watermark_text(),
+              ::testing::HasSubstr("Test Watermark"));
+}
+
+// Tests that watermarking lookups occur even if screenshot protection is
+// enabled by a data control rule.
+TEST_F(DataProtectionTabHelperTest,
+       WatermarkLookupWhenScreenshotBlockedByDataControls) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+
+  GURL protected_url(kProtectedUrl);
+  SetScreenshotBlockRule(kProtectedUrl);
+  auto context = CreateNavigationContext(protected_url);
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+
+  // Wait for the state change caused by the data control rule.
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  // Finish the real-time lookup with a watermark text.
+  auto response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* threat_info = response->add_threat_info();
+  auto* matched_url_rule = threat_info->mutable_matched_url_navigation_rule();
+  matched_url_rule->mutable_watermark_message()->set_watermark_message(
+      "Expected Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(response));
+
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Expected Watermark"));
+  EXPECT_THAT(observer_.watermark_text(),
+              ::testing::HasSubstr("Expected Watermark"));
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+}
+
+// Tests that redirects trigger watermarking lookups when watermarking is
+// enabled.
+TEST_F(DataProtectionTabHelperTest, WatermarkLookupOnRedirect) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+
+  // Initial navigation
+  GURL first_url(kProtectedUrl);
+  auto context = CreateNavigationContext(first_url);
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+  auto response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* threat_info = response->add_threat_info();
+  threat_info->mutable_matched_url_navigation_rule()->set_block_screenshot(
+      true);
+  threat_info->mutable_matched_url_navigation_rule()
+      ->mutable_watermark_message()
+      ->set_watermark_message("First Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(response));
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+
+  // Redirect to another URL. Because watermarking is enabled, it should trigger
+  // another lookup instead of latching early.
+  GURL redirect_url("https://redirected.com");
+  context->SetUrl(redirect_url);
+  tab_helper()->DidRedirectNavigation(web_state_.get(), context.get());
+
+  auto redirect_response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* redirect_threat_info = redirect_response->add_threat_info();
+  redirect_threat_info->mutable_matched_url_navigation_rule()
+      ->set_block_screenshot(true);
+  redirect_threat_info->mutable_matched_url_navigation_rule()
+      ->mutable_watermark_message()
+      ->set_watermark_message("Redirect Watermark");
+  fake_rt_lookup_service_->RunResponseCallback(std::move(redirect_response));
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 2u);
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+  EXPECT_THAT(tab_helper()->GetWatermarkText(),
+              ::testing::HasSubstr("Redirect Watermark"));
+}
+
+// Tests that WebState observer methods notify DataProtectionTabHelperObserver.
+TEST_F(DataProtectionTabHelperTest, ObserverStateChangedEvents) {
+  observer_.reset_state_changed_called();
+  tab_helper()->WasShown(web_state_.get());
+  EXPECT_TRUE(observer_.state_changed_called());
+
+  observer_.reset_state_changed_called();
+  tab_helper()->WasHidden(web_state_.get());
+  EXPECT_TRUE(observer_.state_changed_called());
+
+  observer_.reset_state_changed_called();
+  tab_helper()->DidStopLoading(web_state_.get());
+  EXPECT_TRUE(observer_.state_changed_called());
+}
+
+// Tests that redirects do not trigger additional lookups when watermarking is
+// disabled and screenshot protection is already enabled.
+TEST_F(DataProtectionTabHelperTest,
+       RedirectSkipsLookupWhenWatermarkingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableEnterpriseWatermarkingIOS);
+
+  // Initial navigation
+  GURL first_url(kProtectedUrl);
+  auto context = CreateNavigationContext(first_url);
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+  auto response = std::make_unique<safe_browsing::RTLookupResponse>();
+  auto* threat_info = response->add_threat_info();
+  threat_info->mutable_matched_url_navigation_rule()->set_block_screenshot(
+      true);
+  fake_rt_lookup_service_->RunResponseCallback(std::move(response));
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+
+  // Redirect to another URL. Because watermarking is disabled and we are
+  // already blocking screenshots, it should return early and not perform a
+  // second lookup.
+  GURL redirect_url("https://redirected.com");
+  context->SetUrl(redirect_url);
+  tab_helper()->DidRedirectNavigation(web_state_.get(), context.get());
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
 }
 
 // Tests that screenshot protection stays enabled when real-time lookup fails.

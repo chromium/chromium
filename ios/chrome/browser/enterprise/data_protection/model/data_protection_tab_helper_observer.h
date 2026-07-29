@@ -21,6 +21,15 @@ class DataProtectionTabHelperObserver : public base::CheckedObserver {
       web::WebState* web_state,
       bool screenshot_protection_enabled) {}
 
+  // Called when the watermark text changes.
+  virtual void WatermarkTextDidChange(web::WebState* web_state,
+                                      const std::string& watermark_text) {}
+
+  // Called when the WebState's lifecycle state changes (e.g., shown, hidden,
+  // stopped loading), suggesting the watermark view's visibility might need to
+  // be re-evaluated.
+  virtual void OnWatermarkViewNeedsUpdate(web::WebState* web_state) {}
+
   // Called when the DataProtectionTabHelper is destroyed. Observers should stop
   // observing.
   virtual void DataProtectionTabHelperDestroyed(
