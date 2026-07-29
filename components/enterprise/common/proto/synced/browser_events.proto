@@ -1386,6 +1386,8 @@ message ExtensionTelemetryEvent {
 // Event sent when a user navigates to a URL.
 // Next ID: 7
 message UrlNavigationEvent {
+  reserved 5;
+
   // Tab URL of the navigation.
   UrlInfo url_info = 1;
 
@@ -1412,13 +1414,12 @@ message UrlNavigationEvent {
       // ]
       // copybara:datapol_end
       ;
-
-  // Security agent installed on the device
-  repeated SecurityAgent security_agents = 5 [deprecated = true];
 }
 
 // Event for suspicious site visits.
 message SuspiciousURLEvent {
+  reserved 5;
+
   // Tab URL of the navigation.
   UrlInfo url_info = 1;
 
@@ -1439,9 +1440,6 @@ message SuspiciousURLEvent {
       // ]
       // copybara:datapol_end
       ;
-
-  // Security agent installed on the device
-  repeated SecurityAgent security_agents = 5 [deprecated = true];
 }
 
 message TelomereEvent {
