@@ -110,6 +110,11 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id);
 
+  // Updates the browser theme when focus mode is active for a tab group.
+  // Triggered when tab group focus changes or when the color of the currently
+  // focused tab group changes.
+  void UpdateFocusModeTheme(std::optional<tab_groups::TabGroupId> group_id);
+
  private:
   // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(

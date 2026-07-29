@@ -227,6 +227,14 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
 
   if (change.type == TabGroupChange::kEditorOpened) {
     group_node->GetController()->ShowGroupEditorBubble(group_node);
+  } else if (change.type == TabGroupChange::kVisualsChanged) {
+    // If the group whose visual data (e.g., color) changed is currently
+    // focused, update the focus mode theme color.
+    if (tab_strip_model_->GetFocusedGroup() == change.group) {
+      if (auto* controller = group_node->GetController()) {
+        controller->UpdateFocusModeTheme(change.group);
+      }
+    }
   }
 }
 

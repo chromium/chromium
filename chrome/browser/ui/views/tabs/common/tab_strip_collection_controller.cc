@@ -483,19 +483,31 @@ void TabStripCollectionController::TabGroupFocusChanged(
   browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_focused_group_id,
                                                           old_focused_group_id);
 
-  std::optional<SkColor> color;
-  if (new_focused_group_id.has_value()) {
-    const TabGroup* group =
-        model_->group_model()->GetTabGroup(new_focused_group_id.value());
-    const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
-    const auto* color_provider = browser_view_->GetColorProvider();
-    color = color_provider->GetColor(
-        GetTabGroupDialogColorId(visual_data->color()));
-  }
-
-  browser_view_->browser_widget()->SetUserColorOverride(color);
+  UpdateFocusModeTheme(new_focused_group_id);
   browser_view_->browser_widget()->ThemeChanged();
   browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+}
+
+void TabStripCollectionController::UpdateFocusModeTheme(
+    std::optional<tab_groups::TabGroupId> group_id) {
+  std::optional<SkColor> color;
+  if (group_id.has_value() && model_ && model_->group_model() &&
+      model_->group_model()->ContainsTabGroup(group_id.value())) {
+    const TabGroup* group =
+        model_->group_model()->GetTabGroup(group_id.value());
+    if (group && group->visual_data()) {
+      const auto* color_provider =
+          browser_view_ ? browser_view_->GetColorProvider() : nullptr;
+      if (color_provider) {
+        color = color_provider->GetColor(
+            GetTabGroupDialogColorId(group->visual_data()->color()));
+      }
+    }
+  }
+
+  if (browser_view_ && browser_view_->browser_widget()) {
+    browser_view_->browser_widget()->SetUserColorOverride(color);
+  }
 }
 
 void TabStripCollectionController::TabKeyboardFocusChangedTo(

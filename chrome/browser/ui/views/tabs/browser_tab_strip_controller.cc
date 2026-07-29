@@ -782,6 +782,12 @@ void BrowserTabStripController::OnTabGroupChanged(
       }
 
       tabstrip_->OnGroupVisualsChanged(change.group, old_visuals, new_visuals);
+
+      // If the group whose visual data (e.g., color) changed is currently
+      // focused, update the focus mode theme color.
+      if (model_->GetFocusedGroup() == change.group) {
+        UpdateFocusModeTheme(change.group);
+      }
       break;
     }
     case TabGroupChange::kMoved: {
@@ -867,19 +873,31 @@ void BrowserTabStripController::OnTabGroupFocusChanged(
   browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_group_id,
                                                           old_group_id);
 
-  std::optional<SkColor> color;
-  if (new_group_id.has_value()) {
-    const TabGroup* group =
-        model_->group_model()->GetTabGroup(new_group_id.value());
-    const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
-    const auto* color_provider = tabstrip_->GetColorProvider();
-    color = color_provider->GetColor(
-        GetTabGroupDialogColorId(visual_data->color()));
-  }
-
-  browser_view_->browser_widget()->SetUserColorOverride(color);
+  UpdateFocusModeTheme(new_group_id);
   browser_view_->browser_widget()->ThemeChanged();
   browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+}
+
+void BrowserTabStripController::UpdateFocusModeTheme(
+    std::optional<tab_groups::TabGroupId> group_id) {
+  std::optional<SkColor> color;
+  if (group_id.has_value() && model_ && model_->group_model() &&
+      model_->group_model()->ContainsTabGroup(group_id.value())) {
+    const TabGroup* group =
+        model_->group_model()->GetTabGroup(group_id.value());
+    if (group && group->visual_data()) {
+      const auto* color_provider =
+          tabstrip_ ? tabstrip_->GetColorProvider() : nullptr;
+      if (color_provider) {
+        color = color_provider->GetColor(
+            GetTabGroupDialogColorId(group->visual_data()->color()));
+      }
+    }
+  }
+
+  if (browser_view_ && browser_view_->browser_widget()) {
+    browser_view_->browser_widget()->SetUserColorOverride(color);
+  }
 }
 
 BrowserFrameView* BrowserTabStripController::GetFrameView() {
