@@ -85,7 +85,7 @@ severity of high and could potentially be reduced by other mitigating factors.
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md)),
   that can only be triggered from a compromised renderer,
   leading to a sandbox escape ([1393177](https://crbug.com/1393177),
-  [1421268](crbug.com/1421268)).
+  [1421268](https://crbug.com/1421268)).
 * Controlled read of 16 or more bytes of data from the browser, gpu or network
   process by a compromised renderer.
 * Memory corruption in the browser or another high privileged process (e.g.
