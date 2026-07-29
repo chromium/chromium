@@ -1001,6 +1001,11 @@ void PasskeyTabHelper::CompletePasskeyCreation(RegistrationRequestParams params,
   PasskeyJavaScriptFeature::GetInstance()->ResolveAttestationRequest(
       web_frame, passkey_request_id, credential_id,
       std::move(attestation_data));
+
+  // Notify the client that the passkey creation process has completed.
+  if (params.Type() == PasskeyRequestParams::RequestType::kModal) {
+    client_->OnPasskeyCreated();
+  }
 }
 
 void PasskeyTabHelper::StartPasskeyAssertion(std::string request_id,

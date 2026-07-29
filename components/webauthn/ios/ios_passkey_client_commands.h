@@ -38,6 +38,9 @@
 - (void)cancelPasskeyRequest:
     (webauthn::IOSPasskeyClient::RequestInfo)requestInfo;
 
+// Shows the credential provider promo when a passkey is created.
+- (void)showCredentialProviderPromoOnPasskeyCreated;
+
 @end
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_COMMANDS_H_

@@ -36,6 +36,7 @@ class IOSChromePasskeyClient : public webauthn::IOSPasskeyClient {
   void CancelPasskeyRequest(RequestInfo request_info) override;
   bool IsGpmPasskeySavingEnabled() const override;
   bool IsBiometricsEnabled() const override;
+  void OnPasskeyCreated() override;
 
   id<IOSPasskeyClientCommands> GetCommandHandler() const;
 

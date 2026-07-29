@@ -6,17 +6,21 @@
 
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/testing_pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -25,6 +29,11 @@ using ::testing::Return;
 class IOSChromePasskeyClientTest : public PlatformTest {
  public:
   IOSChromePasskeyClientTest() {
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    local_state_->registry()->RegisterBooleanPref(
+        password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
+    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
+
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
@@ -38,8 +47,13 @@ class IOSChromePasskeyClientTest : public PlatformTest {
     client_ = std::make_unique<IOSChromePasskeyClient>(&fake_web_state_);
   }
 
+  ~IOSChromePasskeyClientTest() override {
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState fake_web_state_;
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
@@ -136,6 +150,39 @@ TEST_F(IOSChromePasskeyClientTest, IncognitoOriginalSyncEnabled) {
   IOSChromePasskeyClient incognito_client(&incognito_web_state);
 
   EXPECT_TRUE(incognito_client.IsGpmPasskeySavingEnabled());
+}
+
+// Tests that the credential provider promo is shown on passkey creation if the
+// credential provider is not enabled on startup.
+TEST_F(IOSChromePasskeyClientTest, ShowPromoOnPasskeyCreated) {
+  local_state_->SetBoolean(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
+
+  id mock_commands_handler =
+      OCMProtocolMock(@protocol(IOSPasskeyClientCommands));
+  OCMExpect(
+      [mock_commands_handler showCredentialProviderPromoOnPasskeyCreated]);
+
+  client_->SetIOSPasskeyClientCommandsHandler(mock_commands_handler);
+  client_->OnPasskeyCreated();
+
+  [mock_commands_handler verify];
+}
+
+// Tests that the credential provider promo is not shown on passkey creation if
+// the credential provider is already enabled on startup.
+TEST_F(IOSChromePasskeyClientTest, DoNotShowPromoOnPasskeyCreated) {
+  local_state_->SetBoolean(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
+
+  id mock_commands_handler =
+      OCMProtocolMock(@protocol(IOSPasskeyClientCommands));
+  [[mock_commands_handler reject] showCredentialProviderPromoOnPasskeyCreated];
+
+  client_->SetIOSPasskeyClientCommandsHandler(mock_commands_handler);
+  client_->OnPasskeyCreated();
+
+  [mock_commands_handler verify];
 }
 
 }  // namespace

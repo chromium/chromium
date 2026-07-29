@@ -2641,6 +2641,14 @@ const char kChromeAppStoreUrl[] =
   _passkeyIncognitoCoordinator = nil;
 }
 
+- (void)showCredentialProviderPromoOnPasskeyCreated {
+  id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
+      HandlerForProtocol(self.dispatcher, CredentialProviderPromoCommands);
+  [credentialProviderPromoHandler
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SuccessfulPasskeyCreation];
+}
+
 - (void)cancelPasskeyRequest:
     (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
   if ([_passkeyCreationBottomSheetCoordinator hasPendingRequest:requestInfo]) {

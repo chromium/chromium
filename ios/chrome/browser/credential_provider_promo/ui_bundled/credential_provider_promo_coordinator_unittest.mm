@@ -112,6 +112,23 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       IOSCredentialProviderPromoSource::kAutofillUsed, 1);
 }
 
+// Tests that impression is recorded with the correct source for passkey
+// creation.
+TEST_F(CredentialProviderPromoCoordinatorTest,
+       CredentialProviderPromoImpressionRecorded_PasskeyCreated) {
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoImpressionHistogram,
+      IOSCredentialProviderPromoSource::kPasskeyCreated, 0);
+
+  [credential_provider_promo_command_handler_
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SuccessfulPasskeyCreation];
+
+  histogram_tester_->ExpectBucketCount(
+      kIOSCredentialProviderPromoImpressionHistogram,
+      IOSCredentialProviderPromoSource::kPasskeyCreated, 1);
+}
+
 // Tests that the remind-me-later promo's impression is recorded with the
 // correct original source.
 TEST_F(CredentialProviderPromoCoordinatorTest,

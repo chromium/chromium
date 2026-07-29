@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/affiliations/core/browser",
+  "+components/password_manager/core/browser",
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/credential_provider/model",

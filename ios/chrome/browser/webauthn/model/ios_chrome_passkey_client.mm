@@ -11,6 +11,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/prefs/pref_service.h"
@@ -268,4 +269,12 @@ bool IOSChromePasskeyClient::IsBiometricsEnabled() const {
       ReauthenticationServiceFactory::GetForProfile(profile_)
           ->GetReauthModule();
   return [reauth_module canAttemptReauthWithBiometrics];
+}
+
+void IOSChromePasskeyClient::OnPasskeyCreated() {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (!password_manager_util::IsCredentialProviderEnabledOnStartup(
+          localState)) {
+    [command_handler_ showCredentialProviderPromoOnPasskeyCreated];
+  }
 }

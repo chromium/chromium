@@ -14,6 +14,7 @@ enum class CredentialProviderPromoTrigger {
                                          // in the Set Up List on the NTP.
   TipsNotification,                      // User has tapped the CPE Tips
                                          // notification.
+  SuccessfulPasskeyCreation,             // User successfully created a passkey.
 };
 
 // Commands to show app-wide promos.

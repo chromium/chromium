@@ -81,6 +81,9 @@ class IOSPasskeyClient {
   // Returns whether biometric authentication is enabled.
   virtual bool IsBiometricsEnabled() const = 0;
 
+  // Notifies the client that a passkey was successfully created.
+  virtual void OnPasskeyCreated();
+
  protected:
   IOSPasskeyClient() = default;
 };

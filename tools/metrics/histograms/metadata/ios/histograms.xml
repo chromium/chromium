@@ -1258,6 +1258,8 @@ chromium-metrics-reviews@google.com.
     Note: this was expired from 2023-09 to 2023-12. Data may be missing.
   </summary>
   <token key="PromoSource">
+    <variant name="OnPasskeyCreated"
+        summary="the user completes the modal passkey creation flow in Chrome"/>
     <variant name="OnSetUpList" summary="the user selects the SetUpList item"/>
     <variant name="OnSuccessfulLoginWithAutofilledPassword"
         summary="the user logs in with autofilled password"/>

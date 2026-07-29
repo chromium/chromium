@@ -194,6 +194,16 @@ TEST_F(CredentialProviderPromoMediatorTest,
                                       promoSeen:NO]);
 }
 
+// Tests that the promo will be displayed when all the trigger requirements are
+// met for passkey creation.
+TEST_F(CredentialProviderPromoMediatorTest,
+       CredentialProviderPromoRequirementsMet_PasskeyCreation) {
+  EXPECT_TRUE([mediator_
+      canShowCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                    SuccessfulPasskeyCreation
+                                      promoSeen:NO]);
+}
+
 // Tests that the promo will always be displayed when the trigger is SetUpList.
 TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderPromoSetUpListTrigger) {
@@ -214,6 +224,21 @@ TEST_F(CredentialProviderPromoMediatorTest,
   [mediator_
       configureConsumerWithTrigger:CredentialProviderPromoTrigger::
                                        SuccessfulLoginUsingExistingPassword
+                           context:CredentialProviderPromoContext::kFirstStep];
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the consumer content is correctly set when the promo:
+// - Is a “First Step” promo
+// - Was triggered by the user successfully creating a passkey
+TEST_F(CredentialProviderPromoMediatorTest,
+       ConsumerContent_FirstStep_SuccessfulPasskeyCreation) {
+  ExpectConsumerSetFieldsForFirstStepNoAnimation();
+
+  [mediator_
+      configureConsumerWithTrigger:CredentialProviderPromoTrigger::
+                                       SuccessfulPasskeyCreation
                            context:CredentialProviderPromoContext::kFirstStep];
 
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -240,47 +265,6 @@ TEST_F(
   [mediator_
       configureConsumerWithTrigger:CredentialProviderPromoTrigger::RemindMeLater
                            context:CredentialProviderPromoContext::kFirstStep];
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that the consumer content is correctly set when the promo:
-//  - Is a “Learn More” promo
-//  - Was triggered by the user successfully logging in using an existing
-//  password
-TEST_F(CredentialProviderPromoMediatorTest,
-       ConsumerContent_LearnMore_SuccessfulLoginUsingExistingPassword) {
-  ExpectConsumerSetFieldsForLearnMore();
-
-  [mediator_
-      configureConsumerWithTrigger:CredentialProviderPromoTrigger::
-                                       SuccessfulLoginUsingExistingPassword
-                           context:CredentialProviderPromoContext::kLearnMore];
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
-// Tests that the consumer content is correctly set when the user selects
-// “Remind Me Later” after seeing a promo that:
-//  - Was a “Learn More” promo
-//  - Was triggered by the user successfully logging in using an existing
-//  password
-TEST_F(
-    CredentialProviderPromoMediatorTest,
-    ConsumerContent_LearnMore_RemindMeLater_AfterSuccessfulLoginUsingExistingPassword) {
-  // Need to check for each of these method calls twice: once for the promo
-  // triggered by successful login and once for the promo triggered by selecting
-  // "Remind Me Later".
-  ExpectConsumerSetFieldsForLearnMore();
-  ExpectConsumerSetFieldsForLearnMore();
-
-  [mediator_
-      configureConsumerWithTrigger:CredentialProviderPromoTrigger::
-                                       SuccessfulLoginUsingExistingPassword
-                           context:CredentialProviderPromoContext::kLearnMore];
-  [mediator_
-      configureConsumerWithTrigger:CredentialProviderPromoTrigger::RemindMeLater
-                           context:CredentialProviderPromoContext::kLearnMore];
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

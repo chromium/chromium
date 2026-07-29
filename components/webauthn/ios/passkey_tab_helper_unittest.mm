@@ -808,6 +808,7 @@ TEST_F(PasskeyTabHelperTest, ConditionalCreateOffTheRecordUpgradeAllowProceed) {
 
   EXPECT_TRUE(client_->DidShowInterstitial());
   EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidOnPasskeyCreated());
 }
 
 // Tests that a conditional create request shows the incognito interstitial
@@ -931,6 +932,7 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
   passkey_tab_helper()->StartPasskeyCreation(kFakeRequestId,
                                              /*did_complete_uv=*/false);
   EXPECT_TRUE(client_->DidFetchKeys());
+  EXPECT_TRUE(client_->DidOnPasskeyCreated());
 
   // Verify that ResolveAttestationRequest was called on the subframe with the
   // correct client data JSON.
@@ -979,6 +981,7 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationWithExcludedCredential) {
 
   // Verify that keys were NOT fetched.
   EXPECT_FALSE(client_->DidFetchKeys());
+  EXPECT_FALSE(client_->DidOnPasskeyCreated());
 
   // Verify that rejectPasskeyRequest was called on the frame with the correct
   // error parameters.

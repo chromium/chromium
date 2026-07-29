@@ -68,14 +68,17 @@ source_set("unit_tests") {
     ":ios_chrome_passkey_client",
     "//base/test:test_support",
     "//components/password_manager/core/common",
-    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
+    "//components/webauthn/ios",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
