@@ -177,7 +177,7 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   [errorView addSubview:errorImageView];
   errorImageView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameCenterConstraints(errorView, errorImageView);
-  [errorImageView setImage:DefaultSymbolWithPointSize(kPhotoSymbol, 17)];
+  [errorImageView setImage:SymbolWithPointSize(SymbolPhoto, 17)];
   errorImageView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 

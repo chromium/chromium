@@ -73,7 +73,7 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
     _chevronView.contentMode = UIViewContentModeScaleAspectFit;
     _chevronView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
     _chevronView.image =
-        DefaultSymbolWithPointSize(kChevronForwardSymbol, kChevronSize);
+        SymbolWithPointSize(SymbolChevronForward, kChevronSize);
     AddSquareConstraints(_chevronView, kChevronSize);
     [_chevronView
         setContentCompressionResistancePriority:UILayoutPriorityRequired
@@ -137,7 +137,7 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
 
   if (task.completed) {
     _iconView.tintColor = [UIColor colorNamed:kGreen600Color];
-    _iconView.image = DefaultSymbolWithPointSize(kCheckmarkSymbol, kIconSize);
+    _iconView.image = SymbolWithPointSize(SymbolCheckmark, kIconSize);
   } else {
     _iconView.tintColor = [UIColor colorNamed:kBlueColor];
     if (task.isCustomSymbol) {

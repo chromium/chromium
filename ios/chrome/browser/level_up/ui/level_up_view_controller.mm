@@ -167,8 +167,8 @@ const CGFloat kTasksCellHeight = 350.0;
   _menuButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _menuButton.backgroundColor = UIColor.clearColor;
   _menuButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  [_menuButton setImage:DefaultSymbolTemplateWithPointSize(
-                            kEllipsisSymbol, kSymbolAccessoryPointSize)
+  [_menuButton setImage:SymbolTemplateWithPointSize(SymbolEllipsis,
+                                                    kSymbolAccessoryPointSize)
                forState:UIControlStateNormal];
   _menuButton.showsMenuAsPrimaryAction = YES;
   [self updateMenuButtonMenu];
@@ -178,8 +178,8 @@ const CGFloat kTasksCellHeight = 350.0;
   UIButton* dismissButton = [UIButton buttonWithType:UIButtonTypeSystem];
   dismissButton.backgroundColor = UIColor.clearColor;
   dismissButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  [dismissButton setImage:DefaultSymbolTemplateWithPointSize(
-                              kXMarkSymbol, kSymbolAccessoryPointSize)
+  [dismissButton setImage:SymbolTemplateWithPointSize(SymbolXMark,
+                                                      kSymbolAccessoryPointSize)
                  forState:UIControlStateNormal];
   [dismissButton addTarget:self
                     action:@selector(dismiss)
@@ -194,10 +194,9 @@ const CGFloat kTasksCellHeight = 350.0;
       _progressUpdatesEnabled
           ? l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TURN_OFF_PROGRESS_UPDATES)
           : l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TURN_ON_PROGRESS_UPDATES);
-  NSString* symbolName =
-      _progressUpdatesEnabled ? kBellSlashSymbol : kBellSymbol;
+  Symbol symbol = _progressUpdatesEnabled ? SymbolBellSlash : SymbolBell;
   UIImage* image =
-      DefaultSymbolTemplateWithPointSize(symbolName, kSymbolAccessoryPointSize);
+      SymbolTemplateWithPointSize(symbol, kSymbolAccessoryPointSize);
 
   __weak __typeof(self) weakSelf = self;
   UIAction* toggleAction = [UIAction actionWithTitle:title

@@ -183,8 +183,7 @@ const CGFloat kCompletionRowSpacing = 16.0;
   badgeContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIImageView* completionBadgeView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol,
-                                               kCompletionBadgeSize)];
+      initWithImage:SymbolWithPointSize(SymbolSealFill, kCompletionBadgeSize)];
   completionBadgeView.contentMode = UIViewContentModeScaleAspectFit;
   completionBadgeView.frame =
       CGRectMake(0, 0, kCompletionBadgeSize, kCompletionBadgeSize);
