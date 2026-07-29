@@ -973,6 +973,9 @@ GURL AimEligibilityService::GetRequestUrl(
   GURL url = base_gurl.ReplaceComponents(replacements);
 
   url = net::AppendQueryParameter(url, "udm", "50");
+  if (base::FeatureList::IsEnabled(omnibox::kAimEligibilityForceUsCountryCode)) {
+    url = net::AppendQueryParameter(url, "gl", "us");
+  }
 
   if (base::FeatureList::IsEnabled(omnibox::kAimUrlInterceptPassthrough) &&
       !omnibox::kAimUrlInterceptionParams.Get().empty()) {
@@ -987,6 +990,9 @@ GURL AimEligibilityService::GetRequestUrl(
   }
 
   if (base::FeatureList::IsEnabled(
+          omnibox::kAimEligibilityForceUsCountryCode)) {
+    url = net::AppendQueryParameter(url, "client_country", "us");
+  } else if (base::FeatureList::IsEnabled(
           omnibox::kAimServerEligibilityIncludeClientCountry)) {
     std::string country_code = GetCountryCode();
     url = net::AppendQueryParameter(url, "client_country", country_code);

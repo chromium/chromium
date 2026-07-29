@@ -70,6 +70,9 @@ const base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>
 BASE_FEATURE(kAimServerEligibilityIncludeClientCountry,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimEligibilityForceUsCountryCode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimEligibilityServiceIdentityImprovements,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

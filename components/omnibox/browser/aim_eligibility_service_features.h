@@ -66,6 +66,9 @@ BASE_DECLARE_FEATURE(kAimServerEligibilityIncludeClientLocale);
 // request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityIncludeClientCountry);
 
+// Configures whether to force client country to US and append gl=us.
+BASE_DECLARE_FEATURE(kAimEligibilityForceUsCountryCode);
+
 enum class AimServerEligibilityIncludeClientLocaleMode {
   kLegacyGet,
   kGetWithLocale,
