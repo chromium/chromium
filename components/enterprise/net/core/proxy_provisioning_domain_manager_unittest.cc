@@ -14,6 +14,7 @@
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_fetcher.h"
 #include "components/enterprise/net/core/types.h"
+#include "components/enterprise/net/core/utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -92,7 +93,8 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
         },
         &test_url_loader_factory_);
     return std::make_unique<ProxyProvisioningDomainManager>(
-        policy, auth_service, std::move(url_loader_factory_callback));
+        base::Value(ProvisioningDomainConfigToDict(policy)), auth_service,
+        std::move(url_loader_factory_callback));
   }
 
   ProvisioningDomainConfig CreateTestPolicyConfig() {
@@ -396,8 +398,8 @@ TEST_F(ProxyProvisioningDomainManagerTest, NullURLLoaderFactoryRecovery) {
       &test_url_loader_factory_, &return_valid_factory);
 
   auto manager = std::make_unique<ProxyProvisioningDomainManager>(
-      CreateTestPolicyConfig(), auth_service.get(),
-      std::move(url_loader_factory_callback));
+      base::Value(ProvisioningDomainConfigToDict(CreateTestPolicyConfig())),
+      auth_service.get(), std::move(url_loader_factory_callback));
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !manager->is_refresh_in_progress(); }));
@@ -416,6 +418,61 @@ TEST_F(ProxyProvisioningDomainManagerTest, NullURLLoaderFactoryRecovery) {
       [&]() { return !manager->is_refresh_in_progress(); }));
 
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
+}
+
+TEST_F(ProxyProvisioningDomainManagerTest, HandlesMalformedPolicyDict) {
+  auto auth_service = CreateAuthService();
+  base::DictValue malformed_policy;
+  malformed_policy.Set("invalid_key", "invalid_value");
+
+  auto url_loader_factory_callback = base::BindRepeating(
+      [](network::TestURLLoaderFactory* test_url_loader_factory)
+          -> scoped_refptr<network::SharedURLLoaderFactory> {
+        return test_url_loader_factory->GetSafeWeakWrapper();
+      },
+      &test_url_loader_factory_);
+
+  auto manager = std::make_unique<ProxyProvisioningDomainManager>(
+      base::Value(std::move(malformed_policy)), auth_service.get(),
+      std::move(url_loader_factory_callback));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            manager->state());
+  EXPECT_FALSE(manager->is_refresh_in_progress());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+
+  base::DictValue debug_info = manager->GetDebugInfo();
+  const std::string* state_str =
+      debug_info.FindStringByDottedPath("fetched_config.state");
+  ASSERT_NE(nullptr, state_str);
+  EXPECT_EQ("FailedPermanent", *state_str);
+}
+
+TEST_F(ProxyProvisioningDomainManagerTest, HandlesNonDictPolicyValue) {
+  auto auth_service = CreateAuthService();
+  base::Value non_dict_policy("not_a_dictionary");
+
+  auto url_loader_factory_callback = base::BindRepeating(
+      [](network::TestURLLoaderFactory* test_url_loader_factory)
+          -> scoped_refptr<network::SharedURLLoaderFactory> {
+        return test_url_loader_factory->GetSafeWeakWrapper();
+      },
+      &test_url_loader_factory_);
+
+  auto manager = std::make_unique<ProxyProvisioningDomainManager>(
+      non_dict_policy, auth_service.get(),
+      std::move(url_loader_factory_callback));
+
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
+            manager->state());
+  EXPECT_FALSE(manager->is_refresh_in_progress());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+
+  base::DictValue debug_info = manager->GetDebugInfo();
+  const std::string* state_str =
+      debug_info.FindStringByDottedPath("fetched_config.state");
+  ASSERT_NE(nullptr, state_str);
+  EXPECT_EQ("FailedPermanent", *state_str);
 }
 
 }  // namespace

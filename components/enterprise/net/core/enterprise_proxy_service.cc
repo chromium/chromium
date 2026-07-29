@@ -159,22 +159,8 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
   refreshing_managers_.clear();
 
   for (const auto& domain_val : policy_domains) {
-    // TODO(crbug.com/538550498): Move policy dictionary parsing (i.e the
-    // following two if blocks) into ProxyProvisioningDomainManager's
-    // constructor by passing `domain_val` directly, allowing the manager to
-    // manage malformed policy entries and represent them in a failed state
-    // with a reason.
-    if (!domain_val.is_dict()) {
-      continue;
-    }
-    std::optional<ProvisioningDomainConfig> policy =
-        ParseProxyProvisioningDomainPolicy(domain_val.GetDict());
-    if (!policy.has_value()) {
-      continue;
-    }
-
     auto manager = std::make_unique<ProxyProvisioningDomainManager>(
-        std::move(*policy), auth_service_, url_loader_factory_callback_);
+        domain_val, auth_service_, url_loader_factory_callback_);
     manager->AddObserver(this);
     OnProvisioningDomainStateChanged(manager.get());
     provisioning_domain_managers_.push_back(std::move(manager));

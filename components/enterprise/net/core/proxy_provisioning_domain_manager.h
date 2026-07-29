@@ -42,7 +42,7 @@ class ProxyProvisioningDomainManager {
       base::RepeatingCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
 
   ProxyProvisioningDomainManager(
-      const ProvisioningDomainConfig& policy,
+      const base::Value& policy_val,
       EnterpriseNetworkAuthService* auth_service,
       GetURLLoaderFactoryCallback url_loader_factory_callback);
   ProxyProvisioningDomainManager(const ProxyProvisioningDomainManager&) =
