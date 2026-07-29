@@ -584,8 +584,8 @@ BASE_EXPORT bool GetFileInfo(const FilePath& file_path, File::Info* info);
 
 // Sets the time of the last access and the time of the last modification.
 BASE_EXPORT bool TouchFile(const FilePath& path,
-                           const Time& last_accessed,
-                           const Time& last_modified);
+                           Time last_accessed,
+                           Time last_modified);
 
 // Wrapper for fopen-like calls. Returns non-NULL FILE* on success. The
 // underlying file descriptor (POSIX) or handle (Windows) is unconditionally

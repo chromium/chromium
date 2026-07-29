@@ -427,9 +427,7 @@ OnceCallback<std::optional<int64_t>()> GetFileSizeCallback(
   return BindOnce([](const FilePath& path) { return GetFileSize(path); }, path);
 }
 
-bool TouchFile(const FilePath& path,
-               const Time& last_accessed,
-               const Time& last_modified) {
+bool TouchFile(const FilePath& path, Time last_accessed, Time last_modified) {
   uint32_t flags = File::FLAG_OPEN | File::FLAG_WRITE_ATTRIBUTES;
 
 #if BUILDFLAG(IS_WIN)
