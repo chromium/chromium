@@ -675,7 +675,6 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "existing_base_sub_menu_model_browsertest.cc",
-      "existing_tab_group_sub_menu_model_browsertest.cc",
       "existing_window_sub_menu_model_browsertest.cc",
       "glic_tab_sub_menu_model_browsertest.cc",
       "pinned_tab_codec_browsertest.cc",

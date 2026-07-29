@@ -74,7 +74,7 @@ GetSharedTabGroupRecallTypeMetric(
           SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromBookmarksBar;
     case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU:
       return tab_groups::saved_tab_groups::metrics::
-          SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromEverythingMenu;
+          SharedTabGroupRecallTypeDesktop::kOpenedFromEverythingMenu;
     case tab_groups::TabGroupMenuContext::APP_MENU:
       return tab_groups::saved_tab_groups::metrics::
           SharedTabGroupRecallTypeDesktop::kOpenedFromSubmenuFromAppMenu;

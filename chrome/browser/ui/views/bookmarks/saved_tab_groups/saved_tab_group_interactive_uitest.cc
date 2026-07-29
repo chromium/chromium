@@ -1160,37 +1160,8 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       EnsureNotPresent(STGEverythingMenu::kTabGroup));
 }
 
-class SavedTabGroupEverythingMenuMoreEntryPointsFeature
-    : public SavedTabGroupInteractiveTestBase {
- public:
-  SavedTabGroupEverythingMenuMoreEntryPointsFeature() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupMenuMoreEntryPoints}, {});
-  }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupEverythingMenuMoreEntryPointsFeature,
-                       CheckCreateNewTabGroupInEverythingMenuHasSubmenu) {
-  browser()->tab_strip_model()->AddToNewGroup({0});
-
-  RunTestSequence(
-      // Show the bookmarks bar where the buttons will be displayed.
-      FinishTabstripAnimations(), ShowBookmarksBar(),
-      // Ensure the group was saved when created.
-      EnsurePresent(kSavedTabGroupButtonElementId), FinishTabstripAnimations(),
-      EnsurePresent(kSavedTabGroupOverflowButtonElementId),
-      PressButton(kSavedTabGroupOverflowButtonElementId),
-      SelectMenuItem(STGEverythingMenu::kTabGroup),
-      EnsurePresent(STGTabsMenuModel::kOpenGroup),
-      EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
-      EnsurePresent(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
-      EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
-      EnsurePresent(STGTabsMenuModel::kTabsTitleItem),
-      EnsurePresent(STGTabsMenuModel::kTab));
-}
 
 
 #if !BUILDFLAG(IS_CHROMEOS)

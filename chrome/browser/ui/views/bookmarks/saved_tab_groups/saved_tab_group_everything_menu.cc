@@ -310,11 +310,8 @@ bool STGEverythingMenu::ShouldShowSubmenu() {
     case MenuContext::kAppMenu:
       return true;
     case MenuContext::kSavedTabGroupBar:
-      return base::FeatureList::IsEnabled(
-          features::kTabGroupMenuMoreEntryPoints);
     case MenuContext::kVerticalTabStrip:
-      return base::FeatureList::IsEnabled(
-          features::kTabGroupMenuMoreEntryPoints);
+      return false;
   }
 }
 
@@ -421,7 +418,7 @@ void STGEverythingMenu::WillShowMenu(views::MenuItemView* menu) {
   // This works because the only submenus in the everything menu are
   // for the tab group items. Will need to change if we add
   // more unbounded submenus to the everything menu.
-  if (base::FeatureList::IsEnabled(features::kTabGroupMenuMoreEntryPoints) &&
+  if (menu_context_ == MenuContext::kAppMenu &&
       menu->GetCommand() >= kMinCommandId) {
     PopulateTabGroupSubMenu(menu);
   }

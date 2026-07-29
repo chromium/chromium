@@ -343,8 +343,6 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
   RunTestSequence(FinishTabstripAnimations(), ShowBookmarksBar(),
                   PressButton(kSavedTabGroupOverflowButtonElementId),
                   SelectMenuItem(STGEverythingMenu::kTabGroup),
-                  WaitForShow(STGTabsMenuModel::kOpenGroup),
-                  SelectMenuItem(STGTabsMenuModel::kOpenGroup),
                   WaitForShow(kTabGroupHeaderElementId),
                   // Close the everything menu to prevent flakes on mac.
                   HoverTabAt(0), ClickMouse(),
@@ -353,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       kRecallHistogram,
       saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-          kOpenedFromSubmenuFromEverythingMenu,
+          kOpenedFromEverythingMenu,
       1);
 }
 
