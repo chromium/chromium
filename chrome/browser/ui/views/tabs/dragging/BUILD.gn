@@ -9,3 +9,21 @@ source_set("tab_drag_target") {
     "//ui/gfx",
   ]
 }
+
+if (!is_android) {
+  source_set("tab_drag_controller_interactive_test_mixin") {
+    testonly = true
+
+    public = [ "tab_drag_controller_interactive_test_mixin.h" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/interaction",
+      "//ui/base:test_support",
+      "//ui/base/interaction:test_support",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+}
