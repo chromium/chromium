@@ -65,6 +65,9 @@
 // no-op.
 - (void)backgroundAndForegroundApp;
 
+// Moves app to background and waits until it is backgrounded.
+- (BOOL)backgroundApplication;
+
 // Adds an observer for AppLaunchManager.
 - (void)addObserver:(id<AppLaunchManagerObserver>)observer;
 

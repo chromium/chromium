@@ -40,17 +40,7 @@ XCUIApplication* GetApplication() {
 
 // Backgrounds the app.
 void BackgroundApp() {
-  [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
-  XCUIApplication* currentApplication = GetApplication();
-  ConditionBlock condition = ^BOOL {
-    return currentApplication.state == XCUIApplicationStateRunningBackground ||
-           currentApplication.state ==
-               XCUIApplicationStateRunningBackgroundSuspended;
-  };
-  // A 20-second timeout is used here to give slow bots sufficient time to
-  // transition the application to the background.
-  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(20),
-                                                              condition),
+  GREYAssertTrue([[AppLaunchManager sharedManager] backgroundApplication],
                  @"Failed to background application.");
 }
 
