@@ -584,52 +584,47 @@ TEST_F(AILanguageModelTest, SamplingParams) {
 }
 
 TEST_F(AILanguageModelTest, SamplingModeMappings) {
+  auto test_sampling_mode =
+      [this](blink::mojom::AILanguageModelSamplingMode sampling_mode,
+             testing::Matcher<std::vector<std::string>> matcher) {
+        auto options = blink::mojom::AILanguageModelCreateOptions::New();
+        options->sampling_mode = sampling_mode;
+        auto session = CreateSession(std::move(options));
+        EXPECT_THAT(Prompt(*session, MakeInput("foo")), matcher);
+      };
+
   // Test most-predictable (uses default values). Default values are omitted
   // from the output by the fake API in
   // services/on_device_model/fake/fake_chrome_ml_api.cc
-  {
-    auto options = blink::mojom::AILanguageModelCreateOptions::New();
-    options->sampling_mode =
-        blink::mojom::AILanguageModelSamplingMode::kMostPredictable;
-    auto session = CreateSession(std::move(options));
-    EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAre("UfooEM"));
-  }
+  test_sampling_mode(
+      blink::mojom::AILanguageModelSamplingMode::kMostPredictable,
+      ElementsAre("UfooEM"));
+
   // Test predictable
-  {
-    auto options = blink::mojom::AILanguageModelCreateOptions::New();
-    options->sampling_mode =
-        blink::mojom::AILanguageModelSamplingMode::kPredictable;
-    auto session = CreateSession(std::move(options));
-    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-                ElementsAre("UfooEM", IsPromptWithParams(30, 0.3)));
-  }
+  test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kPredictable,
+                     ElementsAre("UfooEM", IsPromptWithParams(32, 0.3)));
+
+  // Test slightly-predictable
+  test_sampling_mode(
+      blink::mojom::AILanguageModelSamplingMode::kSlightlyPredictable,
+      ElementsAre("UfooEM", IsPromptWithParams(64, 0.7)));
+
   // Test balanced
-  {
-    auto options = blink::mojom::AILanguageModelCreateOptions::New();
-    options->sampling_mode =
-        blink::mojom::AILanguageModelSamplingMode::kBalanced;
-    auto session = CreateSession(std::move(options));
-    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-                ElementsAre("UfooEM", IsPromptWithParams(64, 0.7)));
-  }
+  test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kBalanced,
+                     ElementsAre("UfooEM", IsPromptWithParams(64, 1.0)));
+
+  // Test slightly-creative
+  test_sampling_mode(
+      blink::mojom::AILanguageModelSamplingMode::kSlightlyCreative,
+      ElementsAre("UfooEM", IsPromptWithParams(72, 1.1)));
+
   // Test creative
-  {
-    auto options = blink::mojom::AILanguageModelCreateOptions::New();
-    options->sampling_mode =
-        blink::mojom::AILanguageModelSamplingMode::kCreative;
-    auto session = CreateSession(std::move(options));
-    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-                ElementsAre("UfooEM", IsPromptWithParams(80, 1.1)));
-  }
+  test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kCreative,
+                     ElementsAre("UfooEM", IsPromptWithParams(80, 1.15f)));
+
   // Test most-creative
-  {
-    auto options = blink::mojom::AILanguageModelCreateOptions::New();
-    options->sampling_mode =
-        blink::mojom::AILanguageModelSamplingMode::kMostCreative;
-    auto session = CreateSession(std::move(options));
-    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
-                ElementsAre("UfooEM", IsPromptWithParams(100, 1.2)));
-  }
+  test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kMostCreative,
+                     ElementsAre("UfooEM", IsPromptWithParams(100, 1.2)));
 }
 
 TEST_F(AILanguageModelTest, SamplingModeDefault) {

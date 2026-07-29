@@ -245,6 +245,10 @@ mojom::blink::AILanguageModelSamplingMode ConvertSamplingModeToMojo(
       return mojom::blink::AILanguageModelSamplingMode::kCreative;
     case V8LanguageModelSamplingMode::Enum::kMostCreative:
       return mojom::blink::AILanguageModelSamplingMode::kMostCreative;
+    case V8LanguageModelSamplingMode::Enum::kSlightlyPredictable:
+      return mojom::blink::AILanguageModelSamplingMode::kSlightlyPredictable;
+    case V8LanguageModelSamplingMode::Enum::kSlightlyCreative:
+      return mojom::blink::AILanguageModelSamplingMode::kSlightlyCreative;
   }
   NOTREACHED();
 }
@@ -270,6 +274,12 @@ std::optional<V8LanguageModelSamplingMode> ConvertSamplingModeToV8(
     case mojom::blink::AILanguageModelSamplingMode::kMostCreative:
       return V8LanguageModelSamplingMode(
           V8LanguageModelSamplingMode::Enum::kMostCreative);
+    case mojom::blink::AILanguageModelSamplingMode::kSlightlyPredictable:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kSlightlyPredictable);
+    case mojom::blink::AILanguageModelSamplingMode::kSlightlyCreative:
+      return V8LanguageModelSamplingMode(
+          V8LanguageModelSamplingMode::Enum::kSlightlyCreative);
   }
   NOTREACHED();
 }

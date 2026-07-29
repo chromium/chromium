@@ -92,12 +92,18 @@ constexpr float kMostPredictableTemperature = 0.0f;
 constexpr uint32_t kMostPredictableTopK = 1;
 
 constexpr float kPredictableTemperature = 0.3f;
-constexpr uint32_t kPredictableTopK = 30;
+constexpr uint32_t kPredictableTopK = 32;
 
-constexpr float kBalancedTemperature = 0.7f;
+constexpr float kSlightlyPredictableTemperature = 0.7f;
+constexpr uint32_t kSlightlyPredictableTopK = 64;
+
+constexpr float kBalancedTemperature = 1.0f;
 constexpr uint32_t kBalancedTopK = 64;
 
-constexpr float kCreativeTemperature = 1.1f;
+constexpr float kSlightlyCreativeTemperature = 1.1f;
+constexpr uint32_t kSlightlyCreativeTopK = 72;
+
+constexpr float kCreativeTemperature = 1.15f;
 constexpr uint32_t kCreativeTopK = 80;
 
 constexpr float kMostCreativeTemperature = 1.2f;
@@ -889,6 +895,14 @@ void AIManager::CreateLanguageModelInternal(
       case blink::mojom::AILanguageModelSamplingMode::kMostCreative:
         params->temperature = kMostCreativeTemperature;
         params->top_k = kMostCreativeTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kSlightlyPredictable:
+        params->temperature = kSlightlyPredictableTemperature;
+        params->top_k = kSlightlyPredictableTopK;
+        break;
+      case blink::mojom::AILanguageModelSamplingMode::kSlightlyCreative:
+        params->temperature = kSlightlyCreativeTemperature;
+        params->top_k = kSlightlyCreativeTopK;
         break;
     }
   } else if (sampling_params) {

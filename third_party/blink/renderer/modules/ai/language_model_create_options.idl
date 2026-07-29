@@ -37,7 +37,7 @@ enum LanguageModelMessageRole { "system", "user", "assistant" };
 enum LanguageModelMessageType { "text", "image", "audio", "tool-call", "tool-response" };
 // LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputType)
 
-enum LanguageModelSamplingMode { "most-predictable", "predictable", "balanced", "creative", "most-creative" };
+enum LanguageModelSamplingMode { "most-predictable", "predictable", "slightly-predictable", "balanced", "slightly-creative", "creative", "most-creative" };
 
 typedef (
   ImageBitmapSource

@@ -81,6 +81,8 @@ enum AILanguageModelSamplingMode {
   kBalanced = 2,
   kCreative = 3,
   kMostCreative = 4,
+  kSlightlyPredictable = 5,
+  kSlightlyCreative = 6,
 };
 
 // The expected data type and languages specified with session creation.
