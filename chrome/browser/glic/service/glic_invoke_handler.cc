@@ -199,11 +199,15 @@ GlicInvokeHandler::~GlicInvokeHandler() = default;
 bool GlicInvokeHandler::RequiresClientInvoke(
     const mojom::InvokeOptionsPtr& mojo_options,
     bool has_auto_submit_passkey) {
-  return has_auto_submit_passkey || !mojo_options->payload.is_null() ||
+  return mojo_options->invocation_source ==
+             mojom::InvocationSource::kCaptureRegionHotkey ||
+         has_auto_submit_passkey || !mojo_options->payload.is_null() ||
          (mojo_options->prompts && !mojo_options->prompts->empty()) ||
          !mojo_options->context.is_null() ||
          mojo_options->feature_mode != mojom::FeatureMode::kUnspecified ||
-         mojo_options->actuation_target != mojom::ActuationTarget::kUnknown ||
+         (mojo_options->actuation_target != mojom::ActuationTarget::kUnknown &&
+          mojo_options->actuation_target !=
+              mojom::ActuationTarget::kAgentDecides) ||
          mojo_options->disable_zero_state_suggestions ||
          mojo_options->skill_id.has_value() ||
          !mojo_options->zss_config.is_null() ||
