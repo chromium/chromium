@@ -45,11 +45,16 @@ class TabManagementTool : public ActorTool {
                     ActionType action_type,
                     base::WeakPtr<WebStateList> web_state_list);
 
+  void ValidateCloseTab(ToolExecutionCallback callback);
+  void ExecuteCloseTab();
+
   const ActionType action_type_;
   const base::WeakPtr<web::WebState> web_state_;
   const base::WeakPtr<WebStateList> web_state_list_;
 
   ToolExecutionCallback callback_;
+
+  base::WeakPtrFactory<TabManagementTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

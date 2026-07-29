@@ -26,71 +26,81 @@ std::unique_ptr<TabManagementTool> TabManagementTool::CreateCloseTabTool(
 TabManagementTool::~TabManagementTool() = default;
 
 void TabManagementTool::Validate(ToolExecutionCallback callback) {
+  switch (action_type_) {
+    case ActionType::kClose:
+      ValidateCloseTab(std::move(callback));
+      break;
+  }
+}
+
+void TabManagementTool::ValidateCloseTab(ToolExecutionCallback callback) {
+  CHECK_EQ(action_type_, ActionType::kClose);
+  if (!web_state_list_) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway));
+    return;
+  }
+  if (!web_state_) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+  if (web_state_list_->GetIndexOfWebState(web_state_.get()) ==
+      WebStateList::kInvalidIndex) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void TabManagementTool::Execute(ToolExecutionCallback callback) {
   callback_ = std::move(callback);
   switch (action_type_) {
-    case ActionType::kClose: {
-      if (!web_state_list_) {
-        // Run callback asynchronously to prevent synchronous destruction of
-        // `this`.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                std::move(callback_),
-                ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway)));
-        return;
-      }
-
-      if (!web_state_) {
-        // Run callback asynchronously to prevent synchronous destruction of
-        // `this`.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                std::move(callback_),
-                ToolExecutionResult(mojom::ActionResultCode::kTabWentAway)));
-        return;
-      }
-
-      int index = web_state_list_->GetIndexOfWebState(web_state_.get());
-      if (index == WebStateList::kInvalidIndex) {
-        // Run callback asynchronously to prevent synchronous destruction of
-        // `this`.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                std::move(callback_),
-                ToolExecutionResult(mojom::ActionResultCode::kTabWentAway)));
-        return;
-      }
-
-      // Move the callback to the stack beforehand. Performing `CloseWebStateAt`
-      // can trigger synchronous destruction of `this`. Holding the callback on
-      // the stack guarantees it survives even if `this` is deleted.
-      ToolExecutionCallback local_callback = std::move(callback_);
-      web_state_list_->CloseWebStateAt(
-          index, WebStateList::ClosingReason::kUserAction);
-      // Run callback asynchronously to prevent synchronous destruction of
-      // `this`.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(local_callback), ToolExecutionResult::Ok()));
+    case ActionType::kClose:
+      ExecuteCloseTab();
       break;
-    }
   }
+}
+
+void TabManagementTool::ExecuteCloseTab() {
+  CHECK_EQ(action_type_, ActionType::kClose);
+  if (!web_state_list_) {
+    std::move(callback_).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kWindowWentAway));
+    return;
+  }
+
+  if (!web_state_) {
+    std::move(callback_).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  int index = web_state_list_->GetIndexOfWebState(web_state_.get());
+  if (index == WebStateList::kInvalidIndex) {
+    std::move(callback_).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  // `CloseWebStateAt` may trigger synchronous destruction of `this`. Holding
+  // the callback on the stack guarantees it survives even if `this` is deleted.
+  ToolExecutionCallback local_callback = std::move(callback_);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  web_state_list_->CloseWebStateAt(index,
+                                   WebStateList::ClosingReason::kUserAction);
+  // Check that `this ` was not destroyed before executing any more code.
+  if (!weak_this) {
+    return;
+  }
+  std::move(local_callback).Run(ToolExecutionResult::Ok());
 }
 
 void TabManagementTool::Cancel() {
   if (callback_) {
-    // Run callback asynchronously to prevent synchronous destruction of `this`.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback_),
-            ToolExecutionResult(mojom::ActionResultCode::kActionsCancelled)));
+    std::move(callback_).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kActionsCancelled));
   }
 }
 
