@@ -99,6 +99,7 @@ source_set("webid") {
   ]
   if (is_android) {
     sources += [
+      "android_native_idp_fetcher.h",
       "identity_provider_service.h",
       "verified_origin_resolver.h",
     ]
@@ -135,6 +136,7 @@ source_set("impl") {
   ]
   if (is_android) {
     sources += [
+      "android_native_idp_fetcher.cc",
       "identity_provider_service.cc",
       "verified_origin_resolver.cc",
     ]
@@ -232,7 +234,10 @@ if (is_android) {
   source_set("android_browsertests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "identity_provider_service_browsertest.cc" ]
+    sources = [
+      "android_native_idp_fetcher_browsertest.cc",
+      "identity_provider_service_browsertest.cc",
+    ]
     deps = [
       ":webid",
       "//base",

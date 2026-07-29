@@ -534,6 +534,7 @@
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/webid/android_native_idp_fetcher.h"
 #include "chrome/common/chrome_descriptors_android.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
@@ -8417,6 +8418,14 @@ ChromeContentBrowserClient::CreateDigitalIdentityProvider() {
   return std::make_unique<DigitalIdentityProviderDesktop>();
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<content::NativeIdpFetcher>
+ChromeContentBrowserClient::CreateNativeIdpFetcher(
+    const url::Origin& idp_origin) {
+  return std::make_unique<chrome::AndroidNativeIdpFetcher>(idp_origin);
+}
+#endif
 
 bool ChromeContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     content::BrowserContext* browser_context) {

@@ -541,6 +541,7 @@ source_set("browser_sources") {
     "webid/identity_request_account.h",
     "webid/identity_request_dialog_controller.cc",
     "webid/identity_request_dialog_controller.h",
+    "webid/native_idp_fetcher.h",
     "webnn_introspection_manager.cc",
     "webnn_introspection_manager.h",
     "webrtc_event_logger.cc",

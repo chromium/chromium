@@ -114,7 +114,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
     }
 
     @CalledByNative
-    private void fetch() {
+    private void fetch(@JniType("std::string") String request) {
         if (!mIsBound) {
             IdentityProviderServiceJni.get().onDataFetched(mNativeIdentityProviderService, null);
             return;
@@ -123,7 +123,7 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
         Message msg = Message.obtain();
         msg.what = MSG_FEDCM_REQUEST;
         Bundle bundle = new Bundle();
-        bundle.putString(FEDCM_BOUND_SERVICE_INTENT_REQUEST, "Hello? ");
+        bundle.putString(FEDCM_BOUND_SERVICE_INTENT_REQUEST, request);
         msg.setData(bundle);
         Messenger responseMessenger = new Messenger(this);
         msg.replyTo = responseMessenger;

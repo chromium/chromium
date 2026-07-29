@@ -23,10 +23,11 @@ IdentityProviderService::~IdentityProviderService() {
 }
 
 void IdentityProviderService::Fetch(
+    const std::string& request,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   callback_ = std::move(callback);
-  Java_IdentityProviderService_fetch(env, java_obj_);
+  Java_IdentityProviderService_fetch(env, java_obj_, request);
 }
 
 void IdentityProviderService::Connect(const std::string& package_name,

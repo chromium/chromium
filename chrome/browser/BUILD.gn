@@ -1098,6 +1098,7 @@ source_set("core") {
     "//chrome/browser/webapps",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
+    "//chrome/browser/webid",
     "//chrome/common:version_header",
     "//chrome/services/speech/buildflags",
     "//components/activity_reporter",

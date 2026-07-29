@@ -58,6 +58,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/native_idp_fetcher.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_utils.h"
@@ -1646,6 +1647,11 @@ ContentBrowserClient::CreateIdentityRequestDialogController(
 
 std::unique_ptr<DigitalIdentityProvider>
 ContentBrowserClient::CreateDigitalIdentityProvider() {
+  return nullptr;
+}
+
+std::unique_ptr<NativeIdpFetcher> ContentBrowserClient::CreateNativeIdpFetcher(
+    const url::Origin& idp_origin) {
   return nullptr;
 }
 

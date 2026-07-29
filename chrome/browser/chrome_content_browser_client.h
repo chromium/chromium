@@ -987,6 +987,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::DigitalIdentityProvider>
   CreateDigitalIdentityProvider() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<content::NativeIdpFetcher> CreateNativeIdpFetcher(
+      const url::Origin& idp_origin) override;
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
   static base::TimeDelta GetKeepaliveTimerTimeout(
       content::BrowserContext* context);

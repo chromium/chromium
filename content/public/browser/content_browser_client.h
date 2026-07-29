@@ -248,6 +248,7 @@ class FontAccessDelegate;
 class GuestPageHolder;
 class HidDelegate;
 class IdentityRequestDialogController;
+class NativeIdpFetcher;
 class LoginDelegate;
 class MediaObserver;
 class NavigationHandle;
@@ -2789,6 +2790,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Creates a digital credential provider to fetch from native apps.
   virtual std::unique_ptr<DigitalIdentityProvider>
   CreateDigitalIdentityProvider();
+
+  // Creates a NativeIdpFetcher to interact with a native application identity
+  // provider for the given `idp_origin`. Returns nullptr if not supported.
+  virtual std::unique_ptr<NativeIdpFetcher> CreateNativeIdpFetcher(
+      const url::Origin& idp_origin);
 
   // Returns true if JS dialogs from an iframe with different origin from the
   // main frame should be disallowed.

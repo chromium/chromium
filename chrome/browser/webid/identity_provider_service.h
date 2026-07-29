@@ -45,6 +45,7 @@ class IdentityProviderService {
 
   // Fetches data asynchronously. `callback` is called when the data is fetched.
   void Fetch(
+      const std::string& request,
       base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
   // Connects to the service asynchronously. `callback` is called when the
