@@ -90,7 +90,7 @@ TEST_F(ChromeForTestingConfigTest, EmptyJson) {
   EXPECT_TRUE(GetRequiredComponentsList().empty());
 
   // Expect default required components update timeout.
-  EXPECT_EQ(GetRequiredComponentsUpdateTimeout(), base::Seconds(15));
+  EXPECT_EQ(GetRequiredComponentsUpdateTimeout(), base::Minutes(5));
 }
 
 class ChromeForTestingConfigBooleanOptionTest
@@ -215,7 +215,8 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple("1000ms", base::Milliseconds(1000)),
                     std::make_tuple("500ms", kInvalidTimeout),  // too small
                     std::make_tuple("3m", base::Minutes(3)),
-                    std::make_tuple("10m", kInvalidTimeout),    // too large
+                    std::make_tuple("10m", base::Minutes(10)),
+                    std::make_tuple("20m", kInvalidTimeout),    // too large
                     std::make_tuple("foobar", kInvalidTimeout)),
     [](const testing::TestParamInfo<
         ChromeForTestingConfigRequiredComponentsUpdateTimeoutTest::ParamType>&
@@ -356,7 +357,7 @@ TEST_F(ChromeForTestingConfigTest, NoConfigSwitch) {
 
   EXPECT_EQ(GetRequiredComponentsList(), base::ListValue());
   EXPECT_EQ(GetRequiredComponentsDir(), base::FilePath());
-  EXPECT_EQ(GetRequiredComponentsUpdateTimeout(), base::Seconds(15));
+  EXPECT_EQ(GetRequiredComponentsUpdateTimeout(), base::Minutes(5));
 }
 
 }  // namespace
