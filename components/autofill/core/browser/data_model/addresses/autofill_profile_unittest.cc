@@ -761,6 +761,70 @@ TEST_F(AutofillProfileTest, CreateInferredLabels) {
   EXPECT_EQ(labels[1], std::u16string(u"123 Letha Shore."));
 }
 
+// Test that forms containing ADDRESS_HOME_STREET_ADDRESS or ADDRESS_HOME_LINE1
+// prioritize showing the street address over the postal code in inferred
+// labels.
+TEST_F(AutofillProfileTest, CreateInferredLabels_StreetAddress) {
+  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  profiles.push_back(std::make_unique<AutofillProfile>(
+      i18n_model_definition::kLegacyHierarchyCountryCode));
+  test::SetProfileInfo(profiles[0].get(), test::SetProfileInfoOptionsBuilder()
+                                              .with_first_name("John")
+                                              .with_last_name("Doe")
+                                              .with_address1("666 Erebus St.")
+                                              .with_city("Elysium")
+                                              .with_zipcode("91111")
+                                              .Build());
+  profiles.push_back(std::make_unique<AutofillProfile>(
+      i18n_model_definition::kLegacyHierarchyCountryCode));
+  test::SetProfileInfo(profiles[1].get(), test::SetProfileInfoOptionsBuilder()
+                                              .with_first_name("Jane")
+                                              .with_last_name("Doe")
+                                              .with_address1("123 Letha Shore.")
+                                              .with_city("Dis")
+                                              .with_zipcode("91222")
+                                              .Build());
+
+  FieldTypeSet suggested_fields = {NAME_FIRST, NAME_LAST,
+                                   ADDRESS_HOME_STREET_ADDRESS,
+                                   ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP};
+
+  // When kAutofillFixLabelGenerationForStreetAddress is disabled, a form with
+  // street address generates postal code as the inferred label.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kAutofillFixLabelGenerationForStreetAddress);
+    std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), suggested_fields, {NAME_FIRST},
+        /*minimal_fields_shown=*/1, "en-US");
+    EXPECT_THAT(labels, testing::ElementsAre(u"91111", u"91222"));
+  }
+
+  // When kAutofillFixLabelGenerationForStreetAddress is enabled, a form with
+  // street address generates street address as the inferred label.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kAutofillFixLabelGenerationForStreetAddress);
+    std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), suggested_fields, {NAME_FIRST},
+        /*minimal_fields_shown=*/1, "en-US");
+    EXPECT_THAT(labels,
+                testing::ElementsAre(u"666 Erebus St.", u"123 Letha Shore."));
+
+    // A form with ADDRESS_HOME_LINE1 also generates street address line 1
+    // as the inferred label.
+    suggested_fields = {NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                        ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP};
+    labels = AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), suggested_fields, {NAME_FIRST},
+        /*minimal_fields_shown=*/1, "en-US");
+    EXPECT_THAT(labels,
+                testing::ElementsAre(u"666 Erebus St.", u"123 Letha Shore."));
+  }
+}
+
 // Test that we fall back to using the full name if there are no other
 // distinguishing fields, but only if it makes sense given the suggested fields.
 TEST_F(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
