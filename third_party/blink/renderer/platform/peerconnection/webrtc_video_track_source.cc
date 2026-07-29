@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
@@ -503,18 +504,17 @@ void WebRtcVideoTrackSource::DeliverFrame(
 
   if (frame->ColorSpace().IsValid() &&
       base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
-    if (frame->format() == media::PIXEL_FORMAT_ARGB ||
-        frame->format() == media::PIXEL_FORMAT_ABGR ||
-        frame->format() == media::PIXEL_FORMAT_XRGB ||
-        frame->format() == media::PIXEL_FORMAT_XBGR) {
+    if (media::IsRGB(frame->format())) {
       // RGB frames can't be encoded directly, there will be conversion in the
-      // encoder, which will produce Rec601.
+      // encoder.
+      gfx::ColorSpace cs =
+          media::VideoFrameConverter::GetDestinationColorSpace(*frame);
       if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
-        LOG(ERROR) << "Rewriting color space to Rec601, because the format is "
+        LOG(ERROR) << "Rewriting color space to " << cs.ToString()
+                   << ", because the format is "
                    << media::VideoPixelFormatToString(frame->format());
       }
-      frame_builder.set_color_space(
-          GfxToWebRtcColorSpace(gfx::ColorSpace::CreateREC601()));
+      frame_builder.set_color_space(GfxToWebRtcColorSpace(cs));
     } else {
       frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
     }

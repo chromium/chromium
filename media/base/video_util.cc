@@ -36,6 +36,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
+#include "ui/gfx/color_space.h"
 
 namespace media {
 
@@ -927,6 +928,10 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
       timestamp);
   if (!frame)
     return nullptr;
+
+  if (sk_image->colorSpace()) {
+    frame->set_color_space(gfx::ColorSpace(*sk_image->colorSpace()));
+  }
 
   frame->AddDestructionObserver(
       base::DoNothingWithBoundArgs(std::move(sk_image)));

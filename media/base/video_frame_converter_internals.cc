@@ -30,6 +30,14 @@ void Mask12BitMSBPlane(base::span<uint16_t> data,
 
 namespace media::internals {
 
+const libyuv::ArgbConstants* GetArgbConstantsForColorSpace(
+    const gfx::ColorSpace& cs,
+    bool is_abgr) {
+  // TODO(crbug.com/467555325): Make the destination color space dependent on
+  // the source color space.
+  return is_abgr ? &libyuv::kAbgrI601Constants : &libyuv::kArgbI601Constants;
+}
+
 bool ARGBScale(const VideoFrame& src_frame,
                VideoFrame& dest_frame,
                libyuv::FilterMode filter) {
@@ -45,24 +53,23 @@ bool ARGBScale(const VideoFrame& src_frame,
              dest_frame.visible_rect().height(), filter) == 0;
 }
 
-bool ARGBToI420x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+bool ARGBToI420x(const VideoFrame& src_frame,
+                 VideoFrame& dest_frame,
+                 const libyuv::ArgbConstants* matrix) {
   DCHECK(IsSupportedRGBFormat(src_frame.format()));
   DCHECK(dest_frame.format() == PIXEL_FORMAT_I420 ||
          dest_frame.format() == PIXEL_FORMAT_I420A);
-  auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
-                     src_frame.format() == PIXEL_FORMAT_ABGR)
-                        ? libyuv::ABGRToI420
-                        : libyuv::ARGBToI420;
-  if (convert_fn(src_frame.visible_data(VideoFrame::Plane::kARGB),
-                 src_frame.stride(VideoFrame::Plane::kARGB),
-                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-                 dest_frame.stride(VideoFrame::Plane::kY),
-                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU),
-                 dest_frame.stride(VideoFrame::Plane::kU),
-                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
-                 dest_frame.stride(VideoFrame::Plane::kV),
-                 dest_frame.visible_rect().width(),
-                 dest_frame.visible_rect().height()) != 0) {
+  if (libyuv::ARGBToI420Matrix(
+          src_frame.visible_data(VideoFrame::Plane::kARGB),
+          src_frame.stride(VideoFrame::Plane::kARGB),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+          dest_frame.stride(VideoFrame::Plane::kY),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU),
+          dest_frame.stride(VideoFrame::Plane::kU),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
+          dest_frame.stride(VideoFrame::Plane::kV), matrix,
+          dest_frame.visible_rect().width(),
+          dest_frame.visible_rect().height()) != 0) {
     return false;
   }
   if (dest_frame.format() == PIXEL_FORMAT_I420) {
@@ -77,13 +84,13 @@ bool ARGBToI420x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
              dest_frame.visible_rect().height()) == 0;
 }
 
-bool ARGBToI444x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+bool ARGBToI444x(const VideoFrame& src_frame,
+                 VideoFrame& dest_frame,
+                 const libyuv::ArgbConstants* matrix) {
   DCHECK(IsSupportedRGBFormat(src_frame.format()));
-  DCHECK(src_frame.format() == PIXEL_FORMAT_ARGB ||
-         src_frame.format() == PIXEL_FORMAT_XRGB);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_I444 ||
          dest_frame.format() == PIXEL_FORMAT_I444A);
-  if (libyuv::ARGBToI444(
+  if (libyuv::ARGBToI444Matrix(
           src_frame.visible_data(VideoFrame::Plane::kARGB),
           src_frame.stride(VideoFrame::Plane::kARGB),
           dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
@@ -91,7 +98,7 @@ bool ARGBToI444x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
           dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU),
           dest_frame.stride(VideoFrame::Plane::kU),
           dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
-          dest_frame.stride(VideoFrame::Plane::kV),
+          dest_frame.stride(VideoFrame::Plane::kV), matrix,
           dest_frame.visible_rect().width(),
           dest_frame.visible_rect().height()) != 0) {
     return false;
@@ -108,23 +115,22 @@ bool ARGBToI444x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
              dest_frame.visible_rect().height()) == 0;
 }
 
-bool ARGBToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+bool ARGBToNV12x(const VideoFrame& src_frame,
+                 VideoFrame& dest_frame,
+                 const libyuv::ArgbConstants* matrix) {
   DCHECK(IsSupportedRGBFormat(src_frame.format()));
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
          dest_frame.format() == PIXEL_FORMAT_NV12A);
 
-  auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
-                     src_frame.format() == PIXEL_FORMAT_ABGR)
-                        ? libyuv::ABGRToNV12
-                        : libyuv::ARGBToNV12;
-  if (convert_fn(src_frame.visible_data(VideoFrame::Plane::kARGB),
-                 src_frame.stride(VideoFrame::Plane::kARGB),
-                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-                 dest_frame.stride(VideoFrame::Plane::kY),
-                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
-                 dest_frame.stride(VideoFrame::Plane::kUV),
-                 dest_frame.visible_rect().width(),
-                 dest_frame.visible_rect().height()) != 0) {
+  if (libyuv::ARGBToNV12Matrix(
+          src_frame.visible_data(VideoFrame::Plane::kARGB),
+          src_frame.stride(VideoFrame::Plane::kARGB),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+          dest_frame.stride(VideoFrame::Plane::kY),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
+          dest_frame.stride(VideoFrame::Plane::kUV), matrix,
+          dest_frame.visible_rect().width(),
+          dest_frame.visible_rect().height()) != 0) {
     return false;
   }
   if (dest_frame.format() == PIXEL_FORMAT_NV12) {
@@ -135,21 +141,6 @@ bool ARGBToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
              src_frame.stride(VideoFrame::Plane::kARGB),
              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kATriPlanar),
              dest_frame.stride(VideoFrame::Plane::kATriPlanar),
-             dest_frame.visible_rect().width(),
-             dest_frame.visible_rect().height()) == 0;
-}
-
-bool ABGRToARGB(const VideoFrame& src_frame, VideoFrame& dest_frame) {
-  DCHECK(src_frame.format() == PIXEL_FORMAT_ABGR ||
-         src_frame.format() == PIXEL_FORMAT_XBGR);
-  DCHECK(dest_frame.format() == PIXEL_FORMAT_ARGB ||
-         dest_frame.format() == PIXEL_FORMAT_XRGB);
-  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
-  return libyuv::ABGRToARGB(
-             src_frame.visible_data(VideoFrame::Plane::kARGB),
-             src_frame.stride(VideoFrame::Plane::kARGB),
-             dest_frame.GetWritableVisibleData(VideoFrame::Plane::kARGB),
-             dest_frame.stride(VideoFrame::Plane::kARGB),
              dest_frame.visible_rect().width(),
              dest_frame.visible_rect().height()) == 0;
 }

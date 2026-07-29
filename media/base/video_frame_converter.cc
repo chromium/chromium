@@ -7,6 +7,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "media/base/video_frame_converter_internals.h"
+#include "media/base/video_util.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
@@ -15,29 +16,6 @@ namespace {
 
 constexpr auto kDefaultFiltering = libyuv::kFilterBox;
 
-std::optional<VideoPixelFormat> GetSourceFormatOverrideForABGRToARGB(
-    VideoPixelFormat src_format,
-    VideoPixelFormat dest_format) {
-  if ((src_format == PIXEL_FORMAT_XBGR || src_format == PIXEL_FORMAT_ABGR) &&
-      (dest_format == PIXEL_FORMAT_I444 || dest_format == PIXEL_FORMAT_I444A)) {
-    return src_format == PIXEL_FORMAT_XBGR ? PIXEL_FORMAT_XRGB
-                                           : PIXEL_FORMAT_ARGB;
-  }
-  return std::nullopt;
-}
-
-// Wraps `tmp_frame` in a new VideoFrame with pixel format `override_format`. No
-// ref is taken on `tmp_frame`, so callers must guarantee it outlives the
-// return frame.
-scoped_refptr<VideoFrame> WrapTempFrameForABGRToARGB(
-    VideoPixelFormat override_format,
-    scoped_refptr<VideoFrame> tmp_frame) {
-  return VideoFrame::WrapExternalData(
-      override_format, tmp_frame->coded_size(), tmp_frame->visible_rect(),
-      tmp_frame->natural_size(), tmp_frame->data_span(VideoFrame::Plane::kARGB),
-      tmp_frame->timestamp());
-}
-
 }  // namespace
 
 VideoFrameConverter::VideoFrameConverter()
@@ -45,6 +23,19 @@ VideoFrameConverter::VideoFrameConverter()
 
 VideoFrameConverter::~VideoFrameConverter() {
   frame_pool_->Shutdown();
+}
+
+// static
+gfx::ColorSpace VideoFrameConverter::GetDestinationColorSpace(
+    const VideoFrame& src_frame) {
+  const auto& src_cs = src_frame.ColorSpace();
+  if (!IsRGB(src_frame.format())) {
+    return src_cs;  // YUV color spaces are unchanged.
+  }
+
+  // TODO(crbug.com/467555325): Make the destination color space dependent on
+  // the source color space.
+  return gfx::ColorSpace::CreateREC601();
 }
 
 EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
@@ -199,51 +190,32 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
         !internals::ARGBScale(*src_frame, *tmp_frame, kDefaultFiltering)) {
       return EncoderStatus::Codes::kScalingError;
     }
+    tmp_frame->set_color_space(src_frame->ColorSpace());
     src_frame = tmp_frame.get();
   }
 
-  // libyuv's RGB to YUV methods always output BT.601.
-  dest_frame.set_color_space(gfx::ColorSpace::CreateREC601());
+  const bool is_abgr = src_frame->format() == PIXEL_FORMAT_XBGR ||
+                       src_frame->format() == PIXEL_FORMAT_ABGR;
+  dest_frame.set_color_space(GetDestinationColorSpace(*src_frame));
+  const auto* matrix = internals::GetArgbConstantsForColorSpace(
+      dest_frame.ColorSpace(), is_abgr);
 
   switch (dest_frame.format()) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
-      return internals::ARGBToI420x(*src_frame, dest_frame)
+      return internals::ARGBToI420x(*src_frame, dest_frame, matrix)
                  ? OkStatus()
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
 
     case PIXEL_FORMAT_I444:
-    case PIXEL_FORMAT_I444A: {
-      // libyuv lacks ABGRToI444 methods, so we convert ABGR to ARGB first.
-      scoped_refptr<VideoFrame> argb_tmp_frame;
-      if (auto src_format_override = GetSourceFormatOverrideForABGRToARGB(
-              src_frame->format(), dest_frame.format())) {
-        if (tmp_frame) {
-          // If we have an existing `tmp_frame`, we must wrap it to change its
-          // pixel format from xBGR to xRGB to avoid unnecessary copies.
-          argb_tmp_frame =
-              WrapTempFrameForABGRToARGB(*src_format_override, tmp_frame);
-        } else {
-          // Otherwise, if we don't already have a `tmp_frame` we must create a
-          // new one with the correct xRGB pixel format.
-          argb_tmp_frame = CreateTempFrame(
-              *src_format_override, dest_frame.coded_size(),
-              dest_frame.visible_rect(), dest_frame.natural_size());
-        }
-        if (!argb_tmp_frame ||
-            !internals::ABGRToARGB(*src_frame, *argb_tmp_frame)) {
-          return EncoderStatus::Codes::kScalingError;
-        }
-        src_frame = argb_tmp_frame.get();
-      }
-      return internals::ARGBToI444x(*src_frame, dest_frame)
+    case PIXEL_FORMAT_I444A:
+      return internals::ARGBToI444x(*src_frame, dest_frame, matrix)
                  ? OkStatus()
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
-    }
 
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
-      return internals::ARGBToNV12x(*src_frame, dest_frame)
+      return internals::ARGBToNV12x(*src_frame, dest_frame, matrix)
                  ? OkStatus()
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
 
@@ -252,7 +224,7 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
           CreateTempFrame(PIXEL_FORMAT_NV12, dest_frame.coded_size(),
                           dest_frame.visible_rect(), dest_frame.natural_size());
       if (!tmp_nv12_frame ||
-          !internals::ARGBToNV12x(*src_frame, *tmp_nv12_frame)) {
+          !internals::ARGBToNV12x(*src_frame, *tmp_nv12_frame, matrix)) {
         return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
       }
       return internals::NV12xToP010(*tmp_nv12_frame, dest_frame)

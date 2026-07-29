@@ -55,6 +55,9 @@ class MEDIA_EXPORT VideoFrameConverter {
   EncoderStatus ConvertAndScale(const VideoFrame& src_frame,
                                 VideoFrame& dest_frame);
 
+  // Returns the destination color space for video encoding based on source.
+  static gfx::ColorSpace GetDestinationColorSpace(const VideoFrame& src_frame);
+
   size_t get_pool_size_for_testing() const {
     return frame_pool_->get_pool_size_for_testing();
   }

@@ -7,8 +7,13 @@
 
 #include "media/base/video_frame.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/color_space.h"
 
 namespace media::internals {
+
+MEDIA_EXPORT const libyuv::ArgbConstants* GetArgbConstantsForColorSpace(
+    const gfx::ColorSpace& cs,
+    bool is_abgr);
 
 // These are all VideoFrame based versions of equivalent libyuv calls. They
 // allow calling code to not have to manually coordinate which planes, strides,
@@ -25,13 +30,17 @@ bool ARGBScale(const VideoFrame& src_frame,
                VideoFrame& dst_frame,
                libyuv::FilterMode filter);
 
-bool ARGBToI420x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+bool ARGBToI420x(const VideoFrame& src_frame,
+                 VideoFrame& dst_frame,
+                 const libyuv::ArgbConstants* matrix);
 
-bool ARGBToI444x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+bool ARGBToI444x(const VideoFrame& src_frame,
+                 VideoFrame& dst_frame,
+                 const libyuv::ArgbConstants* matrix);
 
-bool ARGBToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
-
-bool ABGRToARGB(const VideoFrame& src_frame, VideoFrame& dst_frame);
+bool ARGBToNV12x(const VideoFrame& src_frame,
+                 VideoFrame& dst_frame,
+                 const libyuv::ArgbConstants* matrix);
 
 // Also converts between I420, I422, I444 and vice versa.
 void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dst_frame);
