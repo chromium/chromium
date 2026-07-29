@@ -9,9 +9,8 @@ use storage_common::FileSystemType;
 use url::Origin;
 
 use content_browser_id_types::BrowsingInstanceId;
-use content_common_id_types::ChildProcessId;
 
-use crate::process_state::ProcessState;
+use crate::process_state::ProcessStateMaps;
 
 /// This block defines the Foreign Function Interface for C++ code to call the
 /// specified Rust functions. The functions operate on a
@@ -457,12 +456,11 @@ fn erase_origin_agent_cluster_state(browsing_instance_id: BrowsingInstanceId) {
 /// This object supports being accessed from different threads and guards access
 /// to its internal data with a Mutex.
 pub struct ChildProcessSecurityPolicyImpl {
-    // Tracks all per-process security states.
-    //
-    // TODO(crbug.com/522872468): Separately track states for RenderProcessHosts
-    // that have been deleted, while Handles still exist for them. Such states
-    // can be queried but not modified.
-    pub(crate) process_states: HashMap<ChildProcessId, ProcessState>,
+    // Tracks all per-process security states, including while the
+    // RenderProcessHost exists and the state can be modified, and after it has
+    // been deleted until all of the ChildProcessSecurityPolicy::Handles are
+    // gone (when the state can be queried but not modified).
+    pub(crate) process_states: ProcessStateMaps,
 
     /// Tracks the schemes that are ok to request or commit, or are pseudo
     /// schemes that are generally not allowed to commit.
@@ -533,7 +531,7 @@ impl ChildProcessSecurityPolicyImpl {
     /// `get_locked_instance()`.
     fn new() -> Self {
         Self {
-            process_states: HashMap::new(),
+            process_states: ProcessStateMaps::new(),
             known_schemes: HashMap::new(),
             v8_optimization_verdict_map: BTreeMap::new(),
             file_system_policy_map: BTreeMap::new(),
