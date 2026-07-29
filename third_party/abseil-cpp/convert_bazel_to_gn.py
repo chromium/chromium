@@ -70,27 +70,60 @@ config("absl_flags_config") {
 _ADD_CONTENT = {
     'cleanup:cleanup_internal':
     'visibility = [ "//third_party/abseil-cpp/absl/*" ]',
-    'container:hashtablez_sampler_test': 'if (is_win) { sources = [] }',
+    'container:hashtablez_sampler_test':
+    'if (is_win) { sources = [] }',
     'container:test_allocator':
     'deps = [ "//third_party/abseil-cpp/absl/base:config", "//third_party/googletest:gtest" ]',
-    'flags:config': 'public_configs = [ ":absl_flags_config" ]',
-    'flags:parse_test': 'if (is_ios) { sources = [] }',
-    'log:absl_check_test': 'if (is_ios) { sources = [] }',
-    'log:log_sink_test': 'if (is_ios) { sources = [] }',
-    'log:scoped_mock_log_test': 'if (is_ios) { sources = [] }',
-    'log/internal:log_sink_set': 'if (is_android) { libs = [ "log" ]  }',
+    'flags:config':
+    'public_configs = [ ":absl_flags_config" ]',
+    'flags:parse_test':
+    'if (is_ios) { sources = [] }',
+    'log:absl_check_test':
+    'if (is_ios) { sources = [] }',
+    'log:log_sink_test':
+    'if (is_ios) { sources = [] }',
+    'log:scoped_mock_log_test':
+    'if (is_ios) { sources = [] }',
+    'log/internal:log_sink_set':
+    'if (is_android) { libs = [ "log" ]  }',
     'log/internal:stderr_log_sink_test':
     'if (is_apple || is_android) { sources = [] }',
-    'random:uniform_real_distribution_test': 'if (is_ios) { sources = [] }',
-    'random/internal:seed_material': 'if (is_win) {  libs = [ "bcrypt.lib" ]}',
-    'strings:strings': '''public_deps = [
+    'random:uniform_real_distribution_test':
+    'if (is_ios) { sources = [] }',
+    'random/internal:seed_material':
+    'if (is_win) {  libs = [ "bcrypt.lib" ]}',
+    'strings:strings':
+    '''public_deps = [
     # string_view.h was once part of :strings, so string_view.h is
     # re-exported for backwards compatibility.
     # New code should directly depend on :string_view.
     # TODO(crbug.com/40276308): Remove once all targets are migrated to
     # :string_view.
     ":string_view" ]''',
-    'strings:str_format_convert_test': 'if (is_fuchsia) { sources = [] }',
+    'strings:str_format_convert_test':
+    'if (is_fuchsia) { sources = [] }',
+    # Instead of parsing 'select', add platform-specific rules manually while there are few of those.
+    'time/internal/cctz:time_zone':
+    '''
+if (is_win) { sources += [ "src/time_zone_name_win.cc" ]
+              public += [ "src/time_zone_name_win.h" ] }
+defines = []
+if (is_apple) {
+  frameworks = [ "Foundation.framework" ]
+  # Work-around for https://github.com/llvm/llvm-project/issues/117630
+  defines += [ "_XOPEN_SOURCE=700" ]
+}
+if (is_fuchsia) {
+  deps += [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl:fuchsia.intl_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/async",
+    "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/zx",
+  ]
+}''',
+    'time/internal/cctz:time_zone_name_win_test':
+    'if (is_win) { sources = [ "src/time_zone_name_win_test.cc" ] }',
 }
 
 
@@ -395,6 +428,7 @@ def convert_all(root_dir):
             'strings',
             'synchronization',
             'time',
+            'time/internal/cctz',
             'types',
             'utility',
     ]:
