@@ -15,6 +15,8 @@ source_set("remote_actor") {
     "remote_actor_credential_store_client.h",
     "remote_actor_request_helper.cc",
     "remote_actor_request_helper.h",
+    "remote_actor_switches.cc",
+    "remote_actor_switches.h",
   ]
 
   deps = [

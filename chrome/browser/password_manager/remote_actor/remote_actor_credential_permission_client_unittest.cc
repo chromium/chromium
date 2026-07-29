@@ -8,10 +8,12 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -45,17 +47,13 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
   permission.agent_oauth_client_id = "agent_client_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
-  client_->GrantPasswordPermission(
-      permission, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop.Quit();
-      }));
+  client_->GrantPasswordPermission(permission, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "token", base::Time::Max());
@@ -95,7 +93,44 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "{}");
 
-  run_loop.Run();
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(RemoteActorCredentialPermissionClientTest,
+       GrantPasswordPermissionWithSwitchOverride) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kAgentPermissionServiceEndpoint, "https://custom-aps.com/");
+
+  // Create a new client to pick up the command line switch.
+  auto custom_client = std::make_unique<RemoteActorCredentialPermissionClient>(
+      identity_test_env_.identity_manager(), test_shared_loader_factory_);
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<bool> future;
+  RemoteActorCredentialPermissionClient::PasswordPermission permission;
+  permission.agent_oauth_client_id = "agent_client_id";
+  permission.web_origin = "https://nike.com";
+  permission.password_client_tag_hash = "tag_hash";
+
+  custom_client->GrantPasswordPermission(permission, future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.method, "POST");
+  EXPECT_EQ(pending_request->request.url.spec(),
+            "https://custom-aps.com/v1/permissions:update?allow_missing=true");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), "{}");
+
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(RemoteActorCredentialPermissionClientTest,
@@ -103,22 +138,18 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
   permission.agent_oauth_client_id = "agent_client_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
-  client_->GrantPasswordPermission(
-      permission, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
+  client_->GrantPasswordPermission(permission, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
 
-  run_loop.Run();
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(RemoteActorCredentialPermissionClientTest,
@@ -126,17 +157,13 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
   permission.agent_oauth_client_id = "agent_client_id";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
-  client_->GrantPasswordPermission(
-      permission, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
+  client_->GrantPasswordPermission(permission, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "token", base::Time::Max());
@@ -149,7 +176,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "", net::HTTP_BAD_REQUEST);
 
-  run_loop.Run();
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(RemoteActorCredentialPermissionClientTest,
@@ -157,19 +184,15 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
   permission.agent_oauth_client_id = "agent_client_id";
   permission.web_origin = "";  // Opaque origin
   permission.password_client_tag_hash = "tag_hash";
 
-  client_->GrantPasswordPermission(
-      permission, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
+  client_->GrantPasswordPermission(permission, future.GetCallback());
 
-  run_loop.Run();
+  EXPECT_FALSE(future.Get());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
@@ -178,19 +201,15 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   RemoteActorCredentialPermissionClient::PasswordPermission permission;
   permission.agent_oauth_client_id = "";
   permission.web_origin = "https://nike.com";
   permission.password_client_tag_hash = "tag_hash";
 
-  client_->GrantPasswordPermission(
-      permission, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
+  client_->GrantPasswordPermission(permission, future.GetCallback());
 
-  run_loop.Run();
+  EXPECT_FALSE(future.Get());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 

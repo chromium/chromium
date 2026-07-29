@@ -8,12 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -25,7 +27,7 @@ namespace password_manager {
 namespace {
 
 constexpr char kAgenticPermissionServiceUrlBase[] =
-    "https://agenticpermission.pa.googleapis.com/v1/permissions:";
+    "https://agenticpermission.pa.googleapis.com/";
 
 // TODO(crbug.com/537160937): Consider if any other policy should be
 // considered for this feature.
@@ -100,6 +102,15 @@ std::string CreateGrantPasswordRequestBody(
   return post_data;
 }
 
+std::string GetEndpointUrlBase() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kAgentPermissionServiceEndpoint)) {
+    return command_line->GetSwitchValueASCII(
+        switches::kAgentPermissionServiceEndpoint);
+  }
+  return kAgenticPermissionServiceUrlBase;
+}
+
 }  // namespace
 
 RemoteActorCredentialPermissionClient::RemoteActorCredentialPermissionClient(
@@ -127,7 +138,7 @@ void RemoteActorCredentialPermissionClient::GrantPasswordPermission(
   }
 
   GURL url(base::StrCat(
-      {kAgenticPermissionServiceUrlBase, "update?allow_missing=true"}));
+      {GetEndpointUrlBase(), "v1/permissions:update?allow_missing=true"}));
   std::string post_data = CreateGrantPasswordRequestBody(permission);
 
   StartRequest(std::make_unique<RemoteActorRequest>(

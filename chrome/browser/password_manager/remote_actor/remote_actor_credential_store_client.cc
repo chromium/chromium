@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/time_util.h"
@@ -33,8 +35,7 @@ namespace password_manager {
 
 namespace {
 
-constexpr char kPassboxEndpointUrlBase[] =
-    "https://passbox-pa.googleapis.com/v1/";
+constexpr char kPassboxEndpointUrlBase[] = "https://passbox-pa.googleapis.com/";
 
 // TODO(crbug.com/537160937): Consider if any other policy should be
 // considered for this feature.
@@ -82,6 +83,14 @@ constexpr net::NetworkTrafficAnnotationTag kPassboxTrafficAnnotation =
         }
       })");
 
+std::string GetEndpointUrlBase() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kPassboxEndpoint)) {
+    return command_line->GetSwitchValueASCII(switches::kPassboxEndpoint);
+  }
+  return kPassboxEndpointUrlBase;
+}
+
 }  // namespace
 
 RemoteActorCredentialStoreClient::RemoteActorCredentialStoreClient(
@@ -128,7 +137,7 @@ void RemoteActorCredentialStoreClient::UpdateCredential(
       password_client_tag_hash.c_str());
 
   GURL url(base::StrCat(
-      {kPassboxEndpointUrlBase, resource_name, "?allow_missing=true"}));
+      {GetEndpointUrlBase(), "v1/", resource_name, "?allow_missing=true"}));
 
   base::DictValue credential_data_dict;
   credential_data_dict.Set("data", base64_payload);
@@ -169,7 +178,7 @@ void RemoteActorCredentialStoreClient::DeleteCredential(
       password_client_tag_hash.c_str());
 
   GURL url(base::StrCat(
-      {kPassboxEndpointUrlBase, resource_name, "?allow_missing=true"}));
+      {GetEndpointUrlBase(), "v1/", resource_name, "?allow_missing=true"}));
 
   StartRequest(std::make_unique<RemoteActorRequest>(
       identity_manager_, url, "DELETE", "",

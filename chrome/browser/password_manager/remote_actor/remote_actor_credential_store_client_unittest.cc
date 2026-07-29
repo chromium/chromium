@@ -9,10 +9,12 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/common/time_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -57,16 +59,10 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
-  store_->UpdateCredential(
-      kTestGaiaId, kTestWebOrigin, kTestTagHash, kTestUsername, kTestPassword,
-      base::Minutes(10),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, bool success) {
-            EXPECT_TRUE(success);
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure()));
+  base::test::TestFuture<bool> future;
+  store_->UpdateCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
+                           kTestUsername, kTestPassword, base::Minutes(10),
+                           future.GetCallback());
 
   // 1. Access token request
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -109,22 +105,52 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "{}");
 
-  run_loop.Run();
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(RemoteActorCredentialStoreClientTest,
+       UpdateCredentialWithSwitchOverride) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kPassboxEndpoint, "https://custom-passbox.com/");
+
+  auto custom_store = std::make_unique<RemoteActorCredentialStoreClient>(
+      identity_test_env_.identity_manager(), test_shared_loader_factory_);
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<bool> future;
+  custom_store->UpdateCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
+                                 kTestUsername, kTestPassword,
+                                 base::Minutes(10), future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token", base::Time::Max());
+
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.method, "PATCH");
+  EXPECT_EQ(pending_request->request.url.spec(),
+            "https://custom-passbox.com/v1/internalservices/"
+            "AGENTIC_CREDENTIAL_MANAGER/owneridnamespaces/GOOGLE_USER_ID/"
+            "ownerids/12345/externalservices/https%3A%2F%2Fnike.com/"
+            "credentials/tag_hash?allow_missing=true");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), "{}");
+
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(RemoteActorCredentialStoreClientTest, DeleteCredentialSuccess) {
   identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
-  base::RunLoop run_loop;
-  store_->DeleteCredential(
-      kTestGaiaId, kTestWebOrigin, kTestTagHash,
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, bool success) {
-            EXPECT_TRUE(success);
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure()));
+  base::test::TestFuture<bool> future;
+  store_->DeleteCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
+                           future.GetCallback());
 
   // 1. Access token request
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -143,7 +169,7 @@ TEST_F(RemoteActorCredentialStoreClientTest, DeleteCredentialSuccess) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
 
-  run_loop.Run();
+  EXPECT_TRUE(future.Get());
 }
 
 }  // namespace password_manager
