@@ -25,7 +25,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   item.title = title;
   item.detailText = detail_text;
   item.iconImage =
-      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
+      SymbolWithPointSize(SymbolMagnifyingglass, kTestIconPointSize);
   item.iconBackgroundColor = UIColor.blueColor;
 
   id cell = [[[item cellClass] alloc] init];
@@ -87,7 +87,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   item.title = title;
   item.detailText = detail_text;
   item.iconImage =
-      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
+      SymbolWithPointSize(SymbolMagnifyingglass, kTestIconPointSize);
 
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[WhatsNewTableViewCell class]]);

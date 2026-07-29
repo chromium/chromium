@@ -188,9 +188,8 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
         _eligibilityStatus.Has(AimEligibilityCheck::kIsCobrowseEligible);
     cobrowseItem.detailText = cobrowseEligible ? @"Eligible" : @"Not Eligible";
     cobrowseItem.iconImage =
-        cobrowseEligible
-            ? DefaultSymbolTemplateWithPointSize(kCheckmarkSymbol, 18)
-            : DefaultSymbolTemplateWithPointSize(kXMarkSymbol, 18);
+        cobrowseEligible ? SymbolTemplateWithPointSize(SymbolCheckmark, 18)
+                         : SymbolTemplateWithPointSize(SymbolXMark, 18);
     cobrowseItem.iconTintColor = cobrowseEligible
                                      ? [UIColor colorNamed:kGreenColor]
                                      : [UIColor colorNamed:kRedColor];

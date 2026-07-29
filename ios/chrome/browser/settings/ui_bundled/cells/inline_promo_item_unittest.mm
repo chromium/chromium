@@ -39,7 +39,7 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
   InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
 
   // Set up item.
-  UIImage* promo_image = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  UIImage* promo_image = SymbolWithPointSize(SymbolInfoCircle, 16);
   NSString* promo_text = @"Test text";
   NSString* more_info_button_title = @"Button Title";
   item.promoImage = promo_image;
@@ -91,7 +91,7 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
 // `shouldShowCloseButton` property.
 TEST_F(InlinePromoItemTest, CloseButtonVisibility) {
   InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
-  item.promoImage = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  item.promoImage = SymbolWithPointSize(SymbolInfoCircle, 16);
   item.promoText = @"Test text";
   item.moreInfoButtonTitle = @"Button Title";
 
@@ -111,7 +111,7 @@ TEST_F(InlinePromoItemTest, CloseButtonVisibility) {
 // property.
 TEST_F(InlinePromoItemTest, BadgeVisibility) {
   InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
-  item.promoImage = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  item.promoImage = SymbolWithPointSize(SymbolInfoCircle, 16);
   item.promoText = @"Test text";
   item.moreInfoButtonTitle = @"Button Title";
 
@@ -130,7 +130,7 @@ TEST_F(InlinePromoItemTest, BadgeVisibility) {
 // Tests that the cell is as expected when disabled.
 TEST_F(InlinePromoItemTest, DisableCell) {
   InlinePromoItem* item = [[InlinePromoItem alloc] initWithType:0];
-  item.promoImage = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  item.promoImage = SymbolWithPointSize(SymbolInfoCircle, 16);
   item.promoText = @"Test text";
   item.moreInfoButtonTitle = @"Button Title";
   item.enabled = NO;

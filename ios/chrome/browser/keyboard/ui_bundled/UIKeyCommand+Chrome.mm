@@ -237,8 +237,8 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showHistory {
-  UIImage* image = DefaultSymbolWithConfiguration(
-      kClockArrowTriangleheadCounterclockwiseRotate90Symbol, nil);
+  UIImage* image = SymbolWithConfiguration(
+      SymbolClockArrowTriangleheadCounterclockwiseRotate90, nil);
   return [self cr_commandWithInput:@"y"
                      modifierFlags:Command
                             action:@selector(keyCommand_showHistory)

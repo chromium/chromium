@@ -119,25 +119,31 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 22;
 // Sets up the trailing image and its tint color depending on the item's warning
 // state.
 - (void)setUpWarningTrailingImage {
-  NSString* trailingImageName;
+  Symbol trailingSymbol = SymbolNone;
   NSString* trailingImageTintColorName;
   switch (self.warningState) {
     case WarningState::kSafe:
-      trailingImageName = kCheckmarkCircleFillSymbol;
+      trailingSymbol = SymbolCheckmarkCircleFill;
       trailingImageTintColorName = kGreen500Color;
       break;
     case WarningState::kWarning:
-      trailingImageName = kErrorCircleFillSymbol;
+      trailingSymbol = SymbolErrorCircleFill;
       trailingImageTintColorName = kYellow500Color;
       break;
     case WarningState::kSevereWarning:
-      trailingImageName = kErrorCircleFillSymbol;
+      trailingSymbol = SymbolErrorCircleFill;
       trailingImageTintColorName = kRed500Color;
       break;
   }
-  self.trailingImage = DefaultSymbolTemplateWithPointSize(
-      trailingImageName, kTrailingSymbolImagePointSize);
-  self.trailingImageTintColor = [UIColor colorNamed:trailingImageTintColorName];
+  if (trailingSymbol == SymbolNone) {
+    self.trailingImage = nil;
+    self.trailingImageTintColor = nil;
+  } else {
+    self.trailingImage = SymbolTemplateWithPointSize(
+        trailingSymbol, kTrailingSymbolImagePointSize);
+    self.trailingImageTintColor =
+        [UIColor colorNamed:trailingImageTintColorName];
+  }
 }
 
 @end
