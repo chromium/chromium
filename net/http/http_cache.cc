@@ -1947,6 +1947,23 @@ bool HttpCache::InvalidationFilter::Matches(
 
 void HttpCache::AddInvalidationFilter(InvalidationFilter filter) {
   CHECK_LE(filter.begin_time, filter.end_time);
+
+  base::UmaHistogramCounts1000(
+      "Net.HttpCache.LogicalInvalidation.ActiveFilterCountOnAddition",
+      invalidation_filters_.size());
+
+  const size_t max_filters = static_cast<size_t>(
+      std::max(1, features::kLogicalClearHttpCacheMaxFilters.Get()));
+
+  bool evicted = false;
+  if (invalidation_filters_.size() >= max_filters) {
+    evicted = true;
+    invalidation_filters_.erase(invalidation_filters_.begin());
+  }
+
+  base::UmaHistogramBoolean(
+      "Net.HttpCache.LogicalInvalidation.FilterCapEvicted", evicted);
+
   invalidation_filters_.push_back(std::move(filter));
 }
 

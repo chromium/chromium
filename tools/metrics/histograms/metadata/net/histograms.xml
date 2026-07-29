@@ -3846,6 +3846,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpCache.LogicalInvalidation.ActiveFilterCountOnAddition"
+    units="filters" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The number of active logical HTTP cache invalidation filters present in
+    memory at the moment a new invalidation filter is added. Recorded in
+    HttpCache::AddInvalidationFilter upon each filter addition.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpCache.LogicalInvalidation.ClearContext"
     enum="NetHttpCacheLogicalInvalidationClearContext"
     expires_after="2027-05-26">
@@ -3856,6 +3867,19 @@ chromium-metrics-reviews@google.com.
     (i.e., whether it was cleared during the same session it was added, or if it
     was successfully recovered from disk after a crash/restart and then
     subsequently cleared). Recorded when a filter is removed.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpCache.LogicalInvalidation.FilterCapEvicted"
+    enum="Boolean" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Recorded as true when adding a new logical HTTP cache invalidation filter
+    causes the oldest active filter to be evicted due to reaching the maximum
+    filter capacity cap (configured via FeatureParam
+    kLogicalClearHttpCacheMaxFilters, defaulting to 500). Recorded in
+    HttpCache::AddInvalidationFilter.
   </summary>
 </histogram>
 

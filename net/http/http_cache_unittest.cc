@@ -17345,6 +17345,40 @@ TEST_F(HttpCacheTest, InvalidationFilterRevocation) {
   EXPECT_EQ(cache.network_layer()->transaction_count(), current_count);
 }
 
+TEST_F(HttpCacheTest, InvalidationFilterCap) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kLogicalClearHttpCache,
+      {{net::features::kLogicalClearHttpCacheMaxFilters.name, "5"}});
+
+  base::HistogramTester histograms;
+  MockHttpCache cache;
+
+  for (size_t i = 0; i < 10; ++i) {
+    HttpCache::InvalidationFilter filter;
+    filter.begin_time =
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(i + 1));
+    filter.end_time = base::Time::Max();
+    filter.filter_type = UrlFilterType::kTrueIfMatches;
+    cache.http_cache()->AddInvalidationFilter(std::move(filter));
+  }
+
+  EXPECT_EQ(cache.http_cache()->GetInvalidationFilterCountForTesting(), 5u);
+
+  const std::vector<HttpCache::InvalidationFilter>& filters =
+      cache.http_cache()->invalidation_filters();
+  ASSERT_EQ(filters.size(), 5u);
+  EXPECT_EQ(filters.front().begin_time,
+            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6)));
+
+  histograms.ExpectTotalCount(
+      "Net.HttpCache.LogicalInvalidation.ActiveFilterCountOnAddition", 10);
+  histograms.ExpectBucketCount(
+      "Net.HttpCache.LogicalInvalidation.FilterCapEvicted", true, 5);
+  histograms.ExpectBucketCount(
+      "Net.HttpCache.LogicalInvalidation.FilterCapEvicted", false, 5);
+}
+
 // Tests that restarting a transaction cleanly resets
 // done_headers_create_new_entry_ to false, preventing a CHECK failure in
 // DoGetBackendComplete() (crbug.com/537817232).
