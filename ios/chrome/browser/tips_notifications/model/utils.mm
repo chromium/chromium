@@ -137,21 +137,13 @@ ContentIDs LensContentIDsForAlternative(bool isAlternativeStringEnabled) {
 // Returns the title and the body text ids for the safe browsing promo
 // notification.
 ContentIDs SafeBrowsingContentIDsForAlternative(
-    TipsNotificationsAlternativeStringVersion alternative) {
-  switch (alternative) {
-    case TipsNotificationsAlternativeStringVersion::kAlternative1:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT1_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT1_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative2:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT2_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative3:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT3_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT1_BODY};
-    case TipsNotificationsAlternativeStringVersion::kDefault:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
+    bool isAlternativeStringEnabled) {
+  if (isAlternativeStringEnabled) {
+    return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_ALT2_TITLE,
+            IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
   }
+  return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE,
+          IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
 }
 
 // Returns the ContentIDs for the given `type`.
@@ -176,7 +168,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kLens:
       return LensContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kEnhancedSafeBrowsing:
-      return SafeBrowsingContentIDsForAlternative(alternative);
+      return SafeBrowsingContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kCPE:
       return {IDS_IOS_NOTIFICATIONS_TIPS_CPE_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_CPE_BODY};
