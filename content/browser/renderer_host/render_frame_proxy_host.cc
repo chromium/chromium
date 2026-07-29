@@ -665,20 +665,16 @@ void RenderFrameProxyHost::RouteMessageEvent(
       // RenderFrameProxyHost because a persistent communication channel
       // shouldn't be persisted after the message is sent.
     } else if (is_embedder_to_guest_communication) {
-      // We create a RenderFrameProxyHost for the embedder in the guest's
-      // render process but we intentionally do not expose the embedder's
-      // opener chain to it.
-      // TODO(crbug.com/40261772): Using the main frame will lead to a null
-      // event.source if a subframe posts a message to the guest. See also
-      // https://crbug.com/41172969
       CHECK(target_rfh->is_main_frame());
-      source_rfh->GetMainFrame()
-          ->frame_tree_node()
-          ->render_manager()
-          ->CreateRenderFrameProxy(
-              target_rfh->GetSiteInstance()->group(),
-              source_rfh->GetMainFrame()->browsing_context_state(),
-              /*navigation_metrics_token=*/std::nullopt);
+      // Create proxies for the source frame and its ancestors up to the main
+      // frame. We explicitly avoid creating proxies for the entire frame tree
+      // to prevent leaking the embedder's full frame structure and the
+      // embedder's opener chain to the guest.
+
+      source_rfh->frame_tree_node()
+          ->GetRenderFrameHostManager()
+          .CreateRenderFrameProxyAndAncestorChainIfNeeded(
+              target_rfh->GetSiteInstance()->group());
     } else if (is_guest_to_embedder_communication) {
       // A RenderFrameProxyHost was already created when the guest was
       // attached.

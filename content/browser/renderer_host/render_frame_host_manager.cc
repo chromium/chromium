@@ -4780,6 +4780,33 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
   }
 }
 
+void RenderFrameHostManager::CreateRenderFrameProxyAndAncestorChainIfNeeded(
+    SiteInstanceGroup* group) {
+  // If the frame we need to create a proxy for is a subframe, we need to make
+  // sure the entire ancestor chain exists as proxies as well, otherwise the
+  // subframe proxy would be floating around. Note: we only need to create
+  // ancestors in this frame tree, so we can use IsMainFrame().
+  std::vector<FrameTreeNode*> ancestor_chain;
+  FrameTreeNode* ancestor = frame_tree_node_;
+  while (ancestor) {
+    ancestor_chain.push_back(ancestor);
+    if (ancestor->IsMainFrame()) {
+      ancestor = nullptr;
+    } else {
+      ancestor = ancestor->parent()->frame_tree_node();
+    }
+  }
+
+  // Create proxies, from the top-level frame down to the initially specified
+  // subframe. TODO(crbug.com/40186710): Verify that the behavior is
+  // correct if the frame is pending deletion.
+  for (FrameTreeNode* node : base::Reversed(ancestor_chain)) {
+    node->render_manager()->CreateRenderFrameProxy(
+        group, node->current_frame_host()->browsing_context_state(),
+        /*navigation_metrics_token=*/std::nullopt);
+  }
+}
+
 void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
   TRACE_EVENT_INSTANT(
       "navigation", "RenderFrameHostManager::CreateProxiesForChildFrame_Parent",

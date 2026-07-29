@@ -469,6 +469,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const std::optional<base::UnguessableToken>& navigation_metrics_token,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
+  // Similar to `CreateRenderFrameProxy` but also creates the minimal ancestor
+  // chain of proxies in `group` to support a subframe.
+  void CreateRenderFrameProxyAndAncestorChainIfNeeded(SiteInstanceGroup* group);
+
   // Creates proxies for a new child frame at FrameTreeNode |child| in all
   // SiteInstances for which the current frame has proxies.  This method is
   // called on the parent of a new child frame before the child leaves the

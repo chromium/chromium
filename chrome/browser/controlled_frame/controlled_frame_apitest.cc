@@ -654,6 +654,79 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInBlobIframe) {
   ASSERT_FALSE(CreateControlledFrame(
       iframe, embedded_https_test_server().GetURL("/index.html")));
 }
+// Verifies that when <controlledframe> is embedded inside a nested same-origin
+// iframe within an Isolated Web App, calling postMessage from the nested iframe
+// to the guest should preserve a valid MessageEvent.source.
+// See b/537662184.
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest,
+                       MessageEventSourceInNestedIframe) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Create a nested same-origin iframe inside the app_frame, along with a
+  // sibling iframe.
+  ASSERT_TRUE(
+      ExecJs(app_frame, content::JsReplace(R"(
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.src = $1;
+        f.addEventListener('load', () => {
+          const f2 = document.createElement('iframe');
+          f2.src = $1;
+          f2.addEventListener('load', resolve);
+          document.body.appendChild(f2);
+        });
+        document.body.appendChild(f);
+      });
+  )",
+                                           url_info.origin().Serialize())));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+
+  // Create the <controlledframe> inside the nested iframe.
+  const GURL https_url = embedded_https_test_server().GetURL("/index.html");
+  ASSERT_TRUE(CreateControlledFrame(iframe, https_url));
+
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  ASSERT_NE(web_view_guest, nullptr);
+  content::RenderFrameHost* guest_frame = web_view_guest->GetGuestMainFrame();
+  ASSERT_NE(guest_frame, nullptr);
+
+  // Set up a message listener in the guest frame to record event.source.
+  // It will reply to the sender using the provided MessageChannel port.
+  // We also verify that sibling frames in the embedder aren't exposed.
+  ASSERT_TRUE(ExecJs(guest_frame, R"(
+    window.addEventListener('message', (e) => {
+      if (e.ports && e.ports.length > 0) {
+        let result = 'source_is_valid';
+        if (e.source === null) {
+          result = 'source_is_null';
+        } else if (e.source.parent.frames.length !== 1) {
+          result = 'sibling_exposed';
+        }
+        e.ports[0].postMessage(result);
+      }
+    });
+  )"));
+
+  // Post a message from the nested iframe embedder to the guest frame with a
+  // MessageChannel. Wait for the guest to evaluate event.source and send back
+  // the result.
+  const std::string result = EvalJs(iframe, R"(
+    new Promise(resolve => {
+      const frame = document.querySelector('controlledframe');
+      const channel = new MessageChannel();
+      channel.port1.onmessage = (e) => {
+        resolve(e.data);
+      };
+      frame.contentWindow.postMessage('ping', '*', [channel.port2]);
+    });
+  )")
+                                 .ExtractString();
+
+  EXPECT_EQ("source_is_valid", result);
+}
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ElementHasExpectedProperties) {
   web_app::IsolatedWebAppUrlInfo url_info =
