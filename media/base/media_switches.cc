@@ -970,10 +970,12 @@ BASE_FEATURE(kOnDeviceWebSpeechSmallExpertModel,
 // Enables multi-language support for on-device speech recognition using
 // on-device TinyGemma.
 BASE_FEATURE(kOnDeviceWebSpeechSmallExpertModelMultiLanguage,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string>
     kOnDeviceWebSpeechSmallExpertModelLanguages{
-        &kOnDeviceWebSpeechSmallExpertModelMultiLanguage, "languages", ""};
+        &kOnDeviceWebSpeechSmallExpertModelMultiLanguage, "languages",
+        "en-US,fr-FR,it-IT,de-DE,es-ES,ja-JP,hi-IN,pt-BR,ko-KR,pl-PL,th-TH,"
+        "tr-TR,id-ID,cmn-Hans-CN,cmn-Hant-TW,vi-VN,ru-RU"};
 
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(kLiveCaption, base::FEATURE_ENABLED_BY_DEFAULT);
