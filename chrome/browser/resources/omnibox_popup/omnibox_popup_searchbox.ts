@@ -39,6 +39,12 @@ enum DeferredFocusAction {
   FOCUS_AND_SELECT,
 }
 
+/**
+ * 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
+ */
+const canShowSecondarySideMediaQueryList =
+    window.matchMedia('(min-width: 675px)');
+
 export interface OmniboxPopupSearchboxElement {
   $: {
     input: SearchboxInputElement,
@@ -67,6 +73,10 @@ export class OmniboxPopupSearchboxElement extends
 
   static override get properties() {
     return {
+      omniboxPopupDebugEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
       searchboxChromeRefreshTheming: {
         type: Boolean,
         reflect: true,
@@ -114,13 +124,33 @@ export class OmniboxPopupSearchboxElement extends
       aimButtonVisible_: {
         type: Boolean,
       },
+      /**
+       * Whether the secondary side can be shown based on the feature state and
+       * the width available to the dropdown.
+       */
+      canShowSecondarySide: {
+        type: Boolean,
+        reflect: true,
+      },
+      /**
+       * Whether the secondary side is currently available to be shown.
+       */
+      hasSecondarySide: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
+  accessor canShowSecondarySide: boolean =
+      canShowSecondarySideMediaQueryList.matches;
+  accessor hasSecondarySide: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
+  accessor omniboxPopupDebugEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxPopupDebugEnabled');
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -224,6 +254,10 @@ export class OmniboxPopupSearchboxElement extends
             e.preventDefault();
           }
         });
+
+    this.eventTracker_.add(
+        canShowSecondarySideMediaQueryList, 'change',
+        this.onCanShowSecondarySideChanged_.bind(this));
 
     // Request initial native state in case C++ synced before WebUI connected
     // (e.g., if WebUI preloading is disabled).
@@ -681,6 +715,14 @@ export class OmniboxPopupSearchboxElement extends
     // TODO(b/504670284): Open AIM popup on-click via Mojo IPC.
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-composebox'));
+  }
+
+  protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
+    this.hasSecondarySide = e.detail.value;
+  }
+
+  private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
+    this.canShowSecondarySide = e.matches;
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {

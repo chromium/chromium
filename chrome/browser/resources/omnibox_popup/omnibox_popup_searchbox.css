@@ -140,9 +140,9 @@ cr-searchbox-input::part(searchbox-input) {
   padding-top: 0;
 }
 
-:host([searchbox-chrome-refresh-theming]) cr-searchbox-input::part(searchbox-input)::selection {
-  background-color: var(--color-searchbox-selection-background);
-  color: var(--color-searchbox-selection-foreground);
+cr-searchbox-input::part(searchbox-input)::selection {
+  background-color: var(--color-omnibox-selection-background);
+  color: var(--color-omnibox-selection-foreground);
 }
 
 cr-searchbox-input::part(icon) {

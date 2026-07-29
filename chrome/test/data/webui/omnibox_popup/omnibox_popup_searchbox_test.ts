@@ -1045,4 +1045,26 @@ suite('OmniboxPopupSearchboxTest', function() {
        OmniboxEscapeAction.kClearUserInput,
        handler.getArgs('logEscapeAction')[0]);
  });
+
+ test('SecondarySideAttributesPassedToDropdown', async () => {
+   const matchesEl = searchbox.$.matches;
+   assertTrue(!!matchesEl);
+
+   // Verify initial values.
+   assertEquals(
+       searchbox.canShowSecondarySide,
+       matchesEl.hasAttribute('can-show-secondary-side'));
+   assertFalse(matchesEl.hasAttribute('has-secondary-side'));
+
+   // Dispatch secondary side status change from dropdown.
+   matchesEl.dispatchEvent(new CustomEvent('has-secondary-side-changed', {
+     detail: {value: true},
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertTrue(searchbox.hasSecondarySide);
+   assertTrue(matchesEl.hasAttribute('has-secondary-side'));
+ });
 });
