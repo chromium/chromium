@@ -46,8 +46,8 @@ bool DnsSdRegistry::ServiceTypeData::UpdateService(
   bool known = (it != service_list_.end());
   if (known) {
     // If added == true, but we still found the service in our cache, then just
-    // update the existing entry, but this should not happen!
-    DCHECK(!added);
+    // update the existing entry. This can happen due to duplicate network
+    // notifications.
     if (*it != service) {
       *it = service;
       updated_or_added = true;
