@@ -1011,6 +1011,18 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
       .WillOnce(Return(ActionableError::kSignInNeeded));
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&mock_client_, nullptr));
 }
+
+TEST_F(PasswordManagerUtilTrustedVaultErrorTest,
+       IsSavingBlockedByTrustedVaultErrorForLocalPasswordUpdate) {
+  password_manager::MockPasswordFormManagerForUI form_manager;
+  EXPECT_CALL(form_manager, IsPasswordUpdate()).WillOnce(Return(true));
+  EXPECT_CALL(form_manager,
+              IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
+      .WillOnce(Return(false));
+
+  EXPECT_FALSE(
+      IsSavingBlockedByTrustedVaultError(&mock_client_, &form_manager));
+}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
@@ -1031,19 +1043,30 @@ TEST_F(PasswordManagerUtilRecoverableErrorTest,
 
   EXPECT_CALL(*account_store, GetError)
       .WillOnce(Return(ActionableError::kTrustedVaultKeyNeeded));
-  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_));
+  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_, nullptr));
 
   EXPECT_CALL(*account_store, GetError)
       .WillOnce(Return(ActionableError::kSignInNeeded));
-  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_));
+  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_, nullptr));
 
   EXPECT_CALL(*account_store, GetError)
       .WillOnce(Return(ActionableError::kNeedsPassphrase));
-  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_));
+  EXPECT_TRUE(IsSavingBlockedByRecoverableError(&mock_client_, nullptr));
 
   EXPECT_CALL(*account_store, GetError)
       .WillOnce(Return(ActionableError::kKeychainError));
-  EXPECT_FALSE(IsSavingBlockedByRecoverableError(&mock_client_));
+  EXPECT_FALSE(IsSavingBlockedByRecoverableError(&mock_client_, nullptr));
+}
+
+TEST_F(PasswordManagerUtilRecoverableErrorTest,
+       IsSavingBlockedByRecoverableErrorForLocalPasswordUpdate) {
+  password_manager::MockPasswordFormManagerForUI form_manager;
+  EXPECT_CALL(form_manager, IsPasswordUpdate()).WillOnce(Return(true));
+  EXPECT_CALL(form_manager,
+              IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
+      .WillOnce(Return(false));
+
+  EXPECT_FALSE(IsSavingBlockedByRecoverableError(&mock_client_, &form_manager));
 }
 #endif  // BUILDFLAG(IS_IOS)
 

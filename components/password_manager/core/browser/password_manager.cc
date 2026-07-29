@@ -1661,7 +1661,8 @@ void PasswordManager::OnLoginSuccessful() {
       password_manager_util::IsSavingBlockedByTrustedVaultError(
           client_, submitted_manager);
   bool able_to_save_passwords_after_fixing_recoverable_error =
-      password_manager_util::IsSavingBlockedByRecoverableError(client_);
+      password_manager_util::IsSavingBlockedByRecoverableError(
+          client_, submitted_manager);
   base::UmaHistogramBoolean(
       "PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
       able_to_save_passwords);

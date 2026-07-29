@@ -162,6 +162,14 @@ bool IsSavingBlockedByTrustedVaultError(
           client->GetSyncService())) {
     return false;
   }
+
+  // The updates of the locally stored passwords should not be blocked by
+  // trusted vault errors.
+  if (form_manager && form_manager->IsPasswordUpdate() &&
+      !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const password_manager::PasswordStoreInterface* account_store =
       client->GetAccountPasswordStore();
@@ -171,16 +179,6 @@ bool IsSavingBlockedByTrustedVaultError(
          base::FeatureList::IsEnabled(
              password_manager::features::kPasswordSaveInContextErrorResolution);
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // The updates of the locally stored passwords should not be blocked by
-  // trusted vault errors.
-  // TODO(crbug.com/538573597): Allow updating locally saved passwords despite
-  // the trusted vault error on Android.
-  // TODO(crbug.com/538569490): Allow updating locally saved passwords despite
-  // the trusted vault error on iOS.
-  if (form_manager->IsPasswordUpdate() &&
-      !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
-    return false;
-  }
   bool has_trusted_vault_error = false;
   bool has_other_blocking_errors = false;
   // It might be that the credential is updated in both stores. In this case
@@ -214,10 +212,17 @@ bool IsSavingBlockedByTrustedVaultError(
 }
 
 bool IsSavingBlockedByRecoverableError(
-    const password_manager::PasswordManagerClient* client) {
+    const password_manager::PasswordManagerClient* client,
+    const password_manager::PasswordFormManagerForUI* form_manager) {
 #if BUILDFLAG(IS_IOS)
   if (!password_manager::sync_util::HasChosenToSyncPasswords(
           client->GetSyncService())) {
+    return false;
+  }
+  // The updates of the locally stored passwords should not be blocked by
+  // recoverable errors.
+  if (form_manager && form_manager->IsPasswordUpdate() &&
+      !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
     return false;
   }
   const password_manager::PasswordStoreInterface* account_store =
