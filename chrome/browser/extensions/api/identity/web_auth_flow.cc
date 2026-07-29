@@ -176,6 +176,14 @@ void WebAuthFlow::OnBrowserWindowInterfaceInitialized(
     return;
   }
 
+  TabModel* tab_model =
+      TabModelList::FindTabModelWithWindowSessionId(browser->GetSessionID());
+  tab_model->CreateTab(
+      TabAndroid::FromWebContents(tab_model->GetActiveWebContents()),
+      std::move(web_contents_), TabModel::kInvalidIndex,
+      TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+      /*should_pin=*/false);
+
   if (popup_displayed_callback_for_testing_) {
     std::move(popup_displayed_callback_for_testing_).Run();
   }
@@ -213,7 +221,6 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
                                    *profile_, user_gesture_);
-  params.web_contents = std::move(web_contents_);
   if (popup_bounds_.has_value()) {
     params.initial_bounds = popup_bounds_.value();
   }

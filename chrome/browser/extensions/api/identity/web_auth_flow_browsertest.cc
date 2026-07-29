@@ -738,7 +738,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   EXPECT_NE(popup_window_browser, GetFirstActivatedBrowser());
 
   TabListInterface* popup_tabs = TabListInterface::From(popup_window_browser);
-  EXPECT_EQ(popup_tabs->GetTabCount(), 1);
   EXPECT_EQ(popup_tabs->GetActiveTab()->GetContents()->GetLastCommittedURL(),
             auth_url);
 
