@@ -244,6 +244,39 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeCallsOnClientConnected) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithoutActionableOptionsSucceeds) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  // Call invoke without any actionable fields (empty prompts, empty payload,
+  // etc.).
+  coordinator().Invoke(std::move(options));
+
+  // The success callback should be called immediately after panel creation.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithActionableOptionsSucceeds) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.prompts.push_back("Actionable prompt");
+  options.on_success = success_future.GetCallback();
+
+  // Call invoke with an actionable field to ensure the IPC triggers correctly.
+  coordinator().Invoke(std::move(options));
+
+  // The success callback should be called after the web client acks the mojo
+  // call.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        InvokeCallsOnConversationIdReady) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   base::test::TestFuture<void> success_future;

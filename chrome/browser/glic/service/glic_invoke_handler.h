@@ -45,6 +45,9 @@ class GlicInvokeHandler {
 
   using ResolvedTarget = std::variant<TabSurface, Floating>;
 
+  static bool RequiresClientInvoke(const mojom::InvokeOptionsPtr& mojo_options,
+                                   bool has_auto_submit_passkey);
+
   // Resolves the target surface to a specific tab.
   static ResolvedTarget ResolveTargetSurface(Profile* profile,
                                              const Target& target);

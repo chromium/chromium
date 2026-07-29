@@ -196,6 +196,20 @@ GlicInvokeHandler::GlicInvokeHandler(
 
 GlicInvokeHandler::~GlicInvokeHandler() = default;
 
+bool GlicInvokeHandler::RequiresClientInvoke(
+    const mojom::InvokeOptionsPtr& mojo_options,
+    bool has_auto_submit_passkey) {
+  return has_auto_submit_passkey || !mojo_options->payload.is_null() ||
+         (mojo_options->prompts && !mojo_options->prompts->empty()) ||
+         !mojo_options->context.is_null() ||
+         mojo_options->feature_mode != mojom::FeatureMode::kUnspecified ||
+         mojo_options->actuation_target != mojom::ActuationTarget::kUnknown ||
+         mojo_options->disable_zero_state_suggestions ||
+         mojo_options->skill_id.has_value() ||
+         !mojo_options->zss_config.is_null() ||
+         mojo_options->actuation_tab_id.has_value();
+}
+
 void GlicInvokeHandler::Invoke() {
   timeout_timer_.Start(FROM_HERE, options_.timeout.value_or(kDefaultTimeout),
                        base::BindOnce(&GlicInvokeHandler::OnError,
@@ -299,8 +313,12 @@ void GlicInvokeHandler::Invoke() {
         instance_->profile(), options_.fre_override));
   }
 
-  tasks.push_back(std::make_unique<SendToClientTask>(
-      &*instance_, CreateMojoOptions(), auto_submit_passkey_));
+  mojom::InvokeOptionsPtr mojo_options = CreateMojoOptions();
+
+  if (RequiresClientInvoke(mojo_options, auto_submit_passkey_.has_value())) {
+    tasks.push_back(std::make_unique<SendToClientTask>(
+        &*instance_, std::move(mojo_options), auto_submit_passkey_));
+  }
 
   if (IsActuatingFeatureMode()) {
     if (auto* task_manager = instance_->GetActorTaskManager()) {

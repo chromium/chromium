@@ -716,6 +716,7 @@ source_set("unit_tests") {
     "host/glic_web_contents_warming_pool_unittest.cc",
     "public/glic_cui_tracker_unittest.cc",
     "public/glic_enabling_unittest.cc",
+    "service/glic_invoke_handler_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
   ]
   deps = [
