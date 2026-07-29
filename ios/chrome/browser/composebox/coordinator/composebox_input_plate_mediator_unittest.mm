@@ -133,6 +133,9 @@
 - (void)updatePreferredContentSizeForNewTextFieldHeight {
 }
 
+- (void)disableSending:(BOOL)disableSending {
+}
+
 @end
 
 namespace {

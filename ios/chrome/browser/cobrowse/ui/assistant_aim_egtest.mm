@@ -907,8 +907,8 @@ id<GREYMatcher> CloseButton() {
                                                      nil)];
 }
 
-// Tests that pressing Return in the composebox text view sends the query,
-// and Shift+Return adds a newline.
+// Tests that pressing Return in the composebox text view does not send the
+// query and Shift+Return adds a newline.
 - (void)testComposeboxReturnKeys {
   if ([ComposeboxAppInterface isServerSideStateEnabled]) {
     EARL_GREY_TEST_SKIPPED(
@@ -955,10 +955,12 @@ id<GREYMatcher> CloseButton() {
   // Now press Return (without shift) to send the query.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\r" flags:0];
 
-  // Verify that the query is sending (e.g. the text is cleared).
+  // Verify that the query is not sending (e.g. the text not is cleared).
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_allOf(composeboxInput,
-                                                     OmniboxText(""), nil)];
+      waitForUIElementToAppearWithMatcher:grey_allOf(
+                                              composeboxInput,
+                                              OmniboxText("line 1\nline 2\n"),
+                                              nil)];
 }
 
 // Tests that the cobrowse input plate is hidden when the plus menu bottom sheet

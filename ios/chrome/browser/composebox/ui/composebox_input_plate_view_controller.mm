@@ -298,6 +298,9 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   // Whether to trigger a glow effect on appear.
   BOOL _glowOnAppear;
+
+  // Whether to force disable sending.
+  BOOL _disableSending;
 }
 
 /// ComposeboxAnimationContext
@@ -598,6 +601,11 @@ UIImage* SendButtonImage(BOOL highlighted,
 }
 
 - (void)updateSendButtonStateIfNeeded {
+  if (_disableSending) {
+    [self enableSendButton:NO];
+    return;
+  }
+
   BOOL allLoaded = YES;
   for (ComposeboxInputItem* item in _currentItems) {
     if (item.state != ComposeboxInputItemState::kLoaded) {
@@ -610,17 +618,18 @@ UIImage* SendButtonImage(BOOL highlighted,
 }
 
 - (void)enableSendButton:(BOOL)enableSending {
-  if (enableSending) {
-    _sendButton.alpha = 1;
-    _sendButton.enabled = YES;
-    [_editView forceDisableReturnKey:NO];
-    [_editView setAllowsReturnKeyWithEmptyText:YES];
-  } else {
-    _sendButton.alpha = kSendButtonDisabledOpacity;
-    _sendButton.enabled = NO;
-    [_editView forceDisableReturnKey:YES];
-    [_editView setAllowsReturnKeyWithEmptyText:NO];
-  }
+  _sendButton.enabled = enableSending;
+  _sendButton.alpha = enableSending ? 1 : kSendButtonDisabledOpacity;
+  BOOL isCobrowse = _entrypoint == ComposeboxEntrypoint::kCobrowse;
+  [self enableKeyboardSendButton:enableSending
+      allowsReturnKeyWithEmptyText:!isCobrowse];
+}
+
+// Enables the send button in the keyboard.
+- (void)enableKeyboardSendButton:(BOOL)enabled
+    allowsReturnKeyWithEmptyText:(BOOL)allowsReturnKeyWithEmptyText {
+  [_editView forceDisableReturnKey:!enabled];
+  [_editView setAllowsReturnKeyWithEmptyText:allowsReturnKeyWithEmptyText];
 }
 
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)controls {
@@ -745,6 +754,11 @@ UIImage* SendButtonImage(BOOL highlighted,
 - (void)updatePreferredContentSizeForNewTextFieldHeight {
   // Trigger -viewDidLayoutSubviews that will call -updatePreferredContentSize.
   [_omniboxContainer layoutIfNeeded];
+}
+
+- (void)disableSending:(BOOL)disableSending {
+  _disableSending = disableSending;
+  [self updateSendButtonStateIfNeeded];
 }
 
 #pragma mark - Actions

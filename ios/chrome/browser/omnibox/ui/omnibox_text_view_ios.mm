@@ -126,10 +126,13 @@ const CGFloat kVerticalOffset = 1;
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.enablesReturnKeyAutomatically = YES;
-    self.returnKeyType = UIReturnKeyGo;
+    BOOL isCobrowse =
+        _presentationContext == OmniboxPresentationContext::kCobrowse;
+    self.returnKeyType = isCobrowse ? UIReturnKeyDefault : UIReturnKeyGo;
     self.spellCheckingType = UITextSpellCheckingTypeNo;
     self.textAlignment = NSTextAlignmentNatural;
-    self.keyboardType = UIKeyboardTypeWebSearch;
+    self.keyboardType =
+        isCobrowse ? UIKeyboardTypeDefault : UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.allowsEditingTextAttributes = NO;
@@ -1322,7 +1325,9 @@ const CGFloat kVerticalOffset = 1;
   // trigger submission. Other unicode line breaks (e.g. pasted paragraph
   // separators) should be allowed to be inserted as text.
   BOOL isNewline = [text isEqualToString:@"\n"] || [text isEqualToString:@"\r"];
-  if (isNewline && !_insertingNewline) {
+  BOOL isCobrowse =
+      _presentationContext == OmniboxPresentationContext::kCobrowse;
+  if (isNewline && !_insertingNewline && !isCobrowse) {
     return [self.omniboxTextInputDelegate textInputShouldReturn:self];
   }
   return [self.omniboxTextInputDelegate textInput:self

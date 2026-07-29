@@ -2163,6 +2163,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
        trailingAction);
 
   [self.consumer updateVisibleControls:visibleControls];
+  BOOL shouldDisableSending = !_modeHolder.isRegularSearch && !canSend;
+  [self.consumer disableSending:shouldDisableSending];
 }
 
 /// Updates the consumer whether to show in compact mode.

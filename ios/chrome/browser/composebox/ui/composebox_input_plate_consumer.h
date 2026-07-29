@@ -38,6 +38,9 @@ enum class ComposeboxModelOption;
 // Called when the text field height changes.
 - (void)updatePreferredContentSizeForNewTextFieldHeight;
 
+// Whether to force disable the send functionality.
+- (void)disableSending:(BOOL)disableSending;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_
