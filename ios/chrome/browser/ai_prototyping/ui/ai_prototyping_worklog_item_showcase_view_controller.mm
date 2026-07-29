@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_worklog_item_showcase_view_controller.h"
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

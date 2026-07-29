@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_compact_view.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 
 namespace {
 

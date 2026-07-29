@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item.h"
+@class ActuationWorklogItem;
 
 // Defines the visibility of the connector lines for the item view.
 enum class ActuationWorklogConnectorVisibility {

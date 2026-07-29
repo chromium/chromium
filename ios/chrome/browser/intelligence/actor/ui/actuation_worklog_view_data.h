@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_ITEM_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_DATA_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_DATA_H_
 
 #import <UIKit/UIKit.h>
 
@@ -31,6 +31,8 @@ enum class ActuationWorklogItemStyle {
 @property(nonatomic, strong, readonly) UIImage* icon;
 
 // True if this node is currently active.
+// TODO(crbug.com/532209191): Remove this property from the data model and
+// manage the active state solely inside the view layer.
 @property(nonatomic, assign, getter=isActive) BOOL active;
 
 // The layout style of this node.
@@ -47,4 +49,21 @@ enum class ActuationWorklogItemStyle {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_ITEM_H_
+// View data object describing an actor tool chip in the actuation worklog.
+@interface ActuationWorklogChip : NSObject
+
+// The text displayed on the chip.
+@property(nonatomic, copy, readonly) NSString* text;
+
+// The icon displayed on the chip.
+@property(nonatomic, strong, readonly) UIImage* icon;
+
+// Designated initializer.
+- (instancetype)initWithText:(NSString*)text
+                        icon:(UIImage*)icon NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_DATA_H_

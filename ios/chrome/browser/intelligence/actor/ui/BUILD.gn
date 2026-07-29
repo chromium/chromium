@@ -8,10 +8,10 @@ source_set("ui") {
     "actor_tool_chip_view.mm",
     "actuation_worklog_compact_view.h",
     "actuation_worklog_compact_view.mm",
-    "actuation_worklog_item.h",
-    "actuation_worklog_item.mm",
     "actuation_worklog_item_view.h",
     "actuation_worklog_item_view.mm",
+    "actuation_worklog_view_data.h",
+    "actuation_worklog_view_data.mm",
   ]
   deps = [
     "//base",
