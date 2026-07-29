@@ -2110,7 +2110,13 @@ bool StateProvider::ShouldShowGradientAvatarRing() const {
 }
 
 std::u16string StateProvider::GetAvatarTooltipText() const {
-  return profiles::GetAvatarNameForProfile(profile().GetPath());
+  std::u16string tooltip_text =
+      profiles::GetAvatarNameForProfile(profile().GetPath());
+  if (ShouldShowGradientAvatarRing() && !tooltip_text.empty()) {
+    tooltip_text = l10n_util::GetStringFUTF16(
+        IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, tooltip_text);
+  }
+  return tooltip_text;
 }
 
 std::pair<ChromeColorIds, ChromeColorIds> StateProvider::GetInkdropColors()
@@ -2354,6 +2360,7 @@ AvatarToolbarButtonStateManager::GetAccessibilityLabels(
       description = state_provider->GetAvatarTooltipText();
     }
   }
+
   return {name, description};
 }
 

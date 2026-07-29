@@ -464,6 +464,7 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel,
   }
 
   const std::u16string& profile_name() const { return profile_name_; }
+  const std::u16string& accessible_name() const { return accessible_name_; }
 
   // Returns |next_menu_id_| and increments it by n. This allows for 'sharing'
   // command ids with the other variable sized menu, which also uses every other
@@ -487,6 +488,7 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel,
 
   ui::ImageModel avatar_image_model_;
   std::u16string profile_name_;
+  std::u16string accessible_name_;
   raw_ptr<Profile> profile_;
   raw_ptr<ui::SimpleMenuModel::Delegate> app_menu_model_delegate_;
   // ID of the next menu item.
@@ -525,6 +527,9 @@ ProfileSubMenuModel::ProfileSubMenuModel(
         GetProfileAttributesFromProfile(profile);
     // If the profile is being deleted, profile_attributes may be null.
     if (profile_attributes) {
+      profile_name_ = GetProfileMenuDisplayName(profile_attributes);
+      accessible_name_ = profile_name_;
+
       AccountInfo account_info = GetAccountInfoFromProfile(profile);
       auto [avatar_image, icon_type] =
           account_info.IsEmpty()
@@ -553,11 +558,14 @@ ProfileSubMenuModel::ProfileSubMenuModel(
           avatar_image_model_ =
               ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
                   avatar_model, *color_provider, avatar_icon_size));
+          if (!profile_name_.empty()) {
+            accessible_name_ = l10n_util::GetStringFUTF16(
+                IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, profile_name_);
+          }
         } else {
           avatar_image_model_ = avatar_model;
         }
       }
-      profile_name_ = GetProfileMenuDisplayName(profile_attributes);
     }
   }
 
@@ -586,9 +594,11 @@ ProfileSubMenuModel::ProfileSubMenuModel(
                   avatar_icon_size, /*use_high_res_file=*/true, icon_params),
               avatar_icon_size, avatar_icon_size, profiles::SHAPE_CIRCLE));
 
+      bool has_ai_ring = false;
       if (base::FeatureList::IsEnabled(
               switches::kEnableAiSubscriptionAvatarRing) &&
           profile_entry->GetAiSubscriptionTier() > 0) {
+        has_ai_ring = true;
         avatar_model =
             ui::ImageModel::FromImageSkia(AddLinearGradientRingToAvatar(
                 avatar_model, *color_provider, avatar_icon_size));
@@ -601,6 +611,14 @@ ProfileSubMenuModel::ProfileSubMenuModel(
               GetLayoutConstant(LayoutConstant::kAppMenuMaximumCharacterLength),
               gfx::CHARACTER_BREAK)),
           avatar_model);
+      if (has_ai_ring && !display_name.empty()) {
+        std::optional<size_t> index = GetIndexOfCommandId(menu_id);
+        CHECK(index.has_value());
+        SetAccessibleNameAt(
+            index.value(),
+            l10n_util::GetStringFUTF16(
+                IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, display_name));
+      }
       other_profiles_.insert({menu_id, profile_entry->GetPath()});
     }
 
@@ -2196,6 +2214,8 @@ void AppMenuModel::Build() {
                       profile_submenu_model->avatar_image_model());
   SetElementIdentifierAt(GetIndexOfCommandId(kProfileMenuPlaceholder).value(),
                          kProfileMenuItem);
+  SetAccessibleNameAt(GetIndexOfCommandId(kProfileMenuPlaceholder).value(),
+                      profile_submenu_model->accessible_name());
   AddSeparator(ui::SPACING_SEPARATOR);
 #endif
 

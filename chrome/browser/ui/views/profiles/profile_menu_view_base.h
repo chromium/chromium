@@ -182,10 +182,12 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void SetProfileManagementHeading(const std::u16string& heading);
 
   // Does not resize the image.
-  void AddAvailableProfile(const ui::ImageModel& image_model,
-                           const std::u16string& name,
-                           bool is_guest,
-                           base::RepeatingClosure action);
+  void AddAvailableProfile(
+      const ui::ImageModel& image_model,
+      const std::u16string& name,
+      bool is_guest,
+      base::RepeatingClosure action,
+      const std::u16string& extra_accessible_text = std::u16string());
 
   void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,

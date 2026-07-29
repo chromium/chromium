@@ -510,9 +510,14 @@ void AddSignedInChipToProfileMenuItem(
   // single container view. The Profile MenuItemView has a title and multiple
   // views. As a result, the accessible name must be manually computed to
   // account for the profile chip.
-  item->GetViewAccessibility().SetName(
+  std::u16string accessible_name =
       views::MenuItemView::GetAccessibleNameForMenuItem(
-          item->title(), GetSigninStatusChipString(profile), std::nullopt));
+          item->title(), GetSigninStatusChipString(profile), std::nullopt);
+  if (ShouldShowAvatarGradientRing(profile)) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, accessible_name);
+  }
+  item->GetViewAccessibility().SetName(accessible_name);
 }
 
 // AppMenuView is a view that can contain label buttons.
