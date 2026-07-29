@@ -58,6 +58,38 @@ ChromeClipboardContext::~ChromeClipboardContext() = default;
 enterprise_connectors::ContentMetaData::CopiedTextSource
 ChromeClipboardContext::GetClipboardSource(
     const content::ClipboardEndpoint& source,
+    const char* scope_pref) {
+  using SourceType = enterprise_connectors::ContentMetaData::CopiedTextSource;
+  SourceType copied_text_source;
+
+  if (!source.browser_context()) {
+    if (source.data_transfer_endpoint() &&
+        source.data_transfer_endpoint()->off_the_record()) {
+      copied_text_source.set_context(SourceType::INCOGNITO);
+    } else {
+      copied_text_source.set_context(SourceType::CLIPBOARD);
+    }
+  } else if (Profile::FromBrowserContext(source.browser_context())
+                 ->IsIncognitoProfile()) {
+    copied_text_source.set_context(SourceType::INCOGNITO);
+  } else {
+    copied_text_source.set_context(SourceType::CLIPBOARD);
+  }
+
+  if (source.data_transfer_endpoint() &&
+      source.data_transfer_endpoint()->IsUrlType() &&
+      source.data_transfer_endpoint()->GetURL()) {
+    copied_text_source.set_url(
+        source.data_transfer_endpoint()->GetURL()->spec());
+  }
+
+  return copied_text_source;
+}
+
+// static
+enterprise_connectors::ContentMetaData::CopiedTextSource
+ChromeClipboardContext::GetClipboardSource(
+    const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const char* scope_pref) {
   CHECK(destination.browser_context());

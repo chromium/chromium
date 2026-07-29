@@ -15,9 +15,17 @@
   <message name="IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was blocked from being copied by the DataControlsRules policy. This message will be visible to the user when they attempt to paste into any UI element (perhaps even outside of Chome) that supports displaying text.">
     Pasting this content here is blocked by your administrator.
   </message>
-
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was blocked or warned from being copied by content analysis policies.">
+    Content couldn't be copied due to your organization's policies
+  </message>
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE" desc="Message inserted into the clipboard instead of the intended data, when that data was restricted to managed Chrome by content analysis policies.">
+    Content couldn't be pasted outside of the managed Chrome context due to your organization's policies
+  </message>
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_SCANNING_MESSAGE" desc="Message inserted into the clipboard instead of the intended data while content analysis scanning is ongoing.">
+    Based on your organization's policies, the content you copied is being scanned for sensitive information. Pasting may be allowed after the scan is complete.
+  </message>
   <message name="IDS_ENTERPRISE_COPY_MONITORED_TOAST_BODY" desc="Text displayed on a toast notification when a user copies content that is monitored or kept within managed Chrome by organization policy.">
-    Your organisation monitors copying
+    Your organization monitors copying
   </message>
 
   <!-- Data Controls dialog strings -->

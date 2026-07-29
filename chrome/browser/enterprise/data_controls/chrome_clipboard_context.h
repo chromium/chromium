@@ -33,6 +33,12 @@ class ChromeClipboardContext : public ClipboardContext {
                      const content::ClipboardEndpoint& destination,
                      const char* scope_pref);
 
+  // Converts `source` into a `CopiedTextSource` specifically for copy
+  // operations, where the destination is unknown.
+  static enterprise_connectors::ContentMetaData::CopiedTextSource
+  GetClipboardSource(const content::ClipboardEndpoint& source,
+                     const char* scope_pref);
+
   // ClipboardContext:
   GURL source_url() const override;
   GURL destination_url() const override;
