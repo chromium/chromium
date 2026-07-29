@@ -12,6 +12,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_handle_util.h"
+#include "base/win/windows_version.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/content_client.h"
@@ -223,16 +224,31 @@ bool WebNNModelCompilationInitializeConfig(sandbox::TargetConfig* config) {
     return false;
   }
 
-  // Add MITIGATION_WIN32K_DISABLE to the *startup* mitigation set
-  // (AddWin32kLockdownPolicy calls SetProcessMitigations, not
-  // SetDelayedProcessMitigations). The broker passes this through
-  // PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY to CreateProcess, so the kernel
-  // rejects every Win32k syscall from the child from its very first
-  // instruction of user code. This is safe because the third-party
-  // execution-provider preload helper invoked in stage 2 only needs
-  // D3D12 / DirectML / DXCore code paths, none of which require user32
-  // or gdi32.
-  result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
+  // Add MITIGATION_WIN32K_DISABLE to the *startup* mitigation set.
+  // The broker passes this through PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY
+  // to CreateProcess, so the kernel rejects every Win32k syscall from the
+  // child from its very first instruction of user code.
+  //
+  // Intentionally NOT calling AddWin32kLockdownPolicy() here because it
+  // may call SetFakeGdiInit(), which installs Export Address Table hooks that
+  // let gdi32.dll appear to load successfully (fake GdiDllInitialize returns
+  // TRUE) while leaving the GDI shared memory section unmapped. ORT's
+  // device discovery through DXGI may call
+  // gdi32!DdQueryDisplaySettingsUniqueness, which reads from that shared
+  // section. The fake-init state causes an AV because the section base is NULL.
+  //
+  // Fake GDI init only exists because winmm.dll (timeGetTime) depended on
+  // user32/gdi32 up to Windows 10 RS1. Skipping it is therefore only safe on
+  // RS1 and later.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
+    return false;
+  }
+  // TODO(crbug.com/535696699): Replace this block with
+  // AddWin32kLockdownPolicy() once ORT no longer touches GDI during device
+  // discovery.
+  sandbox::MitigationFlags flags = config->GetProcessMitigations();
+  flags |= sandbox::MITIGATION_WIN32K_DISABLE;
+  result = config->SetProcessMitigations(flags);
   if (result != sandbox::SBOX_ALL_OK) {
     return false;
   }
