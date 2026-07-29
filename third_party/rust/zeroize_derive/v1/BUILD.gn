@@ -19,13 +19,12 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_authors = "The RustCrypto Project Developers"
   cargo_pkg_name = "zeroize_derive"
   cargo_pkg_description = "Custom derive support for zeroize"
-  cargo_pkg_repository =
-      "https://github.com/RustCrypto/utils/tree/master/zeroize/derive"
-  cargo_pkg_version = "1.4.3"
+  cargo_pkg_repository = "https://github.com/RustCrypto/utils"
+  cargo_pkg_version = "1.5.0"
 
   allow_unsafe = false
 

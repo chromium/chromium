@@ -2,18 +2,18 @@
 
 #![crate_type = "proc-macro"]
 #![forbid(unsafe_code)]
-#![warn(rust_2018_idioms, trivial_casts, unused_qualifications)]
+#![warn(trivial_casts, unused_qualifications)]
 
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 use syn::{
+    Attribute, Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, Meta, Result, Variant,
+    WherePredicate,
     parse::{Parse, ParseStream},
     parse_quote,
     punctuated::Punctuated,
     token::Comma,
     visit::Visit,
-    Attribute, Data, DeriveInput, Expr, ExprLit, Field, Fields, Lit, Meta, Result, Variant,
-    WherePredicate,
 };
 
 /// Name of zeroize-related attributes
@@ -166,8 +166,10 @@ impl ZeroizeAttrs {
     /// Parse attributes from the incoming AST
     fn parse(input: &DeriveInput) -> Self {
         let mut result = Self::default();
-        let mut bound_accumulator =
-            BoundAccumulator { generics: &input.generics, params: Vec::new() };
+        let mut bound_accumulator = BoundAccumulator {
+            generics: &input.generics,
+            params: Vec::new(),
+        };
 
         for attr in &input.attrs {
             result.parse_attr(attr, None, None);
@@ -199,7 +201,7 @@ impl ZeroizeAttrs {
                     }
                 }
             }
-            Data::Union(union_) => panic!("Unsupported untagged union {:?}", union_),
+            Data::Union(union_) => panic!("Unsupported untagged union {union_:?}"),
         }
 
         result.auto_params = bound_accumulator.params;
@@ -221,7 +223,7 @@ impl ZeroizeAttrs {
 
         for meta in attr
             .parse_args_with(Punctuated::<Meta, Comma>::parse_terminated)
-            .unwrap_or_else(|e| panic!("error parsing attribute: {:?} ({})", attr, e))
+            .unwrap_or_else(|e| panic!("error parsing attribute: {attr:?} ({e})"))
         {
             self.parse_meta(&meta, variant, binding);
         }
@@ -234,8 +236,7 @@ impl ZeroizeAttrs {
 
             match (variant, binding) {
                 (_variant, Some(_binding)) => {
-                    // structs don't have a variant prefix, and only structs have bindings outside
-                    // of a variant
+                    // structs don't have a variant prefix, and only structs have bindings outside of a variant
                     let item_kind = match variant {
                         Some(_) => "enum",
                         None => "struct",
@@ -261,8 +262,7 @@ impl ZeroizeAttrs {
 
             match (variant, binding) {
                 (_variant, Some(_binding)) => {
-                    // structs don't have a variant prefix, and only structs have bindings outside
-                    // of a variant
+                    // structs don't have a variant prefix, and only structs have bindings outside of a variant
                     let item_kind = match variant {
                         Some(_) => "enum",
                         None => "struct",
@@ -281,14 +281,15 @@ impl ZeroizeAttrs {
                 )),
                 (None, None) => {
                     if let Meta::NameValue(meta_name_value) = meta {
-                        if let Expr::Lit(ExprLit { lit: Lit::Str(lit), .. }) =
-                            &meta_name_value.value
+                        if let Expr::Lit(ExprLit {
+                            lit: Lit::Str(lit), ..
+                        }) = &meta_name_value.value
                         {
                             if lit.value().is_empty() {
                                 self.bound = Some(Bounds(Punctuated::new()));
                             } else {
                                 self.bound = Some(lit.parse().unwrap_or_else(|e| {
-                                    panic!("error parsing bounds: {:?} ({})", lit, e)
+                                    panic!("error parsing bounds: {lit:?} ({e})")
                                 }));
                             }
 
@@ -303,12 +304,13 @@ impl ZeroizeAttrs {
                 }
             }
         } else if meta.path().is_ident("skip") {
-            if variant.is_none() && binding.is_none() {
-                panic!(concat!(
+            assert!(
+                !(variant.is_none() && binding.is_none()),
+                concat!(
                     "The #[zeroize(skip)] attribute is not allowed on a `struct` or `enum`. ",
                     "Use it on a field or variant instead.",
-                ))
-            }
+                )
+            );
         } else {
             panic!("unknown #[zeroize] attribute type: {:?}", meta.path());
         }
@@ -331,9 +333,10 @@ fn generate_fields(input: &DeriveInput, method: TokenStream) -> TokenStream {
             .iter()
             .filter_map(|variant| {
                 if attr_skip(&variant.attrs) {
-                    if variant.fields.iter().any(|field| attr_skip(&field.attrs)) {
-                        panic!("duplicate #[zeroize] skip flags")
-                    }
+                    assert!(
+                        !variant.fields.iter().any(|field| attr_skip(&field.attrs)),
+                        "duplicate #[zeroize] skip flags"
+                    );
                     None
                 } else {
                     let variant_id = &variant.ident;
@@ -342,7 +345,7 @@ fn generate_fields(input: &DeriveInput, method: TokenStream) -> TokenStream {
             })
             .collect(),
         Data::Struct(ref struct_) => vec![(quote! { #input_id }, &struct_.fields)],
-        Data::Union(ref union_) => panic!("Cannot generate fields for untagged union {:?}", union_),
+        Data::Union(ref union_) => panic!("Cannot generate fields for untagged union {union_:?}"),
     };
 
     let arms = fields.into_iter().map(|(name, fields)| {
@@ -355,7 +358,10 @@ fn generate_fields(input: &DeriveInput, method: TokenStream) -> TokenStream {
             }
         });
 
-        let field_bindings = fields.iter().enumerate().map(|(n, field)| field_ident(n, field));
+        let field_bindings = fields
+            .iter()
+            .enumerate()
+            .map(|(n, field)| field_ident(n, field));
 
         let binding = match fields {
             Fields::Named(_) => quote! {
@@ -392,7 +398,7 @@ fn attr_skip(attrs: &[Attribute]) -> bool {
             if list.path.is_ident(ZEROIZE_ATTR) {
                 for meta in list
                     .parse_args_with(Punctuated::<Meta, Comma>::parse_terminated)
-                    .unwrap_or_else(|e| panic!("error parsing attribute: {:?} ({})", list, e))
+                    .unwrap_or_else(|e| panic!("error parsing attribute: {list:?} ({e})"))
                 {
                     if let Meta::Path(path) = meta {
                         if path.is_ident("skip") {
@@ -450,7 +456,7 @@ mod tests {
                 impl ::zeroize::Zeroize for Z {
                     fn zeroize(&mut self) {
                         match self {
-                            #[allow(unused_variables)]
+                            #[allow(unused_variables, unused_assignments)]
                             Z { a, b, c } => {
                                 a.zeroize();
                                 b.zeroize();
@@ -461,7 +467,7 @@ mod tests {
                     }
                 }
             },
-        )
+        );
     }
 
     #[test]
@@ -480,7 +486,7 @@ mod tests {
                 impl ::zeroize::Zeroize for Z {
                     fn zeroize(&mut self) {
                         match self {
-                            #[allow(unused_variables)]
+                            #[allow(unused_variables, unused_assignments)]
                             Z { a, b, c } => {
                                 a.zeroize();
                                 b.zeroize();
@@ -497,7 +503,7 @@ mod tests {
                     }
                 }
             },
-        )
+        );
     }
 
     #[test]
@@ -516,7 +522,7 @@ mod tests {
                 impl ::zeroize::Zeroize for Z {
                     fn zeroize(&mut self) {
                         match self {
-                            #[allow(unused_variables)]
+                            #[allow(unused_variables, unused_assignments)]
                             Z { a, b, c } => {
                                 a.zeroize();
                                 b.zeroize()
@@ -526,7 +532,7 @@ mod tests {
                     }
                 }
             },
-        )
+        );
     }
 
     #[test]
@@ -541,7 +547,7 @@ mod tests {
                 impl<T> ::zeroize::Zeroize for Z<T> where T: MyTrait {
                     fn zeroize(&mut self) {
                         match self {
-                            #[allow(unused_variables)]
+                            #[allow(unused_variables, unused_assignments)]
                             Z(__zeroize_field_0) => {
                                 __zeroize_field_0.zeroize()
                             }
@@ -550,7 +556,7 @@ mod tests {
                     }
                 }
             },
-        )
+        );
     }
 
     #[test]
@@ -570,7 +576,7 @@ mod tests {
                         use ::zeroize::__internal::AssertZeroize;
                         use ::zeroize::__internal::AssertZeroizeOnDrop;
                         match self {
-                            #[allow(unused_variables)]
+                            #[allow(unused_variables, unused_assignments)]
                             Z { a, b, c } => {
                                 a.zeroize_or_on_drop();
                                 b.zeroize_or_on_drop();
@@ -583,7 +589,7 @@ mod tests {
                 #[doc(hidden)]
                 impl ::zeroize::ZeroizeOnDrop for Z {}
             },
-        )
+        );
     }
 
     #[test]

@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
-rust-version = "1.56"
+edition = "2024"
+rust-version = "1.85"
 name = "zeroize_derive"
-version = "1.4.3"
+version = "1.5.0"
 authors = ["The RustCrypto Project Developers"]
 build = false
 autolib = false
@@ -22,6 +22,7 @@ autoexamples = false
 autotests = false
 autobenches = false
 description = "Custom derive support for zeroize"
+documentation = "https://docs.rs/zeroize_derive"
 readme = "README.md"
 keywords = [
     "memory",
@@ -37,8 +38,7 @@ categories = [
     "os",
 ]
 license = "Apache-2.0 OR MIT"
-repository = "https://github.com/RustCrypto/utils/tree/master/zeroize/derive"
-resolver = "1"
+repository = "https://github.com/RustCrypto/utils"
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--document-private-items"]
@@ -61,3 +61,43 @@ features = [
     "extra-traits",
     "visit",
 ]
+
+[lints.clippy]
+borrow_as_ptr = "warn"
+cast_lossless = "warn"
+cast_possible_truncation = "warn"
+cast_possible_wrap = "warn"
+cast_precision_loss = "warn"
+cast_sign_loss = "warn"
+checked_conversions = "warn"
+doc_markdown = "warn"
+from_iter_instead_of_collect = "warn"
+implicit_saturating_sub = "warn"
+manual_assert = "warn"
+map_unwrap_or = "warn"
+missing_errors_doc = "warn"
+missing_panics_doc = "warn"
+mod_module_files = "warn"
+must_use_candidate = "warn"
+needless_range_loop = "allow"
+ptr_as_ptr = "warn"
+redundant_closure_for_method_calls = "warn"
+ref_as_ptr = "warn"
+return_self_not_must_use = "warn"
+semicolon_if_nothing_returned = "warn"
+std_instead_of_alloc = "warn"
+std_instead_of_core = "warn"
+trivially_copy_pass_by_ref = "warn"
+undocumented_unsafe_blocks = "warn"
+unnecessary_safety_comment = "warn"
+unwrap_in_result = "warn"
+unwrap_used = "warn"
+
+[lints.rust]
+missing_copy_implementations = "warn"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+trivial_casts = "warn"
+trivial_numeric_casts = "warn"
+unused_lifetimes = "warn"
+unused_qualifications = "warn"

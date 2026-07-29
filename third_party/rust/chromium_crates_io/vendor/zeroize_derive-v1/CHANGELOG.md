@@ -4,10 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.4.3 (2025-12-29)
+## 1.5.0 (2026-06-12)
+### Changed
+- Edition changed to 2024 and MSRV bumped to 1.85 ([#1149])
+
 ### Fixed
+- Unnecessary qualifications ([#1072])
 - Rust 1.92 warnings ([#1270])
 
+[#1149]: https://github.com/RustCrypto/utils/pull/1149
+[#1072]: https://github.com/RustCrypto/utils/pull/1072
 [#1270]: https://github.com/RustCrypto/utils/pull/1270
 
 ## 1.4.2 (2023-03-30)

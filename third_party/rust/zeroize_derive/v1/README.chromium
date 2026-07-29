@@ -1,7 +1,7 @@
 Name: zeroize_derive
 URL: https://crates.io/crates/zeroize_derive
-Version: 1.4.3
-Revision: 8a65644c8a6ed939c541ce590ec463450e3a5153
+Version: 1.5.0
+Revision: 1ea42bb68f560a2909c856b20aa3c62901f6305c
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/zeroize_derive-v1/LICENSE-APACHE
