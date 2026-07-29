@@ -17,7 +17,6 @@ found in the LICENSE file.
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="4dp"
         android:paddingEnd="@dimen/at_memory_flyout_padding"
         android:layout_marginBottom="@dimen/at_memory_flyout_default_margin">
 
@@ -25,7 +24,6 @@ found in the LICENSE file.
             android:id="@+id/flyout_back_button"
             android:layout_width="@dimen/min_touch_target_size"
             android:layout_height="@dimen/min_touch_target_size"
-            android:layout_marginEnd="4dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_arrow_back_24dp"
             android:contentDescription="@string/back"
