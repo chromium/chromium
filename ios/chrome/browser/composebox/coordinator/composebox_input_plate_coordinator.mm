@@ -892,7 +892,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   for (ComposeboxPickerDriveResult* result in results) {
     [_mediator processDriveFileWithIdentifier:result.identifier
                                          name:result.fileName
-                                     mimeType:result.mimeType];
+                                     mimeType:result.mimeType
+                                         icon:result.icon];
   }
 }
 

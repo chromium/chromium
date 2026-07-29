@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_COORDINATOR_COMPOSEBOX_PICKER_DRIVE_RESULT_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_COORDINATOR_COMPOSEBOX_PICKER_DRIVE_RESULT_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Represents a picked Google Drive file result.
 @interface ComposeboxPickerDriveResult : NSObject
@@ -16,6 +16,8 @@
 @property(nonatomic, copy) NSString* fileName;
 /// The mime type of the Drive item.
 @property(nonatomic, copy) NSString* mimeType;
+/// The icon of the Drive item.
+@property(nonatomic, strong) UIImage* icon;
 
 @end
 

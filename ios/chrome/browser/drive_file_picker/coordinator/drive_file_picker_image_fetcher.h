@@ -46,6 +46,9 @@ class DriveFilePickerImageFetcher {
   // Returns whether a fetch for `item` is in progress.
   BOOL IsFetchInProgress(const DriveItem& item);
 
+  // Returns the cached image for `item` if already fetched, or nil.
+  UIImage* GetFetchedImage(const DriveItem& item) const;
+
  private:
   // Called when the image data has been fetched.
   void OnImageFetched(DriveItem item,
