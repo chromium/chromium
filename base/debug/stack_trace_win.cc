@@ -188,6 +188,13 @@ bool MaybeLoadDbghelp() {
   if (!dbghelp_handle) {
     return false;
   }
+  // Starting in SDK 10.0.28000, dbghelp loads msdia140.dll dynamically at
+  // runtime so we need to pre-load it before entering a sandbox.
+  // TODO(crbug.com/534305839): Once we stabilize on 10.0.28000+, return false
+  // if loading fails.
+  if (!::GetModuleHandle(L"msdia140.dll")) {
+    ::LoadLibrary(L"msdia140.dll");
+  }
   // If the module is loaded, force resolve delayloads.
   auto loaded = base::win::LoadAllImportsForDll("dbghelp.dll");
   // In tests where dbghelp is not delayloaded this can safely be 'false', a

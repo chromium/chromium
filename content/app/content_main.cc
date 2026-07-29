@@ -136,6 +136,7 @@ void CommonSubprocessInit() {
 #if !defined(OFFICIAL_BUILD) && BUILDFLAG(IS_WIN)
   base::RouteStdioToConsole(false);
   LoadLibraryA("dbghelp.dll");
+  LoadLibraryA("msdia140.dll");
 #endif
 }
 

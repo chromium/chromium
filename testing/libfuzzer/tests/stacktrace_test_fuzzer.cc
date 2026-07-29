@@ -24,7 +24,23 @@ NOINLINE int TriggerCheck() {
   CHECK(false);
 }
 
+#if defined(_WIN32)
+#include <windows.h>
+
+// We need to preload these dlls, because if they get loaded during
+// symbolization it can cause reentrancy into asan's malloc handler.
+struct WinDllPreloader {
+  WinDllPreloader() {
+    ::LoadLibraryW(L"dbghelp.dll");
+    ::LoadLibraryW(L"msdia140.dll");
+  }
+};
+#endif
+
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> bytes) {
+#if defined(_WIN32)
+  static WinDllPreloader win_dll_preloader;
+#endif
   auto str = base::as_string_view(bytes);
 
   if (str == "uaf") {

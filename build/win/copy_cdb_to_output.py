@@ -100,6 +100,20 @@ def _CopyCDBToOutput(output_dir, target_arch):
   _CopyImpl('uext.dll', dst_winext_dir, src_winext_dir)
   _CopyImpl('exts.dll', dst_winxp_dir, src_winxp_dir)
   _CopyImpl('ntsdexts.dll', dst_winxp_dir, src_winxp_dir)
+
+  # msdia140.dll must be copied from the DIA SDK directory in the toolchain
+  # package rather than the SDK Debuggers directory because the Debuggers
+  # version statically links ole32.dll, which pulls user32.dll into memory.
+  assert ('GYP_MSVS_OVERRIDE_PATH' in os.environ)  # Just to make sure
+  vs_path = os.environ.get('GYP_MSVS_OVERRIDE_PATH')
+  arch_str = {
+      'x64': 'amd64',
+      'arm64': 'arm64',
+  }.get(target_arch, '')
+  dia_dir = os.path.join(vs_toolchain.NormalizePath(vs_path), 'DIA SDK', 'bin',
+                         arch_str)
+  if os.path.exists(os.path.join(dia_dir, 'msdia140.dll')):
+    _CopyImpl('msdia140.dll', output_dir, dia_dir)
   return 0
 
 

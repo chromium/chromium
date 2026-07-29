@@ -418,6 +418,9 @@ int DispatchCall() {
     if (!LoadLibraryA("dbghelp.dll")) {
       return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
     }
+    // TODO(crbug.com/534305839): Return a failure if we fail to load this,
+    // once we stabilize on win SDK 28000
+    LoadLibraryA("msdia140.dll");
 #endif
 
     target->LowerToken();

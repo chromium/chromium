@@ -64,8 +64,8 @@ TEST(FuzzerStacktraceTest, SymbolizesUAF) {
       R"(ERROR: AddressSanitizer: heap-use-after-free on address 0x[0-9a-f]+.*)",
       R"(READ of size 4 at 0x[0-9a-f]+ thread T[0-9]+)",
 #if BUILDFLAG(IS_WIN)
-      R"(#0 0x[0-9a-f]+ in TriggerUAF(\(void\))? [A-Z]:\\.*testing\\libfuzzer)"
-      R"(\\tests\\stacktrace_test_fuzzer.cc:[0-9]+)",
+      R"(#0 0x[0-9a-f]+ in TriggerUAF(\(void\))? .*testing[/\\]libfuzzer)"
+      R"([/\\]tests[/\\]stacktrace_test_fuzzer.cc:[0-9]+(:[0-9]+)?)",
 #elif BUILDFLAG(IS_MAC)
       R"(#0 0x[0-9a-f]+ in TriggerUAF\(\) \(.*/stacktrace_test_fuzzer:arm64\+0x[0-9a-f]+\))",
 #else

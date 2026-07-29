@@ -31,6 +31,7 @@ if (is_win) {
       "$root_out_dir/cdb/dbgeng.dll",
       "$root_out_dir/cdb/dbghelp.dll",
       "$root_out_dir/cdb/dbgmodel.dll",
+      "$root_out_dir/cdb/msdia140.dll",
       "$root_out_dir/cdb/winext/ext.dll",
       "$root_out_dir/cdb/winext/uext.dll",
       "$root_out_dir/cdb/winxp/exts.dll",
@@ -47,6 +48,7 @@ if (is_win) {
     data = [
       "$root_out_dir/dbghelp.dll",
       "$root_out_dir/dbgcore.dll",
+      "$root_out_dir/msdia140.dll",
     ]
     if (is_component_build || is_asan) {
       # Copy the VS runtime DLLs into the isolate so that they don't have to be
