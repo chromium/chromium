@@ -85,6 +85,8 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/account_id/account_id.h"
+#include "content/public/browser/global_routing_id.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #endif
 
 #if defined(USE_AURA)
@@ -584,7 +586,25 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       !IncognitoModeForced(params->initiating_profile)) {
     // Navigation outside of the current tab or the initial popup window from a
     // captive portal signin window should be prevented.
-    params->disposition = WindowOpenDisposition::CURRENT_TAB;
+    content::RenderFrameHost* initiator_rfh = nullptr;
+    if (params->initiator_frame_token.has_value()) {
+      initiator_rfh = content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(params->initiator_process_id,
+                                              *params->initiator_frame_token));
+    }
+    // If the navigation is initiated by a subframe that is sandboxed against
+    // top-level navigation (e.g., an iframe with allow-popups but without
+    // allow-top-navigation), rewriting the disposition to CURRENT_TAB would
+    // allow the sandboxed frame to navigate the top-level captive portal
+    // window, bypassing the sandbox restriction. In that case, fall back to
+    // NEW_POPUP so that the sandbox restriction is respected while still
+    // allowing popups.
+    if (initiator_rfh && initiator_rfh->IsSandboxed(
+                             network::mojom::WebSandboxFlags::kTopNavigation)) {
+      params->disposition = WindowOpenDisposition::NEW_POPUP;
+    } else {
+      params->disposition = WindowOpenDisposition::CURRENT_TAB;
+    }
   }
 #endif
 
