@@ -123,6 +123,7 @@ class TouchToFillPaymentMethodControllerImpl
   void OnBnplIssuerSuggestionSelected(JNIEnv* env,
                                       const std::string& issuer_id) override;
   void OnBnplTosAccepted(JNIEnv* env) override;
+  void OnUserDecisionToUseSavedCards(JNIEnv* env) override;
   int GetJavaResourceId(int native_resource_id) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
   void ResetJavaObject();

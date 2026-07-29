@@ -3437,6 +3437,75 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(0));
     }
 
+    @Test
+    public void testOnTabSelectedPayNowNotifiesNative() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), new TouchToFillDisplayOptions());
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+
+        // Select Pay Now tab
+        mCoordinator.getMediatorForTesting().onTabSelected(PAY_NOW);
+
+        verify(mDelegateMock).onUserDecisionToUseSavedCards();
+        assertThat(mTouchToFillPaymentMethodModel.get(SELECTED_TAB_INDEX), is(PAY_NOW));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS})
+    public void testPayLaterTabSelectedAmountExtractedAfterSwitchingBackToPayNow() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), new TouchToFillDisplayOptions());
+
+        // Select PAY_LATER tab (amount not extracted yet and shows loading screen)
+        mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_LATER);
+        mCoordinator.showProgressScreen();
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, PROGRESS_ICON).size(), is(1));
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(0));
+
+        // Select PAY_NOW tab
+        mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_NOW);
+        itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
+
+        // Amount is extracted
+        mCoordinator.showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+
+        // Select PAY_LATER tab again -> BNPL issuers are shown
+        mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_LATER);
+        itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, PROGRESS_ICON).size(), is(0));
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(1));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS})
+    public void testPayLaterTabSelectedAmountStillNotExtractedAfterSwitchingBackToPayNow() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), new TouchToFillDisplayOptions());
+
+        // Select PAY_LATER tab (amount not extracted yet and shows loading screen 1st time)
+        mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_LATER);
+        mCoordinator.showProgressScreen();
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, PROGRESS_ICON).size(), is(1));
+
+        // Select PAY_NOW tab
+        mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_NOW);
+        itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
+
+        // Select PAY_LATER tab again (amount still not extracted and shows loading screen 2nd time)
+        mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_LATER);
+        mCoordinator.showProgressScreen();
+
+        itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, PROGRESS_ICON).size(), is(1));
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(0));
+    }
+
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {
         return StreamSupport.stream(items.spliterator(), false)
                 .filter(item -> item.type == type)

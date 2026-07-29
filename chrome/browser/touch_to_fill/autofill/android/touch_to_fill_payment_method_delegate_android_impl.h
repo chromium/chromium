@@ -144,6 +144,7 @@ class TouchToFillPaymentMethodDelegateAndroidImpl
                                     bool is_virtual) override;
   void BnplSuggestionSelected(std::optional<int64_t> extracted_amount) override;
   void OnBnplTosAccepted() override;
+  void OnUserDecisionToUseSavedCards() override;
   void IbanSuggestionSelected(
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
   void LoyaltyCardSuggestionSelected(const LoyaltyCard& loyalty_card) override;

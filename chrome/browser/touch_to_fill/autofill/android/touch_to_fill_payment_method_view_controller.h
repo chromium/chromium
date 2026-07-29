@@ -50,6 +50,8 @@ class TouchToFillPaymentMethodViewController {
   // Called when the user accepted the terms of service for linking a BNPL
   // issuer.
   virtual void OnBnplTosAccepted(JNIEnv* env) = 0;
+  // Handles the user selecting the Pay Now tab to use saved credit cards.
+  virtual void OnUserDecisionToUseSavedCards(JNIEnv* env) = 0;
   virtual int GetJavaResourceId(int native_resource_id) const = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };

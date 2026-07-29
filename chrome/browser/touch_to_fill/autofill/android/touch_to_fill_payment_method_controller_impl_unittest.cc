@@ -171,6 +171,7 @@ class MockTouchToFillPaymentMethodDelegateAndroidImpl
               (const std::string& issuer_id),
               (override));
   MOCK_METHOD(void, OnBnplTosAccepted, (), (override));
+  MOCK_METHOD(void, OnUserDecisionToUseSavedCards, (), (override));
 
  private:
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
@@ -632,6 +633,18 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest, BnplSuggestionSelected) {
   EXPECT_CALL(ttf_delegate(), BnplSuggestionSelected(extracted_amount));
   payment_method_controller().BnplSuggestionSelected(/*JNIEnv*=*/nullptr,
                                                      extracted_amount);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerImplTest,
+       OnUserDecisionToUseSavedCards) {
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+
+  EXPECT_CALL(ttf_delegate(), OnUserDecisionToUseSavedCards());
+  payment_method_controller().OnUserDecisionToUseSavedCards(
+      /*JNIEnv*=*/nullptr);
 }
 
 // Tests that accepting a (credit card) suggestion on TTF from an inactive tab

@@ -685,6 +685,7 @@ class MockTouchToFillPaymentMethodDelegate
               BnplSuggestionSelected,
               (std::optional<int64_t> extracted_amount),
               (override));
+  MOCK_METHOD(void, OnUserDecisionToUseSavedCards, (), (override));
   MOCK_METHOD(void,
               IbanSuggestionSelected,
               ((std::variant<Iban::Guid, Iban::InstrumentId>)),

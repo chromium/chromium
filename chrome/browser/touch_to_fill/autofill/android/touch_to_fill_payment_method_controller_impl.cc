@@ -423,6 +423,15 @@ void TouchToFillPaymentMethodControllerImpl::OnBnplTosAccepted(JNIEnv* env) {
   delegate_->OnBnplTosAccepted();
 }
 
+void TouchToFillPaymentMethodControllerImpl::OnUserDecisionToUseSavedCards(
+    JNIEnv* env) {
+  if (!IsActiveWebContents() || !delegate_) {
+    Hide();
+    return;
+  }
+  delegate_->OnUserDecisionToUseSavedCards();
+}
+
 int TouchToFillPaymentMethodControllerImpl::GetJavaResourceId(
     int native_resource_id) const {
   return ResourceMapper::MapToJavaDrawableId(native_resource_id);

@@ -532,6 +532,7 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
         mBnplIssuerContexts = null;
+        mShowBnplLoadingInTab = false;
         mBnplSuggestion = null;
         mBnplSuggestionModel = null;
 
@@ -583,7 +584,13 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
     public void onTabSelected(@PaymentMethodTabId int tabIndex) {
         mModel.set(SELECTED_TAB_INDEX, tabIndex);
-        if (tabIndex == PAY_LATER && mBnplIssuerContexts == null && !mShowBnplLoadingInTab) {
+        if (tabIndex == PAY_NOW) {
+            mDelegate.onUserDecisionToUseSavedCards();
+            if (mShowBnplLoadingInTab) {
+                mShowBnplLoadingInTab = false;
+                mBnplIssuerContexts = null;
+            }
+        } else if (tabIndex == PAY_LATER && mBnplIssuerContexts == null && !mShowBnplLoadingInTab) {
             mDelegate.bnplSuggestionSelected(null);
         }
         mModel.set(SHEET_ITEMS, tabIndex == PAY_NOW ? getCreditCardTabItems() : getBnplTabItems());
@@ -902,7 +909,9 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         if (mModel.get(CURRENT_SCREEN) == TABBED_HOME_SCREEN) {
             mShowBnplLoadingInTab = false;
             mBnplIssuerContexts = bnplIssuerContexts;
-            onTabSelected(PAY_LATER); // Refresh Pay Later tab to show loaded issuers.
+            if (mModel.get(SELECTED_TAB_INDEX) == PAY_LATER) {
+                onTabSelected(PAY_LATER); // Refresh Pay Later tab to show loaded issuers.
+            }
             return;
         }
         assert mBnplSuggestion != null;
@@ -1174,6 +1183,8 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         // we allow showing the bottom sheet again. The ideal approach is to create a list of types
         // that can be shown again.
         mDelegate.onDismissed(dismissedByUser, shouldReshow(dismissedByUser));
+        mBnplIssuerContexts = null;
+        mShowBnplLoadingInTab = false;
         if (dismissedByUser) {
             if (mSuggestions != null) {
                 if (mModel.get(CURRENT_SCREEN) == BNPL_ISSUER_SELECTION_SCREEN) {

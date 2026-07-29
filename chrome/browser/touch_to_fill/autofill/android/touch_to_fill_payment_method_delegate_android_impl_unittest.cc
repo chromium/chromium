@@ -445,6 +445,14 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
   std::move(captured_callback).Run(test_card);
 }
 
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
+       OnUserDecisionToUseSavedCards_CallsBnplManager) {
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnUserDecisionToUseSavedCards);
+
+  touch_to_fill_delegate_->OnUserDecisionToUseSavedCards();
+}
+
 // Params of TouchToFillPaymentMethodDelegateAndroidImplPaymentMethodUnitTest:
 // -- FillingProduct: Indicates the Autofill data type to test. Supported data
 // types are:
