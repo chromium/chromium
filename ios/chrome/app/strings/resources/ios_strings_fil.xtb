@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Na-export Na</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} password}one{{count} password}other{{count} na password}}</translation>
+<translation id="1274721046703404848">Pamahalaan ang koneksyon sa pagitan ng mga serbisyo ng Search at mga Google Workspace app, tulad ng Google Drive</translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1279024913354609713">Huwag Payagan</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
@@ -2189,6 +2190,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8263228331881858381">Na-save ang passkey</translation>
 <translation id="8263809106706527890">Posibleng nagkaroon ng pagbabago sa iyong mga setting ng default browser. Makikita mo ito sa mga setting.</translation>
 <translation id="8264966119170358612">Nalantad ang ilan sa iyong mga naka-save na password sa isang paglabag sa data na hindi sa Google. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Buksan ang menu ng Chrome</translation>
 <translation id="826614135184049678">Na-sign out ka sa iyong account na <ph name="USER_NAME" />, bilang bahagi ng pag-reset ng iPad mo. Para mag-sign in ulit, i-tap ang "Magpatuloy" sa ibaba.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Lilipat ka na ng profile</translation>

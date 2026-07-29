@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Wedi Allforio yn Llwyddiannus</translation>
 <translation id="1272079795634619415">Stopio</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} cyfrinair}zero{{count} cyfrinair}two{{count} gyfrinair}few{{count} cyfrinair}many{{count} cyfrinair}other{{count} cyfrinair}}</translation>
+<translation id="1274721046703404848">Rheoli'r cysylltiad rhwng gwasanaethau Search ac apiau Google Workspace, megis Google Drive</translation>
 <translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="1279024913354609713">Peidio â chaniatáu</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
@@ -2189,6 +2190,7 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="8263228331881858381">Cod pas wedi'i gadw</translation>
 <translation id="8263809106706527890">Mae'n bosib y bu newid i osodiadau eich porwr diofyn. Gallwch wirio hyn yn y gosodiadau.</translation>
 <translation id="8264966119170358612">Cafodd rhai o'ch cyfrineiriau a gadwyd eu datgelu mewn achos o dor diogelwch data y tu allan i Google. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Agorwch y ddewislen Chrome</translation>
 <translation id="826614135184049678">Cawsoch eich allgofnodi o'ch cyfrif, <ph name="USER_NAME" />, fel rhan o'ch ailosodiad iPad. I fewngofnodi eto, tapiwch "Parhau" isod.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Rydych ar fin newid proffil</translation>

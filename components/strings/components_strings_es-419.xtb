@@ -599,6 +599,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="192095259937375524">Botón Compartir esta pestaña: actívalo para compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
 <translation id="1924727005275031552">Nueva</translation>
 <translation id="1927439846988093361">Cuidados del cabello</translation>
+<translation id="1927930548546198515">Chrome registra cómo usas la función, por ejemplo, tus solicitudes y tu comportamiento cuando aceptas o ignoras las sugerencias</translation>
 <translation id="1932098463447129402">No antes</translation>
 <translation id="1935353813610900265">Envía comentarios sobre history search con la tecnología de IA</translation>
 <translation id="1935995810530254458">Copiar de todos modos</translation>
@@ -985,6 +986,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2491120439723279231">El certificado del servidor contiene errores.</translation>
 <translation id="2491414235131909199">Una extensión bloqueó esta página</translation>
 <translation id="2493122313108999546">Se cambió el tamaño</translation>
+<translation id="249376477913017009">Se abrió el aviso de autocompletar desde Gmail y más</translation>
 <translation id="2495083838625180221">Analizador de JSON</translation>
 <translation id="2496402116964818747">Puedes cambiar la opción de usar la huella dactilar para completar contraseñas en <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Escanear tarjeta nueva</translation>
@@ -1153,6 +1155,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742128390261873684">Automatización del hogar</translation>
 <translation id="2743512410823092182">Recursos y equipos para DJ</translation>
+<translation id="275259155159336003">Con la tecnología de Inteligencia personalizada con Gemini. Es posible que se revisen tus solicitudes, títulos de páginas y URLs para mejorar la función Autocompletar mejorado. <ph name="BEGIN_LINK" />Administrar la configuración<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Subiendo <ph name="COUNT" /> archivos a Google Drive</translation>
 <translation id="2759299890026163685">Asegúrate de tener una conexión a Internet estable antes de volver a intentarlo</translation>
 <translation id="2759825833388495838">completar tu contraseña en <ph name="APP_NAME" /></translation>
@@ -1437,6 +1440,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las actualizaciones de ChromeOS.</translation>
 <translation id="3209034400446768650">La página puede cobrar cargos</translation>
+<translation id="3209071504641569648">Tus solicitudes, títulos de páginas y URLs se envían a Google y es posible que se revisen para mejorar la función Autocompletado mejorado</translation>
 <translation id="3212468046572043669">Comenzó la descarga. Para verla, arrastra desde la parte superior y presiona el botón Atrás.</translation>
 <translation id="3212581601480735796">Se supervisa tu actividad en <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">No se pudo usar WebAuthn</translation>
@@ -1474,6 +1478,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3254301855501243548">45.7 × 55.9 cm (18 × 22 in)</translation>
 <translation id="3255926992597692024">Chromium está intentando modificar la configuración para completar formas de pago.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab, luego, Intro para crear un evento nuevo en el Calendario de Google rápidamente</translation>
+<translation id="3261180263071638338">Se cerró el aviso sobre Autocompletar desde Gmail y más</translation>
 <translation id="3261488570342242926">Obtén más información sobre las tarjetas virtuales</translation>
 <translation id="3262698603497362968">Opciones de compra</translation>
 <translation id="3264637689694266148">Si desactivas las sugerencias, es posible que se sigan procesando el título de la página y las URLs de tus pestañas para otras funciones de Chrome. Puedes administrar el acceso del navegador a estos datos en tu</translation>
@@ -2336,6 +2341,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4602465984861132303">Bolos</translation>
 <translation id="4603727370377253901">Reservas de vuelos</translation>
 <translation id="4607608436550361748">Ver sugerencias para Chrome</translation>
+<translation id="4607879293515681409">La función Autocompletar mejorado ahora puede encontrar y completar información, como números de vuelo y horarios de citas, de apps como Gmail y Fotos</translation>
 <translation id="460848736049414407">Bloqueada por el administrador</translation>
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="4612631413844865947">Se produjo un error al procesar tu pedido en <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2852,6 +2858,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5401344472773249513">Noticias sobre celebridades y entretenimiento</translation>
 <translation id="5401674281624189321">Centros de esquí y de montaña</translation>
+<translation id="5402715318763077894">¿Quieres permitir el acceso a la red local?</translation>
 <translation id="540949333488055151">Plástico (de color)</translation>
 <translation id="540969355065856584">Este servidor no pudo demostrar que se trata de <ph name="DOMAIN" />; el certificado de seguridad no es válido en este momento. Esto puede deberse a una configuración incorrecta o a un ataque que intercepta tu conexión.</translation>
 <translation id="5411462078004183575">Opción de precio bajo</translation>
@@ -3102,6 +3109,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5764725887548570807">El formato de origen no es válido.</translation>
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
+<translation id="5768323954710688012">El aviso de autocompletar desde Gmail y más está totalmente abierto</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
 <translation id="5773286975255318081">Como nombres de usuario de perfiles y versiones de navegadores</translation>
 <translation id="5774897849666641211">Haz preguntas sobre esta pestaña</translation>

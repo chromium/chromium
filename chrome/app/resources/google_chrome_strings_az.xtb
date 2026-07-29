@@ -198,6 +198,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Şəbəkəyə Giriş - Chrome</translation>
 <translation id="2970681950995291301">Google Hesabını Chrome-dan silmək üçün Ayarlar səhifəsində Chrome-dan çıxın</translation>
 <translation id="2976869732253036751">Telefonda Chrome ilə qiymət izləmə xəbərdarlıqları əldə edin</translation>
+<translation id="2985091279808606502">Chrome bu sayt üçün yerli şəbəkə icazəsi tələb edir</translation>
 <translation id="2991167882679440829">Google hesabınızda yadda saxladığınız parollar və digər Chrome datası bu cihazdan silinəcək. Onları Chrome-da yenidən istifadə etmək üçün təkrar daxil olun.</translation>
 <translation id="2994465299455873643">Şifrələmə xidmətləri və köhnəldiyi təqdirdə <ph name="BROWSER_NAME" /> brauzerini bərpa etmək üçün təhlükəsiz yol təqdim edir. Bu xidmət deaktiv edilərsə, <ph name="BROWSER_NAME" /> şifrələnmiş dataya girişi itirə bilər və <ph name="BROWSER_NAME" /> özünü bərpa edə bilməyəcək.</translation>
 <translation id="3003694935412297923">Bütün tapşırıqlar</translation>
@@ -719,6 +720,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8113883687556086139">Chrome datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8115695070094288807">Chrome sizin üçün hazırlanır...</translation>
 <translation id="8118331347066725040">Linza ilə axtarış üçün rəy göndərin</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" /> olaraq daxil olmusunuz, Google üzvlüyü. Hesab menyusunu açın</translation>
 <translation id="8129812357326543296">Google Chrome haqqında</translation>
 <translation id="813913629614996137">Başladılır...</translation>
 <translation id="8162006532256575008">Hesab olmadan Chrome istifadə edin</translation>
@@ -752,6 +754,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 
 Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq olmur. İndi çıxsanız, yadda saxlanılmamış əlfəcinlər silinəcək.</translation>
 <translation id="8458117863387545390">Chrome-u telefonda əldə edin</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" /> olaraq daxil olmusunuz, Google üzvlüyü. Hesab menyusunu açın</translation>
 <translation id="8496177819998570653">Google Parol Meneceri</translation>
 <translation id="8498858610309223613">Google Chrome üçün xüsusi güvənlik güncəllənməsi indicə tətbiq edildi. Brauzeri yenidən başladaraq açıq qalmış tablarınızı bərpa edə bilərsiniz.</translation>
 <translation id="8521348052903287641">mDNS nəqliyyatına icazə vermək üçün Google Chrome Dev ümumi qaydası.</translation>

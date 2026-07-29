@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Eksportimine õnnestus</translation>
 <translation id="1272079795634619415">Peata</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} parool}other{{count} parooli}}</translation>
+<translation id="1274721046703404848">Otsinguteenuste ja Google Workspace'i rakenduste (nt Google Drive) ühenduse haldamine</translation>
 <translation id="1275718070701477396">Valitud</translation>
 <translation id="1279024913354609713">Ära luba</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
@@ -2189,6 +2190,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="8263228331881858381">Pääsuvõti salvestati</translation>
 <translation id="8263809106706527890">Võimalik, et teie brauseri vaikeseadeid on muudetud. Saate seda seadetes kontrollida.</translation>
 <translation id="8264966119170358612">Mõned teie salvestatud paroolid avalikustati Google'i-välise andmetega seotud rikkumise käigus. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Avage Chrome'i menüü</translation>
 <translation id="826614135184049678">Teid logiti iPadi lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Uuesti sisselogimiseks puudutage allpool nuppu „Jätka”.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Jätkates vahetate profiili</translation>

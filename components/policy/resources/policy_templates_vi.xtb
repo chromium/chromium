@@ -5415,19 +5415,6 @@ Chính sách này không có hiệu lực nếu bạn bật, để trống hoặ
 <translation id="4501388411278568771">Các bản nâng cấp HTTPS có thể được áp dụng tuỳ thuộc vào trạng thái khởi chạy tính năng.</translation>
 <translation id="45036050223225148">Tắt thử nghiệm ClientHello được mã hoá của TLS (Bảo mật tầng truyền tải)</translation>
 <translation id="4503935079903510542">Hình ảnh đĩa có thể khởi động theo chuẩn UEFI được dùng để cài đặt máy ảo trên thiết bị x86_64.</translation>
-<translation id="4505299160236615603">Việc đặt chính sách này sẽ cho phép bạn truy cập vào các URL có trong danh sách ở chế độ ẩn danh. Hãy dùng chính sách này để mở các trường hợp ngoại lệ đối với một số mẫu URL được xác định trong <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> theo định dạng được nêu tại ( https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, thì danh sách cho phép sẽ được ưu tiên. Nếu một URL khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép. Còn nếu URL đó khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì các chính sách chung về <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách cho phép sẽ bị chặn ở chế độ ẩn danh.
-
-Nếu bạn đặt <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> thành không cho phép (giá trị 1) nhưng định cấu hình chính sách này, thì chế độ ẩn danh sẽ chỉ hoạt động đối với những URL khớp với danh sách cho phép.
-
-Nếu bạn không đặt chính sách này, thì <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> và <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> sẽ không có trường hợp ngoại lệ.
-
-Chính sách này chỉ ảnh hưởng đến chế độ ẩn danh. Để cho phép URL cho tất cả hồ sơ người dùng, vui lòng sử dụng chính sách <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Chính sách này chỉ áp dụng cho 1000 mục.</translation>
 <translation id="4508728400492074981">Kiểm soát chính sách cho tính năng First-Party Sets.</translation>
 <translation id="4510131075424939993">Chỉ định một giá trị dữ liệu ngẫu nhiên sẽ dùng trong <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> khi đánh giá thông tin nhận dạng</translation>
 <translation id="4510923771103268849">Người dùng được phép truy cập gốc vào vùng chứa Crostini</translation>
@@ -6124,19 +6111,6 @@ Nếu bạn đặt chính sách này thành <ph name="ALLOW_PASSTHROUGH_OF_SEARC
       Nếu bạn không đặt chính sách này trên các phiên bản M76 trở xuống, thì <ph name="PRODUCT_NAME" /> sẽ không thể thu thập và tải các nhật ký này lên theo mặc định. Kể từ phiên bản M77, theo mặc định, <ph name="PRODUCT_NAME" /> sẽ có thể thu thập và tải các nhật ký này lên từ hầu hết các hồ sơ chịu ảnh hưởng của chính sách doanh nghiệp dựa trên đám mây ở cấp người dùng. Kể từ phiên bản M77 đến M80, theo mặc định, <ph name="PRODUCT_NAME" /> cũng có thể thu thập và tải các nhật ký này lên từ các hồ sơ chịu ảnh hưởng của tính năng quản lý tại chỗ của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">cổng 989 (có thể được bỏ chặn cho đến ngày 1/2/2022)</translation>
 <translation id="4917385247580444890">Mạnh</translation>
-<translation id="4917925819533520480">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
-
-Các mẫu URL sẽ được so khớp với URL của mọi khung trên trang đang được kiểm tra. Hành vi kết quả phụ thuộc vào việc chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> có được đặt hay không.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mọi khung phải khớp với một mẫu trong danh sách cho phép này thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép. Nếu URL của bất kỳ khung nào không khớp, thì DevTools sẽ bị chặn đối với toàn bộ trang. Để biết thông tin về định dạng URL, hãy truy cập vào trang https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép này sẽ được ưu tiên áp dụng. Nếu URL của một khung khớp với một mẫu trong danh sách cho phép này, URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu một URL khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn không đặt chính sách này, thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="4918150584200819898">Bật tính năng tự động bắt đầu xác thực lại trực tuyến.</translation>
 <translation id="4918261735182294270">Cho phép người dùng chọn có bật <ph name="CHROME_SYNC_NAME" /> hay không</translation>
 <translation id="4918485681633125382">Bật tính năng hỗ trợ cho biểu mẫu XFA trong tài liệu PDF</translation>
@@ -12978,6 +12952,18 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 
       Nếu bạn tắt hoặc không đặt chính sách này thì thông tin nêu trên sẽ không được báo cáo.
       Nếu bạn bật chính sách này thì các lần đăng nhập/đăng xuất của thiết bị sẽ được báo cáo.</translation>
+<translation id="9087577919890548366">Nếu bạn đặt chính sách này thành Enabled (Bật), các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ chỉ hiển thị cảnh báo trong <ph name="CHROME_DEVTOOLS_NAME" /> do không kiểm tra được <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặt, các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ sử dụng
+chế độ xử lý mặc định cho các yêu cầu này.
+
+Hãy truy cập vào trang https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Chính sách doanh nghiệp này chỉ có hiệu lực tạm thời và sẽ bị xoá sau phiên bản M156.
+
+Về lâu dài, bạn có thể sử dụng chính sách <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+để đưa các mẫu URL vào danh sách cho phép. Các mẫu URL này sẽ tự động được cấp
+quyền <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9087652369391570821">Chính sách cấu hình dành cho Trình kết nối OnFileTransfer của Chrome Enterprise</translation>
 <translation id="9088433379343318874">Cho phép nhà cung cấp nội dung của người dùng được giám sát</translation>
 <translation id="9088444059179765143">Định cấu hình phương thức phát hiện múi giờ tự động</translation>

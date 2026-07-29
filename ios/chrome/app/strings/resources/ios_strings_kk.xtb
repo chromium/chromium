@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Экспорттау сәтті болды.</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} құпия сөз}other{{count} құпия сөз}}</translation>
+<translation id="1274721046703404848">Search қызметтері мен Google Drive сияқты Google Workspace қолданбалары арасындағы байланысты басқару</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1279024913354609713">Рұқсат бермеу</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
@@ -2189,6 +2190,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8263228331881858381">Кіру кілті сақталды</translation>
 <translation id="8263809106706527890">Әдепкі браузер параметрлеріне өзгеріс енгізілген болуы мүмкін. Мұны параметрлерден тексере аласыз.</translation>
 <translation id="8264966119170358612">Google-дан тыс қызметтерде деректер қауіпсіздігі бұзылуына байланысты кейбір сақталған құпия сөздеріңіз жария болды. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome мәзірін ашыңыз.</translation>
 <translation id="826614135184049678">iPad бастапқы күйіне қайтарылған кезде, аккаунтыңыздан (<ph name="USER_NAME" />) шығарылдыңыз. Аккаунтқа қайта кіру үшін төмендегі "Жалғастыру" түймесін түртіңіз.</translation>
 <translation id="8270320981823560179">Диск</translation>
 <translation id="8274795744553482834">Профильдерді ауыстырғалы жатырсыз</translation>

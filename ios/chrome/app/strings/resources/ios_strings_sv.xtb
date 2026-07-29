@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Exporten har slutförts</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} lösenord}other{{count} lösenord}}</translation>
+<translation id="1274721046703404848">Hantera anslutningen mellan söktjänster och Google Workspace-appar, till exempel Google Drive</translation>
 <translation id="1275718070701477396">Markerad</translation>
 <translation id="1279024913354609713">Tillåt inte</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
@@ -2189,6 +2190,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8263228331881858381">Nyckeln har sparats</translation>
 <translation id="8263809106706527890">Inställningarna av standardwebbläsare kan ha ändrats. Du kan kontrollera detta i inställningarna.</translation>
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Öppna Chrome-menyn</translation>
 <translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Du är på väg att byta profil</translation>

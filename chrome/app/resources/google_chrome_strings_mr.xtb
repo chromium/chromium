@@ -80,6 +80,7 @@
 <translation id="1698376642261615901">Google Chrome एक वेब ब्राउझर आहे जे वेब पेज आणि अ‍ॅप्स विजेच्या गतीने चालविते. ते जलद, स्थिर आणि वापरण्यास सोपे आहे. Google Chrome मध्ये तयार केलेल्या मालवेअर आणि फिशिंग संरक्षणासह वेब अधिक सुरक्षितपणे ब्राउझ करा.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome एका तासामध्ये पुन्हा लाँच होईल}other{Chrome # तासांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="1722488837206509557">यामुळे तुम्हाला उपलब्ध डिव्हाइसमधून निवडता येईल आणि आशय दाखवता येईल.</translation>
+<translation id="1724094881572874997">Chrome वर तुमचे काम सुरक्षित ठेवण्यासाठी, तुम्ही Chrome मध्ये साइन-इन केलेले असताना तुमची संस्था विशिष्ट माहिती पाहू किंवा व्यवस्थापित करू शकेल.</translation>
 <translation id="177180974022074201">Chrome मधील Gemini वापरून पहा</translation>
 <translation id="1786003790898721085">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chrome मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पहा.</translation>
 <translation id="1786044937610313874">शॉर्टकट Chrome मध्ये उघडतात</translation>
@@ -199,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, सेटिंग्ज पेजमध्ये Chrome मधून साइन आउट करा</translation>
 <translation id="2976869732253036751">तुमच्या फोनवर Chrome सह किमतीचा माग ठेवण्याशी संबंधित अलर्ट मिळवा</translation>
+<translation id="2985091279808606502">Chrome ला या साइटसाठी स्थानिक नेटवर्क परवानगी आवश्यक आहे</translation>
 <translation id="2991167882679440829">तुम्ही तुमच्या Google खाते मध्ये सेव्ह केलेले तुमचे पासवर्ड आणि इतर Chrome डेटा या डिव्हाइसवरून काढून टाकला जाईल. त्या गोष्टी Chrome मध्ये पुन्हा वापरण्यासाठी, पुन्हा साइन इन करा.</translation>
 <translation id="2994465299455873643"><ph name="BROWSER_NAME" /> कालबाह्य झाल्यास, एन्क्रिप्शन सेवा आणि ते रिकव्‍हर करण्याचा सुरक्षित मार्ग पुरवते. ही सेवा बंद केलेली असल्यास, <ph name="BROWSER_NAME" /> एन्क्रिप्ट केलेल्या डेटाचा अ‍ॅक्सेस गमवू शकते आणि कदाचित <ph name="BROWSER_NAME" /> ला स्वतःला रिकव्‍हर करता येणार नाही.</translation>
 <translation id="3003694935412297923">सर्व टास्क</translation>
@@ -722,6 +724,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8113883687556086139">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये, Chrome वापरण्यासाठी किंवा सेव्ह करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="8115695070094288807">Chrome ला तुमचे बनवत आहे...</translation>
 <translation id="8118331347066725040">Lens वापरून शोधण्यासंबंधित फीडबॅक पाठवा</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" /> म्हणून साइन इन केले आहे, Google सदस्यत्व. खाते मेनू उघडा</translation>
 <translation id="8129812357326543296">&amp;Google Chrome विषयी</translation>
 <translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8162006532256575008">खाते शिवाय Chrome वापरा</translation>
@@ -755,6 +758,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 
 तुम्ही काही बुकमार्क हटवत नाही, तोपर्यंत तुमच्या खात्यामध्ये नवीन बुकमार्क सेव्ह केले जाऊ शकत नाहीत. तुम्ही आता साइन आउट केल्यास, सेव्ह न केलेले बुकमार्क हटवले जातील.</translation>
 <translation id="8458117863387545390">तुमच्या फोनवर Chrome मिळवा</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google सदस्यत्व म्हणून साइन इन केले आहे. खाते मेनू उघडा</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome साठी आत्ताच एक विशिष्ट सुरक्षितता अपडेट लागू करण्यात आला. आता रीस्टार्ट करा आणि आम्ही तुमचे टॅब रिस्टोअर करू.</translation>
 <translation id="8521348052903287641">Google Chrome विकासकाने mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>

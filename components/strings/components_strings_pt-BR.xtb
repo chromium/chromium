@@ -490,7 +490,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira em <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computador</translation>
-<translation id="1739364174357629566">Atualizar o número de passageiro conhecido</translation>
+<translation id="1739364174357629566">Atualizar o número do programa de passageiro conhecido</translation>
 <translation id="1740404923954980840">Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
 <translation id="1741474054575634405">Gerencie cartões fidelidade…</translation>
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -779,7 +779,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2191980191135734720">Use a impressão digital para desbloquear a tela na próxima etapa. Você também pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2195729137168608510">Proteção de e-mail</translation>
-<translation id="2198183835992354675">Número de passageiro conhecido</translation>
+<translation id="2198183835992354675">Número do programa de passageiro conhecido</translation>
 <translation id="2198215508485017216">Ocorreu um erro inesperado. <ph name="BEGIN_LINK" />Saiba mais sobre os uploads do Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botão "Não gostei": pressione Enter para abrir um formulário e enviar um feedback detalhado sobre o motivo de você não ter gostado dessa sugestão</translation>
 <translation id="2202627062836089804">parte de trás do cartão</translation>
@@ -1216,7 +1216,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">usar o bloqueio de tela para preencher senhas</translation>
 <translation id="2881276955470682203">Salvar cartão?</translation>
-<translation id="2882280148032777436">Excluir o número de passageiro conhecido</translation>
+<translation id="2882280148032777436">Excluir o número do programa de passageiro conhecido</translation>
 <translation id="2882949212241984732">Dobra janela dupla</translation>
 <translation id="2891963978019740012">Seu mecanismo de pesquisa no Chrome</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
@@ -2121,7 +2121,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4231448684371260244">20 x 33 cm</translation>
 <translation id="4234996384188431444">Pague com Pix no Google Chrome sem trocar de app</translation>
 <translation id="4239799716689808527">Rótulos</translation>
-<translation id="424063167283213501">Salvar número de identificação do passageiro (KTN)</translation>
+<translation id="424063167283213501">Salvar número do programa de passageiro conhecido (KTN)</translation>
 <translation id="4241830393007970744">Invasores no site que você tentou acessar podem induzir você a instalar um software ou compartilhar dados como senhas, telefone ou números de cartões de crédito.</translation>
 <translation id="4242380780309416996">Envelope (grosso)</translation>
 <translation id="4242981939686657948">Para pesquisar seu histórico de navegação com mais eficiência, ative o</translation>
@@ -4344,7 +4344,7 @@ Mais detalhes:
 <translation id="7648133459447652947">Para mostrar o cursor, troque de app, recarregue a página ou volte</translation>
 <translation id="764847582138410250">Aponte a câmera para fazer login com o celular</translation>
 <translation id="7648527891719919697">Este site vai continuar bloqueado porque a Proteção Avançada está ativada nas suas <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configurações do Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="7648900539798595789">Salvar o número de passageiro conhecido na Carteira do Google</translation>
+<translation id="7648900539798595789">Salvar o número do programa de passageiro conhecido na Carteira do Google</translation>
 <translation id="7648992873808071793">Armazenar arquivos neste dispositivo</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7650141368285545431">Usar a chave de acesso de outro dispositivo</translation>
@@ -4385,7 +4385,7 @@ Mais detalhes:
 <translation id="7690647519407127574">Cartão postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem de páginas recebida</translation>
 <translation id="769424100851389104">Iniciar atualização agora</translation>
-<translation id="7696107855583699585">Editar o número de passageiro conhecido</translation>
+<translation id="7696107855583699585">Editar o número do programa de passageiro conhecido</translation>
 <translation id="7697837508203274589">Eventos esportivos ao vivo</translation>
 <translation id="7698864304447945242">Atualizar o Google Play Services para RA?</translation>
 <translation id="7701040980221191251">Nenhum</translation>
@@ -5251,7 +5251,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9107199998619088551"><ph name="MANAGER" /> gerencia seu perfil</translation>
 <translation id="9107467864910557787">Seu navegador é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativará o compartilhamento de tela com <ph name="APPLICATION_TITLE" /> quando houver conteúdo confidencial visível</translation>
-<translation id="9114101423898634479">Adicionar número de passageiro conhecido</translation>
+<translation id="9114101423898634479">Adicionar número do programa de passageiro conhecido</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para retomar a jornada e ver as atividades no seu histórico do Chrome</translation>

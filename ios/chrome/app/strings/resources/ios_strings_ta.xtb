@@ -84,6 +84,7 @@
 <translation id="126737128831326059">ஏற்றப்பட்டது</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} கடவுச்சொல்}other{{count} கடவுச்சொற்கள்}}</translation>
+<translation id="1274721046703404848">Search சேவைகளுக்கும் Google Drive போன்ற Google Workspace ஆப்ஸிற்கும் இடையிலான இணைப்பை நிர்வகிக்கலாம்</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1279024913354609713">வேண்டாம்</translation>
 <translation id="1285320974508926690">இந்த தளத்தை எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">கடவுச்சாவி சேமிக்கப்பட்டது</translation>
 <translation id="8263809106706527890">உங்கள் இயல்பு உலாவி அமைப்புகள் மாறியிருக்கக்கூடும். அமைப்புகளில் இதை நீங்கள் சரிபார்க்கலாம்.</translation>
 <translation id="8264966119170358612">Google அல்லாத தரவு மீறலால் உங்களுடைய சேமிக்கப்பட்ட கடவுச்சொற்களில் சிலவற்றுக்குப் பாதுகாப்பு இழப்பு ஏற்பட்டது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome மெனுவைத் திறக்கவும்</translation>
 <translation id="826614135184049678">iPadடை மீட்டமைப்பதன் ஒரு பகுதியாக <ph name="USER_NAME" /> கணக்கில் இருந்து வெளியேற்றப்பட்டீர்கள். மீண்டும் உள்நுழைய கீழே உள்ள “தொடர்க” என்பதைத் தட்டவும்.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">சுயவிவரத்தை மாற்றவுள்ளீர்கள்</translation>

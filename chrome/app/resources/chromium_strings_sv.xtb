@@ -57,6 +57,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1623563412065267963">Få ut det bästa av Google med Chromium-appen på telefonen</translation>
 <translation id="1625909126243026060">Granska viktiga integritets- och säkerhetskontroller i Chromium</translation>
 <translation id="1640672724030957280">Hämtar ...</translation>
+<translation id="1665602916345474427">Inloggad som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, medlemskap. Öppna kontomenyn</translation>
 <translation id="1708414395296835197">Du kan använda Chromium varje gång du klickar på länkar i meddelanden, dokument och andra appar. Det fästs även i aktivitetsfältet.</translation>
 <translation id="1709772298389099340">Ger förhöjd behörighet för <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Detta gör att du kan välja bland tillgängliga enheter och visa innehåll på dem.</translation>
@@ -258,6 +259,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 
           **Föreslå frågor:** Skapa en punktlista med tre till fem tankeväckande frågor som en användare kan ställa för att bättre förstå skärmbilden. Minst en fråga ska handla specifikt om ett visuellt objekt, dess design eller placering.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Du behöver ge Chromium behörighet till lokalt nätverk för den här webbplatsen</translation>
 <translation id="3885770153807205175">Språkväljare</translation>
 <translation id="388648406173476553">Anpassa och kontrollera Chromium. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="3889543394854987837">Öppna Chromium genom att klicka på ditt namn och börja surfa.</translation>
@@ -336,6 +338,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4625064703209785397">Detta gör webbplatser snabbare med Chromiums V8-motor men Chromium blir något mindre motståndskraftigt mot attacker</translation>
 <translation id="4665829708273112819">Varning! Chromium kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du det här alternativet.</translation>
 <translation id="4673151026126227699">Om du även delar Chromium-användningsrapporter ingår webbadresserna du besöker i dessa rapporter</translation>
+<translation id="4673710618874938871">Inloggad som <ph name="USER_NAME" />, medlemskap. Öppna kontomenyn</translation>
 <translation id="4677944499843243528">Profilen verkar användas av en annan Chromium-process (<ph name="PROCESS_ID" />) på en annan dator (<ph name="HOST_NAME" />). Profilen har låsts så att den inte används på otillåtet sätt. Om du är säker på att profilen inte används i några andra processer låser du upp profilen och startar om Chromium.</translation>
 <translation id="4680828127924988555">Avbryt installationen</translation>
 <translation id="469259825538636168">Viss Chromium-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>

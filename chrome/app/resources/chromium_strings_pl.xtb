@@ -54,6 +54,7 @@
 <translation id="1623563412065267963">Wykorzystaj w pełni potencjał Google dzięki aplikacji Chromium na telefonie</translation>
 <translation id="1625909126243026060">Zapoznaj się z najważniejszymi funkcjami prywatności i bezpieczeństwa w Chromium</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
+<translation id="1665602916345474427">Zalogowano jako <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subskrypcja. Otwórz menu konta</translation>
 <translation id="1708414395296835197">Możesz używać Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i innych aplikacjach. Przeglądarka zostanie też przypięta do paska zadań.</translation>
 <translation id="1709772298389099340">Przyznaje podwyższone uprawnienia <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Umożliwi Ci to wybranie dostępnych urządzeń i wyświetlanie na nich treści.</translation>
@@ -253,6 +254,7 @@
 
           **Zasugeruj pytania:** wygeneruj listę 3–5 pytań pobudzających do myślenia, które użytkownik może zadać, aby lepiej zrozumieć zrzut ekranu. Te pytania powinny zawierać co najmniej 1 pytanie dotyczące konkretnego obiektu wizualnego, jego wyglądu lub umiejscowienia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Ta strona musi mieć w Chromium dostęp do sieci lokalnej</translation>
 <translation id="3885770153807205175">Selektor języka</translation>
 <translation id="388648406173476553">Dostosuj i kontroluj Chromium. Pewna kwestia wymaga Twojej uwagi – kliknij, by przejść do szczegółów.</translation>
 <translation id="3889543394854987837">Otwórz Chromium, klikając swoją nazwę i rozpocznij przeglądanie.</translation>
@@ -331,6 +333,7 @@
 <translation id="4625064703209785397">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chromium, ale będzie ona trochę mniej odporna na ataki</translation>
 <translation id="4665829708273112819">Ostrzeżenie: Chromium nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie incognito, odznacz tę opcję.</translation>
 <translation id="4673151026126227699">Jeśli udostępnisz też raporty o użytkowaniu Chromium, będą one zawierały odwiedzane przez Ciebie adresy URL.</translation>
+<translation id="4673710618874938871">Zalogowano jako <ph name="USER_NAME" />, subskrypcja. Otwórz menu konta</translation>
 <translation id="4677944499843243528">Wygląda na to, że profil jest używany przez inny proces Chromium (<ph name="PROCESS_ID" />) na innym komputerze (<ph name="HOST_NAME" />). Chromium zablokowało profil, by zapobiec jego uszkodzeniu. Jeśli masz pewność, że żadne inne procesy nie używają tego profilu, możesz go odblokować i ponownie uruchomić Chromium.</translation>
 <translation id="4680828127924988555">Anuluj instalację</translation>
 <translation id="469259825538636168">Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google. Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>

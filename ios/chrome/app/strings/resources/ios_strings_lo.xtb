@@ -84,6 +84,7 @@
 <translation id="126737128831326059">ສົ່ງອອກສຳເລັດແລ້ວ</translation>
 <translation id="1272079795634619415">ຢຸດ</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} ລະຫັດຜ່ານ}other{{count} ລະ​ຫັດ​ຜ່ານ}}</translation>
+<translation id="1274721046703404848">ຈັດການການເຊື່ອມຕໍ່ລະຫວ່າງບໍລິການຊອກຫາ ແລະ ແອັບ Google Workspace ເຊັ່ນ: Google Drive</translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
 <translation id="1279024913354609713">ບໍ່ອະນຸຍາດ</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
@@ -2189,6 +2190,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8263228331881858381">ບັນທຶກກະແຈຜ່ານແລ້ວ</translation>
 <translation id="8263809106706527890">ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານອາດມີການປ່ຽນແປງ. ທ່ານສາມາດກວດສອບໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="8264966119170358612">ລະຫັດຜ່ານຂອງທ່ານຈຳນວນໜຶ່ງທີ່ບັນທຶກໄວ້ຖືກເປີດເຜີຍໃນການລະເມີດຂໍ້ມູນທີ່ບໍ່ແມ່ນຂໍ້ມູນ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">ເປີດເມນູ Chrome</translation>
 <translation id="826614135184049678">ທ່ານຖືກໃຫ້ອອກຈາກລະບົບບັນຊີຂອງທ່ານ, <ph name="USER_NAME" />, ເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPad ທ່ານ. ເພື່ອເຂົ້າສູ່ລະບົບຄືນໃໝ່, ໃຫ້ແຕະ "ສືບຕໍ່" ທາງລຸ່ມ.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">ທ່ານກຳລັງຈະສະຫຼັບໂປຣໄຟລ໌</translation>

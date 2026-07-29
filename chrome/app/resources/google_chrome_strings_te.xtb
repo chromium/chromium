@@ -196,6 +196,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్ - Chrome</translation>
 <translation id="2970681950995291301">Chrome నుండి మీ Google ఖాతాను తీసివేయడానికి, సెట్టింగ్‌ల పేజీలోని Chrome నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="2976869732253036751">మీ ఫోన్‌లో Chromeతో ధర ట్రాకింగ్ అలర్ట్‌లను పొందండి</translation>
+<translation id="2985091279808606502">ఈ సైట్ కోసం Chromeకు లోకల్ నెట్‌వర్క్ అనుమతి అవసరం</translation>
 <translation id="2991167882679440829">మీ Google ఖాతాలో మీరు సేవ్ చేసిన మీ పాస్‌వర్డ్‌లు, ఇతర Chrome డేటా ఈ డివైజ్ నుండి తీసివేయబడతాయి. వాటిని మళ్లీ Chromeలో ఉపయోగించడానికి, తిరిగి సైన్ ఇన్ చేయండి.</translation>
 <translation id="2994465299455873643"><ph name="BROWSER_NAME" /> గడువు ముగిసినట్లయితే తిరిగి రికవర్ అయ్యేందుకు ఎన్‌క్రిప్షన్ సర్వీస్‌లను, సురక్షితమైన మార్గాన్ని అందిస్తుంది. ఈ సర్వీస్ నిలిపివేయబడితే, ఎన్‌క్రిప్ట్ చేసిన డేటాకు <ph name="BROWSER_NAME" /> యాక్సెస్‌ను కోల్పోవచ్చు, అలాగే <ph name="BROWSER_NAME" /> స్వయంగా రికవర్ కాలేకపోవచ్చు.</translation>
 <translation id="3003694935412297923">అన్ని టాస్క్‌లు</translation>
@@ -715,6 +716,7 @@
 <translation id="8113883687556086139">మీ ఖాతా <ph name="ACCOUNT_EMAIL" />‌లో Chrome డేటాను ఉపయోగించింది, సేవ్ చేసింది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="8115695070094288807">మీరు కోరుకున్న విధంగా Chrome వ్యక్తిగతీకరించబడుతోంది...</translation>
 <translation id="8118331347066725040">Lensతో సెర్చ్ చేయడం కోసం ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
+<translation id="812930250799242837">Google మెంబర్‌షిప్‌ ఉన్న <ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. ఖాతా మెనూను తెరవండి</translation>
 <translation id="8129812357326543296">&amp;Google Chrome గురించి</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
 <translation id="8162006532256575008">ఖాతా లేకుండా Chromeను ఉపయోగించండి</translation>
@@ -748,6 +750,7 @@
 
 మీరు కొన్ని బుక్‌మార్క్‌లను తొలగించే వరకు మీ ఖాతాలో కొత్త బుక్‌మార్క్‌లను సేవ్ చేయడం సాధ్యపడదు. మీరు ఇప్పుడు సైన్ అవుట్ చేస్తే, సేవ్ చేయని బుక్‌మార్క్‌లు తొలగించబడతాయి.</translation>
 <translation id="8458117863387545390">మీ ఫోన్‌లో Chromeను పొందండి</translation>
+<translation id="848851325211467878">Google మెంబర్‌షిప్‌ ఉన్న <ph name="USER_NAME" />గా, <ph name="USER_EMAIL" /> ఈమెయిల్ ద్వారా సైన్ ఇన్ చేశారు. ఖాతా మెనూను తెరవండి</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chromeకి సంబంధించిన ప్రత్యేక భద్రతా అప్‌డేట్ వర్తింపజేయబడింది. ఇప్పుడే పునఃప్రారంభించండి, మేము మీ ట్యాబ్‌లను పునరుద్ధరిస్తాము.</translation>
 <translation id="8521348052903287641">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome డెవలపర్ కోసం ఇన్‌బౌండ్ నియమం.</translation>

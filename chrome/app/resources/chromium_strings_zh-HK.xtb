@@ -56,6 +56,7 @@
 <translation id="1623563412065267963">透過手機的 Chromium 應用程式盡享 Google 最精彩的功能</translation>
 <translation id="1625909126243026060">查看 Chromium 中重要的私隱和安全控制項</translation>
 <translation id="1640672724030957280">正在下載…</translation>
+<translation id="1665602916345474427">已使用<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 的身分登入，會員。開啟帳戶選單</translation>
 <translation id="1708414395296835197">你可以隨時使用 Chromium 開啟訊息、文件和其他應用程式中的連結，瀏覽器也會固定在工作列。</translation>
 <translation id="1709772298389099340">為 <ph name="BROWSER_NAME" /> 提供更高權限。</translation>
 <translation id="1722488837206509557">這樣你就能選取可用裝置，並在這些裝置上顯示內容。</translation>
@@ -257,6 +258,7 @@
 
           **建議問題：**以項目符號清單形式生成 3 至 5 條可以啟發思考的問題，幫助使用者深入瞭解螢幕截圖。應該有至少一條具體關於可視物件、其設計或位置的問題。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium 需要區域網絡權限，才能執行此網站要求的功能</translation>
 <translation id="3885770153807205175">語言選擇器</translation>
 <translation id="388648406173476553">自訂及控制 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下您的名稱即可開啟 Chromium 並開始瀏覽。</translation>
@@ -335,6 +337,7 @@
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防攻擊的能力會略為下降</translation>
 <translation id="4665829708273112819">警告：Chromium 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
 <translation id="4673151026126227699">如果您同時分享 Chromium 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
+<translation id="4673710618874938871">已使用<ph name="USER_NAME" />的身分登入，會員。開啟帳戶選單</translation>
 <translation id="4677944499843243528">另一部電腦 (<ph name="HOST_NAME" />) 的 Chromium 處理程序 (<ph name="PROCESS_ID" />) 正在使用這個設定檔。Chromium 已鎖定這個設定檔，確保其不致受損。如果您確定其他處理程序目前未使用此設定檔，請解除鎖定，然後重新啟動 Chromium。</translation>
 <translation id="4680828127924988555">取消安裝</translation>
 <translation id="469259825538636168">部分 Chromium 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>

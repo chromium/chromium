@@ -599,6 +599,7 @@
 <translation id="192095259937375524">Butonul Distribuie fila, activează pentru a trimite fila prin distribuirea linkului, crearea unui cod QR, proiectare și altele</translation>
 <translation id="1924727005275031552">Nou</translation>
 <translation id="1927439846988093361">Îngrijirea părului</translation>
+<translation id="1927930548546198515">Chrome înregistrează modul în care folosești funcția, de exemplu, solicitările și comportamentul tău când accepți sau ignori sugestii</translation>
 <translation id="1932098463447129402">Nu înainte de</translation>
 <translation id="1935353813610900265">Trimite feedback pentru căutarea în istoric, bazată pe AI</translation>
 <translation id="1935995810530254458">Copiază oricum</translation>
@@ -985,6 +986,7 @@
 <translation id="2491120439723279231">Certificatul serverului conține erori.</translation>
 <translation id="2491414235131909199">Pagina a fost blocată de o extensie</translation>
 <translation id="2493122313108999546">S-a redimensionat</translation>
+<translation id="249376477913017009">Notificarea privind completarea automată din Gmail și altele deschisă</translation>
 <translation id="2495083838625180221">Analizor JSON</translation>
 <translation id="2496402116964818747">Poți modifica dacă folosești amprenta pentru completarea parolelor în <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Scanează un card nou</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatizarea casei</translation>
 <translation id="2743512410823092182">Resurse și echipamente pentru DJ</translation>
+<translation id="275259155159336003">Funcție bazată pe Inteligența personalizată, creată cu Gemini. Solicitările, titlurile paginilor și adresele URL pot fi examinate pentru a îmbunătăți completarea automată îmbunătățită. <ph name="BEGIN_LINK" />Gestionează setările<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Se încarcă <ph name="COUNT" /> fișiere în Google Drive</translation>
 <translation id="2759299890026163685">Asigură-te că ai o conexiune stabilă la internet înainte de a încerca din nou</translation>
 <translation id="2759825833388495838">completează parola pe <ph name="APP_NAME" /></translation>
@@ -1436,6 +1439,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208701679386778924">Trimite un raport ca să putem îmbunătăți actualizările ChromeOS pe viitor.</translation>
 <translation id="3209034400446768650">Pagina poate percepe o taxă</translation>
+<translation id="3209071504641569648">Solicitările, titlurile paginilor și adresele URL sunt trimise la Google și pot fi examinate pentru a îmbunătăți completarea automată îmbunătățită</translation>
 <translation id="3212468046572043669">A început descărcarea. Ca să o vezi, trage din partea de sus și atinge butonul Înapoi.</translation>
 <translation id="3212581601480735796">Activitatea ta de pe <ph name="HOSTNAME" /> este monitorizată</translation>
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
@@ -1473,6 +1477,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3255926992597692024">Chromium încearcă să modifice setările pentru completarea metodelor de plată.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un eveniment în Google Calendar</translation>
+<translation id="3261180263071638338">Notificarea privind completarea automată din Gmail și altele închisă</translation>
 <translation id="3261488570342242926">Află despre cardurile virtuale</translation>
 <translation id="3262698603497362968">Opțiuni de cumpărare</translation>
 <translation id="3264637689694266148">Chiar dacă dezactivezi sugestiile, titlul paginii și adresele URL ale filelor pot fi în continuare procesate pentru alte funcții Chrome. Poți gestiona accesul browserului la aceste date în</translation>
@@ -2335,6 +2340,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4602465984861132303">Popice</translation>
 <translation id="4603727370377253901">Rezervări de zboruri</translation>
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
+<translation id="4607879293515681409">Completarea automată îmbunătățită poate acum să găsească și să completeze informații, cum ar fi numerele zborurilor și orele programărilor, din aplicații precum Gmail și Foto</translation>
 <translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
 <translation id="4612631413844865947">A apărut o eroare la procesarea comenzii pe <ph name="MERCHANT_ORIGIN" /> prin <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2851,6 +2857,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5401344472773249513">Știri din divertisment și despre celebrități</translation>
 <translation id="5401674281624189321">Stațiuni montane și de schi</translation>
+<translation id="5402715318763077894">Permiți accesul la rețeaua locală?</translation>
 <translation id="540949333488055151">Plastic (colorat)</translation>
 <translation id="540969355065856584">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; momentan, certificatul de securitate nu este valid. Cauza poate fi o configurare greșită sau interceptarea conexiunii de un atacator.</translation>
 <translation id="5411462078004183575">Opțiune cu preț scăzut</translation>
@@ -3101,6 +3108,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5764725887548570807">Format de origine nevalid.</translation>
 <translation id="5764920692828389743">Trimite la <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pentru a vedea metodele de livrare și cerințele, selectează o adresă</translation>
+<translation id="5768323954710688012">Notificarea privind completarea automată din Gmail și altele s-a deschis la înălțimea completă</translation>
 <translation id="57689295674415555">Numărul de card virtual nu este completat?</translation>
 <translation id="5773286975255318081">de exemplu, numele de utilizatori ai profilului și versiunile browserului.</translation>
 <translation id="5774897849666641211">Pune întrebări despre această filă</translation>

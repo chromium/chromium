@@ -84,6 +84,7 @@
 <translation id="126737128831326059">ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} ಪಾಸ್‌ವರ್ಡ್}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
+<translation id="1274721046703404848">Google Drive ನಂತಹ Search ಸೇವೆಗಳು ಮತ್ತು Google Workspace ಆ್ಯಪ್‌ಗಳ ನಡುವಿನ ಕನೆಕ್ಷನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1279024913354609713">ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1285320974508926690">ಈ ಸೈಟ್ ಅನ್ನು ಎಂದಿಗೂ ಭಾಷಾಂತರಿಸದಿರಿ</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">ಪಾಸ್‌ಕೀ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8263809106706527890">ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದಲಾವಣೆ ಆಗಿರಬಹುದು. ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="8264966119170358612">Google ಅಲ್ಲದ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ನೀವು ಸೇವ್ ಮಾಡಿದ ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗವಾಗಿವೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="826614135184049678">ನಿಮ್ಮ ಐಪ್ಯಾಡ್ ರೀಸೆಟ್‌ನ ಭಾಗವಾಗಿ ನಿಮ್ಮ ಖಾತೆ <ph name="USER_NAME" /> ನಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್‌ಔಟ್ ಮಾಡಲಾಗಿದೆ. ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು, ಕೆಳಗೆ "ಮುಂದುವರಿಸಿ" ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">ನೀವು ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲಿದ್ದೀರಿ</translation>

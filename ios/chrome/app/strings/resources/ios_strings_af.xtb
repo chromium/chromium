@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Uitvoer suksesvol</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} wagwoord}other{{count} wagwoorde}}</translation>
+<translation id="1274721046703404848">Bestuur die verbinding tussen Search-dienste en Google Workspace-apps, soos Google Drive</translation>
 <translation id="1275718070701477396">Gekies</translation>
 <translation id="1279024913354609713">Moenie toelaat nie</translation>
 <translation id="1285320974508926690">Moet nooit hierdie werf vertaal nie</translation>
@@ -2189,6 +2190,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8263228331881858381">Toegangsleutel is gestoor</translation>
 <translation id="8263809106706527890">Daar is dalk ’n verandering aan jou verstekblaaierinstellings gemaak. Jy kan dit in instellings nagaan.</translation>
 <translation id="8264966119170358612">Sommige van jou gestoorde wagwoorde is blootgestel in ’n nie-Google-dataskending. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Maak die Chrome-kieslys oop</translation>
 <translation id="826614135184049678">Jy is as deel van jou iPad-terugstelling uit jou rekening, <ph name="USER_NAME" />, afgemeld. Tik op “Gaan voort” hier onder om weer aan te meld.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Jy staan op die punt om profiele te wissel</translation>

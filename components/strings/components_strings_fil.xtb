@@ -599,6 +599,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="192095259937375524">Button na I-share ang tab na ito, i-activate para ma-share ang tab na ito sa pamamagitan ng pag-share sa link, paggawa ng QR code, pag-cast, at higit pa</translation>
 <translation id="1924727005275031552">Bago</translation>
 <translation id="1927439846988093361">Pangangalaga ng Buhok</translation>
+<translation id="1927930548546198515">Ila-log ng Chrome kung paano mo ginagamit ang feature, gaya ng iyong mga request at gawi kapag tinanggap o binalewala mo ang mga suhestyon</translation>
 <translation id="1932098463447129402">Hindi Bago</translation>
 <translation id="1935353813610900265">Magpadala ng feedback para sa paghahanap sa history na pinapagana ng AI</translation>
 <translation id="1935995810530254458">Kopyahin pa rin</translation>
@@ -985,6 +986,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2491120439723279231">Naglalaman ng mga error ang certificate ng server.</translation>
 <translation id="2491414235131909199">Na-block ng extension ang page na ito</translation>
 <translation id="2493122313108999546">Na-resize</translation>
+<translation id="249376477913017009">Binuksan ang abiso sa autofill mula sa Gmail at higit pa</translation>
 <translation id="2495083838625180221">Pang-parse ng JSON</translation>
 <translation id="2496402116964818747">Puwede mong baguhin kung gagamitin mo ang iyong fingerprint para sa paglalagay ng mga password sa <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Mag-scan ng bagong card</translation>
@@ -1153,6 +1155,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Home Automation</translation>
 <translation id="2743512410823092182">Mga Resource at Kasangkapang Pang-DJ</translation>
+<translation id="275259155159336003">Pinapagana ng Personal Intelligence sa Gemini. Posibleng suriin ang iyong mga request, pamagat ng page, at URL para mapaganda ang pinahusay na autofill. <ph name="BEGIN_LINK" />Pamahalaan ang mga setting<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Nag-a-upload ng <ph name="COUNT" /> (na) file sa Google Drive</translation>
 <translation id="2759299890026163685">Tiyaking stable ang iyong koneksyon sa internet bago subukan ulit</translation>
 <translation id="2759825833388495838">ilagay ang iyong password sa <ph name="APP_NAME" /></translation>
@@ -1436,6 +1439,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3208701679386778924">Magpadala ng ulat para mapahusay pa namin ang mga update sa ChromeOS.</translation>
 <translation id="3209034400446768650">Puwedeng maningil ang page</translation>
+<translation id="3209071504641569648">Ipinapadala sa Google ang iyong mga request, pamagat ng page, at URL at posibleng suriin ang mga ito para mapaganda ang pinahusay na autofill</translation>
 <translation id="3212468046572043669">Nagsimula na ang pag-download. Para makita ito, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="3212581601480735796">Sinusubaybayan ang iyong aktibidad sa <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Hindi magamit ang WebAuthn</translation>
@@ -1473,6 +1477,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3255926992597692024">Sinusubukan ng Chromium na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong event sa Google Calendar nang mabilis</translation>
+<translation id="3261180263071638338">Sarado ang abiso sa autofill mula sa Gmail at higit pa</translation>
 <translation id="3261488570342242926">Matuto pa tungkol sa mga virtual card</translation>
 <translation id="3262698603497362968">Mga opsyon sa pagbili</translation>
 <translation id="3264637689694266148">Kung io-off mo ang mga suhestyon, posibleng iproseso pa rin ang pamagat ng page at mga URL ng iyong mga tab para sa iba pang feature ng Chrome. Puwede mong pamahalaan ang access ng browser sa data na ito sa iyong</translation>
@@ -2335,6 +2340,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Mga reservation ng flight</translation>
 <translation id="4607608436550361748">Tingnan ang mga tip sa Chrome</translation>
+<translation id="4607879293515681409">Mahahanap at mapupunan na ngayon ng pinahusay na autofill ang impormasyon — gaya ng mga numero ng flight at oras ng appointment — mula sa mga app tulad ng Gmail at Photos</translation>
 <translation id="460848736049414407">Na-block ng Admin</translation>
 <translation id="4610279718074907952">Ang site na ito ay nasa isang grupo, na tinukoy ng <ph name="SET_OWNER" />, na makakakita ng iyong aktibidad</translation>
 <translation id="4612631413844865947">Nagka-error sa pagpoproseso ng iyong order sa <ph name="MERCHANT_ORIGIN" /> sa pamamagitan ng <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2851,6 +2857,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5401344472773249513">Mga Celebrity at Balitang Pang-entertainment</translation>
 <translation id="5401674281624189321">Mga Mountain at Ski Resort</translation>
+<translation id="5402715318763077894">Payagan ang access sa lokal na network?</translation>
 <translation id="540949333488055151">Plastic (May Kulay)</translation>
 <translation id="540969355065856584">Hindi mapatunayan ng server na ito ay ang <ph name="DOMAIN" />; walang bisa ang certificate sa seguridad nito sa pagkakataong ito. Maaaring dahil ito sa isang maling pag-configure o may isang attacker na humahadlang sa iyong koneksyon.</translation>
 <translation id="5411462078004183575">Murang Opsyon</translation>
@@ -3101,6 +3108,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5764725887548570807">Invalid na format ng origin.</translation>
 <translation id="5764920692828389743">Ipadala sa <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Upang makita ang mga pamamaraan at kinakailangan sa paghahatid, pumili ng address</translation>
+<translation id="5768323954710688012">Binuksan nang buo ang abiso sa autofill mula sa Gmail at higit pa</translation>
 <translation id="57689295674415555">Hindi napunan ang numero ng virtual card?</translation>
 <translation id="5773286975255318081">Gaya ng mga username sa profile at bersyon ng browser</translation>
 <translation id="5774897849666641211">Magtanong tungkol sa tab na ito</translation>

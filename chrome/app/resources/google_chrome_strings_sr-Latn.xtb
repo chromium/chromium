@@ -200,6 +200,7 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chrome</translation>
 <translation id="2970681950995291301">Da biste uklonili Google nalog iz Chrome-a, odjavite se iz Chrome-a na stranici Podešavanja</translation>
 <translation id="2976869732253036751">Dobijajte obaveštenja o praćenju cena uz Chrome na telefonu</translation>
+<translation id="2985091279808606502">Chrome-u treba dozvola za lokalnu mrežu za ovaj sajt</translation>
 <translation id="2991167882679440829">Lozinke i drugi Chrome podaci koje ste sačuvali na Google nalogu biće uklonjeni sa ovog uređaja. Da biste ih ponovo koristili u Chrome-u, ponovo se prijavite.</translation>
 <translation id="2994465299455873643">Pruža usluge šifrovanja i bezbedan način za oporavak pregledača <ph name="BROWSER_NAME" /> ako postane zastareo. Ako je ova usluga onemogućena, <ph name="BROWSER_NAME" /> može da izgubi pristup šifrovanim podacima i <ph name="BROWSER_NAME" /> možda neće moći da se oporavi.</translation>
 <translation id="3003694935412297923">Svi zadaci</translation>
@@ -723,6 +724,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8113883687556086139">Potvrdite identitet da biste koristili i sačuvali Chrome podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Prilagođavamo Chrome…</translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretragu pomoću Objektiva</translation>
+<translation id="812930250799242837">Prijavljeni ste kao <ph name="USER_NAME" />, sa Google pretplatom. Otvori meni naloga</translation>
 <translation id="8129812357326543296">O &amp;Google Chrome-u</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8162006532256575008">Koristite Chrome bez naloga</translation>
@@ -756,6 +758,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 
 Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako se odjavite odmah, izbrisaćete nesačuvane obeleživače.</translation>
 <translation id="8458117863387545390">Preuzmite Chrome na telefonu</translation>
+<translation id="848851325211467878">Prijavljeni ste kao <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, sa Google pretplatom. Otvori meni naloga</translation>
 <translation id="8496177819998570653">Google menadžer lozinki</translation>
 <translation id="8498858610309223613">Posebno bezbednosno ažuriranje za Google Chrome je upravo primenjeno. Restartujte ga i vratićemo vam kartice.</translation>
 <translation id="8521348052903287641">Pravilo za dolazni saobraćaj za programersku verziju Google Chrome-a da biste omogućili mDNS saobraćaj.</translation>

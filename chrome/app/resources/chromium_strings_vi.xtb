@@ -55,6 +55,7 @@
 <translation id="1623563412065267963">Tận hưởng những tính năng tuyệt vời nhất của Google nhờ ứng dụng Chromium trên điện thoại</translation>
 <translation id="1625909126243026060">Xem các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật trong Chromium</translation>
 <translation id="1640672724030957280">Đang tải xuống...</translation>
+<translation id="1665602916345474427">Đã đăng nhập bằng tài khoản <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, gói thành viên. Mở trình đơn tài khoản</translation>
 <translation id="1708414395296835197">Bạn có thể sử dụng Chromium mỗi khi bạn nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác. Chromium cũng sẽ được ghim vào thanh tác vụ.</translation>
 <translation id="1709772298389099340">Cung cấp đặc quyền cấp cao cho <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Thao tác này sẽ cho phép bạn chọn trong số các thiết bị có sẵn và hiển thị nội dung trên các thiết bị đó.</translation>
@@ -256,6 +257,7 @@
 
           **Đề xuất câu hỏi:** Tạo một danh sách có dấu đầu dòng gồm 3 đến 5 câu hỏi gợi mở mà người dùng có thể đặt ra để hiểu rõ hơn về ảnh chụp màn hình này. Danh sách này phải có ít nhất một câu hỏi cụ thể về một đối tượng trực quan trong ảnh và thiết kế hoặc vị trí của đối tượng đó.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium cần có quyền truy cập vào mạng cục bộ đối với trang web này</translation>
 <translation id="3885770153807205175">Bộ chọn ngôn ngữ</translation>
 <translation id="388648406173476553">Tùy chỉnh và kiểm soát Chromium. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="3889543394854987837">Nhấp vào tên của bạn để mở Chromium và bắt đầu duyệt web.</translation>
@@ -334,6 +336,7 @@
 <translation id="4625064703209785397">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium</translation>
 <translation id="4665829708273112819">Cảnh báo: Chromium không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tùy chọn này.</translation>
 <translation id="4673151026126227699">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chromium, thì các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
+<translation id="4673710618874938871">Đã đăng nhập bằng tài khoản <ph name="USER_NAME" />, gói thành viên. Mở trình đơn tài khoản</translation>
 <translation id="4677944499843243528">Dường như cấu hình này đang được quy trình Chromium khác (<ph name="PROCESS_ID" />) trên máy tính khác (<ph name="HOST_NAME" />) sử dụng. Chromium đã khóa cấu hình này để cấu hình không bị lỗi. Nếu bạn chắc chắn không có quy trình nào khác đang sử dụng cấu hình này, bạn có thể mở khóa cấu hình và chạy lại Chromium.</translation>
 <translation id="4680828127924988555">Huỷ cài đặt</translation>
 <translation id="469259825538636168">Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>

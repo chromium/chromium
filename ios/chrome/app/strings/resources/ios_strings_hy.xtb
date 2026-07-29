@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Արտահանումը կատարված է</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} գաղտնաբառ}one{{count} գաղտնաբառ}other{{count} գաղտնաբառ}}</translation>
+<translation id="1274721046703404848">Կառավարել Որոնման ծառայությունների և Google Workspace հավելվածների, օրինակ՝ Google Drive-ի միջև կապը</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1279024913354609713">Չթույլատրել</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
@@ -2189,6 +2190,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8263228331881858381">Մուտքի բանալին պահված է</translation>
 <translation id="8263809106706527890">Հնարավոր է՝ կանխադրված դիտարկիչի կարգավորումներում փոփոխություն է տեղի ունեցել։ Դա կարող եք ստուգել կարգավորումներում։</translation>
 <translation id="8264966119170358612">Google-ին չպատկանող սերվերներից տվյալների արտահոսքի հետևանքով ձեր որոշ պահված գաղտնաբառեր կոտրվել են։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Բացեք Chrome-ի ընտրացանկը</translation>
 <translation id="826614135184049678">Ձեր iPad-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Դուք պատրաստվում եք անցնել մյուս պրոֆիլ</translation>

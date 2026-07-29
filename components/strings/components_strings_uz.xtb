@@ -1080,6 +1080,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2631387782019878060">Tasdiqlash kodi: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverining IP manzili topilmadi.</translation>
 <translation id="2635276683026132559">Imzo</translation>
+<translation id="2638070510549214427">Xavfsiz deb belgilash</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> orqali qidirish uchun @ deb yozing</translation>
 <translation id="2639739919103226564">Holat:</translation>
 <translation id="2644219706149911059">Google Drive omboriga yuklanmoqda...</translation>
@@ -1383,6 +1384,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3121994479408824897"><ph name="DOMAIN" /> sahifasini ochish</translation>
 <translation id="3122696783148405307">Oxirgi 30 kunlik natijalarni chiqarish</translation>
 <translation id="3126023634486644099">Yorliqlar (oʻzi yopishadigan)</translation>
+<translation id="3131746543143948171">Bu sayt fishing, zararli dastur va firibgarlik bilan aloqador boʻlishi mumkin. <ph name="BEGIN_LEARN_MORE_LINK" />Batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Redress raqamini saqlash</translation>
 <translation id="3133565499688974786">Birlamchi qidiruv tizimi: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="3134859781443140237">Mahalliy tarmoq</translation>
@@ -2521,6 +2523,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4885256590493466218">Hisob-kitob vaqtida <ph name="CARD_DETAIL" /> bilan toʻlang</translation>
 <translation id="4886565443854420066">Sozlamalarni oʻzgartirish uchun shaxsingizni tasdiqlang</translation>
 <translation id="4887406273302438710">Parollarni Windows Hello yordamida himoyalash</translation>
+<translation id="4887785555357166111">Video kadrini saqlash</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali brauzer tarixi, cookie fayllari, kesh va boshqa maʼlumotlarni oʻchirish uchun Enter tugmasini bosing</translation>
 <translation id="4892518386797173871">Orqasi</translation>
 <translation id="4894390983254799375">Qurilma identifikatori, nomi, OT versiyasi va OT foydalanuvchi nomi kabi</translation>
@@ -4554,6 +4557,7 @@ Batafsil axborot:
 <translation id="7979595116210197019">Taom xizmati</translation>
 <translation id="798134797138789862">Virtual reallik qurilmalari va axborotlardan foydalanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="7983008347525536475">Yoʻl tanlamas avtomobillar</translation>
+<translation id="7983569303268727247">Axborotingiz kiritilmoqda</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> saytiga o‘tib bo‘lmadi, chunki veb-sayt shifrlangan hisob ma’lumotlarini yubordi, Chrome ular bilan ishlay olmaydi. Tarmoq xatoligi yoki saytga hujumlar odatda vaqtinchalik bo‘ladi, shu sababli bu sahifa keyinroq ishga tushishi mumkin.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Muddatli toʻlov taklif qiladigan hozir olib, keyin toʻlash emitentlari toʻliq hajmda ochildi.</translation>
@@ -5012,6 +5016,7 @@ Batafsil axborot:
 <translation id="8738058698779197622">Tezkor havfsiz aloqa o‘rnatish uchun tizim soati to‘g‘ri sozlangan bo‘lishi kerak. Chunki sertifikatlar saytlarda haqiqiylik tekshiruvi uchun muddat cheklamalariga ega. Agar qurilmadagi vaqt noto‘g‘ri bo‘lsa, Chromium sertifikatlardan hali ham foydalanish mumkinligini tekshira olmaydi.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> saytining &lt;abbr id="dnsDefinition"&gt;DNS manzili&lt;/abbr&gt; topilmadi. Muammo o‘rganilmoqda.</translation>
 <translation id="874918643257405732">Bu varaqni bukmarklash</translation>
+<translation id="8749274696886550762">Bu sayt shubhali koʻrinadi</translation>
 <translation id="8751426954251315517">Keyingi safar qayta urining</translation>
 <translation id="8753913772043329557">Qoidalar jurnali</translation>
 <translation id="8754546574216727970">Etiklar</translation>
@@ -5299,6 +5304,7 @@ Batafsil axborot:
 <translation id="9192361865877479444">Metall (jilosiz)</translation>
 <translation id="9192947025498305328">Pardozsiz goʻzallik</translation>
 <translation id="9193018794001479794">Aniqlashtirish</translation>
+<translation id="9194783551575429711">Ask <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">Tashkilotingiz Google hisobingizga maʼlumotlarni saqlashni cheklasa, varaqlar guruhini ulashish yoki ularga qoʻshilish imkonsiz boʻladi</translation>
 <translation id="9198613052465150219">Google hisobingiz orqali bajarilgan boshqa shakldagi internet faoliyat tarixini <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> orqali kuzatish mumkin.</translation>
 <translation id="9199905725844810519">Chop etish taqiqlangan</translation>

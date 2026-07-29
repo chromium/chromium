@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Promoción de notificaciones de consejos cerrada</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">¿Borrar también datos de estos sitios?</translation>
-<translation id="1049461303780085993">Prueba Gemini en Chrome para obtener respuestas, ideas clave y más información</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1052842760770519282">No se puede acceder a algunas de tus contraseñas</translation>
 <translation id="1057623954802068161">Desplazarse hasta la parte superior de la página</translation>
@@ -296,7 +295,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2238038374973843156">Mover grupo a otra ventana</translation>
 <translation id="2247789808226901522">Tarjeta caducada</translation>
-<translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
 <translation id="2251809247798634662">Nueva ventana de Incógnito</translation>
 <translation id="2253927598983295051">Elige qué quieres compartir con <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Más información de la app</translation>
@@ -560,6 +558,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3309978850836730073">El modo Lectura siempre está disponible aquí</translation>
 <translation id="331080746368555063">Puede que los sitios privados incluyan cosas como la intranet de tu empresa</translation>
 <translation id="3311330810461485557">Busca por aplicación, fecha y más.</translation>
+<translation id="3312300514034250578">Navegación segura mejorada</translation>
 <translation id="3331974543021145906">Información de la app</translation>
 <translation id="3334729583274622784">¿Cambiar la extensión del archivo?</translation>
 <translation id="333863344734218290">Te avisa de los sitios públicos y privados no seguros</translation>
@@ -1195,7 +1194,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6023820583797130428">Abre el menú para volver</translation>
 <translation id="6026538407078977628">Desplegar a pantalla completa</translation>
-<translation id="6030719887161080597">Gestiona la información que usan los sitios para medir el rendimiento de los anuncios</translation>
 <translation id="6039379616847168523">Te dirige a la siguiente pestaña</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1446,7 +1444,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6880903702195291049">Los permisos están bien</translation>
 <translation id="6883204995689174413">Compartir</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 elemento está guardado solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google.}other{# elementos están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google.}}</translation>
-<translation id="6883606786470492001">Gestiona tus temas de anuncios y otros ajustes para limitar la información que los sitios pueden obtener sobre ti con el fin de mostrarte anuncios personalizados</translation>
 <translation id="6883906387682976294">Darme de baja de las notificaciones de este sitio</translation>
 <translation id="688398477366397178">Permite que los sitios web sepan los idiomas que hablas. Si es posible, mostrarán contenido en esos idiomas.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Suscripción a 1 sitio anulada}other{Suscripción a # sitios anulada}}</translation>
@@ -1511,7 +1508,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7088681679121566888">Chrome está actualizado</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, pestaña de Incógnito silenciada en selección múltiple</translation>
 <translation id="7106762743910369165">Tu organización es la encargada de gestionar tu navegador</translation>
-<translation id="7111394291981742152">Chrome te ofrece más control sobre los anuncios que ves y limita la información que los sitios pueden obtener sobre ti cuando te muestran anuncios personalizados</translation>
 <translation id="7111822978084196600">Ponle nombre a esta ventana</translation>
 <translation id="7115358764509798967">Predeterminado del sistema</translation>
 <translation id="7117485132243600300">Gestiona el contenido que sigues y los temas y las búsquedas sugeridos</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Exportação concluída</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} senha}one{{count} senha}other{{count} senhas}}</translation>
+<translation id="1274721046703404848">Gerencie a conexão entre os serviços da Pesquisa e os apps do Google Workspace, como o Google Drive</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1279024913354609713">Não permitir</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
@@ -232,7 +233,7 @@
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
 <translation id="1732468323901456775">Ative as notificações de <ph name="MODULE_NAME" /></translation>
-<translation id="1739364174357629566">Atualizar o número de passageiro conhecido</translation>
+<translation id="1739364174357629566">Atualizar o número do programa de passageiro conhecido</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1740650426894359238">Usar outro perfil</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
@@ -955,7 +956,7 @@
 <translation id="4232376164796433044">Senhas e preenchimento automático</translation>
 <translation id="4232817129213135694">Configurar chaves de acesso para este dispositivo</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
-<translation id="424063167283213501">Salvar número de identificação do passageiro (KTN)</translation>
+<translation id="424063167283213501">Salvar número do programa de passageiro conhecido (KTN)</translation>
 <translation id="4241893428331130998">Nenhuma senha ou chave de acesso salva</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} guia}=1{Abrir {count} guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
@@ -2189,6 +2190,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8263228331881858381">Chave de acesso salva</translation>
 <translation id="8263809106706527890">Pode ter ocorrido uma mudança nas configurações padrão do seu navegador. Confira nas configurações.</translation>
 <translation id="8264966119170358612">Algumas das suas senhas salvas foram expostas em uma violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Abrir o menu do Google Chrome</translation>
 <translation id="826614135184049678">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPad. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Você está prestes a trocar de perfil</translation>

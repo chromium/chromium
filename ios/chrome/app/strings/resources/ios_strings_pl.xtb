@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Wyeksportowano</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} hasło}few{{count} hasła}many{{count} haseł}other{{count} hasła}}</translation>
+<translation id="1274721046703404848">Zarządzaj połączeniem między usługami wyszukiwania a aplikacjami Google Workspace, takimi jak Dysk Google</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1279024913354609713">Nie zezwalaj</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
@@ -2189,6 +2190,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8263228331881858381">Klucz dostępu został zapisany</translation>
 <translation id="8263809106706527890">Być może zostały zmienione ustawienia domyślnej przeglądarki. Możesz to sprawdzić w ustawieniach.</translation>
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Otwórz menu Chrome</translation>
 <translation id="826614135184049678">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="8270320981823560179">Dysk</translation>
 <translation id="8274795744553482834">Zamierzasz przełączyć profile</translation>

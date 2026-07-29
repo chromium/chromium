@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – пријављивање на мрежу – Chrome</translation>
 <translation id="2970681950995291301">Да бисте уклонили Google налог из Chrome-а, одјавите се из Chrome-а на страници Подешавања</translation>
 <translation id="2976869732253036751">Добијајте обавештења о праћењу цена уз Chrome на телефону</translation>
+<translation id="2985091279808606502">Chrome-у треба дозвола за локалну мрежу за овај сајт</translation>
 <translation id="2991167882679440829">Лозинке и други Chrome подаци које сте сачували на Google налогу биће уклоњени са овог уређаја. Да бисте их поново користили у Chrome-у, поново се пријавите.</translation>
 <translation id="2994465299455873643">Пружа услуге шифровања и безбедан начин за опоравак прегледача <ph name="BROWSER_NAME" /> ако постане застарео. Ако је ова услуга онемогућена, <ph name="BROWSER_NAME" /> може да изгуби приступ шифрованим подацима и <ph name="BROWSER_NAME" /> можда неће моћи да се опорави.</translation>
 <translation id="3003694935412297923">Сви задаци</translation>
@@ -723,6 +724,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8113883687556086139">Потврдите идентитет да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Прилагођавамо Chrome…</translation>
 <translation id="8118331347066725040">Пошаљите повратне информације за претрагу помоћу Објектива</translation>
+<translation id="812930250799242837">Пријављени сте као <ph name="USER_NAME" />, са Google претплатом. Отвори мени налога</translation>
 <translation id="8129812357326543296">О &amp;Google Chrome-у</translation>
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8162006532256575008">Користите Chrome без налога</translation>
@@ -756,6 +758,7 @@ Google Chrome не може да врати подешавања.</translation>
 
 Не можете да сачувате нове обележиваче на налогу док не избришете неке. Ако се одјавите одмах, избрисаћете несачуване обележиваче.</translation>
 <translation id="8458117863387545390">Преузмите Chrome на телефону</translation>
+<translation id="848851325211467878">Пријављени сте као <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, са Google претплатом. Отвори мени налога</translation>
 <translation id="8496177819998570653">Google менаџер лозинки</translation>
 <translation id="8498858610309223613">Посебно безбедносно ажурирање за Google Chrome је управо примењено. Рестартујте га и вратићемо вам картице.</translation>
 <translation id="8521348052903287641">Правило за долазни саобраћај за програмерску верзију Google Chrome-а да бисте омогућили mDNS саобраћај.</translation>

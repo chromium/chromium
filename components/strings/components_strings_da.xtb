@@ -599,6 +599,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="192095259937375524">Knappen Del denne fane, aktivér for at dele denne fane ved at dele linket, oprette en QR-kode, caste m.m.</translation>
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1927439846988093361">Hårpleje</translation>
+<translation id="1927930548546198515">Chrome registrerer, hvordan du bruger funktionen, f.eks. dine anmodninger og din adfærd, når du accepterer eller ignorerer forslag</translation>
 <translation id="1932098463447129402">Ikke før</translation>
 <translation id="1935353813610900265">Send feedback om søgning i historikken, som er baseret på AI</translation>
 <translation id="1935995810530254458">Kopiér alligevel</translation>
@@ -985,6 +986,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2491120439723279231">Serverens certifikat indeholder fejl.</translation>
 <translation id="2491414235131909199">En udvidelse har blokeret denne side</translation>
 <translation id="2493122313108999546">Størrelsen er tilpasset</translation>
+<translation id="249376477913017009">Meddelelsen om autofyld fra Gmail m.m. åbnet</translation>
 <translation id="2495083838625180221">Værktøj til parsing af JSON-filer</translation>
 <translation id="2496402116964818747">Du kan ændre, om du vil bruge dit fingeraftryk til at udfylde adgangskoder, i <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Scan et nyt kort</translation>
@@ -1153,6 +1155,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatisering i hjemmet</translation>
 <translation id="2743512410823092182">DJ-udstyr</translation>
+<translation id="275259155159336003">Leveret af Personlig intelligens med Gemini. Dine anmodninger, sidetitler og webadresser kan blive gennemgået for at gøre forbedret autofyld endnu bedre. <ph name="BEGIN_LINK" />Administrer indstillinger<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> filer uploades til Google Drev</translation>
 <translation id="2759299890026163685">Sørg for, at du har en stabil internetforbindelse, før du prøver igen</translation>
 <translation id="2759825833388495838">udfylde din adgangskode på <ph name="APP_NAME" /></translation>
@@ -1436,6 +1439,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208701679386778924">Send en rapport, så vi kan forbedre ChromeOS-opdateringerne yderligere.</translation>
 <translation id="3209034400446768650">Siden kan opkræve betaling</translation>
+<translation id="3209071504641569648">Dine anmodninger, sidetitler og webadresser sendes til Google og gennemgås muligvis for at gøre forbedret autofyld endnu bedre</translation>
 <translation id="3212468046572043669">Downloaden er påbegyndt. Du kan se den ved at trække fra toppen og trykke på knappen Tilbage</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> overvåges</translation>
 <translation id="3215092763954878852">WebAuthn kunne ikke anvendes</translation>
@@ -1473,6 +1477,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3254301855501243548">18 x 22 tommer</translation>
 <translation id="3255926992597692024">Chromium forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
+<translation id="3261180263071638338">Meddelelsen om Autofyld fra Gmail m.m. lukket</translation>
 <translation id="3261488570342242926">Få flere oplysninger om virtuelle kort</translation>
 <translation id="3262698603497362968">Købsmuligheder</translation>
 <translation id="3264637689694266148">Hvis du deaktiverer forslag, kan sidetitlen og webadresserne for dine faner stadig blive behandlet i forbindelse med andre Chrome-funktioner. Du kan administrere browseradgangen til disse data i</translation>
@@ -2335,6 +2340,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Flyreservationer</translation>
 <translation id="4607608436550361748">Se tips til Chrome</translation>
+<translation id="4607879293515681409">Forbedret autofyld kan nu finde og udfylde oplysninger – f.eks. flynumre og aftaletidspunkter – fra apps som f.eks. Gmail og Fotos.</translation>
 <translation id="460848736049414407">Blokeret af administrator</translation>
 <translation id="4610279718074907952">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
 <translation id="4612631413844865947">Der opstod en fejl under behandlingen af din ordre <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2520,6 +2526,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> ved kassen</translation>
 <translation id="4886565443854420066">Chrome-browseren anmoder om at verificere din identitet, før du ændrer indstillinger</translation>
 <translation id="4887406273302438710">Beskyt adgangskoder med Windows Hello</translation>
+<translation id="4887785555357166111">Gem videobillede</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at slette browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="4892518386797173871">Bagest</translation>
 <translation id="4894390983254799375">F.eks. enheds-id, navn, OS-version og OS-brugernavn</translation>
@@ -2851,6 +2858,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5401344472773249513">Nyheder om kendte og underholdning</translation>
 <translation id="5401674281624189321">Feriesteder med bjerge og ski</translation>
+<translation id="5402715318763077894">Vild du tillade lokal netværksadgang?</translation>
 <translation id="540949333488055151">Plast (farvet)</translation>
 <translation id="540969355065856584">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat ikke er gyldigt i øjeblikket. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="5411462078004183575">Købsmulighed med lav pris</translation>
@@ -3101,6 +3109,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5764725887548570807">Ugyldigt oprindelsesformat.</translation>
 <translation id="5764920692828389743">Send til <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Vælg en adresse for at se leveringsmetoder og -krav</translation>
+<translation id="5768323954710688012">Meddelelsen om Autofyld fra Gmail m.m. åbnet i fuld højde</translation>
 <translation id="57689295674415555">Er det virtuelle kortnummer ikke udfyldt?</translation>
 <translation id="5773286975255318081">F.eks. profilbrugernavne og browserversioner</translation>
 <translation id="5774897849666641211">Stil spørgsmål om denne fane</translation>

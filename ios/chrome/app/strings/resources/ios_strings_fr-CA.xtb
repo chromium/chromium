@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Exportation réussie</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} mot de passe}one{{count} mot de passe}other{{count} mots de passe}}</translation>
+<translation id="1274721046703404848">Gérer la connexion entre les services Recherche et les applis Google Workspace, comme Google Disque</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1279024913354609713">Ne pas autoriser</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
@@ -2189,6 +2190,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8263228331881858381">Clé d'accès enregistrée</translation>
 <translation id="8263809106706527890">Il se peut que les paramètres par défaut de votre navigateur aient été modifiés. Vous pouvez vérifier si c'est le cas dans les paramètres.</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été exposés à une violation de données d'un tiers. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Ouvrir le menu Chrome</translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="8270320981823560179">Disque</translation>
 <translation id="8274795744553482834">Vous êtes sur le point de changer de profil</translation>

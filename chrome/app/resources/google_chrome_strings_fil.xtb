@@ -200,6 +200,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network - Chrome</translation>
 <translation id="2970681950995291301">Para alisin ang iyong Google Account sa Chrome, mag-sign out sa Chrome sa page na Mga Setting</translation>
 <translation id="2976869732253036751">Makatanggap ng mga alerto sa pagsubaybay sa presyo gamit ang Chrome sa iyong telepono</translation>
+<translation id="2985091279808606502">Kailangan ng Chrome ng pahintulot sa lokal na network para sa site na ito</translation>
 <translation id="2991167882679440829">Aalisin sa device na ito ang iyong mga password at iba pang data sa Chrome na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chrome, mag-sign in ulit.</translation>
 <translation id="2994465299455873643">Nagbibigay ng mga serbisyo ng pag-encrypt at ligtas na paraan ng pag-recover ng <ph name="BROWSER_NAME" /> kung maluluma na ito. Kung naka-disable ang serbisyong ito, posibleng mawalan ng access ang <ph name="BROWSER_NAME" /> sa naka-encrypt na data, at posibleng hindi ma-recover ng <ph name="BROWSER_NAME" /> ang sarili nito.</translation>
 <translation id="3003694935412297923">Lahat ng gawain</translation>
@@ -723,6 +724,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8113883687556086139">I-verify na ikaw ito para magamit at ma-save ang data sa Chrome sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Ginagawang iyo ang Chrome...</translation>
 <translation id="8118331347066725040">Magpadala ng feedback para sa paghahanap gamit ang Lens</translation>
+<translation id="812930250799242837">Naka-sign in bilang si <ph name="USER_NAME" />, membership sa Google. Buksan ang menu ng account</translation>
 <translation id="8129812357326543296">Tungkol sa &amp;Google Chrome</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8162006532256575008">Gamitin ang Chrome nang Walang Account</translation>
@@ -756,6 +758,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 
 Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde-delete ng ilan. Kung magsa-sign out ka ngayon, made-delete ang mga hindi na-save na bookmark.</translation>
 <translation id="8458117863387545390">I-download ang Chrome sa iyong telepono</translation>
+<translation id="848851325211467878">Naka-sign in bilang si <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, membership sa Google. Buksan ang menu ng account</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Naglapat ng espesyal na update sa seguridad para sa Google Chrome. Mag-restart na at ire-restore namin ang iyong mga tab.</translation>
 <translation id="8521348052903287641">Inbound na panuntunan para sa Google Chrome Dev upang payagan ang trapiko ng mDNS.</translation>

@@ -55,6 +55,7 @@
 <translation id="1623563412065267963">Beneficiază de tot ce este mai bun la Google cu aplicația Chromium pe telefon</translation>
 <translation id="1625909126243026060">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chromium</translation>
 <translation id="1640672724030957280">Se descarcă…</translation>
+<translation id="1665602916345474427">Te-ai conectat ca <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, utilizatoare / utilizator cu abonament. Deschide meniul contului.</translation>
 <translation id="1708414395296835197">Poți folosi Chromium oricând dai clic pe linkuri în mesaje, documente și alte aplicații. Va fi fixat și în bara de activități.</translation>
 <translation id="1709772298389099340">Oferă privilegii de nivel superior pentru <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Astfel, vei putea să selectezi dintre dispozitivele disponibile și să afișezi conținut pe acestea.</translation>
@@ -256,6 +257,7 @@
 
           **Sugerează întrebări:** generează o listă cu marcatori cu 3 – 5 întrebări care dau de gândit pe care un utilizator le-ar putea pune pentru a înțelege mai bine captura de ecran. Aceste întrebări trebuie să includă cel puțin una care să se refere în mod specific la un obiect vizual, la designul sau plasarea acestuia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium are nevoie de permisiune pentru rețeaua locală pentru acest site</translation>
 <translation id="3885770153807205175">Selector de limbă</translation>
 <translation id="388648406173476553">Personalizează și controlează Chromium. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="3889543394854987837">Dați clic pe numele dvs. pentru a deschide Chromium și a începe să navigați.</translation>
@@ -334,6 +336,7 @@
 <translation id="4625064703209785397">Accelerează site-urile cu motorul V8 din Chromium, dar reduce ușor rezistența Chromium la atacuri</translation>
 <translation id="4665829708273112819">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="4673151026126227699">Dacă trimiți rapoarte privind folosirea Chromium, acestea includ adresele URL pe care le accesezi</translation>
+<translation id="4673710618874938871">Te-ai conectat ca <ph name="USER_NAME" />, utilizatoare / utilizator cu abonament. Deschide meniul contului.</translation>
 <translation id="4677944499843243528">Profilul pare să fie utilizat de alt proces Chromium (<ph name="PROCESS_ID" />), pe alt computer (<ph name="HOST_NAME" />). Chromium a blocat profilul pentru a nu se deteriora. Dacă știi sigur că profilul nu este utilizat de alte procese, poți să îl deblochezi și să relansezi Chromium.</translation>
 <translation id="4680828127924988555">Anulează instalarea</translation>
 <translation id="469259825538636168">Unele date Chromium nu au fost salvate încă în Contul Google. Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>

@@ -200,6 +200,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netwerkaanmelding – Chrome</translation>
 <translation id="2970681950995291301">Meld in die Instellings-bladsy by Chrome af om jou Google-rekening uit Chrome te verwyder</translation>
 <translation id="2976869732253036751">Kry waarskuwings oor prysnasporing met Chrome op jou foon</translation>
+<translation id="2985091279808606502">Chrome het plaaslikenetwerktoestemming vir hierdie werf nodig</translation>
 <translation id="2991167882679440829">Jou wagwoorde en ander Chrome-data wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chrome wil gebruik.</translation>
 <translation id="2994465299455873643">Verskaf enkripsiedienste en ’n veilige manier om <ph name="BROWSER_NAME" /> terug te stel as dit verouderd raak. As hierdie diens gedeaktiveer is, kan <ph name="BROWSER_NAME" /> toegang tot geënkripteerde data verloor en kan <ph name="BROWSER_NAME" /> nie hulself terugstel nie.</translation>
 <translation id="3003694935412297923">Alle take</translation>
@@ -723,6 +724,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8113883687556086139">Verifieer dat dit jy is om Chrome-data in jou rekening, <ph name="ACCOUNT_EMAIL" />, te gebruik en te stoor</translation>
 <translation id="8115695070094288807">Maak tans Chrome joune …</translation>
 <translation id="8118331347066725040">Stuur terugvoer vir soektog met Lens</translation>
+<translation id="812930250799242837">Aangemeld as <ph name="USER_NAME" />, Google-lidmaatskap. Maak die rekeningkieslys oop</translation>
 <translation id="8129812357326543296">Meer oor Google Chrome</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8162006532256575008">Gebruik Chrome sonder ’n rekening</translation>
@@ -756,6 +758,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 
 Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie. As jy nou afmeld, sal ongestoorde boekmerke uitgevee word.</translation>
 <translation id="8458117863387545390">Kry Chrome op jou foon</translation>
+<translation id="848851325211467878">Aangemeld as <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-lidmaatskap. Maak die rekeningkieslys oop</translation>
 <translation id="8496177819998570653">Google W&amp;agwoordbestuurder</translation>
 <translation id="8498858610309223613">'n Spesiale sekuriteitsopdatering vir Google Chrome is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="8521348052903287641">Inkomende reël vir Google Chrome Dev om mDNS-verkeer toe te laat.</translation>

@@ -599,6 +599,7 @@
 <translation id="192095259937375524">دکمه «هم‌رسانی این زبانه»؛ برای هم‌رسانی این زبانه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر، آن را فعال کنید</translation>
 <translation id="1924727005275031552">جدید</translation>
 <translation id="1927439846988093361">مراقبت از مو</translation>
+<translation id="1927930548546198515">‏‫Chrome نحوه استفاده شما از این ویژگی را ثبت می‌کند، مثلاً درخواست‌های شما و رفتارتان هنگام پذیرفتن یا نادیده گرفتن پیشنهادها</translation>
 <translation id="1932098463447129402">نه قبل از</translation>
 <translation id="1935353813610900265">ارسال بازخورد درباره جستجوی سابقه با بهره‌گیری از هوش مصنوعی</translation>
 <translation id="1935995810530254458">درهرصورت کپی شود</translation>
@@ -986,6 +987,7 @@
 <translation id="2491120439723279231">گواهی سرور دارای چندین خطاست.</translation>
 <translation id="2491414235131909199">این صفحه را یکی از افزونه‌ها مسدود کرده است</translation>
 <translation id="2493122313108999546">اندازه تغییر یافت</translation>
+<translation id="249376477913017009">‏تکمیل خودکار از Gmail و اعلان‌های بیشتر باز شد</translation>
 <translation id="2495083838625180221">‏تجزیه‌کننده JSON</translation>
 <translation id="2496402116964818747">می‌توانید در <ph name="SETTINGS" /> انتخاب کنید از اثر انگشت شما برای تکمیل گذرواژه‌ها استفاده شود یا نه</translation>
 <translation id="2498091847651709837">اسکن کارت جدید</translation>
@@ -1154,6 +1156,7 @@
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2742128390261873684">خودکارسازی خانه</translation>
 <translation id="2743512410823092182">منابع و تجهیزات دی‌جِی</translation>
+<translation id="275259155159336003">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شوند. <ph name="BEGIN_LINK" />مدیریت تنظیمات<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">‏درحال بارگذاری <ph name="COUNT" /> فایل در Google Drive</translation>
 <translation id="2759299890026163685">پیش‌از امتحان مجدد، مطمئن شوید اتصال اینترنت پایداری دارید</translation>
 <translation id="2759825833388495838">گذرواژه‌تان را در <ph name="APP_NAME" /> وارد کنید</translation>
@@ -1437,6 +1440,7 @@
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208701679386778924">‏لطفاً گزارشی ارسال کنید تا بتوانیم به‌روزرسانی‌های بعدی ChromeOS را بهبود ببخشیم.</translation>
 <translation id="3209034400446768650">ممکن است این صفحه از شما هزینه کسر کند</translation>
+<translation id="3209071504641569648">‏درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب به Google ارسال می‌شود و ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شود</translation>
 <translation id="3212468046572043669">بارگیری شروع شد. برای دیدن بارگیری، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="3212581601480735796">بر فعالیت شما در <ph name="HOSTNAME" /> نظارت می‌شود</translation>
 <translation id="3215092763954878852">‏استفاده از WebAuthn ممکن نشد</translation>
@@ -1474,6 +1478,7 @@
 <translation id="3254301855501243548">۲۲ × ۱۸ اینچ</translation>
 <translation id="3255926992597692024">‏Chromebook می‌خواهد تنظیمات تکمیل روش‌های پرداخت را اصلاح کند.</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع رویداد جدید در «تقویم Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="3261180263071638338">‏تکمیل خودکار از Gmail و اعلان‌های بیشتر بسته شد</translation>
 <translation id="3261488570342242926">درباره کارت‌های مجازی بیشتر بدانید</translation>
 <translation id="3262698603497362968">گزینه‌های خرید</translation>
 <translation id="3264637689694266148">‏اگر پیشنهادها را خاموش کنید، عنوان صفحه و نشانی‌های وب زبانه‌هایتان ممکن است همچنان برای ویژگی‌های دیگر Chrome پردازش شود. می‌توانید دسترسی مرورگر به این داده‌ها را در تنظیمات همگام‌سازی مدیریت کنید</translation>
@@ -2336,6 +2341,7 @@
 <translation id="4602465984861132303">بولینگ</translation>
 <translation id="4603727370377253901">پروازهای رزروشده</translation>
 <translation id="4607608436550361748">‏دیدن نکته‌های Chrome</translation>
+<translation id="4607879293515681409">‏اکنون تکمیل خودکار بهبودیافته می‌تواند اطلاعاتی مثل شماره پرواز و زمان قرار را از برنامه‌هایی مثل Gmail و Photos پیدا و تکمیل کند</translation>
 <translation id="460848736049414407">سرپرست آن را مسدود کرده است</translation>
 <translation id="4610279718074907952">این سایت در گروهی است که <ph name="SET_OWNER" /> تعریف کرده است و می‌تواند فعالیت شما را ببیند</translation>
 <translation id="4612631413844865947">هنگام پردازش سفارشتان در <ph name="MERCHANT_ORIGIN" /> ازطریق <ph name="PAYMENT_APP_ORIGIN" /> خطایی روی داد.</translation>
@@ -2852,6 +2858,7 @@
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5401344472773249513">اخبار مشاهیر و سرگرمی</translation>
 <translation id="5401674281624189321">اقامتگاه‌های کوهستانی و اسکی</translation>
+<translation id="5402715318763077894">آیا اجازه دسترسی به شبکه محلی داده شود؟</translation>
 <translation id="540949333488055151">پلاستیک (رنگی)</translation>
 <translation id="540969355065856584">این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در حال حاضر، گواهی امنیتی آن معتبر نیست. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط حمله‌کننده ایجاد شده باشد.</translation>
 <translation id="5411462078004183575">گزینه ارزان‌قیمت</translation>
@@ -3102,6 +3109,7 @@
 <translation id="5764725887548570807">قالب مبدأ نامعتبر است.</translation>
 <translation id="5764920692828389743">ارسال به <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">برای دیدن روش‌های تحویل و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
+<translation id="5768323954710688012">‏اعلان تکمیل خودکار از Gmail و موارد دیگر به‌صورت کامل باز شد</translation>
 <translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
 <translation id="5773286975255318081">مانند نام‌های کاربری نمایه و نسخه‌های مرورگر</translation>
 <translation id="5774897849666641211">پرسیدن درباره این زبانه</translation>

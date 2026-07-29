@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Eksporten er utført</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} passord}other{{count} passord}}</translation>
+<translation id="1274721046703404848">Administrer tilkoblingen mellom søketjenester og Google Workspace-apper, for eksempel Google Disk</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1279024913354609713">Ikke tillat</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
@@ -2189,6 +2190,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8263228331881858381">Passnøkkelen er lagret</translation>
 <translation id="8263809106706527890">Det kan ha blitt gjort en endring i standardinnstillingene for nettleseren. Du kan sjekke dette i innstillingene.</translation>
 <translation id="8264966119170358612">Noen av de lagrede passordene dine ble avdekket i et databrudd utenfor Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Åpne Chrome-menyen</translation>
 <translation id="826614135184049678">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPad. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Du er i ferd med å bytte profil</translation>

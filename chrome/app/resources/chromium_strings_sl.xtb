@@ -57,6 +57,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1623563412065267963">Z aplikacijo Chromium v telefonu izkoristite najboljše, kar ponuja Google</translation>
 <translation id="1625909126243026060">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromiumu.</translation>
 <translation id="1640672724030957280">Prenos ...</translation>
+<translation id="1665602916345474427">Prijavljeni ste kot <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, naročnina. Odpri meni računa</translation>
 <translation id="1708414395296835197">Chromium lahko uporabljate ob vsakem kliku povezav v sporočilih, dokumentih in drugih aplikacijah. Pripet bo tudi v opravilno vrstico.</translation>
 <translation id="1709772298389099340">Zagotovi povečane pravice za brskalnik <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Tako boste lahko izbirali med razpoložljivimi napravami in v njih prikazali vsebino.</translation>
@@ -258,6 +259,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 
           **Predlagaj vprašanja:** Generiraj označen seznam s 3–5 vprašanji, ki spodbujajo razmišljanje in jih lahko uporabnik zastavi za boljše razumevanje posnetka zaslona. Ta vprašanja morajo vključevati vsaj eno, ki se nanaša posebej na vizualni predmet, njegovo obliko ali njegovo umestitev.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Chromium za to spletno mesto potrebuje dovoljenje za lokalno omrežje</translation>
 <translation id="3885770153807205175">Izbirnik jezika</translation>
 <translation id="388648406173476553">Prilagajanje in nadziranje Chromiuma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
 <translation id="3889543394854987837">Kliknite ime, da odprete Chromium in začnete brskati.</translation>
@@ -336,6 +338,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4625064703209785397">S Chromiumovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chromium zato nekoliko manj odporen proti napadom</translation>
 <translation id="4665829708273112819">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
 <translation id="4673151026126227699">Če delite tudi poročila o uporabi Chromiuma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
+<translation id="4673710618874938871">Prijavljeni ste kot <ph name="USER_NAME" />, naročnina. Odpri meni računa</translation>
 <translation id="4677944499843243528">Videti je, da profil uporablja drug Chromiumov proces (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chromium je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chromium.</translation>
 <translation id="4680828127924988555">Prekliči namestitev</translation>
 <translation id="469259825538636168">Nekateri podatki v Chromiumu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>

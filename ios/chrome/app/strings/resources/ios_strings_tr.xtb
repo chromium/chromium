@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Dışa aktarma başarılı</translation>
 <translation id="1272079795634619415">Durdur</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} şifre}other{{count} şifre}}</translation>
+<translation id="1274721046703404848">Arama hizmetleri ile Google Drive gibi Google Workspace uygulamaları arasındaki bağlantıyı yönetin</translation>
 <translation id="1275718070701477396">Seçildi</translation>
 <translation id="1279024913354609713">İzin Verme</translation>
 <translation id="1285320974508926690">Bu siteyi asla çevirme</translation>
@@ -2189,6 +2190,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8263228331881858381">Geçiş anahtarı kaydedildi</translation>
 <translation id="8263809106706527890">Varsayılan tarayıcı ayarlarınızda değişiklik yapılmış olabilir. Bunu ayarlardan kontrol edebilirsiniz.</translation>
 <translation id="8264966119170358612">Google harici bir veri ihlalinde bazı kayıtlı şifreleriniz sızdırılmış. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome menüsünü açın.</translation>
 <translation id="826614135184049678">iPad sıfırlama işleminin bir parçası olarak <ph name="USER_NAME" /> hesabınızın oturumu kapatıldı. Yeniden oturum açmak için aşağıda "İlerle"ye dokunun.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profil değiştirmek üzeresiniz</translation>

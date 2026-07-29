@@ -56,6 +56,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1623563412065267963">Tirez le meilleur parti de Google avec l'appli Chromium sur votre téléphone</translation>
 <translation id="1625909126243026060">Passer en revue les principaux paramètres de confidentialité et de sécurité dans Chromium</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
+<translation id="1665602916345474427">Connecté en tant que <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, avec abonnement. Ouvrir le menu du compte</translation>
 <translation id="1708414395296835197">Vous pouvez utiliser Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis. Il sera également épinglé à votre barre des tâches.</translation>
 <translation id="1709772298389099340">Fournit des privilèges élevés pour <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Cela vous permettra de sélectionner parmi les appareils accessibles et d'y afficher du contenu.</translation>
@@ -257,6 +258,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 
           **Suggérer des questions :** génère une liste à puces de trois à cinq questions stimulantes qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant précisément sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Chromium requiert l'autorisation d'accéder au réseau local pour ce site</translation>
 <translation id="3885770153807205175">Sélecteur de langue</translation>
 <translation id="388648406173476553">Personnaliser et gérer Chromium. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
@@ -335,6 +337,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4625064703209785397">Accélère les sites avec le moteur V8 de Chromium, mais rend Chromium légèrement moins résistant aux attaques</translation>
 <translation id="4665829708273112819">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode de navigation privée, désélectionnez cette option.</translation>
 <translation id="4673151026126227699">Si vous partagez aussi les rapports d'utilisation de Chromium, ceux-ci incluent les URL des pages que vous visitez</translation>
+<translation id="4673710618874938871">Connecté en tant que <ph name="USER_NAME" />, avec abonnement. Ouvrir le menu du compte</translation>
 <translation id="4677944499843243528">Le profil semble être utilisé par un autre processus de Chromium (<ph name="PROCESS_ID" />) sur un autre ordinateur (<ph name="HOST_NAME" />). Chromium a verrouillé ce profil pour éviter qu'il ne soit endommagé. Si vous êtes sûr qu'aucun autre processus n'utilise ce profil, vous pouvez le déverrouiller et relancer Chromium.</translation>
 <translation id="4680828127924988555">Annuler l'installation</translation>
 <translation id="469259825538636168">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google. Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>

@@ -599,6 +599,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="192095259937375524">Dugme Deli ovu karticu, aktivirajte ga da biste delili ovu karticu deljenjem linka, pravljenjem QR koda, prebacivanjem i na druge načine</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439846988093361">Nega kose</translation>
+<translation id="1927930548546198515">Chrome evidentira kako koristite tu funkciju, na primer, zahteve i ponašanje kada prihvatate ili ignorišete predloge</translation>
 <translation id="1932098463447129402">Ne pre</translation>
 <translation id="1935353813610900265">Pošaljite povratne informacije za pretragu istorije koju omogućava AI</translation>
 <translation id="1935995810530254458">Ipak kopiraj</translation>
@@ -985,6 +986,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2491120439723279231">Sertifikat servera sadrži greške.</translation>
 <translation id="2491414235131909199">Dodatak blokira ovu stranicu</translation>
 <translation id="2493122313108999546">Promenjena je veličina</translation>
+<translation id="249376477913017009">Otvoreno je obaveštenje o automatskom popunjavanju iz Gmail-a i drugih izvora</translation>
 <translation id="2495083838625180221">Raščlanjivač JSON datoteka</translation>
 <translation id="2496402116964818747">Možete da promenite da li ćete koristiti otisak prsta za popunjavanje lozinki u: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skenirajte novu karticu</translation>
@@ -1153,6 +1155,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2742128390261873684">Automatizacija doma</translation>
 <translation id="2743512410823092182">Aparati i oprema za di-džejeve</translation>
+<translation id="275259155159336003">Omogućava Personalizovana inteligencija pomoću Gemini-ja. Zahtevi, naslovi stranica i URL-ovi mogu da se pregledaju radi poboljšanja poboljšanog automatskog popunjavanja. <ph name="BEGIN_LINK" />Upravljajte podešavanjima<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Broj fajlova koji se otprema na Google disk: <ph name="COUNT" /></translation>
 <translation id="2759299890026163685">Uverite se da imate stabilnu internet vezu pre nego što probate ponovo</translation>
 <translation id="2759825833388495838">unese lozinku na <ph name="APP_NAME" /></translation>
@@ -1436,6 +1439,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208701679386778924">Pošaljite izveštaj da bismo poboljšali dalja ažuriranja ChromeOS-a.</translation>
 <translation id="3209034400446768650">Stranica može da naplaćuje</translation>
+<translation id="3209071504641569648">Zahtevi, naslovi stranica i URL-ovi šalju se Google-u i mogu da se pregledaju radi poboljšanja poboljšanog automatskog popunjavanja</translation>
 <translation id="3212468046572043669">Preuzimanje je počelo. Da biste ga videli, prevucite sa vrha i dodirnite dugme Nazad</translation>
 <translation id="3212581601480735796">Vaše aktivnosti na <ph name="HOSTNAME" /> se prate</translation>
 <translation id="3215092763954878852">Korišćenje veb-standarda WebAuthn nije uspelo</translation>
@@ -1473,6 +1477,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3254301855501243548">18×22 in</translation>
 <translation id="3255926992597692024">Chromium pokušava da izmeni podešavanja za popunjavanje načina plaćanja.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili nov događaj u Google kalendaru</translation>
+<translation id="3261180263071638338">Zatvoreno je obaveštenje o automatskom popunjavanju iz Gmail-a i drugih izvora</translation>
 <translation id="3261488570342242926">Saznajte više o virtuelnim karticama</translation>
 <translation id="3262698603497362968">Opcije kupovine</translation>
 <translation id="3264637689694266148">Ako isključite predloge, naslov stranice i URL-ovi kartica i dalje mogu da se obrađuju za druge Chrome funkcije. Pristupom pregledača ovim podacima možete da upravljate u</translation>
@@ -2335,6 +2340,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4602465984861132303">Kuglanje</translation>
 <translation id="4603727370377253901">Rezervacije letova</translation>
 <translation id="4607608436550361748">Prikaži Chrome savete</translation>
+<translation id="4607879293515681409">Poboljšano automatsko popunjavanje sada može da pronađe i popuni informacije, poput brojeva letova i vremena zakazanih termina, iz aplikacija kao što su Gmail i Slike</translation>
 <translation id="460848736049414407">Blokirao je administrator</translation>
 <translation id="4610279718074907952">Ovaj sajt je u grupi, koju definiše <ph name="SET_OWNER" />, koji može da vidi vaše aktivnosti</translation>
 <translation id="4612631413844865947">Došlo je do greške pri obradi porudžbine na <ph name="MERCHANT_ORIGIN" /> preko <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2852,6 +2858,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5401344472773249513">Poznate ličnosti i vesti iz sveta zabave</translation>
 <translation id="5401674281624189321">Planinska odmarališta i skijališta</translation>
+<translation id="5402715318763077894">Želite da dozvolite pristup lokalnoj mreži?</translation>
 <translation id="540949333488055151">Plastika (u boji)</translation>
 <translation id="540969355065856584">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat trenutno nije važeći. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="5411462078004183575">Opcija niske cene</translation>
@@ -3102,6 +3109,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5764725887548570807">Nevažeći format porekla.</translation>
 <translation id="5764920692828389743">Pošalji na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Da biste videli načine i zahteve za isporuku, izaberite adresu</translation>
+<translation id="5768323954710688012">Obaveštenje o automatskom popunjavanju iz Gmail-a i drugih izvora otvoreno je na celom ekranu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije unet?</translation>
 <translation id="5773286975255318081">Kao što su korisnička imena profila i verzije pregledača</translation>
 <translation id="5774897849666641211">Postavljajte pitanja o ovoj kartici</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">નિકાસ કરવાનું સફળ થયું</translation>
 <translation id="1272079795634619415">રોકો</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} પાસવર્ડ}one{{count} પાસવર્ડ}other{{count} પાસવર્ડ}}</translation>
+<translation id="1274721046703404848">Search સેવાઓ અને Google Drive જેવી Google Workspace ઍપ વચ્ચેનું કનેક્શન મેનેજ કરો</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">પાસકી સાચવી</translation>
 <translation id="8263809106706527890">તમારી ડિફૉલ્ટ બ્રાઉઝર સેટિંગમાં ફેરફાર થયો હોઈ શકે છે. તમે આને સેટિંગમાં જઈને ચેક કરી શકો છો.</translation>
 <translation id="8264966119170358612">તમારા અમુક સાચવેલા પાસવર્ડ બિન-Google ડેટા ઉલ્લંઘનમાં જાહેર કરવામાં આવ્યા હતા. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome મેનૂ ખોલો</translation>
 <translation id="826614135184049678">તમારી iPad રીસેટ પ્રક્રિયાના ભાગ તરીકે, તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા. ફરીથી સાઇન ઇન કરવા માટે, "ચાલુ રાખો" પર ટૅપ કરો.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">તમે પ્રોફાઇલ સ્વિચ કરવા જઈ રહ્યાં છો</translation>

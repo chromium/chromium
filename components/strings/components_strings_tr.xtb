@@ -599,6 +599,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="192095259937375524">Bu sekmeyi paylaş düğmesi. Bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşmak için etkinleştirin</translation>
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1927439846988093361">Saç Bakımı</translation>
+<translation id="1927930548546198515">Chrome, özelliği nasıl kullandığınızı (ör. istekleriniz ve davranışı kabul ettiğiniz veya yoksaydığınızdaki davranışınız) günlüğe kaydeder.</translation>
 <translation id="1932098463447129402">Şundan Önce Değil:</translation>
 <translation id="1935353813610900265">Yapay zeka destekli geçmişte arama için geri bildirim gönderin</translation>
 <translation id="1935995810530254458">Yine de kopyala</translation>
@@ -985,6 +986,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2491120439723279231">Sunucu sertifikası hatalar içeriyor.</translation>
 <translation id="2491414235131909199">Bu sayfa bir uzantı tarafından engellendi</translation>
 <translation id="2493122313108999546">Yeniden boyutlandırıldı</translation>
+<translation id="249376477913017009">Gmail'den otomatik doldurma ve daha fazlası bildirimi açıldı</translation>
 <translation id="2495083838625180221">JSON Ayrıştırıcı</translation>
 <translation id="2496402116964818747">Şifreleri doldurmak için parmak izinizi kullanıp kullanmayacağınızı <ph name="SETTINGS" /> bölümünden değiştirebilirsiniz</translation>
 <translation id="2498091847651709837">Yeni kart tara</translation>
@@ -1153,6 +1155,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2742128390261873684">Ev Otomasyonu</translation>
 <translation id="2743512410823092182">DJ Kaynakları ve Donanımı</translation>
+<translation id="275259155159336003">Kişisel Zeka özellikli Gemini tarafından desteklenir. İstekleriniz, sayfa başlıklarınız ve URL'leriniz gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir. <ph name="BEGIN_LINK" />Ayarları yönetin<ph name="END_LINK" />.</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> dosya Google Drive'a yükleniyor</translation>
 <translation id="2759299890026163685">Tekrar denemeden önce internet bağlantınızın kesintisiz olduğundan emin olun</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> uygulamasında şifrenizi doldurmak</translation>
@@ -1436,6 +1439,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208701679386778924">ChromeOS güncellemelerini daha iyi hale getirebilmemiz için lütfen rapor gönderin.</translation>
 <translation id="3209034400446768650">Sayfa sizden ücret alabilir</translation>
+<translation id="3209071504641569648">İstekleriniz, sayfa başlıklarınız ve URL'leriniz Google'a gönderilerek gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir.</translation>
 <translation id="3212468046572043669">İndirme başladı. Görmek için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> sitesinde etkinliğiniz izleniyor</translation>
 <translation id="3215092763954878852">WebAuthn kullanılamadı</translation>
@@ -1473,6 +1477,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3254301855501243548">18 x 22 inç</translation>
 <translation id="3255926992597692024">Chromium, ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Takvim'de hızlıca yeni bir etkinlik oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="3261180263071638338">Gmail'den otomatik doldurma ve daha fazlası bildirimi kapatıldı</translation>
 <translation id="3261488570342242926">Sanal kartlar hakkında bilgi</translation>
 <translation id="3262698603497362968">Satın alma seçenekleri</translation>
 <translation id="3264637689694266148">Önerileri devre dışı bıraksanız bile sekmelerinizin sayfa başlığı ve URL'leri diğer Chrome özellikleri için işlenmeye devam edebilir. Tarayıcının bu verilere erişimini şuradan yönetebilirsiniz:</translation>
@@ -2335,6 +2340,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Uçuş rezervasyonları</translation>
 <translation id="4607608436550361748">Chrome ipuçlarını göster</translation>
+<translation id="4607879293515681409">Gelişmiş otomatik doldurma özelliği artık Gmail ve Google Fotoğraflar gibi uygulamalardaki bilgileri (ör. uçuş numaraları ve randevu saatleri) bulup doldurabilir.</translation>
 <translation id="460848736049414407">Yönetici tarafından engellendi</translation>
 <translation id="4610279718074907952">Bu site, <ph name="SET_OWNER" /> tarafından tanımlanmış, etkinliğinizi görebilen bir grupta bulunuyor</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> üzerinden verilen <ph name="MERCHANT_ORIGIN" /> adresindeki siparişiniz işleme alınırken bir hata oluştu.</translation>
@@ -2851,6 +2857,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5401344472773249513">Ünlüler ve Eğlence Haberleri</translation>
 <translation id="5401674281624189321">Kış Sporları ve Kayak Merkezleri</translation>
+<translation id="5402715318763077894">Yerel ağ erişimine izin verilsin mi?</translation>
 <translation id="540949333488055151">Plastik (Renkli)</translation>
 <translation id="540969355065856584">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası şu anda geçerli değil. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="5411462078004183575">Düşük Fiyatlı Seçenek</translation>
@@ -3101,6 +3108,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5764725887548570807">Geçersiz kaynak biçimi.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> adresine gönder</translation>
 <translation id="5765072501007116331">Teslimat yöntemlerini ve gereksinimleri görmek için bir adres seçin</translation>
+<translation id="5768323954710688012">Gmail'den otomatik doldurma ve daha fazlası bildirimi tam ekranda açıldı</translation>
 <translation id="57689295674415555">Sanal kart numarası doldurulmadı mı?</translation>
 <translation id="5773286975255318081">Örneğin, profil kullanıcı adları ve tarayıcı sürümleri</translation>
 <translation id="5774897849666641211">Bu sekme hakkında soru sorun</translation>

@@ -5349,19 +5349,6 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="4501388411278568771">HTTPS-upgrades kunnen worden toegepast, afhankelijk van de lanceringsstatus van de functie.</translation>
 <translation id="45036050223225148">Het ClientHallo-experiment met TLS-versleuteling uitzetten</translation>
 <translation id="4503935079903510542">De UEFI-opstartschijfimage die wordt gebruikt om de VM te installeren op x86_64-apparaten.</translation>
-<translation id="4505299160236615603">Als je het beleid instelt, wordt toegang geboden tot de vermelde URL's in de incognitomodus. Gebruik dit beleid om uitzonderingen te openen voor bepaalde URL-patronen die zijn gedefinieerd in <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Als zowel dit beleid als <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> zijn ingesteld, heeft de toelatingslijst voorrang. Als een URL overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het algemene beleid van <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> gebruikt als reserve.
-
-Als je dit beleid instelt en <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> niet, wordt elke URL die niet op de toelatingslijst staat, geblokkeerd in de incognitomodus.
-
-Als je <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> instelt op Niet toestaan (waarde 1), maar dit beleid instelt, is de incognitomodus alleen beschikbaar voor de URL's die overeenkomen met de toelatingslijst.
-
-Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> en <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
-
-Dit beleid is alleen van invloed op de incognitomodus. Als je URL's wilt toestaan voor alle gebruikersprofielen, gebruik je het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4508728400492074981">Beheert het beleid voor de functie First-Party Sets.</translation>
 <translation id="4510131075424939993">Geef een saltwaarde op om te gebruiken in <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> bij de evaluatie van identiteitsgegevens</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
@@ -6038,19 +6025,6 @@ Als je dit beleid instelt op <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCU
       Als het beleid niet is ingesteld in versies tot en met M76, kan <ph name="PRODUCT_NAME" /> deze logboeken standaard niet verzamelen en uploaden. Vanaf M77 kan <ph name="PRODUCT_NAME" /> deze logboeken standaard verzamelen en uploaden vanuit de meeste profielen waarop cloudgebaseerde bedrijfsbeleidsregels op gebruikersniveau van toepassing zijn. Vanaf M77 tot en met M80 kan <ph name="PRODUCT_NAME" /> deze logboeken ook standaard verzamelen en uploaden vanuit profielen waarop <ph name="PRODUCT_NAME" />-beheer op locatie van toepassing is.</translation>
 <translation id="4911334289324462969">poort 989 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
 <translation id="4917385247580444890">Sterk</translation>
-<translation id="4917925819533520480">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
-
-URL-patronen worden vergeleken met de URL van elk frame op de pagina die wordt geïnspecteerd. Het resulterende gedrag hangt ervan af of het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ook is ingesteld.
-
-Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> niet, moet de URL van elk frame overeenkomen met een patroon op deze toelatingslijst om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan. Als de URL van een frame niet overeenkomt, wordt DevTools geblokkeerd voor de hele pagina. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
-
-Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> beide instelt, heeft deze toelatingslijst voorrang. Als de URL van een frame overeenkomt met een patroon op deze toelatingslijst, wordt deze toegestaan, zelfs als deze ook overeenkomt met een patroon op de blokkeerlijst. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
-
-Als je dit beleid niet instelt, wordt de beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
-
-Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4918150584200819898">Automatisch starten van online opnieuw verifiëren aanzetten.</translation>
 <translation id="4918261735182294270">Gebruikers toestaan om te kiezen of <ph name="CHROME_SYNC_NAME" /> moet worden aangezet</translation>
 <translation id="4918485681633125382">Ondersteuning voor XFA-formulieren in pdf-documenten aanzetten</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Амжилттай экспортоллоо</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} нууц үг}other{{count} нууц үг}}</translation>
+<translation id="1274721046703404848">Хайлтын үйлчилгээ болон Google Драйв зэрэг Google Workspace-н аппуудын хоорондох холболтыг удирдаарай</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1279024913354609713">Бүү зөвшөөр</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
@@ -2189,6 +2190,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8263228331881858381">Нэвтрэх түлхүүрийг хадгалсан</translation>
 <translation id="8263809106706527890">Таны өгөгдмөл хөтчийн тохиргоонд өөрчлөлт орсон байж магадгүй. Та үүнийг тохиргоонд шалгах боломжтой.</translation>
 <translation id="8264966119170358612">Таны хадгалсан зарим нууц үг Google-н бус өгөгдлийн зөрчилд өртсөн байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome-н цэсийг нээнэ үү</translation>
 <translation id="826614135184049678">Таны iPad-г шинэчлэх явцад таныг <ph name="USER_NAME" /> бүртгэлээс тань гаргасан. Буцаж нэвтрэхийн тулд доорх "Үргэлжлүүлэх"-ийг товшино уу.</translation>
 <translation id="8270320981823560179">Драйв</translation>
 <translation id="8274795744553482834">Та профайл сэлгэх гэж байна</translation>

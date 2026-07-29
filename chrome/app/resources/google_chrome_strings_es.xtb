@@ -200,6 +200,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chrome</translation>
 <translation id="2970681950995291301">Para eliminar de Chrome tu cuenta de Google, cierra sesión en Chrome en la página de configuración</translation>
 <translation id="2976869732253036751">Recibe alertas de seguimiento de precios con Chrome en tu teléfono</translation>
+<translation id="2985091279808606502">Chrome necesita el permiso de red local para este sitio</translation>
 <translation id="2991167882679440829">Tus contraseñas y otros datos de Chrome que hayas guardado en tu cuenta de Google se eliminarán de este dispositivo. Para usarlos de nuevo en Chrome, vuelve a iniciar sesión.</translation>
 <translation id="2994465299455873643">Proporciona servicios de cifrado y una forma segura de recuperar <ph name="BROWSER_NAME" /> si se desactualiza. Si se inhabilita este servicio, <ph name="BROWSER_NAME" /> podría perder el acceso a los datos cifrados y <ph name="BROWSER_NAME" /> podría no recuperarse.</translation>
 <translation id="3003694935412297923">Todas las tareas</translation>
@@ -723,6 +724,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8113883687556086139">Verifica que eres tú para usar y guardar los datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8115695070094288807">Personalizando Chrome...</translation>
 <translation id="8118331347066725040">Enviar comentarios sobre la búsqueda con Lens</translation>
+<translation id="812930250799242837">Has iniciado sesión como <ph name="USER_NAME" />, suscripción a Google. Abre el menú de la cuenta.</translation>
 <translation id="8129812357326543296">Información de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
@@ -756,6 +758,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 
 No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si cierras sesión ahora, se eliminarán los marcadores que no hayas guardado.</translation>
 <translation id="8458117863387545390">Descarga Chrome en tu teléfono</translation>
+<translation id="848851325211467878">Has iniciado sesión como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, suscripción a Google. Abre el menú de la cuenta.</translation>
 <translation id="8496177819998570653">&amp;Gestor de contraseñas de Google</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia ahora y restauraremos las pestañas.</translation>
 <translation id="8521348052903287641">Regla entrante para que Google Chrome Dev permita tráfico mDNS.</translation>

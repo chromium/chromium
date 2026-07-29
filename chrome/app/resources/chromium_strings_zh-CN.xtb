@@ -54,6 +54,7 @@
 <translation id="1623563412065267963">借助手机上的 Chromium 应用，畅享 Google 的强大功能</translation>
 <translation id="1625909126243026060">检查 Chromium 中重要的隐私控制设置和安全控件</translation>
 <translation id="1640672724030957280">正在下载...</translation>
+<translation id="1665602916345474427">已登录身份为：<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)，会员。打开账号菜单</translation>
 <translation id="1708414395296835197">您可随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接。Chromium 还将固定到任务栏。</translation>
 <translation id="1709772298389099340">为 <ph name="BROWSER_NAME" /> 提供提升的权限。</translation>
 <translation id="1722488837206509557">这样，您就可以从可用设备中选择并在这些设备上显示内容。</translation>
@@ -255,6 +256,7 @@
 
           **建议问题：**生成 3-5 个发人深省的问题，以项目符号列表的形式呈现，帮助用户更深入地理解屏幕截图。这些问题中，至少应有一个是关于某个视觉对象、其设计或其放置位置的问题。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium 需要为此网站授予本地网络权限</translation>
 <translation id="3885770153807205175">语言选择器</translation>
 <translation id="388648406173476553">自定义和控制 Chromium。出了点需要您注意的状况 - 点击即可查看详情。</translation>
 <translation id="3889543394854987837">点击您的姓名即可打开Chromium并开始浏览。</translation>
@@ -333,6 +335,7 @@
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快网站速度，但 Chromium 的防范攻击能力会略微降低</translation>
 <translation id="4665829708273112819">警告：Chromium 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="4673151026126227699">如果您还分享 Chromium 使用情况报告，这些报告会包含您访问过的网址</translation>
+<translation id="4673710618874938871">已登录身份为：<ph name="USER_NAME" />，会员。打开账号菜单</translation>
 <translation id="4677944499843243528">其他计算机 (<ph name="HOST_NAME" />) 的另一个 Chromium 进程 (<ph name="PROCESS_ID" />) 好像正在使用此个人资料。Chromium 已锁定此个人资料以防止其受损。如果您确定其他进程目前未使用此个人资料，请为其解锁并重新启动 Chromium。</translation>
 <translation id="4680828127924988555">取消安装</translation>
 <translation id="469259825538636168">部分 Chromium 数据尚未保存到您的 Google 账号。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据将被删除。</translation>

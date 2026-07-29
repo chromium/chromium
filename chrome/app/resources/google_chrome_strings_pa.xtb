@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ਨੈੱਟਵਰਕ ਸਾਈਨ-ਇਨ - Chrome</translation>
 <translation id="2970681950995291301">Chrome ਤੋਂ ਆਪਣਾ Google ਖਾਤਾ ਹਟਾਉਣ ਲਈ, ਸੈਟਿੰਗਾਂ ਪੰਨੇ 'ਤੇ ਜਾ ਕੇ Chrome ਤੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2976869732253036751">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Chrome ਨਾਲ ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="2985091279808606502">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਸਥਾਨਕ ਨੈੱਟਵਰਕ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2991167882679440829">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਤੁਸੀਂ ਜਿਹੜੇ ਪਾਸਵਰਡਾਂ ਅਤੇ Chrome ਨਾਲ ਸੰਬੰਧਿਤ ਡਾਟੇ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ, ਉਸਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਉਨ੍ਹਾਂ ਨੂੰ Chrome ਵਿੱਚ ਦੁਬਾਰਾ ਵਰਤਣ ਲਈ, ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2994465299455873643">ਜੇ <ph name="BROWSER_NAME" /> ਪੁਰਾਣਾ ਹੋ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਇਹ ਇਨਕ੍ਰਿਪਸ਼ਨ ਸੇਵਾਵਾਂ ਅਤੇ ਇਸਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰਨ ਦਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕਾ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦੀ ਹੈ। ਜੇ ਇਹ ਸੇਵਾ ਬੰਦ ਹੈ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ <ph name="BROWSER_NAME" /> ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੇ ਅਤੇ <ph name="BROWSER_NAME" /> ਆਪਣੇ ਆਪ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਨਾ ਕਰ ਸਕੇ।</translation>
 <translation id="3003694935412297923">ਸਾਰੇ ਕਾਰਜ</translation>
@@ -723,6 +724,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8113883687556086139">ਆਪਣੇ ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8115695070094288807">Chrome ਨੂੰ ਤੁਹਾਡੇ ਮੁਤਾਬਕ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8118331347066725040">Lens ਨਾਲ ਖੋਜ ਲਈ ਵਿਚਾਰ ਭੇਜੋ</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ, Google ਮੈਂਬਰਸ਼ਿਪ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8129812357326543296">&amp;Google Chrome ਬਾਰੇ</translation>
 <translation id="813913629614996137">ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8162006532256575008">ਖਾਤੇ ਤੋਂ ਬਿਨਾਂ Chrome ਨੂੰ ਵਰਤੋ</translation>
@@ -756,6 +758,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 
 ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਕੁਝ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਮਿਟਾ ਨਹੀਂ ਦਿੰਦੇ, ਉਦੋਂ ਤੱਕ ਨਵੇਂ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਸਾਈਨ-ਆਊਟ ਕਰਦੇ ਹੋ, ਤਾਂ ਅਣਰੱਖਿਅਤ ਬੁੱਕਮਾਰਕ ਮਿਟ ਜਾਣਗੇ।</translation>
 <translation id="8458117863387545390">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Chrome ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google ਮੈਂਬਰਸ਼ਿਪ ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome ਲਈ ਇੱਕ ਖਾਸ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਹੁਣੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਸੀ। ਹੁਣ ਇਸਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਾਂਗੇ।</translation>
 <translation id="8521348052903287641">mDNS ਟ੍ਰੈਫਿਕ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ Google Chrome Dev ਲਈ ਇਨਬਾਊਂਡ ਨਿਯਮ।</translation>

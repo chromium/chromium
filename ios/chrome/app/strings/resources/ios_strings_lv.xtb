@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Export Successful (Eksportēšana sekmīga)</translation>
 <translation id="1272079795634619415">Apturēt</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} parole}zero{{count} paroļu}one{{count} parole}other{{count} paroles}}</translation>
+<translation id="1274721046703404848">Pārvaldiet saistījumu starp Meklēšanas pakalpojumiem un Google Workspace lietotnēm, piemēram, Google disku.</translation>
 <translation id="1275718070701477396">Atlasīta</translation>
 <translation id="1279024913354609713">Neatļaut</translation>
 <translation id="1285320974508926690">Nekad netulkot šo vietni</translation>
@@ -2189,6 +2190,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8263228331881858381">Piekļuves atslēga ir saglabāta</translation>
 <translation id="8263809106706527890">Iespējams, ir mainīti jūsu noklusējuma pārlūka iestatījumi. To varat pārbaudīt iestatījumos.</translation>
 <translation id="8264966119170358612">Datu aizsardzības pārkāpumā, kas neradās Google serveros, tika atklātas dažas no jūsu saglabātajām parolēm. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="8265730590513812063">Atveriet Chrome izvēlni</translation>
 <translation id="826614135184049678">Jūs tikāt izrakstīts no konta <ph name="USER_NAME" />, veicot iPad planšetdatora atiestatīšanu. Lai atkal pierakstītos, pieskarieties pie Turpināt.</translation>
 <translation id="8270320981823560179">Disks</translation>
 <translation id="8274795744553482834">Jūs gatavojaties mainīt profilus</translation>

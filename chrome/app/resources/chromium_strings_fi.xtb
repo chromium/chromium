@@ -55,6 +55,7 @@
 <translation id="1623563412065267963">Chromium-sovelluksella voit hyödyntää Googlen parhaita ominaisuuksia puhelimella</translation>
 <translation id="1625909126243026060">Tarkista Chromiumin tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="1640672724030957280">Ladataan...</translation>
+<translation id="1665602916345474427">Kirjautuneena käyttäjänä <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, jäsenyys. Avaa tilivalikko</translation>
 <translation id="1708414395296835197">Voit käyttää Chromiumia aina, kun klikkaat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa. Se myös kiinnitetään tehtäväpalkkiin.</translation>
 <translation id="1709772298389099340">Tarjoaa laajat pääsyoikeudet (<ph name="BROWSER_NAME" />).</translation>
 <translation id="1722488837206509557">Näin voit valita käytettävissä olevista laitteista ja näyttää niillä sisältöä.</translation>
@@ -256,6 +257,7 @@
 
           **Ehdota kysymyksiä:** Luo ranskalaisilla viivoilla lista, jossa on 3–5 ajatuksia herättävää kysymystä kuvakaappauksen ymmärtämisen tueksi. Ainakin yhden kysymyksen tulee koskea nimenomaan visuaalista kohdetta, sen asettelua tai sijoittelua.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium tarvitsee pääsyn lähiverkkoon tällä sivustolla</translation>
 <translation id="3885770153807205175">Kielivalitsin</translation>
 <translation id="388648406173476553">Yksilöi ja ylläpidä Chromiumia. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
 <translation id="3889543394854987837">Avaa Chromium klikkaamalla nimeäsi ja aloita selaaminen.</translation>
@@ -334,6 +336,7 @@
 <translation id="4625064703209785397">Nopeuttaa sivustoja Chromiumin V8-moottorilla, mutta heikentää Chromiumin suojaa hyökkäyksiä vastaan</translation>
 <translation id="4665829708273112819">Varoitus: Chromium ei voi estää laajennuksia tallentamasta selaushistoriaasi. Voit estää tämän laajennuksen käytön incognito-tilassa poistamalla tämän valinnan.</translation>
 <translation id="4673151026126227699">Jos jaat myös Chromiumin käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
+<translation id="4673710618874938871">Kirjautuneena tilillä <ph name="USER_NAME" />, jäsenyys. Avaa tilivalikko</translation>
 <translation id="4677944499843243528">Profiili näyttäisi olevan toisen Chromium-prosessin (<ph name="PROCESS_ID" />) käytössä toisella tietokoneella (<ph name="HOST_NAME" />). Chromium on lukinnut profiilin, jotta se ei vioitu. Jos olet varma, että mikään toinen prosessi ei käytä tätä profiilia, voit poistaa profiilin lukituksen ja käynnistää Chromiumin uudelleen.</translation>
 <translation id="4680828127924988555">Peru asennus</translation>
 <translation id="469259825538636168">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi. Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>

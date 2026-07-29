@@ -599,6 +599,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="192095259937375524">Przycisk Udostępnij tę kartę; aktywuj, aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji</translation>
 <translation id="1924727005275031552">Nowy</translation>
 <translation id="1927439846988093361">Pielęgnacja włosów</translation>
+<translation id="1927930548546198515">Chrome rejestruje sposób korzystania z tej funkcji, np. Twoje prośby i zachowanie, gdy akceptujesz lub ignorujesz sugestie</translation>
 <translation id="1932098463447129402">Nie wcześniej niż</translation>
 <translation id="1935353813610900265">Prześlij opinię o wyszukiwaniu w historii z wykorzystaniem AI</translation>
 <translation id="1935995810530254458">Skopiuj mimo to</translation>
@@ -985,6 +986,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2491120439723279231">Certyfikat serwera zawiera błędy.</translation>
 <translation id="2491414235131909199">Ta strona została zablokowana przez rozszerzenie</translation>
 <translation id="2493122313108999546">Zmieniono rozmiar</translation>
+<translation id="249376477913017009">Otwarto powiadomienie o autouzupełnianiu z Gmaila i innych usług</translation>
 <translation id="2495083838625180221">Parser JSON</translation>
 <translation id="2496402116964818747">Jeśli chcesz włączyć lub wyłączyć opcję używania odcisku palca do wypełniania haseł, otwórz <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Zeskanuj nową kartę</translation>
@@ -1153,6 +1155,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Automatyka domowa</translation>
 <translation id="2743512410823092182">Zasoby i sprzęt dla DJ-ów</translation>
+<translation id="275259155159336003">Technologia spersonalizowanej inteligencji w Gemini Twoje prośby, tytuły stron i adresy URL mogą być weryfikowane w celu doskonalenia funkcji ulepszonego autouzupełniania. <ph name="BEGIN_LINK" />Zarządzaj ustawieniami<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Przesyłam pliki (<ph name="COUNT" />) na Dysk Google</translation>
 <translation id="2759299890026163685">Zanim spróbujesz ponownie, upewnij się, że masz stabilne połączenie z internetem</translation>
 <translation id="2759825833388495838">wypełnić hasło na <ph name="APP_NAME" /></translation>
@@ -1436,6 +1439,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208701679386778924">Prześlij raport, abyśmy mogli ulepszać kolejne aktualizacje ChromeOS.</translation>
 <translation id="3209034400446768650">Strona może powodować naliczanie opłat</translation>
+<translation id="3209071504641569648">Twoje prośby, tytuły stron i adresy URL są wysyłane do Google i mogą być sprawdzane w celu doskonalenia funkcji ulepszonego autouzupełniania.</translation>
 <translation id="3212468046572043669">Rozpoczęto pobieranie. Aby go zobaczyć, przeciągnij od góry i kliknij przycisk Wstecz</translation>
 <translation id="3212581601480735796">Twoja aktywność związana z hostem <ph name="HOSTNAME" /> jest monitorowana</translation>
 <translation id="3215092763954878852">Nie udało się użyć WebAuthn</translation>
@@ -1473,6 +1477,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3254301855501243548">18 x 22 cale</translation>
 <translation id="3255926992597692024">Chromium próbuje zmienić ustawienia wypełniania form płatności.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nowe wydarzenie w Kalendarzu Google</translation>
+<translation id="3261180263071638338">Zamknięto powiadomienie o autouzupełnianiu z Gmaila i innych usług</translation>
 <translation id="3261488570342242926">Dowiedz się więcej o kartach wirtualnych</translation>
 <translation id="3262698603497362968">Opcje zakupu</translation>
 <translation id="3264637689694266148">Jeśli wyłączysz sugestie, to tytuły stron i adresy URL kart mogą być nadal przetwarzane na potrzeby innych funkcji Chrome. Dostęp przeglądarki do tych danych możesz kontrolować w</translation>
@@ -2335,6 +2340,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4602465984861132303">Kręgle</translation>
 <translation id="4603727370377253901">Rezerwacje lotów</translation>
 <translation id="4607608436550361748">Zobacz wskazówki na temat Chrome</translation>
+<translation id="4607879293515681409">Ulepszone autouzupełnianie może teraz znajdować i wypełniać informacje – takie jak numery lotów i godziny spotkań – z aplikacji takich jak Gmail i Zdjęcia.</translation>
 <translation id="460848736049414407">Zablokowany przez administratora</translation>
 <translation id="4610279718074907952">Ta witryna należy do zdefiniowanej przez firmę <ph name="SET_OWNER" /> grupy, która ma dostęp do danych o Twojej aktywności</translation>
 <translation id="4612631413844865947">Podczas przetwarzania Twojego zamówienia w usłudze <ph name="MERCHANT_ORIGIN" /> za pomocą <ph name="PAYMENT_APP_ORIGIN" /> wystąpił błąd.</translation>
@@ -2520,6 +2526,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4885256590493466218">Zapłać kartą <ph name="CARD_DETAIL" /></translation>
 <translation id="4886565443854420066">Przeglądarka Chrome chce sprawdzić, czy to Ty, zanim zmienisz ustawienia</translation>
 <translation id="4887406273302438710">Chroń hasła za pomocą Windows Hello</translation>
+<translation id="4887785555357166111">Zapisz klatkę filmu</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby usunąć historię przeglądania, pliki cookie, pamięć podręczną i inne dane w ustawieniach Chrome</translation>
 <translation id="4892518386797173871">Tył</translation>
 <translation id="4894390983254799375">Takie jak identyfikator urządzenia, nazwa, wersja systemu operacyjnego i nazwa użytkownika systemu operacyjnego</translation>
@@ -2851,6 +2858,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5401344472773249513">Wiadomości o celebrytach i branży rozrywkowej</translation>
 <translation id="5401674281624189321">Kurorty górskie i narciarskie</translation>
+<translation id="5402715318763077894">Zezwolić na dostęp do sieci lokalnej?</translation>
 <translation id="540949333488055151">Plastik (kolorowy)</translation>
 <translation id="540969355065856584">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest obecnie ważny. Może to być spowodowane nieprawidłową konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="5411462078004183575">Niska cena</translation>
@@ -3101,6 +3109,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5764725887548570807">Nieprawidłowy format źródła.</translation>
 <translation id="5764920692828389743">Wysyłaj na adres <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Aby zobaczyć metody dostawy oraz wymagania, wybierz adres</translation>
+<translation id="5768323954710688012">Powiadomienie o autouzupełnianiu z Gmaila i innych usługach otwarte na całą wysokość</translation>
 <translation id="57689295674415555">Nie uzupełniono numeru karty wirtualnej?</translation>
 <translation id="5773286975255318081">Takie jak nazwy użytkowników profili i wersje przeglądarek</translation>
 <translation id="5774897849666641211">Zapytaj o tę kartę</translation>

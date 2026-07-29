@@ -196,6 +196,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – conectare la rețea – Chrome</translation>
 <translation id="2970681950995291301">Pentru a elimina Contul Google din Chrome, deconectează-te de la Chrome din pagina Setări</translation>
 <translation id="2976869732253036751">Primește alerte de urmărire a prețurilor cu Chrome pe telefon</translation>
+<translation id="2985091279808606502">Chrome are nevoie de permisiune pentru rețeaua locală pentru acest site</translation>
 <translation id="2991167882679440829">Parolele și alte date Chrome pe care le-ai salvat în Contul Google se vor elimina de pe acest dispozitiv. Pentru a le folosi din nou în Chrome, conectează-te din nou.</translation>
 <translation id="2994465299455873643">Oferă servicii de criptare și o modalitate sigură de a recupera <ph name="BROWSER_NAME" /> dacă devine învechit. Dacă acest serviciu este dezactivat, <ph name="BROWSER_NAME" /> poate să piardă accesul la datele criptate și este posibil ca <ph name="BROWSER_NAME" /> să nu se poată recupera.</translation>
 <translation id="3003694935412297923">Toate activitățile</translation>
@@ -715,6 +716,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8113883687556086139">Confirmă-ți identitatea pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Se personalizează Chrome...</translation>
 <translation id="8118331347066725040">Trimite feedback pentru căutare cu Lens</translation>
+<translation id="812930250799242837">Te-ai conectat ca <ph name="USER_NAME" />, utilizator cu abonament Google. Deschide meniul contului.</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8162006532256575008">Folosește Chrome fără cont</translation>
@@ -748,6 +750,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 
 Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te deconectezi acum, marcajele nesalvate vor fi șterse.</translation>
 <translation id="8458117863387545390">Instalează Chrome pe telefon</translation>
+<translation id="848851325211467878">Te-ai conectat ca <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, utilizatoare / utilizator cu abonament Google. Deschide meniul contului.</translation>
 <translation id="8496177819998570653">Manager de p&amp;arole Google</translation>
 <translation id="8498858610309223613">Tocmai a fost aplicată o actualizare de securitate specială pentru Google Chrome. Repornește acum și filele vor fi restabilite.</translation>
 <translation id="8521348052903287641">Regula de intrare pentru Google Chrome Dev pentru a permite traficul mDNS.</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">匯出成功</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} 個密碼}other{{count} 個密碼}}</translation>
+<translation id="1274721046703404848">管理「搜尋」服務與 Google Workspace 應用程式 (例如「Google 雲端硬碟」) 之間的連結</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1279024913354609713">不允許</translation>
 <translation id="1285320974508926690">永不翻譯此網站</translation>
@@ -2187,6 +2188,7 @@
 <translation id="8263228331881858381">已儲存密鑰</translation>
 <translation id="8263809106706527890">預設瀏覽器設定可能已有變更，你可在設定中查看。</translation>
 <translation id="8264966119170358612">非 Google 資料外洩中包含部分您儲存的密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">開啟 Chrome 選單</translation>
 <translation id="826614135184049678">您已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕按下方的 [繼續]。</translation>
 <translation id="8270320981823560179">雲端硬碟</translation>
 <translation id="8274795744553482834">即將切換設定檔</translation>

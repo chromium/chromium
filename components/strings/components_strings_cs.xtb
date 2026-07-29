@@ -599,6 +599,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="192095259937375524">Tlačítko sdílení karty, aktivací tuto kartu můžete sdílet pomocí odkazu, QR kódu, odesláním a podobně</translation>
 <translation id="1924727005275031552">Nová</translation>
 <translation id="1927439846988093361">Péče o vlasy</translation>
+<translation id="1927930548546198515">Chrome zaznamenává, jak tuto funkci používáte – například vaše žádosti a vaše chování, když přijmete nebo ignorujete návrhy</translation>
 <translation id="1932098463447129402">Nikoli před</translation>
 <translation id="1935353813610900265">Zpětná vazba k vyhledávání v historii s podporou AI</translation>
 <translation id="1935995810530254458">Přesto zkopírovat</translation>
@@ -985,6 +986,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2491120439723279231">Certifikát serveru obsahuje chyby.</translation>
 <translation id="2491414235131909199">Tato stránka je blokována rozšířením</translation>
 <translation id="2493122313108999546">Změněna velikost</translation>
+<translation id="249376477913017009">Oznámení o automatickém vyplňování z Gmailu a dalších služeb je otevřené</translation>
 <translation id="2495083838625180221">Analyzátor souborů JSON</translation>
 <translation id="2496402116964818747">Používání otisku prstu k vyplňování hesel můžete změnit v <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Naskenovat novou kartu</translation>
@@ -1153,6 +1155,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Chytrá domácnost</translation>
 <translation id="2743512410823092182">Zdroje a vybavení pro dýdžeje</translation>
+<translation id="275259155159336003">Využívá Osobní inteligenci s Gemini. Vaše žádosti, názvy stránek a adresy URL mohou být kontrolovány za účelem zdokonalování vylepšeného automatického vyplňování. <ph name="BEGIN_LINK" />Spravovat nastavení<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Nahrávání <ph name="COUNT" /> souborů na Disk Google</translation>
 <translation id="2759299890026163685">Než to zkusíte znovu, ujistěte se, že máte stabilní připojení k internetu</translation>
 <translation id="2759825833388495838">vyplnit vašeho heslo v aplikaci <ph name="APP_NAME" /></translation>
@@ -1433,6 +1436,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208701679386778924">Pošlete nám hlášení, abychom mohli vylepšit další aktualizace systému ChromeOS.</translation>
 <translation id="3209034400446768650">Stránka může účtovat poplatky</translation>
+<translation id="3209071504641569648">Vaše žádosti, názvy stránek a adresy URL se odesílají do Googlu a mohou být kontrolovány za účelem zdokonalování vylepšeného automatického vyplňování</translation>
 <translation id="3212468046572043669">Bylo zahájeno stahování. Zobrazíte ho tak, že přejedete shora dolů a klepnete na tlačítko Zpět</translation>
 <translation id="3212581601480735796">Vaše aktivita na webu <ph name="HOSTNAME" /> je sledována</translation>
 <translation id="3215092763954878852">Ověření WebAuthn nebylo možné použít</translation>
@@ -1470,6 +1474,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3254301855501243548">18 × 22″</translation>
 <translation id="3255926992597692024">Chromium se pokouší upravit nastavení vyplňování platebních metod.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou událost v Kalendáři Google</translation>
+<translation id="3261180263071638338">Oznámení o automatickém vyplňování z Gmailu a dalších služeb bylo zavřeno</translation>
 <translation id="3261488570342242926">Informace o virtuálních kartách</translation>
 <translation id="3262698603497362968">Možnosti nákupu</translation>
 <translation id="3264637689694266148">Pokud návrhy vypnete, název stránky a adresy URL karet se můžou dál zpracovávat pro jiné funkce Chromu. Přístup prohlížeče k těmto datům můžete spravovat v</translation>
@@ -2331,6 +2336,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Rezervace letenek</translation>
 <translation id="4607608436550361748">Zobrazit tipy k Chromu</translation>
+<translation id="4607879293515681409">Vylepšené automatické vyplňování teď dokáže vyhledat a vyplnit informace (například čísla letů a časy schůzek) z aplikací, jako jsou Gmail a Fotky</translation>
 <translation id="460848736049414407">Blokováno administrátorem</translation>
 <translation id="4610279718074907952">Tento web je ve skupině definované vlastníkem <ph name="SET_OWNER" />, která může sledovat vaši aktivitu</translation>
 <translation id="4612631413844865947">Při zpracování vaší objednávky u obchodníka <ph name="MERCHANT_ORIGIN" /> prostřednictvím služby <ph name="PAYMENT_APP_ORIGIN" /> došlo k chybě.</translation>
@@ -2847,6 +2853,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5400836586163650660">Šedá</translation>
 <translation id="5401344472773249513">Celebrity a zprávy ze showbyznysu</translation>
 <translation id="5401674281624189321">Horská a lyžařská střediska</translation>
+<translation id="5402715318763077894">Povolit přístup k místní síti?</translation>
 <translation id="540949333488055151">Plast (barevný)</translation>
 <translation id="540969355065856584">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát v tuto chvíli není platný. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="5411462078004183575">Možnost s nízkou cenou</translation>
@@ -3097,6 +3104,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5764725887548570807">Neplatný formát zdroje.</translation>
 <translation id="5764920692828389743">Odeslat na adresu <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Chcete-li zobrazit způsoby doručení a požadavky, vyberte adresu</translation>
+<translation id="5768323954710688012">Oznámení o automatickém vyplňování z Gmailu a dalších služeb otevřené na celou výšku</translation>
 <translation id="57689295674415555">Číslo virtuální karty není vyplněno?</translation>
 <translation id="5773286975255318081">Například uživatelská jména profilů a verze prohlížečů</translation>
 <translation id="5774897849666641211">Ptejte se na tuhle kartu</translation>

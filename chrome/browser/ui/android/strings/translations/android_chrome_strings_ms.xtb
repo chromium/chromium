@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Pemberitahuan petua promosi ditutup</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
-<translation id="1049461303780085993">Cuba Gemini dalam Chrome untuk mendapatkan jawapan, kesimpulan utama dan pelbagai lagi</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
 <translation id="1057623954802068161">Tatal kepada bahagian atas halaman</translation>
@@ -296,7 +295,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2234827758954819389">Panduan Privasi</translation>
 <translation id="2238038374973843156">Alihkan kumpulan kepada tetingkap lain</translation>
 <translation id="2247789808226901522">Kad tamat tempoh</translation>
-<translation id="2249635629516220541">Sesuaikan maklumat yang digunakan oleh laman untuk memaparkan iklan kepada anda</translation>
 <translation id="2251809247798634662">Tetingkap Inkognito baharu</translation>
 <translation id="2253927598983295051">Pilih kandungan yang mahu dikongsi dengan <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Lagi maklumat apl</translation>
@@ -314,6 +312,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2328474416100889417">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
 <translation id="2329500425421091035">Memperkenalkan AI Mode dalam Chrome</translation>
 <translation id="2330186936255788117">Lebih banyak penanda halaman</translation>
+<translation id="2330243730505117832">"Pilih peranti" ditutup.</translation>
 <translation id="2332515770639153015">Penyemakan Imbas Selamat Dipertingkat dihidupkan</translation>
 <translation id="233375395665273385">Padamkan dan log keluar</translation>
 <translation id="2334275697832662087">Keselamatan Chrome yang dikuasakan AI melindungi anda daripada ancaman dalam talian serta memberi anda keyakinan semasa anda menyemak imbas</translation>
@@ -503,6 +502,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3037517125981011456">Memaparkan gesaan untuk log masuk ke Chrome</translation>
 <translation id="3038272154009688107">Lihat semua laman</translation>
+<translation id="3044436568790455247">"Pilih peranti" dibuka pada ketinggian penuh.</translation>
 <translation id="3057938290530993634">Ketik dan tahan untuk menyematkan laman web yang paling kerap anda lawati untuk akses mudah pada masa hadapan</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
 <translation id="3062802207422175757">Artikel tentang minat anda di Chrome</translation>
@@ -511,6 +511,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3067505415088964188">Harga rendah</translation>
 <translation id="3070005020161560471">Terjemah secara automatik</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Dasar Privasi<ph name="END_LINK3" /> juga dikenakan.</translation>
+<translation id="3075397426753215787">Pilih peranti.</translation>
 <translation id="3080375898390966733">Cari tab dengan Google Lens</translation>
 <translation id="3080525922482950719">Anda boleh menyimpan halaman untuk dibaca kemudian atau secara luar talian</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -550,6 +551,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3282801380074962248">Kembangkan bahagian</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{# kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
+<translation id="3287664192482809715">"Pilih peranti" dibuka pada ketinggian separuh.</translation>
 <translation id="3293181007446299124">Sejarah penyemakan imbas anda dipastikan tertutup pada peranti anda dan penghantaran laporan dilengahkan untuk melindungi identiti anda</translation>
 <translation id="3301639354590628973">Tukar akaun?</translation>
 <translation id="3301936297336370235">Pengesahan cadangan kata laluan</translation>
@@ -560,6 +562,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3309978850836730073">Mod membaca sentiasa tersedia di sini</translation>
 <translation id="331080746368555063">Laman peribadi mungkin merangkumi perkara seperti intranet syarikat anda</translation>
 <translation id="3311330810461485557">Cari mengikut apl, tarikh dan pelbagai lagi.</translation>
+<translation id="3312300514034250578">Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="3331974543021145906">Maklumat apl</translation>
 <translation id="3334729583274622784">Tukar sambungan fail?</translation>
 <translation id="333863344734218290">Memberi anda amaran untuk laman awam &amp; peribadi yang tidak selamat</translation>
@@ -1195,7 +1198,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6023820583797130428">Buka menu untuk kembali</translation>
 <translation id="6026538407078977628">Kembangkan kepada skrin penuh</translation>
-<translation id="6030719887161080597">Urus maklumat yang digunakan oleh laman untuk mengukur prestasi iklan</translation>
 <translation id="6039379616847168523">Lompat ke tab seterusnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Automatik</translation>
@@ -1446,7 +1448,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6880903702195291049">Kebenaran nampak baik</translation>
 <translation id="6883204995689174413">Kongsi</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 item disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{# item disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
-<translation id="6883606786470492001">Urus topik iklan anda dan tetapan lain untuk mengehadkan perkara yang boleh dipelajari oleh laman tentang anda untuk memaparkan iklan diperibadikan kepada anda</translation>
 <translation id="6883906387682976294">Nyahlanggan pemberitahuan daripada laman ini</translation>
 <translation id="688398477366397178">Benarkan laman web mengetahui bahasa tuturan anda. Laman web ini akan menunjukkan kandungan dalam bahasa tersebut, jika boleh.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Telah menyahlanggan daripada 1 laman}other{Telah menyahlanggan daripada # laman}}</translation>
@@ -1511,7 +1512,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7088681679121566888">Chrome sudah dikemas kini</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, Tab Inkognito Yang Diredamkan Dengan Berbilang Pilihan</translation>
 <translation id="7106762743910369165">Penyemak imbas anda diurus oleh organisasi anda</translation>
-<translation id="7111394291981742152">Chrome memberi anda lebih banyak kawalan terhadap iklan dan mengehadkan perkara yang laman boleh pelajari tentang anda apabila iklan diperibadikan dipaparkan kepada anda.</translation>
 <translation id="7111822978084196600">Namakan tetingkap ini</translation>
 <translation id="7115358764509798967">Ciri lalai sistem</translation>
 <translation id="7117485132243600300">Urus kandungan yang anda ikuti serta topik dan carian yang dicadangkan</translation>

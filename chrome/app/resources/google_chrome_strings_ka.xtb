@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> — ქსელში შესვლა — Chrome</translation>
 <translation id="2970681950995291301">Chrome-იდან Google ანგარიში რომ ამოშალოთ, საჭიროა, სისტემიდან გახვიდეთ Chrome-ის პარამეტრების გვერდზე</translation>
 <translation id="2976869732253036751">მიიღეთ თქვენს ტელეფონში ფასების მეთვალყურის გაფრთხილებები Chrome-ის მეშვეობით</translation>
+<translation id="2985091279808606502">Chrome-ს ამ საიტისთვის სჭირდება ლოკალურ ქსელზე წვდომის ნებართვა</translation>
 <translation id="2991167882679440829">თქვენი პაროლები და Chrome-ის სხვა მონაცემები, რომლებიც შენახულია თქვენს Google ანგარიშში, ამოიშლება ამ მოწყობილობიდან. Chrome-ში რომ ისინი ხელახლა გამოიყენოთ, საჭიროა ანგარიშში შესვლა.</translation>
 <translation id="2994465299455873643">უზრუნველყოფს დაშიფვრის სერვისებს და დაცულ გზებს <ph name="BROWSER_NAME" />-ის აღდგენისთვის, თუ ის მოძველდება. თუ ეს სერვისი გაითიშება, <ph name="BROWSER_NAME" />-მა შეიძლება დაკარგოს წვდომა დაშიფრულ მონაცემებზე და <ph name="BROWSER_NAME" /> ვეღარ აღდგეს.</translation>
 <translation id="3003694935412297923">ყველა ამოცანა</translation>
@@ -723,6 +724,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8113883687556086139">დაადასტურეთ ვინაობა, რომ გამოიყენოთ და შეინახოთ თქვენი Chrome-ის მონაცემები თქვენს ანგარიშში, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Chrome-ის პერსონალიზება...</translation>
 <translation id="8118331347066725040">გამოხმაურება Lens-ით ძიების შესახებ</translation>
+<translation id="812930250799242837">შესული ხართ, როგორც <ph name="USER_NAME" />, Google-ის წევრობა. ანგარიშის მენიუს გახსნა</translation>
 <translation id="8129812357326543296">&amp;Google Chrome-ის შესახებ</translation>
 <translation id="813913629614996137">მიმდინარეობს ინიცირება…</translation>
 <translation id="8162006532256575008">Chrome-ის გამოყენება ანგარიშის გარეშე</translation>
@@ -756,6 +758,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 
 ახალი სანიშნეების შენახვა თქვენს ანგარიშში ვერ მოხერხდება, სანამ რამდენიმეს არ წაშლით. ახლა გასვლის შემთხვევაში შეუნახავი სანიშნები წაიშლება.</translation>
 <translation id="8458117863387545390">მიიღეთ Chrome თქვენს ტელეფონში</translation>
+<translation id="848851325211467878">შესული ხართ, როგორც <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-ის წევრობა. ანგარიშის მენიუს გახსნა</translation>
 <translation id="8496177819998570653">Google პ&amp;აროლების მმართველი</translation>
 <translation id="8498858610309223613">Google Chrome-ს ეს-ესაა მიესადაგა უსაფრთხოების საგანგებო განახლება. გადატვირთეთ ის ახლავე და თქვენი ჩანართებიც აღდგება.</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>

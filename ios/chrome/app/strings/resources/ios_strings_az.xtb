@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Eksport olundu</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} parol}other{{count} parol}}</translation>
+<translation id="1274721046703404848">Axtarış xidmətləri və Google Disk kimi Google Workspace tətbiqləri arasındakı əlaqəni idarə edin</translation>
 <translation id="1275718070701477396">Seçilib</translation>
 <translation id="1279024913354609713">İcazə verməyin</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
@@ -2189,6 +2190,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8263228331881858381">Giriş açarı saxlanıldı</translation>
 <translation id="8263809106706527890">Defolt brauzer ayarlarında dəyişiklik ola bilər. Bunu ayarlarda yoxlaya bilərsiniz.</translation>
 <translation id="8264966119170358612">Yadda saxlanılmış parollarınızdan bəziləri Google-a aid olmayan data pozulması nəticəsində ələ keçirilib. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome menyusunu açın</translation>
 <translation id="826614135184049678">iPad-i sıfırlayarkən <ph name="USER_NAME" /> hesabından çıxdınız. Yenidən daxil olmaq üçün aşağıda "Davam edin" üzərinə toxunun.</translation>
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Profilləri dəyişmək üzrəsiniz</translation>

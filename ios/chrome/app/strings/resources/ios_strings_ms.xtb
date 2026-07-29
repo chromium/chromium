@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Eksport Berjaya</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} kata laluan}other{{count} kata laluan}}</translation>
+<translation id="1274721046703404848">Urus sambungan antara perkhidmatan Search dengan apl Google Workspace, seperti Google Drive</translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1279024913354609713">Jangan Benarkan</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
@@ -2189,6 +2190,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8263228331881858381">Kunci laluan disimpan</translation>
 <translation id="8263809106706527890">Mungkin terdapat perubahan pada tetapan penyemak imbas lalai anda. Anda boleh menyemak perubahan ini dalam tetapan.</translation>
 <translation id="8264966119170358612">Sesetengah kata laluan anda yang disimpan telah terdedah dalam pelanggaran data bukan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Buka menu Chrome</translation>
 <translation id="826614135184049678">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPad anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Anda akan menukar profil</translation>

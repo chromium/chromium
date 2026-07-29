@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Export bol úspešný</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} heslo}few{{count} heslá}many{{count} passwords}other{{count} hesiel}}</translation>
+<translation id="1274721046703404848">Spravujte pripojenie medzi vyhľadávacími službami a aplikáciami Google Workspace, ako je Disk Google</translation>
 <translation id="1275718070701477396">Riadok bol vybratý</translation>
 <translation id="1279024913354609713">Nepovoliť</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
@@ -2189,6 +2190,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="8263228331881858381">Prístupový kľúč bol uložený</translation>
 <translation id="8263809106706527890">Možno sa zmenili nastavenia predvoleného prehliadača. Môžete to skontrolovať v nastaveniach.</translation>
 <translation id="8264966119170358612">Pri porušení ochrany údajov tretej strany boli odhalené niektoré vaše heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Otvorte Ponuku Chrome</translation>
 <translation id="826614135184049678">V rámci resetu iPadu vás systém odhlásil z účtu <ph name="USER_NAME" />. Ak sa chcete znova prihlásiť, klepnite nižšie na Pokračovať.</translation>
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Chystáte sa prepnúť profily</translation>

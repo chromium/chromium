@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">የጠቃሚ ምክሮች ማሳወቂያዎች ማስተዋወቂያ ተዘግቷል</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1045899828449635435">ከእነዚህ ጣቢያዎች የመጣ ውሂብም ይጽዳ?</translation>
-<translation id="1049461303780085993">መልሶችን፣ ቁልፍ ነጥቦችን እና ሌሎችንም ለማግኘት Gemini በChrome ውስጥን ይሞክሩ</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1052842760770519282">አንዳንድ የይለፍ ቃላትዎ የሚደረሱ አይደሉም</translation>
 <translation id="1057623954802068161">ወደ ገጹ የላይኛው ክፍል ያሸብልሉ</translation>
@@ -296,7 +295,6 @@
 <translation id="2234827758954819389">የግላዊነት መመሪያ</translation>
 <translation id="2238038374973843156">ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ</translation>
 <translation id="2247789808226901522">ካርዱ ጊዜው አልፎበታል</translation>
-<translation id="2249635629516220541">ማስታወቂያዎችን ለእርስዎ ለማሳየት በጣቢያዎች ጥቅም ላይ የሚውለውን መረጃ ያብጁ</translation>
 <translation id="2251809247798634662">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
 <translation id="2253927598983295051">ከ<ph name="APP_NAME" /> ጋር ምን እንደሚያጋሩ ይምረጡ</translation>
 <translation id="2261570557291037252">ተጨማሪ የመተግበሪያ መረጃ</translation>
@@ -560,6 +558,7 @@
 <translation id="3309978850836730073">የንባብ ሁነታ ምንጊዜም እዚህ ይገኛል</translation>
 <translation id="331080746368555063">የግል ጣቢያዎች እንደ የድርጅትዎን ውስጠ መረብ ያሉ ነገሮችን ሊያካትቱ ይችላሉ</translation>
 <translation id="3311330810461485557">በመተግበሪያ፣ በቀን እና በሌሎች ይፈልጉ።</translation>
+<translation id="3312300514034250578">የተሻሻለ የደህንነት አሰሳ</translation>
 <translation id="3331974543021145906">የመተግበሪያ መረጃ</translation>
 <translation id="3334729583274622784">የፋይል ቅጥያ ይቀየር?</translation>
 <translation id="333863344734218290">ደህንነታቸው ላልተጠበቀ ይፋዊ እና የግል ጣቢያዎች ያስጠነቅቅዎታል</translation>
@@ -1195,7 +1194,6 @@
 <translation id="6022659036123304283">Chromeን የራስዎ ያድርጉት</translation>
 <translation id="6023820583797130428">ለመመለስ ምናሌውን ይክፈቱ</translation>
 <translation id="6026538407078977628">ወደ ሙሉ ገፅ ዕይታ ዘርጋ</translation>
-<translation id="6030719887161080597">የማስታወቂያ አፈጻጸምን ለመለካት በጣቢያዎች ጥቅም ላይ የዋለ መረጃን ያስተዳድድሩ</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>
@@ -1446,7 +1444,6 @@
 <translation id="6880903702195291049">ፈቃዶች ጥሩ የሆኑ ይመስላል</translation>
 <translation id="6883204995689174413">አጋራ</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 ንጥል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}one{# ንጥል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}other{# ንጥሎች ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}}</translation>
-<translation id="6883606786470492001">ጣቢያዎች ለእርስዎ ግላዊነት የተላበሱ ማስታወቂያዎች ለማሳየት ስለ እርስዎ ማወቅ የሚችሉትን ለመገደብ የእርስዎን የማስታወቂያ ርዕሶች እና ሌሎች ቅንብሮች ያስተዳድሩ</translation>
 <translation id="6883906387682976294">ከዚህ ጣቢያ ማሳወቂያዎች የደንበኝነት ምዝገባ ውጣ</translation>
 <translation id="688398477366397178">ድር ጣቢያዎች እርስዎ የሚናገሯቸውን ቋንቋዎች እንዲያውቁ ያድርጓቸው። በሚቻልበት ጊዜ ይዘቶችን በእነዚያ ቋንቋዎች ያሳያሉ።</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{ከ1 ጣቢያ ከደንበኝነት ምዝገባ ወጥተዋል}one{ከ# ጣቢያ ከደንበኝነት ምዝገባ ወጥተዋል}other{ከ# ጣቢያዎች ከደንበኝነት ምዝገባ ወጥተዋል}}</translation>
@@ -1511,7 +1508,6 @@
 <translation id="7088681679121566888">Chrome የተዘመነ ነው</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ድምፀ-ከል የተደረገ ማንነት የማያሳውቅ ትር</translation>
 <translation id="7106762743910369165">የእርስዎ አሳሽ በእርስዎ ድርጅት የሚተዳደር ነው</translation>
-<translation id="7111394291981742152">Chrome በሚያዩዋቸው ማስታወቂያዎች ላይ የበለጠ ቁጥጥር ይሰጥዎታል እንዲሁም ግላዊነት የተላበሱ ማስታወቂያዎችን ሲያሳዩዎ ጣቢያዎች ስለእርስዎ ምን ማወቅ እንደሚችሉ ይገድባል።</translation>
 <translation id="7111822978084196600">ይህን መስኮት ስም ይስጡት</translation>
 <translation id="7115358764509798967">የሥርዓት ነባሪ</translation>
 <translation id="7117485132243600300">የሚከተሉትን ይዘት እና የሚጠቆሙ ርዕሶች እና ፍለጋዎችን ያስተዳድሩ</translation>

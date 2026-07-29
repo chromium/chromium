@@ -599,6 +599,7 @@
 <translation id="192095259937375524">‏اس ٹیب کا اشتراک کریں بٹن، لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کرنے کیلئے فعال کریں</translation>
 <translation id="1924727005275031552">نئی</translation>
 <translation id="1927439846988093361">بالوں کی نگہداشت</translation>
+<translation id="1927930548546198515">‏‫Chrome لاگ کرتا ہے کہ آپ اس خصوصیت کو کیسے استعمال کرتے ہیں، جیسے کہ آپ کی درخواستیں اور رویہ جب آپ تجاویز کو قبول کرتے ہیں یا نظر انداز کرتے ہیں</translation>
 <translation id="1932098463447129402">اس سے پہلے نہیں</translation>
 <translation id="1935353813610900265">‏‫AI کے ذریعے تقویت یافتہ سرگزشت کی تلاش کے لیے تاثرات بھیجیں</translation>
 <translation id="1935995810530254458">بہر حال کاپی کریں</translation>
@@ -984,6 +985,8 @@
 <translation id="2485243023686553468">اسمارٹ فونز</translation>
 <translation id="2491120439723279231">سرور کے سرٹیفکیٹ میں خرابیاں ہیں۔</translation>
 <translation id="2491414235131909199">اس صفحے کو ایک ایکسٹینشن نے مسدود کر دیا ہے</translation>
+<translation id="2493122313108999546">سائز تبدیل ہو گیا</translation>
+<translation id="249376477913017009">‏‫Gmail سے آٹو فل کریں اور مزید نوٹس کھولا گیا</translation>
 <translation id="2495083838625180221">‏JSON پارسر</translation>
 <translation id="2496402116964818747">آپ تبدیل کر سکتے ہیں کہ آیا آپ <ph name="SETTINGS" /> میں پاس ورڈز پر کرنے کے لیے اپنا فنگر پرنٹ استعمال کرتے ہیں</translation>
 <translation id="2498091847651709837">نیا کارڈ اسکین کریں</translation>
@@ -1152,6 +1155,7 @@
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2742128390261873684">ہوم آٹومیشن</translation>
 <translation id="2743512410823092182">‏DJ کے وسائل اور ساز و سامان</translation>
+<translation id="275259155159336003">‏‫Gemini کے ساتھ ذاتی ذہانت کے ذریعے تقویت یافتہ۔ بہتر کردہ آٹو فل کو بہتر بنانے کے لیے آپ کی درخواستوں، صفحہ کے عنوانات اور URLs کا جائزہ لیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />ترتیبات کا نظم کریں<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">‏‫<ph name="COUNT" /> فائلز کو Google Drive میں اپ لوڈ کیا جا رہا ہے</translation>
 <translation id="2759299890026163685">دوبارہ کوشش کرنے سے پہلے یہ یقینی بنائیں کہ آپ کا انٹرنیٹ کنکشن مستحکم ہے</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> پر اپنا پاس ورڈ پُر کریں</translation>
@@ -1436,6 +1440,7 @@
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208701679386778924">‏براہ کرم ایک رپورٹ بھیجیں تاکہ ہم مزید ChromeOS اپ ڈیٹس کو بہتر بنا سکیں۔</translation>
 <translation id="3209034400446768650">صفحہ پیسے چارج کر سکتا ہے</translation>
+<translation id="3209071504641569648">‏آپ کی درخواستیں، صفحہ کے عنوانات اور URLs کو Google کو بھیجا جاتا ہے اور بہتر کردہ آٹو فل کو بہتر بنانے کے لیے ان کا جائزہ لیا جا سکتا ہے</translation>
 <translation id="3212468046572043669">ڈاؤن لوڈ شروع ہوگیا۔ اسے دیکھنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> پر آپ کی سرگرمی پر نظر رکھی جا رہی ہے</translation>
 <translation id="3215092763954878852">‏WebAuthn کا استعمال نہیں کیا جا سکا</translation>
@@ -1473,6 +1478,7 @@
 <translation id="3254301855501243548">‏‎18 x 22 انچ</translation>
 <translation id="3255926992597692024">‏ادائیگی کے طریقوں پُر کرنے کی خاطر ترتیبات میں ترمیم کرنے کے لیے Chromium کوشش کر رہا ہے۔</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
+<translation id="3261180263071638338">‏‫Gmail اور مزید سے آٹوفل کریں نوٹس بند کر دیا گیا</translation>
 <translation id="3261488570342242926">ورچوئل کارڈز کے بارے میں جانیں</translation>
 <translation id="3262698603497362968">خریداری کے اختیارات</translation>
 <translation id="3264637689694266148">‏اگر آپ تجاویز کو آف کر دیتے ہیں تو آپ کے ٹیبز کے صفحہ کے عنوان اور URLs پر اب بھی Chrome کی دیگر خصوصیات کے لیے کارروائی کی جا سکتی ہے۔ آپ اپنی مطابقت پذیری کی ترتیبات میں اس ڈیٹا تک براؤزر کی رسائی کا نظم کر سکتے ہیں</translation>
@@ -2335,6 +2341,7 @@
 <translation id="4602465984861132303">باؤلنگ</translation>
 <translation id="4603727370377253901">فلائیٹ کے ریزرویشنز</translation>
 <translation id="4607608436550361748">‏Chrome کی تجاویز دیکھیں</translation>
+<translation id="4607879293515681409">‏بہتر کردہ آٹو فل اب Gmail اور تصاویر جیسی ایپس سے فلائیٹ نمبرز اور اپوائنٹمنٹ کے اوقات جیسی معلومات تلاش اور پُر کر سکتا ہے</translation>
 <translation id="460848736049414407">منتظم کے ذریعے مسدود کردہ</translation>
 <translation id="4610279718074907952">یہ سائٹ ایک گروپ میں موجود ہے، جس کی وضاحت <ph name="SET_OWNER" /> نے کی ہے، جو آپ کی سرگرمی دیکھ سکتی ہے</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> کے ذریعے <ph name="MERCHANT_ORIGIN" /> پر آپ کے آرڈر پر کارروائی کرنے میں ایک خرابی پیش آ گئی۔</translation>
@@ -2520,6 +2527,7 @@
 <translation id="4885256590493466218">چیک آؤٹ کرنے پر <ph name="CARD_DETAIL" /> سے ادائیگی کریں۔</translation>
 <translation id="4886565443854420066">‏ترتیبات تبدیل کرنے سے پہلے Chrome براؤزر اس بات کی تصدیق کرنا چاہتا ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="4887406273302438710">‏Windows Hello کے ساتھ پاس ورڈز کی حفاظت کریں</translation>
+<translation id="4887785555357166111">ویڈیو فریم محفوظ کریں</translation>
 <translation id="4891425819480327855">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، cache وغیرہ کو حذف کرنے کے لیے ٹیب، پھر Enter دبائیں</translation>
 <translation id="4892518386797173871">پیچھے</translation>
 <translation id="4894390983254799375">‏جیسے آلہ ID، نام، OS ورژن اور OS صارف نام</translation>
@@ -2557,6 +2565,7 @@
 <translation id="4936134414789135531">داخل کردہ <ph name="VALUE_NAME" /> نہیں مل سکا۔</translation>
 <translation id="4936573216809994970">‫1 گھنٹے میں آپ کی فائل <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہونا شروع ہو جائے گی</translation>
 <translation id="4936675324097895694">فائنانس</translation>
+<translation id="4939748144644852809">دائیں طرف منتقل کیا گیا</translation>
 <translation id="4941627891654116707">فونٹ سائز</translation>
 <translation id="4943620199112228840">اپنے مائیکروفون کا استعمال کریں</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
@@ -2850,6 +2859,7 @@
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5401344472773249513">مشہور شخصیات اور تفریح کی خبریں</translation>
 <translation id="5401674281624189321">پہاڑ اور اسکائی ریزارٹس</translation>
+<translation id="5402715318763077894">مقامی نیٹ ورک تک رسائی کی اجازت دیں؟</translation>
 <translation id="540949333488055151">پلاسٹک (رنگین)</translation>
 <translation id="540969355065856584">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ اس وقت درست نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="5411462078004183575">کم قیمت والا اختیار</translation>
@@ -3100,6 +3110,7 @@
 <translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> پر بھیجیں</translation>
 <translation id="5765072501007116331">ڈیلیوری کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
+<translation id="5768323954710688012">‏‫Gmail اور مزید سے آٹو فل کریں نوٹس مکمل اونچائی پر کھلا ہوا ہے</translation>
 <translation id="57689295674415555">ورچوئل کارڈ نمبر پُر نہیں ہے؟</translation>
 <translation id="5773286975255318081">جیسے پروفائل کے صارف نام اور براؤزر کے ورژنز</translation>
 <translation id="5774897849666641211">اس ٹیب کے بارے میں سوالات پوچھیں</translation>
@@ -3213,6 +3224,7 @@
 <translation id="5953516610448771166">اس میڈیا کے لیے لائیو کیپشن دستیاب نہیں ہے۔ کیپشنز حاصل کرنے کے لیے، <ph name="CONTENT_SETTINGS" /> کو اس سائٹ کے لیے مسدود کریں۔</translation>
 <translation id="5960795367348889467">توثیق</translation>
 <translation id="5963413905009737549">سیکشن</translation>
+<translation id="5963685100480647029">بائیں طرف منتقل کیا گیا</translation>
 <translation id="5964247741333118902">سرایت کردہ مواد</translation>
 <translation id="5967260682280773804">‏‎36 x 48 انچ</translation>
 <translation id="5967592137238574583">رابطے کی معلومات میں ترمیم کریں</translation>
@@ -3720,6 +3732,7 @@
 <translation id="671076103358959139">اندراج کا ٹوکن:</translation>
 <translation id="6711464428925977395">پراکسی سرور میں کچھ غلط ہے یا پتہ درست نہیں ہے۔</translation>
 <translation id="6711700233707023861">تغیرات کی سٹرنگ کو کلپ بورڈ پر کاپی کیا گیا</translation>
+<translation id="6712343563085762261">اوپر منتقل کیا گیا</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> کا موازنہ کریں · <ph name="ITEMS" /> آئٹمز</translation>
 <translation id="6716672519412350405">‏<ph name="URL" /> آپ کے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کرنا چاہتا ہے</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> سے بھیجا گیا ٹیب</translation>
@@ -4613,6 +4626,7 @@
 <translation id="8081087320434522107">سیڈانز</translation>
 <translation id="8086429410809447605">خواتین کے لباس</translation>
 <translation id="8086971161893892807">مسودہ</translation>
+<translation id="8087558780672230449">‫<ph name="MERCHANT_ORIGIN" /> پر آپ کی ادائیگی کو ہینڈل کرنے کے لیے <ph name="APP_ORIGIN" /> لوڈ ہو رہا ہے۔</translation>
 <translation id="8088680233425245692">مضمون دیکھنے میں ناکام:</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8091372947890762290">فعالیت سرور پر زیر التواء ہے</translation>
@@ -4808,6 +4822,7 @@
 <translation id="8400929824946688748">جابز اور تعلیم</translation>
 <translation id="8402442052798347631">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش ہے، اس پر حملہ آور دھوکے سے آپ سے ایسا نقصان دہ سافٹ ویئر انسٹال کروا سکتے ہیں جو آپ کے براؤز کرنے کے طریقے کو متاثر کر سکتا ہے، مثال کے طور پر، آپ کے ہوم پیج کو تبدیل کر کے یا آپ کو ان سائٹس پر اضافی اشتہارات دکھا کر جنہیں آپ ملاحظہ کرتے ہیں۔ نقصان سے بچنے کیلئے، Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">فین فکشن</translation>
+<translation id="8404028426624581035">نیچے منتقل کیا گیا</translation>
 <translation id="8405579342203358118">‏آپ Chrome ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کریں</translation>
 <translation id="8405621913275228683">ایک نامعلوم خرابی کی وجہ سے اسکین ضائع ہو گیا</translation>
 <translation id="8406071103346257942">پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کرنا بند کریں</translation>

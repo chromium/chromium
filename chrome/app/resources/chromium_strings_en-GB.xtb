@@ -57,6 +57,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1623563412065267963">Get the best of Google with the Chromium app on your phone</translation>
 <translation id="1625909126243026060">Review key privacy and security controls in Chromium</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
+<translation id="1665602916345474427">Signed in as <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, membership. Open the account menu</translation>
 <translation id="1708414395296835197">You can use Chromium any time that you click links in messages, documents and other apps. It will also be pinned to your taskbar.</translation>
 <translation id="1709772298389099340">Provides elevated privileges for <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">This will allow you to select from available devices and display content on them.</translation>
@@ -258,6 +259,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 
           **Suggest questions:** Generate a bulleted list of 3–5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design or its placement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium needs local network permission for this site</translation>
 <translation id="3885770153807205175">Language picker</translation>
 <translation id="388648406173476553">Customise and control Chromium. Something needs your attention – click for details.</translation>
 <translation id="3889543394854987837">Click your name to open Chromium and start browsing.</translation>
@@ -336,6 +338,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4625064703209785397">Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks</translation>
 <translation id="4665829708273112819">Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="4673151026126227699">If you also share Chromium usage reports, those reports include the URLs that you visit</translation>
+<translation id="4673710618874938871">Signed in as <ph name="USER_NAME" />, membership. Open the account menu</translation>
 <translation id="4677944499843243528">The profile appears to be in use by another Chromium process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chromium has locked the profile so that it doesn't get corrupted. If you are sure that no other processes are using this profile, you can unlock the profile and relaunch Chromium.</translation>
 <translation id="4680828127924988555">Cancel installation</translation>
 <translation id="469259825538636168">Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>

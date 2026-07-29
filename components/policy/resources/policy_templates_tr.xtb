@@ -5470,19 +5470,6 @@ Etkinleştirilir, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir et
 <translation id="4501388411278568771">Özellik başlatma durumuna bağlı olarak HTTPS Yükseltmeleri uygulanabilir.</translation>
 <translation id="45036050223225148">TLS Encrypted ClientHello denemesini devre dışı bırak</translation>
 <translation id="4503935079903510542">x86_64 cihazlara sanal makine yüklemek için kullanılan UEFI önyüklenebilir disk görüntüsü.</translation>
-<translation id="4505299160236615603">Politikanın ayarlanması, Gizli modda listelenen URL'lere erişim sağlar. Bu politikayı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikasında tanımlanan belirli URL kalıplarına ilişkin istisnaları açmak için kullanın.
-
-Hem bu politika hem de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa izin verilenler listesi öncelikli olur. Bir URL, izin verilenler listesindeki bir kalıpla eşleşirse URL'ye izin verilir. Engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse URL engellenir. Bir URL hiçbiriyle eşleşmezse yedek olarak genel <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları kullanılır.
-
-Bu politika ayarlanır ve <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanmazsa izin verilenler listesinde yer almayan tüm URL'ler Gizli modda engellenir.
-
-<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası izin vermeyecek şekilde (1 değeri) ayarlanır ancak bu politika yapılandırılırsa Gizli mod yalnızca izin verilenler listesindeki URL'ler için kullanılabilir.
-
-Politika ayarlanmadan bırakılırsa <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.
-
-Bu politika yalnızca Gizli modu etkiler. URL'lere tüm kullanıcı profillerinde izin vermek için lütfen <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikasını kullanın.
-
-Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="4508728400492074981">First-Party Sets özelliğiyle ilgili politikaları kontrol eder.</translation>
 <translation id="4510131075424939993">Kimlik bilgilerini değerlendirirken <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> içinde kullanılacak bir takviye değer belirtin</translation>
 <translation id="4510923771103268849">Kullanıcının, Crostini kapsayıcılarına root erişimi olmasına izin verilir</translation>
@@ -6164,19 +6151,6 @@ Bu politika <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS_FULLSCREEN_ONL
       Bu politika ayarlanmadan bırakılırsa M76 ve önceki sürümlerde <ph name="PRODUCT_NAME" /> varsayılan olarak bu günlükleri toplayıp yükleyemez. M77'den itibaren <ph name="PRODUCT_NAME" /> varsayılan olarak, bu günlükleri bulut tabanlı kullanıcı düzeyi kurumsal politikalardan etkilenen profillerin çoğundan toplayıp yükleyebilir. M77'den M80'e (dahil) kadar, <ph name="PRODUCT_NAME" /> bu günlükleri varsayılan olarak <ph name="PRODUCT_NAME" /> şirket içi yönetiminden etkilenen profillerden toplayıp yükleyebilir.</translation>
 <translation id="4911334289324462969">bağlantı noktası 989 (01.02.2022'ye kadar engellemesi kaldırılabilir)</translation>
 <translation id="4917385247580444890">Güçlü</translation>
-<translation id="4917925819533520480">Bu politika, belirli URL'lerde <ph name="CHROME_DEVTOOLS_NAME" /> kullanmaya izin vermek için kullanılabilir.
-
-URL kalıpları, incelenen sayfadaki her çerçevenin URL'siyle eşleştirilir. Sonuçtaki davranış, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasının da ayarlanıp ayarlanmadığına bağlıdır.
-
-Bu politika ayarlanır ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ayarlanmazsa <ph name="CHROME_DEVTOOLS_NAME" /> kullanımına izin verilmesi için her çerçevenin URL'si bu izin verilenler listesindeki bir kalıpla eşleşmelidir. Herhangi bir çerçevenin URL'si eşleşmezse Geliştirici Araçları tüm sayfa için engellenir. URL biçimi hakkında bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakın.
-
-Hem bu politika hem de <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa bu izin verilenler listesi öncelikli olur. Bir çerçevenin URL'si bu izin verilenler listesindeki bir kalıpla eşleşirse engellenenler listesindeki bir kalıpla eşleşse bile URL'ye izin verilir. Bir URL, engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse engellenir. Bir URL hiçbiriyle eşleşmezse yedek olarak <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikası kullanılır.
-
-Bu politika ayarlanmazsa <ph name="CHROME_DEVTOOLS_NAME" /> kullanılabilirliği <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikalarına göre belirlenir.
-
-Bu politika, uzantılar ve web uygulamalarında açılan <ph name="CHROME_DEVTOOLS_NAME" /> için de geçerlidir.
-
-Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="4918150584200819898">Yeniden online kimlik doğrulamayı otomatik olarak başlatmayı etkinleştir.</translation>
 <translation id="4918261735182294270">Kullanıcıların, <ph name="CHROME_SYNC_NAME" /> için etkinleştirme yapıp yapmamayı seçmesine izin ver</translation>
 <translation id="4918485681633125382">PDF belgelerinde XFA formları için desteği etkinleştir</translation>
@@ -13013,6 +12987,16 @@ Not: Cihazın yeniden başlatılması, önbelleğin temizlenmesine neden olur. G
 
       Bu politika yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgi raporlanmaz.
       Doğru değerine ayarlanırsa cihazın giriş/çıkış etkinlikleri raporlanır.</translation>
+<translation id="9087577919890548366">Bu politika, Etkin değerine ayarlanırsa <ph name="LOCAL_NETWORK_ACCESS" />
+istekleri, <ph name="LOCAL_NETWORK_ACCESS" /> kontrollerinin başarısız olması nedeniyle yalnızca <ph name="CHROME_DEVTOOLS_NAME" /> içinde uyarı gösterir.
+
+Bu politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="LOCAL_NETWORK_ACCESS" /> istekleri, bu istekler için varsayılan yöntemle işlenir.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/local-network-access/ sayfasına bakabilirsiniz.
+
+Bu kurumsal politika geçici olup M156 sürümünden sonra kaldırılacaktır.
+
+Uzun vadede, <ph name="LOCAL_NETWORK_ACCESS" /> izninin otomatik olarak verilmesi gereken URL kalıplarının izin verilenler listesine eklenmesi için <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> politikası kullanılabilir.</translation>
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise Connector için yapılandırma politikası</translation>
 <translation id="9088433379343318874">Denetlenen kullanıcı içerik sağlayıcısını etkinleştirme</translation>
 <translation id="9088444059179765143">Otomatik saat dilimi algılama yöntemini yapılandır</translation>

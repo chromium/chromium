@@ -599,6 +599,7 @@
 <translation id="192095259937375524">[このタブを共有] ボタンです。実行すると、リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有できます</translation>
 <translation id="1924727005275031552">新</translation>
 <translation id="1927439846988093361">ヘアケア</translation>
+<translation id="1927930548546198515">Chrome は、リクエストの内容や、候補を採用または無視したときの動作など、この機能の利用状況を記録します</translation>
 <translation id="1932098463447129402">開始時刻</translation>
 <translation id="1935353813610900265">AI を活用した履歴検索に関するフィードバックを送信</translation>
 <translation id="1935995810530254458">このままコピー</translation>
@@ -985,6 +986,7 @@
 <translation id="2491120439723279231">サーバーの証明書にエラーがあります。</translation>
 <translation id="2491414235131909199">このページは拡張機能によってブロックされています</translation>
 <translation id="2493122313108999546">サイズを変更しました</translation>
+<translation id="249376477913017009">Gmail などからの自動入力に関する通知が表示されました</translation>
 <translation id="2495083838625180221">JSON パーサー</translation>
 <translation id="2496402116964818747">パスワード入力で指紋認証を使用するかどうかは [<ph name="SETTINGS" />] で変更できます</translation>
 <translation id="2498091847651709837">新しいカードをスキャン</translation>
@@ -1079,6 +1081,7 @@
 <translation id="2631387782019878060">確認コード: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2635276683026132559">署名</translation>
+<translation id="2638070510549214427">安全としてマーク</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> で検索するには、@ を入力してください</translation>
 <translation id="2639739919103226564">ステータス:</translation>
 <translation id="2644219706149911059">Google ドライブにアップロードしています...</translation>
@@ -1153,6 +1156,7 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">スマートホーム</translation>
 <translation id="2743512410823092182">DJ 用の機材</translation>
+<translation id="275259155159336003">Gemini のパーソナル インテリジェンスを使用します。リクエスト、ページのタイトル、URL は、高精度の自動入力の改善に向けて確認される場合があります。<ph name="BEGIN_LINK" />設定を管理する<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> 個のファイルを Google ドライブにアップロードしています</translation>
 <translation id="2759299890026163685">インターネット接続が安定していることを確認してからもう一度お試しください</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> でパスワードを入力しようとしています</translation>
@@ -1381,6 +1385,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" /> に移動</translation>
 <translation id="3122696783148405307">過去 30 日間の結果を表示</translation>
 <translation id="3126023634486644099">ラベル（永久接着）</translation>
+<translation id="3131746543143948171">このサイトは、フィッシング、マルウェア、詐欺に関連する他のサイトと似ているようです。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Redress 番号を保存</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> をデフォルトの検索サービスに設定しました</translation>
 <translation id="3134859781443140237">ローカル ネットワーク</translation>
@@ -1436,6 +1441,7 @@
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208701679386778924">ChromeOS の今後の更新に役立てるため、報告を送信してください。</translation>
 <translation id="3209034400446768650">このページでは料金が請求される可能性があります</translation>
+<translation id="3209071504641569648">リクエスト、ページのタイトル、URL は Google に送信され、高精度の自動入力の改善に向けて確認される場合があります</translation>
 <translation id="3212468046572043669">ダウンロードを開始しました。表示するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> でのアクティビティは監視されています</translation>
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
@@ -1473,6 +1479,7 @@
 <translation id="3254301855501243548">18x22 インチ</translation>
 <translation id="3255926992597692024">Chromium がお支払い方法の入力の設定を変更しようとしています。</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google カレンダーで新しいイベントをすばやく作成します</translation>
+<translation id="3261180263071638338">Gmail などからの自動入力に関する通知を閉じました</translation>
 <translation id="3261488570342242926">仮想カードについて</translation>
 <translation id="3262698603497362968">購入のオプション</translation>
 <translation id="3264637689694266148">提案をオフにしても、タブで開いているページのタイトルと URL は他の Chrome 機能で使用するため処理されることがあります。このデータへのブラウザ アクセスは、同期設定で管理できます</translation>
@@ -2335,6 +2342,7 @@
 <translation id="4602465984861132303">ボウリング</translation>
 <translation id="4603727370377253901">フライトの予約</translation>
 <translation id="4607608436550361748">Chrome のヒントを表示</translation>
+<translation id="4607879293515681409">高精度の自動入力機能で、Gmail やフォトなどのアプリから情報（フライト番号や予約時間など）を探して入力できるようになりました</translation>
 <translation id="460848736049414407">管理者によりブロック済み</translation>
 <translation id="4610279718074907952">このサイトは、<ph name="SET_OWNER" /> により定義され、アクティビティを確認できるグループに属しています</translation>
 <translation id="4612631413844865947"><ph name="MERCHANT_ORIGIN" /> で <ph name="PAYMENT_APP_ORIGIN" /> 経由のご注文の処理中にエラーが発生しました。</translation>
@@ -2851,6 +2859,7 @@
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5401344472773249513">芸能、エンターテイメント ニュース</translation>
 <translation id="5401674281624189321">山岳、スキーリゾート</translation>
+<translation id="5402715318763077894">ローカル ネットワークへのアクセスを許可しますか？</translation>
 <translation id="540949333488055151">プラスチック（カラー）</translation>
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
 <translation id="5411462078004183575">低価格のオプション</translation>
@@ -3101,6 +3110,7 @@
 <translation id="5764725887548570807">オリジンの形式が無効です。</translation>
 <translation id="5764920692828389743">送信先: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
+<translation id="5768323954710688012">Gmail などからの自動入力に関する通知が画面全体に表示されました</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
 <translation id="5773286975255318081">プロファイルのユーザー名やブラウザのバージョンなど</translation>
 <translation id="5774897849666641211">このタブについて質問</translation>
@@ -4553,6 +4563,7 @@
 <translation id="7979595116210197019">飲食業</translation>
 <translation id="798134797138789862">バーチャル リアリティ デバイスとデータの使用を要求できる</translation>
 <translation id="7983008347525536475">SUV</translation>
+<translation id="7983569303268727247">情報を入力しています</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> から、Chrome で処理できないスクランブル化された認証情報が返されたため、現在このサイトにはアクセスできません。通常、ネットワーク エラーや不正な操作は一時的なものです。少し時間をおくと、またページにアクセスできるようになる可能性があります。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">分割払いを利用できる後払い決済のカード発行会社が画面全体に表示されています。</translation>
@@ -5012,6 +5023,7 @@
 <translation id="8738058698779197622">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chromium ではこれらの証明書を確認できません。</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> の &lt;abbr id="dnsDefinition"&gt;DNS アドレス&lt;/abbr&gt;が見つかりませんでした。問題を診断しています。</translation>
 <translation id="874918643257405732">このタブをブックマークに追加します</translation>
+<translation id="8749274696886550762">このサイトは安全ではない可能性があります</translation>
 <translation id="8751426954251315517">後でもう一度お試しください。</translation>
 <translation id="8753913772043329557">ポリシーログ</translation>
 <translation id="8754546574216727970">長靴</translation>
@@ -5298,6 +5310,7 @@
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
 <translation id="9193018794001479794">より詳しく</translation>
+<translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" /> に質問する</translation>
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="9198613052465150219">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>

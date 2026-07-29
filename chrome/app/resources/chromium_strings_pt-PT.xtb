@@ -55,6 +55,7 @@
 <translation id="1623563412065267963">Obtenha o melhor da Google com a app Chromium no telemóvel</translation>
 <translation id="1625909126243026060">Reveja os principais controlos de privacidade e segurança no Chromium</translation>
 <translation id="1640672724030957280">A transferir...</translation>
+<translation id="1665602916345474427">Sessão iniciada como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subscrição. Abrir menu da conta</translation>
 <translation id="1708414395296835197">Pode usar o Chromium sempre que clicar em links de mensagens, documentos e outras apps. Também vai ser afixado à barra de tarefas.</translation>
 <translation id="1709772298389099340">Oferece privilégios elevados para o navegador <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Isto permite-lhe selecionar entre os dispositivos disponíveis e apresentar conteúdo nestes.</translation>
@@ -256,6 +257,7 @@
 
           **Sugere perguntas:** gera uma lista com marcas de 3 a 5 perguntas que estimulem o pensamento e que um utilizador possa fazer para compreender melhor a captura de ecrã. Estas perguntas devem incluir, pelo menos, uma que seja especificamente sobre um objeto visual, o respetivo design ou o respetivo posicionamento.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">O Chromium precisa da autorização de acesso à rede local para este site</translation>
 <translation id="3885770153807205175">Selecionador de idiomas</translation>
 <translation id="388648406173476553">Personalize e controle o Chromium. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="3889543394854987837">Clique no seu nome para abrir o Chromium e começar a navegar.</translation>
@@ -334,6 +336,7 @@
 <translation id="4625064703209785397">Acelera os sites com o motor V8 do Chromium, mas torna o Chromium ligeiramente menos resistente a ataques</translation>
 <translation id="4665829708273112819">Aviso: o Chromium não consegue impedir que as extensões gravem o seu histórico de navegação. Para desativar esta extensão no Modo de navegação anónima, desselecione esta opção.</translation>
 <translation id="4673151026126227699">Se também partilhar relatórios de utilização do Chromium, esses relatórios incluem os URLs que visita</translation>
+<translation id="4673710618874938871">Sessão iniciada como <ph name="USER_NAME" />, subscrição. Abrir menu da conta</translation>
 <translation id="4677944499843243528">O perfil parece estar a ser utilizado por outro processo do Chromium (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chromium bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a utilizar este perfil, pode desbloqueá-lo e reiniciar o Chromium.</translation>
 <translation id="4680828127924988555">Cancelar instalação</translation>
 <translation id="469259825538636168">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>

@@ -598,6 +598,7 @@
 <translation id="192095259937375524">「分享此分頁」按鈕，啟動後即可利用分享連結、建立 QR code、投放等功能分享這個分頁</translation>
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1927439846988093361">頭髮保養</translation>
+<translation id="1927930548546198515">Chrome 會記錄功能使用情形，例如你的要求，以及你接受或忽略建議時的互動行為</translation>
 <translation id="1932098463447129402">此日期之後：</translation>
 <translation id="1935353813610900265">針對採用 AI 技術的搜尋記錄功能提供意見</translation>
 <translation id="1935995810530254458">仍要複製</translation>
@@ -984,6 +985,7 @@
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
 <translation id="2491414235131909199">擴充功能已封鎖這個網頁</translation>
 <translation id="2493122313108999546">已調整大小</translation>
+<translation id="249376477913017009">「自動填入 Gmail 等服務中的資訊」通知已開啟</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
 <translation id="2496402116964818747">你可以在「<ph name="SETTINGS" />」中變更是否要使用指紋填入密碼</translation>
 <translation id="2498091847651709837">掃描新信用卡</translation>
@@ -1152,6 +1154,7 @@
 <translation id="2740531572673183784">確定</translation>
 <translation id="2742128390261873684">家用裝置自動化</translation>
 <translation id="2743512410823092182">DJ 資源與設備</translation>
+<translation id="275259155159336003">搭載 Gemini 個人化智慧服務。你的要求、網頁標題和網址可能會送交人工審查，以改進強化版自動填入功能。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">正在將 <ph name="COUNT" /> 個檔案上傳至 Google 雲端硬碟</translation>
 <translation id="2759299890026163685">請確認網路連線穩定，然後再試一次</translation>
 <translation id="2759825833388495838">在「<ph name="APP_NAME" />」中填入密碼</translation>
@@ -1434,6 +1437,7 @@
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208701679386778924">請傳送報告，讓我們進一步改善 ChromeOS 更新。</translation>
 <translation id="3209034400446768650">這個頁面可能會產生費用</translation>
+<translation id="3209071504641569648">你的要求、網頁標題和網址傳送給 Google，並可能交由人工審查，以改進強化版自動填入功能</translation>
 <translation id="3212468046572043669">目前已開始下載。如要查看，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="3212581601480735796">你在 <ph name="HOSTNAME" /> 上進行的活動正遭到監控</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
@@ -1471,6 +1475,7 @@
 <translation id="3254301855501243548">18 x 22 吋</translation>
 <translation id="3255926992597692024">Chromium 正嘗試修改填入付款方式的設定。</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 日曆中快速建立新活動</translation>
+<translation id="3261180263071638338">「自動填入 Gmail 等服務中的資料」通知已關閉</translation>
 <translation id="3261488570342242926">瞭解虛擬卡片</translation>
 <translation id="3262698603497362968">購買選項</translation>
 <translation id="3264637689694266148">即使關閉建議功能，系統仍可能會處理分頁的標題和網址，以支援其他 Chrome 功能。如要管理瀏覽器存取這項資料的權限，可以前往</translation>
@@ -2333,6 +2338,7 @@
 <translation id="4602465984861132303">保齡球</translation>
 <translation id="4603727370377253901">機票預訂</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
+<translation id="4607879293515681409">「強化版自動填入」可以自動尋找 Gmail 和 Google 相簿中的航班編號或預約時間資訊，並自動填寫表單</translation>
 <translation id="460848736049414407">已遭管理員封鎖</translation>
 <translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，群組擁有者可以查看你的活動</translation>
 <translation id="4612631413844865947">透過 <ph name="PAYMENT_APP_ORIGIN" /> 處理 <ph name="MERCHANT_ORIGIN" /> 的訂單時發生錯誤。</translation>
@@ -2518,6 +2524,7 @@
 <translation id="4885256590493466218">使用 <ph name="CARD_DETAIL" /> 結帳付款</translation>
 <translation id="4886565443854420066">Chrome 瀏覽器需要先驗證你的身分，才能變更設定</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保護密碼</translation>
+<translation id="4887785555357166111">儲存影片影格</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中刪除你的瀏覽記錄、Cookie、快取和其他資料</translation>
 <translation id="4892518386797173871">後方</translation>
 <translation id="4894390983254799375">例如裝置 ID、名稱、OS 版本和 OS 使用者名稱</translation>
@@ -2849,6 +2856,7 @@
 <translation id="5400836586163650660">灰</translation>
 <translation id="5401344472773249513">名人與娛樂新聞</translation>
 <translation id="5401674281624189321">山區與滑雪勝地</translation>
+<translation id="5402715318763077894">要允許存取區域網路嗎？</translation>
 <translation id="540949333488055151">塑膠 (彩色)</translation>
 <translation id="540969355065856584">這個伺服器無法證明所屬網域為 <ph name="DOMAIN" />；其安全憑證目前無效。這可能是因為設定錯誤，或是有攻擊者攔截您的連線所致。</translation>
 <translation id="5411462078004183575">低價選項</translation>
@@ -3099,6 +3107,7 @@
 <translation id="5764725887548570807">來源格式無效。</translation>
 <translation id="5764920692828389743">傳送到 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>
+<translation id="5768323954710688012">「自動填入 Gmail 等服務中的資訊」通知完整顯示</translation>
 <translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
 <translation id="5773286975255318081">例如設定檔使用者名稱和瀏覽器版本</translation>
 <translation id="5774897849666641211">針對這個分頁提問</translation>

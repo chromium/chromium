@@ -194,6 +194,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="2970681950995291301">如要從 Chrome 中移除 Google 帳戶，請前往「設定」頁面登出 Chrome</translation>
 <translation id="2976869732253036751">在手機上透過 Chrome 接收價格追蹤通知</translation>
+<translation id="2985091279808606502">Chrome 需要區域網路權限，才能讓這個網站正常運作</translation>
 <translation id="2991167882679440829">Google 帳戶中儲存的密碼和其他 Chrome 資料將從這部裝置上移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
 <translation id="2994465299455873643">提供加密服務，以及安全復原 <ph name="BROWSER_NAME" /> 的方式 (如果已過期)。如果停用這項服務，<ph name="BROWSER_NAME" /> 可能會無法存取加密的資料，而且 <ph name="BROWSER_NAME" /> 可能無法自行復原。</translation>
 <translation id="3003694935412297923">所有工作</translation>
@@ -714,6 +715,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8113883687556086139">請驗證身分，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="8115695070094288807">打造個人專屬的 Chrome...</translation>
 <translation id="8118331347066725040">提供你對智慧鏡頭搜尋功能的意見</translation>
+<translation id="812930250799242837">目前登入的帳戶是<ph name="USER_NAME" />，Google 會員。開啟帳戶選單</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化...</translation>
 <translation id="8162006532256575008">使用 Chrome 但不登入帳戶</translation>
@@ -747,6 +749,7 @@ Google Chrome 無法復原你的設定。</translation>
 
 請先刪除一些書籤，才能將新書籤儲存到帳戶。如果現在登出，系統會刪除未儲存的書籤。</translation>
 <translation id="8458117863387545390">在手機上下載 Chrome</translation>
+<translation id="848851325211467878">目前登入的帳戶是<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)，Google 會員。開啟帳戶選單</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 剛才套用了特殊的安全性更新。請立即重新啟動，系統會恢復你原先開啟的分頁。</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>

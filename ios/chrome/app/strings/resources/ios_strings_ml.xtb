@@ -84,6 +84,7 @@
 <translation id="126737128831326059">എക്‌സ്‌പോർട്ട് ചെയ്യൽ പൂർത്തിയായി</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} പാസ്‌വേഡ്}other{{count} പാസ്‌വേഡുകൾ}}</translation>
+<translation id="1274721046703404848">Google Drive പോലുള്ള Search സേവനങ്ങളും Google Workspace ആപ്പുകളും തമ്മിലുള്ള കണക്ഷൻ മാനേജ് ചെയ്യുക</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1279024913354609713">അനുവദിക്കരുത്</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">പാസ്‌കീ സംരക്ഷിച്ചു</translation>
 <translation id="8263809106706527890">നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ക്രമീകരണങ്ങളിൽ മാറ്റമുണ്ടായിരിക്കാം. നിങ്ങൾക്ക് ഇത് ക്രമീകരണത്തിൽ പരിശോധിക്കാം.</translation>
 <translation id="8264966119170358612">നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളിൽ ചിലത് Google ഇതര ഡാറ്റാ ലംഘനത്തെ തുടർന്ന് വെളിപ്പെട്ടു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome മെനു തുറക്കുക</translation>
 <translation id="826614135184049678">iPad റീസെറ്റ് ചെയ്യുന്നതിന്റെ ഭാഗമായി <ph name="USER_NAME" /> എന്ന അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു. തിരികെ സൈൻ ഇൻ ചെയ്യാൻ, ചുവടെയുള്ള "തുടരുക" ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">നിങ്ങൾ പ്രൊഫൈലുകൾ മാറാൻ പോകുകയാണ്</translation>

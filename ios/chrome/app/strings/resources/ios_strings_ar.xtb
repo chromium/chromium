@@ -84,6 +84,7 @@
 <translation id="126737128831326059">تم التصدير بنجاح</translation>
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1273416271143914096">{count,plural, =1{كلمة مرور واحدة ({count})}zero{{count} كلمة مرور}two{كلمتا مرور ({count})}few{{count} كلمات مرور}many{{count} كلمة مرور}other{{count} كلمة مرور}}</translation>
+<translation id="1274721046703404848">‏يمكنك إدارة عملية الربط بين خدمات البحث وتطبيقات Google Workspace، مثل Google Drive</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1279024913354609713">عدم السماح</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
@@ -2188,6 +2189,7 @@
 <translation id="8263228331881858381">تم حفظ مفتاح المرور</translation>
 <translation id="8263809106706527890">قد يكون هناك تغيير في إعدادات المتصفِّح التلقائية. يمكنك التحقّق من ذلك في الإعدادات.</translation>
 <translation id="8264966119170358612">‏تم رصد بعض كلمات المرور المحفوظة الخاصة بك ضمن عملية اختراق للبيانات من خارج Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">‏افتح قائمة Chrome</translation>
 <translation id="826614135184049678">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط جهاز iPad. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">أنت على وشك التبديل بين الملفات الشخصية</translation>

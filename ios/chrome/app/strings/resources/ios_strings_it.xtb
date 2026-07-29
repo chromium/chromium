@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Esportazione riuscita</translation>
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} password}other{{count} password}}</translation>
+<translation id="1274721046703404848">Gestisci la connessione tra i servizi di ricerca e le app Google Workspace, come Google Drive</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1279024913354609713">Non consentire</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
@@ -2189,6 +2190,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8263228331881858381">Passkey salvata</translation>
 <translation id="8263809106706527890">Le impostazioni del browser predefinito potrebbero essere state modificate. Puoi verificarlo nelle impostazioni.</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Apri il menu Chrome</translation>
 <translation id="826614135184049678">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPad. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Stai per cambiare profilo</translation>

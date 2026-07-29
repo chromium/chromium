@@ -5323,19 +5323,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4501388411278568771">可能会应用 HTTPS 升级，具体取决于功能推出状态。</translation>
 <translation id="45036050223225148">停用经过 TLS 加密的 ClientHello 实验</translation>
 <translation id="4503935079903510542">用于在 x86_64 设备上安装虚拟机的 UEFI 可启动式磁盘映像。</translation>
-<translation id="4505299160236615603">通过设置此政策，可在无痕模式下访问所列网址。您可以利用此政策，为 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 政策中定义的特定网址格式设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。
-
-如果同时设置了此政策和 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 政策，则以许可清单为准。如果某个网址与许可清单上的格式匹配，则允许访问该网址；如果与屏蔽清单（而非许可清单）上的格式匹配，则该网址会被屏蔽；如果与两者都不匹配，则通用的 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策将用作后备政策。
-
-如果已设置此政策，但未设置 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 政策，则所有不在许可清单上的网址都会在无痕模式下被屏蔽。
-
-如果 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 政策设置为禁止（值为 1），但已配置此政策，则无痕模式将仅适用于与许可清单匹配的网址。
-
-如果未设置此政策，<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 政策将不会有任何例外情况。
-
-此政策仅影响无痕模式。如要允许所有用户个人资料访问相关网址，请使用 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。
-
-此政策最多只能包含 1,000 个条目。</translation>
 <translation id="4508728400492074981">控制 First-Party Sets 功能的相关政策。</translation>
 <translation id="4510131075424939993">此政策用于指定评估身份信息时要在 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 中使用的盐值</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
@@ -6012,19 +5999,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
       在 M76 或更早版本中，不设置此政策意味着 <ph name="PRODUCT_NAME" /> 默认无法收集和上传这些日志。从 M77 开始，<ph name="PRODUCT_NAME" /> 默认能够从受基于云的用户级企业政策影响的大多数个人资料中收集并上传这些日志。从 M77 到 M80（含），<ph name="PRODUCT_NAME" /> 还默认能从受 <ph name="PRODUCT_NAME" /> 本地管理功能影响的个人资料中收集并上传这些日志。</translation>
 <translation id="4911334289324462969">端口 989（可在 2022 年 2 月 1 日之前解禁）</translation>
 <translation id="4917385247580444890">强</translation>
-<translation id="4917925819533520480">此政策可用于允许在特定网址上使用 <ph name="CHROME_DEVTOOLS_NAME" />。
-
-系统会将网址格式与正在接受检查的网页上每个框架的网址进行比对。最终行为取决于是否也设置了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
-
-如果已设置此政策，但未设置 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，则只有当每个框架的网址都与此许可清单上的格式匹配时，才允许使用 <ph name="CHROME_DEVTOOLS_NAME" />。如果有框架的网址不匹配，将屏蔽整个页面的开发者工具。如需了解网址格式，请参阅 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-
-如果同时设置了此政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，则以许可清单为准。如果框架的网址与此许可清单上的格式匹配，那么即使它同时匹配屏蔽清单中的格式，也仍会被允许。如果某个网址与屏蔽清单（而非许可清单）上的格式匹配，则该网址会被屏蔽。如果某个网址与两者都不匹配，则 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策将用作后备政策。
-
-如果未设置此政策，<ph name="CHROME_DEVTOOLS_NAME" />的可用性将由 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策决定。
-
-此政策还适用于为扩展程序和 Web 应用打开的 <ph name="CHROME_DEVTOOLS_NAME" />。
-
-此政策最多只能包含 1,000 个条目。</translation>
 <translation id="4918150584200819898">允许自动启动在线重新身份验证。</translation>
 <translation id="4918261735182294270">允许用户选择是否启用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">启用对 PDF 文档中 XFA 表单的支持</translation>
@@ -12654,6 +12628,13 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统便会报告这类设备上的登录/退出事件。</translation>
+<translation id="9087577919890548366">如果此政策设为“已启用”，<ph name="LOCAL_NETWORK_ACCESS" />请求将仅在 <ph name="CHROME_DEVTOOLS_NAME" />中显示因<ph name="LOCAL_NETWORK_ACCESS" />检查失败而导致的警告。
+
+如果此政策设为“已停用”或未设置，<ph name="LOCAL_NETWORK_ACCESS" />请求将使用此类请求的默认处理方式。
+
+如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
+
+此企业政策仅为临时性措施，将在 M156 版本之后移除。从长远来看，可以使用政策 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 将应自动获得<ph name="LOCAL_NETWORK_ACCESS" />权限的网址格式列入许可名单。</translation>
 <translation id="9087652369391570821">OnFileTransfer Chrome 企业版接口的配置政策</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>

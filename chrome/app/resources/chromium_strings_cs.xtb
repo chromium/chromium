@@ -56,6 +56,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1623563412065267963">S aplikací Chromium na telefonu získáte to nejlepší od Googlu</translation>
 <translation id="1625909126243026060">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v prohlížeči Chromium</translation>
 <translation id="1640672724030957280">Stahování...</translation>
+<translation id="1665602916345474427">Jste přihlášeni jako <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, máte členství. Otevřít nabídku účtu</translation>
 <translation id="1708414395296835197">Prohlížeč Chromium můžete použít pokaždé, když kliknete na odkazy ve zprávách, dokumentech a dalších aplikacích Bude také připnutý na hlavním panelu.</translation>
 <translation id="1709772298389099340">Poskytuje zvýšená oprávnění prohlížeči <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Budete moci vybírat z dostupných zařízení a zobrazovat na nich obsah.</translation>
@@ -257,6 +258,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 
           **Navrhni otázky:** Vygeneruj seznam 3–5 otázek, které by uživatelé mohli položit s cílem lépe snímku obrazovky porozumět. Alespoň jedna z otázek by se měla týkat konkrétního vizuálního objektu, jeho designu nebo umístění.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Chromium pro tento web potřebuje přístup k místní síti</translation>
 <translation id="3885770153807205175">Výběr jazyka</translation>
 <translation id="388648406173476553">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="3889543394854987837">Chcete-li otevřít Chromium a začít procházet Internet, klikněte na svoje jméno.</translation>
@@ -335,6 +337,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4625064703209785397">Zrychluje weby pomocí modulu V8 prohlížeče Chromium, ale trochu snižuje odolnost prohlížeče Chromium vůči útokům</translation>
 <translation id="4665829708273112819">Upozornění: Chromium nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Pokud toto rozšíření chcete v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="4673151026126227699">Pokud také sdílíte přehledy využití prohlížeče Chromium, budou zahrnovat navštívené adresy URL</translation>
+<translation id="4673710618874938871">Jste přihlášeni jako <ph name="USER_NAME" />, máte členství. Otevřít nabídku účtu</translation>
 <translation id="4677944499843243528">Profil je zřejmě využíván jiným procesem aplikace Chromium (<ph name="PROCESS_ID" />) nebo v jiném počítači (<ph name="HOST_NAME" />). Aplikace Chromium profil uzamkla, aby nedošlo k jeho poškození. Pokud jste si jisti, že žádný jiný proces tento profil nevyužívá, můžete jej odemknout a aplikaci Chromium znovu spustit.</translation>
 <translation id="4680828127924988555">Zrušit instalaci</translation>
 <translation id="469259825538636168">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>

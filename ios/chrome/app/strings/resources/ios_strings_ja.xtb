@@ -84,6 +84,7 @@
 <translation id="126737128831326059">書き出しが正常に完了</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} 個のパスワード}other{{count} 個のパスワード}}</translation>
+<translation id="1274721046703404848">検索サービスと Google Workspace アプリ（Google ドライブなど）の接続を管理します</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1279024913354609713">許可しない</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">パスキーを保存しました</translation>
 <translation id="8263809106706527890">既定のブラウザ設定が変更された可能性があります。これは [設定] で確認できます。</translation>
 <translation id="8264966119170358612">保存したパスワードの一部が Google 以外でのデータ侵害で漏洩しました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome メニューを開く</translation>
 <translation id="826614135184049678">iPad をリセットしている途中で、アカウント <ph name="USER_NAME" /> からログアウトしました。再度ログインするには、下の [続行] をタップします。</translation>
 <translation id="8270320981823560179">ドライブ</translation>
 <translation id="8274795744553482834">プロファイルを切り替えようとしています</translation>

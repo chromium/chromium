@@ -196,6 +196,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login Jaringan - Chrome</translation>
 <translation id="2970681950995291301">Untuk menghapus Akun Google Anda dari Chrome, logout dari Chrome di halaman Setelan</translation>
 <translation id="2976869732253036751">Dapatkan notifikasi pemantauan harga dengan Chrome di ponsel Anda</translation>
+<translation id="2985091279808606502">Chrome memerlukan izin jaringan lokal untuk situs ini</translation>
 <translation id="2991167882679440829">Sandi dan data Chrome Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chrome, login kembali.</translation>
 <translation id="2994465299455873643">Menyediakan layanan enkripsi dan cara yang aman untuk memulihkan <ph name="BROWSER_NAME" /> jika browser tidak update. Jika layanan ini dinonaktifkan, <ph name="BROWSER_NAME" /> mungkin kehilangan akses ke data yang dienkripsi, dan <ph name="BROWSER_NAME" /> mungkin tidak dapat memulihkan data.</translation>
 <translation id="3003694935412297923">Semua tugas</translation>
@@ -713,6 +714,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8113883687556086139">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personalisasi Chrome untuk Anda...</translation>
 <translation id="8118331347066725040">Kirim masukan untuk penelusuran dengan Lens</translation>
+<translation id="812930250799242837">Login sebagai <ph name="USER_NAME" />, langganan Google. Buka menu akun</translation>
 <translation id="8129812357326543296">Tentang &amp;Google Chrome</translation>
 <translation id="813913629614996137">Memulai...</translation>
 <translation id="8162006532256575008">Gunakan Chrome Tanpa Akun</translation>
@@ -746,6 +748,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 
 Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookmark. Jika Anda logout sekarang, bookmark yang belum disimpan akan dihapus.</translation>
 <translation id="8458117863387545390">Dapatkan Chrome di ponsel</translation>
+<translation id="848851325211467878">Login sebagai <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, langganan Google. Buka menu akun</translation>
 <translation id="8496177819998570653">Pengelola S&amp;andi Google</translation>
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>
 <translation id="8521348052903287641">Inbound rule untuk Google Chrome Dev guna mengizinkan traffic mDNS.</translation>

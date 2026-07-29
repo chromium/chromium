@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Izvoz je uspio</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} zaporka}one{{count} zaporka}few{{count} zaporke}other{{count} zaporki}}</translation>
+<translation id="1274721046703404848">Upravljajte vezom između usluga Pretraživanja i aplikacija Google Workspacea, kao što je Google disk</translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1279024913354609713">Ne dopusti</translation>
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
@@ -2189,6 +2190,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="8263228331881858381">Pristupni je ključ spremljen</translation>
 <translation id="8263809106706527890">Možda je došlo do promjene u postavkama zadanog preglednika. To možete provjeriti u postavkama.</translation>
 <translation id="8264966119170358612">Neke od vaših spremljenih zaporki otkrivene su u neovlaštenom pristupu podacima izvan Googlea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Otvorite izbornik preglednika Chrome</translation>
 <translation id="826614135184049678">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPada na zadano. Da biste se ponovno prijavili, dodirnite Nastavi u nastavku.</translation>
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Spremate se promijeniti profil</translation>

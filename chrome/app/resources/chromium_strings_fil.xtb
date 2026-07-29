@@ -57,6 +57,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1623563412065267963">Sulitin ang Google gamit ang Chromium app sa iyong telepono</translation>
 <translation id="1625909126243026060">Suriin ang mga pangunahing kontrol sa privacy at seguridad sa Chromium</translation>
 <translation id="1640672724030957280">Dina-download...</translation>
+<translation id="1665602916345474427">Naka-sign in bilang <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, membership. Buksan ang menu ng account</translation>
 <translation id="1708414395296835197">Magagamit mo ang Chromium sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app. Mapi-pin din ito sa iyong taskbar.</translation>
 <translation id="1709772298389099340">Nagbibigay ng mga mas mataas na pribilehiyo para sa <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Magbibigay-daan ito sa iyong pumili mula sa mga available na device at magpakita ng content sa mga ito.</translation>
@@ -258,6 +259,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 
           **Magmungkahi ng Mga Tanong:** Bumuo ng naka-bullet na listahan ng 3-5 nagpapaisip na tanong na puwedeng magamit ng isang user para mas maintindihan ang screenshot. Ang mga tanong na ito ay dapat may kasamang kahit isang partikular na tanong na tungkol sa visual na object, o sa disenyo o placement nito.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Kailangan ng Chromium ng pahintulot sa lokal na network para sa site na ito</translation>
 <translation id="3885770153807205175">Picker ng wika</translation>
 <translation id="388648406173476553">I-customize at kontrolin ang Chromium. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
 <translation id="3889543394854987837">I-click ang iyong pangalan upang buksan ang Chromium at simulan ang pagba-browse.</translation>
@@ -336,6 +338,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4625064703209785397">Pinapabilis ang mga site gamit ang V8 na engine ng Chromium pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chromium</translation>
 <translation id="4665829708273112819">Babala: Hindi mapipigilan ng Chromium ang pag-record ng mga extension sa iyong history ng pag-browse. Para i-disable ang extension na ito sa Incognito mode, i-unselect ang opsyong ito.</translation>
 <translation id="4673151026126227699">Kung magbabahagi ka rin ng mga ulat ng paggamit sa Chromium, isasama sa mga ulat na iyon ang mga URL na binibisita mo</translation>
+<translation id="4673710618874938871">Naka-sign in bilang <ph name="USER_NAME" />, membership. Buksan ang menu ng account</translation>
 <translation id="4677944499843243528">Mukhang ginagamit ang profile ng iba pang proseso ng Chromium (<ph name="PROCESS_ID" />) sa iba pang computer (<ph name="HOST_NAME" />).  Ni-lock ng Chromium ang profile upang hindi ito ma-corrupt.  Kung nakakatiyak ka na walang ibang mga proseso ang gumagamit sa profile na ito, maaari mong i-unlock ang profile at ilunsad muli ang Chromium.</translation>
 <translation id="4680828127924988555">Kanselahin ang Pag-install</translation>
 <translation id="469259825538636168">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>

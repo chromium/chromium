@@ -1081,6 +1081,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2631387782019878060">Cod Dilysu: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Ni ellid dod o hyd i gyfeiriad IP gweinydd <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">Llofnodi</translation>
+<translation id="2638070510549214427">Marcio fel diogel</translation>
 <translation id="2638567100095052009">Teipiwch @ i chwilio ar draws <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Statws:</translation>
 <translation id="2644219706149911059">Wrthi’n uwchlwytho i Google Drive...</translation>
@@ -1384,6 +1385,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3121994479408824897">Mynd i <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Dangos canlyniadau o'r 30 diwrnod diwethaf</translation>
 <translation id="3126023634486644099">Labeli (Parhaol)</translation>
+<translation id="3131746543143948171">Mae'n ymddangos bod y wefan hon yn debyg i wefannau eraill sy'n gysylltiedig â gwe-rwydo, drwgwedd a sgamiau. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Cadw rhif gwneud iawn</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> yw eich peiriant chwilio diofyn bellach</translation>
 <translation id="3134859781443140237">Rhwydwaith lleol</translation>
@@ -2526,6 +2528,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4885256590493466218">Talu gyda <ph name="CARD_DETAIL" /> wrth y ddesg dalu</translation>
 <translation id="4886565443854420066">Mae porwr Chrome eisiau cadarnhau mai chi sydd yno cyn i chi newid gosodiadau</translation>
 <translation id="4887406273302438710">Amddiffyn cyfrineiriau gyda Windows Hello</translation>
+<translation id="4887785555357166111">Cadw ffrâm fideo</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i ddileu eich hanes pori, cwcis, storfa dros dro, a rhagor yng ngosodiadau Chrome</translation>
 <translation id="4892518386797173871">Cefn</translation>
 <translation id="4894390983254799375">Megis rhif adnabod dyfais, enw, fersiwn OS ac enw defnyddiwr OS</translation>
@@ -4560,6 +4563,7 @@ Manylion ychwanegol:
 <translation id="7979595116210197019">Gwasanaeth Bwyd</translation>
 <translation id="798134797138789862">Yn gallu gofyn am gael defnyddio dyfeisiau rhithwirionedd a'u data</translation>
 <translation id="7983008347525536475">Ceir SUV</translation>
+<translation id="7983569303268727247">Wrthi'n llenwi'ch gwybodaeth</translation>
 <translation id="7984945080620862648">Ni allwch fynd i <ph name="SITE" /> ar hyn o bryd gan fod y wefan wedi anfon manylion adnabod sydd wedi'u sgramblo na all Chrome eu prosesu. Mae gwallau ac ymosodiadau rhwydwaith yn rhai dros dro fel arfer, felly mae'n debyg y bydd y dudalen hon yn gweithio'n nes ymlaen.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Cyhoeddwyr Prynu-Nawr-Talu-Yn-Ddiweddarach ar gael i dalu dros amser wedi'i hagor ar uchder llawn.</translation>
@@ -5018,6 +5022,7 @@ Manylion ychwanegol:
 <translation id="8738058698779197622">Er mwyn gosod cysylltiad diogel, mae angen gosod eich cloc yn gywir. Mae hyn oherwydd bod y tystysgrifau y mae gwefannau yn eu defnyddio i adnabod eu hunain yn ddilys am gyfnodau penodol yn unig. Gan fod cloc eich dyfais yn anghywir, ni all Chromium ddilysu'r tystysgrifau hyn.</translation>
 <translation id="8740359287975076522">Ni ellid dod o hyd i &lt;abbr id="dnsDefinition"&gt;gyfeiriad DNS&lt;/abbr&gt; <ph name="HOST_NAME" />. Wrthi'n diagnosio'r broblem.</translation>
 <translation id="874918643257405732">Creu nod tudalen ar gyfer y tab hwn</translation>
+<translation id="8749274696886550762">Nid yw'r wefan hon yn ymddangos yn iawn</translation>
 <translation id="8751426954251315517">Rhowch gynnig arall arni y tro nesaf</translation>
 <translation id="8753913772043329557">Logiau Polisi</translation>
 <translation id="8754546574216727970">Bŵts</translation>
@@ -5305,6 +5310,7 @@ Manylion ychwanegol:
 <translation id="9192361865877479444">Metel (Matte)</translation>
 <translation id="9192947025498305328">Harddwch Glân</translation>
 <translation id="9193018794001479794">Ymhelaethwch</translation>
+<translation id="9194783551575429711">Gofyn i <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">Pan fydd eich sefydliad yn cyfyngu ar gynilo i'ch Cyfrif Google, ni allwch rannu neu ymuno â grwpiau tabiau</translation>
 <translation id="9198613052465150219">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Ni chewch argraffu</translation>

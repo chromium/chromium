@@ -599,6 +599,7 @@
 <translation id="192095259937375524">ปุ่มแชร์แท็บนี้ เปิดใช้งานเพื่อแชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
 <translation id="1924727005275031552">ใหม่</translation>
 <translation id="1927439846988093361">ผลิตภัณฑ์ดูแลเส้นผม</translation>
+<translation id="1927930548546198515">Chrome จะบันทึกวิธีที่คุณใช้ฟีเจอร์นี้ เช่น คำขอและพฤติกรรมของคุณเมื่อยอมรับหรือเพิกเฉยต่อคำแนะนำ</translation>
 <translation id="1932098463447129402">หลังจาก</translation>
 <translation id="1935353813610900265">ส่งความคิดเห็นสำหรับการค้นหาประวัติการเข้าชมซึ่งทำงานด้วย AI</translation>
 <translation id="1935995810530254458">คัดลอกเลย</translation>
@@ -985,6 +986,7 @@
 <translation id="2491120439723279231">ใบรับรองของเซิร์ฟเวอร์มีข้อผิดพลาด</translation>
 <translation id="2491414235131909199">หน้านี้ถูกบล็อกโดยส่วนขยาย</translation>
 <translation id="2493122313108999546">ปรับขนาดแล้ว</translation>
+<translation id="249376477913017009">เปิดประกาศการป้อนข้อความอัตโนมัติจาก Gmail และอื่นๆ แล้ว</translation>
 <translation id="2495083838625180221">โปรแกรมแยกวิเคราะห์ JSON</translation>
 <translation id="2496402116964818747">คุณสามารถเปลี่ยนว่าจะใช้ลายนิ้วมือเพื่อป้อนรหัสผ่านหรือไม่ใน<ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">สแกนบัตรใหม่</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2742128390261873684">ระบบอัตโนมัติในบ้าน</translation>
 <translation id="2743512410823092182">เครื่องมือและอุปกรณ์สำหรับดีเจ</translation>
+<translation id="275259155159336003">ขับเคลื่อนโดย Personal Intelligence จาก Gemini ระบบอาจตรวจสอบคำขอ ชื่อหน้า และ URL เพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น <ph name="BEGIN_LINK" />จัดการการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">กำลังอัปโหลดไฟล์ <ph name="COUNT" /> รายการไปยัง Google ไดรฟ์</translation>
 <translation id="2759299890026163685">ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ตที่เสถียรก่อนลองอีกครั้ง</translation>
 <translation id="2759825833388495838">กรอกรหัสผ่านใน "<ph name="APP_NAME" />"</translation>
@@ -1436,6 +1439,7 @@
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
 <translation id="3208701679386778924">โปรดส่งรายงานเพื่อให้เราปรับปรุงการอัปเดต ChromeOS เพิ่มเติมได้</translation>
 <translation id="3209034400446768650">อาจมีการเรียกเก็บเงินในหน้านี้</translation>
+<translation id="3209071504641569648">ระบบจะส่งคำขอ ชื่อหน้า และ URL ไปยัง Google และอาจมีการตรวจสอบเพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
 <translation id="3212468046572043669">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้ลากจากด้านบนแล้วแตะปุ่มย้อนกลับ</translation>
 <translation id="3212581601480735796">มีการตรวจสอบกิจกรรมที่คุณทำใน <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ใช้ WebAuthn ไม่ได้</translation>
@@ -1473,6 +1477,7 @@
 <translation id="3254301855501243548">18 x 22 นิ้ว</translation>
 <translation id="3255926992597692024">Chromium กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
+<translation id="3261180263071638338">ปิดประกาศการป้อนข้อความอัตโนมัติจาก Gmail และอื่นๆ แล้ว</translation>
 <translation id="3261488570342242926">ดูข้อมูลเกี่ยวกับบัตรเสมือน</translation>
 <translation id="3262698603497362968">ตัวเลือกการซื้อ</translation>
 <translation id="3264637689694266148">แม้ว่าคุณจะปิดการแนะนำ แต่ระบบอาจยังประมวลผลชื่อหน้าและ URL ของแท็บเพื่อใช้กับฟีเจอร์อื่นๆ ของ Chrome อยู่ คุณจัดการการเข้าถึงข้อมูลนี้ของเบราว์เซอร์ได้ใน</translation>
@@ -2334,6 +2339,7 @@
 <translation id="4602465984861132303">โบว์ลิ่ง</translation>
 <translation id="4603727370377253901">การจองเที่ยวบิน</translation>
 <translation id="4607608436550361748">ดูเคล็ดลับในการใช้ Chrome</translation>
+<translation id="4607879293515681409">ตอนนี้การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นสามารถค้นหาและป้อนข้อมูล เช่น หมายเลขเที่ยวบินและเวลานัดหมาย จากแอปต่างๆ อย่าง Gmail และ Photos ได้</translation>
 <translation id="460848736049414407">ถูกบล็อกโดยผู้ดูแลระบบ</translation>
 <translation id="4610279718074907952">เว็บไซต์นี้อยู่ในกลุ่มที่ <ph name="SET_OWNER" /> กำหนดไว้และสามารถดูกิจกรรมของคุณได้</translation>
 <translation id="4612631413844865947">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณที่ <ph name="MERCHANT_ORIGIN" /> ผ่าน <ph name="PAYMENT_APP_ORIGIN" /></translation>
@@ -2519,6 +2525,7 @@
 <translation id="4885256590493466218">ชำระเงินด้วย <ph name="CARD_DETAIL" /> ที่จุดชำระเงิน</translation>
 <translation id="4886565443854420066">เบราว์เซอร์ Chrome ต้องการยืนยันว่าเป็นคุณก่อนที่คุณจะเปลี่ยนการตั้งค่า</translation>
 <translation id="4887406273302438710">ปกป้องรหัสผ่านด้วย Windows Hello</translation>
+<translation id="4887785555357166111">บันทึกเฟรมวิดีโอ</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อลบประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="4892518386797173871">หลัง</translation>
 <translation id="4894390983254799375">เช่น รหัสอุปกรณ์ ชื่อ เวอร์ชันของระบบปฏิบัติการ และชื่อผู้ใช้ระบบปฏิบัติการ</translation>
@@ -2850,6 +2857,7 @@
 <translation id="5400836586163650660">สีเทา</translation>
 <translation id="5401344472773249513">ข่าวสารคนดังและวงการบันเทิง</translation>
 <translation id="5401674281624189321">ภูเขาและสกีรีสอร์ท</translation>
+<translation id="5402715318763077894">อนุญาตให้เข้าถึงเครือข่ายภายในไหม</translation>
 <translation id="540949333488055151">พลาสติก (มีสี)</translation>
 <translation id="540969355065856584">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใบรับรองความปลอดภัยไม่สามารถใช้ได้ในขณะนี้ ซึ่งอาจเป็นเพราะการกำหนดค่าที่ไม่ถูกต้องหรือมีผู้โจมตีที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="5411462078004183575">ตัวเลือกที่มีราคาต่ำ</translation>
@@ -3100,6 +3108,7 @@
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
 <translation id="5764920692828389743">ส่งไปยัง <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">หากต้องการดูวิธีการนำส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
+<translation id="5768323954710688012">เปิดประกาศการป้อนข้อความอัตโนมัติจาก Gmail และอื่นๆ แบบเต็มหน้าจอแล้ว</translation>
 <translation id="57689295674415555">หมายเลขบัตรเสมือนไม่ได้รับการกรอกใช่ไหม</translation>
 <translation id="5773286975255318081">เช่น ชื่อผู้ใช้ของโปรไฟล์และเวอร์ชันเบราว์เซอร์</translation>
 <translation id="5774897849666641211">ถามคำถามเกี่ยวกับแท็บนี้</translation>

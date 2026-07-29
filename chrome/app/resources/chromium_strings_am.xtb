@@ -57,6 +57,7 @@
 <translation id="1623563412065267963">በስልክዎ ላይ በChromium መተግበሪያ የGoogle ምርጡን ያግኙ</translation>
 <translation id="1625909126243026060">በChromium ውስጥ ቁልፍ የግላዊነት እና የደህንነት ቁጥጥሮችን ይገምግሙ</translation>
 <translation id="1640672724030957280">በማውረድ ላይ...</translation>
+<translation id="1665602916345474427">እንደ <ph name="USER_NAME" />፣ <ph name="USER_EMAIL" />፣ አባልነት በመለያ ገብተዋል። የመለያ ምናሌውን ይክፈቱ</translation>
 <translation id="1708414395296835197">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ ጠቅ በምታደርግበት ማንኛውም ጊዜ Chromium መጠቀም ይችላሉ። እንዲሁም በተግባር አሞሌዎ ላይ ይሰካል።</translation>
 <translation id="1709772298389099340">ለ<ph name="BROWSER_NAME" /> የላቁ ልዩ መብቶች ያቀርባል።</translation>
 <translation id="1722488837206509557">ይህ ከሚገኙ መሣሪያዎች እንዲመርጡ እና ይዘቶችን እንዲያሳዩ ያስችልዎታል።</translation>
@@ -258,6 +259,7 @@
 
           **ጥያቄዎችን ጠቁም፦** ቅጽበታዊ ገጽ እይታውን በተሻለ ለመረዳት ተጠቃሚው ሊጠይቃቸው የሚችላቸው 3-5 ሀሳብ አመንጪ ጥያቄዎች ነጥበ ምልክት ዝርዝርን አመንጭ። እነዚህ ጥያቄዎች በተለይ ስለ ምስላዊ ነገር፣ ስለ ንድፉ ወይም ስለ አቀማመጡ የሚመለከት ቢያንስ አንዱን ማካተት አለባቸው።</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium ለዚህ ጣቢያ የአካባቢያዊ አውታረ መረብ ፈቃድ ያስፈልገዋል</translation>
 <translation id="3885770153807205175">ቋንቋ መራጭ</translation>
 <translation id="388648406173476553">Chromiumን ያብጁ እና ይቆጣጠሩ። የሆነ ነገር ትኩረትዎ ያስፈልገዋል - ለዝርዝሮች ጠቅ ያድርጉ።</translation>
 <translation id="3889543394854987837">Chromiumን ለመክፈት እና ማሰስ ለመጀመር ስምዎን ጠቅ ያድርጉት።</translation>
@@ -336,6 +338,7 @@
 <translation id="4625064703209785397">በChromium V8 ሞተር ጣቢያዎችን ያፋጥናል ነገር ግን የChromiumን ጥቃቶችን የመቋቋም አቅም በመጠኑ ያነሰ ያደርገዋል</translation>
 <translation id="4665829708273112819">ማስጠንቀቂያ፦ Chromium ቅጥያዎች የአሰሳ ታሪክዎን እንዳይመዘግቡ መከልከል አይችልም። ይህን ቅጥያ ማንነት በማያሳውቅ ሁነት ላይ ለማሰናከል ይህን አማራጭ አይምረጡ።</translation>
 <translation id="4673151026126227699">እንዲሁም የChromium አጠቃቀም ሪፖርቶችን ካጋሩ፣ እነዚያ ሪፖርቶች እርስዎ የሚጎበኟቸውን ዩአርኤሎች ያካትታሉ</translation>
+<translation id="4673710618874938871">እንደ <ph name="USER_NAME" />፣ አባልነት ገብተዋል። የመለያ ምናሌውን ይክፈቱ</translation>
 <translation id="4677944499843243528">መገለጫው በሌላ ኮምፒውተር (<ph name="HOST_NAME" />) ላይ በሌላ የChromium ሂደት (<ph name="PROCESS_ID" />) የተያዘ ይመስላል። Chromium መገለጫው እንዳይበላሽ ቆልፎታል። ሌሎች ሂደቶች ይህን መገለጫ እየተጠቀሙበት እንዳልሆኑ እርግጠኛ ከሆኑ መገለጫውን አስከፍተው Chromiumን ዳግም ማስጀመር ይችላሉ።</translation>
 <translation id="4680828127924988555">መጫኑን ሰርዝ</translation>
 <translation id="469259825538636168">አንዳንድ የChromium ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም። ዘግተው ከመውጣትዎ በፊት ጥቂት ደቂቃዎች ለመጠበቅ ይሞክሩ። አሁን ዘግተው ከወጡ ይህ ውሂብ ይሰረዛል።</translation>

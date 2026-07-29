@@ -55,6 +55,7 @@
 <translation id="1623563412065267963">Optimalkan penggunaan Google dengan aplikasi Chromium di ponsel Anda</translation>
 <translation id="1625909126243026060">Meninjau kontrol privasi dan keamanan utama di Chromium</translation>
 <translation id="1640672724030957280">Mengunduh...</translation>
+<translation id="1665602916345474427">Login sebagai <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, langganan. Buka menu akun</translation>
 <translation id="1708414395296835197">Anda dapat menggunakan Chromium kapan saja dengan mengklik link di pesan, dokumen, dan aplikasi lainnya. Chromium juga akan disematkan ke taskbar Anda.</translation>
 <translation id="1709772298389099340">Memberikan hak istimewa yang ditingkatkan untuk <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Tindakan ini akan memungkinkan Anda memilih dari perangkat yang tersedia dan menampilkan konten di perangkat tersebut.</translation>
@@ -256,6 +257,7 @@
 
           **Sarankan Pertanyaan:** Buat daftar berbutir berisi 3-5 pertanyaan yang dapat diajukan pengguna untuk lebih memahami screenshot. Pertanyaan ini harus mencakup setidaknya satu pertanyaan yang secara khusus membahas objek visual, desain, atau penempatannya.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium memerlukan izin jaringan lokal untuk situs ini</translation>
 <translation id="3885770153807205175">Pemilih bahasa</translation>
 <translation id="388648406173476553">Sesuaikan dan kontrol Chromium. Ada sesuatu yang memerlukan perhatian Anda - klik untuk melihat detailnya.</translation>
 <translation id="3889543394854987837">Klik nama Anda untuk membuka Chromium dan mulai menjelajah.</translation>
@@ -334,6 +336,7 @@
 <translation id="4625064703209785397">Mempercepat situs dengan mesin V8 Chromium, tetapi membuat Chromium sedikit lebih rentan terhadap serangan</translation>
 <translation id="4665829708273112819">Peringatan: Chromium tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="4673151026126227699">Jika Anda juga membagikan laporan penggunaan Chromium, laporan tersebut akan menyertakan URL yang Anda buka</translation>
+<translation id="4673710618874938871">Login sebagai <ph name="USER_NAME" />, langganan. Buka menu akun</translation>
 <translation id="4677944499843243528">Profil tersebut mungkin digunakan pada proses Chromium lainnya (<ph name="PROCESS_ID" />) pada komputer lain (<ph name="HOST_NAME" />). Chromium telah mengunci profil tersebut agar tidak rusak. Jika yakin tidak ada proses lain yang menggunakan profil tersebut, Anda dapat membuka profil dan meluncurkan Chromium kembali.</translation>
 <translation id="4680828127924988555">Batalkan Penginstalan</translation>
 <translation id="469259825538636168">Beberapa data Chromium Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>

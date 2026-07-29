@@ -198,6 +198,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> — pierakstīšanās tīklā — Chrome</translation>
 <translation id="2970681950995291301">Lai noņemtu savu Google kontu no pārlūka Chrome, lapā “Iestatījumi” izrakstieties no pārlūka Chrome.</translation>
 <translation id="2976869732253036751">Brīdinājumu saņemšana par cenu izsekošanu, izmantojot pārlūku Chrome savā tālrunī</translation>
+<translation id="2985091279808606502">Pārlūkam Chrome ir nepieciešama atļauja izmantot lokālo tīklu šajā vietnē.</translation>
 <translation id="2991167882679440829">Jūsu paroles un citi Chrome dati, ko saglabājāt savā Google kontā, tiks noņemti no šīs ierīces. Lai atkal izmantotu šos datus pārlūkā Chrome, atkārtoti pierakstieties.</translation>
 <translation id="2994465299455873643">Nodrošina šifrēšanas pakalpojumus un drošu pārlūka <ph name="BROWSER_NAME" /> atkopšanu, ja tas ir novecojis. Ja šis pakalpojums tiks atspējots, pārlūkā <ph name="BROWSER_NAME" /> var tikt zaudēta piekļuve šifrētajiem datiem, kā arī nebūs iespējama pārlūka <ph name="BROWSER_NAME" /> automātiska atkopšana.</translation>
 <translation id="3003694935412297923">Visi uzdevumi</translation>
@@ -718,6 +719,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8113883687556086139">Lai izmantotu un saglabātu Chrome datus savā kontā (<ph name="ACCOUNT_EMAIL" />), apstipriniet savu identitāti.</translation>
 <translation id="8115695070094288807">Notiek Chrome pielāgošana…</translation>
 <translation id="8118331347066725040">Sūtiet atsauksmes par meklēšanu, izmantojot Lens</translation>
+<translation id="812930250799242837">Veikta pierakstīšanās kā lietotājam <ph name="USER_NAME" />, un jums ir Google abonements. Atvērt konta izvēlni</translation>
 <translation id="8129812357326543296">Par &amp;Google Chrome</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
 <translation id="8162006532256575008">Izmantot pārlūku Chrome, nepierakstoties kontā</translation>
@@ -751,6 +753,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 
 Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas no tām. Ja izrakstīsieties tūlīt, nesaglabātās grāmatzīmes tiks dzēstas.</translation>
 <translation id="8458117863387545390">Iegūstiet pārlūku Chrome savā tālrunī</translation>
+<translation id="848851325211467878">Veikta pierakstīšanās kā lietotājam <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />), un jums ir Google abonements. Atvērt konta izvēlni</translation>
 <translation id="8496177819998570653">Google p&amp;aroļu pārvaldnieks</translation>
 <translation id="8498858610309223613">Tikko tika piemērots īpašs Google Chrome drošības atjauninājums. Restartējiet tūlīt, un mēs atjaunosim jūsu cilnes.</translation>
 <translation id="8521348052903287641">Ienākošo savienojumu kārtula pārlūkam Google Chrome Dev, lai atļautu mDNS datplūsmu.</translation>

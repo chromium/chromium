@@ -57,6 +57,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1623563412065267963">Iskoristite sve prednosti Googlea putem aplikacije Chromium na telefonu</translation>
 <translation id="1625909126243026060">Pregledajte ključne kontrole privatnosti i sigurnosti na Chromiumu</translation>
 <translation id="1640672724030957280">Preuzimanje…</translation>
+<translation id="1665602916345474427">Prijavljeni ste kao <ph name="USER_NAME" />, <ph name="USER_EMAIL" />. Članstvo. Otvaranje menija računa</translation>
 <translation id="1708414395296835197">Možete koristiti Chromium svaki put kada kliknete na linkove u porukama, dokumentima i drugim aplikacijama. Također će se zakačiti na traku zadataka.</translation>
 <translation id="1709772298389099340">Pruža dodatne ovlasti za preglednik <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Ovo će vam dozvoliti da odaberete jedan od dostupnih uređaja i da se na njemu prikazuje sadržaj.</translation>
@@ -258,6 +259,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 
           **Predloži pitanja:** generiraj listu s 3–5 pitanja koja potiču na razmišljanje i koja korisnik može postaviti da bolje razumije snimak ekrana. Ova pitanja trebaju uključivati najmanje jedno pitanje koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Chromium treba odobrenje za lokalnu mrežu za ovu web lokaciju</translation>
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="388648406173476553">Prilagodite i kontrolirajte Chromium. Potrebna je vaša pažnja - kliknite za detalje.</translation>
 <translation id="3889543394854987837">Kliknite na svoje ime da otvorite Chromium i počnete pretraživati.</translation>
@@ -336,6 +338,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4625064703209785397">Ubrzava web lokacije putem Chromiumovog pretraživača V8, ali čini da Chromium bude manje otporan na napade</translation>
 <translation id="4665829708273112819">Upozorenje: Chromium ne može spriječiti da ekstenzije snimaju vašu historiju pregledanja. Da onemogućite ovu ekstenziju u anonimnom načinu rada, poništite odabir ove opcije.</translation>
 <translation id="4673151026126227699">Ako dijelite i izvještaje o korištenju Chromiuma, ti izvještaji uključuju URL-ove koje posjećujete</translation>
+<translation id="4673710618874938871">Prijavljeni ste kao <ph name="USER_NAME" />. Članstvo. Otvaranje menija računa</translation>
 <translation id="4677944499843243528">Izgleda da drugi Chromium proces (<ph name="PROCESS_ID" />) na drugom računaru (<ph name="HOST_NAME" />) koristi profil. Chromium je zaključao profil da se ne ošteti. Ako ste sigurni da nijedan drugi proces ne koristi ovaj profil, možete ga otključati i ponovo pokrenuti Chromium.</translation>
 <translation id="4680828127924988555">Otkaži instalaciju</translation>
 <translation id="469259825538636168">Određeni podaci Chromiuma još uvijek nisu sačuvani na Google račun. Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ti podaci će se izbrisati.</translation>

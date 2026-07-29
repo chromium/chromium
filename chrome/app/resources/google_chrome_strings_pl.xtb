@@ -196,6 +196,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
 <translation id="2970681950995291301">Aby usunąć swoje konto Google z Chrome, wyloguj się z Chrome na stronie Ustawienia</translation>
 <translation id="2976869732253036751">Otrzymuj alerty o śledzeniu cen w Chrome na telefonie</translation>
+<translation id="2985091279808606502">Ta strona musi mieć w Chrome dostęp do sieci lokalnej</translation>
 <translation id="2991167882679440829">Hasła i inne dane z Chrome zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chrome, zaloguj się ponownie.</translation>
 <translation id="2994465299455873643">Zapewnia usługi szyfrowania i bezpieczny sposób przywracania <ph name="BROWSER_NAME" /> w razie utraty ważności. Jeśli ta usługa zostanie wyłączona, <ph name="BROWSER_NAME" /> może utracić dostęp do zaszyfrowanych danych i nie być w stanie przeprowadzić samoczynnego przywracania.<ph name="BROWSER_NAME" /></translation>
 <translation id="3003694935412297923">Wszystkie zadania</translation>
@@ -714,6 +715,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8113883687556086139">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="8115695070094288807">Dostosowuję Chrome…</translation>
 <translation id="8118331347066725040">Prześlij opinię na temat wyszukiwania z użyciem Obiektywu</translation>
+<translation id="812930250799242837">Zalogowano jako <ph name="USER_NAME" />, subskrypcja Google. Otwórz menu konta</translation>
 <translation id="8129812357326543296">&amp;Google Chrome – informacje</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8162006532256575008">Używaj Chrome bez konta</translation>
@@ -747,6 +749,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 
 Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych na Twoim koncie. Jeśli wylogujesz się teraz, niezapisane zakładki zostaną usunięte.</translation>
 <translation id="8458117863387545390">Pobierz Chrome na telefon</translation>
+<translation id="848851325211467878">Zalogowano jako <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subskrypcja Google. Otwórz menu konta</translation>
 <translation id="8496177819998570653">Menedżer &amp;haseł Google</translation>
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>

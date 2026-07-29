@@ -84,6 +84,7 @@
 <translation id="126737128831326059">已成功导出</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} 个密码}other{{count} 个密码}}</translation>
+<translation id="1274721046703404848">管理搜索服务与 Google Workspace 应用（例如 Google 云端硬盘）之间的关联</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1279024913354609713">不允许</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">已保存通行密钥</translation>
 <translation id="8263809106706527890">您的默认浏览器设置可能发生了变更。您可以在设置中检查这项变更。</translation>
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">打开 Chrome 菜单</translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8270320981823560179">云端硬盘</translation>
 <translation id="8274795744553482834">您即将切换个人资料</translation>

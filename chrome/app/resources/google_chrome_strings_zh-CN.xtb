@@ -196,6 +196,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 网络登录 - Chrome</translation>
 <translation id="2970681950995291301">若要从 Chrome 中移除您的 Google 账号，请在“设置”页面中退出 Chrome</translation>
 <translation id="2976869732253036751">在手机上使用 Chrome 接收价格跟踪提醒</translation>
+<translation id="2985091279808606502">Chrome 需要为此网站授予本地网络权限</translation>
 <translation id="2991167882679440829">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chrome 数据。如需在 Chrome 中重新使用这些数据，请重新登录。</translation>
 <translation id="2994465299455873643">提供加密服务，并提供安全的方式来恢复过期的 <ph name="BROWSER_NAME" />。如果停用此服务，<ph name="BROWSER_NAME" /> 可能无法访问加密数据，并且 <ph name="BROWSER_NAME" /> 可能无法恢复。</translation>
 <translation id="3003694935412297923">所有任务</translation>
@@ -714,6 +715,7 @@
 <translation id="8113883687556086139">请验证您的身份，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="8115695070094288807">正在打造您的专属 Chrome…</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
+<translation id="812930250799242837">已登录身份为：<ph name="USER_NAME" />，Google 会员。打开账号菜单</translation>
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8162006532256575008">在不登录账号的情况下使用 Chrome</translation>
@@ -747,6 +749,7 @@
 
 请先删除一些书签，否则新书签将无法保存到账号中。如果现在退出账号，系统将删除未保存的书签。</translation>
 <translation id="8458117863387545390">在手机上下载 Chrome</translation>
+<translation id="848851325211467878">已登录身份为：<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)，Google 会员。打开账号菜单</translation>
 <translation id="8496177819998570653">Google 密码管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 刚刚应用了一项特殊的安全更新。请立即重启，以便系统恢复您的标签页。</translation>
 <translation id="8521348052903287641">Google Chrome 开发者版的入站规则，允许 mDNS 流量。</translation>

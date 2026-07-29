@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Экспартаванне завершана</translation>
 <translation id="1272079795634619415">Спыніць</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} паролі}many{{count} пароляў}other{{count} пароля}}</translation>
+<translation id="1274721046703404848">Кіраваць падключэннем сэрвісаў Пошуку з праграмамі Google Workspace, напрыклад з Google Дыскам</translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1279024913354609713">Не дазваляць</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">Ключ доступу захаваны</translation>
 <translation id="8263809106706527890">Магчыма, ваш стандартны браўзер зменены. Гэта можна праверыць у наладах.</translation>
 <translation id="8264966119170358612">Некаторыя захаваныя вамі паролі былі раскрыты ў выніку ўцечкі даных у староннім сэрвісе. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Адкрыйце меню Chrome</translation>
 <translation id="826614135184049678">У выніку скіду налад iPad адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці зноў, націсніце "Працягнуць" ніжэй.</translation>
 <translation id="8270320981823560179">Дыск</translation>
 <translation id="8274795744553482834">Вы збіраецеся пераключыць профілі</translation>

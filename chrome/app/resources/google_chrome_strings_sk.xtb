@@ -198,6 +198,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prihlásenie do siete – Chrome</translation>
 <translation id="2970681950995291301">Ak chcete odstrániť svoj účet Google z Chromu, odhláste sa z Chromu na stránke Nastavenia</translation>
 <translation id="2976869732253036751">Dostávajte upozornenia sledovania cien v Chrome v telefóne</translation>
+<translation id="2985091279808606502">Chrome vyžaduje pre tento web povolenie na prístup k miestnej sieti</translation>
 <translation id="2991167882679440829">Heslá a ďalšie údaje Chromu, ktoré ste si uložili do účtu Google, budú z tohto zariadenia odstránené. Ak ich chcete opäť používať v Chrome, znova sa prihláste.</translation>
 <translation id="2994465299455873643">Poskytuje služby šifrovania a bezpečný spôsob obnovenia prehliadača <ph name="BROWSER_NAME" />, ak je jeho verzia zastaraná. V prípade deaktivácie tejto služby môže <ph name="BROWSER_NAME" /> stratiť prístup k šifrovaným údajom a <ph name="BROWSER_NAME" /> sa zrejme nebude môcť samočinne obnoviť.</translation>
 <translation id="3003694935412297923">Všetky úlohy</translation>
@@ -720,6 +721,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8113883687556086139">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, overte svoju totožnosť</translation>
 <translation id="8115695070094288807">Chrome sa prispôsobuje…</translation>
 <translation id="8118331347066725040">Odošlite spätnú väzbu k vyhľadávaniu pomocou funkcie Lens</translation>
+<translation id="812930250799242837">Prihlásili ste sa ako <ph name="USER_NAME" />, členstvo na Googli. Otvoriť ponuku účtu</translation>
 <translation id="8129812357326543296">Informácie o prehliadači &amp;Google Chrome</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8162006532256575008">Používať Chrome bez účtu</translation>
@@ -753,6 +755,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 
 Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neodstránite. Ak sa teraz odhlásite, neuložené záložky budú odstránené.</translation>
 <translation id="8458117863387545390">Stiahnite si Chrome do telefónu</translation>
+<translation id="848851325211467878">Prihlásili ste sa ako <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, členstvo na Googli. Otvoriť ponuku účtu</translation>
 <translation id="8496177819998570653">Správca hesiel Google</translation>
 <translation id="8498858610309223613">Práve bola použitá mimoriadna bezpečnostná aktualizácia pre prehliadač Google Chrome. Po reštartovaní obnovíme vaše karty.</translation>
 <translation id="8521348052903287641">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome verzie pre vývojárov, ktoré povoľuje prenos dát mDNS.</translation>

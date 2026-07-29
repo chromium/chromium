@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">ヒント通知のプロモーションが閉じられました</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1045899828449635435">これらのサイトのデータも削除しますか？</translation>
-<translation id="1049461303780085993">質問の回答や重要なポイントなどを確認できる Gemini in Chrome をお試しください</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1052842760770519282">一部のパスワードにアクセスできません</translation>
 <translation id="1057623954802068161">ページの一番上までスクロール</translation>
@@ -296,7 +295,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2234827758954819389">プライバシー ガイド</translation>
 <translation id="2238038374973843156">グループを別のウィンドウに移動</translation>
 <translation id="2247789808226901522">カードの有効期限が切れています</translation>
-<translation id="2249635629516220541">ウェブサイトが広告表示に使用する情報をカスタマイズします</translation>
 <translation id="2251809247798634662">新しいシークレット ウィンドウ</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> と共有する情報を選択する</translation>
 <translation id="2261570557291037252">アプリの詳細情報</translation>
@@ -560,6 +558,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3309978850836730073">ここからいつでもリーディング モードを使用できます</translation>
 <translation id="331080746368555063">非公開サイトには、会社のイントラネットなどが含まれます</translation>
 <translation id="3311330810461485557">アプリや日付などで検索します。</translation>
+<translation id="3312300514034250578">セーフ ブラウジング保護強化機能</translation>
 <translation id="3331974543021145906">アプリ情報</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="333863344734218290">安全でない公開サイトと非公開サイトについて警告する</translation>
@@ -1195,7 +1194,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6022659036123304283">Chrome を自分用にカスタマイズ</translation>
 <translation id="6023820583797130428">戻るにはメニューを開きます</translation>
 <translation id="6026538407078977628">フルスクリーンで拡大表示</translation>
-<translation id="6030719887161080597">広告効果を測定するためにサイトで使用される情報を管理します</translation>
 <translation id="6039379616847168523">次のタブに移動する</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="604124094241169006">自動設定</translation>
@@ -1446,7 +1444,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6880903702195291049">権限に問題は見受けられません</translation>
 <translation id="6883204995689174413">共有</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{# 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
-<translation id="6883606786470492001">広告トピックやその他の設定を管理して、パーソナライズド広告を表示するサイトがユーザーについて把握できる情報を制限します</translation>
 <translation id="6883906387682976294">このサイトからの通知をブロックする</translation>
 <translation id="688398477366397178">お使いの言語を指定すると、可能な場合はウェブサイトのコンテンツが指定した言語で表示されます。</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 件のサイトの登録を解除しました}other{# 件のサイトの登録を解除しました}}</translation>
@@ -1511,7 +1508,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />、複数選択されたミュート中のシークレット タブ</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
-<translation id="7111394291981742152">Chrome では、表示される広告を細かく管理でき、サイトがパーソナライズド広告を表示する際にユーザーについて把握できる情報も制限されます。</translation>
 <translation id="7111822978084196600">このウィンドウに名前を付ける</translation>
 <translation id="7115358764509798967">システムのデフォルト</translation>
 <translation id="7117485132243600300">フォローしているコンテンツ、おすすめのトピックと検索候補を管理します</translation>

@@ -199,6 +199,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chrome</translation>
 <translation id="2970681950995291301">Pour supprimer votre compte Google de Chrome, déconnectez-vous de Chrome sur la page de paramètres</translation>
 <translation id="2976869732253036751">Recevez des alertes de suivi des prix avec Chrome sur votre téléphone</translation>
+<translation id="2985091279808606502">Chrome a besoin de l'autorisation d'accéder au réseau local pour ce site</translation>
 <translation id="2991167882679440829">Vos mots de passe et d'autres données Chrome enregistrés dans votre compte Google seront supprimés de cet appareil. Pour les utiliser de nouveau dans Chrome, reconnectez-vous.</translation>
 <translation id="2994465299455873643">Fournit des services de chiffrement et un moyen sécurisé de restaurer <ph name="BROWSER_NAME" /> si la version est ancienne. Si ce service est désactivé, <ph name="BROWSER_NAME" /> pourrait perdre l'accès aux données chiffrées, et <ph name="BROWSER_NAME" /> pourrait ne pas pouvoir se restaurer.</translation>
 <translation id="3003694935412297923">Toutes les tâches</translation>
@@ -722,6 +723,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8113883687556086139">Confirmez votre identité pour utiliser et enregistrer des données Chrome dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personnalisation de Chrome...</translation>
 <translation id="8118331347066725040">Envoyer des commentaires sur la recherche avec Lens</translation>
+<translation id="812930250799242837">Connexion en tant que <ph name="USER_NAME" />, abonnement Google. Ouvrir le menu du compte</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8162006532256575008">Utiliser Chrome sans compte</translation>
@@ -755,6 +757,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>
 <translation id="8458117863387545390">Installez Chrome sur votre téléphone</translation>
+<translation id="848851325211467878">Connexion en tant que <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, abonnement Google. Ouvrir le menu du compte</translation>
 <translation id="8496177819998570653">Gestionnaire de mots de p&amp;asse de Google</translation>
 <translation id="8498858610309223613">Une mise à jour spéciale de sécurité pour Google Chrome vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome pour les développeurs autorisant le trafic mDNS.</translation>

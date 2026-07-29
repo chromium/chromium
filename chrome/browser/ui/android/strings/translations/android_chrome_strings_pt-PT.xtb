@@ -12,7 +12,6 @@
 <translation id="1035113036584565771">Promoção de notificações de dicas fechada</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1045899828449635435">Limpar também dados destes sites?</translation>
-<translation id="1049461303780085993">Experimente o Gemini no Chrome para receber respostas, principais pontos a reter e muito mais</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1052842760770519282">Algumas das suas palavras-passe não estão acessíveis</translation>
 <translation id="1057623954802068161">Deslocar a página até à parte superior</translation>
@@ -296,7 +295,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2238038374973843156">Mover grupo p/ outra janela</translation>
 <translation id="2247789808226901522">Cartão expirado</translation>
-<translation id="2249635629516220541">Personalize as informações usadas pelos sites para lhe mostrar anúncios</translation>
 <translation id="2251809247798634662">Nova janela de navegação anónima</translation>
 <translation id="2253927598983295051">Escolha o que quer partilhar com a app <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Mais informações sobre a app</translation>
@@ -560,6 +558,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3309978850836730073">O modo de leitura está sempre disponível aqui</translation>
 <translation id="331080746368555063">Os sites privados podem incluir elementos como a intranet da sua empresa</translation>
 <translation id="3311330810461485557">Pesquise por app, data e muito mais.</translation>
+<translation id="3312300514034250578">Navegação segura melhorada</translation>
 <translation id="3331974543021145906">Informações da aplicação</translation>
 <translation id="3334729583274622784">Quer alterar a extensão de ficheiro?</translation>
 <translation id="333863344734218290">Envia-lhe avisos sobre sites públicos e privados inseguros</translation>
@@ -1195,7 +1194,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6022659036123304283">Personalize o Google Chrome</translation>
 <translation id="6023820583797130428">Abra o menu para voltar</translation>
 <translation id="6026538407078977628">Expandir para ecrã inteiro</translation>
-<translation id="6030719887161080597">Faça a gestão das informações usadas pelos sites para medir o desempenho dos anúncios</translation>
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1446,7 +1444,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6880903702195291049">As autorizações parecem estar corretas</translation>
 <translation id="6883204995689174413">Partilhar</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 item está guardado apenas neste dispositivo. Para usá-lo nos seus outros dispositivos, guarde-o na sua Conta Google.}other{# itens estão guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google.}}</translation>
-<translation id="6883606786470492001">Faça a gestão dos tópicos de anúncios e de outras definições para limitar o que os sites podem saber sobre si para lhe mostrar anúncios personalizados</translation>
 <translation id="6883906387682976294">Anular subscrição de notificações deste site</translation>
 <translation id="688398477366397178">Permita que os Websites conheçam os idiomas que fala. Vão apresentar conteúdo nesses idiomas, sempre que possível.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Anulou a subscrição de 1 site}other{Anulou a subscrição de # sites}}</translation>
@@ -1511,7 +1508,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, separador de navegação anónima com som desativado multisselecionado</translation>
 <translation id="7106762743910369165">O seu navegador é gerido pela sua entidade</translation>
-<translation id="7111394291981742152">O Chrome dá-lhe mais controlo sobre os anúncios que vê e limita o que os sites podem saber sobre si quando lhe mostram anúncios personalizados.</translation>
 <translation id="7111822978084196600">Dê um nome a esta janela</translation>
 <translation id="7115358764509798967">Predefinição do sistema</translation>
 <translation id="7117485132243600300">Faça a gestão do conteúdo que segue e dos tópicos e pesquisas sugeridos</translation>

@@ -200,6 +200,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava v omrežje – Chrome</translation>
 <translation id="2970681950995291301">Če želite račun Google odstraniti iz Chroma, se na strani z nastavitvami odjavite iz Chroma.</translation>
 <translation id="2976869732253036751">Prejemanje opozoril o spremljanju cen s Chromom v telefonu</translation>
+<translation id="2985091279808606502">Chrome za to spletno mesto potrebuje dovoljenje za lokalno omrežje</translation>
 <translation id="2991167882679440829">Gesla in drugi podatki v Chromu, ki ste jih shranili v računu Google, bodo odstranjeni iz te naprave. Če jih želite znova uporabljati v Chromu, se znova prijavite.</translation>
 <translation id="2994465299455873643">Zagotavlja storitve šifriranja in varen način za obnovitev brskalnika <ph name="BROWSER_NAME" />, če je zastarel. Če je ta storitev onemogočena, lahko <ph name="BROWSER_NAME" /> izgubi dostop do šifriranih podatkov in <ph name="BROWSER_NAME" /> se morda ne more obnoviti.</translation>
 <translation id="3003694935412297923">Vsa opravila</translation>
@@ -723,6 +724,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8113883687556086139">Potrdite, da ste to vi, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Prilagajanje Chroma …</translation>
 <translation id="8118331347066725040">Pošiljanje povratnih informacij za iskanje z Googlom Lens</translation>
+<translation id="812930250799242837">Prijavljeni ste kot <ph name="USER_NAME" />, naročnina Google. Odpri meni računa</translation>
 <translation id="8129812357326543296">O &amp;Google Chromu</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8162006532256575008">Uporaba Chroma brez prijave</translation>
@@ -756,6 +758,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 
 Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Če se odjavite zdaj, bodo neshranjeni zaznamki izbrisani.</translation>
 <translation id="8458117863387545390">Prenesite Chrome v telefon</translation>
+<translation id="848851325211467878">Prijavljeni ste kot <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, naročnina Google. Odpri meni računa</translation>
 <translation id="8496177819998570653">Googlov upravitelj g&amp;esel</translation>
 <translation id="8498858610309223613">Pravkar je bila nameščena posebna varnostna posodobitev za Google Chrome. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
 <translation id="8521348052903287641">Pravilo za dohodni promet za Google Chrome Dev, ki dovoli promet mDNS.</translation>

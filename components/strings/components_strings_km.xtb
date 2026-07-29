@@ -1084,6 +1084,7 @@
 <translation id="2631387782019878060">លេខកូដ​ផ្ទៀងផ្ទាត់៖ <ph name="OTP" /></translation>
 <translation id="2634124572758952069">រកមិន​ឃើញអាសយដ្ឋាន IP ម៉ាស៊ីនមេរបស់ <ph name="HOST_NAME" /> ទេ។</translation>
 <translation id="2635276683026132559">ការចុះហត្ថលេខា</translation>
+<translation id="2638070510549214427">សម្គាល់ថាមានសុវត្ថិភាព</translation>
 <translation id="2638567100095052009">វាយបញ្ចូល @ ដើម្បី​ស្វែងរក​នៅលើ <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">ស្ថានភាព៖</translation>
 <translation id="2644219706149911059">កំពុង​បង្ហោះទៅ Google ថាស...</translation>
@@ -1387,6 +1388,7 @@
 <translation id="3121994479408824897">ចូលទៅ​ <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">បង្ហាញលទ្ធផលពី 30 ថ្ងៃចុងក្រោយ</translation>
 <translation id="3126023634486644099">ស្លាក (អចិន្ត្រៃយ៍)</translation>
+<translation id="3131746543143948171">គេហទំព័រនេះហាក់ដូចជាស្រដៀងនឹងគេហទំព័រផ្សេងទៀតដែលពាក់ព័ន្ធនឹងការដាក់នុយ កម្មវិធីគ្រោះថ្នាក់ និងការឆបោក។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">រក្សាទុក​លេខកែតម្រូវ</translation>
 <translation id="3133565499688974786">ឥឡូវនេះ <ph name="SEARCH_ENGINE_NAME" /> គឺជាម៉ាស៊ីន​ស្វែងរកលំនាំដើមរបស់អ្នក</translation>
 <translation id="3134859781443140237">បណ្ដាញ​មូលដ្ឋាន</translation>
@@ -4566,6 +4568,7 @@
 <translation id="7979595116210197019">សេវា​ម្ហូបអាហារ</translation>
 <translation id="798134797138789862">អាចស្នើសុំ​ប្រើទិន្នន័យ និងឧបករណ៍ VR</translation>
 <translation id="7983008347525536475">រថយន្ត​ប្រភេទ SUV</translation>
+<translation id="7983569303268727247">កំពុងបំពេញព័ត៌មានរបស់អ្នក</translation>
 <translation id="7984945080620862648">អ្នកមិនអាចទៅកាន់ <ph name="SITE" /> ឥឡូវនេះទេ ពីព្រោះគេហទំព័ររបស់អ្នកបានផ្ញើអត្តសញ្ញាណសម្គាល់រញេរញៃដែល Chrome មិនអាចដំណើរការបាន។ ជាធម្មតាកំហុសឆ្គងបណ្តាញ
 និងការវាយប្រហារជារឿងបណ្ណោះអាសន្ន ដូច្នេះទំព័រនេះនឹងអាចដំណើរពេលក្រោយ។</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -5025,6 +5028,7 @@
 <translation id="8738058698779197622">ដើម្បីបង្កើតការភ្ជាប់ដែលមានសុវត្ថិភាព ម៉ោងរបស់អ្នកត្រូវបានតែកំណត់ឲ្យត្រឹមត្រូវ។ ដោយសារតែវិញ្ញាបនបត្រដែលគេហទំព័រប្រើដើម្បីកំណត់អត្តសញ្ញាណខ្លួនវាមានសុពលភាពត្រឹមចន្លោះរយៈពេលមួយប៉ុណ្ណោះ។ ដោយសារតែម៉ោងឧបករណ៍របស់អ្នកមិនត្រឹមត្រូវ Chromium មិនអាចផ្ទៀងផ្ទាត់វិញ្ញាបនបត្រទាំងនេះទេ។</translation>
 <translation id="8740359287975076522">រកមិនឃើញអាសយដ្ឋាន &lt;abbr id="dnsDefinition"&gt;DNS របស់<ph name="HOST_NAME" />&lt;/abbr&gt; ទេ។ កំពុងវិភាគរកបញ្ហា។</translation>
 <translation id="874918643257405732">ចំណាំ​ផ្ទាំងនេះ</translation>
+<translation id="8749274696886550762">គេហទំព័រនេះហាក់ដូចជាមិនត្រឹមត្រូវទេ</translation>
 <translation id="8751426954251315517">សូមព្យាយាម​ម្ដងទៀត​នៅពេលក្រោយ</translation>
 <translation id="8753913772043329557">កំណត់ហេតុគោលការណ៍</translation>
 <translation id="8754546574216727970">ស្បែក​ជើងកវែង</translation>
@@ -5311,6 +5315,7 @@
 <translation id="9192361865877479444">លោហៈ (គ្រើម)</translation>
 <translation id="9192947025498305328">គ្រឿងថែរក្សាសម្ផស្សគ្មានសារធាតុគ្រោះថ្នាក់</translation>
 <translation id="9193018794001479794">បរិយាយ</translation>
+<translation id="9194783551575429711">សួរ <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">នៅពេល​ស្ថាប័ន​របស់អ្នក​ដាក់កំហិតលើ​ការរក្សាទុក​ទៅគណនី Google របស់អ្នក អ្នក​មិនអាច​ចែករំលែក ឬ​ចូលរួម​ក្រុមផ្ទាំង​បានទេ</translation>
 <translation id="9198613052465150219">គណនី Google របស់អ្នក​អាចមាន​ទម្រង់​ផ្សេងទៀត​នៃប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៅ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">ការបោះពុម្ពត្រូវបានទប់ស្កាត់។</translation>

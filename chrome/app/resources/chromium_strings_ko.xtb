@@ -56,6 +56,7 @@
 <translation id="1623563412065267963">휴대전화에서 Chromium 앱을 사용하여 Google 기능을 최대한 활용하세요</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1640672724030957280">다운로드 중...</translation>
+<translation id="1665602916345474427"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, 멤버십으로 로그인되었습니다. 계정 메뉴 열기</translation>
 <translation id="1708414395296835197">언제든지 메시지, 문서, 기타 앱에서 링크를 클릭하여 Chromium을 사용할 수 있습니다. 작업 표시줄에도 고정됩니다.</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" />에 승격된 권한을 제공합니다.</translation>
 <translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
@@ -257,6 +258,7 @@
 
           **질문 추천:** 사용자가 스크린샷을 더 잘 파악하기 위해 물어볼 법하면서 생각할 거리를 주는 질문 3~5개를 글머리기호 목록 형식으로 생성해 줘. 질문에는 시각적 객체, 디자인 또는 배치에 관한 질문이 하나 이상 포함되어야 해.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="387514319934708384">Chromium에 사이트에 대한 로컬 네트워크 권한이 필요합니다.</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
@@ -335,6 +337,7 @@
 <translation id="4625064703209785397">Chromium의 V8 엔진으로 사이트 속도를 높이지만 Chromium이 공격에 약간 더 취약해집니다.</translation>
 <translation id="4665829708273112819">경고: Chromium에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="4673151026126227699">Chromium 사용 보고서도 공유하면 내가 방문한 URL이 해당 보고서에 포함됩니다.</translation>
+<translation id="4673710618874938871"><ph name="USER_NAME" />, 멤버십으로 로그인되었습니다. 계정 메뉴 열기</translation>
 <translation id="4677944499843243528">다른 컴퓨터(<ph name="HOST_NAME" />)의 다른 Chromium 프로세스(<ph name="PROCESS_ID" />)에서 프로필을 사용 중인 것 같습니다. 프로필이 손상되지 않도록 Chromium에서 잠금 설정했습니다. 다른 프로세스에서 프로필을 사용 중이지 않은 것이 확실한 경우 프로필을 잠금 해제하고 Chromium을 다시 시작하세요.</translation>
 <translation id="4680828127924988555">설치 취소</translation>
 <translation id="469259825538636168">Chromium 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다. 잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다</translation>

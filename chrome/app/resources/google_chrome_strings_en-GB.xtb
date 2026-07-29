@@ -200,6 +200,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
 <translation id="2976869732253036751">Get price tracking alerts with Chrome on your phone</translation>
+<translation id="2985091279808606502">Chrome needs local network permission for this site</translation>
 <translation id="2991167882679440829">Your passwords and other Chrome data that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
 <translation id="2994465299455873643">Provides encryption services and a secure way for recovering <ph name="BROWSER_NAME" /> if it gets out of date. If this service is disabled, <ph name="BROWSER_NAME" /> may lose access to encrypted data, and <ph name="BROWSER_NAME" /> may not be able to recover itself.</translation>
 <translation id="3003694935412297923">All tasks</translation>
@@ -723,6 +724,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Making Chrome yours…</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
+<translation id="812930250799242837">Signed in as <ph name="USER_NAME" />, Google membership. Open the account menu</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8162006532256575008">Use Chrome without an account</translation>
@@ -756,6 +758,7 @@ Google Chrome is unable to recover your settings.</translation>
 
 New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>
 <translation id="8458117863387545390">Get Chrome on your phone</translation>
+<translation id="848851325211467878">Signed in as <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google membership. Open the account menu</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Export successful</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} password}other{{count} passwords}}</translation>
+<translation id="1274721046703404848">Manage the connection between Search services and Google Workspace apps, like Google Drive</translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1279024913354609713">Don't allow</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
@@ -2189,6 +2190,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8263228331881858381">Passkey saved</translation>
 <translation id="8263809106706527890">There may have been a change to your default browser settings. You can check this in settings.</translation>
 <translation id="8264966119170358612">Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Open the Chrome menu</translation>
 <translation id="826614135184049678">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPad reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">You're about to switch profiles</translation>

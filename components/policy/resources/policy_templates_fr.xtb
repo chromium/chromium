@@ -5355,19 +5355,6 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="4501388411278568771">Des mises à niveau HTTPS peuvent être appliquées en fonction de l'état du lancement des fonctionnalités.</translation>
 <translation id="45036050223225148">Désactiver le test TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">Image de disque de démarrage UEFI utilisé pour installer la VM sur des appareils x86_64.</translation>
-<translation id="4505299160236615603">Cette règle permet d'autoriser l'accès en mode navigation privée aux URL de la liste. Utilisez-la pour définir des exceptions à certains formats d'URL définis dans <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, à l'aide du format spécifié sur ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Si cette règle et <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, la liste d'autorisation prévaut. Si une URL correspond à un format de la liste d'autorisation, elle est autorisée. Si elle correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, les règles générales <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sont utilisées comme règles de remplacement.
-
-Si cette règle est configurée et que <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ne l'est pas, toute URL ne figurant pas dans la liste d'autorisation est bloquée en mode navigation privée.
-
-Si <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> est défini sur "Interdire" (valeur 1), mais que cette règle est configurée, le mode navigation privée n'est disponible que pour les URL correspondant à la liste d'autorisation.
-
-Si cette règle n'est pas configurée, aucune exception à <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> et <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> n'est autorisée.
-
-Cette règle ne concerne que le mode navigation privée. Pour autoriser les URL pour tous les profils utilisateur, veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="4508728400492074981">Contrôle les règles pour la fonctionnalité d'ensembles propriétaires.</translation>
 <translation id="4510131075424939993">Spécifier une valeur de salage à utiliser dans <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> lors de l'évaluation des informations d'identification</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
@@ -6054,19 +6041,6 @@ Si cette règle est définie sur <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHO
       Sur <ph name="PRODUCT_NAME" /> version M76 ou inférieure, si la règle n'est pas définie, l'application ne peut, par défaut, ni collecter, ni importer ces journaux. À partir de la version M77, <ph name="PRODUCT_NAME" /> est, par défaut, en mesure de collecter et d'importer ces journaux à partir de la plupart des profils affectés par les règles d'entreprise au niveau de l'utilisateur dans le cloud. De la version M77 à la version M80, <ph name="PRODUCT_NAME" /> peut également, par défaut, collecter et importer ces journaux à partir des profils affectés par la fonction de gestion sur site de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">port 989 (peut être débloqué jusqu'au 01/02/2022)</translation>
 <translation id="4917385247580444890">Très bon</translation>
-<translation id="4917925819533520480">Cette règle peut être utilisée pour autoriser les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques.
-
-Les formats d'URL sont mis en correspondance avec l'URL de chaque frame sur la page inspectée. Le comportement qui en résulte dépend de la configuration ou non de la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Si cette règle est configurée et que <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ne l'est pas, l'URL de chaque frame doit correspondre à un format de cette liste d'autorisation pour que les <ph name="CHROME_DEVTOOLS_NAME" /> soient autorisés. Si l'URL d'un frame ne correspond pas, les outils de développement seront bloqués pour l'ensemble de la page. Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Si cette règle et la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, cette liste d'autorisation prévaut. Si l'URL d'un frame correspond à un format de cette liste d'autorisation, elle est autorisée, même si elle correspond aussi à un format de la liste de blocage. Si une URL correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est utilisée comme règle de remplacement.
-
-Si cette règle n'est pas configurée, la disponibilité des <ph name="CHROME_DEVTOOLS_NAME" /> est déterminée par les règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> et <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Cette règle s'applique également aux <ph name="CHROME_DEVTOOLS_NAME" /> ouverts pour les extensions et les applis Web.
-
-Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="4918150584200819898">Activer le démarrage automatique de la réauthentification en ligne.</translation>
 <translation id="4918261735182294270">Laisser aux utilisateurs le choix d'activer ou de désactiver <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">Contrôler la prise en charge des formulaires XFA dans les documents PDF</translation>
@@ -12763,6 +12737,17 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
       Si elle est définie sur "True", les événements de connexion/déconnexion de l'appareil seront transmis.</translation>
+<translation id="9087577919890548366">Si cette règle est activée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> n'afficheront des avertissements dans les <ph name="CHROME_DEVTOOLS_NAME" /> qu'en cas d'échec des vérifications <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.
+
+Cette règle d'entreprise est temporaire et sera supprimée après M156.
+
+À long terme, la règle <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+peut être utilisée pour ajouter à la liste d'autorisation les formats d'URL auxquels l'autorisation
+<ph name="LOCAL_NETWORK_ACCESS" /> doit être automatiquement accordée.</translation>
 <translation id="9087652369391570821">Règle de configuration du connecteur Chrome Enterprise OnFileTransfer</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>

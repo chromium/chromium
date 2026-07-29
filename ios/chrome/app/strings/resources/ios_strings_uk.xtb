@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Експортовано</translation>
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} паролі}many{{count} паролів}other{{count} пароля}}</translation>
+<translation id="1274721046703404848">Керуйте зв’язком між сервісами Пошуку й додатками Google Workspace, наприклад Google Диском</translation>
 <translation id="1275718070701477396">Вибрано</translation>
 <translation id="1279024913354609713">Не дозволяти</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">Ключ доступу збережено</translation>
 <translation id="8263809106706527890">Можливо, параметри вебпереглядача за умовчанням змінилися. Ви можете перевірити їх у налаштуваннях.</translation>
 <translation id="8264966119170358612">Деякі ваші збережені паролі було розкрито через порушення безпеки даних стороннього сервісу. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Відкрийте меню Chrome</translation>
 <translation id="826614135184049678">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPad. Щоб увійти знову, натисніть "Продовжити" нижче.</translation>
 <translation id="8270320981823560179">Диск</translation>
 <translation id="8274795744553482834">Ви збираєтеся змінити профіль</translation>

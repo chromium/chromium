@@ -599,6 +599,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="192095259937375524">Knoppie om hierdie oortjie te deel; aktiveer om hierdie oortjie te deel deur die skakel te deel, ’n QR-kode te skep, uit te saai, en meer</translation>
 <translation id="1924727005275031552">Nuut</translation>
 <translation id="1927439846988093361">Haarsorg</translation>
+<translation id="1927930548546198515">Chrome teken aan hoe jy die kenmerk gebruik, soos jou versoeke en optrede wanneer jy voorstelle aanvaar of ignoreer</translation>
 <translation id="1932098463447129402">Nie voor</translation>
 <translation id="1935353813610900265">Stuur terugvoer vir geskiedenissoektog aangedryf deur KI</translation>
 <translation id="1935995810530254458">Kopieer in elk geval</translation>
@@ -985,6 +986,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2491120439723279231">Bediener se sertifikaat bevat foute.</translation>
 <translation id="2491414235131909199">Hierdie bladsy is deur 'n uitbreiding geblokkeer</translation>
 <translation id="2493122313108999546">Grootte verander</translation>
+<translation id="249376477913017009">Outovul vanaf Gmail en Meer-kennisgewing is oopgemaak</translation>
 <translation id="2495083838625180221">JSON-ontleder</translation>
 <translation id="2496402116964818747">Jy kan in <ph name="SETTINGS" /> verander of jy jou vingerafdruk vir die invul van wagwoorde gebruik</translation>
 <translation id="2498091847651709837">Skandeer nuwe kaart</translation>
@@ -1153,6 +1155,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Huisoutomatisering</translation>
 <translation id="2743512410823092182">Platejoggie-hulpbronne en -toerusting</translation>
+<translation id="275259155159336003">Aangedryf deur Persoonlike Intelligensie met Gemini. Jou versoeke, bladsytitels en URL’e kan nagegaan word om Gevorderde Outovul te verbeter. <ph name="BEGIN_LINK" />Bestuur instellings<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Laai tans <ph name="COUNT" /> na Google Drive toe op</translation>
 <translation id="2759299890026163685">Maak seker dat jy ’n stabiele internetverbinding het voordat jy weer probeer</translation>
 <translation id="2759825833388495838">vul jou wagwoord in op <ph name="APP_NAME" /></translation>
@@ -1436,6 +1439,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208701679386778924">Stuur asseblief ’n verslag sodat ons toekomstige ChromeOS-opdaterings kan verbeter.</translation>
 <translation id="3209034400446768650">Bladsy kan geld hef</translation>
+<translation id="3209071504641569648">Jou versoeke, bladsytitels en URL’e word na Google toe gestuur en kan hersien word om Gevorderde Outovul te verbeter</translation>
 <translation id="3212468046572043669">Aflaai het begin. Sleep van bo af en raak die terugknoppie om dit te sien</translation>
 <translation id="3212581601480735796">Jou aktiwiteit op <ph name="HOSTNAME" /> word gemonitor</translation>
 <translation id="3215092763954878852">Kon nie in WebAuthn gebruik nie</translation>
@@ -1473,6 +1477,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3254301855501243548">18x22 dm.</translation>
 <translation id="3255926992597692024">Chromium probeer tans instellings vir die invul van betaalmetodes wysig.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe geleentheid in Google Kalender te skep</translation>
+<translation id="3261180263071638338">Outovul vanaf Gmail en Meer-kennisgewing is toegemaak</translation>
 <translation id="3261488570342242926">Kom meer te wete oor virtuele kaarte</translation>
 <translation id="3262698603497362968">Koopopsies</translation>
 <translation id="3264637689694266148">As jy voorstelle afskakel, kan die bladsytitel en URL’e van jou oortjies steeds vir ander Chrome-kenmerke verwerk word. Jy kan blaaier se toegang tot hierdie data bestuur in jou</translation>
@@ -2335,6 +2340,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4602465984861132303">Kegelbal</translation>
 <translation id="4603727370377253901">Vlugbesprekings</translation>
 <translation id="4607608436550361748">Sien Chrome-wenke</translation>
+<translation id="4607879293515681409">Gevorderde Outovul kan nou inligting – soos vlugnommers en afspraaktye – uit apps soos Gmail en Foto’s kry en invul</translation>
 <translation id="460848736049414407">Geblokkeer deur admin</translation>
 <translation id="4610279718074907952">Hierdie werf is in ’n groep, wat deur <ph name="SET_OWNER" /> gedefinieer is, en wat jou aktiwiteit kan sien</translation>
 <translation id="4612631413844865947">Daar was ’n fout met die verwerking van jou bestelling op <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2851,6 +2857,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5400836586163650660">Grys</translation>
 <translation id="5401344472773249513">Nuus oor bekendes en vermaak</translation>
 <translation id="5401674281624189321">Berg- en skioorde</translation>
+<translation id="5402715318763077894">Laat toegang tot plaaslike netwerk toe?</translation>
 <translation id="540949333488055151">Plastiek (gekleurd)</translation>
 <translation id="540969355065856584">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is nie op die oomblik geldig nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="5411462078004183575">Goedkoop opsie</translation>
@@ -3101,6 +3108,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5764725887548570807">Ongeldige oorsprongformaat.</translation>
 <translation id="5764920692828389743">Stuur na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Kies 'n adres om afleweringmetodes en -vereistes te sien</translation>
+<translation id="5768323954710688012">Outovul vanaf Gmail en Meer-kennisgewing is teen volle hoogte oopgemaak</translation>
 <translation id="57689295674415555">Is virtuelekaartnommer nie ingevul nie?</translation>
 <translation id="5773286975255318081">Soos profielgebruikername en blaaierweergawes</translation>
 <translation id="5774897849666641211">Vra vrae oor hierdie oortjie</translation>

@@ -198,6 +198,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng – Chrome</translation>
 <translation id="2970681950995291301">Để xoá Tài khoản Google của bạn khỏi Chrome, hãy vào trang Cài đặt rồi đăng xuất khỏi Chrome</translation>
 <translation id="2976869732253036751">Nhận thông báo theo dõi giá từ Chrome trên điện thoại</translation>
+<translation id="2985091279808606502">Chrome cần có quyền truy cập vào mạng cục bộ đối với trang web này</translation>
 <translation id="2991167882679440829">Mật khẩu và các dữ liệu khác trên Chrome mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chrome, hãy đăng nhập lại.</translation>
 <translation id="2994465299455873643">Cung cấp dịch vụ mã hoá và một phương thức an toàn để khôi phục <ph name="BROWSER_NAME" /> nếu trình duyệt đã lỗi thời. Nếu dịch vụ này tắt, <ph name="BROWSER_NAME" /> có thể mất quyền truy cập vào dữ liệu đã mã hoá và <ph name="BROWSER_NAME" /> có thể không tự khôi phục được.</translation>
 <translation id="3003694935412297923">Tất cả tác vụ</translation>
@@ -719,6 +720,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8113883687556086139">Xác minh danh tính của bạn để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
 <translation id="8115695070094288807">Đang tuỳ chỉnh Chrome cho phù hợp với bạn...</translation>
 <translation id="8118331347066725040">Gửi ý kiến phản hồi về tính năng tìm kiếm bằng Ống kính</translation>
+<translation id="812930250799242837">Đã đăng nhập bằng tài khoản <ph name="USER_NAME" />, gói thành viên Google. Mở trình đơn tài khoản</translation>
 <translation id="8129812357326543296">Giới thiệu về &amp;Google Chrome</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8162006532256575008">Dùng Chrome mà không cần tài khoản</translation>
@@ -752,6 +754,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 
 Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu trang mới vào tài khoản. Nếu bạn đăng xuất ngay bây giờ, các dấu trang chưa lưu sẽ bị xoá.</translation>
 <translation id="8458117863387545390">Tải Chrome về điện thoại</translation>
+<translation id="848851325211467878">Đã đăng nhập bằng tài khoản <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, gói thành viên Google. Mở trình đơn tài khoản</translation>
 <translation id="8496177819998570653">Trình quản lý mật khẩu của Google</translation>
 <translation id="8498858610309223613">Google Chrome vừa áp dụng một bản cập nhật bảo mật đặc biệt. Vui lòng khởi động lại ngay bây giờ và chúng tôi sẽ khôi phục các thẻ của bạn.</translation>
 <translation id="8521348052903287641">Quy tắc kết nối để Google Chrome Dev cho phép lưu lượng truy cập mDNS.</translation>

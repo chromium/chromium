@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Sėkmingai eksportuota</translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} slaptažodis}one{{count} slaptažodis}few{{count} slaptažodžiai}many{{count} slaptažodžio}other{{count} slaptažodžių}}</translation>
+<translation id="1274721046703404848">Tvarkykite Paieškos paslaugų ir „Google Workspace“ programų, pvz., „Google“ disko, ryšį</translation>
 <translation id="1275718070701477396">Pasirinkta</translation>
 <translation id="1279024913354609713">Neleisti</translation>
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
@@ -2189,6 +2190,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="8263228331881858381">Prieigos raktas išsaugotas</translation>
 <translation id="8263809106706527890">Galbūt buvo pakeisti numatytosios naršyklės nustatymai. Tai galite patikrinti nustatymuose.</translation>
 <translation id="8264966119170358612">Kai kurie jūsų išsaugoti slaptažodžiai buvo atskleisti dėl ne „Google“ duomenų saugos pažeidimo. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Atidaryti „Chrome“ meniu</translation>
 <translation id="826614135184049678">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPad“ iš naujo. Jei norite vėl prisijungti, toliau palieskite „Tęsti“.</translation>
 <translation id="8270320981823560179">Diskas</translation>
 <translation id="8274795744553482834">Ketinate perjungti profilius</translation>

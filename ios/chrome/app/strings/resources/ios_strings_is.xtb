@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Útflutningur tókst</translation>
 <translation id="1272079795634619415">Stöðva</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} aðgangsorð}one{{count} aðgangsorð}other{{count} aðgangsorð}}</translation>
+<translation id="1274721046703404848">Stjórnaðu tengingunni milli leitarþjónusta og Google Workspace-forrita, eins og Google Drive</translation>
 <translation id="1275718070701477396">Valið</translation>
 <translation id="1279024913354609713">Ekki leyfa</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
@@ -2189,6 +2190,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8263228331881858381">Aðgangslykill vistaður</translation>
 <translation id="8263809106706527890">Hugsanlega voru gerðar breytingar á stillingum sjálfgefins vafra. Þú getur athugað þetta í stillingunum.</translation>
 <translation id="8264966119170358612">Sum vistuðu aðgangsorðin þín voru afhjúpuð í öryggisbroti utan Google. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Opnaðu Chrome-valmyndina</translation>
 <translation id="826614135184049678">Þú skráðist út af reikningnum þínum <ph name="USER_NAME" /> í tengslum við endurstillingu iPad. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig aftur inn.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Þú ert að fara að skipta um prófíl</translation>

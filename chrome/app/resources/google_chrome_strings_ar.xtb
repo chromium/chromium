@@ -198,6 +198,7 @@
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - Chrome - تسجيل الدخول إلى الشبكة</translation>
 <translation id="2970681950995291301">‏لإزالة حسابك على Google من Chrome، يجب تسجيل الخروج من Chrome في صفحة "الإعدادات"</translation>
 <translation id="2976869732253036751">‏تلقّي تنبيهات ميزة "تتبُّع الأسعار" باستخدام Chrome على هاتفك</translation>
+<translation id="2985091279808606502">‏يحتاج Chrome إلى إذن بالوصول إلى الشبكة المحلية لهذا الموقع الإلكتروني</translation>
 <translation id="2991167882679440829">‏ستتم إزالة كلمات المرور وبيانات Chrome الأخرى التي تم حفظها في حسابك على Google من هذا الجهاز. ولاستخدامها مرة أخرى في Chrome، عليك تسجيل الدخول مجددًا.</translation>
 <translation id="2994465299455873643">توفِّر هذه الخدمة خدمات تشفير وطريقة آمنة لترقية <ph name="BROWSER_NAME" /> عندما يصبح قديمًا. وفي حال إيقاف هذه الخدمة، قد يفقد <ph name="BROWSER_NAME" /> إمكانية الوصول إلى البيانات المشفّرة، وقد يتعذّر على <ph name="BROWSER_NAME" /> إجراء الترقية.</translation>
 <translation id="3003694935412297923">كل المهام</translation>
@@ -719,6 +720,7 @@
 <translation id="8113883687556086139">‏يُرجى إثبات هويتك لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8115695070094288807">‏جارٍ تخصيص Chrome…</translation>
 <translation id="8118331347066725040">‏إرسال ملاحظات عن البحث باستخدام "عدسة Google"</translation>
+<translation id="812930250799242837">‏تم تسجيل الدخول باسم <ph name="USER_NAME" />، ولديك اشتراك Google. يمكنك فتح قائمة الحسابات</translation>
 <translation id="8129812357326543296">‏&amp;حول Google Chrome</translation>
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8162006532256575008">‏استخدام Chrome بدون حساب</translation>
@@ -752,6 +754,7 @@
 
 ولا يمكن حفظ إشارات مرجعية جديدة في حسابك إلا بعد حذف بعض الإشارات. وفي حال سجّلت الخروج الآن، سيتم حذف الإشارات المرجعية غير المحفوظة.</translation>
 <translation id="8458117863387545390">‏تثبيت Chrome على هاتفك</translation>
+<translation id="848851325211467878">‏تم تسجيل الدخول باسم <ph name="USER_NAME" />، باستخدام الحساب <ph name="USER_EMAIL" />، ولديك اشتراك Google. يمكنك فتح قائمة الحسابات</translation>
 <translation id="8496177819998570653">‏مدير كلمات المرور في Google</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
 <translation id="8521348052903287641">‏قاعدة الوارد إلى إصدار مطوري البرامج من Google Chrome للسماح بحركة مرور mDNS.</translation>

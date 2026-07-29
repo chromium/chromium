@@ -599,6 +599,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="192095259937375524">Mygtukas „Bendrinti šį skirtuką“; suaktyvinkite, jei norite bendrinti šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami turinį ir kt.</translation>
 <translation id="1924727005275031552">Naujas</translation>
 <translation id="1927439846988093361">Plaukų priežiūra</translation>
+<translation id="1927930548546198515">„Chrome“ registruoja, kaip naudojate šią funkciją, pvz., užklausas ir elgseną, kai priimate ar ignoruojate pasiūlymus</translation>
 <translation id="1932098463447129402">Nuo</translation>
 <translation id="1935353813610900265">Siųsti atsiliepimus apie DI teikiamą istorijos paiešką</translation>
 <translation id="1935995810530254458">Vis tiek kopijuoti</translation>
@@ -985,6 +986,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2491120439723279231">Serverio sertifikate yra klaidų.</translation>
 <translation id="2491414235131909199">Šį puslapį užblokavo plėtinys</translation>
 <translation id="2493122313108999546">Pakeistas dydis</translation>
+<translation id="249376477913017009">Pranešimas „Automatinis pildymas iš „Gmail“ ir kt.“ atidarytas</translation>
 <translation id="2495083838625180221">JSON analizavimo įrankis</translation>
 <translation id="2496402116964818747">Galite pakeisti, ar naudoti piršto atspaudą slaptažodžiams užpildyti, skiltyje „<ph name="SETTINGS" />“</translation>
 <translation id="2498091847651709837">Nuskaityti naują kortelę</translation>
@@ -1153,6 +1155,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2742128390261873684">Namų įrenginių automatizavimas</translation>
 <translation id="2743512410823092182">Muzikos renginių ir laidų vedėjams skirti ištekliai ir įranga</translation>
+<translation id="275259155159336003">Teikia Asmeninis intelektas su „Gemini“. Užklausos, puslapių pavadinimai ir URL gali būti peržiūrėti siekiant patobulinti išmanųjį automatinį pildymą. <ph name="BEGIN_LINK" />Tvarkyti nustatymus<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Įkeliamą tiek failų: <ph name="COUNT" /> į „Google“ diską</translation>
 <translation id="2759299890026163685">Prieš bandydami dar kartą įsitikinkite, kad interneto ryšys stabilus</translation>
 <translation id="2759825833388495838">užpildyti „<ph name="APP_NAME" />“ slaptažodį</translation>
@@ -1437,6 +1440,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3207960819495026254">Pažymėta</translation>
 <translation id="3208701679386778924">Atsiųskite pranešimą, kad galėtume patobulinti kitus „ChromeOS“ naujinius.</translation>
 <translation id="3209034400446768650">Puslapyje galite būti apmokestinti</translation>
+<translation id="3209071504641569648">Užklausos, puslapių pavadinimai ir URL siunčiami „Google“ ir gali būti peržiūrimi siekiant patobulinti išmanųjį automatinį pildymą</translation>
 <translation id="3212468046572043669">Atsisiuntimas pradėtas. Jei norite jį peržiūrėti, vilkite nuo viršaus ir palieskite mygtuką „Atgal“</translation>
 <translation id="3212581601480735796">Jūsų veikla <ph name="HOSTNAME" /> stebima</translation>
 <translation id="3215092763954878852">Nepavyko naudoti „WebAuthn“</translation>
@@ -1474,6 +1478,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3254301855501243548">18 x 22 col.</translation>
 <translation id="3255926992597692024">„Chromium“ bando keisti mokėjimo metodų pildymo nustatymus.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite greitai sukurti naują „Google“ kalendoriaus įvykį</translation>
+<translation id="3261180263071638338">Pranešimas „Automatinis pildymas iš „Gmail“ ir kt.“ uždarytas</translation>
 <translation id="3261488570342242926">Sužinokite daugiau apie virtualias korteles</translation>
 <translation id="3262698603497362968">Pirkimo parinktys</translation>
 <translation id="3264637689694266148">Jei išjungsite pasiūlymus, jūsų skirtukų puslapių pavadinimai ir URL vis tiek gali būti apdorojami, kad būtų galima teikti kitas „Chrome“ funkcijas. Naršyklės prieigą prie šių duomenų galite tvarkyti</translation>
@@ -2336,6 +2341,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4602465984861132303">Kėgliai</translation>
 <translation id="4603727370377253901">Skrydžių užsakymai</translation>
 <translation id="4607608436550361748">Žr. „Chrome“ patarimus</translation>
+<translation id="4607879293515681409">Išmanusis automatinis užpildymas dabar gali rasti ir užpildyti informaciją, pvz., skrydžių numerius ir susitikimų laiką, iš tokių programų kaip „Gmail“ ir Nuotraukos</translation>
 <translation id="460848736049414407">Užblokavo administratorius</translation>
 <translation id="4610279718074907952">Ši svetainė yra grupėje (nustatytoje <ph name="SET_OWNER" />), kuri gali peržiūrėti jūsų veiklą</translation>
 <translation id="4612631413844865947">Apdorojant užsakymą <ph name="MERCHANT_ORIGIN" /> per <ph name="PAYMENT_APP_ORIGIN" /> įvyko klaida.</translation>
@@ -2521,6 +2527,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4885256590493466218">Mokėti naudojant <ph name="CARD_DETAIL" /> atsiskaitant</translation>
 <translation id="4886565443854420066">Naršyklė „Chrome“ nori patvirtinti jūsų tapatybę, prieš jums pakeičiant nustatymus</translation>
 <translation id="4887406273302438710">Slaptažodžių apsauga naudojant „Windows Hello“</translation>
+<translation id="4887785555357166111">Išsaugoti vaizdo įrašo rėmelį</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad būtų ištrinta naršymo istorija, slapukai, talpyklos duomenys ir kt. „Chrome“ nustatymuose</translation>
 <translation id="4892518386797173871">Galas</translation>
 <translation id="4894390983254799375">Pavyzdžiui, įrenginio ID, pavadinimas, OS versija ir OS naudotojo vardas</translation>
@@ -2852,6 +2859,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5400836586163650660">Pilka spalva</translation>
 <translation id="5401344472773249513">Garsenybės ir pramogų naujienos</translation>
 <translation id="5401674281624189321">Kalnų ir slidinėjimo kurortai</translation>
+<translation id="5402715318763077894">Leisti prieigą prie vietinio tinklo?</translation>
 <translation id="540949333488055151">Plastikas (spalvotas)</translation>
 <translation id="540969355065856584">Šiam serveriui nepavyko patvirtinti, kad jis yra <ph name="DOMAIN" />; šiuo metu jo saugos sertifikatas negalioja. Tai gali būti dėl netinkamos konfigūracijos arba dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="5411462078004183575">Mažos kainos parinktis</translation>
@@ -3102,6 +3110,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5764725887548570807">Netinkamas šaltinio formatas.</translation>
 <translation id="5764920692828389743">Siųsti: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>
+<translation id="5768323954710688012">Automatinio pildymo iš „Gmail“ ir kt. pranešimas atidarytas per visą ekrano aukštį</translation>
 <translation id="57689295674415555">Virtualios kortelės numeris neįvestas?</translation>
 <translation id="5773286975255318081">Pavyzdžiui, profilių naudotojų vardai ir naršyklės versijos</translation>
 <translation id="5774897849666641211">Užduokite klausimų apie šį skirtuką</translation>

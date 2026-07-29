@@ -599,6 +599,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="192095259937375524">Butoni "Ndaj këtë skedë". Aktivizoje për ta ndarë këtë skedë duke ndarë lidhjen, duke krijuar një kod QR, duke transmetuar etj.</translation>
 <translation id="1924727005275031552">I ri</translation>
 <translation id="1927439846988093361">Kujdesi për flokët</translation>
+<translation id="1927930548546198515">Chrome regjistron se si e përdor veçorinë, si p.sh. kërkesat dhe sjelljen tënde kur pranon ose shpërfill sugjerimet</translation>
 <translation id="1932098463447129402">Jo më parë</translation>
 <translation id="1935353813610900265">Dërgo komente për kërkimin te historiku, mundësuar nga IA-ja</translation>
 <translation id="1935995810530254458">Kopjo gjithsesi</translation>
@@ -984,6 +985,8 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2485243023686553468">Telefona inteligjentë</translation>
 <translation id="2491120439723279231">Certifikata e serverit përmban gabime.</translation>
 <translation id="2491414235131909199">Kjo faqe është bllokuar nga një shtesë</translation>
+<translation id="2493122313108999546">Përmasat u ndryshuan</translation>
+<translation id="249376477913017009">Njoftimi për plotësimin automatik nga Gmail etj. u hap</translation>
 <translation id="2495083838625180221">Analizuesi JSON</translation>
 <translation id="2496402116964818747">Mund të ndryshosh nëse e përdor gjurmën e gishtit për plotësimin e fjalëkalimeve te "<ph name="SETTINGS" />"</translation>
 <translation id="2498091847651709837">Skano një kartë të re</translation>
@@ -1152,6 +1155,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2742128390261873684">Automatizimi i shtëpisë</translation>
 <translation id="2743512410823092182">Burime dhe pajisje për DJ</translation>
+<translation id="275259155159336003">Mundësuar nga "Inteligjenca personale" me Gemini. Kërkesat, titujt e faqeve dhe URL-të e tua mund të shqyrtohen për të përmirësuar plotësimin automatik të përmirësuar. <ph name="BEGIN_LINK" />Menaxho cilësimet<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Po ngarkohen <ph name="COUNT" /> skedarë te "Disku i Google"</translation>
 <translation id="2759299890026163685">Sigurohu që të kesh një lidhje të qëndrueshme interneti para se të provosh përsëri</translation>
 <translation id="2759825833388495838">të plotësojë fjalëkalimin tënd në <ph name="APP_NAME" /></translation>
@@ -1435,6 +1439,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208701679386778924">Dërgo një raport që të mund t'i përmirësojmë përditësimet e mëtejshme të ChromeOS.</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
+<translation id="3209071504641569648">Kërkesat, titujt e faqeve dhe URL-të e tua dërgohen te Google dhe mund të shqyrtohen për të përmirësuar plotësimin automatik të përmirësuar</translation>
 <translation id="3212468046572043669">Shkarkimi filloi. Për ta shikuar, zvarrite nga kreu dhe prek butonin "prapa"</translation>
 <translation id="3212581601480735796">Aktiviteti yt në <ph name="HOSTNAME" /> po monitorohet</translation>
 <translation id="3215092763954878852">WebAuthn nuk mund të përdorej</translation>
@@ -1472,6 +1477,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3254301855501243548">18 x 22 inç</translation>
 <translation id="3255926992597692024">Chromium po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesave.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një ngjarje të re në "Google Calendar"</translation>
+<translation id="3261180263071638338">Njoftimi për plotësimin automatik nga Gmail etj. u mbyll</translation>
 <translation id="3261488570342242926">Mëso rreth kartave virtuale</translation>
 <translation id="3262698603497362968">Opsionet e blerjes</translation>
 <translation id="3264637689694266148">Nëse i çaktivizon sugjerimet, titulli i faqes dhe URL-të e skedave të tua mund të përpunohen përsëri për veçori të tjera të Chrome. Mund ta menaxhosh qasjen e shfletuesit te këto të dhëna në</translation>
@@ -2334,6 +2340,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4602465984861132303">Loja me birila</translation>
 <translation id="4603727370377253901">Rezervimet e fluturimeve</translation>
 <translation id="4607608436550361748">Shiko këshillat për Chrome</translation>
+<translation id="4607879293515681409">Plotësimi automatik i përmirësuar tani mund të gjejë dhe të plotësojë informacionet, si p.sh. numrat e fluturimeve dhe oraret e takimeve, nga aplikacionet si Gmail dhe "Fotografitë"</translation>
 <translation id="460848736049414407">Bllokuar nga administratori</translation>
 <translation id="4610279718074907952">Ky sajt është në një grup, i përcaktuar nga <ph name="SET_OWNER" />, që mund ta shikojë aktivitetin tënd</translation>
 <translation id="4612631413844865947">Ndodhi një gabim gjatë përpunimit të porosisë sate në <ph name="MERCHANT_ORIGIN" /> nëpërmjet <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2556,6 +2563,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> që është futur nuk mund të gjendej.</translation>
 <translation id="4936573216809994970">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 ore</translation>
 <translation id="4936675324097895694">Financa</translation>
+<translation id="4939748144644852809">U zhvendos djathtas</translation>
 <translation id="4941627891654116707">Madhësia e shkrimit</translation>
 <translation id="4943620199112228840">Të përdorë mikrofonat e tu</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
@@ -2849,6 +2857,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5401344472773249513">Lajme nga persona të famshëm dhe argëtimi</translation>
 <translation id="5401674281624189321">Rezorte malore dhe për ski</translation>
+<translation id="5402715318763077894">Të lejohet qasja në rrjetin lokal?</translation>
 <translation id="540949333488055151">Plastikë (me ngjyra)</translation>
 <translation id="540969355065856584">Ky server nuk mund të provojë se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është e pavlefshme në këtë moment. Kjo mund të shkaktohet për shkak të konfigurimit të pasaktë ose në rast të ndërhyrjes së ndonjë sulmuesi në lidhjen tënde.</translation>
 <translation id="5411462078004183575">Opsion me çmim të ulët</translation>
@@ -3099,6 +3108,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5764725887548570807">Format i pavlefshëm i origjinës.</translation>
 <translation id="5764920692828389743">Dërgo te <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Për të parë mënyrat dhe kërkesat e dorëzimit, zgjidh një adresë</translation>
+<translation id="5768323954710688012">Njoftimi për plotësimin automatik nga Gmail etj. u hap në lartësi të plotë</translation>
 <translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
 <translation id="5773286975255318081">Si p.sh. emrat e përdoruesve të profileve dhe versionet e shfletuesve</translation>
 <translation id="5774897849666641211">Bëj pyetje rreth kësaj skede</translation>
@@ -3212,6 +3222,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5953516610448771166">"Titrat në çast" nuk ofrohen për këtë media. Për të marrë titrat, blloko <ph name="CONTENT_SETTINGS" /> për këtë sajt.</translation>
 <translation id="5960795367348889467">Verifikimi</translation>
 <translation id="5963413905009737549">Seksioni</translation>
+<translation id="5963685100480647029">U zhvendos majtas</translation>
 <translation id="5964247741333118902">Përmbajtjet e integruara</translation>
 <translation id="5967260682280773804">36 x 48 inç</translation>
 <translation id="5967592137238574583">Modifiko informacionet e kontaktit</translation>
@@ -3717,6 +3728,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="671076103358959139">Tokeni i regjistrimit:</translation>
 <translation id="6711464428925977395">Ka një gabim me serverin përfaqësues ose adresa është e pasaktë.</translation>
 <translation id="6711700233707023861">Vargu i varianteve u kopjua te kujtesa e fragmenteve</translation>
+<translation id="6712343563085762261">U lëviz lart</translation>
 <translation id="6716039223770814796">Krahaso "<ph name="COMPARE_SET_NAME" />" · <ph name="ITEMS" /> artikuj</translation>
 <translation id="6716672519412350405"><ph name="URL" /> kërkon të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="6717692133381953670">Skeda u dërgua nga <ph name="DEVICE_NAME" /></translation>
@@ -4610,6 +4622,7 @@ Detaje shtesë:
 <translation id="8081087320434522107">Veturat</translation>
 <translation id="8086429410809447605">Veshje për gra</translation>
 <translation id="8086971161893892807">Draft</translation>
+<translation id="8087558780672230449"><ph name="APP_ORIGIN" /> po ngarkohet për të menaxhuar pagesën tënde në <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Shfaqja e artikullit dështoi.</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8091372947890762290">Aktivizimi është në pritje në server</translation>
@@ -4805,6 +4818,7 @@ Detaje shtesë:
 <translation id="8400929824946688748">Punët dhe arsimi</translation>
 <translation id="8402442052798347631">Sulmuesit në sajtin që u përpoqe të vizitoje mund të të mashtrojnë që të instalosh një softuer të dëmshëm që ndikon në mënyrën se si ti shfleton, p.sh. duke ndryshuar faqen kryesore ose duke të shfaqur reklama shtesë në sajtet që ti viziton. Chrome rekomandon shumë të kthehesh aty ku je i sigurt për të shmangur dëmtimet. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Krijime nga admiruesit</translation>
+<translation id="8404028426624581035">U lëviz poshtë</translation>
 <translation id="8405579342203358118">Menaxho se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="8405621913275228683">Skanimi humbi për shkak të një gabimi të panjohur</translation>
 <translation id="8406071103346257942">të ndalojë përdorimin e kyçjes së ekranit për plotësimin e fjalëkalimeve</translation>

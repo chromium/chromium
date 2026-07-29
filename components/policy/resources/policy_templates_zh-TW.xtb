@@ -5232,17 +5232,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="4501388411278568771">視功能啟動狀態套用 HTTPS 升級功能。</translation>
 <translation id="45036050223225148">停用經過 TLS 加密的 ClientHello 實驗</translation>
 <translation id="4503935079903510542">用於在 x86_64 裝置上安裝 VM 的 UEFI 開機磁碟映像檔。</translation>
-<translation id="4505299160236615603">如果設定這項政策，使用者可在無痕模式下存取許可清單中的網址。你可以使用這項政策，將 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 中定義的特定網址模式設為例外，格式請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-
-如果同時設定這項政策和 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />，系統會優先採用許可清單。如果網址符合許可清單中的模式，系統就會允許存取。如果網址符合封鎖清單的模式 (但不符合許可清單)，系統就會封鎖該網址。如果網址都不符合，系統會自動改用一般 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。
-
-如果設定這項政策，而未設定 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />，在無痕模式下，未列入許可清單的網址一律會被封鎖。
-
-如果 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 設為禁止 (值 1)，但已設定這項政策，只有符合許可清單的網址才能使用無痕模式。
-
-如果未設定這項政策，<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 就不會有任何例外。
-
-這項政策只會影響無痕模式。如要允許所有使用者設定檔存取這些網址，請使用 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="4508728400492074981">控管 First-Party Sets 功能的相關政策。</translation>
 <translation id="4510131075424939993">指定評估身分資訊時要在 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 中使用的鹽值</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
@@ -5912,19 +5901,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> M76 以下版本預設將無法收集與上傳這類記錄。自 M77 版起，針對大多數適用雲端式使用者層級企業政策的設定檔，<ph name="PRODUCT_NAME" /> 預設可收集與上傳這類記錄。從 M77 版到 M80 版，針對適用 <ph name="PRODUCT_NAME" /> 內部部署管理設定的設定檔，<ph name="PRODUCT_NAME" /> 預設也可收集與上傳這類記錄。</translation>
 <translation id="4911334289324462969">通訊埠 989 (2022 年 2 月 1 日前可解除封鎖)</translation>
 <translation id="4917385247580444890">強</translation>
-<translation id="4917925819533520480">這項政策可用於允許 <ph name="CHROME_DEVTOOLS_NAME" /> 存取特定網址。
-
-系統會比對網址模式和要檢查的網頁中每個框架的網址。最終行為取決於是否也設定了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
-
-如果已設定這項政策，但未設定 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，則每個框架的網址都必須符合這份許可清單中的模式，才能允許 <ph name="CHROME_DEVTOOLS_NAME" />。如果任何框架的網址不相符，系統就會封鎖整頁的開發人員工具。如要瞭解網址格式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-
-如果同時設定這項政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，系統會優先採用這個許可清單。如果框架的網址符合這份許可清單中的模式，系統就會允許存取，即使該網址也與封鎖清單中的模式相符。如果網址符合封鎖清單的模式 (但不符合許可清單)，系統就會封鎖該網址。如果網址都不符合，系統會自動改用「<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />」政策。
-
-如果未設定這項政策，<ph name="CHROME_DEVTOOLS_NAME" /> 是否可用會取決於 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
-
-這項政策也適用於開放給擴充功能和網頁應用程式使用的 <ph name="CHROME_DEVTOOLS_NAME" />。
-
-這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="4918150584200819898">允許自動啟動線上重新驗證。</translation>
 <translation id="4918261735182294270">允許使用者選擇是否要啟用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">啟用 PDF 文件 XFA 表單支援功能</translation>
@@ -12452,6 +12428,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 
       如果將這項政策設為 False 或未設定，系統不會回報這項資訊。
       如果設為 True，則系統會回報裝置的登入/登出事件。</translation>
+<translation id="9087577919890548366">如果將這項政策設為啟用，<ph name="LOCAL_NETWORK_ACCESS" />要求只會因<ph name="LOCAL_NETWORK_ACCESS" />檢查失敗而在 <ph name="CHROME_DEVTOOLS_NAME" />中顯示警告。
+
+如果設為停用或未設定，系統會使用預設方式處理<ph name="LOCAL_NETWORK_ACCESS" />要求。
+
+如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
+
+這項企業政策只是臨時措施，將於 M156 之後移除。
+
+長期來看，使用 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策將網址模式加入許可清單，就能自動授予<ph name="LOCAL_NETWORK_ACCESS" />權限。</translation>
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 連接器的設定政策</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>

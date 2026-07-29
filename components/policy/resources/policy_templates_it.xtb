@@ -5435,19 +5435,6 @@ Questa policy non ha effetto se viene attivata, lasciata vuota o se non viene co
 <translation id="4501388411278568771">Potrebbero essere applicati upgrade a HTTPS a seconda dello stato del lancio della funzionalità.</translation>
 <translation id="45036050223225148">Disattiva l'esperimento TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">L'immagine del disco di avvio UEFI utilizzata per installare la VM sui dispositivi x86_64.</translation>
-<translation id="4505299160236615603">La configurazione della policy consente di accedere in modalità Incognito agli URL elencati. Utilizzala per aprire le eccezioni di alcuni pattern URL definiti in <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Se vengono configurate sia questa policy sia <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, la lista consentita ha la precedenza. Se un URL corrisponde a un pattern nella lista consentita, verrà consentito. Se corrisponde a un pattern nella lista bloccata (ma non nella lista consentita), verrà bloccato. Se un URL non corrisponde a nessuno dei due, verranno utilizzate le policy generali <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> come riserva.
-
-Se questa policy viene impostata, ma <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> no, tutti gli URL non presenti nella lista consentita verranno bloccati in modalità Incognito.
-
-Se <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> è impostata sulla negazione del consenso (valore 1), ma questa policy è configurata, la modalità Incognito sarà disponibile solo per gli URL corrispondenti alla lista consentita.
-
-Se la policy non viene configurata, non sono consentite eccezioni a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> e <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
-
-Questa policy influisce solo sulla modalità Incognito. Per consentire gli URL per tutti i profili utente, utilizza la policy <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="4508728400492074981">Controlla le policy relative alla funzionalità First-Party Sets.</translation>
 <translation id="4510131075424939993">Specifica un valore di sale da usare nella policy <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> durante la valutazione delle informazioni sull'identità</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
@@ -6152,19 +6139,6 @@ Se questa policy viene impostata su <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_
       Se la policy non viene impostata su versioni fino alla M76 inclusa, per impostazione predefinita <ph name="PRODUCT_NAME" /> non può raccogliere e caricare questi log. A partire dalla versione M77, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare questi log dalla maggior parte dei profili interessati dalle policy aziendali a livello di utente basati su cloud. Dalla versione M77 fino alla M80 inclusa, <ph name="PRODUCT_NAME" /> può anche raccogliere e caricare questi log per impostazione predefinita dai profili soggetti alla gestione on-premise di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">porta 989 (può essere sbloccata fino al 01/02/2022)</translation>
 <translation id="4917385247580444890">Forte</translation>
-<translation id="4917925819533520480">Questa policy può essere utilizzata per consentire gli <ph name="CHROME_DEVTOOLS_NAME" /> su URL specifici.
-
-I pattern URL vengono confrontati con l'URL di ogni frame nella pagina ispezionata. Il comportamento risultante dipende dal fatto che sia impostata anche la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Se questa policy viene impostata, ma <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> no, l'URL di ogni frame deve corrispondere a un pattern in questa lista consentita per consentire <ph name="CHROME_DEVTOOLS_NAME" />. Se l'URL di un frame non corrisponde, DevTools verrà bloccato per l'intera pagina. Per informazioni sul formato dell'URL, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Se vengono impostate sia questa policy sia la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, questa lista consentita ha la precedenza. Se l'URL di un frame corrisponde a un pattern in questa lista consentita, verrà consentito, anche se corrisponde ugualmente a un pattern nella lista bloccata. Se un URL corrisponde a un pattern nella lista bloccata (ma non nella lista consentita), verrà bloccato. Se un URL non corrisponde a nessuno dei due, verrà utilizzata la policy<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> come riserva.
-
-Se questa policy non viene configurata, la disponibilità di <ph name="CHROME_DEVTOOLS_NAME" /> viene determinata dalle policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Questa policy si applica anche agli <ph name="CHROME_DEVTOOLS_NAME" /> aperti per le estensioni e le applicazioni web.
-
-Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="4918150584200819898">Attiva l'avvio automatico della riautenticazione online.</translation>
 <translation id="4918261735182294270">Consenti agli utenti di scegliere se attivare <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">Abilita il supporto per i moduli XFA nei documenti PDF</translation>
@@ -12971,6 +12945,17 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 
       Se la policy viene impostata su False o se non viene configurata, le informazioni non vengono segnalate.
       Se viene impostata su True, gli eventi di accesso/uscita del dispositivo vengono segnalati.</translation>
+<translation id="9087577919890548366">Se questa policy viene impostata su Attivata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> visualizzeranno solo avvisi in <ph name="CHROME_DEVTOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCESS" /> non riusciti.
+
+Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
+
+Consulta la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Questa policy aziendale è temporanea e verrà rimossa dopo la versione M156.
+
+A lungo termine, la policy <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+potrà essere utilizzata per inserire in una lista consentita i pattern URL a cui concedere automaticamente
+l'autorizzazione <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9087652369391570821">Policy di configurazione per il connettore OnFileTransfer di Chrome Enterprise</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>
 <translation id="9088444059179765143">Configura il metodo di rilevamento automatico del fuso orario</translation>

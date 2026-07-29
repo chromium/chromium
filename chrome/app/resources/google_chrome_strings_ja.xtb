@@ -194,6 +194,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chrome</translation>
 <translation id="2970681950995291301">Chrome から Google アカウントを削除するには、[設定] ページで Chrome からログアウトしてください</translation>
 <translation id="2976869732253036751">スマートフォンの Chrome で価格トラッキングのアラートを受け取る</translation>
+<translation id="2985091279808606502">このサイトを利用するには、Chrome でローカル ネットワークの使用を許可する必要があります</translation>
 <translation id="2991167882679440829">Google アカウントに保存したパスワードなどの Chrome データは、このデバイスから削除されます。Chrome でこれらのデータを再度使用するには、もう一度ログインしてください。</translation>
 <translation id="2994465299455873643">暗号化サービスと、<ph name="BROWSER_NAME" /> が最新の状態でなくなった場合に安全に復元する方法を提供します。このサービスを無効にすると、<ph name="BROWSER_NAME" /> は暗号化されたデータにアクセスできなくなり、<ph name="BROWSER_NAME" /> が自動で復元できなくなる可能性があります。</translation>
 <translation id="3003694935412297923">すべてのタスク</translation>
@@ -712,6 +713,7 @@
 <translation id="8113883687556086139">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8115695070094288807">Chrome をカスタマイズしています...</translation>
 <translation id="8118331347066725040">Google レンズでの検索に関するフィードバックを送信する</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" />（Google メンバーシップ）としてログインしています。アカウント メニューを開く</translation>
 <translation id="8129812357326543296">Google Chrome について(&amp;G)</translation>
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8162006532256575008">アカウントなしで Chrome を使用</translation>
@@ -745,6 +747,7 @@
 
 新しいブックマークをアカウントに保存するには、既存のブックマークを削除してください。今すぐログアウトすると、保存されていないブックマークは削除されます。</translation>
 <translation id="8458117863387545390">スマートフォンで Chrome を活用</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />、Google メンバーシップ）としてログインしています。アカウント メニューを開く</translation>
 <translation id="8496177819998570653">Google パスワード マネージャー(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
 <translation id="8521348052903287641">mDNS トラフィックを許可する Google Chrome Dev のインバウンド ルールです。</translation>

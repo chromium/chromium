@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chrome</translation>
 <translation id="2970681950995291301">Google аккаунтуңузду Chrome'дон өчүрүү үчүн Параметрлер барагынан Chrome'дон чыгыңыз</translation>
 <translation id="2976869732253036751">Телефонуңуздагы Chrome менен бааларга көз салуу тууралуу билдирмелерди алыңыз</translation>
+<translation id="2985091279808606502">Chrome'го бул сайтта жергиликтүү тармакты колдонууга уруксат керек</translation>
 <translation id="2991167882679440829">Сырсөздөрүңүз жана Chrome'догу башка маалымат Google аккаунтуңузга сакталып, бул түзмөктөн өчүрүлөт. Аларды Chrome'до кайра колдонуу үчүн кайра кириңиз.</translation>
 <translation id="2994465299455873643">Шифрлөө кызматтарын көрсөтүп, <ph name="BROWSER_NAME" /> эскирип калганда аны калыбына келтирүүнүн коопсуз жолун сунуштайт. Бул кызмат өчүрүлсө, <ph name="BROWSER_NAME" /> шифрленген маалыматты көрө албай, ал эми <ph name="BROWSER_NAME" /> өз алдынча калыбына келбей калышы мүмкүн.</translation>
 <translation id="3003694935412297923">Бардык жасалчу иштер</translation>
@@ -723,6 +724,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8113883687556086139">Аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) Chrome маалыматын сактоо жана колдонуу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="8115695070094288807">Chrome'ду тууралап алуу...</translation>
 <translation id="8118331347066725040">Lens менен издөө үчүн пикир билдирүү</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" /> катары кирдиңиз. Google'га катталгансыз. Аккаунттун менюсун ачуу</translation>
 <translation id="8129812357326543296">&amp;Google Chrome жөнүндө</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
 <translation id="8162006532256575008">Chrome'ду аккаунтсуз колдонуу</translation>
@@ -756,6 +758,7 @@ Google Chrome параметрлериңизди калыбына келтире
 
 Айрымдарын өчүргөнгө чейин жаңы кыстармаларды аккаунтуңузга сактоого болбойт. Эгер азыр чыгып кетсеңиз, сакталбаган кыстармалар өчүрүлөт.</translation>
 <translation id="8458117863387545390">Chrome'ду телефонуңузга орнотуңуз</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" /> катары кирдиңиз. Google'га катталгансыз. Аккаунттун менюсун ачуу</translation>
 <translation id="8496177819998570653">С&amp;ырсөздөрдү башкаргыч</translation>
 <translation id="8498858610309223613">Жаңы эле Google Chrome үчүн өзгөчө коопсуздук жаңыртуулары орнотулду. Өтмөктөрдү калыбына келтирүү үчүн аны өчүрүп күйгүзүңүз.</translation>
 <translation id="8521348052903287641">mDNS трафигине уруксат берүү үчүн Google Chrome Dev'дин кирүүчү туташуу эрежеси.</translation>

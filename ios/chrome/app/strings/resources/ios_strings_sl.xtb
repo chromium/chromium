@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Izvoz je uspel</translation>
 <translation id="1272079795634619415">Ustavi</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} geslo}one{{count} geslo}two{{count} gesli}few{{count} gesla}other{{count} gesel}}</translation>
+<translation id="1274721046703404848">Upravljanje povezave med storitvami iskanja in aplikacijami storitve Google Workspace, kot je Google Drive</translation>
 <translation id="1275718070701477396">Izbrano</translation>
 <translation id="1279024913354609713">Ne dovoli</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
@@ -2189,6 +2190,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8263228331881858381">Ključ za dostop je shranjen</translation>
 <translation id="8263809106706527890">Privzete nastavitve brskalnika so se morda spremenile. To lahko preverite v nastavitvah.</translation>
 <translation id="8264966119170358612">Nekatera shranjena gesla so bila razkrita v podatkovni kršitvi pri ponudniku, ki ni Google. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Odpiranje Chromovega menija</translation>
 <translation id="826614135184049678">Zaradi ponastavitve iPada ste bili odjavljeni iz računa <ph name="USER_NAME" />. Če se želite znova prijaviti, spodaj kliknite »Continue« (Naprej).</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Preklopili boste med profili</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Ийгиликтүү экспорттолду</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} сырсөз}other{{count} сырсөз}}</translation>
+<translation id="1274721046703404848">Издөө кызматтары менен Google Drive сыяктуу Google Workspace колдонмолорунун ортосундагы байланышты тескөө</translation>
 <translation id="1275718070701477396">Тандалган</translation>
 <translation id="1279024913354609713">Тыюу салуу</translation>
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
@@ -2189,6 +2190,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8263228331881858381">Киргизүүчү ачкыч сакталды</translation>
 <translation id="8263809106706527890">Демейки серепчиңиздин параметрлери өзгөргөн болушу мүмкүн. Муну параметрлерден текшерсеңиз болот.</translation>
 <translation id="8264966119170358612">Айрым сырсөздөрүңүздү Google'дан тышкары жерде кимдир бирөө билип алды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome менюсун ачуу</translation>
 <translation id="826614135184049678">iPad'ды баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="8270320981823560179">Google Drive</translation>
 <translation id="8274795744553482834">Башка профилге которулганы жатасыз</translation>

@@ -84,6 +84,7 @@
 <translation id="126737128831326059">ਨਿਰਯਾਤ ਕਰਨਾ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} ਪਾਸਵਰਡ}one{{count} ਪਾਸਵਰਡ}other{{count} ਪਾਸਵਰਡ}}</translation>
+<translation id="1274721046703404848">Search ਸੇਵਾਵਾਂ ਅਤੇ Google Drive ਵਰਗੀਆਂ Google Workspace ਐਪਾਂ ਵਿਚਾਲੇ ਕਨੈਕਸ਼ਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1275718070701477396">ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1279024913354609713">ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="1285320974508926690">ਕਦੇ ਵੀ ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
@@ -2189,6 +2190,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8263228331881858381">ਪਾਸਕੀ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8263809106706527890">ਤੁਹਾਡੀਆਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੋਈ ਤਬਦੀਲੀ ਹੋਈ ਹੋ ਸਕਦੀ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਇਸਦੀ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8264966119170358612">ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਵਿੱਚੋਂ ਕੁਝ ਗੈਰ-Google ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਪ੍ਰਗਟ ਹੋਏ ਸਨ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="826614135184049678">ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ iPad ਰੀਸੈੱਟ ਕਰਨ ਦੇ ਹਿੱਸੇ ਵਜੋਂ ਆਪਣੇ ਖਾਤੇ <ph name="USER_NAME" /> ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ ਸੀ। ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ, ਹੇਠਾਂ "ਜਾਰੀ ਰੱਖੋ" 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">ਤੁਸੀਂ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਸਵਿੱਚ ਕਰਨ ਜਾ ਰਹੇ ਹੋ</translation>

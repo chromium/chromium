@@ -599,6 +599,7 @@
 <translation id="192095259937375524">"Bu tabı paylaşın" düyməsi, aktivləşdirərək keçid paylaşmaq, QR kodu yaratmaq, yayımlamaq və s. yollarla bu tabı paylaşın</translation>
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1927439846988093361">Saça Qulluq</translation>
+<translation id="1927930548546198515">Chrome funksiyadan necə istifadə etdiyinizi (məsələn, sorğularınızı və təklifləri qəbul etdiyiniz və ya görməzdən gəldiyiniz zaman davranışınızı) qeyd edir</translation>
 <translation id="1932098463447129402">Öncə yox</translation>
 <translation id="1935353813610900265">AI tərəfindən dəstəklənən tarixçədə axtarış ilə bağlı rəy göndərin</translation>
 <translation id="1935995810530254458">İstənilən halda kopyalayın</translation>
@@ -985,6 +986,7 @@
 <translation id="2491120439723279231">Serverin sertifikatında xətalar var.</translation>
 <translation id="2491414235131909199">Bu səhifə artırma tərəfindən bloklanıb</translation>
 <translation id="2493122313108999546">Ölçüsü dəyişdirildi</translation>
+<translation id="249376477913017009">Gmail və digər mənbələrdən avtodoldurma bildirişi açıldı</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" /> bölməsində parolları doldurmaq üçün barmaq izindən istifadə edib-etməməyi dəyişə bilərsiniz</translation>
 <translation id="2498091847651709837">Yeni kartı skan edin</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Məişət Avtomatlaşdırması</translation>
 <translation id="2743512410823092182">DJ resurs və avadanlığı</translation>
+<translation id="275259155159336003">Gemini ilə Şəxsi Zəka tərəfindən dəstəklənir. Qabaqcıl avtodoldurmanı təkmilləşdirmək üçün sorğularınız, səhifə başlıqlarınız və URL-ləriniz nəzərdən keçirilə bilər. <ph name="BEGIN_LINK" />Ayarları idarə edin<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> fayl Google Diskə yüklənir</translation>
 <translation id="2759299890026163685">Yenidən cəhd etməzdən əvvəl sabit internet bağlantısı olduğundan əmin olun</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> tətbiqində parolunuzu daxil edin</translation>
@@ -1434,6 +1437,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208701679386778924">Gələcək ChromeOS güncəllənmələrini təkmilləşdirməyimiz üçün hesabat göndərin.</translation>
 <translation id="3209034400446768650">Səhifədə pul çıxıla bilər</translation>
+<translation id="3209071504641569648">Sorğular, səhifə başlıqları və URL-lər Google-a göndərilir və qabaqcıl avtodoldurmanı təkmilləşdirmək üçün nəzərdən keçirilə bilər</translation>
 <translation id="3212468046572043669">Endirmə başladı. Bunu görmək üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> hostundakı fəaliyyətinizə nəzarət edilir</translation>
 <translation id="3215092763954878852">WebAuthn istifadə edilmədi</translation>
@@ -1471,6 +1475,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3254301855501243548">18 x 22 düym</translation>
 <translation id="3255926992597692024">Chromium ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Calendar'da cəld yeni tədbir yaradın</translation>
+<translation id="3261180263071638338">Gmail-dən avtodoldurma və daha çox bildiriş bağlandı</translation>
 <translation id="3261488570342242926">Virtual kartlar barədə məlumat</translation>
 <translation id="3262698603497362968">Alış seçimləri</translation>
 <translation id="3264637689694266148">Təklifləri deaktiv etsəniz də, tablarınızın səhifə başlığı və URL-ləri hələ də digər Chrome funksiyaları üçün emal oluna bilər. Brauzerin bu dataya girişini burada idarə edə bilərsiniz:</translation>
@@ -2331,6 +2336,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4602465984861132303">Boulinq</translation>
 <translation id="4603727370377253901">Uçuş rezervasiyaları</translation>
 <translation id="4607608436550361748">Chrome ipucularına baxın</translation>
+<translation id="4607879293515681409">Qabaqcıl avtodoldurma artıq Gmail və Foto kimi tətbiqlərdən uçuş nömrələri, eləcə də görüş vaxtları kimi məlumatları tapa və doldura bilər</translation>
 <translation id="460848736049414407">Admin tərəfindən bloklanıb</translation>
 <translation id="4610279718074907952">Bu sayt fəaliyyətinizi görən <ph name="SET_OWNER" /> tərəfindən təyin edilən qrupdadır</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> vasitəsilə <ph name="MERCHANT_ORIGIN" /> saytında sifarişinizi emal edərkən xəta baş verdi.</translation>
@@ -2847,6 +2853,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5400836586163650660">Boz</translation>
 <translation id="5401344472773249513">Məşhurlar və əyləncə xəbərləri</translation>
 <translation id="5401674281624189321">Dağ və xizək kurortları</translation>
+<translation id="5402715318763077894">Lokal şəbəkəyə giriş icazəsi verilsin?</translation>
 <translation id="540949333488055151">Plastik (rəngli)</translation>
 <translation id="540969355065856584">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; güvənlik sertifikatı hazırda etibarlı deyil. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="5411462078004183575">Aşağı qiymət seçimi</translation>
@@ -3097,6 +3104,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5764725887548570807">Yanlış mənşə formatı.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ünvanına göndərin</translation>
 <translation id="5765072501007116331">Çatdırılma üsulları və tələblərinə baxın, ünvan seçin</translation>
+<translation id="5768323954710688012">Gmail və digər mənbələrdən avtodoldurma bildirişi tam hündürlükdə açıldı</translation>
 <translation id="57689295674415555">Virtual kart nömrəsi daxil edilməyib?</translation>
 <translation id="5773286975255318081">Məsələn, profil istifadəçi adları və brauzer versiyaları</translation>
 <translation id="5774897849666641211">Bu tab haqqında suallar verin</translation>

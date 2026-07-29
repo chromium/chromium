@@ -5546,19 +5546,6 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
 <translation id="4501388411278568771">Upgrade HTTPS dapat diterapkan bergantung pada status peluncuran fitur.</translation>
 <translation id="45036050223225148">Nonaktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="4503935079903510542">Disk image yang dapat di-booting UEFI digunakan untuk menginstal VM di perangkat x86_64p.</translation>
-<translation id="4505299160236615603">Jika kebijakan ini disetel, akses ke URL yang tercantum akan diberikan di mode Samaran. Gunakan kebijakan ini untuk membuka pengecualian untuk pola URL tertentu yang ditentukan dalam <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Jika kebijakan ini dan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan akan diprioritaskan. Jika URL cocok dengan pola di daftar yang diizinkan, URL tersebut akan diizinkan. Jika cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL tidak cocok dengan keduanya, kebijakan umum <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> akan digunakan sebagai penggantian.
-
-Jika kebijakan ini disetel dan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL apa pun yang tidak ada dalam daftar yang diizinkan akan diblokir dalam mode Samaran.
-
-Jika <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> disetel ke tidak diizinkan (nilai 1), tetapi kebijakan ini dikonfigurasi, mode Samaran hanya akan tersedia untuk URL yang cocok dengan daftar yang diizinkan.
-
-Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
-
-Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="4508728400492074981">Mengontrol kebijakan untuk fitur Set Pihak Pertama.</translation>
 <translation id="4510131075424939993">Menentukan nilai salt yang akan digunakan di <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> saat mengevaluasi informasi identitas</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
@@ -6277,19 +6264,6 @@ Jika kebijakan ini disetel ke <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTC
       Jika kebijakan pada versi hingga dan termasuk M76 tidak disetel, berarti default <ph name="PRODUCT_NAME" /> tidak dapat mengumpulkan atau mengupload log tersebut. Mulai versi M77, default <ph name="PRODUCT_NAME" /> akan dapat mengumpulkan dan mengupload log tersebut dari sebagian besar profil yang terdampak oleh kebijakan perusahaan tingkat pengguna berbasis cloud. Mulai versi M77 hingga dan termasuk M80, <ph name="PRODUCT_NAME" /> juga dapat mengumpulkan dan mengupload log secara default dari profil yang terdampak oleh manajemen lokal <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">port 989 (blokir dapat dibatalkan hingga 01/02/2022)</translation>
 <translation id="4917385247580444890">Kuat</translation>
-<translation id="4917925819533520480">Kebijakan ini dapat digunakan untuk mengizinkan <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu.
-
-Pola URL dicocokkan dengan URL setiap frame di halaman yang diperiksa. Perilaku yang dihasilkan bergantung pada apakah kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> juga disetel.
-
-Jika kebijakan ini disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL setiap frame harus cocok dengan pola di daftar yang diizinkan ini agar <ph name="CHROME_DEVTOOLS_NAME" /> diizinkan. Jika URL frame tidak cocok, DevTools akan diblokir untuk seluruh halaman. Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Jika kebijakan ini dan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan ini akan diprioritaskan. Jika URL frame cocok dengan pola di daftar yang diizinkan ini, URL akan diizinkan, meskipun juga cocok dengan pola di daftar yang tidak diizinkan. Jika cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL tidak cocok dengan keduanya, kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> akan digunakan sebagai gantinya.
-
-Jika kebijakan ini tidak disetel, ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Kebijakan ini juga berlaku untuk <ph name="CHROME_DEVTOOLS_NAME" /> yang dibuka untuk ekstensi dan aplikasi web.
-
-Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="4918150584200819898">Aktifkan mulai autentikasi ulang online otomatis.</translation>
 <translation id="4918261735182294270">Izinkan pengguna memilih apakah akan mengaktifkan <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">Aktifkan dukungan untuk formulir XFA di dokumen PDF</translation>
@@ -13304,6 +13278,19 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 
       Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
       Jika disetel ke benar (true), peristiwa login/logout di perangkat akan dilaporkan.</translation>
+<translation id="9087577919890548366">Jika kebijakan ini disetel ke Aktif, permintaan <ph name="LOCAL_NETWORK_ACCESS" />
+hanya akan menampilkan peringatan di <ph name="CHROME_DEVTOOLS_NAME" /> karena pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" /> gagal.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, permintaan <ph name="LOCAL_NETWORK_ACCESS" /> akan menggunakan
+penanganan default untuk permintaan ini.
+
+Lihat https://wicg.github.io/local-network-access/ untuk melihat batasan <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Kebijakan perusahaan ini bersifat sementara, dan akan dihapus setelah M156.
+
+Dalam jangka panjang, kebijakan <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+dapat digunakan untuk memasukkan pola URL ke daftar yang diizinkan yang harus otomatis diberikan
+izin <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9087652369391570821">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileTransfer</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>

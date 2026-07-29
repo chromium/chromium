@@ -599,6 +599,7 @@
 <translation id="192095259937375524">이 탭 공유 버튼, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 이 탭을 공유하려면 활성화하세요.</translation>
 <translation id="1924727005275031552">새로운 주소</translation>
 <translation id="1927439846988093361">헤어 케어</translation>
+<translation id="1927930548546198515">Chrome에서 사용자가 기능을 사용하는 방식(예: 사용자의 요청 및 추천을 수락하거나 무시할 때의 동작)을 기록합니다.</translation>
 <translation id="1932098463447129402">시작:</translation>
 <translation id="1935353813610900265">AI 기반 방문 기록 검색에 관한 의견 보내기</translation>
 <translation id="1935995810530254458">무시하고 복사</translation>
@@ -985,6 +986,7 @@
 <translation id="2491120439723279231">서버 인증서에 오류가 있습니다.</translation>
 <translation id="2491414235131909199">확장 프로그램에서 차단한 페이지입니다.</translation>
 <translation id="2493122313108999546">크기를 조절했습니다</translation>
+<translation id="249376477913017009">Gmail 등의 자동 완성 알림 열림</translation>
 <translation id="2495083838625180221">JSON 파서</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" />에서 비밀번호를 입력할 때 지문을 사용할지 여부를 변경할 수 있습니다.</translation>
 <translation id="2498091847651709837">새 카드 스캔</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2740531572673183784">확인</translation>
 <translation id="2742128390261873684">홈 자동화</translation>
 <translation id="2743512410823092182">DJ 인력 및 장비</translation>
+<translation id="275259155159336003">Gemini의 개인 인텔리전스를 기반으로 합니다. 향상된 자동 완성을 개선하기 위해 요청, 페이지 제목, URL이 검토될 수 있습니다. <ph name="BEGIN_LINK" />설정 관리<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">파일 <ph name="COUNT" />개를 Google Drive에 업로드하는 중</translation>
 <translation id="2759299890026163685">다시 시도하기 전에 인터넷 연결이 안정적인지 확인하세요.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
@@ -1436,6 +1439,7 @@
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208701679386778924">향후 ChromeOS 업데이트를 개선할 수 있도록 보고서를 보내주세요.</translation>
 <translation id="3209034400446768650">페이지에서 요금을 청구할 수 있음</translation>
+<translation id="3209071504641569648">요청, 페이지 제목, URL이 Google로 전송되며 향상된 자동 완성을 개선하기 위해 검토될 수 있습니다.</translation>
 <translation id="3212468046572043669">다운로드가 시작되었습니다. 확인하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />에서의 활동이 모니터링되고 있음</translation>
 <translation id="3215092763954878852">WebAuthn을 사용할 수 없음</translation>
@@ -1473,6 +1477,7 @@
 <translation id="3254301855501243548">18x22인치</translation>
 <translation id="3255926992597692024">Chromium에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Calendar에서 빠르게 새 일정 만들기</translation>
+<translation id="3261180263071638338">Gmail 등의 자동 완성 알림 닫힘</translation>
 <translation id="3261488570342242926">가상 카드 자세히 알아보기</translation>
 <translation id="3262698603497362968">구매 옵션</translation>
 <translation id="3264637689694266148">추천을 사용 중지하더라도 탭의 페이지 제목과 URL은 다른 Chrome 기능을 위해 계속 처리될 수 있습니다. 다음 페이지에서 이 데이터에 대한 브라우저 액세스를 관리할 수 있습니다.</translation>
@@ -2335,6 +2340,7 @@
 <translation id="4602465984861132303">볼링</translation>
 <translation id="4603727370377253901">항공편 예약</translation>
 <translation id="4607608436550361748">Chrome 도움말 보기</translation>
+<translation id="4607879293515681409">향상된 자동 완성 기능은 이제 Gmail, 포토 등의 앱에서 항공편 번호, 약속 시간 등의 정보를 찾아서 입력할 수 있습니다.</translation>
 <translation id="460848736049414407">관리자가 차단함</translation>
 <translation id="4610279718074907952"><ph name="SET_OWNER" />에서 정의한 그룹(내 활동을 볼 수 있음)에 속하는 사이트입니다.</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> 앱으로 <ph name="MERCHANT_ORIGIN" /> 주문을 처리하는 중에 오류가 발생했습니다.</translation>
@@ -2520,6 +2526,7 @@
 <translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4886565443854420066">Chrome 브라우저에서 설정을 변경하기 전에 본인 확인을 요청합니다.</translation>
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
+<translation id="4887785555357166111">동영상 프레임 저장</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="4892518386797173871">후면</translation>
 <translation id="4894390983254799375">기기 ID, 이름, OS 버전, OS 사용자 이름 등</translation>
@@ -2851,6 +2858,7 @@
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5401344472773249513">유명인 및 연예 소식</translation>
 <translation id="5401674281624189321">산악 및 스키 리조트</translation>
+<translation id="5402715318763077894">로컬 네트워크 액세스를 허용하시겠습니까?</translation>
 <translation id="540949333488055151">플라스틱(컬러)</translation>
 <translation id="540969355065856584">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버의 보안 인증서가 현재 유효하지 않습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="5411462078004183575">저렴한 가격 옵션</translation>
@@ -3101,6 +3109,7 @@
 <translation id="5764725887548570807">원본 형식이 잘못되었습니다.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />(으)로 보내기</translation>
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
+<translation id="5768323954710688012">Gmail 등의 자동 완성 알림이 전체 높이로 열림</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
 <translation id="5773286975255318081">프로필 사용자 이름 및 브라우저 버전 등</translation>
 <translation id="5774897849666641211">이 탭에 관해 질문하기</translation>

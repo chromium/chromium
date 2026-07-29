@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Umehamisha</translation>
 <translation id="1272079795634619415">Simamisha</translation>
 <translation id="1273416271143914096">{count,plural, =1{Nenosiri {count}}other{Manenosiri {count}}}</translation>
+<translation id="1274721046703404848">Dhibiti muunganisho kati ya huduma za Utafutaji na programu za Google Workspace, kama vile Hifadhi ya Google</translation>
 <translation id="1275718070701477396">Umeichagua</translation>
 <translation id="1279024913354609713">Usiruhusu</translation>
 <translation id="1285320974508926690">Kamwe usitafsiri tovuti hii</translation>
@@ -2189,6 +2190,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8263228331881858381">Ufunguo wa siri umehifadhiwa</translation>
 <translation id="8263809106706527890">Huenda kuna badiliko kwenye mipangilio chaguomsingi ya kivinjari chako. Unaweza kuangalia badiliko hili kwenye mipangilio.</translation>
 <translation id="8264966119170358612">Baadhi ya manenosiri uliyohifadhi yalifichuliwa katika ufichuzi haramu wa data kwenye tovuti isiyo ya Google. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Fungua menyu ya Chrome</translation>
 <translation id="826614135184049678">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPad yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="8270320981823560179">Hifadhi</translation>
 <translation id="8274795744553482834">Unakaribia kubadilisha wasifu</translation>

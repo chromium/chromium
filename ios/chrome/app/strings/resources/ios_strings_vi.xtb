@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Xuất thành công</translation>
 <translation id="1272079795634619415">Dừng</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} mật khẩu}other{{count} mật khẩu}}</translation>
+<translation id="1274721046703404848">Quản lý kết nối giữa các dịch vụ Tìm kiếm và ứng dụng trong Google Workspace, chẳng hạn như Google Drive</translation>
 <translation id="1275718070701477396">Đã chọn</translation>
 <translation id="1279024913354609713">Không cho phép</translation>
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">Đã lưu khoá truy cập</translation>
 <translation id="8263809106706527890">Các chế độ cài đặt mặc định của trình duyệt có thể đã thay đổi. Bạn có thể kiểm tra điều này trong phần cài đặt.</translation>
 <translation id="8264966119170358612">Một số mật khẩu bạn lưu đã bị lộ trong một sự cố rò rỉ dữ liệu xảy ra ngoài Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Mở trình đơn Chrome</translation>
 <translation id="826614135184049678">Bạn đã bị đăng xuất khỏi tài khoản <ph name="USER_NAME" /> trong quá trình đặt lại iPad. Để đăng nhập lại, hãy nhấn vào "Tiếp tục" ở dưới.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Bạn sắp chuyển đổi hồ sơ</translation>

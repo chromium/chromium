@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - በአውታረ መረብ ወደ መለያ መግባት - Chrome</translation>
 <translation id="2970681950995291301">የGoogle መለያዎን ከChrome ለማስወገድ በቅንብሮች ገጽ ውስጥ ከChrome ዘግተው ይውጡ</translation>
 <translation id="2976869732253036751">በስልክዎ ላይ በChrome የዋጋ ክትትል ማንቂያዎችን ያግኙ</translation>
+<translation id="2985091279808606502">Chrome ለዚህ ጣቢያ የአካባቢያዊ አውታረ መረብ ፈቃድ ያስፈልገዋል</translation>
 <translation id="2991167882679440829">Google መለያ ውስጥ ያስቀመጧቸው የይለፍ ቃላትዎ እና ሌላ Chromium ውሂብ ከዚህ መሣሪያ ይወገዳሉ። እንደገና Chrome ውስጥ እነሱን ለመጠቀም መልሰው በመለያ ይግቡ።</translation>
 <translation id="2994465299455873643">የምሥጠራ አገልግሎቶችን እና <ph name="BROWSER_NAME" /> ጊዜ ካለፈበት እሱን መልሶ ለማግኘት ደህንነቱ የተጠበቀ መንገድ ያቀርባል። ይህ አገልግሎት ከተሰናከለ <ph name="BROWSER_NAME" /> ለተመሠጠረ ውሂብ ያለውን መዳረሻ ሊያጣ ይቻላል እና <ph name="BROWSER_NAME" /> ራሱን መልሶ ማግኘት አይችል ይሆናል።</translation>
 <translation id="3003694935412297923">ሁሉም ተግባሮች</translation>
@@ -723,6 +724,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8113883687556086139">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="8115695070094288807">Chromeን የእርስዎ በማድረግ ላይ...</translation>
 <translation id="8118331347066725040">በሌንስ ለፍለጋ ግብረ መልስ ይላኩ</translation>
+<translation id="812930250799242837">እንደ <ph name="USER_NAME" />፣ የGoogle አባልነት ገብተዋል። የመለያ ምናሌውን ይክፈቱ</translation>
 <translation id="8129812357326543296">ስለ &amp;Google Chrome</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8162006532256575008">Chromeን ያለ መለያ ይጠቀሙ</translation>
@@ -756,6 +758,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 
 አንዳንድ እስኪሰርዙ ድረስ አዲስ እልባቶች በመለያዎ ውስጥ መቀመጥ አይችሉም። አሁን ዘግተው ከወጡ ያልተቀመጡ እልባቶች ይሰረዛሉ።</translation>
 <translation id="8458117863387545390">Chromeን በስልክዎ ላይ ያግኙ</translation>
+<translation id="848851325211467878">እንደ <ph name="USER_NAME" />፣ <ph name="USER_EMAIL" />፣ የGoogle አባልነት በመለያ ገብተዋል። የመለያ ምናሌውን ይክፈቱ</translation>
 <translation id="8496177819998570653">Google የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="8498858610309223613">ለGoogle Chrome ልዩ የደህንነት ዝማኔ አሁን ተጭኗል። አሁን እንደገና ያስጀምሩ እና የእርስዎን ትሮች እንደነበሩ እንመልሳቸዋለን።</translation>
 <translation id="8521348052903287641">የmDNS ትራፊክን ለመፍቀድ የGoogle Chrome ገንቢ የውስጥ ደንብ።</translation>

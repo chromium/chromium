@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="2970681950995291301">Chromeରୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦେବା ପାଇଁ ସେଟିଂସ ପୃଷ୍ଠାରେ Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="2976869732253036751">ଆପଣଙ୍କ ଫୋନରେ Chrome ସହ ମୂଲ୍ୟ ଟ୍ରାକିଂ ଆଲର୍ଟଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
+<translation id="2985091279808606502">ଏହି ସାଇଟ ପାଇଁ Chrome ସ୍ଥାନୀୟ ନେଟୱାର୍କ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2991167882679440829">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିଥିବା ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ Chrome ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ। Chromeରେ ସେଗୁଡ଼ିକୁ ପୁଣି ବ୍ୟବହାର କରିବା ପାଇଁ ଆଉ ଥରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2994465299455873643">ଯଦି <ph name="BROWSER_NAME" /> ପୁରୁଣା ହୋଇଯାଏ, ତେବେ ଏହାକୁ ରିକଭର କରିବା ପାଇଁ ଏନକ୍ରିପସନ ସେବାଗୁଡ଼ିକ ଏବଂ ଏକ ସୁରକ୍ଷିତ ଉପାୟ ପ୍ରଦାନ କରେ। ଯଦି ଏହି ସେବାକୁ ଅକ୍ଷମ କରାଯାଏ, ତେବେ <ph name="BROWSER_NAME" /> ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ଆକ୍ସେସ ହରାଇପାରେ ଏବଂ <ph name="BROWSER_NAME" /> ସ୍ୱତଃ ରିକଭର ହେବା ପାଇଁ ସକ୍ଷମ ହୋଇନପାରେ।</translation>
 <translation id="3003694935412297923">ସମସ୍ତ ଟାସ୍କ</translation>
@@ -722,6 +723,7 @@
 <translation id="8113883687556086139">ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8115695070094288807">ଆପଣଙ୍କ ପସନ୍ଦ ଅନୁଯାୟୀ Chromeକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...</translation>
 <translation id="8118331347066725040">Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" />, Google ସଦସ୍ୟତା ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। ଆକାଉଣ୍ଟ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8129812357326543296">&amp;Google Chrome ବିଷୟରେ</translation>
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8162006532256575008">କୌଣସି ଆକାଉଣ୍ଟ ବିନା Chrome ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -755,6 +757,7 @@
 
 ଆପଣ କିଛି ବୁକମାର୍କକୁ ଡିଲିଟ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ନୂଆ ବୁକମାର୍କଗୁଡ଼ିକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ସେଭ ହୋଇନଥିବା ବୁକମାର୍କଗୁଡ଼ିକ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="8458117863387545390">ଆପଣଙ୍କ ଫୋନରେ Chrome ପାଆନ୍ତୁ</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google ସଦସ୍ୟତା ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। ଆକାଉଣ୍ଟ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">କିଛି ସମୟ ପୂର୍ବରୁ Google Chrome ପାଇଁ ଏକ ବିଶେଷ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍ ଲାଗୁ କରାଯାଇଛି। ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ ଏବଂ ଆମେ ଆପଣଙ୍କ ଟାବ୍ ରିଷ୍ଟୋର୍ କରିବୁ।</translation>
 <translation id="8521348052903287641">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବାକୁ Google Chrome Dev ପାଇଁ ଇନ୍‌ବାଉଣ୍ଡ ନିୟମ।</translation>

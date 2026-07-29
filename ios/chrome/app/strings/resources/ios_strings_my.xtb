@@ -84,6 +84,7 @@
 <translation id="126737128831326059">ထုတ်ယူပြီးပါပြီ</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
 <translation id="1273416271143914096">{count,plural, =1{စကားဝှက် {count} ခု}other{စကားဝှက် {count} ခု}}</translation>
+<translation id="1274721046703404848">Google Drive ကဲ့သို့သော Google Workspace အက်ပ်များနှင့် Search ဝန်ဆောင်မှုများကြား ချိတ်ဆက်မှုကို စီမံနိုင်သည်</translation>
 <translation id="1275718070701477396">ရွေးထား</translation>
 <translation id="1279024913354609713">ခွင့်မပြုပါ</translation>
 <translation id="1285320974508926690">ဒီဆိုက်ကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
@@ -2188,6 +2189,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8263228331881858381">လျှို့ဝှက်ကီး သိမ်းလိုက်ပြီ</translation>
 <translation id="8263809106706527890">သင်၏ မူရင်းဘရောင်ဇာ ဆက်တင်များတွင် ပြောင်းလဲမှု ရှိနိုင်သည်။ ၎င်းကို ဆက်တင်များတွင် ကြည့်နိုင်သည်။</translation>
 <translation id="8264966119170358612">Google မဟုတ်သည့် ဒေတာကျိုးပေါက်မှုတွင် သင်၏ သိမ်းထားသည့်စကားဝှက်အချို့ ဖော်ထုတ်ခံထားရသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome မီနူးကို ဖွင့်ပါ</translation>
 <translation id="826614135184049678">သင့် iPad ပြင်ဆင်သတ်မှတ်မှု၏ လုပ်ဆောင်ချက်တစ်ခုအနေဖြင့် သင့်အကောင့် <ph name="USER_NAME" /> မှ ထွက်သွားသည်။ ထပ်မံလက်မှတ်ထိုးဝင်ရန် အောက်ရှိ “ရှေ့ဆက်ရန်” ကိုတို့ပါ။</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">ပရိုဖိုင်ပြောင်းပါတော့မည်</translation>

@@ -600,6 +600,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="192095259937375524">Tombol Bagikan tab ini, aktifkan untuk berbagi tab ini dengan membagikan link, membuat kode QR, melakukan transmisi, dan lainnya</translation>
 <translation id="1924727005275031552">Baru</translation>
 <translation id="1927439846988093361">Perawatan Rambut</translation>
+<translation id="1927930548546198515">Chrome mencatat cara Anda menggunakan fitur ini, termasuk permintaan Anda serta perilaku Anda saat menerima atau mengabaikan saran</translation>
 <translation id="1932098463447129402">Tidak Sebelum</translation>
 <translation id="1935353813610900265">Kirim masukan untuk penelusuran histori yang didukung teknologi AI</translation>
 <translation id="1935995810530254458">Tetap salin</translation>
@@ -986,6 +987,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2491120439723279231">Sertifikat server mengandung kesalahan.</translation>
 <translation id="2491414235131909199">Halaman ini telah diblokir oleh ekstensi</translation>
 <translation id="2493122313108999546">Diubah ukurannya</translation>
+<translation id="249376477913017009">Pemberitahuan Isi Otomatis dari Gmail dan lainnya dibuka</translation>
 <translation id="2495083838625180221">Pengurai JSON</translation>
 <translation id="2496402116964818747">Anda dapat mengubah apakah akan menggunakan sidik jari untuk mengisi sandi di <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Pindai kartu baru</translation>
@@ -1154,6 +1156,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2742128390261873684">Otomatisasi Rumah</translation>
 <translation id="2743512410823092182">Peralatan &amp; Perlengkapan DJ</translation>
+<translation id="275259155159336003">Didukung oleh Kecerdasan Personal dengan Gemini. Permintaan, judul halaman, dan URL Anda dapat ditinjau untuk meningkatkan kualitas isi otomatis yang ditingkatkan. <ph name="BEGIN_LINK" />Kelola setelan<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Mengupload <ph name="COUNT" /> file ke Google Drive</translation>
 <translation id="2759299890026163685">Pastikan Anda memiliki koneksi internet yang stabil sebelum mencoba lagi</translation>
 <translation id="2759825833388495838">mengisi sandi Anda di <ph name="APP_NAME" /></translation>
@@ -1437,6 +1440,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3208701679386778924">Kirim laporan agar kami dapat meningkatkan update ChromeOS lebih lanjut.</translation>
 <translation id="3209034400446768650">Halaman mungkin dikenakan biaya</translation>
+<translation id="3209071504641569648">Permintaan, judul halaman, dan URL Anda dikirim ke Google dan dapat ditinjau untuk meningkatkan kualitas isi otomatis yang ditingkatkan</translation>
 <translation id="3212468046572043669">Download dimulai. Untuk melihatnya, tarik dari bagian atas layar dan sentuh tombol kembali</translation>
 <translation id="3212581601480735796">Aktivitas Anda di <ph name="HOSTNAME" /> sedang dipantau</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
@@ -1474,6 +1478,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3254301855501243548">18 x 22 inci (45 x 55 cm)</translation>
 <translation id="3255926992597692024">Chromium mencoba mengubah setelan pengisian metode pembayaran.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat acara baru di Google Kalender dengan cepat</translation>
+<translation id="3261180263071638338">Pemberitahuan Isi Otomatis dari Gmail dan lainnya ditutup</translation>
 <translation id="3261488570342242926">Pelajari kartu virtual</translation>
 <translation id="3262698603497362968">Opsi pembelian</translation>
 <translation id="3264637689694266148">Jika Anda menonaktifkan saran, judul halaman dan URL tab Anda mungkin masih diproses untuk fitur Chrome lainnya. Anda dapat mengelola akses browser ke data ini di</translation>
@@ -2335,6 +2340,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4602465984861132303">Boling</translation>
 <translation id="4603727370377253901">Reservasi penerbangan</translation>
 <translation id="4607608436550361748">Lihat tips Chrome</translation>
+<translation id="4607879293515681409">Isi otomatis yang ditingkatkan kini dapat menemukan dan mengisi info, seperti nomor penerbangan dan waktu janji temu, dari aplikasi seperti Gmail dan Foto</translation>
 <translation id="460848736049414407">Diblokir oleh Admin</translation>
 <translation id="4610279718074907952">Situs ini berada dalam grup, yang ditentukan oleh <ph name="SET_OWNER" />, yang dapat melihat aktivitas Anda</translation>
 <translation id="4612631413844865947">Terjadi error saat memproses pesanan Anda di <ph name="MERCHANT_ORIGIN" /> melalui <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2851,6 +2857,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5401344472773249513">Berita Selebritas &amp; Hiburan</translation>
 <translation id="5401674281624189321">Resor Pegunungan &amp; Ski</translation>
+<translation id="5402715318763077894">Izinkan akses jaringan lokal?</translation>
 <translation id="540949333488055151">Plastik (Berwarna)</translation>
 <translation id="540969355065856584">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya saat ini tidak valid. Hal ini mungkin disebabkan oleh kesalahan konfigurasi atau ada penyerang yang mengganggu koneksi internet Anda.</translation>
 <translation id="5411462078004183575">Opsi Harga Rendah</translation>
@@ -3101,6 +3108,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5764725887548570807">Format asal tidak valid.</translation>
 <translation id="5764920692828389743">Kirim ke <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
+<translation id="5768323954710688012">Notifikasi Isi Otomatis dari Gmail dan lainnya dibuka dalam tampilan penuh</translation>
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
 <translation id="5773286975255318081">Seperti nama pengguna profil &amp; versi browser</translation>
 <translation id="5774897849666641211">Ajukan pertanyaan tentang tab ini</translation>

@@ -200,6 +200,7 @@
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان - Chrome</translation>
 <translation id="2970681950995291301">‏اپنے Google اکاؤنٹ کو Chrome سے ہٹانے کے لیے، ترتیبات کے صفحے میں Chrome سے سائن آؤٹ کریں</translation>
 <translation id="2976869732253036751">‏اپنے فون پر Chrome کے ساتھ قیمت کی ٹریکنگ کے الرٹس حاصل کریں</translation>
+<translation id="2985091279808606502">‏‫Chrome کو اس سائٹ کے لیے مقامی نیٹ ورک کی اجازت درکار ہے</translation>
 <translation id="2991167882679440829">‏آپ کے پاس ورڈز اور دیگر Chrome ڈیٹا جو آپ نے اپنے Google اکاؤنٹ میں محفوظ کیا ہے انہیں اس آلہ سے ہٹا دیا جائے گا۔ انہیں Chrome میں دوبارہ استعمال کرنے کے لیے، دوبارہ سائن ان کریں۔</translation>
 <translation id="2994465299455873643">مرموز کاری کی سروسز اور <ph name="BROWSER_NAME" /> کے پرانے ہونے پر اسے بازیاب کرنے کا محفوظ طریقہ فراہم کرتا ہے۔ اگر یہ سروس غیر فعال کر دی جائے، تو <ph name="BROWSER_NAME" /> مرموز کردہ ڈیٹا تک رسائی سے محروم ہو سکتا ہے اور ممکن ہے <ph name="BROWSER_NAME" /> اپنی بازیافت پر قادر نہ ہو۔</translation>
 <translation id="3003694935412297923">سبھی ٹاسکس</translation>
@@ -262,6 +263,7 @@
 <translation id="3595784445906693824">‏نئی پروفائل میں Chrome میں سائن ان کریں؟</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں}=1{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="3597003331831379823">زیادہ مراعات کے ساتھ سیٹ اپ کو چلانے میں ناکام۔ <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3598673391539778844">‏سسٹم ٹرے میں Chrome میں Gemini دکھائیں</translation>
 <translation id="3622716124581627104">‏چیزوں یا مقامات کی شناخت کریں اور ٹیکسٹ کو کاپی یا اس کا ترجمہ کریں۔ جب آپ Google لینز استعمال کرتے ہیں تو صفحہ کا اسکرین شاٹ Google کو بھیجا جاتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏اب آپ کے Google اکاؤنٹ کے ساتھ اور اشتراک کردہ کمپیوٹرز پر Chrome کو استعمال کرنا آسان تر ہے۔</translation>
 <translation id="3635073343384702370">‏جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chrome انہیں چیک کر سکتا ہے</translation>
@@ -721,6 +723,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8113883687556086139">‏اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں Chrome ڈیٹا کا استعمال کرنے اور محفوظ کرنے کیلئے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="8115695070094288807">‏‫Chrome کو اپنے لحاظ سے سیٹ کرنا...</translation>
 <translation id="8118331347066725040">لینز کے ساتھ تلاش کے لیے تاثرات بھیجیں</translation>
+<translation id="812930250799242837">‏بطور <ph name="USER_NAME" />، Google رکنیت سائن ان ہے۔ اکاؤنٹ مینیو کھولیں</translation>
 <translation id="8129812357326543296">‏‎&amp;Google Chrome کے بارے میں</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8162006532256575008">‏اکاؤنٹ کے بغیر Chrome استعمال کریں</translation>
@@ -754,6 +757,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 
 جب تک آپ کچھ بُک مارکس کو حذف نہیں کرتے ہیں تب تک نئے بُک مارکس آپ کے اکاؤنٹ میں محفوظ نہیں کیے جا سکتے۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو غیر محفوظ کردہ بُک مارکس حذف ہو جائیں گے۔</translation>
 <translation id="8458117863387545390">‏اپنے فون پر Chrome حاصل کریں</translation>
+<translation id="848851325211467878">‏بطور <ph name="USER_NAME" />، <ph name="USER_EMAIL" />، Google رکنیت سائن ان ہے۔ اکاؤنٹ مینیو کھولیں</translation>
 <translation id="8496177819998570653">‏Google پاس ورڈ مینیجر</translation>
 <translation id="8498858610309223613">‏Google Chrome کے لیے ایک خاص سیکیورٹی اپ ڈیٹ ابھی ابھی لاگو کیا گیا ہے۔ ابھی دوبارہ شروع کریں اور ہم آپ کے ٹیبز کو بحال کر دیں گے۔</translation>
 <translation id="8521348052903287641">‏mDNS ٹریفک کی اجازت دینے کے لیے Google Chrome Dev کے لیے ان باؤنڈ اصول۔</translation>
@@ -789,6 +793,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8821043148920470810">‏مستقبل کے Google Chrome اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 7 استعمال کر رہا ہے۔</translation>
 <translation id="8823341990149967727">‏Chrome پرانا ہے</translation>
 <translation id="8834965163890861871">‏Google Chrome پاس ورڈز میں ترمیم کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
+<translation id="8841151363570555833">‏‫Mac مینیو بار میں Chrome میں Gemini دکھائیں</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں}other{‏Chrome تجویز کرتا ہے کہ آپ انہیں ہٹا دیں}}</translation>
 <translation id="8862326446509486874">سسٹم کی سطح پر انسٹال کرنے کیلئے آپ کے پاس مناسب حقوق نہیں ہیں۔ انسٹالر کو دوبارہ منتظم کے بطور چلانے کی کوشش کریں۔</translation>
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>

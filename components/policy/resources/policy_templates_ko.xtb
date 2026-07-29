@@ -5423,19 +5423,6 @@ false로 설정되면 확장 프로그램 및 플러그인 데이터가 수집�
 <translation id="4501388411278568771">기능 출시 상태에 따라 HTTPS 업그레이드가 적용될 수 있습니다.</translation>
 <translation id="45036050223225148">TLS Encrypted ClientHello 실험 사용 중지</translation>
 <translation id="4503935079903510542">x86_64 기기에 VM을 설치하는 데 사용되는 UEFI 부팅 가능한 디스크 이미지입니다.</translation>
-<translation id="4505299160236615603">정책을 설정하면 시크릿 모드에서 목록에 추가된 URL에 액세스할 수 있습니다. 이 정책을 사용하면 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)에 지정된 형식을 사용하여 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />에 정의된 특정 URL 패턴에 대한 예외를 열 수 있습니다.
-
-이 정책과 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 허용 목록이 우선 적용됩니다. URL이 허용 목록의 패턴과 일치하면 허용됩니다. 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과 일치하지 않으면 차단됩니다. URL이 어느 쪽과도 일치하지 않으면 일반 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
-
-이 정책이 설정되어 있고 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우 허용 목록에 없는 모든 URL이 시크릿 모드에서 차단됩니다.
-
-<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 정책이 허용 안함(값 1)으로 설정되어 있지만 이 정책이 구성된 경우 허용 목록과 일치하는 URL에만 시크릿 모드를 사용할 수 있습니다.
-
-정책을 설정하지 않으면 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />에 예외가 허용되지 않습니다.
-
-이 정책은 시크릿 모드에만 영향을 미칩니다. 모든 사용자 프로필에서 URL을 허용하려면 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책을 사용하세요.
-
-정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="4508728400492074981">First-Party Sets 기능 정책을 제어합니다.</translation>
 <translation id="4510131075424939993">ID 정보를 평가할 때 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />에 사용할 솔트 값 지정</translation>
 <translation id="4510923771103268849">사용자는 Crostini 컨테이너에 대한 루트 액세스 권한을 가질 수 있음</translation>
@@ -6134,19 +6121,6 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />와 충�
       M76 이하 버전에서 정책을 설정하지 않으면 기본적으로 <ph name="PRODUCT_NAME" />에서 이러한 로그를 수집하거나 업로드할 수 없습니다. M77부터는 <ph name="PRODUCT_NAME" />에서 기본적으로 클라우드 기반 사용자 수준 엔터프라이즈 정책의 영향을 받는 대부분의 프로필에서 이러한 로그를 수집하고 업로드할 수 있습니다. M77부터 M80까지는 <ph name="PRODUCT_NAME" />에서 기본적으로 <ph name="PRODUCT_NAME" /> 온프레미스 관리의 영향을 받는 프로필에서 이러한 로그를 수집하고 업로드할 수도 있습니다.</translation>
 <translation id="4911334289324462969">포트 989(2022년 2월 1일까지 차단 해제될 수 있음)</translation>
 <translation id="4917385247580444890">강력</translation>
-<translation id="4917925819533520480">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />을(를) 허용할 수 있습니다.
-
-URL 패턴이 검사 중인 페이지의 모든 프레임 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
-
-이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우, <ph name="CHROME_DEVTOOLS_NAME" />이(가) 허용되려면 모든 프레임의 URL이 해당 허용 목록의 패턴과 일치해야 합니다. 프레임 중 하나라도 URL이 일치하지 않으면 전체 페이지에서 DevTools가 차단됩니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
-
-이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 이 허용 목록이 우선 적용됩니다. 프레임의 URL이 해당 허용 목록의 패턴과 일치하는 경우, 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. URL이 차단 목록의 패턴과는 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
-
-이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
-
-이 정책은 확장 프로그램 및 웹 애플리케이션용으로 열리는 <ph name="CHROME_DEVTOOLS_NAME" />에도 적용됩니다.
-
-정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="4918150584200819898">자동 온라인 재인증 시작을 사용 설정합니다.</translation>
 <translation id="4918261735182294270">사용자가 <ph name="CHROME_SYNC_NAME" /> 설정 여부를 선택하도록 허용</translation>
 <translation id="4918485681633125382">PDF 문서에서 XFA 양식 지원 사용 설정</translation>
@@ -12985,6 +12959,19 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 
       정책을 False로 설정하거나 설정하지 않으면 정보가 보고되지 않습니다.
       True로 설정되면 기기 로그인/로그아웃 이벤트가 보고됩니다.</translation>
+<translation id="9087577919890548366">정책을 사용 설정하면 <ph name="LOCAL_NETWORK_ACCESS" />
+요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 검사 실패로 인해 <ph name="CHROME_DEVTOOLS_NAME" />에서만 경고를 표시합니다.
+
+정책을 사용 중지하거나 설정하지 않으면 <ph name="LOCAL_NETWORK_ACCESS" /> 요청에서 이러한 요청의
+기본 처리를 사용합니다.
+
+<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
+
+이 기업 정책은 일시적이며, M156 이후 삭제될 예정입니다.
+
+장기적으로 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책을 사용하여
+<ph name="LOCAL_NETWORK_ACCESS" /> 권한이 자동으로 부여되어야 하는 URL 패턴을
+허용 목록에 추가할 수 있습니다.</translation>
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 커넥터 설정 정책</translation>
 <translation id="9088433379343318874">관리 대상 사용자 콘텐츠 제공업체 사용</translation>
 <translation id="9088444059179765143">자동 시간대 감지 방법 설정</translation>

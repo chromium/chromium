@@ -84,6 +84,7 @@
 <translation id="126737128831326059">एक्सपोर्ट करणे पूर्ण झाले</translation>
 <translation id="1272079795634619415">थांबा</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} पासवर्ड}other{{count} पासवर्ड}}</translation>
+<translation id="1274721046703404848">Google Drive सारख्या शोध सेवा आणि Google Workspace अ‍ॅप्स यांमधील कनेक्शन व्यवस्थापित करा</translation>
 <translation id="1275718070701477396">निवडले</translation>
 <translation id="1279024913354609713">अनुमती देऊ नका</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
@@ -2190,6 +2191,7 @@
 <translation id="8263228331881858381">पासकी सेव्ह केली आहे</translation>
 <translation id="8263809106706527890">तुमच्या डीफॉल्ट ब्राउझर सेटिंग्जमध्ये बदल झाल्याची शक्यता आहे. तुम्ही सेटिंग्जमध्ये हे तपासू शकता.</translation>
 <translation id="8264966119170358612">तुमचे सेव्ह केलेले काही पासवर्ड हे Google ऐवजी तृतीय पक्षाच्या डेटा भंगामध्ये उघड झाले होते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome मेनू उघडा</translation>
 <translation id="826614135184049678">तुमच्या iPad रीसेटचा भाग म्हणून तुम्हाला <ph name="USER_NAME" /> खात्यामधून साइन आउट केले गेले होते. पुन्हा साइन इन करण्यासाठी, खाली "पुढे सुरू ठेवा" वर टॅप करा.</translation>
 <translation id="8270320981823560179">ड्राइव्ह</translation>
 <translation id="8274795744553482834">तुम्ही प्रोफाइल स्विच करणार आहात</translation>

@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Уваход у сетку – Chrome</translation>
 <translation id="2970681950995291301">Каб выдаліць свой Уліковы Google з Chrome, выйдзіце з Chrome на старонцы налад</translation>
 <translation id="2976869732253036751">Атрымлівайце ў Chrome на тэлефоне абвесткі пра змяненне цаны</translation>
+<translation id="2985091279808606502">Chrome запытвае дазвол на доступ да лакальнай сеткі для гэтага сайта</translation>
 <translation id="2991167882679440829">Вашы паролі і іншыя даныя Chrome, захаваныя ва Уліковым запісе Google, будуць выдалены з гэтай прылады. Увайдзіце паўторна, каб яны зноў сталі даступнымі ў Chrome.</translation>
 <translation id="2994465299455873643">Дае доступ да сэрвісаў шыфравання і дазваляе бяспечна аднавіць браўзер <ph name="BROWSER_NAME" />, калі яго версія састарэе. Калі гэты сэрвіс адключаны, браўзер <ph name="BROWSER_NAME" /> можа страціць доступ да зашыфраваных даных і <ph name="BROWSER_NAME" /> не зможа аднаўляцца.</translation>
 <translation id="3003694935412297923">Усе задачы</translation>
@@ -722,6 +723,7 @@
 <translation id="8113883687556086139">Каб выкарыстоўваць і захоўваць даныя Chrome ва Уліковым запісе <ph name="ACCOUNT_EMAIL" />, пацвердзіце сваю асобу</translation>
 <translation id="8115695070094288807">Ідзе персаналізацыя Chromium…</translation>
 <translation id="8118331347066725040">Адправіць водгук на пошук з дапамогай Аб’ектыва</translation>
+<translation id="812930250799242837">Вы ўвайшлі як <ph name="USER_NAME" /> (падпіска Google). Адкрыць меню ўліковага запісу</translation>
 <translation id="8129812357326543296">Пра &amp;Google Chrome</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
 <translation id="8162006532256575008">Выкарыстоўваць Chrome без уліковага запісу</translation>
@@ -755,6 +757,7 @@
 
 Новыя закладкі нельга захаваць у вашым уліковым запісе, пакуль вы не выдаліце некаторыя з існуючых. Калі вы выйдзеце зараз, незахаваныя закладкі будуць выдалены.</translation>
 <translation id="8458117863387545390">Усталюйце Chrome на тэлефон</translation>
+<translation id="848851325211467878">Вы ўвайшлі як <ph name="USER_NAME" />, <ph name="USER_EMAIL" /> (падпіска Google). Адкрыць меню ўліковага запісу</translation>
 <translation id="8496177819998570653">&amp;Менеджар пароляў Google</translation>
 <translation id="8498858610309223613">Толькі што было прыменена спецыяльнае абнаўленне бяспекі для Google Chrome. Перазапусціце браўзер, і вашы ўкладкі будуць адноўлены.</translation>
 <translation id="8521348052903287641">Уваходнае правіла версіі Google Chrome для распрацоўшчыкаў, якое дазваляе трафік mDNS.</translation>

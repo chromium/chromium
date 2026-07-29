@@ -196,6 +196,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Login på netværk – Chrome</translation>
 <translation id="2970681950995291301">Hvis du vil fjerne din Google-konto fra Chrome, skal du logge ud af Chrome på siden Indstillinger</translation>
 <translation id="2976869732253036751">Få underretninger om prissporing med Chrome på din telefon</translation>
+<translation id="2985091279808606502">Chrome skal have adgangstilladelse til det lokale netværk for at bruge dette website</translation>
 <translation id="2991167882679440829">Dine adgangskoder og andre Chrome-data, som du har gemt på din Google-konto, fjernes fra denne enhed. Hvis du vil bruge dem igen i Chrome, skal du logge ind igen.</translation>
 <translation id="2994465299455873643">Leverer krypteringstjenester og en sikker måde at gendanne <ph name="BROWSER_NAME" /> på, hvis den forældes. Hvis denne tjeneste deaktiveres, mister <ph name="BROWSER_NAME" /> muligvis adgangen til krypterede data, og <ph name="BROWSER_NAME" /> kan muligvis ikke gendanne sig selv.</translation>
 <translation id="3003694935412297923">Alle opgaver</translation>
@@ -715,6 +716,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Tilpasser Chrome…</translation>
 <translation id="8118331347066725040">Send feedback om søgning via Lens</translation>
+<translation id="812930250799242837">Logget ind som <ph name="USER_NAME" />, Google-medlemskab. Åbn kontomenuen</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8162006532256575008">Brug Chrome uden en konto</translation>
@@ -748,6 +750,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 
 Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
 <translation id="8458117863387545390">Få Chrome på din telefon</translation>
+<translation id="848851325211467878">Logget ind som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-medlemskab. Åbn kontomenuen</translation>
 <translation id="8496177819998570653">Google Adgangs­kode­admin­istrator</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="8521348052903287641">Indgående regel for udviklerversionen af Chrome om at tillade mDNS-trafik.</translation>

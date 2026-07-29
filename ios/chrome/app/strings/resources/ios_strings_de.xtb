@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Export erfolgreich</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} Passwort}other{{count} Passwörter}}</translation>
+<translation id="1274721046703404848">Verbindung zwischen Suchdiensten und Google Workspace-Apps wie Google Drive verwalten</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1279024913354609713">Nicht zulassen</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
@@ -2189,6 +2190,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8263228331881858381">Passkey gespeichert</translation>
 <translation id="8263809106706527890">Möglicherweise wurden deine Einstellungen für den Standardbrowser geändert. Das kannst du in den Einstellungen prüfen.</translation>
 <translation id="8264966119170358612">Einige deiner gespeicherten Passwörter wurden durch eine Datenpanne (nicht bei Google) preisgegeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Öffne das Chrome-Menü</translation>
 <translation id="826614135184049678">Du wurdest beim Zurücksetzen deines iPads von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Du bist dabei, das Profil zu wechseln</translation>

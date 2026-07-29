@@ -84,6 +84,7 @@
 <translation id="126737128831326059">‏‫Export Successful (باموفقیت صادر شد)</translation>
 <translation id="1272079795634619415">ایست</translation>
 <translation id="1273416271143914096">{count,plural, =1{‫{count} گذرواژه}one{‫{count} گذرواژه}other{‫{count} گذرواژه}}</translation>
+<translation id="1274721046703404848">‏مدیریت کردن اتصال بین سرویس‌های «جستجو» و برنامه‌های Google Workspace، مثل Google Drive</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1279024913354609713">اجازه ندادن</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
@@ -2189,6 +2190,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8263228331881858381">گذرکلید ذخیره شد</translation>
 <translation id="8263809106706527890">ممکن است تغییری در تنظیمات مرورگر پیش‌فرض ایجاد شده باشد. می‌توانید آن را در تنظیمات بررسی کنید.</translation>
 <translation id="8264966119170358612">‏برخی‌از گذرواژه‌های ذخیره‌شده‌تان به‌دلیل سرقت اطلاعات شبکه در سایت غیر Google لو رفته‌اند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">‏باز کردن منو Chrome</translation>
 <translation id="826614135184049678">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم حساب <ph name="USER_NAME" /> خارج شدید. برای ورود مجدد به سیستم، روی «ادامه» در زیر تک‌ضرب بزنید.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">درحال عوض کردن نمایه هستید</translation>

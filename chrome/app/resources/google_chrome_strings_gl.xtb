@@ -200,6 +200,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="2970681950995291301">Para quitar a túa Conta de Google de Chrome, vai á páxina de configuración e pecha a sesión en Chrome</translation>
 <translation id="2976869732253036751">Recibe alertas de seguimento de prezos con Chrome no teléfono</translation>
+<translation id="2985091279808606502">Chrome necesita permiso de acceso á rede local para este sitio</translation>
 <translation id="2991167882679440829">Os teus contrasinais e outros datos de Chrome que gardases na túa Conta de Google quitaranse deste dispositivo. Para usalos de novo en Chrome, volve iniciar sesión.</translation>
 <translation id="2994465299455873643">Fornece servizos de encriptación e unha maneira segura de recuperar <ph name="BROWSER_NAME" /> se queda desactualizado. Se o servizo se desactiva, <ph name="BROWSER_NAME" /> pode perder acceso aos datos encriptados e <ph name="BROWSER_NAME" /> pode non recuperarse.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
@@ -723,6 +724,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8113883687556086139">Verifica a túa identidade para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8115695070094288807">Personalizando Chrome...</translation>
 <translation id="8118331347066725040">Envía comentarios sobre as buscas con Lens</translation>
+<translation id="812930250799242837">Tes a sesión iniciada como <ph name="USER_NAME" /> (subscrición a Google). Abrir o menú da conta</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8162006532256575008">Usar Chrome sen ningunha conta</translation>
@@ -756,6 +758,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 
 Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora, eliminaranse os marcadores sen gardar.</translation>
 <translation id="8458117863387545390">Desfruta de Chrome no teléfono</translation>
+<translation id="848851325211467878">Tes a sesión iniciada como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, subscrición a Google. Abrir o menú da conta</translation>
 <translation id="8496177819998570653">Xestor de c&amp;ontrasinais de Google</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>

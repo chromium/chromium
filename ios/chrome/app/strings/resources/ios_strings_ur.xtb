@@ -84,6 +84,7 @@
 <translation id="126737128831326059">ایکسپورٹ کا عمل مکمل ہو گیا ہے</translation>
 <translation id="1272079795634619415">روکیں</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} پاس ورڈ}other{{count} پاس ورڈز}}</translation>
+<translation id="1274721046703404848">‏تلاش کی سروسز اور Google Workspace ایپس، جیسے Google Drive کے درمیان کنکشن کا نظم کریں</translation>
 <translation id="1275718070701477396">منتخب</translation>
 <translation id="1279024913354609713">اجازت نہ دیں</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
@@ -2189,6 +2190,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8263228331881858381">پاس کی کو محفوظ کر دیا گیا</translation>
 <translation id="8263809106706527890">ہو سکتا ہے کہ آپ کے ڈیفالٹ براؤزر کی ترتیبات میں کوئی تبدیلی ہوئی ہو۔ آپ اسے ترتیبات میں چیک کر سکتے ہیں۔</translation>
 <translation id="8264966119170358612">‏آپ کے محفوظ کردہ کچھ پاس ورڈز غیر Google ڈیٹا کی خلاف ورزی میں افشاء ہو گئے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">‏‫Chrome مینیو کھولیں</translation>
 <translation id="826614135184049678">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ واپس سائن ان کرنے کے لیے، نیچے "جاری رکھیں" پر تھپتھپائیں۔</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">آپ پروفائلز کو سوئچ کرنے والے ہیں</translation>
@@ -2311,6 +2313,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8643403533759285912">گروپ حذف کریں</translation>
 <translation id="8647280737650867362">قیمت کے ٹریک کو کالعدم نہیں کیا جا سکا۔</translation>
 <translation id="8654802032646794042">منسوخ کریں</translation>
+<translation id="8655861111558401309">براؤزنگ ڈیٹا کو حذف کریں کو منتخب کریں</translation>
 <translation id="8659875081143553823">بس ایک سیکنڈ</translation>
 <translation id="8660600697590740984">لینز نے تصویر کو کاپی کیا</translation>
 <translation id="866266761389616183">اوہ، نہیں!</translation>

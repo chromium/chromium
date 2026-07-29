@@ -196,6 +196,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chrome</translation>
 <translation id="2970681950995291301">Google Hesabınızı Chrome'dan kaldırmak için Ayarlar sayfasında Chrome oturumunu kapatın</translation>
 <translation id="2976869732253036751">Telefonunuzda Chrome ile fiyat takibi uyarıları alın</translation>
+<translation id="2985091279808606502">Chrome'un bu site için yerel ağ iznine ihtiyacı var</translation>
 <translation id="2991167882679440829">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chrome verileri bu cihazdan kaldırılır. Bu bilgileri Chrome'da tekrar kullanmak için yeniden oturum açın.</translation>
 <translation id="2994465299455873643">Şifreleme hizmetlerinin yanı sıra güncelliğini yitirdiği takdirde <ph name="BROWSER_NAME" /> tarayıcıyı kurtarmanın güvenli bir yolunu sunar. Bu hizmet devre dışı bırakılırsa <ph name="BROWSER_NAME" />, şifrelenmiş verilere erişimi kaybedebilir ve <ph name="BROWSER_NAME" /> kendisini kurtaramayabilir.</translation>
 <translation id="3003694935412297923">Tüm görevler</translation>
@@ -716,6 +717,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8113883687556086139">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
 <translation id="8115695070094288807">Chrome'u kendinize uyarlama...</translation>
 <translation id="8118331347066725040">Lens ile arama hakkında geri bildirim gönderin</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" /> olarak oturum açıldı (Google üyeliği). Hesap menüsünü açın</translation>
 <translation id="8129812357326543296">&amp;Google Chrome hakkında</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8162006532256575008">Chrome'u hesap olmadan kullan</translation>
@@ -749,6 +751,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 
 Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedilemez. Oturumu şimdi kapatırsanız kaydedilmemiş yer işaretleri silinir.</translation>
 <translation id="8458117863387545390">Telefonunuza Chrome'u yükleyin</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" /> olarak oturum açıldı (Google üyeliği). Hesap menüsünü açın</translation>
 <translation id="8496177819998570653">Google Ş&amp;ifre Yöneticisi</translation>
 <translation id="8498858610309223613">Google Chrome için özel bir güvenlik güncellemesi uygulandı. Uygulamayı hemen yeniden başlatın; açık sekmeleriniz geri yüklenir.</translation>
 <translation id="8521348052903287641">Google Chrome Dev'in mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>

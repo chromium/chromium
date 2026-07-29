@@ -196,6 +196,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="2970681950995291301">Sal de Chrome en la página de Configuración para quitar tu Cuenta de Google</translation>
 <translation id="2976869732253036751">Recibe alertas de seguimiento de precios con Chrome en tu teléfono</translation>
+<translation id="2985091279808606502">Chrome necesita permiso de acceso a la red local para este sitio</translation>
 <translation id="2991167882679440829">Se quitarán de este dispositivo tus contraseñas y otros datos de Chrome que guardaste en tu Cuenta de Google. Para volver a usarlas en Chrome, vuelve a acceder.</translation>
 <translation id="2994465299455873643">Proporciona servicios de encriptación y una forma segura de recuperar <ph name="BROWSER_NAME" /> si está desactualizado. Si se inhabilita este servicio, es posible que <ph name="BROWSER_NAME" /> pierda el acceso a los datos encriptados y que <ph name="BROWSER_NAME" /> no pueda recuperarse.</translation>
 <translation id="3003694935412297923">Todas las tareas</translation>
@@ -715,6 +716,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="8113883687556086139">Verifica tu identidad para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Personalizando Chrome…</translation>
 <translation id="8118331347066725040">Envía comentarios sobre la búsqueda con Lens</translation>
+<translation id="812930250799242837">Accediste como <ph name="USER_NAME" />, membresía de Google. Abrir el menú de la cuenta</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
@@ -748,6 +750,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 
 No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si sales ahora, se borrarán los favoritos no guardados.</translation>
 <translation id="8458117863387545390">Obtén Chrome en tu teléfono</translation>
+<translation id="848851325211467878">Accediste como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, membresía de Google. Abrir el menú de la cuenta</translation>
 <translation id="8496177819998570653">Administrador de contraseñas de Google</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia el navegador ahora (se restablecerán tus pestañas).</translation>
 <translation id="8521348052903287641">Regla de entrada para que Google Chrome Dev permita el tráfico mDNS.</translation>

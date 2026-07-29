@@ -599,6 +599,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="192095259937375524">Pulsante Condividi questa scheda, attiva per condividere questa scheda tramite link, creando un codice QR, mediante trasmissione e altro ancora</translation>
 <translation id="1924727005275031552">Nuovo</translation>
 <translation id="1927439846988093361">Cura dei capelli</translation>
+<translation id="1927930548546198515">Chrome registra il modo in cui utilizzi la funzionalità, ad esempio le richieste e il comportamento quando accetti o ignori i suggerimenti</translation>
 <translation id="1932098463447129402">Non prima</translation>
 <translation id="1935353813610900265">Invia feedback per la ricerca nella cronologia basata sull'AI</translation>
 <translation id="1935995810530254458">Copia comunque</translation>
@@ -985,6 +986,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2491120439723279231">Il certificato del server contiene degli errori.</translation>
 <translation id="2491414235131909199">Questa pagina è stata bloccata da un'estensione</translation>
 <translation id="2493122313108999546">Ridimensionato</translation>
+<translation id="249376477913017009">Notifica di Compilazione automatica da Gmail e altro aperta</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747">Puoi scegliere se utilizzare l'impronta per inserire le password in <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Scansiona una nuova carta</translation>
@@ -1153,6 +1155,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Domotica</translation>
 <translation id="2743512410823092182">Risorse e apparecchiature per DJ</translation>
+<translation id="275259155159336003">Basato su Personal Intelligence con Gemini. Le tue richieste, i titoli delle pagine e gli URL potrebbero essere esaminati per migliorare la compilazione automatica avanzata. <ph name="BEGIN_LINK" />Gestisci le impostazioni<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Caricamento di <ph name="COUNT" /> file su Google Drive in corso…</translation>
 <translation id="2759299890026163685">Assicurati di avere una connessione a internet stabile prima di riprovare</translation>
 <translation id="2759825833388495838">inserire la tua password su <ph name="APP_NAME" /></translation>
@@ -1433,6 +1436,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208701679386778924">Invia una segnalazione per consentirci di migliorare ulteriori aggiornamenti di ChromeOS.</translation>
 <translation id="3209034400446768650">La pagina potrebbe addebitare denaro</translation>
+<translation id="3209071504641569648">Le tue richieste, i Titoli delle pagine e gli URL vengono inviati a Google e potrebbero essere esaminati per migliorare la compilazione automatica avanzata</translation>
 <translation id="3212468046572043669">Download iniziato. Per visualizzarlo, trascina dall'alto e tocca il pulsante Indietro</translation>
 <translation id="3212581601480735796">La tua attività su <ph name="HOSTNAME" /> è monitorata</translation>
 <translation id="3215092763954878852">Impossibile usare WebAuthn</translation>
@@ -1470,6 +1474,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3255926992597692024">Chromium sta cercando di modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo evento in Google Calendar</translation>
+<translation id="3261180263071638338">Notifica di Compilazione automatica da Gmail e altro chiusa</translation>
 <translation id="3261488570342242926">Scopri di più sulle carte virtuali</translation>
 <translation id="3262698603497362968">Opzioni di acquisto</translation>
 <translation id="3264637689694266148">Anche disattivando i suggerimenti, il titolo della pagina e gli URL delle schede potrebbero comunque essere elaborati per altre funzionalità di Chrome. Puoi gestire l'accesso del browser a questi dati nelle</translation>
@@ -2332,6 +2337,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Prenotazioni di voli</translation>
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
+<translation id="4607879293515681409">La Compilazione automatica avanzata ora può trovare e inserire informazioni, come numeri del volo e orari degli appuntamenti, da app come Gmail e Foto</translation>
 <translation id="460848736049414407">Bloccato dall'amministratore</translation>
 <translation id="4610279718074907952">Questo sito fa parte di un gruppo, definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
 <translation id="4612631413844865947">Si è verificato un errore durante l'elaborazione dell'ordine su <ph name="MERCHANT_ORIGIN" /> tramite <ph name="PAYMENT_APP_ORIGIN" />.</translation>
@@ -2848,6 +2854,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5401344472773249513">Notizie su celebrità e intrattenimento</translation>
 <translation id="5401674281624189321">Località montane e sciistiche</translation>
+<translation id="5402715318763077894">Consentire l'accesso alla rete locale?</translation>
 <translation id="540949333488055151">Plastica (colorata)</translation>
 <translation id="540969355065856584">Questo server non è riuscito a verificare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato valido in questa fase. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che ha intercettato la connessione.</translation>
 <translation id="5411462078004183575">Opzione prezzo basso</translation>
@@ -3098,6 +3105,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5764725887548570807">Formato di origine non valido.</translation>
 <translation id="5764920692828389743">Invia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Seleziona un indirizzo per conoscere i requisiti e i metodi di consegna</translation>
+<translation id="5768323954710688012">Notifica di Compilazione automatica da Gmail e altro aperta a schermo intero</translation>
 <translation id="57689295674415555">Il numero della carta virtuale non è stato inserito?</translation>
 <translation id="5773286975255318081">Ad esempio, nomi utente dei profili e versioni del browser</translation>
 <translation id="5774897849666641211">Fai domande su questa scheda</translation>

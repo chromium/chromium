@@ -55,6 +55,7 @@
 <translation id="1623563412065267963">Få det bedste fra Google med Chromium-appen på din telefon</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
 <translation id="1640672724030957280">Downloader...</translation>
+<translation id="1665602916345474427">Logget ind som <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, medlemskab. Åbn kontomenuen</translation>
 <translation id="1708414395296835197">Du kan bruge Chromium, hver gang du klikker på links i beskeder, dokumenter og andre apps. Den fastgøres også til proceslinjen.</translation>
 <translation id="1709772298389099340">Giver udvidede adgangsrettigheder til <ph name="BROWSER_NAME" />.</translation>
 <translation id="1722488837206509557">Dette giver dig mulighed for at vælge mellem tilgængelige enheder og vise indhold på dem.</translation>
@@ -256,6 +257,7 @@
 
           **Foreslå spørgsmål:** Generér en opstilling med punkttegn med 3-5 tankevækkende spørgsmål, som en bruger kan stille for bedre at forstå screenshottet. Disse spørgsmål skal omfatte mindst ét spørgsmål, der specifikt handler om et visuelt objekt, dets design eller dets placering.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="387514319934708384">Chromium skal have adgangstilladelse til det lokale netværk for at bruge dette website</translation>
 <translation id="3885770153807205175">Sprogvælger</translation>
 <translation id="388648406173476553">Tilpas og administrer Chromium. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
 <translation id="3889543394854987837">Klik på dit navn for at åbne Chromium og gå i gang med at browse.</translation>
@@ -334,6 +336,7 @@
 <translation id="4625064703209785397">Gør websites hurtigere ved hjælp af Chromiums V8-maskine, men gør Chromium en smule mindre modstandsdygtig over for angreb</translation>
 <translation id="4665829708273112819">Advarsel! Chromium kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="4673151026126227699">Hvis du også deler Chromium-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
+<translation id="4673710618874938871">Logget ind som <ph name="USER_NAME" />, medlemskab. Åbn kontomenuen</translation>
 <translation id="4677944499843243528">Profilen ser ud til at være i brug i en anden Chromium-proces (<ph name="PROCESS_ID" />) på en anden computer (<ph name="HOST_NAME" />). Chromium har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du fjerne blokeringen af profilen og genstarte Chromium.</translation>
 <translation id="4680828127924988555">Annuller installation</translation>
 <translation id="469259825538636168">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>

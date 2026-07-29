@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Eksporten er gennemført</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} adgangskode}one{{count} adgangskode}other{{count} adgangskoder}}</translation>
+<translation id="1274721046703404848">Administrer tilknytningen mellem søgetjenester og Google Workspace-apps, f.eks. Google Drev</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1279024913354609713">Tillad ikke</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
@@ -2189,6 +2190,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8263228331881858381">Adgangsnøglen er gemt</translation>
 <translation id="8263809106706527890">Dine standardbrowserindstillinger er muligvis blevet ændret. Du kan tjekke dette i indstillingerne.</translation>
 <translation id="8264966119170358612">Nogle af dine gemte adgangskoder er blevet offentliggjort som følge af et brud på datasikkerheden uden for Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Åbn Chrome-menuen</translation>
 <translation id="826614135184049678">Du blev logget ud af din konto, <ph name="USER_NAME" />, som en del af nulstillingen af din iPad. Tryk på "Fortsæt" nedenfor for at logge ind igen.</translation>
 <translation id="8270320981823560179">Drev</translation>
 <translation id="8274795744553482834">Du er ved at skifte profil</translation>

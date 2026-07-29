@@ -84,6 +84,7 @@
 <translation id="126737128831326059">Export Successful</translation>
 <translation id="1272079795634619415">Стоп</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} парола}other{{count} пароли}}</translation>
+<translation id="1274721046703404848">Управление на връзката между услугите на Търсене и приложенията на Google Workspace, като например Google Диск</translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1279024913354609713">Без разрешаване</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8263228331881858381">Ключът за достъп е запазен</translation>
 <translation id="8263809106706527890">Възможно е да има промяна в стандартните настройки на браузъра ви. Можете да проверите това в настройките.</translation>
 <translation id="8264966119170358612">Някои от запазените ви пароли са били разкрити вследствие на нарушение на сигурността на данните извън Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Отваряне на менюто на Chrome</translation>
 <translation id="826614135184049678">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPad. За да влезете отново, докоснете „Напред“ по-долу.</translation>
 <translation id="8270320981823560179">Диск</translation>
 <translation id="8274795744553482834">Превключвате потребителските профили</translation>

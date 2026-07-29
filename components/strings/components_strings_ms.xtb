@@ -1081,6 +1081,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2631387782019878060">Kod Pengesahan: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Alamat IP pelayan <ph name="HOST_NAME" /> tidak ditemui.</translation>
 <translation id="2635276683026132559">Melog</translation>
+<translation id="2638070510549214427">Tandai sebagai selamat</translation>
 <translation id="2638567100095052009">Taip @ untuk membuat carian merentas <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2644219706149911059">Memuat naik kepada Google Drive...</translation>
@@ -1384,6 +1385,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3121994479408824897">Pergi ke <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Paparkan hasil carian dari 30 hari yang lalu</translation>
 <translation id="3126023634486644099">Label (Kekal)</translation>
+<translation id="3131746543143948171">Laman ini kelihatan serupa dengan laman lain yang dikaitkan dengan pancingan data, perisian hasad dan komplot. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Simpan nombor tebus rugi</translation>
 <translation id="3133565499688974786">Kini <ph name="SEARCH_ENGINE_NAME" /> ialah enjin carian lalai anda</translation>
 <translation id="3134859781443140237">Rangkaian setempat</translation>
@@ -4563,6 +4565,7 @@ Butiran tambahan:
 <translation id="7979595116210197019">Perkhidmatan Makanan</translation>
 <translation id="798134797138789862">Boleh meminta untuk menggunakan peranti dan data realiti maya</translation>
 <translation id="7983008347525536475">SUV</translation>
+<translation id="7983569303268727247">Mengisi maklumat anda</translation>
 <translation id="7984945080620862648">Anda tidak boleh melawati <ph name="SITE" /> sekarang kerana laman web ini menghantar bukti kelayakan yang dicampuradukkan yang tidak boleh diproses oleh Chrome. Ralat rangkaian dan serangan biasanya bersifat sementara oleh itu, halaman ini mungkin akan berfungsi sebentar lagi.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Pengeluar Beli Sekarang, Bayar Kemudian yang tersedia untuk bayaran ansuran dibuka pada ketinggian penuh.</translation>
@@ -5022,6 +5025,7 @@ Butiran tambahan:
 <translation id="8738058698779197622">Untuk mewujudkan sambungan yang selamat, jam anda perlu ditetapkan dengan betul. Ini kerana sijil yang digunakan oleh laman web untuk mengenal pastinya hanya sah untuk tempoh masa yang tertentu. Memandangkan jam peranti anda tidak betul, Chromium tidak boleh mengesahkan sijil-sijil ini.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Alamat DNS&lt;/abbr&gt; <ph name="HOST_NAME" /> tidak ditemui. Masalah sedang didiagnosis.</translation>
 <translation id="874918643257405732">Tanda tab ini</translation>
+<translation id="8749274696886550762">Laman ini kelihatan tidak betul</translation>
 <translation id="8751426954251315517">Sila cuba lagi nanti</translation>
 <translation id="8753913772043329557">Log Dasar</translation>
 <translation id="8754546574216727970">Kasut but</translation>
@@ -5309,6 +5313,7 @@ Butiran tambahan:
 <translation id="9192361865877479444">Logam (Kusam)</translation>
 <translation id="9192947025498305328">Kecantikan Alamiah</translation>
 <translation id="9193018794001479794">Huraikan</translation>
+<translation id="9194783551575429711">Tanya <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">Apabila organisasi anda mengehadkan penyimpanan kepada Google Account anda, anda tidak boleh berkongsi atau menyertai kumpulan tab</translation>
 <translation id="9198613052465150219">Google Account anda mungkin mempunyai bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Pencetakan disekat</translation>

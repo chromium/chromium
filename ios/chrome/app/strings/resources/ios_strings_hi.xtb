@@ -84,6 +84,7 @@
 <translation id="126737128831326059">एक्सपोर्ट हो गया</translation>
 <translation id="1272079795634619415">रोकें</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} पासवर्ड}one{{count} पासवर्ड}other{{count} पासवर्ड}}</translation>
+<translation id="1274721046703404848">Search की सेवाओं और Google Workspace के ऐप्लिकेशन, जैसे कि Google Drive के बीच कनेक्शन मैनेज करें</translation>
 <translation id="1275718070701477396">चयनित</translation>
 <translation id="1279024913354609713">अनुमति न दें</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
@@ -2189,6 +2190,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8263228331881858381">पासकी सेव की गई</translation>
 <translation id="8263809106706527890">ऐसा हो सकता है कि आपके डिफ़ॉल्ट ब्राउज़र की सेटिंग में कुछ बदलाव किया गया हो. सेटिंग में जाकर इसे देखा जा सकता है.</translation>
 <translation id="8264966119170358612">पासवर्ड मैनेजर में सेव किए गए आपके कुछ पासवर्ड, बिना अनुमति के सार्वजनिक किए गए हैं. ऐसा करने के लिए, Google के बजाय किसी तीसरे पक्ष ने डेटा का गलत इस्तेमाल किया है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome मेन्यू खोलें</translation>
 <translation id="826614135184049678">iPad रीसेट होने की वजह से, आपको <ph name="USER_NAME" /> खाते से साइन आउट कर दिया गया था. फिर से साइन इन करने के लिए, नीचे "जारी रखें" पर टैप करें.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">प्रोफ़ाइलें स्विच होने वाली हैं</translation>

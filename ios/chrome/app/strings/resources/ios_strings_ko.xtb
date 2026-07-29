@@ -84,6 +84,7 @@
 <translation id="126737128831326059">내보내기 완료</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1273416271143914096">{count,plural, =1{비밀번호 {count}개}other{비밀번호 {count}개}}</translation>
+<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리해 보세요.</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1279024913354609713">허용 안함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -2189,6 +2190,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8263228331881858381">패스키 저장됨</translation>
 <translation id="8263809106706527890">기본 브라우저 설정이 변경되었을 수 있습니다. 설정에서 이를 확인해 볼 수 있습니다</translation>
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="8265730590513812063">Chrome 메뉴 열기</translation>
 <translation id="826614135184049678">iPad 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 다시 로그인하려면 아래에서 '계속'을 탭하세요.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">프로필을 전환하려고 합니다</translation>
