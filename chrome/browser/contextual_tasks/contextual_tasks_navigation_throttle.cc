@@ -116,8 +116,7 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
 
   content::SiteInstance* site = navigation_handle()->GetSourceSiteInstance();
   bool is_same_site_or_from_ui =
-      !navigation_handle()->IsRendererInitiated() ||
-      (site && site->IsSameSiteWithURL(navigation_handle()->GetURL()));
+      site && site->IsSameSiteWithURL(navigation_handle()->GetURL());
 
   const net::HttpRequestHeaders& headers =
       navigation_handle()->GetRequestHeaders();
