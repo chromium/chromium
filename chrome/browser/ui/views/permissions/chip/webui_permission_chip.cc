@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -70,7 +74,7 @@ toolbar_ui_api::mojom::PermissionAction GetMojoPermissionAction(
 
 }  // namespace
 
-WebUIPermissionChip::WebUIPermissionChip(WebUILocationBar* location_bar)
+WebUIPermissionChip::WebUIPermissionChip(LocationBar* location_bar)
     : location_bar_(location_bar) {}
 
 WebUIPermissionChip::~WebUIPermissionChip() = default;
@@ -250,8 +254,13 @@ views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
   if (ui::TrackedElement* element = location_bar_->GetAnchorOrNull()) {
     return views::BubbleAnchor(element);
   }
-  return views::BubbleAnchor(
-      location_bar_->GetLocationBarWidget()->GetContentsView());
+  BrowserWindow* window =
+      BrowserWindow::FromBrowser(location_bar_->GetBrowser());
+  CHECK(window);
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
+  CHECK(widget);
+  return views::BubbleAnchor(widget->GetContentsView());
 }
 
 void WebUIPermissionChip::SetBubbleOwner(BubbleOwnerDelegate* owner) {

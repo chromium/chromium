@@ -9,11 +9,11 @@
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 
-class WebUILocationBar;
+class LocationBar;
 
 class WebUIPermissionDashboard : public PermissionDashboardInterface {
  public:
-  explicit WebUIPermissionDashboard(WebUILocationBar* location_bar);
+  explicit WebUIPermissionDashboard(LocationBar* location_bar);
   ~WebUIPermissionDashboard() override;
 
   // PermissionDashboardInterface:
@@ -31,7 +31,7 @@ class WebUIPermissionDashboard : public PermissionDashboardInterface {
  private:
   void UpdateState();
 
-  raw_ptr<WebUILocationBar> location_bar_;
+  raw_ptr<LocationBar> location_bar_;
   bool is_visible_ = false;
 
   WebUIPermissionChip request_chip_;

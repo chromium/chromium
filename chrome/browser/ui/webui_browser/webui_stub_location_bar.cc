@@ -10,7 +10,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "ui/views/bubble/bubble_border.h"
 
@@ -18,9 +21,29 @@ WebUIStubLocationBar::WebUIStubLocationBar(WebUIBrowserWindow* window)
     : LocationBar(window->browser()
                       ->GetBrowserForMigrationOnly()
                       ->command_controller()),
-      window_(window) {}
+      window_(window) {
+  permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
+  permission_dashboard_controller_ =
+      std::make_unique<PermissionDashboardController>(
+          /*location_bar=*/this,
+          /*content_settings_image_delegate=*/this,
+          permission_dashboard_.get());
+}
 
 WebUIStubLocationBar::~WebUIStubLocationBar() = default;
+
+bool WebUIStubLocationBar::ShouldHideContentSettingImage() {
+  return false;
+}
+
+content::WebContents* WebUIStubLocationBar::GetContentSettingWebContents() {
+  return GetWebContents();
+}
+
+ContentSettingBubbleModelDelegate*
+WebUIStubLocationBar::GetContentSettingBubbleModelDelegate() {
+  return nullptr;
+}
 
 void WebUIStubLocationBar::FocusLocation(bool is_user_initiated,
                                          bool clear_focus_if_failed) {
@@ -68,13 +91,11 @@ bool WebUIStubLocationBar::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
 }
 
 ChipController* WebUIStubLocationBar::GetChipController() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return permission_dashboard_controller_->request_chip_controller();
 }
 
 content::WebContents* WebUIStubLocationBar::GetWebContents() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return GetBrowser()->tab_strip_model()->GetActiveWebContents();
 }
 
 LocationBarModel* WebUIStubLocationBar::GetLocationBarModel() {
@@ -84,32 +105,25 @@ LocationBarModel* WebUIStubLocationBar::GetLocationBarModel() {
 
 std::optional<bubble_anchor_util::AnchorConfiguration>
 WebUIStubLocationBar::GetChipAnchor() {
-  ui::TrackedElement* location_button =
-      BrowserElements::From(window_->browser())
-          ->GetElement(kLocationIconElementId);
-  CHECK(location_button) << "Location button not found";
+  ui::TrackedElement* location_button = GetAnchorOrNull();
   return {{views::BubbleAnchor(location_button), std::nullopt,
            views::BubbleBorder::TOP_LEFT}};
 }
 
 ui::TrackedElement* WebUIStubLocationBar::GetAnchorOrNull() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return BrowserElements::From(window_->browser())
+      ->GetElement(kLocationIconElementId);
 }
 
 BrowserWindowInterface* WebUIStubLocationBar::GetBrowser() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return window_->browser();
 }
 
 Profile* WebUIStubLocationBar::GetProfile() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return window_->browser()->GetProfile();
 }
 
-void WebUIStubLocationBar::OnChanged() {
-  NOTIMPLEMENTED();
-}
+void WebUIStubLocationBar::OnChanged() {}
 
 void WebUIStubLocationBar::UpdateWithoutTabRestore() {
   NOTIMPLEMENTED();
@@ -190,4 +204,8 @@ bool WebUIStubLocationBar::HasSecurityStateChanged() {
 LocationBarTesting* WebUIStubLocationBar::GetLocationBarForTesting() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+void WebUIStubLocationBar::AnnounceAlert(const std::u16string& announcement) {
+  NOTIMPLEMENTED();
 }

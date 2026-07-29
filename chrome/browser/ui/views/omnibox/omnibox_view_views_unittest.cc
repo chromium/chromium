@@ -323,6 +323,7 @@ class TestLocationBar : public LocationBar {
   void Update(content::WebContents* contents) override {}
   void ResetTabState(content::WebContents* contents) override {}
   bool HasSecurityStateChanged() override { return false; }
+  void AnnounceAlert(const std::u16string& announcement) override {}
 
   raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;

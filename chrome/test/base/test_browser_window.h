@@ -263,6 +263,7 @@ class TestBrowserWindow : public BrowserWindow,
     void Update(content::WebContents* contents) override {}
     void ResetTabState(content::WebContents* contents) override {}
     bool HasSecurityStateChanged() override;
+    void AnnounceAlert(const std::u16string& announcement) override {}
   };
 
   // BrowserCollectionObserver:

@@ -129,6 +129,9 @@ class LocationBar {
   // Controls the chip in the LocationBar.
   virtual ChipController* GetChipController() = 0;
 
+  // Announces an alert for accessibility screen readers.
+  virtual void AnnounceAlert(const std::u16string& announcement) = 0;
+
   // Called when anything has changed that might affect the layout or contents
   // of the views around the edit, including the text of the edit and the
   // status of any keyword- or hint-related state.

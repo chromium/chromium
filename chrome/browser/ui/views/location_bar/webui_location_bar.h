@@ -89,6 +89,7 @@ class WebUILocationBar : public LocationBar,
   ChipController* GetChipController() override;
   content::WebContents* GetWebContents() override;
   void SetPermissionPromptShowing(bool showing) override;
+  void AnnounceAlert(const std::u16string& announcement) override;
 
   // LocationBarTesting:
   LocationBarModel* GetLocationBarModel() override;
@@ -131,8 +132,6 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipDrag(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
                      ui::mojom::DragEventSource source);
-
-  void AnnounceAlert(const std::u16string& announcement);
 
   WebUIContentSettingImageControl& content_setting_image_control() {
     return content_setting_image_control_;

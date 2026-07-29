@@ -1970,6 +1970,10 @@ void LocationBarView::OnChanged() {
   RefreshAiModePageAction();
 }
 
+void LocationBarView::AnnounceAlert(const std::u16string& announcement) {
+  GetViewAccessibility().AnnounceAlert(announcement);
+}
+
 const LocationBarModel* LocationBarView::GetLocationBarModel() const {
   return delegate_->GetLocationBarModel();
 }

@@ -20,11 +20,11 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class WebUILocationBar;
+class LocationBar;
 
 class WebUIPermissionChip : public PermissionChipInterface {
  public:
-  explicit WebUIPermissionChip(WebUILocationBar* location_bar);
+  explicit WebUIPermissionChip(LocationBar* location_bar);
   ~WebUIPermissionChip() override;
 
   // PermissionChipInterface:
@@ -74,7 +74,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void NotifyVisibilityChanged();
   void UpdateState();
 
-  raw_ptr<WebUILocationBar> location_bar_;
+  raw_ptr<LocationBar> location_bar_;
 
   bool is_visible_ = false;
   std::string icon_name_;

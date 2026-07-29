@@ -420,6 +420,7 @@ class LocationBarView
   void SaveStateToContents(content::WebContents* contents) override;
   LocationBarTesting* GetLocationBarForTesting() override;
   void OnChanged() override;
+  void AnnounceAlert(const std::u16string& announcement) override;
 
   // LocationBarTesting:
   bool TestContentSettingImagePressed(size_t index) override;
