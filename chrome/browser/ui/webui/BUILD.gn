@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//chrome/test/include_js_tests.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
@@ -984,5 +985,101 @@ source_set("net_export_ui") {
 
   if (is_android) {
     deps += [ "//components/browser_ui/share/android" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "chrome_content_browser_client_webui_part_browsertest.cc",
+      "chrome_web_ui_controller_factory_browsertest.cc",
+      "chrome_webui_navigation_browsertest.cc",
+      "constrained_web_dialog_ui_browsertest.cc",
+      "log_web_ui_url_browsertest.cc",
+      "prefs_internals_browsertest.cc",
+      "web_dialog_web_contents_delegate_browsertest.cc",
+      "webui_embedding_context_browsertest.cc",
+      "webui_load_timer_browsertest.cc",
+      "webui_url_hashes_browsertest.cc",
+    ]
+    deps = [
+      ":chrome_content_browser_client_webui_part",
+      ":chrome_web_contents_handler",
+      ":chrome_web_ui_controller_factory",
+      ":log_web_ui_url",
+      ":webui",
+      ":webui_load_timer",
+      ":webui_util",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resource_coordinator",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/webui/top_chrome:test_support",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/local_state",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gtest",
+      "//ui/gfx/geometry",
+      "//ui/web_dialogs",
+      "//ui/web_dialogs:test_support",
+      "//ui/webui:test_support",
+      "//url",
+    ]
+
+    if (is_win || is_mac || is_linux) {
+      sources += [ "profile_helper_browsertest.cc" ]
+      deps += [
+        ":profile_helper",
+        "//chrome/browser/apps/platform_apps",
+        "//chrome/browser/ui/browser_window",
+      ]
+    }
+
+    if (include_js_tests) {
+      sources += [
+        "chrome_url_data_manager_browsertest.cc",
+        "web_ui_all_urls_browser_test.cc",
+        "web_ui_all_urls_browser_test.h",
+        "webui_url_browsertest.cc",
+        "webui_urls_for_test.cc",
+        "webui_urls_for_test.h",
+      ]
+      deps += [
+        ":theme_source",
+        "//chrome/browser/contextual_cueing",
+        "//chrome/browser/ui:ui_features",
+        "//chrome/browser/ui/webui/iwa_dev",
+        "//chrome/browser/ui/webui/whats_new",
+        "//chrome/test/data/webui:browser_tests",
+        "//components/collaboration/public",
+        "//components/enterprise:test_support",
+        "//components/history_clusters/core",
+        "//components/omnibox/common",
+        "//components/optimization_guide/core:features",
+        "//components/password_manager/core/common:features",
+        "//components/privacy_sandbox:features",
+        "//components/regional_capabilities",
+        "//components/search",
+        "//components/search_engines",
+        "//components/signin/public/base:signin_switches",
+        "//components/variations",
+      ]
+
+      if (is_chromeos) {
+        deps += [
+          "//ash/constants",
+          "//chrome/browser/ash/file_system_provider",
+          "//chrome/browser/ash/file_system_provider:test_support",
+          "//chromeos/constants",
+          "//components/prefs",
+        ]
+      }
+    }
   }
 }
