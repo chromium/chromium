@@ -95,8 +95,6 @@ class TabStripComboButton : public views::View,
  private:
   void ShowEverythingMenu();
 
-  void OnOrganizerPanelButtonPressed();
-
   void UpdateButtonsVisibility();
 
   void OnTabSearchBubbleShown();

@@ -49,7 +49,8 @@ class OrganizerPanelStateControllerInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This test checks that we can click the organizer panel button.
+// This test checks that we can click the tab search button to toggle the
+// organizer panel.
 IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
                        VerifyOrganizerPanelButton) {
   RunTestSequence(
@@ -62,9 +63,9 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
                 ->IsOrganizerPanelVisible();
           },
           false),
-      // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      // Click Tab Search Button and Verify Visibilities.
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
@@ -84,6 +85,29 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
       Do([this]() { RunScheduledLayouts(); }),
       WaitForHide(kOrganizerPanelViewElementId),
       WaitForHide(kOrganizerPanelButtonElementId));
+}
+
+// This test checks that clicking the tab search button opens the organizer
+// panel in vertical tabs mode.
+IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
+                       VerifyTabSearchButtonInVerticalTabs) {
+  RunTestSequence(WaitForShow(kVerticalTabStripTopContainerElementId),
+                  CheckResult(
+                      [this]() {
+                        return organizer_panel_state_controller()
+                            ->IsOrganizerPanelVisible();
+                      },
+                      false),
+                  EnsurePresent(kTabSearchButtonElementId),
+                  MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
+                  CheckResult(
+                      [this]() {
+                        return organizer_panel_state_controller()
+                            ->IsOrganizerPanelVisible();
+                      },
+                      true),
+                  Do([this]() { RunScheduledLayouts(); }),
+                  WaitForShow(kOrganizerPanelViewElementId));
 }
 
 }  // namespace base::test

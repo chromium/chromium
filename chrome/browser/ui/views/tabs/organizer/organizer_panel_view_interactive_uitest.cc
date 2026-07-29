@@ -16,11 +16,13 @@
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -28,6 +30,8 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_shadow.h"
 
@@ -44,10 +48,15 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {tabs::kVerticalTabs, tab_groups::kOrganizerPanel}, {});
     OrganizerPanelView::disable_animations_for_testing();
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   }
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, true);
 
     // Resize the window to be wide enough to accommodate a wide vertical tab
     // strip and the toolbar.
@@ -61,8 +70,8 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto OpenOrganizerPanel() {
-    return Steps(WaitForShow(kVerticalTabStripOrganizerButtonElementId),
-                 PressButton(kVerticalTabStripOrganizerButtonElementId),
+    return Steps(WaitForShow(kTabSearchButtonElementId),
+                 MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
                  Do([this]() { RunScheduledLayouts(); }),
                  WaitForShow(kOrganizerPanelViewElementId),
                  Do([this]() { RunScheduledLayouts(); }));
@@ -107,6 +116,7 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -123,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnClickOutside) {
           },
           false),
       // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
@@ -214,8 +224,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
           },
           false),
       // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
@@ -249,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, CloseOnEsc) {
           },
           false),
       // Click Organizer Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       CheckResult(
           [this]() {
             return organizer_panel_state_controller()
@@ -284,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
       ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
       Do([this]() { RunScheduledLayouts(); }),
       // Open the Organizer Panel.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       Do([this]() { RunScheduledLayouts(); }),
       WaitForShow(kOrganizerPanelViewElementId),
       // Verify that the panel matches the width of Vertical Tabs and does not
@@ -306,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
       ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
       Do([this]() { RunScheduledLayouts(); }),
       // Open the Organizer Panel.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       Do([this]() { RunScheduledLayouts(); }),
       WaitForShow(kOrganizerPanelViewElementId),
       // Verify that the panel is at its minimum width and has rounded corners.
@@ -327,8 +337,8 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
       ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
       Do([this]() { RunScheduledLayouts(); }),
       // Open the Organizer Panel.
-      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
-      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
+      EnsurePresent(kTabSearchButtonElementId),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(),
       Do([this]() { RunScheduledLayouts(); }),
       WaitForShow(kOrganizerPanelViewElementId),
       // Verify that the panel is at its minimum width and has rounded corners.

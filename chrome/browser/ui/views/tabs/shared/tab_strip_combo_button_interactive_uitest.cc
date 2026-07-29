@@ -74,9 +74,9 @@ class TabStripComboButtonInteractiveUiTest
 
   auto EnsureBothButtonsVisible() {
     return Steps(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
-                 SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, true),
+                 SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true),
                  WaitForShow(kTabSearchButtonElementId),
-                 WaitForShow(kVerticalTabStripOrganizerButtonElementId));
+                 WaitForShow(kSavedTabGroupButtonElementId));
   }
 
   auto ExecuteCommand(int command_id) {
@@ -108,12 +108,12 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       // Pin Tab Search.
       ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN),
       CheckUserAction("TabStripComboButton.TabSearch.Pinned", 1),
-      // Unpin Organizer Panel.
-      ExecuteCommand(IDC_ORGANIZER_PANEL_TOGGLE_PIN),
-      CheckUserAction("TabStripComboButton.OrganizerPanel.Unpinned", 1),
-      // Pin Organizer Panel.
-      ExecuteCommand(IDC_ORGANIZER_PANEL_TOGGLE_PIN),
-      CheckUserAction("TabStripComboButton.OrganizerPanel.Pinned", 1));
+      // Unpin Everything Menu.
+      ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
+      CheckUserAction("TabStripComboButton.EverythingMenu.Unpinned", 1),
+      // Pin Everything Menu.
+      ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
+      CheckUserAction("TabStripComboButton.EverythingMenu.Pinned", 1));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
@@ -121,22 +121,17 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
   using FlatEdge = TabStripFlatEdgeButton::FlatEdge;
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      CheckFlatEdge(kVerticalTabStripOrganizerButtonElementId,
-                    FlatEdge::kRight),
+      CheckFlatEdge(kSavedTabGroupButtonElementId, FlatEdge::kRight),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kLeft),
       // Collapse vertical tabs.
       PressButton(kVerticalTabStripCollapseButtonElementId),
-      WaitForEvent(kTabStripRegionElementId,
-                   VerticalTabStripRegionView::kAnimationCompletedEvent),
-      CheckFlatEdge(kVerticalTabStripOrganizerButtonElementId,
-                    FlatEdge::kBottom),
+      Do([this]() { RunScheduledLayouts(); }),
+      CheckFlatEdge(kSavedTabGroupButtonElementId, FlatEdge::kBottom),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kTop),
       // Expand vertical tabs.
       PressButton(kVerticalTabStripCollapseButtonElementId),
-      WaitForEvent(kTabStripRegionElementId,
-                   VerticalTabStripRegionView::kAnimationCompletedEvent),
-      CheckFlatEdge(kVerticalTabStripOrganizerButtonElementId,
-                    FlatEdge::kRight),
+      Do([this]() { RunScheduledLayouts(); }),
+      CheckFlatEdge(kSavedTabGroupButtonElementId, FlatEdge::kRight),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kLeft));
 }
 
@@ -145,25 +140,23 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
   using FlatEdge = TabStripFlatEdgeButton::FlatEdge;
   RunTestSequence(
       EnsureBothButtonsVisible(),
-      CheckFlatEdge(kVerticalTabStripOrganizerButtonElementId,
-                    FlatEdge::kRight),
+      CheckFlatEdge(kSavedTabGroupButtonElementId, FlatEdge::kRight),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kLeft),
       // Hide end button via pref.
       SetPinned(prefs::kTabSearchPinnedToTabstrip, false),
       WaitForHide(kTabSearchButtonElementId),
-      CheckFlatEdge(kVerticalTabStripOrganizerButtonElementId, FlatEdge::kNone),
+      CheckFlatEdge(kSavedTabGroupButtonElementId, FlatEdge::kNone),
       // Show end button again.
       SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
       WaitForShow(kTabSearchButtonElementId),
-      CheckFlatEdge(kVerticalTabStripOrganizerButtonElementId,
-                    FlatEdge::kRight),
+      CheckFlatEdge(kSavedTabGroupButtonElementId, FlatEdge::kRight),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kLeft),
       // Hide start button via pref.
-      SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, false),
-      WaitForHide(kVerticalTabStripOrganizerButtonElementId),
+      SetPinned(prefs::kEverythingMenuPinnedToTabstrip, false),
+      WaitForHide(kSavedTabGroupButtonElementId),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kNone),
       // Show start button again.
-      SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, true));
+      SetPinned(prefs::kEverythingMenuPinnedToTabstrip, true));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
@@ -180,15 +173,15 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
-                       UnpinOrganizerPanel) {
+                       UnpinEverythingMenu) {
   RunTestSequence(EnsureBothButtonsVisible(),
-                  ExecuteCommand(IDC_ORGANIZER_PANEL_TOGGLE_PIN),
+                  ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
                   // Verify button is hidden and pref is updated.
-                  WaitForHide(kVerticalTabStripOrganizerButtonElementId),
+                  WaitForHide(kSavedTabGroupButtonElementId),
                   CheckResult(
                       [this]() {
                         return browser()->GetProfile()->GetPrefs()->GetBoolean(
-                            prefs::kOrganizerPanelPinnedToTabstrip);
+                            prefs::kEverythingMenuPinnedToTabstrip);
                       },
                       false));
 }
