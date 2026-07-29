@@ -4,16 +4,19 @@
 
 source_set("readaloud") {
   public = [
+    "chunking/text_chunker.h",
     "decoded_audio_segment.h",
     "read_aloud_playback_controller.h",
   ]
   sources = [
+    "chunking/text_chunker.cc",
     "decoded_audio_segment.cc",
     "read_aloud_playback_controller.cc",
   ]
 
   public_deps = [
     "//base",
+    "//base:i18n",
     "//chrome/common:mojo_bindings",
     "//chrome/common:readaloud_constants",
     "//media",
@@ -26,10 +29,10 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "chunking/text_chunker_unittest.cc",
     "decoded_audio_segment_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
   ]
-
   deps = [
     ":readaloud",
     "//base",
