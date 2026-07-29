@@ -9,6 +9,7 @@ import './searched_label.js';
 import './shared_icons.html.js';
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
@@ -85,6 +86,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
       // Search term used to obtain this history-item.
       searchTerm: {type: String},
+
+      isExpanded_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -100,6 +106,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   accessor isCardEnd: boolean = false;
   accessor numberOfItems: number = 0;
   accessor selected: boolean = false;
+  accessor isExpanded_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -121,6 +128,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('item')) {
+      this.isExpanded_ = false;
       this.itemChanged_();
       this.fire('iron-resize');
     }
@@ -248,6 +256,19 @@ export class HistoryItemElement extends HistoryItemElementBase {
 
   private isCriticalActionsEnabled_(): boolean {
     return loadTimeData.getBoolean('isCriticalActionsEnabled');
+  }
+
+  protected isExpandable_(): boolean {
+    return this.isCriticalActionsEnabled_() && !!this.item?.isActorVisit;
+  }
+
+  protected getExpandIcon_(): string {
+    return this.isExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
+  }
+
+  protected onExpandClick_(e: Event) {
+    e.stopPropagation();
+    this.isExpanded_ = !this.isExpanded_;
   }
 
   /**

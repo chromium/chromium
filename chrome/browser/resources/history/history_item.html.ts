@@ -75,6 +75,16 @@ export function getHtml(this: HistoryItemElement) {
                     aria-hidden="true">
                 </cr-icon-button>
                 `: ''}
+              ${this.isExpandable_() ? html`
+                <cr-icon-button id="expand-button"
+                    iron-icon="${this.getExpandIcon_()}"
+                    title="$i18n{geminiKeyBrowsingActionsTitle}"
+                    aria-controls="collapse"
+                    focus-row-control focus-type="expand-button"
+                    @click="${this.onExpandClick_}"
+                    aria-expanded="${this.isExpanded_}">
+                </cr-icon-button>
+              `: ''}
             </div>
           </div>
           <div role="gridcell" id="options">
@@ -87,6 +97,11 @@ export function getHtml(this: HistoryItemElement) {
             </cr-icon-button>
           </div>
         </div>
+        ${this.isExpandable_() ? html`
+          <cr-collapse id="collapse" ?opened="${this.isExpanded_}">
+            <div id="expanded-container"></div>
+          </cr-collapse>
+        `: ''}
         ${this.item?.debug ? html`
           <div id="debug-container" aria-hidden="true">
             <div class="debug-info">DEBUG</div>

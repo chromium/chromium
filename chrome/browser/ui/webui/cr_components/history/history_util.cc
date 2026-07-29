@@ -68,6 +68,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
       {"reviewGeminiActivity", IDS_HISTORY_REVIEW_GEMINI_ACTIVITY},
+      {"geminiKeyBrowsingActionsTitle",
+       IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE},
       {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
       {"searchResult", IDS_HISTORY_SEARCH_RESULT},
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},

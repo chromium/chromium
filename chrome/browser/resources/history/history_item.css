@@ -142,6 +142,21 @@
   --cr-icon-button-size: 32px;
 }
 
+#expand-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-size: 32px;
+}
+
+#collapse {
+  pointer-events: auto;
+}
+
+#expanded-container {
+  border: 0;
+  padding: 0;
+}
+
 #icons {
   align-items: center;
   display: flex;

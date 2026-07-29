@@ -212,5 +212,44 @@ suite('<history-item> integration test', function() {
         items[1]!.shadowRoot.querySelector<HTMLElement>('#icons #actor-icon');
     assertTrue(isVisible(startActorIcon));
     assertFalse(isVisible(endActorIcon));
+
+    // Verify expand button for actor visit item.
+    const nonActorExpandBtn =
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#expand-button');
+    assertFalse(isVisible(nonActorExpandBtn));
+
+    const actorExpandBtn =
+        items[1]!.shadowRoot.querySelector<HTMLElement>('#expand-button');
+    assertTrue(isVisible(actorExpandBtn));
+
+    const collapse =
+        items[1]!.shadowRoot.querySelector<HTMLElement>('#collapse');
+    assertTrue(!!collapse);
+    assertFalse(collapse.hasAttribute('opened'));
+
+    actorExpandBtn!.click();
+    await microtasksFinished();
+
+    assertTrue(collapse.hasAttribute('opened'));
+  });
+
+  test('non-actor visit with critical actions enabled', async function() {
+    loadTimeData.overrideValues({
+      enableBrowsingHistoryActorIntegrationM1: true,
+      isCriticalActionsEnabled: true,
+    });
+
+    const newResults = [...TEST_HISTORY_RESULTS];
+    newResults[0]!.isActorVisit = false;
+    element.addNewResults(newResults, false, true);
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    const expandBtn =
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#expand-button');
+    assertFalse(isVisible(expandBtn));
+    const collapse =
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#collapse');
+    assertFalse(isVisible(collapse));
   });
 });
