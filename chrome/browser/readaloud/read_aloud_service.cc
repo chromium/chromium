@@ -59,6 +59,8 @@ void ReadAloudService::Pause() {
   if (active_session_) {
     active_session_->NotifyPlaybackPaused();
   }
+
+  // Notify the UI/client delegate if the playback state transitioned.
   PlaybackState current_state = GetCurrentPlaybackState();
   if (current_state != previous_state && delegate_) {
     delegate_->OnPlaybackStateChanged(current_state);
