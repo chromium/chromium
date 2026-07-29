@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/glic/glic_selection_observer.h"
+
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"

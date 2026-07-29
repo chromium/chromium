@@ -19,6 +19,7 @@
 #include "content/public/common/url_constants.h"
 #include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
+
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/appkit_utils.h"
 #endif

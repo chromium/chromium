@@ -33,17 +33,18 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"           // nogncheck
-#include "chrome/browser/ui/browser_commands.h"  // nogncheck
-#include "chrome/browser/ui/browser_window.h"    // nogncheck
-#endif
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"           // nogncheck
+#include "chrome/browser/ui/browser_commands.h"  // nogncheck
+#include "chrome/browser/ui/browser_window.h"    // nogncheck
+#endif
 
 namespace glic {
 

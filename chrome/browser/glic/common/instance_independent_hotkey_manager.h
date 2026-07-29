@@ -7,10 +7,9 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
-
-#include "base/callback_list.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace glic {

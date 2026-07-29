@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/common/glic_tab_observer_android.h"
+#include "chrome/browser/glic/common/glic_tab_observer.h"
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/glic/common/glic_tab_observer.h"
+#include "chrome/browser/glic/common/glic_tab_observer_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
