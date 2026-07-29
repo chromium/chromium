@@ -1043,7 +1043,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsNavigation.java",
   "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSuspiciousSiteDialogBridge.java",
   "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckUpdatesDelegateImpl.java",
-  "java/src/org/chromium/chrome/browser/screenshot_protection/ScreenshotProtectionController.java",
   "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderImpl.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java",
   "java/src/org/chromium/chrome/browser/searchwidget/SearchActivityClientImpl.java",
