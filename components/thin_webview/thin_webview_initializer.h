@@ -33,7 +33,7 @@ class ThinWebViewInitializer {
   // WebContents to serve in that role.
   virtual void AttachTabHelpers(content::WebContents* web_contents,
                                 bool enable_permission_requests,
-                                bool enable_autofill = true) = 0;
+                                bool enable_browser_autofill = true) = 0;
 
   // Set the context menu populator factory for the web contents. This allows
   // the ThinWebView to show a context menu on long press.

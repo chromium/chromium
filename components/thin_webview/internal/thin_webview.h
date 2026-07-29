@@ -42,7 +42,7 @@ class ThinWebView : public content::WebContentsObserver {
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
       bool enable_permission_requests,
       bool support_theming,
-      bool enable_autofill);
+      bool enable_browser_autofill);
 
   void SetContextMenuPopulatorFactory(
       JNIEnv* env,
@@ -59,7 +59,7 @@ class ThinWebView : public content::WebContentsObserver {
       web_contents_delegate_android::WebContentsDelegateAndroid* delegate,
       bool enable_permission_requests,
       bool support_theming,
-      bool enable_autofill);
+      bool enable_browser_autofill);
   void ResizeWebContents(const gfx::Size& size);
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;

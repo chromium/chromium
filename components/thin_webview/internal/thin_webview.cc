@@ -64,7 +64,7 @@ void ThinWebView::SetWebContents(JNIEnv* env,
                                  const JavaRef<jobject>& jweb_contents_delegate,
                                  bool enable_permission_requests,
                                  bool support_theming,
-                                 bool enable_autofill) {
+                                 bool enable_browser_autofill) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   WebContentsDelegateAndroid* delegate =
@@ -72,14 +72,14 @@ void ThinWebView::SetWebContents(JNIEnv* env,
           ? nullptr
           : new WebContentsDelegateAndroid(env, jweb_contents_delegate);
   SetWebContents(web_contents, delegate, enable_permission_requests,
-                 support_theming, enable_autofill);
+                 support_theming, enable_browser_autofill);
 }
 
 void ThinWebView::SetWebContents(content::WebContents* web_contents,
                                  WebContentsDelegateAndroid* delegate,
                                  bool enable_permission_requests,
                                  bool support_theming,
-                                 bool enable_autofill) {
+                                 bool enable_browser_autofill) {
   DCHECK(web_contents);
   Observe(web_contents);
   web_contents_ = web_contents->GetWeakPtr();
@@ -102,7 +102,7 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
   }
 
   ThinWebViewInitializer::GetInstance()->AttachTabHelpers(
-      web_contents, enable_permission_requests, enable_autofill);
+      web_contents, enable_permission_requests, enable_browser_autofill);
 }
 
 void ThinWebView::SetContextMenuPopulatorFactory(

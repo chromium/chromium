@@ -26,7 +26,7 @@ class ChromeThinWebViewInitializer : public ThinWebViewInitializer {
 
   void AttachTabHelpers(content::WebContents* web_contents,
                         bool enable_permission_requests,
-                        bool enable_autofill) override;
+                        bool enable_browser_autofill) override;
 
   void SetContextMenuPopulatorFactory(
       content::WebContents* web_contents,
