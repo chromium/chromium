@@ -5367,6 +5367,7 @@ test("unit_tests") {
     "//chrome/browser/profiling_host:unit_tests",
     "//chrome/browser/push_messaging",
     "//chrome/browser/push_messaging:unit_tests",
+    "//chrome/browser/pwc:unit_tests",
     "//chrome/browser/reading_list",
     "//chrome/browser/reduce_accept_language:unit_tests",
     "//chrome/browser/regional_capabilities:unit_tests",

@@ -1,0 +1,15 @@
+carlosk@chromium.org
+dewittj@chromium.org
+erikchen@chromium.org
+
+# The component policy defines which origins receive elevated browser
+# capabilities. Changes (including new PrivilegedComponent values) require
+# security review. PwcPolicyDelegate implementations living in other
+# directories should be covered by an equivalent SECURITY_OWNERS per-file
+# rule there.
+per-file pwc_component_policy.*=set noparent
+per-file pwc_component_policy.*=file://ipc/SECURITY_OWNERS
+
+# Mojom defines IPC surface and is security-sensitive.
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

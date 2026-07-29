@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pwc.mojom.features;
+
+// Gates creation of PrivilegedWebContents. Defined as a mojom feature so
+// that future PWC mojom interfaces can be guarded with
+// [RuntimeFeature=pwc.mojom.features.kPrivilegedWebContents] in addition to
+// the browser-side binder checks.
+feature kPrivilegedWebContents {
+  const string name = "PrivilegedWebContents";
+  const bool default_state = false;
+};

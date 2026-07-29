@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("features") {
+  disable_variants = true
+
+  sources = [ "pwc_features.mojom" ]
+}
+
+source_set("pwc") {
+  public = [
+    "privileged_web_contents.h",
+    "pwc_component_policy.h",
+  ]
+
+  sources = [
+    "privileged_web_contents.cc",
+    "pwc_component_policy.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  deps = [ ":features" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "privileged_web_contents_unittest.cc",
+    "pwc_component_policy_unittest.cc",
+  ]
+
+  deps = [
+    ":features",
+    ":pwc",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
