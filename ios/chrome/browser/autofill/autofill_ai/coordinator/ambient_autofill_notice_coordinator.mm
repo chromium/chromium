@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_mediator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -48,7 +47,6 @@
   if (!self.browser) {
     return;
   }
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   base::WeakPtr<web::WebState> webState =
@@ -56,11 +54,10 @@
   id<AutofillCommands> autofillHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AutofillCommands);
 
-  _mediator = [[AmbientAutofillNoticeMediator alloc]
-      initWithPrefService:prefService
-                 webState:webState
-                   params:_params
-          autofillHandler:autofillHandler];
+  _mediator =
+      [[AmbientAutofillNoticeMediator alloc] initWithWebState:webState
+                                                       params:_params
+                                              autofillHandler:autofillHandler];
 
   _viewController = [[ConfirmationAlertViewController alloc] init];
   _viewController.titleString =

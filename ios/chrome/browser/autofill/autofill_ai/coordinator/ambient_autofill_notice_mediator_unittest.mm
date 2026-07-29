@@ -5,8 +5,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "components/personal_context/core/personal_context_prefs.h"
-#import "components/prefs/testing_pref_service.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -29,13 +28,10 @@ class AmbientAutofillNoticeMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.SetBoolean(
-        personal_context::prefs::
-            kPersonalContextAmbientAutofillNoticeShouldBeShown,
-        true);
-
     mock_autofill_commands_ = OCMProtocolMock(@protocol(AutofillCommands));
+
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        web_state_.get(), nil);
 
     AutofillBottomSheetTabHelper::CreateForWebState(web_state_.get());
     tab_helper_ = AutofillBottomSheetTabHelper::FromWebState(web_state_.get());
@@ -44,8 +40,8 @@ class AmbientAutofillNoticeMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
-  TestingPrefServiceSimple pref_service_;
   id mock_autofill_commands_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<AutofillBottomSheetTabHelper> tab_helper_;
 };
@@ -59,10 +55,9 @@ TEST_F(AmbientAutofillNoticeMediatorTest,
 
   AmbientAutofillNoticeMediator* mediator =
       [[AmbientAutofillNoticeMediator alloc]
-          initWithPrefService:&pref_service_
-                     webState:web_state_->GetWeakPtr()
-                       params:params
-              autofillHandler:mock_autofill_commands_];
+          initWithWebState:web_state_->GetWeakPtr()
+                    params:params
+           autofillHandler:mock_autofill_commands_];
 
   OCMExpect([mock_autofill_commands_ dismissAmbientAutofillNotice]);
 
@@ -77,10 +72,9 @@ TEST_F(AmbientAutofillNoticeMediatorTest, TapSettingsDismisses) {
 
   AmbientAutofillNoticeMediator* mediator =
       [[AmbientAutofillNoticeMediator alloc]
-          initWithPrefService:&pref_service_
-                     webState:web_state_->GetWeakPtr()
-                       params:params
-              autofillHandler:mock_autofill_commands_];
+          initWithWebState:web_state_->GetWeakPtr()
+                    params:params
+           autofillHandler:mock_autofill_commands_];
 
   OCMExpect([mock_autofill_commands_ dismissAmbientAutofillNotice]);
 
@@ -96,10 +90,9 @@ TEST_F(AmbientAutofillNoticeMediatorTest, SwipeDownDismisses) {
 
   AmbientAutofillNoticeMediator* mediator =
       [[AmbientAutofillNoticeMediator alloc]
-          initWithPrefService:&pref_service_
-                     webState:web_state_->GetWeakPtr()
-                       params:params
-              autofillHandler:mock_autofill_commands_];
+          initWithWebState:web_state_->GetWeakPtr()
+                    params:params
+           autofillHandler:mock_autofill_commands_];
 
   OCMExpect([mock_autofill_commands_ dismissAmbientAutofillNotice]);
 
@@ -108,25 +101,23 @@ TEST_F(AmbientAutofillNoticeMediatorTest, SwipeDownDismisses) {
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_);
 }
 
-// Tests that markNoticeShown successfully updates profile preference status to
-// shown.
-TEST_F(AmbientAutofillNoticeMediatorTest, MarkNoticeShownUpdatesPref) {
+// Tests that markNoticeShown successfully calls
+// MarkPersonalContextAmbientAutofillNoticeAsAcknowledged on the client.
+TEST_F(AmbientAutofillNoticeMediatorTest, MarkNoticeShownUpdatesClient) {
   autofill::FormActivityParams params;
 
   AmbientAutofillNoticeMediator* mediator =
       [[AmbientAutofillNoticeMediator alloc]
-          initWithPrefService:&pref_service_
-                     webState:web_state_->GetWeakPtr()
-                       params:params
-              autofillHandler:mock_autofill_commands_];
+          initWithWebState:web_state_->GetWeakPtr()
+                    params:params
+           autofillHandler:mock_autofill_commands_];
 
-  EXPECT_TRUE(pref_service_.GetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown));
+  EXPECT_FALSE(
+      autofill_client_
+          ->is_personal_context_ambient_autofill_notice_acknowledged());
 
   [mediator markNoticeShown];
 
-  EXPECT_FALSE(pref_service_.GetBoolean(
-      personal_context::prefs::
-          kPersonalContextAmbientAutofillNoticeShouldBeShown));
+  EXPECT_TRUE(autofill_client_
+                  ->is_personal_context_ambient_autofill_notice_acknowledged());
 }

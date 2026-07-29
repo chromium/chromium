@@ -16,9 +16,8 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
-    "//components/personal_context/core:prefs",
-    "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/autofill_ai/ui",
@@ -46,13 +45,13 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
-    "//components/personal_context/core:prefs",
-    "//components/prefs:test_support",
+    "//components/autofill/ios/browser:test_support",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
