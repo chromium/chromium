@@ -113,28 +113,8 @@ suite('SuggestionsPage', function() {
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
 
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    const linkout = subpage.shadowRoot!.querySelector('.cr-row.flex');
     assertFalse(!!linkout);
-  });
-
-  test('learnMoreLinkRow', async function() {
-    loadTimeData.overrideValues({
-      aiSuggestionsHelpCenterArticleLink:
-          'https://support.google.com/chrome?p=',
-    });
-
-    await createPage();
-
-    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
-    assertTrue(!!linkout);
-
-    linkout.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals('https://support.google.com/chrome?p=', url);
-    await assertFeatureInteractionMetrics(
-        AiPageSuggestionsInteractions.LEARN_MORE_LINK_CLICKED,
-        AiPageActions.AI_SUGGESTIONS_LEARN_MORE_CLICKED);
-    openWindowProxy.reset();
   });
 
   test('learnMoreLink', async () => {

@@ -21,18 +21,20 @@
   <div class="settings-row first">
     <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
         restamp>
-      <cr-link-row label="$i18n{aiSuggestionsToggleLabel}"
-          on-click="onLearnMoreRowClick_" external>
-        <div slot="sub-label">
-          <span>$i18n{aiSuggestionsToggleSublabel}</span>
-          <a href="$i18n{aiSuggestionsHelpCenterArticleLink}"
-              aria-label="$i18n{learnMore}"
-              aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
-              on-click="onLearnMoreClick_" target="_blank">
-            $i18n{learnMore}
-          </a>
+      <div class="cr-row first flex">
+        <div class="flex cr-padded-text">
+          <div id="aiSuggestionsLabel">$i18n{aiSuggestionsToggleLabel}</div>
+          <div class="secondary">
+            <span>$i18n{aiSuggestionsToggleSublabel}</span>
+            <a href="$i18n{aiSuggestionsHelpCenterArticleLink}"
+                aria-label="$i18n{learnMore}"
+                aria-description="$i18n{opensInNewTab}" id="learnMoreLink"
+                on-click="onLearnMoreClick_" target="_blank">
+              $i18n{learnMore}
+            </a>
+          </div>
         </div>
-      </cr-link-row>
+      </div>
       <div class="separator"></div>
     </template>
     <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
