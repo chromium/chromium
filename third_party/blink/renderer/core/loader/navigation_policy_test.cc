@@ -97,17 +97,6 @@ class NavigationPolicyTest : public testing::Test {
   WebWindowFeatures features;
 };
 
-class NavigationPolicyWithSplitViewEnabledTest : public NavigationPolicyTest {
- protected:
-  void SetUp() override {
-    WebRuntimeFeatures::EnableFeatureFromString("SplitViewLinkOpen", true);
-  }
-
-  void TearDown() override {
-    WebRuntimeFeatures::EnableFeatureFromString("SplitViewLinkOpen", false);
-  }
-};
-
 TEST_F(NavigationPolicyTest, LeftClick) {
   int modifiers = 0;
   WebMouseEvent::Button button = WebMouseEvent::Button::kLeft;
@@ -436,9 +425,7 @@ TEST_F(NavigationPolicyTest, EventAltClickWithDifferentUserEvent) {
             GetPolicyFromEvent(modifiers, button, 0, button));
 }
 
-
-TEST_F(NavigationPolicyWithSplitViewEnabledTest,
-       EventAltControlOrMetaLeftClick) {
+TEST_F(NavigationPolicyTest, EventAltControlOrMetaLeftClick) {
 #if BUILDFLAG(IS_MAC)
   int modifiers = WebInputEvent::kMetaKey | WebInputEvent::kAltKey;
 #else
@@ -449,8 +436,7 @@ TEST_F(NavigationPolicyWithSplitViewEnabledTest,
             NavigationPolicyFromEvent(GetEvent(modifiers, button)));
 }
 
-TEST_F(NavigationPolicyWithSplitViewEnabledTest,
-       EventAltControlOrMetaLeftClickWithUserEvent) {
+TEST_F(NavigationPolicyTest, EventAltControlOrMetaLeftClickWithUserEvent) {
 #if BUILDFLAG(IS_MAC)
   int modifiers = WebInputEvent::kMetaKey | WebInputEvent::kAltKey;
 #else

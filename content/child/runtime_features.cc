@@ -331,7 +331,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
           {"WebSerialWorldIsolatedCache",
            raw_ref(features::kWebSerialWorldIsolatedCache)},
-          {"SplitViewLinkOpen", raw_ref(features::kSplitViewLinkOpen)},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},

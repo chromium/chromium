@@ -6056,11 +6056,7 @@
       name: "SplitTextNotCleanupDummySpans",
       status: "stable",
     },
-    {
-      // Mirrors ui::features::kSplitViewLinkOpen.
-      name: "SplitViewLinkOpen",
-      base_feature: "none",
-    },
+
     // Kill switch for change to unify image-set and srcset selection logic.
     {
       name: "SrcsetSelectionMatchesImageSet",

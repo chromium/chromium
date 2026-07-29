@@ -58,8 +58,7 @@ NavigationPolicy NavigationPolicyFromEventModifiers(int16_t button,
 #else
   const bool new_tab_modifier = (button == 1) || ctrl;
 #endif
-  if (new_tab_modifier && alt && !shift &&
-      RuntimeEnabledFeatures::SplitViewLinkOpenEnabled()) {
+  if (new_tab_modifier && alt && !shift) {
     return kNavigationPolicySplitView;
   }
   if (!new_tab_modifier && !shift && !alt) {

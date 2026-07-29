@@ -331,11 +331,6 @@ BASE_DECLARE_FEATURE_PARAM(int, kCompensationExpectedLatencyMs);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(int, kCompensationAcceptableLatencyMs);
 
-// When enabled, Ctrl+Alt+Click (Cmd+Alt+Click on macOS) opens a link in a
-// split view alongside the current tab.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kSplitViewLinkOpen);
-
 // All feature flags associated with Glow Up, apart from those in ui_features.h
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopGlowUp);
