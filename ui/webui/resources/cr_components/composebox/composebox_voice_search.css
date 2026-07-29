@@ -96,7 +96,7 @@
 
 #error-container {
   display: none;
-  font-size: 18px;
+  font-size: var(--cr-composebox-font-size, 18px);
 }
 
 #error-container:not([hidden]) {
