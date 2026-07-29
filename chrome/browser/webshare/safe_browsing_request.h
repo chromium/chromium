@@ -25,6 +25,20 @@ class V5GetHashProtocolManager;
 // thread.
 class SafeBrowsingRequest {
  public:
+  // LINT.IfChange(WebShareSafeBrowsingCheckResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CheckResult {
+    // The check completed and the URL was safe.
+    kSafe = 0,
+    // The check completed and the URL was unsafe (blocklisted).
+    kUnsafe = 1,
+    // The check timed out before a result was received.
+    kTimeout = 2,
+    kMaxValue = kTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:WebShareSafeBrowsingCheckResult)
+
   // Constructs a request that check whether a website |url| is safe by
   // consulting the |database_manager| and |v5_get_hash_protocol_manager|, and
   // invokes |callback| when done.
