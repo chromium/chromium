@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/grid_track_list.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -651,6 +653,16 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
           return ResolveInitialMinBlockLength(space, item_style, border_padding,
                                               min_length);
         }
+      }
+
+      // Count if the child element on the track axis would have been allowed
+      // to collapse to zero (auto) if single-axis scroll containers were
+      // disabled.
+      if (is_parallel_with_track_direction
+              ? item_style.IsOverflowValueScrollableBlock()
+              : item_style.IsOverflowValueScrollableInline()) {
+        UseCounter::Count(node.GetDocument(),
+                          WebFeature::kSingleAxisScrollerAutoMinSize);
       }
 
       maybe_clamp = true;

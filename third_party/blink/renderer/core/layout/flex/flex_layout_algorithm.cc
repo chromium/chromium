@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
@@ -437,7 +438,17 @@ bool FlexLayoutAlgorithm::ShouldApplyAutoMinSize(const BlockNode& child) const {
   }
   const Length& min =
       is_horizontal_flow_ ? child_style.MinWidth() : child_style.MinHeight();
-  return min.HasAuto();
+  if (!min.HasAuto()) {
+    return false;
+  }
+  // Count if the child element on the flex main axis would have been allowed
+  // to collapse to zero (auto) if single-axis scroll containers were disabled.
+  if (is_horizontal_flow_ ? child_style.IsOverflowValueScrollableY()
+                          : child_style.IsOverflowValueScrollableX()) {
+    UseCounter::Count(child.GetDocument(),
+                      WebFeature::kSingleAxisScrollerAutoMinSize);
+  }
+  return true;
 }
 
 namespace {

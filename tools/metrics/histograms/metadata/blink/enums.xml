@@ -6727,6 +6727,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5974" label="XmlCAPAlertWithXSLT"/>
   <int value="5975" label="SingleAxisScrollerPositionSticky"/>
   <int value="5976" label="SingleAxisScrollerOverscrollBehavior"/>
+  <int value="5977" label="SingleAxisScrollerAutoMinSize"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

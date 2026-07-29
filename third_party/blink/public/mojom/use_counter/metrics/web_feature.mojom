@@ -5291,6 +5291,7 @@ enum WebFeature {
   kXmlCAPAlertWithXSLT = 5974,
   kSingleAxisScrollerPositionSticky = 5975,
   kSingleAxisScrollerOverscrollBehavior = 5976,
+  kSingleAxisScrollerAutoMinSize = 5977,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

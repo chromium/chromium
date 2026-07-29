@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
@@ -2086,6 +2087,49 @@ TEST_F(GridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
     EXPECT_EQ(ordered_named_grid_row_lines.find(i)->value[0],
               row_named_lines[i]);
   }
+}
+
+TEST_F(GridLayoutAlgorithmTest, SingleAxisScrollerAutoMinSizeUseCount) {
+  ScopedSingleAxisScrollContainersForTest single_axis_scroll_containers(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='display: grid'>
+      <div style='overflow-x: auto; overflow-y: clip; min-height: 0'></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSingleAxisScrollerAutoMinSize));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerAutoMinSize);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='display: grid'>
+      <div style='overflow-x: clip; overflow-y: auto'></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kSingleAxisScrollerAutoMinSize));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerAutoMinSize);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='display: grid'>
+      <div style='writing-mode: vertical-rl;
+                  overflow-x: clip; overflow-y: auto'></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kSingleAxisScrollerAutoMinSize));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerAutoMinSize);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='display: grid'>
+      <div style='overflow-y: auto'></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kSingleAxisScrollerAutoMinSize));
 }
 
 }  // namespace blink
