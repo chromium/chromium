@@ -3520,7 +3520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FirstWebContentsProfile.Recorded" enum="Boolean"
-    expires_after="2026-07-06">
+    expires_after="2027-07-31">
   <owner>vincentchiang@google.com</owner>
   <owner>zoraiznaeem@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
