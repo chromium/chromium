@@ -27,8 +27,7 @@ ReadAnythingOmniboxController::ReadAnythingOmniboxController(
       tab_(tab) {
   // This class should only be instantiated if the omnibox entrypoint is
   // enabled.
-  CHECK(features::IsReadAnythingOmniboxChipEnabled() &&
-        base::FeatureList::IsEnabled(features::kPageActionsMigration));
+  CHECK(features::IsReadAnythingOmniboxChipEnabled());
 
   read_anything::ReadAnythingEntryPointController::
       RegisterForSuggestReadingMode(
@@ -86,7 +85,6 @@ void ReadAnythingOmniboxController::Activate(
     }
 
     if (features::IsReadAnythingOmniboxChipEnabled() &&
-        base::FeatureList::IsEnabled(features::kPageActionsMigration) &&
         open_trigger !=
             ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton &&
         GetCurrentPageActionState().showing) {

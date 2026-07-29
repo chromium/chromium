@@ -131,7 +131,6 @@ CookieControlsPageActionController::CookieControlsPageActionController(
       page_action_controller_(page_action_controller),
       bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kCookieControls));
   RegisterAsPageActionObserver(page_action_controller_.get());
 }
 

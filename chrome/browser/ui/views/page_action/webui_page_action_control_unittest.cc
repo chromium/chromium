@@ -56,9 +56,7 @@ class MockPageActionModelObserver
 
 class WebUIPageActionControlTest : public ChromeRenderViewHostTestHarness {
  public:
-  WebUIPageActionControlTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  WebUIPageActionControlTest() = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

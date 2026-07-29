@@ -14,9 +14,7 @@ namespace {
 
 class FindBarInteractiveUiTest : public InteractiveBrowserTest {
  protected:
-  FindBarInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  FindBarInteractiveUiTest() = default;
 
   ~FindBarInteractiveUiTest() override = default;
 

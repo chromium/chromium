@@ -62,8 +62,7 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingImagesEnabled, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
-  if (features::IsReadAnythingOmniboxChipEnabled() &&
-      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (features::IsReadAnythingOmniboxChipEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

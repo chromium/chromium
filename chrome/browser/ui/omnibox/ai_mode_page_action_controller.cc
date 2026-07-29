@@ -106,8 +106,6 @@ AiModePageActionController::AiModePageActionController(
       profile_(profile),
       location_bar_(location_bar),
       scoped_data_(bwi.GetUnownedUserDataHost(), *this) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kAiMode));
-
   if (auto* omnibox_controller = location_bar.GetOmniboxController()) {
     omnibox_edit_model_observation_.Observe(omnibox_controller->edit_model());
   }

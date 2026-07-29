@@ -516,10 +516,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
 class LocationBarViewPageActionHideWhileEditingTests
     : public InProcessBrowserTest {
  public:
-  LocationBarViewPageActionHideWhileEditingTests() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kPageActionsMigration);
-  }
+  LocationBarViewPageActionHideWhileEditingTests() = default;
 
   void SetUpOnMainThread() override {
     // 1. Ensure the Zoom action is globally visible/enabled.

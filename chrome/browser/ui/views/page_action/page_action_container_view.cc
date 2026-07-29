@@ -45,12 +45,6 @@ PageActionContainerView::PageActionContainerView(
     const auto action_item_id = action_item->GetActionId().value();
     const auto& properties = properties_provider.GetProperties(action_item_id);
 
-    // When the page action migration is not enabled, the view should not be
-    // created to avoid conflicting with the old framework version identifier.
-    if (!IsPageActionMigrated(properties.type)) {
-      continue;
-    }
-
     PageActionView* view = AddChildView(std::make_unique<PageActionView>(
         action_item, params, properties.type, properties.element_identifier));
 

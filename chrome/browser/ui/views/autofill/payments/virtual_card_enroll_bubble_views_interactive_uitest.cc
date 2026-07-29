@@ -289,8 +289,6 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
           features::kAutofillShowBubblesBasedOnPriorities);
     }
 
-    enabled_features.push_back({::features::kPageActionsMigration, {}});
-
     if (GetParam().is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
     } else {

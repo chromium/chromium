@@ -374,15 +374,7 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
 };
 
 class IntentPickerBubbleViewBrowserTestChromeOS
-    : public IntentPickerBubbleViewBrowserTestChromeOSBase {
- public:
-  IntentPickerBubbleViewBrowserTestChromeOS() {
-    feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+    : public IntentPickerBubbleViewBrowserTestChromeOSBase {};
 
 // Test that the intent picker bubble will show for ARC apps.
 //
@@ -733,7 +725,6 @@ class IntentPickerBubbleViewBrowserTestChromeOSParameterized
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
     std::vector<base::test::FeatureRef> features_to_disable;
-    features_to_enable.push_back({features::kPageActionsMigration, {}});
     feature_list_.InitWithFeaturesAndParameters(features_to_enable,
                                                 features_to_disable);
   }

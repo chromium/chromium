@@ -71,9 +71,7 @@ std::string GetLinkCapturingTestName(
 
 class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
  public:
-  IntentPickerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  IntentPickerBrowserTest() = default;
 
   template <typename Action>
   testing::AssertionResult DoAndWaitForIntentPickerIconUpdate(Action action) {
@@ -155,7 +153,6 @@ class IntentPickerIconBrowserTest
         apps::test::GetFeaturesToEnableLinkCapturingUX(LinkCapturingVersion());
 
     features_to_enable.push_back({blink::features::kPaintHolding, {}});
-    features_to_enable.push_back({::features::kPageActionsMigration, {}});
 
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
@@ -435,8 +432,6 @@ class IntentPickerIconBrowserBubbleTest
   IntentPickerIconBrowserBubbleTest() {
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
         apps::test::GetFeaturesToEnableLinkCapturingUX(LinkCapturingVersion());
-
-    features_to_enable.push_back({::features::kPageActionsMigration, {}});
 
     feature_list_.InitWithFeaturesAndParameters(
         features_to_enable, {blink::features::kPaintHolding});

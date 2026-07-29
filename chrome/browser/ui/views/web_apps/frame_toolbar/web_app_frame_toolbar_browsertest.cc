@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -284,8 +283,7 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
   WebAppFrameToolbarBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kPageActionsMigration, {}},
-         {blink::features::kWebAppMigrationApi, {}}},
+        {{blink::features::kWebAppMigrationApi, {}}},
         /*disabled_features=*/{});
   }
 
@@ -310,15 +308,11 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
   // added as the toolbar child. As a result, the positioning should be
   // offsetted.
   int GetPageActionViewOffset() {
-    if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
-      return helper()
-          ->web_app_frame_toolbar()
-          ->get_right_container_for_testing()
-          ->page_action_container()
-          ->x();
-    }
-
-    return 0;
+    return helper()
+        ->web_app_frame_toolbar()
+        ->get_right_container_for_testing()
+        ->page_action_container()
+        ->x();
   }
 
  private:
@@ -349,19 +343,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
             helper()->web_app_frame_toolbar());
 
   std::vector<const views::View*> page_action_views = {};
-  const auto& properties_provider =
-      page_actions::PageActionPropertiesProvider();
   for (auto action_id :
        web_app::AppBrowserController::From(helper()->app_browser())
            ->GetTitleBarPageActions()) {
-    const auto& properties = properties_provider.GetProperties(action_id);
-
-    // When the page action migration is not enabled, the view should not be
-    // created to avoid conflicting with the old framework version identifier.
-    if (!IsPageActionMigrated(properties.type)) {
-      continue;
-    }
-
     auto* provider = helper()->web_app_frame_toolbar();
     auto* page_action_view = page_actions::GetIconLabelBubbleViewForTesting(
         provider->GetPageActionViewInterface(action_id), action_id);

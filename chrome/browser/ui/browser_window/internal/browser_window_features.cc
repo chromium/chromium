@@ -907,8 +907,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       }
     }
 
-    if (browser_view && IsPageActionMigrated(PageActionIconType::kAiMode) &&
-        AiModeButtonServiceFactory::GetForProfile(profile)) {
+    if (browser_view && AiModeButtonServiceFactory::GetForProfile(profile)) {
       LocationBar* location_bar = browser_view->GetLocationBar();
       if (location_bar) {
         ai_mode_page_action_controller_ =

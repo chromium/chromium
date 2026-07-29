@@ -67,8 +67,6 @@ class DefaultLinkCapturingInteractiveUiTest
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
 
-    features_to_enable.push_back({::features::kPageActionsMigration, {}});
-
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
 

@@ -510,11 +510,6 @@ class WebAppFrameViewChromeOSTest
       return page_actions::GetIconLabelBubbleViewForTesting(
           provider->GetPageActionViewInterface(action_id), action_id);
     } else {
-      PageActionIconType type = std::get<PageActionIconType>(action_type);
-      if (!IsPageActionMigrated(type)) {
-        return browser_view_->toolbar_button_provider()->GetPageActionIconView(
-            type);
-      }
       return nullptr;
     }
   }

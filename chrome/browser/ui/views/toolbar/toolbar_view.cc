@@ -1788,12 +1788,8 @@ page_actions::PageActionViewInterface* ToolbarView::GetPageActionViewInterface(
   if (!provider.Contains(action_id)) {
     return nullptr;
   }
-  const auto& properties = provider.GetProperties(action_id);
-  if (IsPageActionMigrated(properties.type)) {
-    return location_bar_view()->page_action_container()->GetPageActionView(
-        action_id);
-  }
-  return GetPageActionIconView(properties.type);
+  return location_bar_view()->page_action_container()->GetPageActionView(
+      action_id);
 }
 
 AppMenuControl* ToolbarView::GetAppMenuControl() {

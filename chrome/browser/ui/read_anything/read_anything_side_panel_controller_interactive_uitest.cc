@@ -364,7 +364,6 @@ class ReadAnythingKeyboardShortcutCUJTest
 
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kImmersiveReadAnything, features::kReadAnythingOmniboxChip,
-        features::kPageActionsMigration,
         feature_engagement::kIPHReadingModeKeyboardShortcutFeature};
     feature_list_.InitAndEnableFeatures(enabled_features);
     ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
@@ -440,7 +439,6 @@ class ReadAnythingPresentationModeCUJTest
 
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kImmersiveReadAnything, features::kReadAnythingOmniboxChip,
-        features::kPageActionsMigration,
         feature_engagement::kIPHReadingModePresentationModeFeature};
     feature_list_.InitAndEnableFeatures(enabled_features);
     ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);

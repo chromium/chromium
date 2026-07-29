@@ -3935,10 +3935,6 @@ inline constexpr char kOverscrollHistoryNavigationName[] =
 inline constexpr char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
-inline constexpr char kPageActionsMigrationName[] = "Page actions migration";
-inline constexpr char kPageActionsMigrationDescription[] =
-    "Enables a new internal framework for driving page actions behavior.";
-
 inline constexpr char kPageContentAnnotationsName[] =
     "Page content annotations";
 inline constexpr char kPageContentAnnotationsDescription[] =

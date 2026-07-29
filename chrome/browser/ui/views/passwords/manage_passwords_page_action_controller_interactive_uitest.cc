@@ -26,9 +26,7 @@
 
 class ManagePasswordsControllerTest : public ManagePasswordsTest {
  public:
-  ManagePasswordsControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  ManagePasswordsControllerTest() = default;
 
   ~ManagePasswordsControllerTest() override = default;
 

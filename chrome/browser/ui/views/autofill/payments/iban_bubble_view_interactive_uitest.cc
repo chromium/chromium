@@ -448,10 +448,6 @@ class IbanBubbleViewFullFormBrowserTest
         FindViewInBubbleById(DialogViewId::NICKNAME_TEXTFIELD));
   }
 
-  bool IsPageActionMigrationEnabled() {
-    return IsPageActionMigrated(PageActionIconType::kSaveIban);
-  }
-
   bool IsWalletBrandingEnabled() { return std::get<0>(GetParam()); }
 
   bool IsWalletBrandingV2Enabled() { return std::get<1>(GetParam()); }
@@ -605,37 +601,12 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
               kIbanValueWithoutWhitespaces)));
 
   // Post migration, the icon will not show after max strikes.
-  if (IsPageActionMigrationEnabled()) {
-    EXPECT_FALSE(GetSaveIbanIconView()->GetVisible());
-  } else {
-    EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
-  }
+  EXPECT_FALSE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
 
-  // Post migration, since the icon will not show, there is no entrypoint to the
-  // Save IBAN bubble.
-  // if (IsPageActionMigrationEnabled()) {
-  //   return;
-  // }
-  //
-  if (!IsPageActionMigrationEnabled()) {
-    // Click the icon to show the bubble.
-    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    ClickOnView(GetSaveIbanIconView());
-    ASSERT_TRUE(WaitForObservedEvent());
-    EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
-                    ->GetVisible());
-    ClickOnCancelButton();
-    ASSERT_TRUE(WaitForObservedEvent());
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.SaveIbanPromptOffer.Local.Reshows",
-        autofill_metrics::SaveIbanPromptOffer::kShown, 1);
-  } else {
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.SaveIbanPromptOffer.Local.Reshows",
-        autofill_metrics::SaveIbanPromptOffer::kShown, 0);
-  }
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.Reshows",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 0);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",

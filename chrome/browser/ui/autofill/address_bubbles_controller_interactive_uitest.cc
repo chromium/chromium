@@ -37,8 +37,6 @@ class BaseAddressBubblesControllerTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kAutofillSupportSplitZipCode, {}},
-            {::features::kPageActionsMigration,
-             {{"autofill_address", GetParam() ? "true" : "false"}}},
         },
         /*disabled_features=*/{});
   }

@@ -202,38 +202,35 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   const int page_action_between_icon_spacing =
       HorizontalPaddingBetweenPageActionsAndAppMenuButtons();
 
-  if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
-    std::vector<actions::ActionItem*> page_action_items = {};
-    actions::ActionItem* root_action_item =
-        browser_view_->browser()->browser_actions()->root_action_item();
-    for (actions::ActionId action_id :
-         app_controller->GetTitleBarPageActions()) {
-      if (actions::ActionItem* item = actions::ActionManager::Get().FindAction(
-              action_id, root_action_item)) {
-        page_action_items.emplace_back(item);
-      }
+  std::vector<actions::ActionItem*> page_action_items = {};
+  actions::ActionItem* root_action_item =
+      browser_view_->browser()->browser_actions()->root_action_item();
+  for (actions::ActionId action_id : app_controller->GetTitleBarPageActions()) {
+    if (actions::ActionItem* item = actions::ActionManager::Get().FindAction(
+            action_id, root_action_item)) {
+      page_action_items.emplace_back(item);
     }
-
-    const int page_action_icon_size =
-        GetLayoutConstant(LayoutConstant::kWebAppPageActionIconSize);
-    const page_actions::PageActionViewParams page_action_params{
-        .icon_size = page_action_icon_size,
-        .icon_insets = PageActionIconInsetsFromSize(page_action_icon_size),
-        .between_icon_spacing = page_action_between_icon_spacing,
-        .icon_label_bubble_delegate = this,
-        // The toolbar button container already sets spacing between child
-        // views.
-        .should_bridge_containers = false,
-        // On space constraint, the page action should get hidden.
-        .hide_icon_on_space_constraint = true,
-    };
-    page_action_container_ =
-        AddChildView(std::make_unique<page_actions::PageActionContainerView>(
-            page_action_items, page_actions::PageActionPropertiesProvider(),
-            page_action_params));
-    views::SetHitTestComponent(page_action_container_,
-                               static_cast<int>(HTCLIENT));
   }
+
+  const int page_action_icon_size =
+      GetLayoutConstant(LayoutConstant::kWebAppPageActionIconSize);
+  const page_actions::PageActionViewParams page_action_params{
+      .icon_size = page_action_icon_size,
+      .icon_insets = PageActionIconInsetsFromSize(page_action_icon_size),
+      .between_icon_spacing = page_action_between_icon_spacing,
+      .icon_label_bubble_delegate = this,
+      // The toolbar button container already sets spacing between child
+      // views.
+      .should_bridge_containers = false,
+      // On space constraint, the page action should get hidden.
+      .hide_icon_on_space_constraint = true,
+  };
+  page_action_container_ =
+      AddChildView(std::make_unique<page_actions::PageActionContainerView>(
+          page_action_items, page_actions::PageActionPropertiesProvider(),
+          page_action_params));
+  views::SetHitTestComponent(page_action_container_,
+                             static_cast<int>(HTCLIENT));
 
   // Note: the page action setup below is for the legacy page actions framework,
   // which will eventually be removed altogether.
@@ -327,14 +324,12 @@ void WebAppToolbarButtonContainer::UpdateStatusIconsVisibility() {
     content_settings_container_->UpdateContentSettingViewsVisibility();
   }
 
-  if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
-    page_actions::PageActionController* controller = nullptr;
-    if (tabs::TabInterface* active_tab =
-            browser_view_->browser()->GetActiveTabInterface()) {
-      controller = active_tab->GetTabFeatures()->page_action_controller();
-    }
-    page_action_container_->SetController(controller);
+  page_actions::PageActionController* controller = nullptr;
+  if (tabs::TabInterface* active_tab =
+          browser_view_->browser()->GetActiveTabInterface()) {
+    controller = active_tab->GetTabFeatures()->page_action_controller();
   }
+  page_action_container_->SetController(controller);
 }
 
 // When Window Controls Overlay is enabled dynamically by the user clicking the

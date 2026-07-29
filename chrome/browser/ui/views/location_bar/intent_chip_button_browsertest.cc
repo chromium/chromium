@@ -69,8 +69,6 @@ class IntentChipButtonBrowserTest
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
 
-    features_to_enable.push_back({::features::kPageActionsMigration, {}});
-
     scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
 
@@ -281,8 +279,6 @@ class IntentChipButtonBrowserUiTest
   IntentChipButtonBrowserUiTest() {
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
-
-    features_to_enable.push_back({::features::kPageActionsMigration, {}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }

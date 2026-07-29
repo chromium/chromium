@@ -317,8 +317,6 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
     const bool is_wallet_branding_enabled = IsWalletBrandingEnabled();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    enabled_features.push_back({::features::kPageActionsMigration, {}});
     if (is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
     } else {

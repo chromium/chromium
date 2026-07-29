@@ -26,12 +26,7 @@ IconLabelBubbleView* GetIconLabelBubbleViewForTesting(
   if (!provider.Contains(action_id)) {
     return nullptr;
   }
-  const auto& properties = provider.GetProperties(action_id);
-  if (IsPageActionMigrated(properties.type)) {
-    return static_cast<PageActionView*>(interface_ptr);
-  } else {
-    return static_cast<PageActionIconView*>(interface_ptr);
-  }
+  return static_cast<PageActionView*>(interface_ptr);
 }
 
 }  // namespace page_actions

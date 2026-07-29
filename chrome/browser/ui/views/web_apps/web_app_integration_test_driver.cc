@@ -1542,15 +1542,10 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   ASSERT_TRUE(pwa_install_view()->GetVisible());
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
-  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
-    actions::ActionManager::Get()
-        .FindAction(kActionInstallPwa,
-                    browser()->GetActions()->root_action_item())
-        ->InvokeAction();
-  } else {
-    BrowserWindow::FromBrowser(browser())->ExecutePageActionIconForTesting(
-        PageActionIconType::kPwaInstall);
-  }
+  actions::ActionManager::Get()
+      .FindAction(kActionInstallPwa,
+                  browser()->GetActions()->root_action_item())
+      ->InvokeAction();
 
   WaitForAndAcceptInstallDialogForSite(InstallableSiteToSite(site));
 

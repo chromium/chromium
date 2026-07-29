@@ -65,9 +65,4 @@ enum class PageActionIconType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
-// Returns a bool indicating whether the given page action type has been
-// migrated to the new framework, which is based on ActionItems instead of
-// PageActionIconType.
-bool IsPageActionMigrated(PageActionIconType page_action);
-
 #endif  // CHROME_BROWSER_UI_PAGE_ACTION_PAGE_ACTION_ICON_TYPE_H_

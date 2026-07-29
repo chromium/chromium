@@ -18,9 +18,7 @@
 
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
     tabs::TabInterface& tab_interface)
-    : tab_interface_(tab_interface) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kIntentPicker));
-}
+    : tab_interface_(tab_interface) {}
 
 void IntentPickerViewPageActionController::UpdatePageActionVisibility(
     bool should_show_icon,

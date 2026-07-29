@@ -428,9 +428,6 @@ bool AppBrowserController::HasTitlebarContentSettings() const {
 
 std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
     const {
-  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
-    return {};
-  }
 #if BUILDFLAG(IS_CHROMEOS)
   if (system_app()) {
     return {

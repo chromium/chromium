@@ -112,8 +112,6 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
           features::kAutofillShowBubblesBasedOnPriorities);
     }
 
-    enabled_features.push_back({::features::kPageActionsMigration, {}});
-
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }

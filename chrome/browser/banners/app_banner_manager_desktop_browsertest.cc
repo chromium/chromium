@@ -264,12 +264,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Install the app via the menu instead of the banner.
-  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
-    actions::ActionManager::Get().FindAction(kActionInstallPwa)->InvokeAction();
-  } else {
-    BrowserWindow::FromBrowser(browser())->ExecutePageActionIconForTesting(
-        PageActionIconType::kPwaInstall);
-  }
+  actions::ActionManager::Get().FindAction(kActionInstallPwa)->InvokeAction();
 
   manager->AwaitAppInstall();
 

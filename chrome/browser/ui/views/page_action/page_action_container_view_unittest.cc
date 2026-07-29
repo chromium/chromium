@@ -46,9 +46,7 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
 
 class PageActionContainerViewTest : public views::ViewsTestBase {
  public:
-  PageActionContainerViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  PageActionContainerViewTest() = default;
 
   ~PageActionContainerViewTest() override = default;
 

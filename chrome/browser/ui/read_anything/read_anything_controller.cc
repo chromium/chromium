@@ -128,8 +128,7 @@ ReadAnythingController::ReadAnythingController(
           &ReadAnythingController::MaybeUpdateFindBarController,
           base::Unretained(this))));
 
-  if (features::IsReadAnythingOmniboxChipEnabled() &&
-      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (features::IsReadAnythingOmniboxChipEnabled()) {
     omnibox_controller_ = std::make_unique<ReadAnythingOmniboxController>(tab_);
   }
 

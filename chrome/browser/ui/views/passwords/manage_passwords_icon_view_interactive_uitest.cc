@@ -26,9 +26,7 @@
 
 class ManagePasswordsIconViewTest : public ManagePasswordsTest {
  public:
-  ManagePasswordsIconViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  ManagePasswordsIconViewTest() = default;
 
   ManagePasswordsIconViewTest(const ManagePasswordsIconViewTest&) = delete;
   ManagePasswordsIconViewTest& operator=(const ManagePasswordsIconViewTest&) =

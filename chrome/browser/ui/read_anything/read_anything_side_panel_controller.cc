@@ -93,7 +93,6 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
   distillable_ = IsActivePageDistillable();
   UpdateIphVisibility();
   if (features::IsReadAnythingOmniboxChipEnabled() &&
-      base::FeatureList::IsEnabled(features::kPageActionsMigration) &&
       !features::IsImmersiveReadAnythingEnabled()) {
     // The omnibox controller can't add itself as an observer because it needs
     // to access this controller during its construction, so add it as an

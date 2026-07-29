@@ -299,16 +299,9 @@ BASE_DECLARE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization);
 // losing focus).
 BASE_DECLARE_FEATURE(kPageActionAnchoredMessageEasyDismiss);
 
-// Controls whether the new page actions framework should be displaying page
-// actions.
-BASE_DECLARE_FEATURE(kPageActionsMigration);
-
 // Gates the optimization for AI Mode page action to reduce mouse pressed
 // latency.
 BASE_DECLARE_FEATURE(kAiModePageActionOptimization);
-
-// For development only, set this to enable all page actions.
-BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationEnableAll);
 
 // The following feature params indicate whether individual features should
 // have their page actions controlled using the new framework.

@@ -454,10 +454,6 @@ void LocationBarView::Init() {
     page_action_items = page_actions::GetActivePageActionItems(*browser_);
   }
 
-  // We don't need to bridge the new page action container with the legacy one
-  // if page actions migration is enabled.
-  const bool should_bridge_containers =
-      !base::FeatureList::IsEnabled(features::kPageActionsMigration);
   static constexpr int kBetweenIconSpacing = 8;
   const page_actions::PageActionViewParams page_action_params{
       .icon_size =
@@ -466,7 +462,7 @@ void LocationBarView::Init() {
       .between_icon_spacing = kBetweenIconSpacing,
       .icon_label_bubble_delegate = this,
       .font_list = &page_action_font_list,
-      .should_bridge_containers = should_bridge_containers,
+      .should_bridge_containers = false,
       .hide_icon_on_space_constraint = false};
   page_action_container_ =
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(
@@ -877,14 +873,9 @@ void LocationBarView::Layout(PassKey) {
   // location bar.
   // If page actions migration is enabled, then the extra padding that is
   // usually added to bridge the new and legacy containers can be discounted.
-  const bool all_page_actions_migrated =
-      base::FeatureList::IsEnabled(features::kPageActionsMigration);
-  const int kTrailingEdgePaddingForAim = !all_page_actions_migrated ? -3 : 5;
+  const int kTrailingEdgePaddingForAim = 5;
   const PageActionInfo info = GetPageActionInfo();
-  const int kTrailingEdgePaddingForNonAim =
-      (info.num_legacy_page_actions_shown == 0) && !all_page_actions_migrated
-          ? 4
-          : trailing_decorations_edge_padding;
+  const int kTrailingEdgePaddingForNonAim = trailing_decorations_edge_padding;
   add_trailing_decoration(page_action_icon_container_,
                           /*intra_item_padding=*/0,
                           /*edge_padding=*/

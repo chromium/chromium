@@ -101,7 +101,7 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
 
   // Legacy path for unmigrated page actions or when migration disabled by
   // feature flag.
-  if (!action_id.has_value() || !IsPageActionMigrated(*icon_type)) {
+  if (!action_id.has_value()) {
     if (BrowserWindowInterface* browser =
             GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                 web_contents())) {

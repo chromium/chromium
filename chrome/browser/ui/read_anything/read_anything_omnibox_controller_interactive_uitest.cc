@@ -46,7 +46,7 @@ class ReadAnythingOmniboxControllerTest
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingOmniboxChip, features::kPageActionsMigration,
+        features::kReadAnythingOmniboxChip,
         feature_engagement::kIPHReadingModePageActionLabelFeature};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsImmersiveEnabled()) {

@@ -20,9 +20,7 @@
 
 class FileSystemAccessUsageBubbleInteractiveUiTest : public DialogBrowserTest {
  public:
-  FileSystemAccessUsageBubbleInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
-  }
+  FileSystemAccessUsageBubbleInteractiveUiTest() = default;
 
   ~FileSystemAccessUsageBubbleInteractiveUiTest() override = default;
 

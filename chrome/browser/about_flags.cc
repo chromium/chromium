@@ -1216,14 +1216,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 };
 #endif  // BUILDFLAG(IS_WIN)
 
-const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
-    {"file_system_access", "true"},
-    {"sharing_hub", "true"},
-};
-const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
-    {"with all migrated page actions enabled", kPageActionsMigrationParams,
-     nullptr},
-};
 
 const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
     {"annotate_title_instead_of_page_content", "false"},
@@ -11535,11 +11527,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kStartupLaunchVariations,
                                     "LaunchOnStartup")},
 #endif  // BUILDFLAG(IS_WIN)
-    {"page-actions-migration", flag_descriptions::kPageActionsMigrationName,
-     flag_descriptions::kPageActionsMigrationDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPageActionsMigration,
-                                    kPageActionsMigrationVariations,
-                                    "PageActionsMigration")},
 
     {"field-classification-model-caching",
      flag_descriptions::kFieldClassificationModelCachingName,

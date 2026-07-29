@@ -202,19 +202,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   auto* app_banner_manager =
       webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
   app_banner_manager->WaitForInstallableCheck();
-  // TODO(crbug.com/376283433): The legacy page action has a bug that prevents
-  // it from displaying in "chip" mode (just the icon shows). We force the
-  // migrated page action to be collapsed for now to ensure consistency in the
-  // snapshot.
-  // This can be removed once the page action migration path is fully rolled
-  // out.
-  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
-    browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->page_action_controller()
-        ->HideSuggestionChip(kActionInstallPwa);
-  }
   auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
                        ->toolbar_button_provider();
   EXPECT_TRUE(page_actions::GetIconLabelBubbleViewForTesting(

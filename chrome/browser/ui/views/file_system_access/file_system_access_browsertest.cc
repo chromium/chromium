@@ -1348,8 +1348,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
  public:
   FileSystemAccessBrowserTestForWebUI() {
-    scoped_feature_list_.InitWithFeatures({::features::kPageActionsMigration},
-                                          {});
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     // Create a scoped directory under %TEMP% instead of using

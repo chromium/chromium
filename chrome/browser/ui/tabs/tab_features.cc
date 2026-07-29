@@ -222,8 +222,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             *page_action_controller_);
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kIntentPicker) &&
-      page_action_controller_->ActionExists(kActionShowIntentPicker)) {
+  if (page_action_controller_->ActionExists(kActionShowIntentPicker)) {
     intent_picker_view_page_action_controller_ =
         std::make_unique<IntentPickerViewPageActionController>(tab);
   }
@@ -251,31 +250,27 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, *page_action_controller_);
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kManagePasswords) &&
-      page_action_controller_->ActionExists(kActionShowPasswordsBubbleOrPage)) {
+  if (page_action_controller_->ActionExists(kActionShowPasswordsBubbleOrPage)) {
     manage_passwords_page_action_controller_ =
         std::make_unique<ManagePasswordsPageActionController>(
             *page_action_controller_);
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kCookieControls) &&
-      page_action_controller_->ActionExists(kActionShowCookieControls)) {
+  if (page_action_controller_->ActionExists(kActionShowCookieControls)) {
     cookie_controls_page_action_controller_ =
         GetUserDataFactory().CreateInstance<CookieControlsPageActionController>(
             tab, tab, *profile, *page_action_controller_);
     cookie_controls_page_action_controller_->Init();
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kLensOverlayHomework) &&
-      page_action_controller_->ActionExists(kActionLensOverlayHomework)) {
+  if (page_action_controller_->ActionExists(kActionLensOverlayHomework)) {
     lens_overlay_homework_page_action_controller_ =
         GetUserDataFactory()
             .CreateInstance<LensOverlayHomeworkPageActionController>(
                 tab, tab, *profile, *page_action_controller_);
   }
 
-  if (IsPageActionMigrated(PageActionIconType::kBookmarkStar) &&
-      tab.GetBrowserWindowInterface()->GetType() ==
+  if (tab.GetBrowserWindowInterface()->GetType() ==
           BrowserWindowInterface::TYPE_NORMAL &&
       page_action_controller_->ActionExists(kActionBookmarkThisTab)) {
     bookmark_page_action_controller_ =
