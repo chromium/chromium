@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -1215,5 +1216,26 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         return mForegroundColorTint;
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
+    @Override
+    public void setLayerType(int layerType, @Nullable Paint paint) {
+        if (layerType == LAYER_TYPE_HARDWARE && (getWidth() <= 0 || getHeight() <= 0)) {
+            layerType = LAYER_TYPE_NONE;
+        }
+        super.setLayerType(layerType, paint);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (getLayerType() == LAYER_TYPE_HARDWARE && (getWidth() <= 0 || getHeight() <= 0)) {
+            super.setLayerType(LAYER_TYPE_NONE, null);
+        }
     }
 }
