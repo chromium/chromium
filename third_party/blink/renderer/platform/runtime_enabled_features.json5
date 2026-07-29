@@ -6632,6 +6632,9 @@
       status: "experimental",
     },
     {
+      name: "UAImageReplacementAPI",
+    },
+    {
       // The Unbounded Element API. See crbug.com/508672616.
       name: "UnboundedElement",
       implied_by: ["UnboundedElementOnTheOpenWeb"],

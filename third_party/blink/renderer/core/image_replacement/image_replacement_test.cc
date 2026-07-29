@@ -18,10 +18,12 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkWebpDecoder.h"
@@ -1323,6 +1326,260 @@ TEST_F(ImageReplacementSimTest,
 
   // The image replacement should not be reset.
   EXPECT_TRUE(img->HasImageReplacement());
+}
+
+TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPI) {
+  ScopedUAImageReplacementAPIForTest scoped_ua_image_replacement(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target">
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  ASSERT_TRUE(img->complete());
+
+  EXPECT_FALSE(img->replacedByUserAgent());
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+
+  MainFrame().ExecuteScript(WebScriptSource(R"JS(
+    const img = document.getElementById('target');
+    window.startEvents = 0;
+    window.endEvents = 0;
+    window.onStartHandlerFired = 0;
+    window.onEndHandlerFired = 0;
+
+    img.addEventListener('uareplacestart', () => { window.startEvents++; });
+    img.addEventListener('uareplaceend', () => { window.endEvents++; });
+    img.onuareplacestart = () => { window.onStartHandlerFired++; };
+    img.onuareplaceend = () => { window.onEndHandlerFired++; };
+  )JS"));
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(img->replacedByUserAgent());
+
+  v8::Local<v8::Value> js_replaced = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("img.replacedByUserAgent"));
+  EXPECT_TRUE(js_replaced->IsTrue());
+
+  v8::Local<v8::Value> start_count = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.startEvents"));
+  ASSERT_TRUE(start_count->IsInt32());
+  EXPECT_EQ(1, start_count.As<v8::Int32>()->Value());
+
+  v8::Local<v8::Value> on_start_count = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.onStartHandlerFired"));
+  ASSERT_TRUE(on_start_count->IsInt32());
+  EXPECT_EQ(1, on_start_count.As<v8::Int32>()->Value());
+
+  // Reset image replacement.
+  img->ResetImageReplacement();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(img->replacedByUserAgent());
+
+  v8::Local<v8::Value> js_replaced_after_reset =
+      MainFrame().ExecuteScriptAndReturnValue(
+          WebScriptSource("img.replacedByUserAgent"));
+  EXPECT_TRUE(js_replaced_after_reset->IsFalse());
+
+  v8::Local<v8::Value> end_count = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.endEvents"));
+  ASSERT_TRUE(end_count->IsInt32());
+  EXPECT_EQ(1, end_count.As<v8::Int32>()->Value());
+
+  v8::Local<v8::Value> on_end_count = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.onEndHandlerFired"));
+  ASSERT_TRUE(on_end_count->IsInt32());
+  EXPECT_EQ(1, on_end_count.As<v8::Int32>()->Value());
+}
+
+TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIDisabled) {
+  ScopedUAImageReplacementAPIForTest scoped_ua_image_replacement(false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target">
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+
+  MainFrame().ExecuteScript(WebScriptSource(R"JS(
+    const img = document.getElementById('target');
+    window.eventsFired = 0;
+    img.addEventListener('uareplacestart', () => { window.eventsFired++; });
+    img.addEventListener('uareplaceend', () => { window.eventsFired++; });
+  )JS"));
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+  test::RunPendingTasks();
+
+  img->ResetImageReplacement();
+  test::RunPendingTasks();
+
+  v8::Local<v8::Value> count = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.eventsFired"));
+  ASSERT_TRUE(count->IsInt32());
+  EXPECT_EQ(0, count.As<v8::Int32>()->Value());
+}
+
+TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIElementRemoved) {
+  ScopedUAImageReplacementAPIForTest scoped_ua_image_replacement(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target">
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+
+  MainFrame().ExecuteScript(WebScriptSource(R"JS(
+    const img = document.getElementById('target');
+    window.endEvents = 0;
+    img.addEventListener('uareplaceend', () => { window.endEvents++; });
+  )JS"));
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(img->replacedByUserAgent());
+
+  // Remove element from DOM.
+  MainFrame().ExecuteScript(WebScriptSource("img.remove();"));
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(img->replacedByUserAgent());
+
+  v8::Local<v8::Value> end_count = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.endEvents"));
+  ASSERT_TRUE(end_count->IsInt32());
+  EXPECT_EQ(1, end_count.As<v8::Int32>()->Value());
+}
+
+TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIWaitsForImageLoad) {
+  ScopedUAImageReplacementAPIForTest scoped_ua_image_replacement(true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/foo.png",
+                                       "image/png");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="foo.png" id="target">
+  )");
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+  ASSERT_FALSE(img->complete());
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+
+  MainFrame().ExecuteScript(WebScriptSource(R"JS(
+    const img = document.getElementById('target');
+    window.startEvents = 0;
+    img.addEventListener('uareplacestart', () => { window.startEvents++; });
+  )JS"));
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+  test::RunPendingTasks();
+
+  // Image load is still pending. Replacement should not be active yet.
+  EXPECT_FALSE(img->replacedByUserAgent());
+
+  v8::Local<v8::Value> js_replaced_before_load =
+      MainFrame().ExecuteScriptAndReturnValue(
+          WebScriptSource("img.replacedByUserAgent"));
+  EXPECT_TRUE(js_replaced_before_load->IsFalse());
+
+  v8::Local<v8::Value> start_count_before_load =
+      MainFrame().ExecuteScriptAndReturnValue(
+          WebScriptSource("window.startEvents"));
+  ASSERT_TRUE(start_count_before_load->IsInt32());
+  EXPECT_EQ(0, start_count_before_load.As<v8::Int32>()->Value());
+
+  // Finish image load.
+  Vector<char> gif_data = GetTransparentGifBytes();
+  image_resource.Complete(gif_data);
+  test::RunPendingTasks();
+
+  // Replacement becomes active and uareplacestart fires.
+  EXPECT_TRUE(img->replacedByUserAgent());
+
+  v8::Local<v8::Value> js_replaced_after_load =
+      MainFrame().ExecuteScriptAndReturnValue(
+          WebScriptSource("img.replacedByUserAgent"));
+  EXPECT_TRUE(js_replaced_after_load->IsTrue());
+
+  v8::Local<v8::Value> start_count_after_load =
+      MainFrame().ExecuteScriptAndReturnValue(
+          WebScriptSource("window.startEvents"));
+  ASSERT_TRUE(start_count_after_load->IsInt32());
+  EXPECT_EQ(1, start_count_after_load.As<v8::Int32>()->Value());
 }
 
 }  // namespace blink
