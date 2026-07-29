@@ -107,13 +107,21 @@ ContentIDs DockingContentIDsForAlternative(bool isAlternativeStringEnabled) {
 // Returns the title and the body text ids for the omnibox position promo
 // notification.
 ContentIDs OmniboxPositionContentIDsForAlternative(
-    bool isAlternativeStringEnabled) {
-  if (isAlternativeStringEnabled) {
-    return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT2_TITLE,
-            IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
+    TipsNotificationsAlternativeStringVersion alternative) {
+  switch (alternative) {
+    case TipsNotificationsAlternativeStringVersion::kAlternative1:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT1_BODY};
+    case TipsNotificationsAlternativeStringVersion::kAlternative2:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT2_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
+    case TipsNotificationsAlternativeStringVersion::kAlternative3:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT2_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_ALT1_BODY};
+    case TipsNotificationsAlternativeStringVersion::kDefault:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
   }
-  return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
-          IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
 }
 
 // Returns the title and the body text ids for the lens promo notification.
@@ -156,8 +164,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kDocking:
       return DockingContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kOmniboxPosition:
-      return OmniboxPositionContentIDsForAlternative(
-          isAlternativeStringEnabled);
+      return OmniboxPositionContentIDsForAlternative(alternative);
     case TipsNotificationType::kLens:
       return LensContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kEnhancedSafeBrowsing:
