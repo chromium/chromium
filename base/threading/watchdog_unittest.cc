@@ -21,7 +21,7 @@ namespace {
 
 class WatchdogCounter : public Watchdog::Delegate {
  public:
-  WatchdogCounter(const TimeDelta& duration,
+  WatchdogCounter(TimeDelta duration,
                   const std::string& thread_watched_name,
                   bool enabled)
       : watchdog_(duration, thread_watched_name, enabled, this) {}

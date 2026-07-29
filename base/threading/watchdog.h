@@ -43,7 +43,7 @@ class BASE_EXPORT Watchdog {
   // Constructor specifies how long the Watchdog will wait before alarming. If
   // `delegate` is non-null, `Alarm` on the delegate will be called instead of
   // the default behavior.
-  Watchdog(const TimeDelta& duration,
+  Watchdog(TimeDelta duration,
            const std::string& thread_watched_name,
            bool enabled,
            Delegate* delegate = nullptr);
@@ -62,7 +62,7 @@ class BASE_EXPORT Watchdog {
 
   // Start timing, and alarm when time expires (unless we're disarm()ed.)
   void Arm();  // Arm  starting now.
-  void ArmSomeTimeDeltaAgo(const TimeDelta& time_delta);
+  void ArmSomeTimeDeltaAgo(TimeDelta time_delta);
   void ArmAtStartTime(const TimeTicks start_time);
 
   // Reset time, and do not set off the alarm.
