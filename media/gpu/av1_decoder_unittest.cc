@@ -1118,6 +1118,20 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
   EXPECT_EQ(results, expected);
 }
 
+TEST(AV1PictureTest, DuplicatePreservesDynamicHdrMetadata) {
+  auto pic = base::MakeRefCounted<AV1Picture>();
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.SetAgtm({.fHdrReferenceWhite = 203.0101f});
+  pic->SetDynamicHdrMetadata(hdr_metadata, nullptr);
+  EXPECT_TRUE(pic->dynamic_hdr_metadata().HasAgtm());
+
+  auto dup_pic = pic->Duplicate();
+  ASSERT_TRUE(dup_pic);
+  EXPECT_TRUE(dup_pic->dynamic_hdr_metadata().HasAgtm());
+  EXPECT_EQ(dup_pic->dynamic_hdr_metadata().GetAgtm().fHdrReferenceWhite,
+            203.0101f);
+}
+
 class FuzzAV1Accelerator : public media::AV1Decoder::AV1Accelerator {
  public:
   FuzzAV1Accelerator() = default;

@@ -16,14 +16,10 @@ scoped_refptr<AV1Picture> AV1Picture::Duplicate() {
   scoped_refptr<AV1Picture> dup_pic = CreateDuplicate();
   if (!dup_pic)
     return nullptr;
+  dup_pic->CopyCommonFieldsFrom(*this);
 
-  // Copy members of AV1Picture and CodecPicture.
-  // A proper bitstream id is set in AV1Decoder.
-  // Note that decrypt_config_ is not used in here, so skip copying it.
+  // Copy members of AV1Picture.
   dup_pic->frame_header = frame_header;
-  dup_pic->set_bitstream_id(bitstream_id());
-  dup_pic->set_visible_rect(visible_rect());
-  dup_pic->set_colorspace(get_colorspace());
   return dup_pic;
 }
 

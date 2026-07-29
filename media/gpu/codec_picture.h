@@ -83,6 +83,10 @@ class MEDIA_GPU_EXPORT CodecPicture
   friend class base::RefCountedThreadSafe<CodecPicture>;
   virtual ~CodecPicture();
 
+  // Copy member variables of CodecPicture from `src` to `this`. This does not
+  // copy the DecryptConfig.
+  void CopyCommonFieldsFrom(const CodecPicture& src);
+
  private:
   int32_t bitstream_id_ = -1;
   gfx::Rect visible_rect_;

@@ -33,4 +33,14 @@ void CodecPicture::SetDynamicHdrMetadata(const DecoderBuffer* decoder_buffer) {
   }
 }
 
+void CodecPicture::CopyCommonFieldsFrom(const CodecPicture& src) {
+  bitstream_id_ = src.bitstream_id_;
+  visible_rect_ = src.visible_rect_;
+  colorspace_ = src.colorspace_;
+  hdr_metadata_ = src.hdr_metadata_;
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  dolby_vision_metadata_ = src.dolby_vision_metadata_;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+}
+
 }  // namespace media
