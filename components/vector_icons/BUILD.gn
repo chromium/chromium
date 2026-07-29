@@ -457,6 +457,7 @@ if (current_toolchain == default_toolchain) {
       "sync_saved_locally_old.icon",
       "tenancy_filled.icon",
       "tenancy_old.icon",
+      "text_select_end.icon",
       "thumb_down.icon",
       "thumb_down_filled.icon",
       "thumb_down_filled_old.icon",

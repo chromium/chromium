@@ -559,7 +559,7 @@
     Hide for this site
   </message>
   <message name="IDS_GLIC_SELECTION_HIDDEN_TOAST_BODY" desc="Body text for the toast notification when the selection widget is hidden on the current page.">
-    Hidden
+    Hidden until the page refreshes
   </message>
   <message name="IDS_GLIC_SELECTION_ASK_MORE_ABOUT_THIS" desc="Label for the button at the bottom of the inline explanation box to open Gemini in the side panel for follow-up questions.">
     Ask Gemini more about this
