@@ -18,4 +18,6 @@ void UkmRecorderObserver::OnPurge() {}
 
 void UkmRecorderObserver::OnUkmAllowedStateChanged(UkmConsentState state) {}
 
+void UkmRecorderObserver::OnUkmAllowedStateChanged(bool ukm_allowed) {}
+
 }  // namespace ukm

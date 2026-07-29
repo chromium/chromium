@@ -413,7 +413,16 @@ void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
 }
 
 void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
-  NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, state);
+  NotifyAllObservers(
+      static_cast<void (UkmRecorderObserver::*)(UkmConsentState)>(
+          &UkmRecorderObserver::OnUkmAllowedStateChanged),
+      state);
+}
+
+void UkmRecorderImpl::OnUkmAllowedStateChanged(bool ukm_allowed) {
+  NotifyAllObservers(static_cast<void (UkmRecorderObserver::*)(bool)>(
+                         &UkmRecorderObserver::OnUkmAllowedStateChanged),
+                     ukm_allowed);
 }
 
 void UkmRecorderImpl::StoreDownsamplingParameters(Report* report) {

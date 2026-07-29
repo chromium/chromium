@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/metrics/accessibility_state_provider.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
@@ -48,6 +48,7 @@
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -465,6 +466,11 @@ class ChromeComponentMetricsProviderDelegate
   ~ChromeComponentMetricsProviderDelegate() override = default;
 
   std::vector<component_updater::ComponentInfo> GetComponents() override {
+    if (!component_updater_service_) {
+      // `component_updater_service_` can be null in tests.
+      CHECK_IS_TEST();
+      return {};
+    }
     return component_updater_service_->GetComponents();
   }
 
@@ -1240,6 +1246,8 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
     if (!sync) {
       return false;
     }
+    profile_observations_.AddObservation(profile);
+    MonitorAdvancedReportingPref(profile->GetPrefs());
     StartObserving(sync, profile->GetPrefs());
     return true;
   }
@@ -1265,6 +1273,8 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   if (!sync) {
     return false;
   }
+  profile_observations_.AddObservation(profile);
+  MonitorAdvancedReportingPref(profile->GetPrefs());
   StartObserving(sync, profile->GetPrefs());
   return true;
 }
@@ -1277,6 +1287,36 @@ void ChromeMetricsServiceClient::OnProfileAdded(Profile* profile) {
     observers_active_ = false;
     UpdateRunningServices();
   }
+}
+
+void ChromeMetricsServiceClient::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observations_.RemoveObservation(profile);
+  StopMonitoringAdvancedReportingPref(profile->GetPrefs());
+}
+
+void ChromeMetricsServiceClient::
+    OnAdvancedReportingEnabledForAllProfilesChanged(bool enabled,
+                                                    bool reset_client_state) {
+  if (!metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return;
+  }
+
+  if (ukm_service_) {
+    if (reset_client_state) {
+      ukm_service_->Purge();
+      ukm_service_->ResetClientState(
+          ukm::ResetReason::kOnUkmAllowedStateChanged);
+    }
+
+    ukm_service_->OnUkmAllowedStateChanged(enabled);
+  }
+
+  if (dwa_service_ && reset_client_state) {
+    dwa_service_->Purge();
+  }
+
+  UpdateRunningServices();
 }
 
 void ChromeMetricsServiceClient::OnProfileManagerDestroying() {
@@ -1311,6 +1351,10 @@ void ChromeMetricsServiceClient::OnHistoryDeleted() {
 void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool total_purge,
     ukm::UkmConsentState previous_consent_state) {
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return;
+  }
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
   // Apply UKM consent changes to UKM service.
   if (ukm_service_) {
@@ -1459,10 +1503,18 @@ void ChromeMetricsServiceClient::SetIsProcessRunningForTesting(
 }
 
 bool ChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return IsAdvancedReportingEnabledForAllProfiles();
+  }
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
 }
 
 bool ChromeMetricsServiceClient::IsDwaAllowedForAllProfiles() {
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return IsAdvancedReportingEnabledForAllProfiles();
+  }
   return UkmConsentStateObserver::IsDwaAllowedForAllProfiles();
 }
 

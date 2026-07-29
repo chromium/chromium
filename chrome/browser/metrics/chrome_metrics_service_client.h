@@ -24,8 +24,10 @@
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
@@ -74,11 +76,13 @@ class PerUserStateManagerChromeOS;
 // that depends on chrome/.
 class ChromeMetricsServiceClient
     : public metrics::MetricsServiceClient,
+      public metrics::MetricsReportingChoiceService,
       public ukm::HistoryDeleteObserver,
       public ukm::UkmConsentStateObserver,
       public content::RenderProcessHostObserver,
       public content::RenderProcessHostCreationObserver,
       public ProfileManagerObserver,
+      public ProfileObserver,
       public ui::UserActivityObserver {
  public:
   ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
@@ -169,6 +173,9 @@ class ChromeMetricsServiceClient
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
@@ -189,6 +196,11 @@ class ChromeMetricsServiceClient
 
   // Completes the two-phase initialization of ChromeMetricsServiceClient.
   void Initialize();
+
+  // metrics::MetricsReportingChoiceService:
+  void OnAdvancedReportingEnabledForAllProfilesChanged(
+      bool enabled,
+      bool reset_client_state) override;
 
  private:
   friend class ChromeMetricsServiceClientTest;
@@ -342,6 +354,9 @@ class ChromeMetricsServiceClient
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
+
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observations_{this};
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -133,20 +134,36 @@ class TestUkmRecorderObserver : public ukm::UkmRecorderObserver {
   void OnPurge() override {}
 
   void ExpectAllowedStateChanged(ukm::UkmConsentState expected_state) {
-    expected_allowed_ = expected_state;
+    expected_allowed_state_ = expected_state;
+    expected_allowed_bool_ = std::nullopt;
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  void ExpectAllowedStateChanged(bool expected_allowed) {
+    expected_allowed_bool_ = expected_allowed;
+    expected_allowed_state_ = std::nullopt;
     base::RunLoop loop;
     quit_closure_ = loop.QuitClosure();
     loop.Run();
   }
 
   void OnUkmAllowedStateChanged(ukm::UkmConsentState allowed_state) override {
-    if (allowed_state == expected_allowed_) {
+    if (expected_allowed_state_ && allowed_state == *expected_allowed_state_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void OnUkmAllowedStateChanged(bool allowed_state) override {
+    if (expected_allowed_bool_ && allowed_state == *expected_allowed_bool_) {
       std::move(quit_closure_).Run();
     }
   }
 
  private:
-  ukm::UkmConsentState expected_allowed_;
+  std::optional<ukm::UkmConsentState> expected_allowed_state_;
+  std::optional<bool> expected_allowed_bool_;
   base::OnceClosure quit_closure_;
   raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_;
 };

@@ -146,6 +146,9 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Called when UKM consent state changed.
   void OnUkmAllowedStateChanged(UkmConsentState state);
 
+  // Called when UKM allowed state changes.
+  void OnUkmAllowedStateChanged(bool ukm_allowed);
+
   // Sets the sampling seed for testing purposes.
   void SetSamplingSeedForTesting(uint32_t seed) {
     // Normally the seed is set during object construction and remains

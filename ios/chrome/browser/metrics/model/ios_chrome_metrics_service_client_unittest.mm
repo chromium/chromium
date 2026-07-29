@@ -13,6 +13,7 @@
 #import "build/branding_buildflags.h"
 #import "components/metrics/client_info.h"
 #import "components/metrics/dwa/dwa_recorder.h"
+#import "components/metrics/metrics_features.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics/metrics_state_manager.h"
 #import "components/metrics/metrics_switches.h"
@@ -23,7 +24,9 @@
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/ukm/ukm_service.h"
+#import "components/ukm/ukm_test_helper.h"
 #import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -43,6 +46,8 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
     profile_manager_.AddProfileWithBuilder(std::move(builder));
   }
 
@@ -59,6 +64,24 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
     metrics_state_manager_->InstantiateFieldTrialList();
     synthetic_trial_registry_ =
         std::make_unique<variations::SyntheticTrialRegistry>();
+  }
+
+  void TriggerOnAdvancedReportingEnabledForAllProfilesChanged(
+      IOSChromeMetricsServiceClient* client,
+      bool enabled,
+      bool reset_client_state) {
+    client->OnAdvancedReportingEnabledForAllProfilesChanged(enabled,
+                                                            reset_client_state);
+  }
+
+  bool RegisterForProfileEvents(IOSChromeMetricsServiceClient* client,
+                                ProfileIOS* profile) {
+    return client->RegisterForProfileEvents(profile);
+  }
+
+  void OnProfileUnloaded(IOSChromeMetricsServiceClient* client,
+                         ProfileIOS* profile) {
+    client->OnProfileUnloaded(nullptr, profile);
   }
 
  protected:
@@ -230,4 +253,131 @@ TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
   // The signing operation itself never fails, even if there is no key
   // available: empty keys are padded out with 0 bytes.
   EXPECT_FALSE(signature.empty());
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest,
+       OnAdvancedReportingEnabledForAllProfilesChanged) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {ukm::kUkmFeature, metrics::features::kRestructureMetricsConsentSettings},
+      {});
+
+  std::unique_ptr<IOSChromeMetricsServiceClient> client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
+  ukm::UkmService* ukm_service = client->GetUkmService();
+  ASSERT_TRUE(ukm_service);
+
+  uint64_t initial_client_id = ukm_service->client_id();
+
+  // Trigger state change with reset_client_state = false.
+  // UKM client ID should NOT change.
+  TriggerOnAdvancedReportingEnabledForAllProfilesChanged(
+      client.get(), /*enabled=*/false, /*reset_client_state=*/false);
+  EXPECT_EQ(initial_client_id, ukm_service->client_id());
+
+  // Trigger state change with reset_client_state = true.
+  // UKM client ID SHOULD change.
+  TriggerOnAdvancedReportingEnabledForAllProfilesChanged(
+      client.get(), /*enabled=*/false, /*reset_client_state=*/true);
+  EXPECT_NE(initial_client_id, ukm_service->client_id());
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest,
+       AdvancedReportingDataRetentionOnProfileUnload) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {ukm::kUkmFeature, metrics::features::kRestructureMetricsConsentSettings},
+      {});
+
+  std::unique_ptr<IOSChromeMetricsServiceClient> client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
+  ukm::UkmService* ukm_service = client->GetUkmService();
+  ASSERT_TRUE(ukm_service);
+
+  ukm::UkmTestHelper ukm_test_helper(ukm_service);
+
+  // Get the testing profile created in the constructor.
+  std::vector<ProfileIOS*> loaded_profiles =
+      profile_manager_.GetLoadedProfiles();
+  ASSERT_EQ(1U, loaded_profiles.size());
+  ProfileIOS* profile = loaded_profiles[0];
+
+  // Enable advanced reporting for this profile.
+  // This will enable UKM recording and trigger initialization.
+  metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+      profile->GetPrefs(), true);
+  EXPECT_TRUE(client->IsUkmAllowedForAllProfiles());
+
+  // Manually enable recording/reporting since MetricsServicesManager is not
+  // running in this unit test.
+  ukm_service->EnableRecording();
+  ukm_service->EnableReporting();
+
+  // Setup: build and store a dummy log to verify purging logic.
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_test_helper.RecordSourceForTesting(source_id);
+  ukm_test_helper.BuildAndStoreLog();
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+
+  uint64_t initial_client_id = ukm_service->client_id();
+
+  // Simulate profile unloading (like during browser shutdown).
+  // This will trigger state change with reset_client_state = false.
+  // UKM client ID should NOT change, and unsent logs should NOT be purged.
+  OnProfileUnloaded(client.get(), profile);
+  EXPECT_FALSE(client->IsUkmAllowedForAllProfiles());
+  EXPECT_EQ(initial_client_id, ukm_service->client_id());
+  EXPECT_TRUE(ukm_test_helper.HasUnsentLogs());
+}
+
+TEST_F(IOSChromeMetricsServiceClientTest,
+       AdvancedReportingDataPurgeOnConsentRevocation) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeatures(
+      {ukm::kUkmFeature, metrics::features::kRestructureMetricsConsentSettings},
+      {});
+
+  std::unique_ptr<IOSChromeMetricsServiceClient> client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
+  ukm::UkmService* ukm_service = client->GetUkmService();
+  ASSERT_TRUE(ukm_service);
+
+  ukm::UkmTestHelper ukm_test_helper(ukm_service);
+
+  // Get the testing profile created in the constructor.
+  std::vector<ProfileIOS*> loaded_profiles =
+      profile_manager_.GetLoadedProfiles();
+  ASSERT_EQ(1U, loaded_profiles.size());
+  ProfileIOS* profile = loaded_profiles[0];
+
+  // Enable advanced reporting for this profile.
+  // This will enable UKM recording and trigger initialization.
+  metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+      profile->GetPrefs(), true);
+  EXPECT_TRUE(client->IsUkmAllowedForAllProfiles());
+
+  // Manually enable recording/reporting since MetricsServicesManager is not
+  // running in this unit test.
+  ukm_service->EnableRecording();
+  ukm_service->EnableReporting();
+
+  // Setup: build and store a dummy log to verify purging logic.
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_test_helper.RecordSourceForTesting(source_id);
+  ukm_test_helper.BuildAndStoreLog();
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+
+  uint64_t initial_client_id = ukm_service->client_id();
+
+  // Simulate user revoking consent (setting pref to false).
+  // This will trigger state change with reset_client_state = true.
+  // UKM client ID SHOULD change, and unsent logs SHOULD be purged.
+  metrics::MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+      profile->GetPrefs(), false);
+  EXPECT_FALSE(client->IsUkmAllowedForAllProfiles());
+  EXPECT_NE(initial_client_id, ukm_service->client_id());
+  EXPECT_FALSE(ukm_test_helper.HasUnsentLogs());
 }

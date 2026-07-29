@@ -83,10 +83,14 @@ void UkmObserver::OnUkmAllowedStateChanged(ukm::UkmConsentState state) {
   InitalizeUkmAllowedState(state.Has(ukm::MSBB));
 }
 
-void UkmObserver::InitalizeUkmAllowedState(bool is_msbb_enabled) {
+void UkmObserver::OnUkmAllowedStateChanged(bool ukm_allowed) {
+  InitalizeUkmAllowedState(ukm_allowed);
+}
+
+void UkmObserver::InitalizeUkmAllowedState(bool is_ukm_allowed) {
   base::Time most_recent_allowed = LocalStateHelper::GetInstance().GetPrefTime(
       kSegmentationUkmMostRecentAllowedTimeKey);
-  if (!is_msbb_enabled) {
+  if (!is_ukm_allowed) {
     if (most_recent_allowed != base::Time::Max()) {
       LocalStateHelper::GetInstance().SetPrefTime(
           kSegmentationUkmMostRecentAllowedTimeKey, base::Time::Max());

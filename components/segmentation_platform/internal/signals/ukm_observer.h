@@ -49,11 +49,12 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   void OnUpdateSourceURL(ukm::SourceId source_id,
                          const std::vector<GURL>& urls) override;
   void OnUkmAllowedStateChanged(ukm::UkmConsentState state) override;
+  void OnUkmAllowedStateChanged(bool ukm_allowed) override;
 
   // Called to initialize UKM state when the observer is created, in case it
-  // missed notifications prior to set up. `is_msbb_enabled` should indicate if
-  // ukm::MSBB was consented.
-  void InitalizeUkmAllowedState(bool is_msbb_enabled);
+  // missed notifications prior to set up. `is_ukm_allowed` should indicate if
+  // UKM is allowed.
+  void InitalizeUkmAllowedState(bool is_ukm_allowed);
 
   void set_ukm_data_manager(UkmDataManagerImpl* ukm_data_manager) {
     ukm_data_manager_ = ukm_data_manager;

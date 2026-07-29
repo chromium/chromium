@@ -104,4 +104,141 @@ TEST_F(MetricsReportingChoiceServiceTest, IsMetricsReportingDisabledByPolicy) {
       &prefs_));
 }
 
+class TestMetricsReportingChoiceService : public MetricsReportingChoiceService {
+ public:
+  TestMetricsReportingChoiceService() = default;
+  ~TestMetricsReportingChoiceService() override = default;
+
+  bool was_notified() const { return was_notified_; }
+  bool last_enabled() const { return last_enabled_; }
+  bool last_reset_client_state() const { return last_reset_client_state_; }
+  void ResetNotification() {
+    was_notified_ = false;
+    last_enabled_ = false;
+    last_reset_client_state_ = false;
+  }
+
+ protected:
+  void OnAdvancedReportingEnabledForAllProfilesChanged(
+      bool enabled,
+      bool reset_client_state) override {
+    was_notified_ = true;
+    last_enabled_ = enabled;
+    last_reset_client_state_ = reset_client_state;
+  }
+
+ private:
+  bool was_notified_ = false;
+  bool last_enabled_ = false;
+  bool last_reset_client_state_ = false;
+};
+
+TEST_F(MetricsReportingChoiceServiceTest, MultiProfileMonitoring) {
+  TestMetricsReportingChoiceService service;
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+
+  TestingPrefServiceSimple prefs1;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs1.registry());
+  TestingPrefServiceSimple prefs2;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs2.registry());
+
+  // Monitor first profile (pref is default false).
+  service.MonitorAdvancedReportingPref(&prefs1);
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_FALSE(service.was_notified());
+
+  // Enable advanced reporting on first profile.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs1, true);
+  EXPECT_TRUE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_TRUE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Monitor second profile (pref is default false).
+  service.MonitorAdvancedReportingPref(&prefs2);
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_FALSE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Enable advanced reporting on second profile.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs2, true);
+  EXPECT_TRUE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_TRUE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Disable advanced reporting on second profile (user opt-out).
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs2, false);
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_FALSE(service.last_enabled());
+  EXPECT_TRUE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Re-enable advanced reporting on second profile.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs2, true);
+  EXPECT_TRUE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_TRUE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Stop monitoring first profile (should remain enabled since prefs2 is true).
+  service.StopMonitoringAdvancedReportingPref(&prefs1);
+  EXPECT_TRUE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_FALSE(service.was_notified());
+
+  // Stop monitoring second profile (monitored profiles is now empty, so false).
+  service.StopMonitoringAdvancedReportingPref(&prefs2);
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_FALSE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+}
+
+TEST_F(MetricsReportingChoiceServiceTest,
+       RevokeConsentWhileAggregatedStateIsDisabled) {
+  TestMetricsReportingChoiceService service;
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+
+  TestingPrefServiceSimple prefs1;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs1.registry());
+  TestingPrefServiceSimple prefs2;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs2.registry());
+
+  // Enable advanced reporting on first profile.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs1, true);
+
+  // Monitor first profile (pref is true).
+  service.MonitorAdvancedReportingPref(&prefs1);
+  EXPECT_TRUE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_TRUE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Monitor second profile (pref is default false).
+  // This changes the aggregated state to false.
+  service.MonitorAdvancedReportingPref(&prefs2);
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_FALSE(service.last_enabled());
+  EXPECT_FALSE(service.last_reset_client_state());
+  service.ResetNotification();
+
+  // Revoke consent on first profile (prefs1 becomes false).
+  // The aggregated state is already false, and remains false.
+  // But since consent was revoked on a previously consented profile,
+  // we expect a notification with last_reset_client_state() == true.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs1, false);
+  EXPECT_FALSE(service.IsAdvancedReportingEnabledForAllProfiles());
+  EXPECT_TRUE(service.was_notified());
+  EXPECT_FALSE(service.last_enabled());
+  EXPECT_TRUE(service.last_reset_client_state());
+}
+
 }  // namespace metrics

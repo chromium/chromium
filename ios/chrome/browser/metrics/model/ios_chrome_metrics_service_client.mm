@@ -583,6 +583,7 @@ bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
   }
 
   ObserveServiceForDeletions(history_service);
+  MonitorAdvancedReportingPref(profile->GetPrefs());
   StartObserving(sync, profile->GetPrefs());
   StartObservingBrowserList(browser_list);
   return true;
@@ -629,6 +630,10 @@ void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
 void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool must_purge,
     ukm::UkmConsentState previous_consent_state) {
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return;
+  }
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
   if (ukm_service_) {
     if (must_purge) {
@@ -690,7 +695,32 @@ void IOSChromeMetricsServiceClient::OnProfileLoaded(ProfileManagerIOS* manager,
 void IOSChromeMetricsServiceClient::OnProfileUnloaded(
     ProfileManagerIOS* manager,
     ProfileIOS* profile) {
-  // Nothing to do.
+  StopMonitoringAdvancedReportingPref(profile->GetPrefs());
+}
+
+void IOSChromeMetricsServiceClient::
+    OnAdvancedReportingEnabledForAllProfilesChanged(bool enabled,
+                                                    bool reset_client_state) {
+  if (!metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return;
+  }
+
+  if (ukm_service_) {
+    if (reset_client_state) {
+      ukm_service_->Purge();
+      ukm_service_->ResetClientState(
+          ukm::ResetReason::kOnUkmAllowedStateChanged);
+    }
+
+    ukm_service_->OnUkmAllowedStateChanged(enabled);
+  }
+
+  if (dwa_service_ && reset_client_state) {
+    dwa_service_->Purge();
+  }
+
+  UpdateRunningServices();
 }
 
 void IOSChromeMetricsServiceClient::OnProfileMarkedForPermanentDeletion(
@@ -808,10 +838,18 @@ void IOSChromeMetricsServiceClient::WebStateDestroyed(
 }
 
 bool IOSChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return IsAdvancedReportingEnabledForAllProfiles();
+  }
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
 }
 
 bool IOSChromeMetricsServiceClient::IsDwaAllowedForAllProfiles() {
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure()) {
+    return IsAdvancedReportingEnabledForAllProfiles();
+  }
   return UkmConsentStateObserver::IsDwaAllowedForAllProfiles();
 }
 
