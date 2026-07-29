@@ -71,6 +71,10 @@ class UkmConsentParamBrowserTest;
 class CrOSPreChoiceMetricsManagerTest;
 }  // namespace metrics
 
+namespace multistep_filter {
+class MultistepFilterServiceFactory;
+}  // namespace multistep_filter
+
 namespace optimization_guide {
 class ChromeOnDeviceModelServiceController;
 }  // namespace optimization_guide
@@ -183,6 +187,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class supervised_user::MetricsServiceAccessorDelegateImpl;
   friend class glic::GlicMetricsProvider;
   friend class glic::GlicSyntheticTrialManager;
+  friend class multistep_filter::MultistepFilterServiceFactory;
   friend class OptimizationGuideKeyedService;
   friend class optimization_guide::ChromeOnDeviceModelServiceController;
   friend class WebUITabStripFieldTrial;

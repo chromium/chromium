@@ -15,6 +15,9 @@ inline constexpr char kMultistepFilterAllowHttpForTesting[] =
 inline constexpr char kMultistepFilterBypassCapabilityCheck[] =
     "multistep-filter-bypass-capability-check";
 
+// Tag the browser instance as running evals to filter out UMA metrics.
+inline constexpr char kMultistepFilterEvals[] = "multistep-filter-evals";
+
 }  // namespace multistep_filter::switches
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_SWITCHES_H_
