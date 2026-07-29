@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <numeric>
 
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
@@ -17,6 +18,7 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/common/opus_constants.h"
 #include "third_party/opus/src/include/opus.h"
@@ -59,7 +61,7 @@ struct OpusExtraData {
   int16_t gain_db = 0;
 
   // Initialize with the default opus channel layout.
-  std::array<uint8_t, OPUS_MAX_VORBIS_CHANNELS> stream_map = {0, 1};
+  std::vector<uint8_t> stream_map = {0, 1};
 };
 
 std::optional<OpusExtraData> ParseOpusExtraData(
@@ -95,11 +97,12 @@ std::optional<OpusExtraData> ParseOpusExtraData(
   OpusExtraData extra_data;
   extra_data.channels = channels;
   if (extra_data.channels <= 0 ||
-      extra_data.channels > OPUS_MAX_VORBIS_CHANNELS) {
+      extra_data.channels > limits::kAbsoluteMaxChannels) {
     DLOG(ERROR) << "invalid channel count in extra data: "
                 << extra_data.channels;
     return std::nullopt;
   }
+  extra_data.stream_map.resize(extra_data.channels);
 
   if (!reader.ReadU16LittleEndian(extra_data.skip_samples)) {
     return std::nullopt;
@@ -119,13 +122,14 @@ std::optional<OpusExtraData> ParseOpusExtraData(
   }
   extra_data.channel_mapping = channel_mapping;
 
-  if (!extra_data.channel_mapping) {
+  if (extra_data.channel_mapping == OPUS_CHANNEL_MAPPING_FAMILY_DEFAULT) {
     if (extra_data.channels > OPUS_MAX_CHANNELS_WITH_DEFAULT_LAYOUT) {
       return std::nullopt;
     }
 
     extra_data.num_streams = 1;
     extra_data.num_coupled = config.channels() > 1 ? 1 : 0;
+    std::iota(extra_data.stream_map.begin(), extra_data.stream_map.end(), 0);
     return extra_data;
   }
 
@@ -141,7 +145,8 @@ std::optional<OpusExtraData> ParseOpusExtraData(
   }
   extra_data.num_coupled = num_coupled;
 
-  if (extra_data.num_streams + extra_data.num_coupled != extra_data.channels) {
+  if (extra_data.channel_mapping == OPUS_CHANNEL_MAPPING_FAMILY_VORBIS &&
+      extra_data.num_streams + extra_data.num_coupled != extra_data.channels) {
     DVLOG(1) << "Inconsistent channel mapping.";
   }
 
@@ -156,6 +161,59 @@ std::optional<OpusExtraData> ParseOpusExtraData(
     extra_data.stream_map[i] = stream_map_value;
   }
   return extra_data;
+}
+
+// Constructs the channel mapping array required by libopus's
+// opus_multistream_decoder_create() per RFC 7845 Section 5.1.1 and RFC 8486.
+//
+// libopus's decoder takes a `mapping` array where mapping[i] specifies the Opus
+// stream index for output channel `i`. By reordering the Opus header's Vorbis
+// channel mapping (Family 1) into Chromium's channel order (FL, FR, C, LFE,
+// ...), libopus decodes audio directly into Chromium's expected channel layout.
+std::optional<std::vector<uint8_t>> BuildOpusChannelMapping(
+    int channels,
+    const OpusExtraData& extra_data) {
+  std::vector<uint8_t> channel_mapping(channels);
+
+  switch (extra_data.channel_mapping) {
+    case OPUS_CHANNEL_MAPPING_FAMILY_DEFAULT:
+      // Channel Mapping Family 0 (RFC 7845 Section 5.1.1):
+      // Allowed channels: 1 (mono) or 2 (stereo).
+      if (channels > OPUS_MAX_CHANNELS_WITH_DEFAULT_LAYOUT) {
+        DLOG(ERROR) << "Default channel mapping only supports up to 2 channels";
+        return std::nullopt;
+      }
+      std::iota(channel_mapping.begin(), channel_mapping.end(), 0);
+      break;
+
+    case OPUS_CHANNEL_MAPPING_FAMILY_VORBIS:
+      // Channel Mapping Family 1 (RFC 7845 Section 5.1.1):
+      // Vorbis Surround Sound Layout (1 to 8 channels). The Opus header maps
+      // channels in Vorbis order (FL, C, FR, RL, RR, LFE).
+      // RemapOpusChannelLayout translates these indices into Chromium channel
+      // order (FL, FR, C, LFE, RL, RR).
+      if (channels > OPUS_MAX_VORBIS_CHANNELS) {
+        DLOG(ERROR) << "Vorbis channel mapping only supports up to 8 channels";
+        return std::nullopt;
+      }
+      RemapOpusChannelLayout(extra_data.stream_map, channels,
+                             base::span(channel_mapping));
+      break;
+
+    default:
+      // Channel Mapping Family 2 (RFC 8486 Ambisonics) or Family 255 (Custom):
+      // Ambisonic channels represent 3D spherical harmonic component signals.
+      // Maximum channel count in an 8-bit Opus header field is 255.
+      if (channels > 255) {
+        DLOG(ERROR) << "Opus channel count exceeds maximum 255 channels: "
+                    << channels;
+        return std::nullopt;
+      }
+      channel_mapping = extra_data.stream_map;
+      break;
+  }
+
+  return channel_mapping;
 }
 
 }  // namespace
@@ -189,10 +247,9 @@ void OpusAudioDecoder::Initialize(const AudioDecoderConfig& config,
     return;
   }
 
-  config_ = config;
   output_cb_ = BindCallbackIfNeeded(output_cb);
 
-  if (!ConfigureDecoder()) {
+  if (!ConfigureDecoder(config)) {
     BindCallbackIfNeeded(std::move(init_cb))
         .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
@@ -261,68 +318,64 @@ OpusAudioDecoder::~OpusAudioDecoder() {
   opus_decoder_.reset();
 }
 
-bool OpusAudioDecoder::ConfigureDecoder() {
-  if (config_.codec() != AudioCodec::kOpus) {
+bool OpusAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
+  if (config.codec() != AudioCodec::kOpus) {
     DVLOG(1) << "Codec must be kOpus.";
     return false;
   }
 
-  if (!config_.IsValidConfig() ||
-      config_.channels() > OPUS_MAX_VORBIS_CHANNELS) {
+  if (!config.IsValidConfig() ||
+      config.channels() > limits::kAbsoluteMaxChannels) {
     DLOG(ERROR) << "Invalid or unsupported audio stream -"
-                << " codec: " << config_.codec()
-                << " channel count: " << config_.channels()
-                << " channel layout: " << config_.channel_layout()
-                << " bytes per channel: " << config_.bytes_per_channel()
-                << " samples per second: " << config_.samples_per_second();
+                << " codec: " << config.codec()
+                << " channel count: " << config.channels()
+                << " channel layout: " << config.channel_layout()
+                << " bytes per channel: " << config.bytes_per_channel()
+                << " samples per second: " << config.samples_per_second();
     return false;
   }
 
-  CHECK(!config_.is_encrypted());
+  CHECK(!config.is_encrypted());
 
   opus_decoder_.reset();
 
   const std::optional<OpusExtraData> extra_data =
-      ParseOpusExtraData(config_.extra_data(), config_);
+      ParseOpusExtraData(config.extra_data(), config);
   if (!extra_data) {
     DLOG(ERROR) << "Failed to parse opus extra data";
     return false;
   }
 
-  if (config_.codec_delay() < 0) {
+  if (config.codec_delay() < 0) {
     DLOG(ERROR) << "Invalid file. Incorrect value for codec delay: "
-                << config_.codec_delay();
+                << config.codec_delay();
     return false;
   }
 
-  if (config_.codec_delay() != extra_data->skip_samples) {
+  if (config.codec_delay() != extra_data->skip_samples) {
     base::UmaHistogramCounts1000(
         "Media.Audio.Decode.OpusCodecDelayMismatch",
-        std::abs(config_.codec_delay() -
+        std::abs(config.codec_delay() -
                  static_cast<int>(extra_data->skip_samples)));
-
-    // Overwrite the config with the skip samples value from extra data.
-    config_.Initialize(config_.codec(), config_.sample_format(),
-                       {config_.channel_layout(), config_.channels()},
-                       config_.samples_per_second(), config_.extra_data(),
-                       config_.encryption_scheme(), config_.seek_preroll(),
-                       extra_data->skip_samples);
   }
 
-  std::array<uint8_t, OPUS_MAX_VORBIS_CHANNELS> channel_mapping = {0, 1};
+  sample_rate_ = config.samples_per_second();
+  channels_ = config.channels();
+  channel_layout_ = config.channel_layout();
+  codec_delay_ = extra_data->skip_samples;
+  should_discard_decoder_delay_ = config.should_discard_decoder_delay();
 
-  if (config_.channels() > OPUS_MAX_CHANNELS_WITH_DEFAULT_LAYOUT) {
-    CHECK(extra_data->channel_mapping);
-    RemapOpusChannelLayout(extra_data->stream_map, config_.channels(),
-                           base::span(channel_mapping)
-                               .first(static_cast<size_t>(config_.channels())));
+  const std::optional<std::vector<uint8_t>> channel_mapping =
+      BuildOpusChannelMapping(channels_, *extra_data);
+  if (!channel_mapping) {
+    return false;
   }
 
   // Init Opus.
   int status = OPUS_INVALID_STATE;
   opus_decoder_.reset(opus_multistream_decoder_create(
-      config_.samples_per_second(), config_.channels(), extra_data->num_streams,
-      extra_data->num_coupled, channel_mapping.data(), &status));
+      sample_rate_, channels_, extra_data->num_streams, extra_data->num_coupled,
+      channel_mapping->data(), &status));
   if (!opus_decoder_ || status != OPUS_OK) {
     DLOG(ERROR) << "opus_multistream_decoder_create failed status="
                 << opus_strerror(status);
@@ -342,17 +395,16 @@ bool OpusAudioDecoder::ConfigureDecoder() {
 }
 
 void OpusAudioDecoder::ResetTimestampState() {
-  discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config_.samples_per_second(), 0, false);
-  discard_helper_->Reset(
-      config_.should_discard_decoder_delay() ? config_.codec_delay() : 0);
+  discard_helper_ =
+      std::make_unique<AudioDiscardHelper>(sample_rate_, 0, false);
+  discard_helper_->Reset(should_discard_decoder_delay_ ? codec_delay_ : 0);
 }
 
 bool OpusAudioDecoder::DecodeBuffer(const scoped_refptr<DecoderBuffer>& input) {
   // Allocate a buffer for the output samples.
   scoped_refptr<AudioBuffer> output_buffer = AudioBuffer::CreateBuffer(
-      kSampleFormatF32, config_.channel_layout(), config_.channels(),
-      config_.samples_per_second(), kMaxOpusOutputPacketSizeSamples, pool_);
+      kSampleFormatF32, channel_layout_, channels_, sample_rate_,
+      kMaxOpusOutputPacketSizeSamples, pool_);
 
   float* float_output_buffer =
       reinterpret_cast<float*>(output_buffer->channel_data()[0].get());

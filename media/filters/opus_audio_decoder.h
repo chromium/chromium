@@ -55,7 +55,7 @@ class MEDIA_EXPORT OpusAudioDecoder : public AudioDecoder {
  private:
   bool DecodeBuffer(const scoped_refptr<DecoderBuffer>& input);
 
-  bool ConfigureDecoder();
+  bool ConfigureDecoder(const AudioDecoderConfig& config);
   void ResetTimestampState();
 
   // If the execution mode is set to asynchronous, wraps the `callback` in a
@@ -70,7 +70,12 @@ class MEDIA_EXPORT OpusAudioDecoder : public AudioDecoder {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const ExecutionMode mode_ = ExecutionMode::kAsynchronous;
 
-  AudioDecoderConfig config_;
+  int sample_rate_ = 0;
+  int channels_ = 0;
+  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_NONE;
+  int codec_delay_ = 0;
+  bool should_discard_decoder_delay_ = true;
+
   OutputCB output_cb_;
   std::unique_ptr<OpusMSDecoder, OpusMSDecoderDeleter> opus_decoder_;
   std::unique_ptr<AudioDiscardHelper> discard_helper_;

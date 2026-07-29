@@ -318,10 +318,15 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
         << config_.samples_per_second() << ", ChannelLayout: " << channel_layout
         << " vs " << config_.channel_layout() << ", Channels: " << channels
         << " vs " << config_.channels();
+    const bool should_discard_decoder_delay =
+        config_.should_discard_decoder_delay();
     config_.Initialize(config_.codec(), config_.sample_format(),
                        {channel_layout, channels}, frame->sample_rate,
                        config_.extra_data(), config_.encryption_scheme(),
                        config_.seek_preroll(), config_.codec_delay());
+    if (!should_discard_decoder_delay) {
+      config_.disable_discard_decoder_delay();
+    }
 
     if (is_sample_rate_change)
       ResetTimestampState(config_);

@@ -208,20 +208,34 @@ class AudioDecoderTest
   }
 
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-    const std::vector<base::test::FeatureRef> features = {
+    const std::vector<base::test::FeatureRef> symphonia_features = {
         { kSymphoniaAudioDecoding,
           kSymphoniaMp3Decoding,
           kSymphoniaPcmDecoding,
           kSymphoniaVorbisDecoding }};
 
     if (decoder_type_ == AudioDecoderType::kSymphonia) {
-      scoped_feature_list_.InitWithFeatures(features,
-                                            /*disabled_features=*/{});
+      enabled_features.insert(enabled_features.end(),
+                              symphonia_features.begin(),
+                              symphonia_features.end());
     } else {
-      scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{}, features);
+      disabled_features.insert(disabled_features.end(),
+                               symphonia_features.begin(),
+                               symphonia_features.end());
     }
 #endif
+
+    if (decoder_type_ == AudioDecoderType::kOpus) {
+      enabled_features.push_back(kDirectOpusAudioDecoding);
+    } else if (decoder_type_ == AudioDecoderType::kFFmpeg) {
+      disabled_features.push_back(kDirectOpusAudioDecoding);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     if (!IsSupported()) {
       GTEST_SKIP() << "Unsupported platform.";
     }
@@ -236,7 +250,7 @@ class AudioDecoderTest
     return true;
   }
 
-  bool IsIamfTest() const { return params_.codec == AudioCodec::kIAMF; }
+  bool IsIamfTest() const { return codec() == AudioCodec::kIAMF; }
 
   void VerifyIamfOutputLayout() {
     ASSERT_GT(decoded_audio_size(), 0u);
@@ -318,7 +332,7 @@ class AudioDecoderTest
     // streams we need to extract it with a separate procedure.
     if ((decoder_type_ == AudioDecoderType::kMediaCodec ||
          decoder_type_ == AudioDecoderType::kMediaFoundation) &&
-        params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
+        codec() == AudioCodec::kAAC && config.extra_data().empty()) {
       const auto header = ADTSStreamParser::ParseHeader(AVPacketData(*packet));
       ASSERT_TRUE(header.has_value());
       config.Initialize(AudioCodec::kAAC, kSampleFormatS16,
@@ -381,9 +395,11 @@ class AudioDecoderTest
     base::RunLoop().RunUntilIdle();
   }
 
-  void Decode() {
+  bool ReadAndDecodeNextPacket() {
     auto packet = ScopedAVPacket::Allocate();
-    ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
+    if (!reader_->ReadPacketForTesting(packet.get())) {
+      return false;
+    }
 
     scoped_refptr<DecoderBuffer> buffer =
         DecoderBuffer::CopyFrom(AVPacketData(*packet));
@@ -405,6 +421,24 @@ class AudioDecoderTest
     // DecodeBuffer() shouldn't need the original packet since it uses the copy.
     av_packet_unref(packet.get());
     DecodeBuffer(std::move(buffer));
+    return true;
+  }
+
+  void Decode() { ASSERT_TRUE(ReadAndDecodeNextPacket()); }
+
+  // Decodes all remaining packets from reader_ until EOF and sends EOS.
+  void DecodeAllPackets() {
+    while (ReadAndDecodeNextPacket()) {
+    }
+    SendEndOfStream();
+  }
+
+  int GetTotalDecodedFrames() const {
+    int total_frames = 0;
+    for (const auto& buffer : decoded_audio_) {
+      total_frames += buffer->frame_count();
+    }
+    return total_frames;
   }
 
   void ResetDecoder() {
@@ -529,6 +563,9 @@ class AudioDecoderTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
+  AudioCodec codec() const { return params_.codec; }
+  AudioDecoderType decoder_type() const { return decoder_type_; }
+
   std::unique_ptr<AudioFileReader> reader_;
   std::unique_ptr<AudioDecoder> decoder_;
   base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
@@ -537,7 +574,7 @@ class AudioDecoderTest
   const AudioDecoderType decoder_type_;
 
   // Current TestParams used to initialize the test and decoder. The initial
-  // valie is std::get<1>(GetParam()). Could be overridden by set_param() so
+  // value is std::get<1>(GetParam()). Could be overridden by set_param() so
   // that the decoder can be reinitialized with different parameters.
   TestParams params_;
 
@@ -948,6 +985,46 @@ TEST_P(AudioDecoderTest, VerifyIamfOutputLayout) {
   ASSERT_NO_FATAL_FAILURE(Decode());
   EXPECT_TRUE(last_decode_status().is_ok());
   VerifyIamfOutputLayout();
+}
+
+// Verifies that disabling decoder delay discard (disable_discard_decoder_delay)
+// causes the decoder to output all decoded samples (including the initial
+// codec delay / pre-skip samples) rather than discarding them.
+TEST_P(AudioDecoderTest, OpusDisableDiscardDecoderDelay) {
+  if (codec() != AudioCodec::kOpus) {
+    GTEST_SKIP() << "Only for Opus";
+  }
+
+  if (decoder_type() != AudioDecoderType::kOpus &&
+      decoder_type() != AudioDecoderType::kFFmpeg) {
+    GTEST_SKIP()
+        << "Decoder type does not support disable_discard_decoder_delay";
+  }
+
+  // 1. Decode the entire file with default discard_decoder_delay enabled.
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  DecodeAllPackets();
+  const int total_frames_default = GetTotalDecodedFrames();
+
+  // 2. Re-initialize the decoder with disable_discard_decoder_delay().
+  ResetReader();
+  decoded_audio_.clear();
+
+  AudioDecoderConfig config;
+  ASSERT_TRUE(AVCodecContextToAudioDecoderConfig(
+      reader_->codec_context_for_testing(), EncryptionScheme::kUnencrypted,
+      &config));
+  config.disable_discard_decoder_delay();
+  EXPECT_FALSE(config.should_discard_decoder_delay());
+
+  InitializeDecoder(config);
+  DecodeAllPackets();
+  const int total_frames_disabled_discard = GetTotalDecodedFrames();
+
+  // 3. Verify that disabling delay discard outputs extra samples corresponding
+  // to the Opus header skip_samples (312 samples for sfx-opus and bear-opus).
+  EXPECT_GT(total_frames_disabled_discard, total_frames_default);
+  EXPECT_EQ(total_frames_disabled_discard - total_frames_default, 312);
 }
 
 TEST_P(AudioDecoderTest, Decode) {
