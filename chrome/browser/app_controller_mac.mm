@@ -164,10 +164,6 @@ GetPendingWebAuthRequests() {
   return g_pending_requests;
 }
 
-// Open the urls in the last used browser from a regular profile.
-void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
-                                  Profile* profile);
-
 // Returns true if the profile requires signin before being used.
 bool IsProfileSignedOut(const base::FilePath& profile_path);
 
@@ -432,19 +428,20 @@ base::FilePath GetStartupProfilePathMac() {
   return profile_path_info.path;
 }
 
-// Open the urls in the last used browser. Loads the profile asynchronously if
-// needed.
-void OpenUrlsInBrowser(std::vector<GURL> urls) {
-  std::vector<GURL> regular_urls;
+void OpenStartupTabsInBrowserWithProfile(const StartupTabs& tabs,
+                                         Profile* profile);
+
+void OpenStartupTabsInBrowser(StartupTabs tabs) {
+  StartupTabs regular_tabs;
   std::vector<base::FilePath> shortcuts;
 
-  for (auto& url : urls) {
+  for (auto& tab : tabs) {
     base::FilePath path;
-    if (net::FileURLToFilePath(url, &path) &&
+    if (net::FileURLToFilePath(tab.url, &path) &&
         path.Extension() == shortcuts::ChromeWeblocFile::kFileExtension) {
       shortcuts.push_back(path);
     } else {
-      regular_urls.push_back(std::move(url));
+      regular_tabs.push_back(std::move(tab));
     }
   }
 
@@ -457,7 +454,7 @@ void OpenUrlsInBrowser(std::vector<GURL> urls) {
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         base::BindOnce(
             [](const std::vector<base::FilePath>& shortcuts) {
-              base::flat_map<base::FilePath, std::vector<GURL>> profile_url_map;
+              base::flat_map<base::FilePath, StartupTabs> profile_tab_map;
               for (const auto& path : shortcuts) {
                 auto shortcut = shortcuts::ChromeWeblocFile::LoadFromFile(path);
                 // TODO: Consider opening the original file URL?
@@ -466,8 +463,6 @@ void OpenUrlsInBrowser(std::vector<GURL> urls) {
                 }
                 bool is_shortcut_url_valid =
                     startup::ValidateLaunchUrlWebUnsafe(shortcut->target_url());
-        // Do not allow chrome sensitive urls to be launched from a .crwebloc
-        // file.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
                 is_shortcut_url_valid =
                     is_shortcut_url_valid || shortcut->target_url().SchemeIs(
@@ -478,45 +473,44 @@ void OpenUrlsInBrowser(std::vector<GURL> urls) {
                              << shortcut->target_url();
                   continue;
                 }
-                profile_url_map[shortcut->profile_path_name().path()].push_back(
-                    shortcut->target_url());
+                profile_tab_map[shortcut->profile_path_name().path()]
+                    .emplace_back(shortcut->target_url(),
+                                  /*is_untrusted_launch=*/false);
               }
-              return profile_url_map;
+              return profile_tab_map;
             },
             std::move(shortcuts)),
-        base::BindOnce(
-            [](const base::flat_map<base::FilePath, std::vector<GURL>>
-                   profile_url_map) {
-              const base::FilePath& user_data_dir =
-                  g_browser_process->profile_manager()->user_data_dir();
-              ProfileAttributesStorage& profile_attributes_storage =
-                  g_browser_process->profile_manager()
-                      ->GetProfileAttributesStorage();
-              for (const auto& [profile, urls_for_profile] : profile_url_map) {
-                const base::FilePath profile_path =
-                    user_data_dir.Append(profile);
-                if (profile_attributes_storage.GetProfileAttributesWithPath(
-                        profile_path)) {
-                  RunInProfileSafely(
-                      profile_path,
-                      base::BindOnce(&OpenUrlsInBrowserWithProfile,
-                                     urls_for_profile),
-                      app_controller_mac::kShowProfilePickerOnFailure);
-                } else {
-                  // If the target profile doesn't exist, fall back to the
-                  // last profile.
-                  RunInLastProfileSafely(
-                      base::BindOnce(&OpenUrlsInBrowserWithProfile,
-                                     urls_for_profile),
-                      app_controller_mac::kShowProfilePickerOnFailure);
-                }
-              }
-            }));
+        base::BindOnce([](const base::flat_map<base::FilePath, StartupTabs>
+                              profile_tab_map) {
+          const base::FilePath& user_data_dir =
+              g_browser_process->profile_manager()->user_data_dir();
+          ProfileAttributesStorage& profile_attributes_storage =
+              g_browser_process->profile_manager()
+                  ->GetProfileAttributesStorage();
+          for (const auto& [profile, tabs_for_profile] : profile_tab_map) {
+            const base::FilePath profile_path = user_data_dir.Append(profile);
+            if (profile_attributes_storage.GetProfileAttributesWithPath(
+                    profile_path)) {
+              app_controller_mac::RunInProfileSafely(
+                  profile_path,
+                  base::BindOnce(&OpenStartupTabsInBrowserWithProfile,
+                                 tabs_for_profile),
+                  app_controller_mac::kShowProfilePickerOnFailure);
+            } else {
+              // If the target profile doesn't exist, fall back to the
+              // last profile.
+              app_controller_mac::RunInLastProfileSafely(
+                  base::BindOnce(&OpenStartupTabsInBrowserWithProfile,
+                                 tabs_for_profile),
+                  app_controller_mac::kShowProfilePickerOnFailure);
+            }
+          }
+        }));
   }
 
-  if (!regular_urls.empty()) {
+  if (!regular_tabs.empty()) {
     app_controller_mac::RunInLastProfileSafely(
-        base::BindOnce(&OpenUrlsInBrowserWithProfile, regular_urls),
+        base::BindOnce(&OpenStartupTabsInBrowserWithProfile, regular_tabs),
         app_controller_mac::kShowProfilePickerOnFailure);
   }
 }
@@ -550,16 +544,16 @@ Profile* GetLastProfileMac() {
 - (void)profileWasRemoved:(const base::FilePath&)profilePath
              forIncognito:(bool)isIncognito;
 
-// This class cannot open urls until startup has finished. The urls that cannot
-// be opened are cached in |startupUrls_|. This method must be called exactly
-// once after startup has completed. It opens the urls in |startupUrls_|, and
-// clears |startupUrls_|.
+// This class cannot open tabs until startup has finished. The tabs that cannot
+// be opened are cached in |_startupTabs|. This method must be called exactly
+// once after startup has completed. It opens the tabs in |_startupTabs|, and
+// clears |_startupTabs|.
 - (void)openStartupUrls;
 
-// Opens a tab for each GURL in |urls|. If there is exactly one tab open before
-// this method is called, and that tab is the NTP, then this method closes the
-// NTP after all the |urls| have been opened.
-- (void)openUrlsReplacingNTP:(std::vector<GURL>)urls;
+// Opens a tab for each StartupTab in |tabs|. If there is exactly one tab open
+// before this method is called, and that tab is the NTP, then this method
+// closes the NTP after all the |tabs| have been opened.
+- (void)openStartupTabsReplacingNTP:(StartupTabs)tabs;
 
 // Returns |YES| if |webContents| can be sent to another device via Handoff.
 - (BOOL)isHandoffEligible:(content::WebContents*)webContents;
@@ -714,8 +708,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   // If we're told to open URLs (in particular, via |-application:openURLs:| by
   // Launch Services) before we've launched the browser, we queue them up in
-  // |startupUrls_| so that they can go in the first browser window/tab.
-  std::vector<GURL> _startupUrls;
+  // |_startupTabs| so that they can go in the first browser window/tab.
+  StartupTabs _startupTabs;
   BOOL _startupComplete;
 
   // Outlets for testing close tab/window menu items.
@@ -1254,30 +1248,24 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 }
 
 - (void)openStartupUrls {
-  DCHECK(_startupComplete);
-  [self openUrlsReplacingNTP:std::move(_startupUrls)];
-  _startupUrls.clear();
+  CHECK(_startupComplete);
+  [self openStartupTabsReplacingNTP:std::move(_startupTabs)];
+  _startupTabs.clear();
 }
 
-- (void)openUrlsReplacingNTP:(std::vector<GURL>)urls {
-  if (urls.empty())
-    return;
-
-  // On Mac, the URLs are passed in via Cocoa, not command line. The Chrome
-  // NSApplication is created in MainMessageLoop, and then the shortcut urls
-  // are passed in via Apple events. At this point, the first browser is
-  // already loaded in PreMainMessageLoop. If we initialize NSApplication
-  // before PreMainMessageLoop to capture shortcut URL events, it may cause
-  // more problems because it relies on things created in PreMainMessageLoop
-  // and may break existing message loop design.
-
-  // If the browser hasn't started yet, just queue up the URLs.
-  if (!_startupComplete) {
-    _startupUrls.insert(_startupUrls.end(), urls.begin(), urls.end());
+- (void)openStartupTabsReplacingNTP:(StartupTabs)tabs {
+  if (tabs.empty()) {
     return;
   }
 
-  OpenUrlsInBrowser(std::move(urls));
+  if (!_startupComplete) {
+    for (auto& tab : tabs) {
+      _startupTabs.push_back(std::move(tab));
+    }
+    return;
+  }
+
+  OpenStartupTabsInBrowser(std::move(tabs));
 }
 
 - (void)resetKeepAliveWhileHidden {
@@ -2065,7 +2053,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 }
 
 - (void)application:(NSApplication*)sender openURLs:(NSArray<NSURL*>*)urls {
-  std::vector<GURL> gurlVector;
+  StartupTabs startupTabs;
   for (NSURL* url in urls) {
     // Handle the google-chrome:// scheme (and chromium://).
     // We convert every URL to string here to reuse the shared
@@ -2077,15 +2065,17 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     if (startup::StripGoogleChromeScheme(urlStringView)) {
       GURL gurl(urlStringView);
       if (startup::ValidateLaunchUrlWebSafe(gurl)) {
-        gurlVector.push_back(gurl);
+        startupTabs.emplace_back(gurl, /*is_untrusted_launch=*/true);
       }
     } else {
-      gurlVector.push_back(net::GURLWithNSURL(url));
+      startupTabs.emplace_back(net::GURLWithNSURL(url),
+                               /*is_untrusted_launch=*/false);
     }
   }
 
-  if (!gurlVector.empty())
-    [self openUrlsReplacingNTP:std::move(gurlVector)];
+  if (!startupTabs.empty()) {
+    [self openStartupTabsReplacingNTP:std::move(startupTabs)];
+  }
 }
 
 // Show the preferences window, or bring it to the front if it's already
@@ -2190,9 +2180,6 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   return dockMenu;
 }
 
-- (const std::vector<GURL>&)startupUrls {
-  return _startupUrls;
-}
 
 - (BookmarkMenuBridge*)bookmarkMenuBridge {
   return _bookmarkMenuBridge;
@@ -2449,10 +2436,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     return NO;
 
   GURL gurl(base::SysNSStringToUTF8([url absoluteString]));
-  std::vector<GURL> gurlVector;
-  gurlVector.push_back(gurl);
+  StartupTabs tabs;
+  tabs.emplace_back(gurl, /*is_untrusted_launch=*/true);
 
-  [self openUrlsReplacingNTP:std::move(gurlVector)];
+  [self openStartupTabsReplacingNTP:std::move(tabs)];
   return YES;
 }
 
@@ -2592,8 +2579,8 @@ void UpdateProfileInUse(Profile* profile) {
   [AppController.sharedController setLastProfile:profile];
 }
 
-void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
-                                  Profile* profile) {
+void OpenStartupTabsInBrowserWithProfile(const StartupTabs& tabs,
+                                         Profile* profile) {
   if (!profile)
     return;  // No suitable profile to open the URLs, do nothing.
   // Prefer a regular (non-incognito) profile
@@ -2628,8 +2615,9 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
       first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
                                     : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.OpenURLsInBrowser(browser->GetBrowserForMigrationOnly(),
-                           chrome::startup::IsProcessStartup::kNo, urls);
+  launch.OpenTabsInBrowser(browser->GetBrowserForMigrationOnly(),
+                           chrome::startup::IsProcessStartup::kNo, tabs,
+                           StartupBrowserCreatorImpl::TabOverWrite::kNo);
 
   // This NTP check should be replaced once https://crbug.com/41261582 is fixed.
   if (startupIndex != TabStripModel::kNoTab &&
@@ -2697,8 +2685,9 @@ void EnterpriseStartupDialogClosed() {
   [AppController.sharedController applicationDidFinishLaunching:notify];
 }
 
-void RunInLastProfileSafely(base::OnceCallback<void(Profile*)> callback,
-                            ProfileLoadFailureBehavior on_failure) {
+void RunInLastProfileSafely(
+    base::OnceCallback<void(Profile*)> callback,
+    app_controller_mac::ProfileLoadFailureBehavior on_failure) {
   DCHECK(callback);
   if (Profile* profile = [AppController.sharedController lastProfileIfLoaded]) {
     OnProfileLoaded(std::move(callback), on_failure, profile);
@@ -2710,9 +2699,10 @@ void RunInLastProfileSafely(base::OnceCallback<void(Profile*)> callback,
       base::BindOnce(&OnProfileLoaded, std::move(callback), on_failure));
 }
 
-void RunInProfileSafely(const base::FilePath& profile_dir,
-                        base::OnceCallback<void(Profile*)> callback,
-                        ProfileLoadFailureBehavior on_failure) {
+void RunInProfileSafely(
+    const base::FilePath& profile_dir,
+    base::OnceCallback<void(Profile*)> callback,
+    app_controller_mac::ProfileLoadFailureBehavior on_failure) {
   DCHECK(callback);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // `profile_manager` can be null in tests.

@@ -568,6 +568,7 @@ if (is_mac) {
       "//base",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui/startup:startup_tab",
       "//components/prefs",
       "//components/sessions",
     ]
