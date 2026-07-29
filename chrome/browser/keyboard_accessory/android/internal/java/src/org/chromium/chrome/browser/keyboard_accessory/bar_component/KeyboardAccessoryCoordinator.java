@@ -130,6 +130,23 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         boolean hasTabs();
     }
 
+    /** Interface for callbacks related to the At Memory feature. */
+    public interface AtMemoryDelegate {
+        /**
+         * Set the At Memory enablement.
+         *
+         * @param enabled True if At Memory should be enabled, false otherwise.
+         */
+        void setAtMemoryEnabled(boolean enabled);
+
+        /**
+         * Set the At Memory callback.
+         *
+         * @param callback The callback to be invoked when the At Memory button is clicked.
+         */
+        void setAtMemoryCallback(Runnable callback);
+    }
+
     /**
      * Initializes the component as soon as the native library is loaded by e.g. starting to listen
      * to keyboard visibility events.
@@ -321,7 +338,11 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     }
 
     public void setAtMemoryCallback(Runnable callback) {
-        mButtonGroup.setAtMemoryCallback(callback);
+        mButtonGroup.getAtMemoryDelegate().setAtMemoryCallback(callback);
+    }
+
+    public void setAtMemoryEnabled(boolean enabled) {
+        mButtonGroup.getAtMemoryDelegate().setAtMemoryEnabled(enabled);
     }
 
     public void setActiveTab(@AccessoryTabType int tabType) {

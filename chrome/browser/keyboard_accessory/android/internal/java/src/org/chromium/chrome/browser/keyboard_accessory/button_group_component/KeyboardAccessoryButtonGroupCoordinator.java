@@ -134,20 +134,20 @@ public class KeyboardAccessoryButtonGroupCoordinator {
     }
 
     /**
-     * Sets the callback to be performed when the @memory search button is clicked.
-     *
-     * @param callback The {@link Runnable} to execute.
-     */
-    public void setAtMemoryCallback(Runnable callback) {
-        mModel.set(KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK, callback);
-    }
-
-    /**
      * Returns a delegate that executes on several tab-related actions.
      *
      * @return A {@link KeyboardAccessoryCoordinator.TabSwitchingDelegate}.
      */
     public KeyboardAccessoryCoordinator.TabSwitchingDelegate getTabSwitchingDelegate() {
+        return mMediator;
+    }
+
+    /**
+     * Returns a delegate that executes on several @memory-related actions.
+     *
+     * @return A {@link KeyboardAccessoryCoordinator.AtMemoryDelegate}.
+     */
+    public KeyboardAccessoryCoordinator.AtMemoryDelegate getAtMemoryDelegate() {
         return mMediator;
     }
 

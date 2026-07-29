@@ -133,6 +133,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private EntityDataManager mMockEntityDataManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private KeyboardAccessoryCoordinator.AtMemoryDelegate mMockAtMemoryDelegate;
     @Mock private InsetObserver mInsetObserver;
     @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
     @Mock private Supplier<Boolean> mMockIsLargeFormFactorSupplier;
@@ -174,6 +175,7 @@ public class KeyboardAccessoryControllerTest {
                         SuggestionType.FILL_AUTOFILL_AI))
                 .thenReturn(FillingProduct.AUTOFILL_AI);
 
+        when(mMockButtonGroup.getAtMemoryDelegate()).thenReturn(mMockAtMemoryDelegate);
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
                         ApplicationProvider.getApplicationContext(),
@@ -194,7 +196,7 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testSetsAtMemoryCallback() {
         mCoordinator.setAtMemoryCallback(mMockAtMemoryCallback);
-        verify(mMockButtonGroup).setAtMemoryCallback(mMockAtMemoryCallback);
+        verify(mMockAtMemoryDelegate).setAtMemoryCallback(mMockAtMemoryCallback);
     }
 
     @Test

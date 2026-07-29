@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_ENABLED;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
@@ -33,7 +34,8 @@ import java.util.Set;
 class KeyboardAccessoryButtonGroupMediator
         implements KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
                 PropertyObservable.PropertyObserver<PropertyKey>,
-                KeyboardAccessoryCoordinator.TabSwitchingDelegate {
+                KeyboardAccessoryCoordinator.TabSwitchingDelegate,
+                KeyboardAccessoryCoordinator.AtMemoryDelegate {
     private final PropertyModel mModel;
     private @Nullable AccessoryTabObserver mAccessoryTabObserver;
     private final Set<ViewPager.OnPageChangeListener> mPageChangeListeners = new HashSet<>();
@@ -82,7 +84,9 @@ class KeyboardAccessoryButtonGroupMediator
             closeActiveTab(); // Make sure the active tab is reset for a modified tab list.
             return;
         }
-        if (propertyKey == BUTTON_SELECTION_CALLBACKS || propertyKey == AT_MEMORY_CALLBACK) {
+        if (propertyKey == BUTTON_SELECTION_CALLBACKS
+                || propertyKey == AT_MEMORY_CALLBACK
+                || propertyKey == AT_MEMORY_ENABLED) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";
@@ -135,6 +139,16 @@ class KeyboardAccessoryButtonGroupMediator
     @Override
     public void onButtonClicked(int position) {
         mModel.set(ACTIVE_TAB, position >= mModel.get(TABS).size() ? null : position);
+    }
+
+    @Override
+    public void setAtMemoryEnabled(boolean enabled) {
+        mModel.set(AT_MEMORY_ENABLED, enabled);
+    }
+
+    @Override
+    public void setAtMemoryCallback(Runnable callback) {
+        mModel.set(AT_MEMORY_CALLBACK, callback);
     }
 
     void setTabObserver(AccessoryTabObserver accessoryTabObserver) {

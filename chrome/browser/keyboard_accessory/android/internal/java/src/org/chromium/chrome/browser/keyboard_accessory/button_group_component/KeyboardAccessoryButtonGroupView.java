@@ -30,6 +30,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     private @Nullable Runnable mAtMemoryCallback;
     private @Nullable Runnable mAtMemoryIphCallback;
     private @Nullable ImageButton mAtMemoryButton;
+    private boolean mAtMemoryEnabled;
 
     /**
      * This interface should be implemented by classes which want to observe clicks on the buttons
@@ -51,6 +52,10 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
 
     public void setAtMemoryIphCallback(Runnable callback) {
         mAtMemoryIphCallback = callback;
+    }
+
+    public void setAtMemoryEnabled(boolean enabled) {
+        mAtMemoryEnabled = enabled;
     }
 
     @Override
@@ -91,6 +96,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     }
 
     public void addAtMemoryButton() {
+        if (!mAtMemoryEnabled) return;
         mAtMemoryButton =
                 createButton(
                         R.drawable.search_spark,

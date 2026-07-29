@@ -63,7 +63,7 @@ public class KeyboardAccessoryButtonGroupControllerTest {
 
     @Test
     public void testSetsAtMemoryCallback() {
-        mCoordinator.setAtMemoryCallback(mMockAtMemoryCallback);
+        mCoordinator.getAtMemoryDelegate().setAtMemoryCallback(mMockAtMemoryCallback);
         assertThat(mModel.get(AT_MEMORY_CALLBACK), is(mMockAtMemoryCallback));
     }
 

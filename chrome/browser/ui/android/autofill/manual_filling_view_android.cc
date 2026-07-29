@@ -23,6 +23,8 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -409,6 +411,24 @@ std::unique_ptr<ManualFillingViewInterface> ManualFillingViewInterface::Create(
     ManualFillingController* controller,
     content::WebContents* web_contents) {
   return std::make_unique<ManualFillingViewAndroid>(controller, web_contents);
+}
+
+static bool JNI_ManualFillingComponentBridge_IsAtMemoryEnabled(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+  // Not every `WebContents` has a `ContentAutofillClient`.
+  if (!autofill_client) {
+    return false;
+  }
+
+  const GURL& page_url = web_contents->GetLastCommittedURL();
+  return autofill::MayPerformAtMemoryAction(
+      autofill::AtMemoryAction::kTriggerSearchUI, *autofill_client, page_url);
 }
 
 DEFINE_JNI(ManualFillingComponentBridge)

@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -63,6 +64,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -169,6 +171,7 @@ public class ManualFillingControllerTest {
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
     @Mock private MultiWindowModeStateDispatcher mMockMultiWindowModeStateDispatcher;
     @Mock private BrowserControlsManager mMockBrowserControlsManager;
+    @Mock private ManualFillingComponentBridge.Natives mManualFillingComponentBridgeJniMock;
 
     private final ManualFillingCoordinator mController = new ManualFillingCoordinator();
     private final ManualFillingMediator mMediator = mController.getMediatorForTesting();
@@ -367,6 +370,7 @@ public class ManualFillingControllerTest {
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(any())).thenReturn(mMockProfile);
+        ManualFillingComponentBridgeJni.setInstanceForTesting(mManualFillingComponentBridgeJniMock);
 
         when(mMockWindow.getKeyboardDelegate()).thenReturn(mMockKeyboardDelegate);
         when(mMockKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
@@ -1896,6 +1900,24 @@ public class ManualFillingControllerTest {
         mController.dismissIfWaitingForFetch();
         ShadowLooper.idleMainLooper();
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+    }
+
+    @Test
+    public void testRefreshTabsUpdatesComponentsInExpectedOrderOnAtMemoryEnabled() {
+        addBrowserTab(mMediator, 1111, null);
+
+        // Clear any calls that happened during initialization:
+        reset(mMockKeyboardAccessory);
+        reset(mMockAccessorySheet);
+
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, new Provider<>());
+
+        InOrder inOrder = inOrder(mMockAccessorySheet, mMockKeyboardAccessory);
+
+        inOrder.verify(mMockKeyboardAccessory).setAtMemoryEnabled(anyBoolean());
+        inOrder.verify(mMockAccessorySheet).setTabs(any());
+        inOrder.verify(mMockKeyboardAccessory).setTabs(any());
     }
 
     private Tab addBrowserTab(ManualFillingMediator mediator, int id, @Nullable Tab lastTab) {
