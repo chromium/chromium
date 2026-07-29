@@ -1042,11 +1042,17 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Generated password deleted by autofilling"/>
 </enum>
 
+<!-- LINT.IfChange(PasswordGenerationPopupShown) -->
+
 <enum name="PasswordGenerationPopupShown">
   <int value="0" label="Not shown"/>
   <int value="1" label="Shown automatically"/>
   <int value="2" label="Shown manually"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_form_metrics_recorder.h:PasswordGenerationPopupShown) -->
+
+<!-- LINT.IfChange(PasswordGenerationUserEvent) -->
 
 <enum name="PasswordGenerationUserEvent">
   <int value="0" label="Password accepted"/>
@@ -1054,6 +1060,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Password deleted"/>
   <int value="3" label="Password rejected in modal dialog (obsolete)"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_form_metrics_recorder.h:GeneratedPasswordStatus) -->
 
 <enum name="PasswordLeakDetectionDialogDismissalReason">
   <int value="0" label="No direct user interaction"/>
