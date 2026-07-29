@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.accessibility;
 
-import static androidx.core.view.accessibility.AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_APPEARED;
 import static androidx.core.view.accessibility.AccessibilityEventCompat.CONTENT_CHANGE_TYPE_SORT_DIRECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.ACTION_ARGUMENT_HTML_ELEMENT_STRING;
@@ -2479,7 +2478,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    @SuppressLint("WrongConstant")
     protected void handlePaneOpened(int virtualViewId) {
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
@@ -2488,7 +2486,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 return;
             }
 
-            event.setContentChangeTypes(CONTENT_CHANGE_TYPE_PANE_APPEARED);
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
+            event.setSource(mView, virtualViewId);
+            requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE, virtualViewId);
+        }
+    }
+
+    @CalledByNative
+    protected void handlePaneClosed(int virtualViewId) {
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+            if (event == null) {
+                return;
+            }
+
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
             event.setSource(mView, virtualViewId);
             requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE, virtualViewId);
         }

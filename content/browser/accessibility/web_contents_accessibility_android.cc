@@ -596,6 +596,21 @@ std::optional<ExtendedSelectionOffsetType> AsExtendedSelectionOffsetType(
   return std::nullopt;
 }
 
+BrowserAccessibilityAndroid* GetDialogAncestor(
+    BrowserAccessibilityAndroid* node) {
+  ui::BrowserAccessibility* current = node;
+  while (current) {
+    BrowserAccessibilityAndroid* android_current =
+        static_cast<BrowserAccessibilityAndroid*>(current);
+    if (android_current->GetRole() == ax::mojom::Role::kDialog ||
+        android_current->GetRole() == ax::mojom::Role::kAlertDialog) {
+      return android_current;
+    }
+    current = current->PlatformGetParent();
+  }
+  return nullptr;
+}
+
 }  // anonymous namespace
 
 class WebContentsAccessibilityAndroid::Connector
@@ -1002,6 +1017,16 @@ void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
   }
 
   Java_WebContentsAccessibilityImpl_handlePaneOpened(env, obj, unique_id);
+}
+
+void WebContentsAccessibilityAndroid::HandlePaneClosed(int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_WebContentsAccessibilityImpl_handlePaneClosed(env, obj, unique_id);
 }
 
 void WebContentsAccessibilityAndroid::HandleAtomicLiveRegionChanged(
@@ -2610,6 +2635,26 @@ void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
   }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(new_unique_id);
+
+  int32_t new_dialog_id = ui::kAXAndroidInvalidViewId;
+  if (node) {
+    BrowserAccessibilityAndroid* dialog_ancestor = GetDialogAncestor(node);
+    if (dialog_ancestor) {
+      new_dialog_id = dialog_ancestor->GetUniqueId();
+    }
+  }
+  // TODO: Follow up with TalkBack to verify if TalkBack should announce
+  // pane closed when transitioning directly from one dialog to another.
+  if (new_dialog_id != active_dialog_unique_id_) {
+    if (active_dialog_unique_id_ != ui::kAXAndroidInvalidViewId) {
+      HandlePaneClosed(active_dialog_unique_id_);
+    }
+    if (new_dialog_id != ui::kAXAndroidInvalidViewId) {
+      HandlePaneOpened(node->GetUniqueId());
+    }
+    active_dialog_unique_id_ = new_dialog_id;
+  }
+
   if (!node) {
     return;
   }

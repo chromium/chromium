@@ -19,6 +19,7 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/node_hash_map.h"
+#include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/geometry/rect.h"
@@ -430,6 +431,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleSortDirectionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
   void HandlePaneOpened(int32_t unique_id);
+  void HandlePaneClosed(int32_t unique_id);
   // Dispatches events for atomic live region changes over the JNI Bridge.
   void HandleAtomicLiveRegionChanged(int32_t unique_id);
   // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.
@@ -641,6 +643,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   std::unique_ptr<ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   int32_t tooltip_showing_node_id_ = 0;
+
+  int32_t active_dialog_unique_id_ = ui::kAXAndroidInvalidViewId;
 
   bool should_announce_full_text_ = false;
 
