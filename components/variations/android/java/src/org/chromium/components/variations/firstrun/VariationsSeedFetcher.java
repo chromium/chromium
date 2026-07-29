@@ -80,7 +80,8 @@ public class VariationsSeedFetcher {
                           ChromeVariations: 2
                         }
                       }
-                    }""");
+                    }\
+                    """);
 
     @IntDef({VariationsPlatform.ANDROID, VariationsPlatform.ANDROID_WEBVIEW})
     @Retention(RetentionPolicy.SOURCE)
