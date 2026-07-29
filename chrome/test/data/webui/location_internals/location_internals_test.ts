@@ -198,7 +198,7 @@ suite('LocationInternalsUITest', function() {
   let fakeLocationInternalsHandler: FakeLocationInternalsHandlerRemote|null =
       null;
 
-  suiteSetup(function() {
+  suiteSetup(async function() {
     const promiseResolver = new PromiseResolver<void>();
 
     const internalsHandlerInterceptor =
@@ -209,9 +209,12 @@ suite('LocationInternalsUITest', function() {
       promiseResolver.resolve();
     };
     internalsHandlerInterceptor.start();
+
+    const refreshFinishPromise = eventToPromise(REFRESH_FINISH_EVENT, window);
     initializeMojo();
 
-    return promiseResolver.promise;
+    await promiseResolver.promise;
+    await refreshFinishPromise;
   });
 
   teardown(function() {

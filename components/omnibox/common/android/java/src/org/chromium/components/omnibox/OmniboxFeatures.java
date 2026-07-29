@@ -110,10 +110,10 @@ public class OmniboxFeatures {
                     FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sPlatformAgnosticXGeo =
-            newFlag(OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sInlineLocationSignaling =
-            newFlag(OmniboxFeatureList.INLINE_LOCATION_SIGNALING, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.INLINE_LOCATION_SIGNALING, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, FeatureState.ENABLED_IN_TEST);

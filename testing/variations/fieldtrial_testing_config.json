@@ -15218,6 +15218,30 @@
             ]
         }
     ],
+    "InlineLocationSuggestions": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ApproximateLocationDisplayAbove_20260727",
+                    "params": {
+                        "display_order": "DisplayAbove",
+                        "wording": "UseApproximateLocation"
+                    },
+                    "enable_features": [
+                        "InlineLocationSignaling",
+                        "PlatformAgnosticXGeo"
+                    ]
+                }
+            ]
+        }
+    ],
     "InlineScriptCache": [
         {
             "platforms": [
