@@ -577,11 +577,6 @@
       // enabled to make the whole feature work.
     },
     {
-      // https://crbug.com/40681200
-      name: "AllowSkippingEditingBoundaryToMergeEnd",
-      status: "stable",
-    },
-    {
       name: "AllowSvgUseToReferenceExternalDocumentRoot",
       status: "stable",
     },
@@ -4683,10 +4678,6 @@
       origin_trial_feature_name: "Parakeet",
     },
     {
-      name: "PartialCompletionNotAllowedInMoveParagraphs",
-      status: "stable",
-    },
-    {
       name: "PartitionVisitedLinkDatabaseWithSelfLinks",
       status: {"iOS": "", "default": "stable"},
     },
@@ -5198,11 +5189,6 @@
       status: "stable",
     },
     {
-      // See https://issues.chromium.org/issues/41474791
-      name: "RemoveSelectionCanonicalizationInMoveParagraph",
-      status: "stable",
-    },
-    {
       // See https://issues.chromium.org/issues/41311101
       name: "RemoveVisibleSelectionInDOMSelection",
       status: "test",
@@ -5239,10 +5225,6 @@
       name: "RequestStorageAccessFor",
       status: "stable",
       base_feature: "StorageAccessAPIRelatedWebsiteSets",
-    },
-    {
-      name: "ResolveVarStylesOnCopy",
-      status: "stable",
     },
     {
       name: "ResourceTimingInitiator",
@@ -5662,11 +5644,6 @@
       // scroll position doesn't change.
       // See https://crbug.com/412578722
       name: "SelectionUpdateOnlyAfterAutoscroll",
-      status: "stable",
-    },
-    {
-      // See https://crbug.com/395544401
-      name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",
     },
     {

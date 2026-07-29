@@ -238,12 +238,10 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
       DetermineParentTagAndUpdateLastClosed(first_node, past_end);
 
   // `UpdateViewportSize` ensures viewport_size_ is defined.
-  //  See comment on viewport_size_ in style_engine.h
-  //  without `UpdateViewportSize` call to `GetViewportsize()` while
-  //  resolving style causes crash  in other unit tests and resize scenarios
-  if (RuntimeEnabledFeatures::ResolveVarStylesOnCopyEnabled()) {
-    start_.GetDocument()->GetStyleEngine().UpdateViewportSize();
-  }
+  // See comment on viewport_size_ in style_engine.h
+  // without `UpdateViewportSize` call to `GetViewportsize()` while
+  // resolving style causes crash  in other unit tests and resize scenarios.
+  start_.GetDocument()->GetStyleEngine().UpdateViewportSize();
 
   StyledMarkupTraverser<Strategy> traverser(&markup_accumulator, last_closed_);
   Node* last_closed = traverser.Traverse(first_node, past_end);

@@ -1635,11 +1635,7 @@ void CompositeEditCommand::SetEndingSelectionToDelete(const Position& start,
   const SelectionInDomTree selection_to_delete =
       SelectionInDomTree::Builder().Collapse(start).Extend(end).Build();
   const SelectionForUndoStep undo_step =
-      RuntimeEnabledFeatures::
-              RemoveSelectionCanonicalizationInMoveParagraphEnabled()
-          ? SelectionForUndoStep::From(selection_to_delete)
-          : SelectionForUndoStep::From(
-                CreateVisibleSelection(selection_to_delete).AsSelection());
+      SelectionForUndoStep::From(selection_to_delete);
   SetEndingSelection(undo_step);
   if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
     SetEndingDomSelection(undo_step);
@@ -1673,10 +1669,6 @@ void CompositeEditCommand::InsertPlaceholderBrIfPruningCollapsed(
 
 bool CompositeEditCommand::DestinationStillEditableForPaste(
     const VisiblePosition& destination) {
-  if (!RuntimeEnabledFeatures::
-          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
-    return true;
-  }
   const VisibleSelection& destination_selection =
       CreateVisibleSelection(SelectionInDomTree::Builder()
                                  .Collapse(destination.ToPositionWithAffinity())

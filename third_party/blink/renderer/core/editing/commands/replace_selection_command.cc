@@ -1278,16 +1278,11 @@ void ReplaceSelectionCommand::MergeEndIfNeeded(EditingState* editing_state) {
     start_of_paragraph_to_move = CreateVisiblePosition(
         start_of_paragraph_to_move.ToPositionWithAffinity());
   }
-  if (RuntimeEnabledFeatures::AllowSkippingEditingBoundaryToMergeEndEnabled()) {
-    MoveParagraph(
-        start_of_paragraph_to_move,
-        EndOfParagraph(start_of_paragraph_to_move, kCanSkipOverEditingBoundary),
-        destination, editing_state);
-  } else {
-    MoveParagraph(start_of_paragraph_to_move,
-                  EndOfParagraph(start_of_paragraph_to_move), destination,
-                  editing_state);
-  }
+  MoveParagraph(
+      start_of_paragraph_to_move,
+      EndOfParagraph(start_of_paragraph_to_move, kCanSkipOverEditingBoundary),
+      destination, editing_state);
+
   if (editing_state->IsAborted())
     return;
 

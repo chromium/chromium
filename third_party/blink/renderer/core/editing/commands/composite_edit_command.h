@@ -275,8 +275,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
                                              const Position& after_paragraph,
                                              EditingState* editing_state);
 
-  // Returns true when the move may proceed to the paste phase. With the
-  // `PartialCompletionNotAllowedInMoveParagraphs` flag enabled, verifies that
+  // Returns true when the move may proceed to the paste phase. Verifies that
   // both `destination` and the post-delete ending selection still have
   // editable roots; returns false (without aborting) to signal the caller to
   // bail out silently.

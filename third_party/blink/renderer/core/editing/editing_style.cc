@@ -1649,9 +1649,7 @@ void EditingStyle::MergeStyleFromRulesForSerialization(Element* element) {
     mutable_style_->SetLonghandProperty(CSSPropertyID::kTextDecorationColor,
                                         CSSValueID::kInitial, false);
   }
-  if (RuntimeEnabledFeatures::ResolveVarStylesOnCopyEnabled()) {
-    ComputeValues(element);
-  }
+  ComputeValues(element);
 }
 
 static void RemovePropertiesInStyle(
