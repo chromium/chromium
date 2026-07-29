@@ -176,8 +176,7 @@
     symbol = SymbolWithConfiguration(SymbolArrowUpCircleFill, symbolConfig);
     cell.directionIconView.tintColor = [UIColor colorNamed:kBlueColor];
   } else {
-    symbol =
-        DefaultSymbolWithConfiguration(@"arrow.down.circle.fill", symbolConfig);
+    symbol = SymbolWithConfiguration(SymbolArrowDownCircleFill, symbolConfig);
     cell.directionIconView.tintColor = [UIColor colorNamed:kGreenColor];
   }
 

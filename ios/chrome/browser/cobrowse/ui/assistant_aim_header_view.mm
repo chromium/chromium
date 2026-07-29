@@ -277,7 +277,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {
     UIAction* showLogsAction = [UIAction
         actionWithTitle:@"AIM SRP Logs"
-                  image:DefaultSymbolWithPointSize(@"binoculars.circle", 16)
+                  image:SymbolWithPointSize(SymbolBinocularsCircle, 16)
              identifier:nil
                 handler:^(UIAction* action) {
                   [weakSelf didTapShowLogsButton];

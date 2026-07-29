@@ -193,6 +193,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"app.fill", SymbolType::kSystem};
     case SymbolArrowDown:
       return {@"arrow.down", SymbolType::kSystem};
+    case SymbolArrowDownCircleFill:
+      return {@"arrow.down.circle.fill", SymbolType::kSystem};
     case SymbolArrowDownToLine:
       return {@"arrow.down.to.line", SymbolType::kSystem};
     case SymbolArrowLeft:
@@ -233,6 +235,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"bell.badge", SymbolType::kSystem};
     case SymbolBellSlash:
       return {@"bell.slash", SymbolType::kSystem};
+    case SymbolBinocularsCircle:
+      return {@"binoculars.circle", SymbolType::kSystem};
     case SymbolBolt:
       return {@"bolt", SymbolType::kSystem};
     case SymbolBook:
@@ -407,6 +411,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"keyboard", SymbolType::kSystem};
     case SymbolKeyboardDown:
       return {@"keyboard.chevron.compact.down", SymbolType::kSystem};
+    case SymbolLadybugCircleFill:
+      return {@"ladybug.circle.fill", SymbolType::kSystem};
     case SymbolLaptop:
       return {@"laptopcomputer", SymbolType::kSystem};
     case SymbolLaptopAndIphone:
@@ -630,6 +636,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"wifi", SymbolType::kSystem};
     case SymbolWork:
       return {@"case", SymbolType::kSystem};
+    case SymbolWrenchAndScrewdriver:
+      return {@"wrench.and.screwdriver", SymbolType::kSystem};
     case SymbolXMark:
       return {@"xmark", SymbolType::kSystem};
     case SymbolXMarkCircle:
