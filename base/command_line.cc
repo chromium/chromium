@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <ostream>
 #include <string_view>
 
@@ -92,11 +93,13 @@ size_t GetSwitchPrefixLength(CommandLine::StringViewType string) {
 
 // Fills in |switch_string| and |switch_value| if |string| is a switch.
 // This will preserve the input switch prefix in the output |switch_string|.
+// |switch_value| will contain a value if a value separator ('=') was present,
+// or std::nullopt if no value was specified.
 bool IsSwitch(const CommandLine::StringType& string,
               CommandLine::StringType* switch_string,
-              CommandLine::StringType* switch_value) {
+              std::optional<CommandLine::StringType>* switch_value) {
   switch_string->clear();
-  switch_value->clear();
+  switch_value->reset();
   size_t prefix_length = GetSwitchPrefixLength(string);
   if (prefix_length == 0 || prefix_length == string.length()) {
     return false;
@@ -650,7 +653,7 @@ void CommandLine::AppendSwitchesAndArguments(span<const StringType> argv) {
 #endif
 
     CommandLine::StringType switch_string;
-    CommandLine::StringType switch_value;
+    std::optional<CommandLine::StringType> switch_value;
     parse_switches &= (arg != kSwitchTerminator);
     if (parse_switches && IsSwitch(arg, &switch_string, &switch_value)) {
 #if BUILDFLAG(IS_WIN)
@@ -659,9 +662,11 @@ void CommandLine::AppendSwitchesAndArguments(span<const StringType> argv) {
         ParseAsSingleArgument(switch_string);
         return;
       }
-      AppendSwitchNative(WideToUTF8(switch_string), switch_value);
+      AppendSwitchNative(WideToUTF8(switch_string),
+                         switch_value.value_or(CommandLine::StringType()));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-      AppendSwitchNative(switch_string, switch_value);
+      AppendSwitchNative(switch_string,
+                         switch_value.value_or(CommandLine::StringType()));
 #else
 #error Unsupported platform
 #endif
@@ -683,19 +688,19 @@ CommandLine::StringType CommandLine::GetArgumentsStringInternal(
   for (size_t i = 1; i < argv_.size(); ++i) {
     StringType arg = argv_[i];
     StringType switch_string;
-    StringType switch_value;
+    std::optional<StringType> switch_value;
     parse_switches &= arg != kSwitchTerminator;
     if (i > 1) {
       params.append(FILE_PATH_LITERAL(" "));
     }
     if (parse_switches && IsSwitch(arg, &switch_string, &switch_value)) {
       params.append(switch_string);
-      if (!switch_value.empty()) {
+      if (switch_value.has_value()) {
 #if BUILDFLAG(IS_WIN)
-        switch_value = QuoteForCommandLineToArgvWInternal(
-            switch_value, allow_unsafe_insert_sequences);
+        *switch_value = QuoteForCommandLineToArgvWInternal(
+            *switch_value, allow_unsafe_insert_sequences);
 #endif
-        params.append(kSwitchValueSeparator + switch_value);
+        params.append(kSwitchValueSeparator + *switch_value);
       }
     } else {
 #if BUILDFLAG(IS_WIN)

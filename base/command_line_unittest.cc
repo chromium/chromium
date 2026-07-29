@@ -324,6 +324,17 @@ TEST(CommandLineTest, AppendSwitches) {
 #endif
 }
 
+TEST(CommandLineTest, AppendArgWithSwitchPrefixPreservesEquals) {
+  CommandLine cl(FilePath(FILE_PATH_LITERAL("Program")));
+  cl.AppendArg("--empty_val_switch=");
+  cl.AppendSwitch("no_val_switch");
+
+  // Verify that GetArgumentsString() preserves the trailing '=' for an explicit
+  // empty value, distinguishing it from a switch without a value.
+  EXPECT_EQ(FILE_PATH_LITERAL("--no_val_switch --empty_val_switch="),
+            cl.GetArgumentsString());
+}
+
 // Test methods for appending valid UTF8 values to a command line.
 TEST(CommandLineTest, UTF8Valid) {
   std::string ascii_switch = "ascii";
