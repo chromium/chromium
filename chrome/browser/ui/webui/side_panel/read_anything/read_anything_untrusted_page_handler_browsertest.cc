@@ -35,6 +35,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language_detection/core/constants.h"
@@ -2089,6 +2090,13 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple.html")));
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+
+  // Set the side panel URL on the test web contents so that
+  // ChromeTranslateClient can find the browser window.
+  content::NavigationController::LoadURLParams params{
+      GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)};
+  web_contents_->GetController().LoadURLWithParams(params);
+  content::WaitForLoadStop(web_contents_.get());
 
   handler_ = CreateHandler();
   TranslateBubbleController* controller =

@@ -366,6 +366,10 @@ class ReadAnythingUntrustedPageHandler :
 
   content::WebContents* GetWebContents() const;
 
+  // Returns the actual language of the text currently displayed in the Reading
+  // Mode panel.
+  std::string GetDisplayLanguage();
+
   void OnScreenAIServiceInitialized(bool successful);
 
   // Called to notify this instance that the dependency parser loader

@@ -65,6 +65,8 @@ export function getHtml(this: AppElement) {
         @close-all-menus="${this.onCloseAllMenus_}"
         @settings-opened="${this.onSettingsOpened_}"
         @settings-closed="${this.onSettingsClosed_}"
+        translate="no"
+        class="notranslate"
         id="toolbar">
     </read-anything-toolbar>
   </div>
@@ -82,13 +84,16 @@ export function getHtml(this: AppElement) {
     </div>
     <!-- TODO: crbug.com/324143642- Localize the "Load More" string. -->
     <cr-button id="docs-load-more-button" tabindex="0"
+        translate="no"
+        class="notranslate"
         @click="${this.onDocsLoadMoreButtonClick_}"
         ?hidden="${!this.isDocsLoadMoreButtonVisible_}">
       Load More
     </cr-button>
   </div>
   <div id="empty-state-container"
-      class="sp-scroller"
+      class="sp-scroller notranslate"
+      translate="no"
       @mousemove="${this.onScrollerMousemove_}"
       @mouseleave="${this.onScrollerMouseleave_}"
       ?hidden="${this.computeHasContent()}">

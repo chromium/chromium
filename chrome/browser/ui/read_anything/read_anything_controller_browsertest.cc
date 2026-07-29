@@ -11,6 +11,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -91,16 +92,17 @@ class MockReadAnythingService : public ReadAnythingService {
 
 class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
  public:
-  ReadAnythingControllerBrowserTest() = default;
+  explicit ReadAnythingControllerBrowserTest(
+      std::vector<base::test::FeatureRef> enabled_features = {},
+      std::vector<base::test::FeatureRef> disabled_features = {}) {
+    enabled_features.push_back(features::kImmersiveReadAnything);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    enabled_features.push_back(features::kWasmTtsEngineAutoInstallDisabled);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kImmersiveReadAnything,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-         features::kWasmTtsEngineAutoInstallDisabled
-#endif
-        },
-        {});
     ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
     InProcessBrowserTest::SetUp();
   }
@@ -3154,4 +3156,33 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Verify focus has return to the main page.
   EXPECT_TRUE(base::test::RunUntil([&]() { return IsFocusOnMainPage(); }));
+}
+
+class ReadAnythingControllerTranslateBrowserTest
+    : public ReadAnythingControllerBrowserTest {
+ public:
+  ReadAnythingControllerTranslateBrowserTest()
+      : ReadAnythingControllerBrowserTest(
+            {features::kReadAnythingTranslateEntryPoint}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerTranslateBrowserTest,
+    ImmersiveWebView_AttachesTranslateClientWhenFeatureEnabled) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab = tab_strip_model->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+  views::View* overlay_view = GetActiveImmersiveOverlay();
+  ASSERT_FALSE(overlay_view->children().empty());
+
+  ReadAnythingImmersiveWebView* web_view =
+      static_cast<ReadAnythingImmersiveWebView*>(overlay_view->children()[0]);
+  ASSERT_NE(web_view, nullptr);
+  EXPECT_NE(ChromeTranslateClient::FromWebContents(web_view->GetWebContents()),
+            nullptr);
 }
