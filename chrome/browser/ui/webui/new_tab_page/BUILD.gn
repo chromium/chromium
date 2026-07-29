@@ -55,11 +55,6 @@ source_set("new_tab_page") {
   if (!is_android) {
     public_deps += [ "//components/user_education/webui" ]
   }
-
-  # action_chips_handler.cc includes new_tab_page_ui.h, while this target
-  # depends on action_chips.
-  allow_circular_includes_from =
-      [ "//chrome/browser/ui/webui/new_tab_page/action_chips" ]
 }
 
 # Full implementation target.
