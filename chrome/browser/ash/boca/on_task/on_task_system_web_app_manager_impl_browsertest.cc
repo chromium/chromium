@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Verify that tab switch commands are disabled.
   chrome::BrowserCommandController* const command_controller =
-      chrome::BrowserCommandController::From(boca_app_browser);
+      boca_app_browser->command_controller();
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_NEXT_TAB));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_PREVIOUS_TAB));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_CYCLE_TO_NEXT_TAB));
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Verify that tab switch commands are enabled.
   chrome::BrowserCommandController* const command_controller =
-      chrome::BrowserCommandController::From(boca_app_browser);
+      boca_app_browser->command_controller();
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_NEXT_TAB));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_PREVIOUS_TAB));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_CYCLE_TO_NEXT_TAB));
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
       boca_app_browser->session_id(), /*close_bundle_content=*/false);
   chrome::BrowserCommandController* const command_controller =
-      chrome::BrowserCommandController::From(boca_app_browser);
+      boca_app_browser->command_controller();
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_CONSOLE));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_DEVICES));
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       /*pinned=*/false, boca_app_browser->session_id());
   EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   chrome::BrowserCommandController* const command_controller =
-      chrome::BrowserCommandController::From(boca_app_browser);
+      boca_app_browser->command_controller();
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_CONSOLE));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_DEVICES));

@@ -448,7 +448,7 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
                 static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
                     trigger))
             .Build();
-    chrome::BrowserCommandController::From(browser_)->ExecuteCommandWithContext(
+    browser_->command_controller()->ExecuteCommandWithContext(
         id, std::move(context));
     return;
   }

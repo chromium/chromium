@@ -121,8 +121,7 @@ void TabGroupsPageHandler::CreateNewTabGroup() {
   auto* browser = webui::GetTabInterface(web_contents_)
                       ->GetBrowserWindowInterface()
                       ->GetBrowserForMigrationOnly();
-  chrome::BrowserCommandController::From(browser)->ExecuteCommand(
-      IDC_CREATE_NEW_TAB_GROUP);
+  browser->command_controller()->ExecuteCommand(IDC_CREATE_NEW_TAB_GROUP);
 }
 
 std::vector<const tab_groups::SavedTabGroup*>

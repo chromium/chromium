@@ -192,8 +192,6 @@ using ExtensionRegistryObserver = extensions::ExtensionRegistryObserver;
 using UnloadedExtensionReason = extensions::UnloadedExtensionReason;
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
-DEFINE_USER_DATA(chrome::BrowserCommandController);
-
 namespace chrome {
 
 namespace {
@@ -298,24 +296,11 @@ class BrowserCommandController::ExtensionStateObserver
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserCommandController, public:
 
-// static
-BrowserCommandController* BrowserCommandController::From(
-    BrowserWindowInterface* browser) {
-  return Get(browser->GetUnownedUserDataHost());
-}
-
-// static
-const BrowserCommandController* BrowserCommandController::From(
-    const BrowserWindowInterface* browser) {
-  return Get(browser->GetUnownedUserDataHost());
-}
-
 // TODO(crbug.com/434734349): Implement dependency injection for this class to
 // allow removing the Browser dependency.
 BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
     : browser_(bwi->GetBrowserForMigrationOnly()),
-      command_updater_(CreateCommandUpdater()),
-      scoped_unowned_user_data_(bwi->GetUnownedUserDataHost(), *this) {
+      command_updater_(CreateCommandUpdater()) {
   browser_->tab_strip_model()->AddObserver(this);
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {

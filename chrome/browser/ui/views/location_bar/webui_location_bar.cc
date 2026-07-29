@@ -84,8 +84,7 @@ toolbar_ui_api::mojom::SecurityLevel GetMojoSecurityLevel(
 
 WebUILocationBar::WebUILocationBar(Browser* browser,
                                    LocationBarView::Delegate* delegate)
-    : LocationBar(browser ? chrome::BrowserCommandController::From(browser)
-                          : nullptr),
+    : LocationBar(browser ? browser->command_controller() : nullptr),
       browser_(browser),
       delegate_(delegate),
       content_setting_image_control_(this),

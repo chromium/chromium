@@ -88,9 +88,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BasicBackToOpener) {
                                       1);
 
   // Verify back button is enabled in UI
-  EXPECT_TRUE(
-      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
-          IDC_BACK));
+  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_BACK));
 
   content::WebContentsDestroyedWatcher close_watcher(dest_contents);
   chrome::ExecuteCommand(browser(), IDC_BACK);
@@ -146,9 +144,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   // Back button should be disabled
   EXPECT_FALSE(controller->HasValidOpener());
   EXPECT_FALSE(controller->CanGoBackToOpener());
-  EXPECT_FALSE(
-      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
-          IDC_BACK));
+  EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(IDC_BACK));
 }
 
 // Opener navigated away should disable back button
@@ -241,9 +237,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   EXPECT_FALSE(controller->HasValidOpener());
   EXPECT_TRUE(dest_contents->GetController().CanGoBack());
 
-  EXPECT_TRUE(
-      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
-          IDC_BACK));
+  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_BACK));
 }
 
 // Pinned tab should disable back button but maintain relationship

@@ -145,7 +145,7 @@ class BrowserCommandControllerBrowserTestRefreshOnly
     }
     translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
     net::NetworkChangeNotifier::CreateMockIfNeeded();
-    chrome::BrowserCommandController::From(browser())->TabStateChanged();
+    browser()->command_controller()->TabStateChanged();
   }
 };
 // Test case for actions behind Toolbar Pinning.
@@ -221,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   Browser* browser = CreateGuestBrowser();
   EXPECT_TRUE(browser);
 
-  const CommandUpdater* command_updater =
-      chrome::BrowserCommandController::From(browser);
+  const CommandUpdater* command_updater = browser->command_controller();
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
 #endif
@@ -259,28 +258,23 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
 
     // Update the corresponding command controller state as well as other
     // states so we can verify what commands are enabled.
-    chrome::BrowserCommandController::From(browser())
-        ->LockedFullscreenStateChanged();
-    chrome::BrowserCommandController::From(browser())->TabStateChanged();
-    chrome::BrowserCommandController::From(browser())->FullscreenStateChanged();
-    chrome::BrowserCommandController::From(browser())->PrintingStateChanged();
-    chrome::BrowserCommandController::From(browser())->ExtensionStateChanged();
-    chrome::BrowserCommandController::From(browser())
-        ->FindBarVisibilityChanged();
-    chrome::BrowserCommandController::From(browser())->UpdateReloadStopState(
-        /*is_loading=*/true,
-        /*force=*/false);
+    browser()->command_controller()->LockedFullscreenStateChanged();
+    browser()->command_controller()->TabStateChanged();
+    browser()->command_controller()->FullscreenStateChanged();
+    browser()->command_controller()->PrintingStateChanged();
+    browser()->command_controller()->ExtensionStateChanged();
+    browser()->command_controller()->FindBarVisibilityChanged();
+    browser()->command_controller()->UpdateReloadStopState(/*is_loading=*/true,
+                                                           /*force=*/false);
   }
 
   void ExitLockedFullscreen() {
     ash::UnpinWindow(browser()->GetWindow()->GetNativeWindow());
-    chrome::BrowserCommandController::From(browser())
-        ->LockedFullscreenStateChanged();
+    browser()->command_controller()->LockedFullscreenStateChanged();
   }
 
   CommandUpdater* GetCommandUpdater() {
-    return chrome::BrowserCommandController::From(browser())
-        ->command_updater_.get();
+    return browser()->command_controller()->command_updater_.get();
   }
 
  private:
@@ -378,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   // After initialization, the command should become disabled because there's
   // nothing to restore.
   chrome::BrowserCommandController* commandController =
-      chrome::BrowserCommandController::From(browser());
+      browser()->command_controller();
   ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_RESTORE_TAB));
 }
 
@@ -409,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   // After initialization, the command should remain enabled because there's
   // one tab to restore.
   chrome::BrowserCommandController* commandController =
-      chrome::BrowserCommandController::From(browser());
+      browser()->command_controller();
   ASSERT_EQ(true, commandController->IsCommandEnabled(IDC_RESTORE_TAB));
 }
 
@@ -422,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   Browser* browser = Browser::Create(params);
 
   chrome::BrowserCommandController* commandController =
-      chrome::BrowserCommandController::From(browser);
+      browser->command_controller();
   ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
 }
 
@@ -435,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   Browser* browser = Browser::Create(params);
 
   chrome::BrowserCommandController* commandController =
-      chrome::BrowserCommandController::From(browser);
+      browser->command_controller();
   ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
 }
 
@@ -446,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   Browser* browser = Browser::Create(params);
 
   chrome::BrowserCommandController* commandController =
-      chrome::BrowserCommandController::From(browser);
+      browser->command_controller();
   ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
 }
 
@@ -623,27 +617,24 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   net::NetworkChangeNotifier::CreateMockIfNeeded();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  chrome::BrowserCommandController::From(browser())->TabStateChanged();
+  browser()->command_controller()->TabStateChanged();
 
   EXPECT_FALSE(
-      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
-          IDC_SHOW_TRANSLATE));
+      browser()->command_controller()->IsCommandEnabled(IDC_SHOW_TRANSLATE));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ShowTranslateStatusEnglishPage) {
   LoadAndWaitForLanguage("/english_page.html");
   EXPECT_TRUE(
-      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
-          IDC_SHOW_TRANSLATE));
+      browser()->command_controller()->IsCommandEnabled(IDC_SHOW_TRANSLATE));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ShowTranslateStatusFrenchPage) {
   LoadAndWaitForLanguage("/french_page.html");
   EXPECT_TRUE(
-      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
-          IDC_SHOW_TRANSLATE));
+      browser()->command_controller()->IsCommandEnabled(IDC_SHOW_TRANSLATE));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
@@ -660,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestToolbarPinningOnly,
   net::NetworkChangeNotifier::CreateMockIfNeeded();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  chrome::BrowserCommandController::From(browser())->TabStateChanged();
+  browser()->command_controller()->TabStateChanged();
 
   EXPECT_FALSE(actions::ActionManager::GetForTesting()
                    .FindAction(kActionShowTranslate)

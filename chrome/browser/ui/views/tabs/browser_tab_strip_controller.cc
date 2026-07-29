@@ -575,8 +575,8 @@ void BrowserTabStripController::TabKeyboardFocusChangedTo(
   if (tab) {
     index = model_->GetIndexOfTab(tab);
   }
-  chrome::BrowserCommandController::From(browser_view_->browser())
-      ->TabKeyboardFocusChangedTo(index);
+  browser_view_->browser()->command_controller()->TabKeyboardFocusChangedTo(
+      index);
 }
 
 std::u16string BrowserTabStripController::GetGroupTitle(

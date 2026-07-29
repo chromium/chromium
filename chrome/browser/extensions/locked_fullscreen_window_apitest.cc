@@ -162,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
   SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
-  chrome::BrowserCommandController::From(current_browser)
-      ->LockedFullscreenStateChanged();
+  current_browser->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
@@ -182,27 +181,27 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
 
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for
   // testing.
-  EXPECT_TRUE(chrome::BrowserCommandController::From(current_browser)
-                  ->IsCommandEnabled(IDC_EXIT));
+  EXPECT_TRUE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_EXIT));
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
       << message_;
 
   // Verify some disabled commands.
-  EXPECT_FALSE(chrome::BrowserCommandController::From(current_browser)
-                   ->IsCommandEnabled(IDC_EXIT));
-  EXPECT_FALSE(chrome::BrowserCommandController::From(current_browser)
-                   ->IsCommandEnabled(IDC_ZOOM_PLUS));
+  EXPECT_FALSE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_EXIT));
+  EXPECT_FALSE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_ZOOM_PLUS));
 
   // Verify some allowlisted commands.
-  EXPECT_TRUE(chrome::BrowserCommandController::From(current_browser)
-                  ->IsCommandEnabled(IDC_COPY));
-  EXPECT_TRUE(chrome::BrowserCommandController::From(current_browser)
-                  ->IsCommandEnabled(IDC_PASTE));
+  EXPECT_TRUE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_COPY));
+  EXPECT_TRUE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_PASTE));
 
-  EXPECT_FALSE(chrome::BrowserCommandController::From(current_browser)
-                   ->IsCommandEnabled(IDC_FIND));
+  EXPECT_FALSE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_FIND));
 }
 
 IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
@@ -237,8 +236,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
   SetCurrentWindowPinType(chromeos::WindowPinType::kLockedFullscreen);
-  chrome::BrowserCommandController::From(current_browser)
-      ->LockedFullscreenStateChanged();
+  current_browser->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/without_permission",

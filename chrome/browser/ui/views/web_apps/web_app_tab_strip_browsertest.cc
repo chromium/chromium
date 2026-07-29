@@ -801,13 +801,13 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, OpenInChrome) {
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
   // 'Open in Chrome' menu item should not be enabled for the pinned home tab.
-  EXPECT_FALSE(chrome::BrowserCommandController::From(app_browser)
-                   ->IsCommandEnabled(IDC_OPEN_IN_CHROME));
+  EXPECT_FALSE(
+      app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 
   chrome::NewTab(app_browser, NewTabTypes::kNoUserAction);
   // 'Open in Chrome' menu item should be enabled for other tabs.
-  EXPECT_TRUE(chrome::BrowserCommandController::From(app_browser)
-                  ->IsCommandEnabled(IDC_OPEN_IN_CHROME));
+  EXPECT_TRUE(
+      app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, WebAppMenuModelTabbedApp) {
@@ -1120,7 +1120,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 0);
 
   chrome::BrowserCommandController* commandController =
-      chrome::BrowserCommandController::From(app_browser);
+      app_browser->command_controller();
   // Close tab command should be enabled since the home tab is the only tab.
   EXPECT_TRUE(commandController->IsCommandEnabled(IDC_CLOSE_TAB));
 
@@ -1511,8 +1511,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   PinWindow(app_browser->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   // TODO(crbug.com/429215055): This should happen as a part of pin state
   // transition.
-  chrome::BrowserCommandController::From(app_browser)
-      ->LockedFullscreenStateChanged();
+  app_browser->command_controller()->LockedFullscreenStateChanged();
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(app_browser));
 
   // Open another tab so we can test tab close behavior on both home and

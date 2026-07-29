@@ -323,8 +323,7 @@ void ToolbarView::Init() {
     webui_location_bar = std::make_unique<WebUILocationBar>(browser_, this);
   } else {
     location_bar_view = std::make_unique<LocationBarView>(
-        browser_, browser_->GetProfile(),
-        chrome::BrowserCommandController::From(browser_), this,
+        browser_, browser_->GetProfile(), browser_->command_controller(), this,
         display_mode_ != DisplayMode::kNormal);
   }
 
@@ -418,11 +417,10 @@ void ToolbarView::Init() {
   if (base::FeatureList::IsEnabled(
           features::kWebUIToolbarProcessOverheadExperiment)) {
     detached_toolbar_webview_ = std::make_unique<WebUIToolbarWebView>(
-        browser_, chrome::BrowserCommandController::From(browser_),
-        /*location_bar=*/nullptr);
+        browser_, browser_->command_controller(), /*location_bar=*/nullptr);
   } else if (features::IsWebUIToolbarEnabled()) {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
-        browser_, chrome::BrowserCommandController::From(browser_),
+        browser_, browser_->command_controller(),
         std::move(webui_location_bar)));
   }
 
@@ -430,8 +428,7 @@ void ToolbarView::Init() {
       base::FeatureList::IsEnabled(
           features::kWebUIToolbarProcessOverheadExperiment)) {
     reload_ = AddChildView(std::make_unique<ReloadButton>(
-        browser_->GetProfile(),
-        chrome::BrowserCommandController::From(browser_),
+        browser_->GetProfile(), browser_->command_controller(),
         InitialWebUIWindowMetricsManager::From(browser_)));
   }
 

@@ -492,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   BrowserWindowInterface* app_browser = GetBrowserFromFrame(app_frame);
 
-  EXPECT_FALSE(chrome::BrowserCommandController::From(app_browser)
+  EXPECT_FALSE(app_browser->GetBrowserForMigrationOnly()
+                   ->command_controller()
                    ->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 
   auto app_menu_model = std::make_unique<WebAppMenuModel>(

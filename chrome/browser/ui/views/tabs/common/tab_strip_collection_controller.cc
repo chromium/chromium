@@ -505,8 +505,8 @@ void TabStripCollectionController::TabKeyboardFocusChangedTo(
     tab_index = model_->GetIndexOfTab(tab);
   }
 
-  chrome::BrowserCommandController::From(browser_view_->browser())
-      ->TabKeyboardFocusChangedTo(tab_index);
+  browser_view_->browser()->command_controller()->TabKeyboardFocusChangedTo(
+      tab_index);
 }
 
 void TabStripCollectionController::RecordMetricsOnTabSelectionChange(

@@ -800,13 +800,13 @@ void Browser::WindowFullscreenStateChanged() {
       ->exclusive_access_manager()
       ->fullscreen_controller()
       ->WindowFullscreenStateChanged();
-  chrome::BrowserCommandController::From(this)->FullscreenStateChanged();
+  GetCommandController()->FullscreenStateChanged();
   BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kToggleFullscreen);
 }
 
 void Browser::FullscreenTopUIStateChanged() {
-  chrome::BrowserCommandController::From(this)->FullscreenStateChanged();
+  GetCommandController()->FullscreenStateChanged();
   BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kToolbarOptionChange);
 }
@@ -814,7 +814,7 @@ void Browser::FullscreenTopUIStateChanged() {
 void Browser::OnFindBarVisibilityChanged() {
   GetFeatures().GetFindBarController()->UpdatePageAction();
 
-  chrome::BrowserCommandController::From(this)->FindBarVisibilityChanged();
+  GetCommandController()->FindBarVisibilityChanged();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1154,7 +1154,7 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
 
   // Update reload/stop state.
   chrome::BrowserCommandController* const browser_command_controller =
-      chrome::BrowserCommandController::From(this);
+      GetCommandController();
   browser_command_controller->LoadingStateChanged(
       selection.new_contents->IsLoading(), true);
 
@@ -1399,6 +1399,9 @@ std::vector<StatusBubble*> Browser::GetStatusBubbles() {
   }
 }
 
+chrome::BrowserCommandController* Browser::GetCommandController() {
+  return GetFeatures().browser_command_controller();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Assorted utility functions (private):
@@ -1457,8 +1460,7 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
   WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();
   if (source == selected_contents) {
     bool is_loading = source->IsLoading() && should_show_loading_ui;
-    chrome::BrowserCommandController::From(this)->LoadingStateChanged(
-        is_loading, false);
+    GetCommandController()->LoadingStateChanged(is_loading, false);
 
     std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
     if (status_bubbles.size() > 0) {

@@ -78,19 +78,16 @@ class CommandActionUpdaterBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        CommandEnablementSyncsToAction) {
   // Force enable it to start with known state.
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
   EXPECT_TRUE(action_item_->GetEnabled());
 
   // Disable command.
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, false);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, false);
   // Action should be disabled.
   EXPECT_FALSE(action_item_->GetEnabled());
 
   // Enable command.
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
   // Action should be enabled.
   EXPECT_TRUE(action_item_->GetEnabled());
 }
@@ -100,12 +97,10 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
   EXPECT_FALSE(action_invoked_);
 
   // Force enable it.
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
 
   // Execute command.
-  EXPECT_TRUE(chrome::BrowserCommandController::From(browser())->ExecuteCommand(
-      IDC_BACK));
+  EXPECT_TRUE(browser()->command_controller()->ExecuteCommand(IDC_BACK));
 
   // Action should be invoked.
   EXPECT_TRUE(action_invoked_);
@@ -115,8 +110,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        ExecuteCommandWithContextPassesContextToAction) {
   EXPECT_FALSE(action_invoked_);
 
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
 
   auto context = actions::ActionInvocationContext::Builder()
                      .SetProperty(kTestPropertyKey, 42)
@@ -132,8 +126,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        ExecuteCommandWithDispositionAndContextPassesContext) {
   EXPECT_FALSE(action_invoked_);
 
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
 
   auto context = actions::ActionInvocationContext::Builder()
                      .SetProperty(kTestPropertyKey, 99)
@@ -150,8 +143,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        ExecuteActionPreservesSidePanelOpenTrigger) {
   EXPECT_FALSE(action_invoked_);
 
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
 
   auto context =
       actions::ActionInvocationContext::Builder()
@@ -171,10 +163,8 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
                        ExecuteCommandDoesNotInjectDefaultSidePanelTrigger) {
   EXPECT_FALSE(action_invoked_);
 
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
-  EXPECT_TRUE(chrome::BrowserCommandController::From(browser())->ExecuteCommand(
-      IDC_BACK));
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
+  EXPECT_TRUE(browser()->command_controller()->ExecuteCommand(IDC_BACK));
   EXPECT_TRUE(action_invoked_);
   EXPECT_EQ(static_cast<SidePanelOpenTrigger>(
                 last_context_.GetProperty(kSidePanelOpenTriggerKey)),

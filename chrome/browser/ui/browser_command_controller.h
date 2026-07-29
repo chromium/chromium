@@ -24,7 +24,6 @@
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/actions/actions.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -52,12 +51,6 @@ class BrowserCommandController : public CommandUpdater,
                                  public TabStripModelObserver,
                                  public sessions::TabRestoreServiceObserver {
  public:
-  DECLARE_USER_DATA(BrowserCommandController);
-
-  static BrowserCommandController* From(BrowserWindowInterface* browser);
-  static const BrowserCommandController* From(
-      const BrowserWindowInterface* browser);
-
   explicit BrowserCommandController(BrowserWindowInterface* bwi);
 
   BrowserCommandController(const BrowserCommandController&) = delete;
@@ -290,8 +283,6 @@ class BrowserCommandController : public CommandUpdater,
   // Observes for extension state changes (load/unload).
   class ExtensionStateObserver;
   std::unique_ptr<ExtensionStateObserver> extension_state_observer_;
-
-  ui::ScopedUnownedUserData<BrowserCommandController> scoped_unowned_user_data_;
 
   base::WeakPtrFactory<BrowserCommandController> weak_ptr_factory_{this};
 };

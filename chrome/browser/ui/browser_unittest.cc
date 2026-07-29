@@ -140,8 +140,7 @@ TEST_F(BrowserUnitTest, DisablePrintOnCrashedTab) {
   tab_strip_model->AppendWebContents(std::move(contents), true);
   WebContentsTester::For(raw_contents)->NavigateAndCommit(GURL("about:blank"));
 
-  CommandUpdater* command_updater =
-      chrome::BrowserCommandController::From(browser());
+  CommandUpdater* command_updater = browser()->command_controller();
 
   EXPECT_FALSE(raw_contents->IsCrashed());
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_PRINT));
@@ -169,8 +168,7 @@ TEST_F(BrowserUnitTest, DisableZoomOnCrashedTab) {
   EXPECT_TRUE(
       zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel()));
 
-  CommandUpdater* command_updater =
-      chrome::BrowserCommandController::From(browser());
+  CommandUpdater* command_updater = browser()->command_controller();
 
   EXPECT_TRUE(zoom_controller->IsAtDefaultZoom());
   EXPECT_FALSE(raw_contents->IsCrashed());

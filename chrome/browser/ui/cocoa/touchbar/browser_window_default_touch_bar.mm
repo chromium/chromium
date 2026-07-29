@@ -132,7 +132,7 @@ class TouchBarNotificationBridge : public CommandObserver,
     model->AddObserver(this);
     UpdateWebContents(model->GetActiveWebContents());
 
-    auto* command_controller = chrome::BrowserCommandController::From(browser);
+    auto* command_controller = browser->command_controller();
     command_controller->AddCommandObserver(IDC_BACK, this);
     owner.canGoBack = command_controller->IsCommandEnabled(IDC_BACK);
     command_controller->AddCommandObserver(IDC_FORWARD, this);
@@ -164,8 +164,7 @@ class TouchBarNotificationBridge : public CommandObserver,
   ~TouchBarNotificationBridge() override {
     UpdateWebContents(nullptr);
     if (browser_) {
-      chrome::BrowserCommandController::From(browser_)->RemoveCommandObserver(
-          this);
+      browser_->command_controller()->RemoveCommandObserver(this);
     }
   }
 
@@ -199,8 +198,7 @@ class TouchBarNotificationBridge : public CommandObserver,
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (browser == browser_) {
-      chrome::BrowserCommandController::From(browser_)->RemoveCommandObserver(
-          this);
+      browser_->command_controller()->RemoveCommandObserver(this);
       browser_ = nullptr;
     }
     if (browser == owner_.browser) {
@@ -627,7 +625,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 - (void)executeCommand:(id)sender {
   int command = [sender tag];
-  chrome::BrowserCommandController::From(_browser)->ExecuteCommand(command);
+  _browser->command_controller()->ExecuteCommand(command);
 }
 
 - (void)setIsPageLoading:(BOOL)isPageLoading {

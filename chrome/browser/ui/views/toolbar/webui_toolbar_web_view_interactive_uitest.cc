@@ -117,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
       InstrumentNonTabWebView(kWebUIToolbarWebViewId, kInstrumentedWebViewId,
                               /*wait_for_ready=*/true),
       Do([this]() {
-        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
-            IDC_FOCUS_TOOLBAR);
+        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
       }),
       CheckJsResultAt(kWebUIToolbarWebViewId, DeepQuery{},
                       "() => {"

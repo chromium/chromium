@@ -82,7 +82,7 @@ TEST_F(BrowserCommandsTest, TabNavigationAccelerators) {
   // Select the second tab.
   browser()->tab_strip_model()->ActivateTabAt(1);
 
-  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  CommandUpdater* updater = browser()->command_controller();
 
   // Navigate to the first tab using an accelerator.
   updater->ExecuteCommand(IDC_SELECT_TAB_0);
@@ -136,7 +136,7 @@ TEST_F(BrowserCommandsTest, CycleToMruTab) {
   // We are currently on tab 2.
   browser()->tab_strip_model()->ActivateTabAt(2);
 
-  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  CommandUpdater* updater = browser()->command_controller();
 
   // If MRU is active, the most recently used tab before 2 is 0.
   updater->ExecuteCommand(IDC_CYCLE_TO_NEXT_TAB);
@@ -166,7 +166,7 @@ TEST_F(BrowserCommandsTest, DirectionalTabSelectionIgnoresMru) {
   // Start at tab 0.
   browser()->tab_strip_model()->ActivateTabAt(0);
 
-  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  CommandUpdater* updater = browser()->command_controller();
 
   // Directional IDC_SELECT_NEXT_TAB should move to tab 1.
   updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);

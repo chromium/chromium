@@ -70,8 +70,8 @@ class WebAppFrameToolbarInteractiveUITest
   // shortcuts for IDC_FOCUS_TOOLBAR is supported on Mac.
   auto FocusToolbar() {
     return Do([this]() {
-      chrome::BrowserCommandController::From(helper()->app_browser())
-          ->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+      helper()->app_browser()->command_controller()->ExecuteCommand(
+          IDC_FOCUS_TOOLBAR);
     });
   }
 

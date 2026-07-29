@@ -145,7 +145,7 @@ void ManagePasswordsTest::ExecuteManagePasswordsCommand() {
   // Show the window to ensure that it's active.
   browser()->GetWindow()->Show();
 
-  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  CommandUpdater* updater = browser()->command_controller();
   EXPECT_TRUE(updater->IsCommandEnabled(IDC_MANAGE_PASSWORDS_FOR_PAGE));
   EXPECT_TRUE(updater->ExecuteCommand(IDC_MANAGE_PASSWORDS_FOR_PAGE));
 }

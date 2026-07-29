@@ -1426,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
   // Select the fourth tab.
   tab_strip_model()->ActivateTabAt(3);
 
-  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  CommandUpdater* updater = browser()->command_controller();
 
   // Navigate to the first tab using an accelerator.
   updater->ExecuteCommand(IDC_SELECT_TAB_0);
