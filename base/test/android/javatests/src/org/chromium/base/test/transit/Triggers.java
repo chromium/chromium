@@ -5,6 +5,8 @@
 package org.chromium.base.test.transit;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
 /** Common Triggers to start Transitions. */
 public class Triggers {
@@ -42,6 +44,26 @@ public class Triggers {
      * @return a {@link TripBuilder} to perform the Transition.
      */
     public static TripBuilder pressBackTo() {
-        return new TripBuilder().withTrigger(Espresso::pressBack);
+        return new TripBuilder()
+                .withTrigger(
+                        () -> {
+                            try {
+                                Espresso.pressBack();
+                            } catch (IllegalStateException e) {
+                                if (e.getMessage() != null
+                                        && e.getMessage()
+                                                .contains(
+                                                        "There is not a single resumed Activity")) {
+                                    // Espresso.pressBack() fails in multi-window environments (e.g.
+                                    // Desktop Android or split-screen) when multiple activities are
+                                    // in Stage.RESUMED simultaneously.
+                                    UiDevice.getInstance(
+                                                    InstrumentationRegistry.getInstrumentation())
+                                            .pressBack();
+                                } else {
+                                    throw e;
+                                }
+                            }
+                        });
     }
 }
