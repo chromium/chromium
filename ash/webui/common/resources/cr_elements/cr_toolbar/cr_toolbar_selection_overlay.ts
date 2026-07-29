@@ -64,7 +64,7 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
   declare selectionLabel: string;
   declare private hasShown_: boolean;
   declare private selectionLabel_: string;
-  private debouncer_: Debouncer;
+  private debouncer_: Debouncer|null = null;
 
   override ready() {
     super.ready();

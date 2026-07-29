@@ -88,7 +88,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   declare tabIndex: number;
 
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _rippleContainer: Element;
+  override _rippleContainer: Element|null = null;
 
   override ready() {
     super.ready();

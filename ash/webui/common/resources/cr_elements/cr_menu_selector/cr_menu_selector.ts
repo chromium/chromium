@@ -19,7 +19,7 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     return 'cr-menu-selector';
   }
 
-  private focusOutlineManager_: FocusOutlineManager;
+  private focusOutlineManager_: FocusOutlineManager|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -53,6 +53,7 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     // ensures that the first menu item is always the first focused item when
     // focusing into the menu. A null relatedTarget means the focus was moved
     // from outside the WebContents.
+    assert(this.focusOutlineManager_);
     const focusMovedWithKeyboard = this.focusOutlineManager_.visible;
     const focusMovedFromOutside = e.relatedTarget === null ||
         !this.contains(e.relatedTarget as HTMLElement);

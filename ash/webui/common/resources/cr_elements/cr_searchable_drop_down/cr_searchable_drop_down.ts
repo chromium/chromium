@@ -27,6 +27,7 @@ import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
+import {assert} from '//resources/js/assert.js';
 import type {IronDropdownElement} from '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -158,7 +159,7 @@ export class CrSearchableDropDownElement extends PolymerElement {
   declare private opened_: boolean;
   private openDropdownTimeoutId_: number = 0;
   private resizeObserver_: ResizeObserver|null = null;
-  private pointerDownListener_: (e: Event) => void;
+  private pointerDownListener_: ((e: Event) => void)|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -179,8 +180,10 @@ export class CrSearchableDropDownElement extends PolymerElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
+    assert(this.pointerDownListener_);
     document.removeEventListener('pointerdown', this.pointerDownListener_);
-    this.resizeObserver_!.unobserve(this.$.search);
+    assert(this.resizeObserver_);
+    this.resizeObserver_.unobserve(this.$.search);
   }
 
   /**
