@@ -107,19 +107,24 @@ void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
   // be satisfied:
 
   // (1) A mousedown event must have started the timer not earlier than
-  // `kMaxTimeGap` milliseconds ago.
+  // `kMaxTimeGap` milliseconds ago. This is to increase the likelihood of the
+  // JS change being caused by the click itself.
   if (!timer_.IsRunning()) {
     return;
   }
 
-  // (2) The element whose value was set by JS should be autofillable.
-  if (!form_util::IsAutofillableElement(element)) {
+  // (2) `js_logs_` must still have less than `kJsAutofillMaxFieldsChanged`
+  // records. If more than that many fields are modified in such a small window
+  // of time, it is likely not an autofill dropdown. This is also a performance
+  // guard since string analysis is performed below.
+  if (js_logs_.size() >= kJsAutofillMaxFieldsChanged) {
     return;
   }
 
-  // (3) `js_logs_` must still have less than `kJsAutofillMaxFieldsChanged`
-  // records.
-  if (js_logs_.size() >= kJsAutofillMaxFieldsChanged) {
+  // (3) The element whose value was set by JS should be autofillable and
+  // focusable (which is an approximation of "visible"). Other JS modifications
+  // are not interesting from a JS-autofill dropdown perspective.
+  if (!form_util::IsAutofillableElement(element) || !element.IsFocusable()) {
     return;
   }
 

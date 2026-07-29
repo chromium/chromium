@@ -36,9 +36,13 @@ class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
       const std::vector<std::pair<std::string, std::string>>& field_values) {
     std::string fill_statements;
     for (const auto& [id, val] : field_values) {
-      fill_statements +=
-          base::StringPrintf(R"(document.getElementById('%s').value = '%s';)",
-                             id.c_str(), val.c_str());
+      fill_statements += base::StringPrintf(
+          R"({
+            const elem = document.getElementById('%s');
+            elem.value = '%s';
+            elem.dispatchEvent(new Event('change', {bubbles: true}));
+          })",
+          id.c_str(), val.c_str());
     }
 
     constexpr std::string_view dropdown_body = R"(
@@ -73,6 +77,72 @@ class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
                             const std::string& option_id) {
     Focus(input_id.c_str());
     SimulateElementClickAndWait(option_id.c_str());
+  }
+
+  // Loads HTML form with shipping and billing address sections and sets up the
+  // "same_as_shipping" checkbox logic. The billing section starts hidden.
+  // Unchecking the checkbox unhides the billing section (which stays visible
+  // thereafter) and clears its fields. Changing a shipping field copies its
+  // value to the corresponding billing field if the checkbox is checked.
+  void LoadBillingAndShippingForm() {
+    LoadHTML(R"(
+        <form id="form_id">
+          <!-- Shipping Section (visible by default) -->
+          <div id="shipping_section">
+            <input id="shipping_street">
+            <input id="shipping_city">
+            <input id="shipping_state">
+            <input id="shipping_zip">
+          </div>
+
+          <!-- Checkbox: Same as shipping (checked by default) -->
+          <input type="checkbox" id="same_as_shipping" checked>
+
+          <!-- Billing Section (hidden by default) -->
+          <div id="billing_section" style="display: none">
+            <input id="billing_street">
+            <input id="billing_city">
+            <input id="billing_state">
+            <input id="billing_zip">
+          </div>
+        </form>)");
+
+    ExecuteJavaScriptForTests(R"(
+      const checkbox = document.getElementById('same_as_shipping');
+      const billingSection = document.getElementById('billing_section');
+
+      const fieldPairs = [
+        ['shipping_street', 'billing_street'],
+        ['shipping_city', 'billing_city'],
+        ['shipping_state', 'billing_state'],
+        ['shipping_zip', 'billing_zip']
+      ];
+
+      checkbox.addEventListener('change', () => {
+        if (!checkbox.checked) {
+          billingSection.style.display = 'block';
+          document.getElementById('billing_street').value = '';
+          document.getElementById('billing_city').value = '';
+          document.getElementById('billing_state').value = '';
+          document.getElementById('billing_zip').value = '';
+        } else {
+          fieldPairs.forEach(([shippingId, billingId]) => {
+            document.getElementById(billingId).value =
+                document.getElementById(shippingId).value;
+          });
+        }
+      });
+
+      fieldPairs.forEach(([shippingId, billingId]) => {
+        const shippingElem = document.getElementById(shippingId);
+        const billingElem = document.getElementById(billingId);
+        shippingElem.addEventListener('change', () => {
+          if (checkbox.checked) {
+            billingElem.value = shippingElem.value;
+          }
+        });
+      });
+    )");
   }
 };
 
@@ -260,6 +330,43 @@ TEST_F(JavaScriptAutofillTrackerTest,
   // 2 fields changed (< 3), but neither is kPrefixCompletion -> should NOT
   // trigger detection.
   task_environment_.FastForwardBy(base::Milliseconds(200));
+}
+
+// Test that if JS copies values to hidden fields (e.g. billing section hidden
+// when "same as shipping" is checked), those hidden fields are ignored and not
+// added to the logs.
+TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
+  LoadBillingAndShippingForm();
+
+  // Attach shipping picker to shipping_street. When clicked, it sets the 4
+  // shipping fields. The 'change' event listeners automatically copy those
+  // values to the 4 hidden billing fields.
+  AttachCustomDropdownOption("shipping_street", "shipping_option",
+                             {{"shipping_street", "1600 Amphitheatre Pkwy"},
+                              {"shipping_city", "Mountain View"},
+                              {"shipping_state", "CA"},
+                              {"shipping_zip", "94043"}});
+
+  const std::vector<mojom::JavaScriptFieldModificationPtr>& logs =
+      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
+          .js_logs();
+
+  // Click shipping address option while same_as_shipping is checked.
+  // JS sets all 8 fields, but only the 4 visible shipping fields should be
+  // logged.
+  SelectDropdownOption("shipping_street", "shipping_option");
+
+  EXPECT_EQ(logs[0]->field_id, form_util::GetFieldRendererId(
+                                   GetWebElementById("shipping_street")));
+  EXPECT_EQ(logs[1]->field_id,
+            form_util::GetFieldRendererId(GetWebElementById("shipping_city")));
+  EXPECT_EQ(logs[2]->field_id,
+            form_util::GetFieldRendererId(GetWebElementById("shipping_state")));
+  EXPECT_EQ(logs[3]->field_id,
+            form_util::GetFieldRendererId(GetWebElementById("shipping_zip")));
+
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  EXPECT_TRUE(logs.empty());
 }
 
 }  // namespace
