@@ -302,7 +302,7 @@ class BASE_EXPORT SysInfo {
   // Call ResetChromeOSVersionInfoForTest() to restore the previous values.
   // Prefer base::test::ScopedChromeOSVersionInfo to calling this function.
   static void SetChromeOSVersionInfoForTest(const std::string& lsb_release,
-                                            const Time& lsb_release_time);
+                                            Time lsb_release_time);
 
   // Undoes the function above.
   static void ResetChromeOSVersionInfoForTest();

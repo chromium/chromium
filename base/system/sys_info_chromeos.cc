@@ -107,10 +107,8 @@ class ChromeOSVersionInfo {
     *bugfix_version = bugfix_version_;
   }
 
-  const Time& lsb_release_time() const LIFETIME_BOUND {
-    return lsb_release_time_;
-  }
-  void set_lsb_release_time(const Time& time) { lsb_release_time_ = time; }
+  Time lsb_release_time() const { return lsb_release_time_; }
+  void set_lsb_release_time(Time time) { lsb_release_time_ = time; }
 
   bool is_running_on_chromeos() const { return is_running_on_chromeos_; }
 
@@ -251,7 +249,7 @@ bool SysInfo::IsRunningOnChromeOS() {
 
 // static
 void SysInfo::SetChromeOSVersionInfoForTest(const std::string& lsb_release,
-                                            const Time& lsb_release_time) {
+                                            Time lsb_release_time) {
   DCHECK(!g_chromeos_version_info_for_test) << "Nesting is not allowed";
   g_chromeos_version_info_for_test =
       new ChromeOSVersionInfo(ChromeOSVersionInfo::FOR_TEST);
