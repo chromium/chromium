@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/site_instance_process_assignment.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -609,6 +610,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // but have the same renderer process.
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
   EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
+            site_instance_2->GetLastProcessAssignmentOutcome());
 }
 
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
@@ -1483,6 +1486,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // process.
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
   EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
+            site_instance_2->GetLastProcessAssignmentOutcome());
 }
 
 // Tests that pagehide handlers of the old RFH are run during the commit

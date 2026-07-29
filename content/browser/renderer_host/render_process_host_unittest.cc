@@ -1054,6 +1054,26 @@ TEST_F(RenderProcessHostUnitTest, ProcessAssignmentDefault) {
   EXPECT_FALSE(site_instance->HasProcess());
 }
 
+TEST_F(RenderProcessHostUnitTest,
+       ProcessAssignmentReuseExistingProcessIfPossible) {
+  const GURL kUrl1("https://foo.com");
+  const GURL kUrl2("https://foo.com");
+
+  scoped_refptr<SiteInstanceImpl> site_instance1 = CreateForUrl(kUrl1);
+  RenderProcessHost* host1 = site_instance1->GetOrCreateProcessForTesting();
+
+  scoped_refptr<SiteInstanceImpl> site_instance2 = CreateForUrl(kUrl2);
+  EXPECT_EQ(SiteInstanceProcessAssignment::UNKNOWN,
+            site_instance2->GetLastProcessAssignmentOutcome());
+  EXPECT_FALSE(site_instance2->HasProcess());
+
+  site_instance2->ReuseExistingProcessIfPossible(host1);
+  EXPECT_TRUE(site_instance2->HasProcess());
+  EXPECT_EQ(host1, site_instance2->GetProcess());
+  EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
+            site_instance2->GetLastProcessAssignmentOutcome());
+}
+
 // Tests the GetPendingReuseRefCount() function.
 TEST_F(RenderProcessHostUnitTest, GetPendingReuseRefCount) {
   MockRenderProcessHost mock_host(browser_context());
