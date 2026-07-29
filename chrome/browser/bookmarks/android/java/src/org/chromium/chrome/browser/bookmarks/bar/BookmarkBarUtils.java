@@ -210,7 +210,7 @@ public class BookmarkBarUtils {
         // On Desktop, we sync with the UserPrefs.
         // On tablets we use the device preference logic (policy (pref service)  > local pref
         // (shared pref) > FeatureParam).
-        return DeviceInfo.isDesktop()
+        return shouldUseProfileUserPrefs()
                 ? isUserPrefsShowBookmarksBarEnabled(profile)
                 : isDevicePrefShowBookmarksBarEnabled(profile);
     }
@@ -223,7 +223,7 @@ public class BookmarkBarUtils {
      * @param fromKeyboardShortcut True if the change was triggered by a keyboard shortcut.
      */
     public static void toggleShowBookmarksBar(Profile profile, boolean fromKeyboardShortcut) {
-        if (DeviceInfo.isDesktop()) {
+        if (shouldUseProfileUserPrefs()) {
             toggleUserPrefsShowBookmarksBar(profile, fromKeyboardShortcut);
         } else {
             toggleDevicePrefShowBookmarksBar(profile, fromKeyboardShortcut);
@@ -478,6 +478,16 @@ public class BookmarkBarUtils {
     }
 
     // Helper methods.
+
+    /**
+     * Returns whether the bookmark bar should use profile user preferences (synced across devices,
+     * e.g. Desktop) rather than local device preferences (e.g. tablet). This method should not be
+     * used in lieu of 'DeviceInfo.isDesktop().' Rather, it should only be used to determine syncing
+     * behavior for the bookmark bar visibility settings.
+     */
+    public static boolean shouldUseProfileUserPrefs() {
+        return DeviceInfo.isDesktop();
+    }
 
     private static PrefService getPrefService(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile());

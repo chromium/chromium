@@ -11,7 +11,6 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -55,7 +54,7 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
         mPageTitle.set(getString(R.string.bookmark_bar_settings_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.bookmark_bar_preferences);
 
-        mUseProfileUserPrefs = DeviceInfo.isDesktop();
+        mUseProfileUserPrefs = BookmarkBarUtils.shouldUseProfileUserPrefs();
         initBookmarkBarPref();
     }
 
