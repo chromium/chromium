@@ -26,14 +26,19 @@ interface ContentSettingsManager {
     WEB_LOCKS,
   };
 
-  // Sent by the renderer process to check whether access to a particular
-  // storage system is granted by content settings. Sync support is optional
-  // for when needed; prefer async whenever possible!
+  // Sent by the renderer process to check storage permissions.
   //
-  // `enable_logging_usage` should typically be true. It should be set to false
-  // only when this method is invoked purely to eagerly fetch and cache
-  // permissions prior to an actual JS usage. When false, this access is not
-  // logged to the browser's UI or usage metrics.
+  // Note: This returns the same value as AllowStorageAccess() below, but
+  // without the side effect of requesting storage access (e.g. eager
+  // pre-fetching during navigation commit).
+  IsStorageAccessAllowed(
+      url.mojom.Origin origin,
+      network.mojom.SiteForCookies site_for_cookies,
+      url.mojom.Origin top_frame_origin) => (bool allowed);
+
+  // Sent by the renderer process when it attempts to access a storage system.
+  // Evaluates permissions, triggers delegate logic, and logs UI/metrics usage.
+  // Sync support is optional for when needed; prefer async whenever possible!
   //
   // TODO(darin): Ideally this interface would be attached to a document-
   // specific browser-side object that would already know the origin info.
@@ -44,8 +49,7 @@ interface ContentSettingsManager {
       StorageType storage_type,
       url.mojom.Origin origin,
       network.mojom.SiteForCookies site_for_cookies,
-      url.mojom.Origin top_frame_origin,
-      bool enable_logging_usage) => (bool allowed);
+      url.mojom.Origin top_frame_origin) => (bool allowed);
 
   // Tells the browser that content in the current page was blocked due to the
   // user's content settings.

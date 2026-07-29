@@ -191,11 +191,9 @@ void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
 
 void ContentSettingsAgentImpl::EagerlyFetchStorageSettings(StorageType type) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  GetContentSettingsManager().AllowStorageAccess(
-      frame->GetLocalFrameToken(), ConvertToMojoStorageType(type),
+  GetContentSettingsManager().IsStorageAccessAllowed(
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(),
-      /*enable_logging_usage=*/false,
       base::BindOnce(&ContentSettingsAgentImpl::OnEagerStorageSettingsFetched,
                      base::Unretained(this),
                      StoragePermissionsKey(
@@ -277,8 +275,7 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
       GetContentSettingsManager().AllowStorageAccess(
           frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
           frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
-          frame->GetDocument().TopFrameOrigin(),
-          /*enable_logging_usage=*/true, base::DoNothing());
+          frame->GetDocument().TopFrameOrigin(), base::DoNothing());
     }
     return;
   }
@@ -297,8 +294,7 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
   GetContentSettingsManager().AllowStorageAccess(
       frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
-      frame->GetDocument().TopFrameOrigin(), /*enable_logging_usage=*/true,
-      std::move(new_cb));
+      frame->GetDocument().TopFrameOrigin(), std::move(new_cb));
 }
 
 bool ContentSettingsAgentImpl::AllowStorageAccessSync(
@@ -331,8 +327,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
       GetContentSettingsManager().AllowStorageAccess(
           frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
           frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
-          frame->GetDocument().TopFrameOrigin(),
-          /*enable_logging_usage=*/true, base::DoNothing());
+          frame->GetDocument().TopFrameOrigin(), base::DoNothing());
     }
     return permissions->second;
   }
@@ -341,8 +336,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   GetContentSettingsManager().AllowStorageAccess(
       frame->GetLocalFrameToken(), ConvertToMojoStorageType(storage_type),
       frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
-      frame->GetDocument().TopFrameOrigin(), /*enable_logging_usage=*/true,
-      &result);
+      frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
   base::UmaHistogramBoolean(kCacheHitHistogram, false);
   return result;

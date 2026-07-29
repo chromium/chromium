@@ -146,14 +146,10 @@ void ContentSettingsManagerImpl::Clone(
       std::move(receiver));
 }
 
-void ContentSettingsManagerImpl::AllowStorageAccess(
-    const blink::LocalFrameToken& frame_token,
-    StorageType storage_type,
+bool ContentSettingsManagerImpl::EvaluateStorageAccessPermission(
     const url::Origin& origin,
     const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
-    bool enable_logging_usage,
-    base::OnceCallback<void(bool)> callback) {
+    const url::Origin& top_frame_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GURL url = origin.GetURL();
 
@@ -174,10 +170,10 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
       url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
       cookie_partition_key, &cookie_settings);
 
-  //  If storage partitioning is active, third-party partitioned storage is
-  //  allowed by default, and access is only blocked due to general third-party
-  //  cookie blocking (and not due to a user specified pattern) then we'll allow
-  //  storage access.
+  // If storage partitioning is active, third-party partitioned storage is
+  // allowed by default, and access is only blocked due to general third-party
+  // cookie blocking (and not due to a user specified pattern) then we'll allow
+  // storage access.
   if (base::FeatureList::IsEnabled(
           net::features::kThirdPartyStoragePartitioning) &&
       base::FeatureList::IsEnabled(
@@ -194,24 +190,42 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     allowed = true;
   }
 
-  // `enable_logging_usage` is set to false during eager pre-fetching so that
-  // UI indicators (like the omnibox cookie blocked icon) are not triggered
-  // before JavaScript actually accesses storage. The permission evaluation
-  // above always runs and its result (`allowed`) is always returned below.
-  if (enable_logging_usage) {
-    if (delegate_->AllowStorageAccess(content::GlobalRenderFrameHostToken(
-                                          render_process_id_, frame_token),
-                                      storage_type, url, allowed, &callback)) {
-      DCHECK(!callback);
-      return;
-    }
+  return allowed;
+}
 
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&NotifyStorageAccess,
-                                  content::GlobalRenderFrameHostToken(
-                                      render_process_id_, frame_token),
-                                  storage_type, top_frame_origin, allowed));
+void ContentSettingsManagerImpl::IsStorageAccessAllowed(
+    const url::Origin& origin,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    base::OnceCallback<void(bool)> callback) {
+  bool allowed = EvaluateStorageAccessPermission(origin, site_for_cookies,
+                                                 top_frame_origin);
+  std::move(callback).Run(allowed);
+}
+
+void ContentSettingsManagerImpl::AllowStorageAccess(
+    const blink::LocalFrameToken& frame_token,
+    StorageType storage_type,
+    const url::Origin& origin,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    base::OnceCallback<void(bool)> callback) {
+  bool allowed = EvaluateStorageAccessPermission(origin, site_for_cookies,
+                                                 top_frame_origin);
+  GURL url = origin.GetURL();
+
+  if (delegate_->AllowStorageAccess(
+          content::GlobalRenderFrameHostToken(render_process_id_, frame_token),
+          storage_type, url, allowed, &callback)) {
+    DCHECK(!callback);
+    return;
   }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyStorageAccess,
+                                content::GlobalRenderFrameHostToken(
+                                    render_process_id_, frame_token),
+                                storage_type, top_frame_origin, allowed));
 
   std::move(callback).Run(allowed);
 }

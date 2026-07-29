@@ -58,22 +58,21 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
       mojo::PendingReceiver<mojom::ContentSettingsManager> receiver) override {
     ADD_FAILURE() << "Not reached";
   }
+  void IsStorageAccessAllowed(
+      const url::Origin& origin,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      base::OnceCallback<void(bool)> callback) override {
+    ++log_->eager_allow_storage_access_count;
+    std::move(callback).Run(true);
+  }
   void AllowStorageAccess(const blink::LocalFrameToken& frame_token,
                           StorageType storage_type,
                           const url::Origin& origin,
                           const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
-                          bool enable_logging_usage,
                           base::OnceCallback<void(bool)> callback) override {
-    // In production, enable_logging_usage=false skips UI updates and metrics
-    // logging. However, in this mock, we intentionally count it via
-    // eager_allow_storage_access_count to verify that the eager pre-fetch IPC
-    // successfully reached the browser process.
-    if (enable_logging_usage) {
-      ++log_->allow_storage_access_count;
-    } else {
-      ++log_->eager_allow_storage_access_count;
-    }
+    ++log_->allow_storage_access_count;
     std::move(callback).Run(true);
   }
   void OnContentBlocked(const blink::LocalFrameToken& frame_token,

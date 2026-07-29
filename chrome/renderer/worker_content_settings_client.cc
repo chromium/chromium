@@ -85,7 +85,7 @@ void WorkerContentSettingsClient::AllowStorageAccess(
       content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
           storage_type),
       document_origin_, site_for_cookies_, top_frame_origin_,
-      /*enable_logging_usage=*/true, std::move(callback));
+      std::move(callback));
 }
 
 bool WorkerContentSettingsClient::AllowStorageAccessSync(
@@ -100,8 +100,7 @@ bool WorkerContentSettingsClient::AllowStorageAccessSync(
       frame_token_,
       content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
           storage_type),
-      document_origin_, site_for_cookies_, top_frame_origin_,
-      /*enable_logging_usage=*/true, &result);
+      document_origin_, site_for_cookies_, top_frame_origin_, &result);
   return result;
 }
 

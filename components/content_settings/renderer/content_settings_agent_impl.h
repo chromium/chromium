@@ -139,10 +139,9 @@ class ContentSettingsAgentImpl
   // Caches the result of AllowStorageAccess.
   using StoragePermissionsKey = std::pair<url::Origin, StorageType>;
 
-  // Initiates an asynchronous IPC to fetch the storage permission for `type`
-  // and stores the result in `cached_storage_permissions_`. This IPC sets
-  // `enable_logging_usage=false` because it is fired before JS actually
-  // accesses storage.
+  // Initiates an asynchronous IPC (IsStorageAccessAllowed) to fetch the
+  // storage permission for `type` and stores the result in
+  // `cached_storage_permissions_` before JS actually accesses storage.
   void EagerlyFetchStorageSettings(StorageType type);
 
   // Callback to store the permission fetched by EagerlyFetchStorageSettings in
