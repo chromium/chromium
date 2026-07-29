@@ -151,8 +151,8 @@ Matcher GetScopeMatcher(UpdaterScope scope) {
       }
     }();
     if (!is_match) {
-      ADD_FAILURE() << R"(Request does not match "ismachine": )"
-                    << GetPrintableContent(request);
+      ADD_FAILURE() << "Request does not match scope [" << scope
+                    << "]: " << GetPrintableContent(request);
     }
     return is_match;
   });
@@ -192,8 +192,9 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
       return priority != UpdateService::Priority::kForeground;
     }();
     if (!is_match) {
-      ADD_FAILURE() << R"(Request does not match "appid", "priority: )"
-                    << GetPrintableContent(request);
+      ADD_FAILURE() << "Request does not match app_id [" << app_id
+                    << "], priority [" << priority
+                    << "]: " << GetPrintableContent(request);
     }
     return is_match;
   });
