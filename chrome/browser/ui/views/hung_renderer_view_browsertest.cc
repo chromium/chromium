@@ -10,6 +10,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -107,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
   // Simulate the renderer becoming responsive again.
   content::RenderWidgetHost* render_widget_host =
       web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  content::WebContentsDelegate* web_contents_delegate = browser();
+  content::WebContentsDelegate* web_contents_delegate =
+      BrowserWebContentsDelegate::From(browser());
   web_contents_delegate->RendererResponsive(web_contents, render_widget_host);
 }
 

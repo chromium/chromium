@@ -60,6 +60,7 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/smart_card",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",

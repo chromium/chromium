@@ -505,6 +505,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/user_education",
       "//chrome/common:constants",

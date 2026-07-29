@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1272,9 +1273,11 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, OverscrollEnabled) {
 
   // Overscroll is only enabled on Aura platforms currently.
 #if defined(USE_AURA)
-  EXPECT_TRUE(app_browser->CanOverscrollContent());
+  EXPECT_TRUE(
+      BrowserWebContentsDelegate::From(app_browser)->CanOverscrollContent());
 #else
-  EXPECT_FALSE(app_browser->CanOverscrollContent());
+  EXPECT_FALSE(
+      BrowserWebContentsDelegate::From(app_browser)->CanOverscrollContent());
 #endif
 }
 

@@ -51,7 +51,9 @@ PopunderPreventer::~PopunderPreventer() {
         (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
          browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP ||
          browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
-      browser->GetBrowserForMigrationOnly()->ActivateContents(popup.get());
+      if (popup->GetDelegate()) {
+        popup->GetDelegate()->ActivateContents(popup.get());
+      }
     }
   }
 }

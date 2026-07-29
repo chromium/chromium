@@ -48,6 +48,7 @@ specific_include_rules = {
   ".*_(browser|unit)test\\.cc": [
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/navigator/browser_navigator_params.h",
     "+chrome/browser/ui/tabs",

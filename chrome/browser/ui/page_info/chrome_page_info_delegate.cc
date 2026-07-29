@@ -66,6 +66,7 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -219,7 +220,7 @@ content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
 void ChromePageInfoDelegate::FocusWebContents() {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
-  browser->GetBrowserForMigrationOnly()->ActivateContents(web_contents_);
+  BrowserWebContentsDelegate::From(browser)->ActivateContents(web_contents_);
 }
 
 std::optional<std::u16string> ChromePageInfoDelegate::GetRwsOwner(

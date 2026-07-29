@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -241,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
 IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
                        FullscreenForTabTitlebarHeight) {
   InstallAndLaunchBookmarkApp();
-  static_cast<content::WebContentsDelegate*>(app_browser_)
+  BrowserWebContentsDelegate::From(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});
 
   EXPECT_EQ(GetAppFrameView()->GetTopInset(false), 0);
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com")));
 
-  static_cast<content::WebContentsDelegate*>(app_browser_)
+  BrowserWebContentsDelegate::From(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});
 
   EXPECT_TRUE(app_browser_view_->toolbar()->custom_tab_bar()->IsDrawn());

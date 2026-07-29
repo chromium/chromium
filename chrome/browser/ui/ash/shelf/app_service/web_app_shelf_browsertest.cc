@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -145,25 +146,25 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   const ash::ShelfAppButton* const button_chrome =
       shelf_view->GetShelfAppButton(ash::ShelfID(app_constants::kChromeAppId));
 
-  browser()->ActivateContents(contents_a);
+  BrowserWebContentsDelegate::From(browser())->ActivateContents(contents_a);
   EXPECT_EQ(button_a->state(), ash::ShelfAppButton::STATE_ACTIVE);
   EXPECT_EQ(button_b->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_chrome->state(), ash::ShelfAppButton::STATE_RUNNING);
 
-  browser()->ActivateContents(contents_b);
+  BrowserWebContentsDelegate::From(browser())->ActivateContents(contents_b);
   EXPECT_EQ(button_a->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_b->state(), ash::ShelfAppButton::STATE_ACTIVE);
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_chrome->state(), ash::ShelfAppButton::STATE_RUNNING);
 
-  browser_c->ActivateContents(contents_c);
+  BrowserWebContentsDelegate::From(browser_c)->ActivateContents(contents_c);
   EXPECT_EQ(button_a->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_b->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_ACTIVE);
   EXPECT_EQ(button_chrome->state(), ash::ShelfAppButton::STATE_RUNNING);
 
-  browser()->ActivateContents(contents_d);
+  BrowserWebContentsDelegate::From(browser())->ActivateContents(contents_d);
   EXPECT_EQ(button_a->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_b->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_RUNNING);

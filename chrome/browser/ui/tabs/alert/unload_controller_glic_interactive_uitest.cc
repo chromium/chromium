@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -88,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerGlicInteractiveUiTest,
       Do([&]() {
         content::WebContents* web_contents =
             browser()->tab_strip_model()->GetWebContentsAt(0);
-        static_cast<content::WebContentsDelegate*>(browser())->CloseContents(
+        BrowserWebContentsDelegate::From(browser())->CloseContents(
             web_contents);
       }),
       InAnyContext(WaitForShow(actor::ActorTaskTabCloseConfirmDialog::kViewId)),
@@ -115,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerGlicInteractiveUiTest, EndToEndLogTest) {
         // This simulates closing the active tab via CloseContents.
         content::WebContents* web_contents =
             browser()->tab_strip_model()->GetWebContentsAt(0);
-        static_cast<content::WebContentsDelegate*>(browser())->CloseContents(
+        BrowserWebContentsDelegate::From(browser())->CloseContents(
             web_contents);
       }),
       InAnyContext(WaitForShow(actor::ActorTaskTabCloseConfirmDialog::kViewId)),

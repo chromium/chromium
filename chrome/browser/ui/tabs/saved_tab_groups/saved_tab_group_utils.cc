@@ -635,8 +635,9 @@ void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
     return;
   }
 
-  browser_for_activation->ActivateContents(
-      tab_group->GetFirstTab()->GetContents());
+  if (auto* delegate = tab_group->GetFirstTab()->GetContents()->GetDelegate()) {
+    delegate->ActivateContents(tab_group->GetFirstTab()->GetContents());
+  }
 
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));

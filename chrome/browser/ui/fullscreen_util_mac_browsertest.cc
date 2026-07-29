@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/common/pref_names.h"
@@ -25,14 +26,14 @@ class FullscreenUtilMacTest : public InProcessBrowserTest {
   }
   void EnterTabFullscreen() {
     content::WebContentsDelegate* contents_delegate =
-        static_cast<content::WebContentsDelegate*>(browser());
+        BrowserWebContentsDelegate::From(browser());
     contents_delegate->EnterFullscreenModeForTab(
         GetWebContents()->GetPrimaryMainFrame(), {});
   }
 
   void ExitTabFullscreen() {
     content::WebContentsDelegate* contents_delegate =
-        static_cast<content::WebContentsDelegate*>(browser());
+        BrowserWebContentsDelegate::From(browser());
     contents_delegate->ExitFullscreenModeForTab(GetWebContents());
   }
 

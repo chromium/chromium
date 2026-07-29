@@ -347,6 +347,7 @@ if (!is_android) {
       "//chrome/browser:flags",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/safety_hub:test_support",

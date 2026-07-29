@@ -89,6 +89,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/side_panel",

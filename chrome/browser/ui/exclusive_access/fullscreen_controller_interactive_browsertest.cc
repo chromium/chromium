@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -218,9 +219,11 @@ void FullscreenControllerInteractiveTest::ToggleTabFullscreen_Internal(
     ui_test_utils::FullscreenWaiter waiter(
         browser(), {.tab_fullscreen = enter_fullscreen});
     if (enter_fullscreen) {
-      browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
+      BrowserWebContentsDelegate::From(browser())->EnterFullscreenModeForTab(
+          tab->GetPrimaryMainFrame(), {});
     } else {
-      browser()->ExitFullscreenModeForTab(tab);
+      BrowserWebContentsDelegate::From(browser())->ExitFullscreenModeForTab(
+          tab);
     }
     waiter.Wait();
     // Repeat ToggleFullscreenModeForTab until the correct state is entered.

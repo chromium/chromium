@@ -6,6 +6,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -19,11 +20,14 @@ IN_PROC_BROWSER_TEST_F(OverscrollPrefManagerTest, PrefChange) {
   PrefService* local_state = g_browser_process->local_state();
   ASSERT_TRUE(
       local_state->GetBoolean(prefs::kOverscrollHistoryNavigationEnabled));
-  ASSERT_TRUE(browser()->CanOverscrollContent());
+  ASSERT_TRUE(
+      BrowserWebContentsDelegate::From(browser())->CanOverscrollContent());
 
   local_state->SetBoolean(prefs::kOverscrollHistoryNavigationEnabled, false);
-  EXPECT_FALSE(browser()->CanOverscrollContent());
+  EXPECT_FALSE(
+      BrowserWebContentsDelegate::From(browser())->CanOverscrollContent());
 
   local_state->SetBoolean(prefs::kOverscrollHistoryNavigationEnabled, true);
-  EXPECT_TRUE(browser()->CanOverscrollContent());
+  EXPECT_TRUE(
+      BrowserWebContentsDelegate::From(browser())->CanOverscrollContent());
 }

@@ -17,6 +17,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_input_protector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -94,7 +95,7 @@ void ShowExtensionInstallDialogImpl(
 
   if (browser &&
       browser->GetTabStripModel()->GetActiveWebContents() != web_contents) {
-    browser->GetBrowserForMigrationOnly()->ActivateContents(web_contents);
+    BrowserWebContentsDelegate::From(browser)->ActivateContents(web_contents);
   }
 
   gfx::NativeWindow parent_window = show_params->GetParentWindow();

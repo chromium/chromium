@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tab_helpers.h"
@@ -117,7 +118,7 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     // Make sure the loading state is updated correctly, otherwise the throbber
     // won't start if the page is loading.
     // TODO(beng): find a better way of doing this.
-    static_cast<content::WebContentsDelegate*>(browser)->LoadingStateChanged(
+    BrowserWebContentsDelegate::From(browser)->LoadingStateChanged(
         raw_web_contents, true);
   }
 

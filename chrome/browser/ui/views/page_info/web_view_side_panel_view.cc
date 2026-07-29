@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -203,7 +204,9 @@ BrowserView* WebViewSidePanelView::outer_browser_view() {
 
 content::WebContentsDelegate* WebViewSidePanelView::outer_delegate() {
   auto* browser_view = outer_browser_view();
-  return browser_view ? browser_view->browser() : nullptr;
+  return browser_view
+             ? BrowserWebContentsDelegate::From(browser_view->browser())
+             : nullptr;
 }
 
 void WebViewSidePanelView::OpenUrlInBrowser(

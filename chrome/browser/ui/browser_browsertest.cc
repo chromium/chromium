@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -432,8 +433,9 @@ class BrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   void OpenURLFromTab(WebContents* source, OpenURLParams params) {
-    browser()->OpenURLFromTab(source, params,
-                              /*navigation_handle_callback=*/{});
+    BrowserWebContentsDelegate::From(browser())->OpenURLFromTab(
+        source, params,
+        /*navigation_handle_callback=*/{});
   }
 
   // Returns the app extension aptly named "App Test".
@@ -1363,14 +1365,16 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
 #if defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInRegularWindows) {
   ASSERT_TRUE(browser()->is_type_normal());
-  EXPECT_TRUE(browser()->CanOverscrollContent());
+  EXPECT_TRUE(
+      BrowserWebContentsDelegate::From(browser())->CanOverscrollContent());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInPopups) {
   Browser* popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_POPUP, browser()->GetProfile(), true));
   ASSERT_TRUE(popup_browser->is_type_popup());
-  EXPECT_TRUE(popup_browser->CanOverscrollContent());
+  EXPECT_TRUE(
+      BrowserWebContentsDelegate::From(popup_browser)->CanOverscrollContent());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollDisabledInDevToolsWindows) {
@@ -1379,8 +1383,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollDisabledInDevToolsWindows) {
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_EQ(dev_tools_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_DEVTOOLS);
-  EXPECT_FALSE(
-      dev_tools_browser->GetBrowserForMigrationOnly()->CanOverscrollContent());
+  EXPECT_FALSE(BrowserWebContentsDelegate::From(dev_tools_browser)
+                   ->CanOverscrollContent());
 }
 #endif
 

@@ -386,6 +386,7 @@ if (!is_android) {
       "//chrome/browser/spellchecker",
       "//chrome/browser/sync",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",

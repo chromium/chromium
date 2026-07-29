@@ -292,6 +292,7 @@ if (!is_android) {
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",

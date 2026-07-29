@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -2488,8 +2489,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::JavaScriptDialogManager* dialog_manager =
-      static_cast<content::WebContentsDelegate*>(browser())
-          ->GetJavaScriptDialogManager(active_web_contents);
+      BrowserWebContentsDelegate::From(browser())->GetJavaScriptDialogManager(
+          active_web_contents);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   dialog_manager->HandleJavaScriptDialog(active_web_contents, /*accept=*/true,
                                          /*prompt_override=*/nullptr);

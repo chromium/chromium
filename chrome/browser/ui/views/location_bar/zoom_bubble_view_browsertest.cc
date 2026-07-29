@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -85,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
     // notification before testing the zoom bubble visibility.
     ui_test_utils::FullscreenWaiter waiter_f(browser(),
                                              {.tab_fullscreen = true});
-    static_cast<content::WebContentsDelegate*>(browser())
-        ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(), {});
+    BrowserWebContentsDelegate::From(browser())->EnterFullscreenModeForTab(
+        web_contents->GetPrimaryMainFrame(), {});
     waiter_f.Wait();
   }
 #if !BUILDFLAG(IS_MAC)

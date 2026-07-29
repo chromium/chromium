@@ -21,6 +21,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/exclusive_access:test_support",

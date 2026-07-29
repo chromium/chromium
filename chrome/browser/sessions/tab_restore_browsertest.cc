@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1111,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWithExistingSiteInstance) {
   content::WebContents* tab =
       browser()->tab_strip_model()->GetWebContentsAt(tab_count - 1);
   content::LoadStopObserver observer(tab);
-  static_cast<content::WebContentsDelegate*>(browser())->OpenURLFromTab(
+  BrowserWebContentsDelegate::From(browser())->OpenURLFromTab(
       tab,
       content::OpenURLParams(http_url2, content::Referrer(),
                              WindowOpenDisposition::CURRENT_TAB,
