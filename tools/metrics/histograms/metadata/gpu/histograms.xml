@@ -1947,6 +1947,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SharedImage.R8ToAlpha8Fallback" enum="Boolean"
+    expires_after="2027-07-01">
+  <owner>hitawala@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether a single-channel 8-bit texture (R_8) fell back to ALPHA_8
+    because the OpenGL context lacks ext_texture_rg support. Recorded only for
+    single-channel 8-bit planes (R_8) of a multi-planar texture and only when
+    getting GL format info for such textures during GL based backing creation.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SharedImage.SharedImageFormat" enum="SharedImageFormatUMA"
     expires_after="2026-12-16">
   <owner>hitawala@chromium.org</owner>

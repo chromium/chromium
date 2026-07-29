@@ -27,9 +27,13 @@ namespace {
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,
     const GLFormatCaps& caps) {
-  if (plane_format == viz::SinglePlaneFormat::kR_8 && !caps.ext_texture_rg()) {
-    // Fallback to ALPHA_8 for R_8 format.
-    return viz::SinglePlaneFormat::kALPHA_8;
+  if (plane_format == viz::SinglePlaneFormat::kR_8) {
+    bool fallback = !caps.ext_texture_rg();
+    base::UmaHistogramBoolean("GPU.SharedImage.R8ToAlpha8Fallback", fallback);
+    if (fallback) {
+      // Fallback to ALPHA_8 for R_8 format.
+      return viz::SinglePlaneFormat::kALPHA_8;
+    }
   }
   if (plane_format == viz::SinglePlaneFormat::kRG_88 &&
       !caps.ext_texture_rg()) {
