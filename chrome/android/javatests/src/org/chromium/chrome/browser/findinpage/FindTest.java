@@ -240,6 +240,7 @@ public class FindTest {
     @Test
     @MediumTest
     @Feature({"FindInPage"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testFindNext() {
         String query = "pitts";
         loadTestAndVerifyFindInPage(query, "1/7");
@@ -255,6 +256,7 @@ public class FindTest {
     @Test
     @MediumTest
     @Feature({"FindInPage"})
+    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void testFindNextPrevious() {
         String query = "pitts";
         loadTestAndVerifyFindInPage(query, "1/7");
