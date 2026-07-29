@@ -1265,6 +1265,14 @@ void Display::DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
   }
 
   if (!timings.viz_scheduled_draw.is_null()) {
+    DCHECK_LE(draw_start_timestamp, timings.viz_scheduled_draw);
+    base::TimeDelta draw_start_to_scheduled_draw =
+        timings.viz_scheduled_draw - draw_start_timestamp;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.Display.DrawToVizScheduledDraw",
+        draw_start_to_scheduled_draw, kDrawToSwapMin, kDrawToSwapMax,
+        kDrawToSwapUsBuckets);
+
     DCHECK(!timings.gpu_started_draw.is_null());
     DCHECK_LE(timings.viz_scheduled_draw, timings.gpu_started_draw);
     base::TimeDelta schedule_draw_to_gpu_start =
