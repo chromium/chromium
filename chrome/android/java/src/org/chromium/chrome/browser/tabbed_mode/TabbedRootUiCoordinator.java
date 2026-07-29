@@ -1283,7 +1283,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 PwaBottomSheetControllerFactory.createPwaBottomSheetController(mActivity);
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initCommerceSubscriptionsService();
-        initUndoGroupSnackbarController();
 
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
@@ -1470,6 +1469,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 mSnackbarManagerSupplier);
             }
         }
+        initUndoGroupSnackbarController();
         initializeSideUi(currentlySelectedProfile);
     }
 
@@ -2370,7 +2370,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     canActivateTabLayoutToggleMenu(),
                                     mActivity.findViewById(
                                             R.id.vertical_tab_hover_card_holder_stub),
-                                    mTabContentManagerSupplier),
+                                    mTabContentManagerSupplier,
+                                    mUndoGroupSnackbarController),
                             mIsVerticalTabsActiveSupplier);
             mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
         }

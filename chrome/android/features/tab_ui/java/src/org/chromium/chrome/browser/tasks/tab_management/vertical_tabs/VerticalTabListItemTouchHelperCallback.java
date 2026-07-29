@@ -33,10 +33,12 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabListItemTouchHelperCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
+import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -79,9 +81,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     private final Set<Integer> mDraggedChildTabIds = new HashSet<>();
     private final List<Integer> mSelectedGroupTabIds = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> mDraggedChildViewHolders = new ArrayList<>();
+    private final @Nullable UndoBarThrottle mUndoBarThrottle;
     private @DragDropResult int mDragResult = DragDropResult.ABORTED_NO_CHANGE;
     private RecyclerView.@Nullable ViewHolder mSelectedViewHolder;
-
+    private @Nullable OnDragOutListener mOnDragOutListener;
+    private int mUndoBarThrottleToken = TokenHolder.INVALID_TOKEN;
     private float mDragStartX;
 
     public void setDragStartX(float x) {
@@ -95,8 +99,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent event) {
                 callback.setIsMouseInputSource(
                         event.getSource() == android.view.InputDevice.SOURCE_MOUSE);
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                int action = event.getActionMasked();
+                if (action == MotionEvent.ACTION_DOWN) {
                     callback.setDragStartX(event.getX());
+                } else if (action == MotionEvent.ACTION_UP) {
+                    callback.stopThrottling();
                 }
                 return false;
             }
@@ -114,8 +121,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         void onDragOut(RecyclerView.ViewHolder viewHolder, float dX, float dY);
     }
 
-    private @Nullable OnDragOutListener mOnDragOutListener;
-
     /** Sets the listener for outward drag events. */
     public void setOnDragOutListener(OnDragOutListener listener) {
         mOnDragOutListener = listener;
@@ -125,10 +130,15 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
      * @param context The Android context.
      * @param model The {@link TabListModel} for the tab list.
      * @param currentTabModelSupplier Supplier for the current {@link TabModel}.
+     * @param undoBarThrottle Throttle to pause undo snackbars during active drag operations.
      */
     public VerticalTabListItemTouchHelperCallback(
-            Context context, TabListModel model, Supplier<TabModel> currentTabModelSupplier) {
+            Context context,
+            TabListModel model,
+            Supplier<TabModel> currentTabModelSupplier,
+            @Nullable UndoBarThrottle undoBarThrottle) {
         super(context, model, currentTabModelSupplier);
+        mUndoBarThrottle = undoBarThrottle;
         int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop() / 4;
         mMouseDragThresholdSquared = touchSlop * touchSlop;
     }
@@ -543,6 +553,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            // Pause undo snackbars while dragging.
+            startThrottling();
             mDragResult = DragDropResult.ABORTED_NO_CHANGE;
             mSelectedViewHolder = viewHolder;
             mSelectedGroupTabIds.clear();
@@ -580,6 +592,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 selectTab(viewHolder);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
+            stopThrottling();
             mSelectedViewHolder = null;
             if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
                 mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
@@ -781,6 +794,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+        if (viewHolder == mSelectedViewHolder || mSelectedViewHolder == null) {
+            stopThrottling();
+        }
         for (RecyclerView.ViewHolder childViewHolder : mDraggedChildViewHolders) {
             childViewHolder.setIsRecyclable(true);
             recyclerView.getOverlay().remove(childViewHolder.itemView);
@@ -1137,6 +1153,26 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 return false;
             }
         };
+    }
+
+    /**
+     * Starts throttling undo group snackbars if a throttle is configured and not already
+     * throttling.
+     */
+    private void startThrottling() {
+        if (mUndoBarThrottle != null && mUndoBarThrottleToken == TokenHolder.INVALID_TOKEN) {
+            mUndoBarThrottleToken = mUndoBarThrottle.startThrottling();
+        }
+    }
+
+    /**
+     * Stops throttling undo group snackbars and resets the throttle token if throttling is active.
+     */
+    private void stopThrottling() {
+        if (mUndoBarThrottle != null && mUndoBarThrottleToken != TokenHolder.INVALID_TOKEN) {
+            mUndoBarThrottle.stopThrottling(mUndoBarThrottleToken);
+            mUndoBarThrottleToken = TokenHolder.INVALID_TOKEN;
+        }
     }
 
     /** Sets the tab grid item long press orchestrator for testing. */

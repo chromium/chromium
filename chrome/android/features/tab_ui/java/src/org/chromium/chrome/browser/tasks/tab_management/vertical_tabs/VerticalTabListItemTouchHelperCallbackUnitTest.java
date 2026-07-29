@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -72,6 +73,8 @@ import java.util.function.Supplier;
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })
 public class VerticalTabListItemTouchHelperCallbackUnitTest {
+    private static final int THROTTLE_TOKEN = 123;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Supplier<TabModel> mCurrentTabModelSupplier;
@@ -88,6 +91,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Mock private TabGridItemLongPressOrchestrator mOrchestrator;
     @Mock private VerticalTabListItemTouchHelperCallback.OnDragOutListener mOnDragOutListener;
+    @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private Canvas mCanvas;
     @Mock private View mItemView;
     @Mock private View mTargetItemView;
@@ -148,7 +152,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         mCallback =
                 new VerticalTabListItemTouchHelperCallback(
-                        context, mModel, mCurrentTabModelSupplier);
+                        context, mModel, mCurrentTabModelSupplier, mUndoBarThrottle);
         mCallback.setRecyclerView(mRecyclerView);
     }
 
@@ -461,6 +465,66 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 mPropertyModel.get(TabListModel.CardProperties.CARD_ANIMATION_STATUS));
         assertEquals(0.8f, mPropertyModel.get(TabListModel.CardProperties.CARD_ALPHA), 0.01f);
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnSelectedChanged_StartsUndoBarThrottling() {
+        when(mUndoBarThrottle.startThrottling()).thenReturn(THROTTLE_TOKEN);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        verify(mUndoBarThrottle).startThrottling();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnInterceptTouchEvent_ActionUp_StopsUndoBarThrottling() {
+        when(mUndoBarThrottle.startThrottling()).thenReturn(THROTTLE_TOKEN);
+
+        // Start drag to acquire token.
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        // Simulate touch up to release token.
+        RecyclerView.OnItemTouchListener listener =
+                VerticalTabListItemTouchHelperCallback.createBeforeOnItemTouchListener(mCallback);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0);
+        listener.onInterceptTouchEvent(mRecyclerView, event);
+
+        verify(mUndoBarThrottle).stopThrottling(THROTTLE_TOKEN);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnInterceptTouchEvent_ActionUpWhenNotThrottled_NeverCallsStopThrottling() {
+        RecyclerView.OnItemTouchListener listener =
+                VerticalTabListItemTouchHelperCallback.createBeforeOnItemTouchListener(mCallback);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0);
+        listener.onInterceptTouchEvent(mRecyclerView, event);
+
+        verify(mUndoBarThrottle, never()).stopThrottling(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testClearView_StopsUndoBarThrottling() {
+        when(mUndoBarThrottle.startThrottling()).thenReturn(THROTTLE_TOKEN);
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        verify(mUndoBarThrottle).stopThrottling(THROTTLE_TOKEN);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnSelectedChanged_Idle_StopsUndoBarThrottling() {
+        when(mUndoBarThrottle.startThrottling()).thenReturn(THROTTLE_TOKEN);
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        mCallback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mUndoBarThrottle).stopThrottling(THROTTLE_TOKEN);
     }
 
     @Test

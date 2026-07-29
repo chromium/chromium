@@ -24,21 +24,27 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.UndoGroupMetadata;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.Locale;
 
 /**
- * A controller that listens to {@link TabGroupObserver#showUndoGroupSnackbar} and shows a undo
- * snackbar.
+ * A controller that listens to {@link TabGroupObserver#showUndoGroupSnackbar} and shows an undo
+ * snackbar. Also implements {@link UndoBarThrottle} to delay snackbar display during active UI
+ * operations (e.g., drag-and-drop).
  */
 @NullMarked
-public class UndoGroupSnackbarController implements SnackbarManager.SnackbarController {
+public class UndoGroupSnackbarController
+        implements SnackbarManager.SnackbarController, UndoBarThrottle {
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
     private final SnackbarManager mSnackbarManager;
     private final TabGroupObserver mTabGroupObserver;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
+    private final TokenHolder mThrottle = new TokenHolder(this::maybeShowUndoGroupSnackbar);
+    private @Nullable UndoGroupMetadata mPendingUndoGroupMetadata;
 
     /**
      * @param context The current Android context.
@@ -63,7 +69,15 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
 
                     @Override
                     public void showUndoGroupSnackbar(UndoGroupMetadata undoGroupMetadata) {
-                        showUndoGroupSnackbarInternal(undoGroupMetadata);
+                        if (mThrottle.hasTokens()) {
+                            // Only the most recent undo group snackbar should be preserved while
+                            // throttled. Expire any existing pending operation so we do not leak
+                            // detached tab groups in the TabModel.
+                            expirePendingUndoGroupMetadata();
+                            mPendingUndoGroupMetadata = undoGroupMetadata;
+                        } else {
+                            showUndoGroupSnackbarInternal(undoGroupMetadata);
+                        }
                     }
                 };
 
@@ -106,6 +120,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
      * TabModel}.
      */
     public void destroy() {
+        expirePendingUndoGroupMetadata();
         if (mTabModelSelector != null) {
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             getTabModel(/* isIncognito= */ false).removeTabGroupObserver(mTabGroupObserver);
@@ -114,8 +129,54 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mTabModelSelectorTabModelObserver.destroy();
     }
 
+    // Implement UndoBarThrottle interface.
+
+    @Override
+    public int startThrottling() {
+        return mThrottle.acquireToken();
+    }
+
+    @Override
+    public void stopThrottling(int token) {
+        mThrottle.releaseToken(token);
+    }
+
+    // Implement SnackbarManager.SnackbarController interface.
+
+    @Override
+    public void onAction(@Nullable Object actionData) {
+        assumeNonNull(actionData);
+        UndoGroupMetadata undoGroupMetadata = (UndoGroupMetadata) actionData;
+        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
+        tabModel.performUndoGroupOperation(undoGroupMetadata);
+    }
+
+    @Override
+    public void onDismissNoAction(@Nullable Object actionData) {
+        assumeNonNull(actionData);
+        UndoGroupMetadata undoGroupMetadata = (UndoGroupMetadata) actionData;
+        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
+        tabModel.undoGroupOperationExpired(undoGroupMetadata);
+    }
+
+    private void maybeShowUndoGroupSnackbar() {
+        if (mPendingUndoGroupMetadata != null) {
+            showUndoGroupSnackbarInternal(mPendingUndoGroupMetadata);
+            mPendingUndoGroupMetadata = null;
+        }
+    }
+
     private void dismissSnackbars() {
+        expirePendingUndoGroupMetadata();
         mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
+    }
+
+    private void expirePendingUndoGroupMetadata() {
+        if (mPendingUndoGroupMetadata != null) {
+            TabModel tabModel = getTabModel(mPendingUndoGroupMetadata.isIncognito());
+            tabModel.undoGroupOperationExpired(mPendingUndoGroupMetadata);
+            mPendingUndoGroupMetadata = null;
+        }
     }
 
     private void showUndoGroupSnackbarInternal(UndoGroupMetadata undoGroupMetadata) {
@@ -137,22 +198,6 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                                 Snackbar.UMA_TAB_GROUP_MANUAL_CREATION_UNDO)
                         .setTemplateText(templateText)
                         .setAction(mContext.getString(R.string.undo), undoGroupMetadata));
-    }
-
-    @Override
-    public void onAction(@Nullable Object actionData) {
-        assumeNonNull(actionData);
-        UndoGroupMetadata undoGroupMetadata = (UndoGroupMetadata) actionData;
-        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
-        tabModel.performUndoGroupOperation(undoGroupMetadata);
-    }
-
-    @Override
-    public void onDismissNoAction(@Nullable Object actionData) {
-        assumeNonNull(actionData);
-        UndoGroupMetadata undoGroupMetadata = (UndoGroupMetadata) actionData;
-        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
-        tabModel.undoGroupOperationExpired(undoGroupMetadata);
     }
 
     private TabModel getTabModel(boolean isIncognito) {

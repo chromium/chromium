@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -172,6 +173,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private TabSwitcherDragHandler mMainTabSwitcherDragHandler;
     @Mock private TabSwitcherDragHandler mPinnedTabSwitcherDragHandler;
+    @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private RailCollapseListener mMockRailCollapseListener;
     @Mock private ViewStub mTabHoverCardViewStub;
@@ -989,7 +991,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         widthSupplier,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mTabHoverCardViewStub,
-                        mTabContentManagerSupplier);
+                        mTabContentManagerSupplier,
+                        mUndoBarThrottle);
 
         View containerView = mCoordinator.getView();
         containerView.setVisibility(View.VISIBLE);
@@ -1486,7 +1489,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mVerticalTabsWidthSupplier,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mTabHoverCardViewStub,
-                        mTabContentManagerSupplier);
+                        mTabContentManagerSupplier,
+                        mUndoBarThrottle);
     }
 
     /** Helper method to create a basic mock {@link Tab} with initialized state and URL. */
