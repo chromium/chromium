@@ -359,6 +359,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
     void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                  const std::u16string& copied_text) override;
     void OnPaste() override;
+    void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
    private:
     const base::raw_ref<ChromeAutofillClient> client_;

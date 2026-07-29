@@ -278,6 +278,14 @@ void TestRenderFrameHost::SimulateUserActivation() {
       blink::mojom::UserActivationNotificationType::kTest);
 }
 
+void TestRenderFrameHost::SimulateFocusedElementChanged(
+    bool is_editable_element,
+    bool is_richly_editable_element) {
+  FocusedElementChanged(is_editable_element, is_richly_editable_element,
+                        gfx::Rect(), blink::mojom::FocusType::kNone,
+                        blink::DOMNodeIdType());
+}
+
 const std::vector<std::string>& TestRenderFrameHost::GetConsoleMessages() {
   return console_messages_;
 }

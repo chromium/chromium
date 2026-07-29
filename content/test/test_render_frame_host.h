@@ -110,6 +110,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SimulateBeforeUnloadCompleted(bool proceed) override;
   void SimulateUnloadACK() override;
   void SimulateUserActivation() override;
+  void SimulateFocusedElementChanged(bool is_editable_element,
+                                     bool is_richly_editable_element) override;
   const std::vector<std::string>& GetConsoleMessages() override;
   void ClearConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;

@@ -135,6 +135,11 @@ class RenderFrameHostTester {
   // Simulates the frame receiving a user activation.
   virtual void SimulateUserActivation() = 0;
 
+  // Simulates a change of the focused element and its editability state.
+  virtual void SimulateFocusedElementChanged(
+      bool is_editable_element,
+      bool is_richly_editable_element) = 0;
+
   // Gets all the console messages requested via
   // RenderFrameHost::AddMessageToConsole in this frame.
   virtual const std::vector<std::string>& GetConsoleMessages() = 0;

@@ -70,6 +70,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -1039,6 +1041,122 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
   client()->at_memory_copy_paste_observer().OnTextCopiedToClipboard(
       web_contents()->GetPrimaryMainFrame(), u"some text");
   secondary_client->at_memory_copy_paste_observer().OnPaste();
+}
+
+// Tests that `AtMemoryCopyPasteObserver` detects hotkey paste events via
+// `DidGetUserInteraction` and triggers the promo when an editable element is
+// focused.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AtMemoryCopyPasteObserver_HotkeyPasteDidGetUserInteraction) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  std::unique_ptr<content::WebContents> secondary_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TestChromeAutofillClient* secondary_client =
+      client(secondary_web_contents.get());
+  ASSERT_TRUE(secondary_client);
+
+  TabAndWindowMocks secondary_mocks;
+  SetUpMockTabAndWindow(secondary_web_contents.get(), profile(),
+                        secondary_mocks);
+
+  MockBrowserUserEducationInterface secondary_mock_user_education(
+      &secondary_mocks.mock_window);
+
+  EXPECT_CALL(secondary_mock_user_education,
+              MaybeShowFeaturePromo(testing::Truly(
+                  [](const user_education::FeaturePromoParams& params) {
+                    return &*params.feature ==
+                           &feature_engagement::kIPHAutofillAtMemoryFeature;
+                  })))
+      .WillOnce(Return(true));
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), sessions::SessionTabHelper::DelegateLookup());
+  sessions::SessionTabHelper::CreateForWebContents(
+      secondary_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+
+  // Copy on the first tab.
+  client()->at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+      web_contents()->GetPrimaryMainFrame(), u"some text");
+
+  // Simulate Ctrl+V / Cmd+V via `DidGetUserInteraction` on the second tab.
+#if BUILDFLAG(IS_MAC)
+  constexpr int modifiers = blink::WebInputEvent::kMetaKey;
+#else
+  constexpr int modifiers = blink::WebInputEvent::kControlKey;
+#endif
+  blink::WebKeyboardEvent paste_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                      modifiers, base::TimeTicks::Now());
+  paste_event.windows_key_code = ui::VKEY_V;
+
+  // Focus an editable element in the second tab.
+  content::FocusWebContentsOnFrame(
+      secondary_web_contents.get(),
+      secondary_web_contents->GetPrimaryMainFrame());
+  content::RenderFrameHostTester::For(
+      secondary_web_contents->GetPrimaryMainFrame())
+      ->SimulateFocusedElementChanged(/*is_editable_element=*/true,
+                                      /*is_richly_editable_element=*/false);
+
+  secondary_client->at_memory_copy_paste_observer().DidGetUserInteraction(
+      paste_event);
+}
+
+// Tests that `AtMemoryCopyPasteObserver` does not trigger the promo when a
+// hotkey paste occurs and no editable element is focused.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AtMemoryCopyPasteObserver_HotkeyPasteDidGetUserInteraction_NotEditable) {
+  base::test::ScopedFeatureList feature_list(features::kAutofillAtMemory);
+  InitializePersonalContextEligibilityService();
+  EXPECT_CALL(*personal_context_eligibility_service(), GetEligibilityState())
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+
+  std::unique_ptr<content::WebContents> secondary_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  TestChromeAutofillClient* secondary_client =
+      client(secondary_web_contents.get());
+  ASSERT_TRUE(secondary_client);
+
+  TabAndWindowMocks secondary_mocks;
+  SetUpMockTabAndWindow(secondary_web_contents.get(), profile(),
+                        secondary_mocks);
+
+  MockBrowserUserEducationInterface secondary_mock_user_education(
+      &secondary_mocks.mock_window);
+
+  EXPECT_CALL(secondary_mock_user_education, MaybeShowFeaturePromo).Times(0);
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), sessions::SessionTabHelper::DelegateLookup());
+  sessions::SessionTabHelper::CreateForWebContents(
+      secondary_web_contents.get(),
+      sessions::SessionTabHelper::DelegateLookup());
+
+  // Copy on the first tab.
+  client()->at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+      web_contents()->GetPrimaryMainFrame(), u"some text");
+
+  // Simulate Ctrl+V / Cmd+V via `DidGetUserInteraction` on the second tab.
+#if BUILDFLAG(IS_MAC)
+  constexpr int modifiers = blink::WebInputEvent::kMetaKey;
+#else
+  constexpr int modifiers = blink::WebInputEvent::kControlKey;
+#endif
+  blink::WebKeyboardEvent paste_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                      modifiers, base::TimeTicks::Now());
+  paste_event.windows_key_code = ui::VKEY_V;
+
+  // No content editable is focused by default.
+
+  secondary_client->at_memory_copy_paste_observer().DidGetUserInteraction(
+      paste_event);
 }
 
 #endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
