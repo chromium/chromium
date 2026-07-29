@@ -414,6 +414,53 @@ TEST_F(AnchorElementInteractionTest, ShorterThanEagerMouseHover) {
   EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
 }
 
+class AnchorElementInteractionRendererSideHeuristicsTest
+    : public AnchorElementInteractionTest {
+ public:
+  AnchorElementInteractionRendererSideHeuristicsTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSpeculationRulesRendererSideHeuristics},
+        {features::kPreloadingEagerHoverHeuristics});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AnchorElementInteractionRendererSideHeuristicsTest,
+       ModerateHoverStillNotifiesBrowser) {
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href='https://anchor1.example/'>
+      <div style='padding: 0px; width: 400px; height: 400px;'></div>
+    </a>
+  )HTML");
+
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  GetDocument().GetAnchorElementInteractionTracker()->SetTaskRunnerForTesting(
+      task_runner, task_runner->GetMockTickClock());
+
+  gfx::PointF coordinates(100, 100);
+  WebMouseEvent event(WebInputEvent::Type::kMouseMove, coordinates, coordinates,
+                      WebPointerProperties::Button::kNoButton, 0,
+                      WebInputEvent::kNoModifiers,
+                      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+  task_runner->AdvanceTimeAndRun(GetLongerThanModerateHoverDwellTime());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return hosts_.size() == 1u && hosts_[0]->calls_.size() == 1u; }));
+
+  ASSERT_EQ(hosts_.size(), 1u);
+  ASSERT_EQ(hosts_[0]->calls_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->calls_[0].url, KURL("https://anchor1.example/"));
+  EXPECT_EQ(hosts_[0]->calls_[0].type, PointerEventType::kOnPointerHover);
+  EXPECT_FALSE(hosts_[0]->calls_[0].is_eager.value());
+}
+
 class AnchorElementInteractionEagerHeuristicsTest
     : public base::test::WithFeatureOverride,
       public AnchorElementInteractionTest {

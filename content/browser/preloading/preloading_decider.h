@@ -88,13 +88,12 @@ class CONTENT_EXPORT PreloadingDecider
   // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
   //
   // Executes a single candidate that the renderer's link-selection
-  // heuristics have already selected. Unlike the OnPointerDown/OnPointerHover
-  // path, this does NOT consult `on_standby_candidates_` or perform
-  // heuristic->eagerness mapping: the renderer owns that decision. This
-  // method only applies browser-side eligibility/holdback/resource limits
-  // and hands the candidate to the Prefetcher/Prerenderer.
+  // `heuristic` has already selected. The browser uses the heuristic to merge
+  // tags from the corresponding standby candidates and attribute the resulting
+  // prediction, but the renderer owns the enactment decision.
   void EnactRendererSelectedCandidate(
-      blink::mojom::SpeculationCandidatePtr candidate);
+      blink::mojom::SpeculationCandidatePtr candidate,
+      blink::mojom::SpeculationHeuristic heuristic);
 
   // Returns true if the |url|, |action| pair is in the on-standby list.
   bool IsOnStandByForTesting(const GURL& url,

@@ -35,17 +35,23 @@ interface SpeculationHost {
 
   // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
   //
-  // The renderer's link-selection heuristics (pointerdown/hover/viewport)
-  // selected `candidate` for enactment and asks the browser to execute it
-  // now. Unlike UpdateSpeculationCandidates (which pushes the full proposed
-  // set and lets the browser decide when non-immediate candidates fire),
-  // this is a targeted request for a single candidate the renderer has
-  // already decided to enact. The browser still applies eligibility,
-  // holdback, and resource limits, and may decline.
+  // The renderer's link-selection `heuristic` selected `candidate` for
+  // enactment and asks the browser to execute it now. Unlike
+  // UpdateSpeculationCandidates (which pushes the full proposed set and lets
+  // the browser decide when non-immediate candidates fire), this is a targeted
+  // request for a single candidate the renderer has already decided to enact.
+  // The browser still applies eligibility, holdback, and resource limits, and
+  // may decline.
   //
   // `candidate` must be one of the candidates previously sent via
   // UpdateSpeculationCandidates (validated the same way).
-  EnactCandidate(SpeculationCandidate candidate);
+  EnactCandidate(SpeculationCandidate candidate, SpeculationHeuristic heuristic);
+};
+
+// The renderer-side heuristic that selected a candidate for enactment.
+enum SpeculationHeuristic {
+  kPointerDown,
+  kPointerHover,
 };
 
 // The action that is proposed. The actions can be executed in a pipeline-like

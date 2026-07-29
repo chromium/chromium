@@ -85,14 +85,9 @@ class CORE_EXPORT DocumentSpeculationRules
   }
 
   // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
-  //
-  // Called when the pointerdown link-selection heuristic fires for `url`
-  // (from AnchorElementInteractionTracker). Selects the matching
-  // non-immediate candidate(s) previously sent to the browser and asks the
-  // browser to enact them via SpeculationHost::EnactCandidate. No-op unless
-  // the feature is enabled. Immediate-eagerness candidates are excluded (they
-  // are enacted at rule-parse time via UpdateSpeculationCandidates).
   void OnPointerDownHeuristic(const KURL& url);
+  void OnHoverHeuristic(const KURL& url,
+                        mojom::blink::SpeculationEagerness triggered_eagerness);
 
   // Requests a future call to UpdateSpeculationCandidates, if none is yet
   // scheduled.
@@ -106,6 +101,14 @@ class CORE_EXPORT DocumentSpeculationRules
   // Retrieves a valid proxy to the speculation host in the browser.
   // May be null if the execution context does not exist.
   mojom::blink::SpeculationHost* GetHost();
+
+  // Shared implementation for the renderer-driven heuristics above: asks the
+  // browser to enact every sent candidate whose URL equals `url` and whose
+  // eagerness is in `eagernesses`.
+  void EnactMatchingCandidates(
+      const KURL& url,
+      const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
+      mojom::blink::SpeculationHeuristic heuristic);
 
   // Executes in a microtask after QueueUpdateSpeculationCandidates.
   void UpdateSpeculationCandidatesMicrotask();

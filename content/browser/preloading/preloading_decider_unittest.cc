@@ -282,6 +282,89 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
   }
 }
 
+TEST_F(PreloadingDeciderTest, RendererSelectedCandidateMergesTagsForHeuristic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSpeculationRulesRendererSideHeuristics);
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+
+  const GURL hover_url = GetSameOriginUrl("/hover.html");
+  const GURL pointer_down_url = GetSameOriginUrl("/pointer-down.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  auto add_candidates = [&](const GURL& url) {
+    auto conservative =
+        MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                      blink::mojom::SpeculationEagerness::kConservative);
+    conservative->tags = {"conservative"};
+    candidates.push_back(std::move(conservative));
+
+    auto moderate =
+        MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                      blink::mojom::SpeculationEagerness::kModerate);
+    moderate->tags = {"moderate"};
+    auto enacted_candidate = moderate.Clone();
+    candidates.push_back(std::move(moderate));
+    return enacted_candidate;
+  };
+  auto hover_candidate = add_candidates(hover_url);
+  auto pointer_down_candidate = add_candidates(pointer_down_url);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  preloading_decider->EnactRendererSelectedCandidate(
+      std::move(hover_candidate),
+      blink::mojom::SpeculationHeuristic::kPointerHover);
+  preloading_decider->EnactRendererSelectedCandidate(
+      std::move(pointer_down_candidate),
+      blink::mojom::SpeculationHeuristic::kPointerDown);
+
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+  ASSERT_EQ(prefetches.size(), 2u);
+  ASSERT_TRUE(prefetches[0]->request().speculation_rules_tags());
+  EXPECT_EQ(prefetches[0]
+                ->request()
+                .speculation_rules_tags()
+                ->ConvertStringToHeaderString(),
+            "\"moderate\"");
+  ASSERT_TRUE(prefetches[1]->request().speculation_rules_tags());
+  EXPECT_EQ(prefetches[1]
+                ->request()
+                .speculation_rules_tags()
+                ->ConvertStringToHeaderString(),
+            "\"conservative\", \"moderate\"");
+}
+
+TEST_F(PreloadingDeciderTest, RendererSideHoverDoesNotEnactCandidateInBrowser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSpeculationRulesRendererSideHeuristics);
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+
+  const GURL url = GetCrossOriginUrl("/candidate.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrefetch,
+                    blink::mojom::SpeculationEagerness::kModerate));
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      url, blink::mojom::SpeculationAction::kPrefetch));
+
+  preloading_decider->OnPointerHover(
+      url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
+      blink::mojom::SpeculationEagerness::kModerate);
+
+  EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      url, blink::mojom::SpeculationAction::kPrefetch));
+}
+
 class PreloadingDeciderPointerEventHeuristicsTest
     : public PreloadingDeciderTest,
       public ::testing::WithParamInterface<

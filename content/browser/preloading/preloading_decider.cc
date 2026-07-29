@@ -68,6 +68,30 @@ bool PredictionOccursInOtherWebContents(
              blink::mojom::SpeculationTargetHint::kBlank;
 }
 
+PreloadingPredictor PredictorForRendererHeuristic(
+    blink::mojom::SpeculationHeuristic heuristic) {
+  switch (heuristic) {
+    case blink::mojom::SpeculationHeuristic::kPointerDown:
+      return preloading_predictor::kUrlPointerDownOnAnchor;
+    case blink::mojom::SpeculationHeuristic::kPointerHover:
+      return preloading_predictor::kUrlPointerHoverOnAnchor;
+  }
+  NOTREACHED();
+}
+
+PreloadingDecider::EagernessSet HoverEagernessToExclude(
+    blink::mojom::SpeculationEagerness target_eagerness) {
+  PreloadingDecider::EagernessSet eagerness_to_exclude;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPreloadingEagerHoverHeuristics)) {
+    // In practice, this excludes "moderate" eagerness for candidates triggered
+    // by "eager" hover events.
+    eagerness_to_exclude = PreloadingDecider::EagernessSet::All();
+    eagerness_to_exclude.Remove(target_eagerness);
+  }
+  return eagerness_to_exclude;
+}
+
 }  // namespace
 
 class PreloadingDecider::BehaviorConfig {
@@ -316,16 +340,18 @@ void PreloadingDecider::OnPointerHover(
       /*max_score=*/500,
       /*buckets=*/100);
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculationRulesRendererSideHeuristics)) {
+    // The renderer owns candidate enactment. The browser still receives hover
+    // notifications for metrics and for the generic warmups performed by
+    // AnchorElementInteractionHostImpl.
+    return;
+  }
+
   // Preconnecting on hover events should not be done if the link is not safe
   // to prefetch or prerender.
   constexpr bool fallback_to_preconnect = false;
-  // Filter `kModerate` for the "eager" mouse hover to prevent false preloading.
-  EagernessSet eagerness_to_exclude;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHoverHeuristics)) {
-    eagerness_to_exclude = EagernessSet::All();
-    eagerness_to_exclude.Remove(target_eagerness);
-  }
+  EagernessSet eagerness_to_exclude = HoverEagernessToExclude(target_eagerness);
   MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
                       PreloadingConfidence{100}, fallback_to_preconnect,
                       eagerness_to_exclude);
@@ -614,18 +640,23 @@ void PreloadingDecider::OnLCPPredicted() {
 }
 
 void PreloadingDecider::EnactRendererSelectedCandidate(
-    blink::mojom::SpeculationCandidatePtr candidate) {
+    blink::mojom::SpeculationCandidatePtr candidate,
+    blink::mojom::SpeculationHeuristic heuristic) {
   // SpeculationHostImpl::EnactCandidate rejects the message when the feature is
   // disabled, so reaching here never happens.
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kSpeculationRulesRendererSideHeuristics));
 
-  // TODO(crbug.com/532860179): Plumb the actual enacting predictor from the
-  // renderer. For now only pointerdown is routed here, so attribute enactment
-  // to it.
   const PreloadingPredictor enacting_predictor =
-      preloading_predictor::kUrlPointerDownOnAnchor;
+      PredictorForRendererHeuristic(heuristic);
   const PreloadingConfidence confidence{100};
+  EagernessSet eagerness_to_exclude;
+  if (heuristic == blink::mojom::SpeculationHeuristic::kPointerHover) {
+    CHECK(candidate->eagerness ==
+              blink::mojom::SpeculationEagerness::kModerate ||
+          candidate->eagerness == blink::mojom::SpeculationEagerness::kEager);
+    eagerness_to_exclude = HoverEagernessToExclude(candidate->eagerness);
+  }
 
   // Capture before `candidate` is moved below.
   const GURL url = candidate->url;
@@ -642,7 +673,7 @@ void PreloadingDecider::EnactRendererSelectedCandidate(
   // the browser-driven path (MaybePrefetch), so the enacted preload carries
   // all applicable Sec-Speculation-Tags rather than just this candidate's.
   candidate->tags = GetMergedSpeculationTagsFromSuitableCandidates(
-      key, enacting_predictor, confidence, /*eagerness_to_exclude=*/{});
+      key, enacting_predictor, confidence, eagerness_to_exclude);
 
   bool enacted = false;
   switch (candidate->action) {

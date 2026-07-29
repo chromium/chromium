@@ -129,7 +129,8 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 }
 
 void SpeculationHostImpl::EnactCandidate(
-    blink::mojom::SpeculationCandidatePtr candidate) {
+    blink::mojom::SpeculationCandidatePtr candidate,
+    blink::mojom::SpeculationHeuristic heuristic) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The renderer must only send EnactCandidate when renderer-side heuristics
   // are enabled; reject the message otherwise.
@@ -147,6 +148,20 @@ void SpeculationHostImpl::EnactCandidate(
     return;
   }
 
+  // A pointer-hover selection must target a "moderate" or "eager" candidate
+  // (matching PreloadingDecider::OnPointerHover). A compromised renderer must
+  // not be able to enact a candidate with a different eagerness via the hover
+  // heuristic.
+  if (heuristic == blink::mojom::SpeculationHeuristic::kPointerHover) {
+    const blink::mojom::SpeculationEagerness eagerness =
+        singleton.front()->eagerness;
+    if (eagerness != blink::mojom::SpeculationEagerness::kModerate &&
+        eagerness != blink::mojom::SpeculationEagerness::kEager) {
+      mojo::ReportBadMessage("SH_ENACT_CANDIDATE_INVALID_HOVER_EAGERNESS");
+      return;
+    }
+  }
+
   // Only handle messages from an active main frame.
   // TODO(crbug.com/489033320): Validate with ValidateFrameState().
   if (!render_frame_host().IsActive()) {
@@ -159,7 +174,7 @@ void SpeculationHostImpl::EnactCandidate(
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
   preloading_decider->EnactRendererSelectedCandidate(
-      std::move(singleton.front()));
+      std::move(singleton.front()), heuristic);
 }
 
 void SpeculationHostImpl::OnLCPPredicted() {

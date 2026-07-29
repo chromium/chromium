@@ -646,26 +646,54 @@ void DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
           features::kSpeculationRulesRendererSideHeuristics)) {
     return;
   }
+  // Mirrors PreloadingDecider::BehaviorConfig::pointer_down_eagerness_.
+  Vector<mojom::blink::SpeculationEagerness> eagernesses = {
+      mojom::blink::SpeculationEagerness::kConservative,
+      mojom::blink::SpeculationEagerness::kModerate};
+  if (base::FeatureList::IsEnabled(features::kPreloadingEagerHoverHeuristics)) {
+    eagernesses.push_back(mojom::blink::SpeculationEagerness::kEager);
+  }
+  EnactMatchingCandidates(url, eagernesses,
+                          mojom::blink::SpeculationHeuristic::kPointerDown);
+}
+
+void DocumentSpeculationRules::OnHoverHeuristic(
+    const KURL& url,
+    mojom::blink::SpeculationEagerness triggered_eagerness) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSpeculationRulesRendererSideHeuristics)) {
+    return;
+  }
+  // A hover that reaches the `triggered_eagerness` dwell threshold enacts only
+  // candidates registered at exactly that eagerness, matching
+  // PreloadingDecider::OnPointerHover (which excludes all other eagerness
+  // levels for a given hover event).
+  EnactMatchingCandidates(url, {triggered_eagerness},
+                          mojom::blink::SpeculationHeuristic::kPointerHover);
+}
+
+void DocumentSpeculationRules::EnactMatchingCandidates(
+    const KURL& url,
+    const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
+    mojom::blink::SpeculationHeuristic heuristic) {
   mojom::blink::SpeculationHost* host = GetHost();
   if (!host) {
     return;
   }
-  // Pointerdown is the highest-confidence pointer signal and may enact any
-  // non-immediate candidate for `url`. (Immediate-eagerness candidates were
-  // already enacted at rule-parse time via UpdateSpeculationCandidates.)
-  //
-  // TODO(crbug.com/532860179): Fold in the browser-side eagerness mapping
-  // (BehaviorConfig) so different predictors enact different eagerness sets,
-  // and add No-Vary-Search matching (currently exact-URL only).
+  // `immediate` candidates are enacted when candidates are updated, not via
+  // these interaction heuristics, so callers never pass `immediate` here.
+  CHECK(!eagernesses.Contains(mojom::blink::SpeculationEagerness::kImmediate));
+  // TODO(crbug.com/532860179): Add No-Vary-Search matching (currently
+  // exact-URL only), matching PreloadingDecider's NVS-hint standby logic.
   for (SpeculationCandidate* candidate : sent_candidates_) {
-    if (candidate->eagerness() ==
-        mojom::blink::SpeculationEagerness::kImmediate) {
-      continue;
-    }
     if (candidate->url() != url) {
       continue;
     }
-    host->EnactCandidate(candidate->ToMojom());
+    // Skip candidates not selected by this heuristic.
+    if (!eagernesses.Contains(candidate->eagerness())) {
+      continue;
+    }
+    host->EnactCandidate(candidate->ToMojom(), heuristic);
   }
 }
 

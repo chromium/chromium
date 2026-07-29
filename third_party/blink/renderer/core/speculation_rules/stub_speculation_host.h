@@ -44,8 +44,8 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
       Candidates candidates,
       bool enable_cross_origin_prerender_iframes) override;
   void OnLCPPredicted() override {}
-  void EnactCandidate(
-      mojom::blink::SpeculationCandidatePtr candidate) override {
+  void EnactCandidate(mojom::blink::SpeculationCandidatePtr candidate,
+                      mojom::blink::SpeculationHeuristic) override {
     enacted_candidates_.push_back(std::move(candidate));
   }
 
