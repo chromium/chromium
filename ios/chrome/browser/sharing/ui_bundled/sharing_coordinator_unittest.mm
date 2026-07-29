@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/components/enterprise/analysis/features.h"
-#import "ios/web/download/crw_web_view_download.h"
+#import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"

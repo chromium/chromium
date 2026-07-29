@@ -15,9 +15,3 @@ include_rules = [
   "+ios/components/enterprise/analysis/features.h",
   # keep-sorted end
 ]
-specific_include_rules = {
-  # TODO(crbug.com/532174813): Remove usage of //ios/web internals.
-  "^sharing_coordinator(_unittest)?\\.mm$" : [
-    "+ios/web/download/crw_web_view_download.h",
-  ]
-}
