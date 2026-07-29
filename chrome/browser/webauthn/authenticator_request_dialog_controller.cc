@@ -1000,7 +1000,12 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
 void AuthenticatorRequestDialogController::
     HideDialogAndDispatchToPlatformAuthenticator(
         std::optional<AuthenticatorType> type) {
+  base::WeakPtr<AuthenticatorRequestDialogController> weak_this =
+      weak_factory_.GetWeakPtr();
   SetCurrentStep(Step::kPlatformAuthenticator);
+  if (!weak_this) {
+    return;
+  }
 
   std::vector<AuthenticatorReference>& authenticators =
       ephemeral_state_.saved_authenticators_;
@@ -2341,7 +2346,12 @@ AuthenticatorRequestDialogController::GetRenderFrameHost() const {
 }
 
 void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
+  base::WeakPtr<AuthenticatorRequestDialogController> weak_this =
+      weak_factory_.GetWeakPtr();
   SetCurrentStep(Step::kPasskeyUpgrade);
+  if (!weak_this) {
+    return;
+  }
 
   if (!enclave_request_callback_) {
     RecordPasskeyUpgradeResultHistogram(PasskeyUpgradeResult::kGpmDisabled);
