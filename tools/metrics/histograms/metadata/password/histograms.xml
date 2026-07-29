@@ -3701,6 +3701,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.RemoteActorCredentialSharing.Result"
+    enum="RemoteActorCredentialSharingResult" expires_after="2026-10-28">
+  <owner>derinel@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the outcome of a Remote Actor Credential Sharing request. Recorded
+    when the flow finishes (either successfully or with a specific failure
+    reason).
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.RequestVerificationAsyncResult"
     enum="AuthenticationResultStatusWin" expires_after="2026-12-27">
   <owner>sygiet@google.com</owner>

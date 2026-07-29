@@ -1784,6 +1784,22 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="SAVING_ON_HTTP_AFTER_HTTPS"/>
 </enum>
 
+<!-- LINT.IfChange(RemoteActorCredentialSharingResult) -->
+
+<enum name="RemoteActorCredentialSharingResult">
+  <int value="0" label="Other error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="User identity or sync state invalid"/>
+  <int value="3" label="No sync or account storage"/>
+  <int value="4" label="No passwords found"/>
+  <int value="5" label="User cancelled dialog"/>
+  <int value="6" label="Authenticator failed"/>
+  <int value="7" label="Sharing service unavailable"/>
+  <int value="8" label="Sharing failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h:RemoteActorCredentialSharingResult) -->
+
 <enum name="ReusedPasswordType">
   <int value="0" label="Saved password"/>
   <int value="1" label="Primary account password"/>

@@ -32,6 +32,24 @@ class DeviceAuthenticator;
 
 namespace password_manager {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(RemoteActorCredentialSharingResult)
+enum class RemoteActorCredentialSharingResult {
+  kOtherError = 0,
+  kSuccess = 1,
+  kUserIdentityOrSyncStateInvalid = 2,
+  kNoSyncOrAccountStorage = 3,
+  kNoPasswordsFound = 4,
+  kUserCancelledDialog = 5,
+  kAuthenticatorFailed = 6,
+  kSharingServiceUnavailable = 7,
+  kSharingFailed = 8,
+  kMaxValue = kSharingFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:RemoteActorCredentialSharingResult)
+
 class RemoteActorSelectionDialogController;
 
 class RemoteActorCredentialSharingImpl

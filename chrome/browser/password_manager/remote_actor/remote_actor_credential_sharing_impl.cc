@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -60,6 +61,11 @@ std::unique_ptr<RemoteActorSelectionDialogController> CreateDefaultDialog(
 
 constexpr size_t kMaxArgumentLength = 256;
 constexpr base::TimeDelta kShareTimeToLive = base::Minutes(10);
+
+void LogResult(RemoteActorCredentialSharingResult result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.RemoteActorCredentialSharing.Result", result);
+}
 
 }  // namespace
 DOCUMENT_USER_DATA_KEY_IMPL(RemoteActorCredentialSharingImpl);
@@ -122,6 +128,8 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
 
   if (!VerifyUserIdentityAndSyncState(profile, gaia_id)) {
+    LogResult(
+        RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid);
     RespondWithError(std::move(callback));
     return;
   }
@@ -170,6 +178,7 @@ void RemoteActorCredentialSharingImpl::OnAllLoginsRetrieved() {
   }
 
   if (pending_request_->credentials.empty()) {
+    LogResult(RemoteActorCredentialSharingResult::kNoPasswordsFound);
     std::move(pending_request_->callback).Run(false);
     pending_request_.reset();
     return;
@@ -178,6 +187,7 @@ void RemoteActorCredentialSharingImpl::OnAllLoginsRetrieved() {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
+    LogResult(RemoteActorCredentialSharingResult::kOtherError);
     std::move(pending_request_->callback).Run(false);
     pending_request_.reset();
     return;
@@ -213,6 +223,7 @@ void RemoteActorCredentialSharingImpl::ProceedWithCredential(
   absl::Cleanup cleanup_request = [this] { pending_request_.reset(); };
 
   if (!auth_success) {
+    LogResult(RemoteActorCredentialSharingResult::kAuthenticatorFailed);
     RespondWithError(std::move(pending_request_->callback));
     return;
   }
@@ -222,6 +233,7 @@ void RemoteActorCredentialSharingImpl::ProceedWithCredential(
   RemoteActorCredentialSharingService* service =
       RemoteActorCredentialSharingServiceFactory::GetForProfile(profile);
   if (!service) {
+    LogResult(RemoteActorCredentialSharingResult::kSharingServiceUnavailable);
     RespondWithError(std::move(pending_request_->callback));
     return;
   }
@@ -350,6 +362,7 @@ void RemoteActorCredentialSharingImpl::QueryPasswordStores(
   }
 
   if (stores.empty()) {
+    LogResult(RemoteActorCredentialSharingResult::kNoSyncOrAccountStorage);
     RespondWithError(std::move(callback));
     return;
   }
@@ -380,6 +393,7 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
   }
 
   if (!selected_form) {
+    LogResult(RemoteActorCredentialSharingResult::kUserCancelledDialog);
     RespondWithError(std::move(pending_request_->callback));
     pending_request_.reset();
     return;
@@ -388,6 +402,7 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
+    LogResult(RemoteActorCredentialSharingResult::kOtherError);
     RespondWithError(std::move(pending_request_->callback));
     pending_request_.reset();
     return;
@@ -395,6 +410,7 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
 
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   if (!client) {
+    LogResult(RemoteActorCredentialSharingResult::kOtherError);
     RespondWithError(std::move(pending_request_->callback));
     pending_request_.reset();
     return;
@@ -428,6 +444,8 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
 void RemoteActorCredentialSharingImpl::OnShareCompleted(
     RequestAgentAuthenticationCallback callback,
     bool success) {
+  LogResult(success ? RemoteActorCredentialSharingResult::kSuccess
+                    : RemoteActorCredentialSharingResult::kSharingFailed);
   std::move(callback).Run(success);
 }
 
