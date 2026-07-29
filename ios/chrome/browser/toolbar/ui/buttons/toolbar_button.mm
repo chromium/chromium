@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/blue_dot_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
@@ -72,6 +73,9 @@ UIColor* NormalTintColor() {
       UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
     ]
                        withAction:@selector(updateAppearance)];
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(userInterfaceStyleDidChange)];
   }
   return self;
 }
@@ -142,6 +146,27 @@ UIColor* NormalTintColor() {
     _image = _imageLoader();
   }
   return _image;
+}
+
+- (void)setShadowAndBackgroundRemoved:(BOOL)shadowAndBackgroundRemoved {
+  if (_shadowAndBackgroundRemoved == shadowAndBackgroundRemoved) {
+    return;
+  }
+  _shadowAndBackgroundRemoved = shadowAndBackgroundRemoved;
+  BOOL isDarkMode =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  if (_shadowAndBackgroundRemoved) {
+    _backgroundView.backgroundColor =
+        IsGlassToolbarEnabled() ? UIColor.clearColor
+                                : ToolbarElementBackgroundColor(isDarkMode);
+    self.layer.shadowColor = nil;
+    self.layer.shadowOpacity = 0.0;
+    self.layer.shadowOffset = CGSizeZero;
+    self.layer.shadowRadius = 0;
+  } else {
+    _backgroundView.backgroundColor = ToolbarElementBackgroundColor(isDarkMode);
+    ConfigureShadowForToolbarElement(self);
+  }
 }
 
 - (void)setForceHidden:(BOOL)forceHidden {
@@ -258,6 +283,13 @@ UIColor* NormalTintColor() {
   ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
                                                  self.traitCollection);
   [self updateMask];
+}
+
+// Handles user interface style trait collection changes.
+- (void)userInterfaceStyleDidChange {
+  if (!_shadowAndBackgroundRemoved) {
+    ConfigureShadowForToolbarElement(self);
+  }
 }
 
 @end

@@ -93,15 +93,22 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   ConfigureShadowForToolbarElement(buttonsContainer);
 
   // Remove effects from the standalone buttons in the container
-  ConfigureShadowForToolbarElement(backButton, /*remove_shadow*/ YES);
-  ConfigureShadowForToolbarElement(forwardButton, /*remove_shadow*/ YES);
+  backButton.shadowAndBackgroundRemoved = YES;
+  forwardButton.shadowAndBackgroundRemoved = YES;
 
   [buttonsContainer
       registerForTraitChanges:
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
-                  withHandler:^(id<UITraitEnvironment>, UITraitCollection*) {
+                  withHandler:^(id<UITraitEnvironment> environment,
+                                UITraitCollection* previousTraitCollection) {
                     ConfigureCornerRadiusForToolbarButtonContainer(
                         backgroundView, buttonsContainer.traitCollection);
+                  }];
+  [buttonsContainer
+      registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                  withHandler:^(id<UITraitEnvironment> environment,
+                                UITraitCollection* previousTraitCollection) {
+                    ConfigureShadowForToolbarElement(buttonsContainer);
                   }];
   return buttonsContainer;
 }

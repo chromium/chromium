@@ -32,6 +32,9 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // When true, the button has a blue dot in the top right corner.
 @property(nonatomic, assign) BOOL hasBlueDot;
 
+// When true, shadow and background are removed from this button. Default NO.
+@property(nonatomic, assign) BOOL shadowAndBackgroundRemoved;
+
 // The string to be used for the accessibility label when the blue dot is
 // visible.
 @property(nonatomic, copy) NSString* blueDotAccessibilityLabel;

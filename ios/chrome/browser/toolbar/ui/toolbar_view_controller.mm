@@ -115,6 +115,9 @@ constexpr CGFloat kGlassShadowOffsetY = 7;
 // Shadow opacity for the glass effect container (9% Black).
 constexpr CGFloat kGlassShadowOpacity = 0.09;
 
+// Dark mode background opacity for the glass effect container (25% Black).
+constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
+
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate,
@@ -424,6 +427,9 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
       registerForTraitChanges:
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                    withAction:@selector(sizeClassDidChange)];
+
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(userInterfaceStyleDidChange)];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -1353,6 +1359,14 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
   if (@available(iOS 26, *)) {
     _glassBackgroundContainer = [[UIView alloc] init];
     _glassBackgroundContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    _glassBackgroundContainer.backgroundColor = [UIColor
+        colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
+          if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            return [UIColor colorWithWhite:0
+                                     alpha:kGlassContainerDarkBackgroundAlpha];
+          }
+          return [UIColor clearColor];
+        }];
 
     if (!@available(iOS 27, *)) {
       // The shadow (and thus the container) can be removed on iOS 27.
@@ -1856,6 +1870,13 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
     [self updateBannerConstraints];
     _bannerPromoBackgroundHeightConstraint.constant = [self
         bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
+  }
+}
+
+// Handles user interface style trait collection changes.
+- (void)userInterfaceStyleDidChange {
+  if (_locationBarBackground) {
+    ConfigureShadowForToolbarElement(_locationBarBackground);
   }
 }
 
