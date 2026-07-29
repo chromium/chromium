@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck);
 // forms.
 BASE_DECLARE_FEATURE(kRecordDiscardedFormsToModelQualityLogs);
 
+// Controls whether ChangePasswordFormWaiter rechecks cached password forms
+// exponentially.
+BASE_DECLARE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter);
+
 // Controls whether ChromePasswordChangeService::GetGeneralAvailability skips
 // the check for ShouldModelExecutionBeAllowedForUser.
 BASE_DECLARE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange);

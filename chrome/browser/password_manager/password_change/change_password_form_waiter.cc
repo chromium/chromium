@@ -167,6 +167,17 @@ ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
 void ChangePasswordFormWaiter::Init() {
   model_loaded_subscription_ = {};
   if (PasswordFormCache* cache = GetPasswordFormCache(client_)) {
+    cache->AddObserver(this);
+  }
+  RecheckForms();
+
+  if (!web_contents()->IsLoading()) {
+    DidStopLoading();
+  }
+}
+
+void ChangePasswordFormWaiter::RecheckForms() {
+  if (auto* cache = GetPasswordFormCache(client_)) {
     for (const auto& manager : cache->GetFormManagers()) {
       std::optional<DiscardReason> discard_reason =
           GetDiscardReason(manager.get());
@@ -192,10 +203,17 @@ void ChangePasswordFormWaiter::Init() {
                          &ChangePasswordFormWaiter::OnPasswordFormParsed,
                          weak_ptr_factory_.GetWeakPtr())));
     }
-    cache->AddObserver(this);
   }
-  if (!web_contents()->IsLoading()) {
-    DidStopLoading();
+
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kRecheckFormsExponentiallyInChangePasswordFormWaiter)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ChangePasswordFormWaiter::RecheckForms,
+                       weak_ptr_factory_.GetWeakPtr()),
+        forms_recheck_delay_);
+    forms_recheck_delay_ *= 2;
   }
 }
 

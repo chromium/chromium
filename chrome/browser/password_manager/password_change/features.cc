@@ -18,6 +18,9 @@ BASE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck,
 BASE_FEATURE(kRecordDiscardedFormsToModelQualityLogs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRecheckFormsExponentiallyInChangePasswordFormWaiter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

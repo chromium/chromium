@@ -991,3 +991,111 @@ TEST_F(ChangePasswordFormWaiterTest, DiscardedFormLogged) {
       optimization_guide::proto::
           PasswordChangeQuality_FormData_DiscardReason_USERNAME_FIELD_EMPTY_AND_FOCUSABLE);
 }
+
+TEST_F(ChangePasswordFormWaiterTest, RecheckFormsWithExponentialBackoff) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password confirmation:", /*name=*/"new_password_2",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(3));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
+      form_managers;
+  form_managers.push_back(CreateFormManager(form));
+
+  EXPECT_CALL(cache(), GetFormManagers)
+      .WillRepeatedly(testing::Return(base::span(form_managers)));
+
+  // On initial check at t=0s, form is not visible yet.
+  EXPECT_CALL(driver(),
+              CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(false));
+
+  EXPECT_CALL(completion_callback, Run).Times(0);
+
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .Build();
+
+  // Run tasks posted during Build() at t=0s.
+  task_environment()->FastForwardBy(base::Milliseconds(0));
+
+  // At t=0.5s (before 1st recheck at 1s), recheck has not fired yet.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // On second check (at t=1s), form becomes visible.
+  EXPECT_CALL(driver(),
+              CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_CALL(completion_callback, Run(form_managers.back().get()));
+
+  // Fast forward past 1s backoff interval to trigger recheck.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+}
+
+TEST_F(ChangePasswordFormWaiterTest, RecheckFormsExponentialBackoffTiming) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(1));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(2));
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Password confirmation:", /*name=*/"new_password_2",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.back().set_renderer_id(autofill::FieldRendererId(3));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
+      form_managers;
+  form_managers.push_back(CreateFormManager(form));
+
+  EXPECT_CALL(cache(), GetFormManagers)
+      .WillRepeatedly(testing::Return(base::span(form_managers)));
+
+  // Initial check at t=0s: returns false (next retry at t=1s).
+  // 1st retry at t=1s: returns false (next retry at t=3s = 1s + 2s).
+  // 2nd retry at t=3s: returns false (next retry at t=7s = 3s + 4s).
+  // 3rd retry at t=7s: returns true!
+  EXPECT_CALL(driver(),
+              CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(false))
+      .WillOnce(base::test::RunOnceCallback<1>(false))
+      .WillOnce(base::test::RunOnceCallback<1>(false))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .Build();
+
+  // Run initial posted tasks at t=0.
+  task_environment()->FastForwardBy(base::Milliseconds(0));
+
+  // t=5.0s (after 2nd retry at 3s, before 3rd retry at 7s): callback not run.
+  EXPECT_CALL(completion_callback, Run).Times(0);
+  task_environment()->FastForwardBy(base::Seconds(5));
+
+  // t=7.0s: 3rd retry fires, callback runs!
+  EXPECT_CALL(completion_callback, Run(form_managers.back().get()));
+  task_environment()->FastForwardBy(base::Seconds(2));
+}
