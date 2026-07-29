@@ -1161,4 +1161,48 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
       CheckOverlayBoundsMatchContents(0));
 }
 
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       CloseFloatingWindowClearsOverlay) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  TrackFloatingGlicInstance();
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Wayland unsupported"),
+      OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents,
+                             /*conversation_id=*/std::nullopt),
+      ClickMockGlicElement({"#pinFocusedTab"}),
+      ActivateSurface(kBrowserViewElementId),
+      WaitForJsResultAt(kGlicContentsElementId, {"body"},
+                        "el => window.client.getFocusedTabId() !== ''"),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
+                                                    "glic-selection-overlay"}),
+      ActivateSurface(kBrowserViewElementId), CloseGlicWindow(),
+      WaitForHide(OverlayBaseController::kOverlayId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       CloseSidePanelClearsOverlay) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
+                                                    "glic-selection-overlay"}),
+      ToggleGlicWindow(GlicWindowMode::kAttached),
+      InAnyContext(WaitForHide(kGlicHostElementId)),
+      WaitForHide(OverlayBaseController::kOverlayId));
+}
+
 }  // namespace glic

@@ -209,7 +209,7 @@ void GlicFloatingUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
 bool GlicFloatingUi::HasSelectionOverlay() {
   tabs::TabInterface* focused_tab =
       delegate_->host().GetSharingManagerInternal().GetFocusedTabData().focus();
-  if (!focused_tab || focused_tab->IsActivated()) {
+  if (!focused_tab || !focused_tab->IsActivated()) {
     return false;
   }
   auto* selection_overlay_controller =
@@ -222,7 +222,7 @@ bool GlicFloatingUi::HasSelectionOverlay() {
 void GlicFloatingUi::CloseSelectionOverlay() {
   tabs::TabInterface* focused_tab =
       delegate_->host().GetSharingManagerInternal().GetFocusedTabData().focus();
-  if (!focused_tab || focused_tab->IsActivated()) {
+  if (!focused_tab || !focused_tab->IsActivated()) {
     return;
   }
   auto* selection_overlay_controller =
