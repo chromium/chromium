@@ -13,6 +13,7 @@ per-file notifications_page_test.ts=lyf@chromium.org
 per-file people_page_*.ts=amelies@google.com
 per-file privacy_guide_*test*.ts=rainhard@chromium.org
 per-file privacy_page_test.ts=rainhard@chromium.org,sideyilmaz@chromium.org,tommasin@chromium.org
+per-file protected_content_page_test.ts=xhwang@chromium.org
 per-file site_details_*test*.ts=rainhard@chromium.org,sideyilmaz@chromium.org,fsenra@google.com
 per-file *site_settings_*.ts=rainhard@chromium.org,sideyilmaz@chromium.org,fsenra@google.com
 per-file test_privacy_page_browser_proxy.ts=rainhard@chromium.org,sideyilmaz@chromium.org

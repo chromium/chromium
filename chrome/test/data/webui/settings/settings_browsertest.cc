@@ -447,6 +447,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
   RunTest("settings/settings_pref_util_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, ProtectedContentPage) {
+  RunTest("settings/protected_content_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityPageFeatureRow) {
   RunTest("settings/security/security_page_feature_row_test.js", "mocha.run()");
 }

@@ -10,7 +10,7 @@
     search-term="{{searchTerm}}" route-path$="[[routePath]]">
 </if>
   <div class="radio-group">
-    <div class="secondary">
+    <div id="description" class="secondary">
       $i18n{siteSettingsProtectedContentDescription}
     </div>
     <h2>$i18n{siteSettingsDefaultBehavior}</h2>
@@ -21,6 +21,7 @@
         pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
         selectable-elements="settings-collapse-radio-button">
       <settings-collapse-radio-button no-collapse
+          id="allowedButton"
           pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
           label="$i18n{siteSettingsProtectedContentAllowed}"
 <if expr="is_win or is_macosx">
@@ -31,6 +32,7 @@
           icon="[[getSyncSavedLocallyIcon_()]]">
       </settings-collapse-radio-button>
       <settings-collapse-radio-button no-collapse
+          id="blockedButton"
           pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
           label="$i18n{siteSettingsProtectedContentBlocked}"
           sub-label="$i18n{siteSettingsProtectedContentBlockedSubLabel}"
