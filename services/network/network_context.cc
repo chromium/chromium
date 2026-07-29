@@ -1215,7 +1215,7 @@ void NetworkContext::GetRestrictedCookieManager(
           cookie_manager_->cookie_settings(), origin, isolation_info,
           cookie_setting_overrides, devtools_cookie_setting_overrides,
           std::move(cookie_observer), std::move(first_party_set_metadata),
-          network_service_->metrics_updater());
+          network_service_->GetMetricsUpdater());
 
   auto callback = base::BindOnce(&NetworkContext::OnRCMDisconnect,
                                  base::Unretained(this), ptr.get());

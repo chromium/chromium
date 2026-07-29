@@ -515,7 +515,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       std::make_unique<SCTAuditingCache>(kMaxSCTAuditingCacheEntries);
 #endif
 
-  metrics_updater_ = std::make_unique<RestrictedCookieManagerMetrics>();
 }
 
 NetworkService::~NetworkService() {
@@ -1309,6 +1308,14 @@ NetworkService::GetDefaultURLLoaderNetworkServiceObserver() {
     return default_url_loader_network_service_observer_.get();
   }
   return nullptr;
+}
+
+RestrictedCookieManager::UmaMetricsUpdater*
+NetworkService::GetMetricsUpdater() {
+  if (!metrics_updater_) {
+    metrics_updater_ = std::make_unique<RestrictedCookieManagerMetrics>();
+  }
+  return metrics_updater_.get();
 }
 
 void NetworkService::ResetMetricsUpdaterForTesting() {

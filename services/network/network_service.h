@@ -390,9 +390,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   mojom::URLLoaderNetworkServiceObserver*
   GetDefaultURLLoaderNetworkServiceObserver();
 
-  RestrictedCookieManager::UmaMetricsUpdater* metrics_updater() const {
-    return metrics_updater_.get();
-  }
+  RestrictedCookieManager::UmaMetricsUpdater* GetMetricsUpdater();
 
   // For tests to clear the metrics updater to avoid time out due to its poor
   // interaction with TaskEnvironment::FastForward*() methods with long delays.
