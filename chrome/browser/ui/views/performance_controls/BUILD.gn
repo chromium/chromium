@@ -29,28 +29,6 @@ source_set("performance_controls") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_support/discard_mock_navigation_handle.cc",
-    "test_support/discard_mock_navigation_handle.h",
-    "test_support/memory_saver_unit_test_mixin.h",
-  ]
-  public_deps = [
-    "//base",
-    "//chrome/browser/extensions",
-    "//chrome/browser/ui/actions:actions_headers",
-    "//chrome/browser/ui/performance_controls",
-    "//chrome/browser/ui/tabs:tabs_public",
-    "//chrome/browser/ui/views/frame:toolbar_button_provider",
-    "//chrome/browser/ui/views/location_bar:icon_label_bubble",
-    "//chrome/test:test_support",
-    "//content/test:test_support",
-  ]
-
-  deps = [ "//chrome/browser/ui/views/frame:test_with_browser_view" ]
-}
-
 source_set("impl") {
   sources = [
     "battery_saver_bubble_view.cc",
@@ -82,12 +60,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "battery_saver_button_unittest.cc",
-    "memory_saver_bubble_view_unittest.cc",
     "tab_list_view_unittest.cc",
   ]
   deps = [
     ":performance_controls",
-    ":test_support",
     "//base/test:test_support",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:test_support",
@@ -105,19 +81,33 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "memory_saver_exclusion_list_browsertest.cc" ]
+  sources = [
+    "memory_saver_bubble_view_browsertest.cc",
+    "memory_saver_exclusion_list_browsertest.cc",
+  ]
   deps = [
     ":performance_controls",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/performance_manager/public/user_tuning",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/resource_coordinator:utils",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/performance_controls/test_support",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/page_action",
+    "//chrome/browser/ui/views/page_action:page_action_test_support",
     "//chrome/test:test_support_ui",
+    "//components/performance_manager/test_support:test_support_common",
     "//content/test:test_support",
     "//net:test_support",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 
   if (!is_chromeos) {
@@ -128,7 +118,6 @@ source_set("browser_tests") {
       "//chrome/browser/user_education",
       "//chrome/test/user_education:impl",
       "//components/user_education/views",
-      "//ui/views:test_support",
     ]
   }
 }
