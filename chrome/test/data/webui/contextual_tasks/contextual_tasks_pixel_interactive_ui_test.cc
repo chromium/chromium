@@ -27,6 +27,7 @@
 // follow the pattern `ContextualTasks*PixelTest*`. If not, the test needs to
 // manually be added to `testing/buildbot/filters/pixel_tests.filter`.
 
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -44,6 +45,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "url/url_constants.h"
@@ -74,7 +76,9 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks,
           {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
-         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {contextual_tasks::kContextualTasksContextMenu, {}},
+         {contextual_tasks::kContextualTasksUseStratusDarkModeColors, {}}},
         {contextual_tasks::kContextualTasksAnimatedCaret});
     WebUIComposeBoxPixelTest::SetUp();
   }
@@ -93,6 +97,28 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
                   nullptr, nullptr);
           ON_CALL(*service, IsAimEligible())
               .WillByDefault(testing::Return(true));
+
+          static base::NoDestructor<omnibox::AimEligibilityResponse> response;
+          response->set_is_eligible(true);
+          response->set_is_fusebox_eligible(true);
+          response->set_is_cobrowse_eligible(true);
+          auto* config = response->mutable_searchbox_config();
+          auto* tool_config = config->add_tool_configs();
+          tool_config->set_tool(omnibox::TOOL_MODE_DEEP_SEARCH);
+          tool_config->mutable_rule()->set_allow_all_input_types(true);
+
+          auto* input_config1 = config->add_input_type_configs();
+          input_config1->set_input_type(omnibox::INPUT_TYPE_LENS_IMAGE);
+          auto* input_config2 = config->add_input_type_configs();
+          input_config2->set_input_type(omnibox::INPUT_TYPE_LENS_FILE);
+          auto* input_config3 = config->add_input_type_configs();
+          input_config3->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
+
+          ON_CALL(*service, GetMostRecentResponse())
+              .WillByDefault(testing::ReturnRef(*response));
+          ON_CALL(*service, GetSearchboxConfig())
+              .WillByDefault(
+                  testing::Return(response->mutable_searchbox_config()));
           return service;
         }));
 
@@ -201,9 +227,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ContextualTasksComposeBoxPixelTestParams>&
            info) { return info.param.ToString(); });
 
-// TODO(http://crbug.com/491973183): Fix and reenable.
-IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
-                       DISABLED_Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kApp = {"contextual-tasks-app"};
 
@@ -224,23 +248,63 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
       EnsurePresent(kActiveTab, kComposebox),
 
       ExecuteJsAt(kActiveTab, kApp,
-                  base::StringPrintf("(el) => { "
-                                     "  el.isAiPage_ = %s; "
-                                     "  el.requestUpdate(); "
-                                     "}",
-                                     GetParam().is_ai_page ? "true" : "false")),
+                  base::StringPrintf(
+                      R"((el) => {
+                el.isAiPage_ = %s;
+                el.isAimEligible_ = true;
+                el.isShownInTab_ = false;
+                el.isZeroState_ = true;
+                el.isInputHidden_ = false;
+                el.isComposeboxHidden_ = () => false;
+                el.useStratusDarkModeColors_ = true;
+                if (el.requestUpdate) el.requestUpdate();
+
+                const inputState = {
+                  allowedModels: [],
+                  allowedTools: [1],
+                  allowedInputTypes: [1, 2, 3],
+                  disabledModels: [],
+                  disabledTools: [],
+                  disabledInputTypes: [],
+                  activeModel: 0,
+                  activeTool: 0,
+                  toolConfigs: [],
+                  modelConfigs: [],
+                  inputTypeConfigs: [],
+                  hintText: '',
+                  maxInputsByType: {},
+                  maxTotalInputs: 10,
+                  isCanvasQuerySubmitted: false,
+                };
+
+                const composebox = el.shadowRoot ? el.shadowRoot.querySelector('contextual-tasks-composebox') : null;
+                if (composebox) {
+                  composebox.inputState_ = inputState;
+                  composebox.removeAttribute('hidden');
+                  composebox.style.cssText += '; display: flex !important; opacity: 1 !important; visibility: visible !important;';
+                  if (composebox.requestUpdate) composebox.requestUpdate();
+                }
+
+                const inner = composebox && composebox.shadowRoot ? composebox.shadowRoot.querySelector('#composebox') : null;
+                if (inner) {
+                  inner.inputState = inputState;
+                  inner.style.cssText += '; display: block !important; opacity: 1 !important; visibility: visible !important;';
+                  if (inner.requestUpdate) inner.requestUpdate();
+                }
+              })",
+                      GetParam().is_ai_page ? "true" : "false")),
       WaitForWebContentsPainted(kActiveTab),
 
-      // Ensure the AI page webview is loaded with about:blank.
-      CheckJsResultAt(kActiveTab, kAiPageWebView, "(el) => el.src",
-                      url::kAboutBlankURL),
+      // Ensure the AI page webview is loaded with about:blank if is_ai_page is
+      // true.
+      If([]() { return GetParam().is_ai_page; },
+         Then(CheckJsResultAt(kActiveTab, kAiPageWebView, "(el) => el.src",
+                              url::kAboutBlankURL))),
 
-      // Disable the blinking caret to reduce flakiness.
-      HideCaret(kActiveTab, kComposeBoxInput),
-
-      // Focus the composebox if specified.
+      // Apply focus or blur according to test parameter.
       If([]() { return GetParam().focused; },
-         Then(ExecuteJsAt(kActiveTab, kComposeBoxInput, "(el) => el.focus()"))),
+         Then(ExecuteJsAt(kActiveTab, kComposeBoxInput, "(el) => el.focus()")),
+         Else(ExecuteJsAt(kActiveTab, kComposeBoxInput, "(el) => el.blur()"))),
 
       // Set the composebox text if specified.
       If([]() { return GetParam().with_text; },
@@ -251,6 +315,49 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
                            true, composed: true}));
                          })"))),
 
+      // Disable the blinking caret to reduce flakiness.
+      HideCaret(kActiveTab, kComposeBoxInput),
+
+      // Disable animations, enforce static glow states, and await Lit updates
+      // before screenshot.
+      ExecuteJsAt(kActiveTab, kApp, R"(async (el) => {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(`
+          *, *::before, *::after {
+            transition: none !important;
+            animation: none !important;
+          }
+          .gradient, .double-gradient, .glow-container {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            animation: none !important;
+          }
+        `);
+
+        async function prepareAndAwait(root) {
+          if (!root) return;
+          if (root.adoptedStyleSheets && !root.adoptedStyleSheets.includes(sheet)) {
+            root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet];
+          }
+          if (root.host) {
+            if ('animationState' in root.host) root.host.animationState = 'NONE';
+            if ('glifAnimationState' in root.host) root.host.glifAnimationState = 'INELIGIBLE';
+            if ('energyEffectAnimationEnabled' in root.host) root.host.energyEffectAnimationEnabled = false;
+            if (root.host.updateComplete) await root.host.updateComplete;
+          }
+          const children = root.querySelectorAll('*');
+          for (const child of children) {
+            if (child.shadowRoot) {
+              await prepareAndAwait(child.shadowRoot);
+            }
+          }
+        }
+        await prepareAndAwait(document);
+        await prepareAndAwait(el.shadowRoot || el);
+      })"),
+      WaitForWebContentsPainted(kActiveTab),
+
       // This step is needed to prevent test from failing on platforms that
       // don't support screenshots.
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
@@ -259,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"7620222"));
+                      /*baseline_cl=*/"8142019"));
 }
 
 struct AppPixelTestParams {
@@ -355,6 +462,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, MAYBE_Screenshots) {
                              "  el.isZeroState_ = %s; "
                              "  el.isAiPage_ = %s; "
                              "  el.isGhostLoaderVisible_ = %s; "
+                             "  el.useStratusDarkModeColors_ = true; "
                              "  el.requestUpdate(); "
                              "}",
                              GetParam().is_side_panel ? "false" : "true",

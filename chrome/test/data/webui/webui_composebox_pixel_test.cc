@@ -6,11 +6,8 @@
 
 void WebUIComposeBoxPixelTest::SetUpOnMainThread() {
   InteractiveBrowserTest::SetUpOnMainThread();
-  if (rtl_) {
-    base::i18n::SetRTLForTesting(true);
-  }
-  if (dark_mode_) {
-    os_settings_provider_.SetPreferredColorScheme(
-        ui::NativeTheme::PreferredColorScheme::kDark);
-  }
+  base::i18n::SetRTLForTesting(rtl_);
+  os_settings_provider_.SetPreferredColorScheme(
+      dark_mode_ ? ui::NativeTheme::PreferredColorScheme::kDark
+                 : ui::NativeTheme::PreferredColorScheme::kLight);
 }

@@ -48,6 +48,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       ${this.useFork_ ? html`
         <contextual-tasks-inner-composebox
           id="composebox"
+          .inputState="${this.inputState_}"
           .isSidePanel="${this.isSidePanel}"
           .autofocus="${false}"
           carousel-on-top_
@@ -85,6 +86,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
     ` : html`
       <cr-composebox
           id="composebox"
+          .inputState="${this.inputState_}"
           .isSidePanel="${this.isSidePanel}"
           .autofocus="${false}"
           carousel-on-top_
