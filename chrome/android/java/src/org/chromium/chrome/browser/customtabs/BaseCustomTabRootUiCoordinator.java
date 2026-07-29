@@ -552,6 +552,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             googleBottomBarCoordinator.initDefaultSearchEngine(
                     currentlySelectedProfile.getOriginalProfile());
         }
+
+        BrowserServicesIntentDataProvider intentDataProvider =
+                assumeNonNull(mIntentDataProvider.get());
+        CustomTabsConnection.getInstance()
+                .updateAppAccountForAccountPreview(
+                        currentlySelectedProfile,
+                        assumeNonNull(intentDataProvider.getIntent()),
+                        intentDataProvider.getClientPackageName());
     }
 
     public @Nullable CustomTabHistoryIphController getHistoryIphController() {

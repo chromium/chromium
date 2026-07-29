@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/sync/base/data_type.h"
@@ -41,6 +42,13 @@ class AccountPreviewDataService : public KeyedService {
   // if no signed-in accounts exist.
   virtual std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
       const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Updates the account currently used by the external 1P app. A null/empty
+  // value means that no account is signed-in in the app.
+  virtual void UpdateExternalAppAccount(
+      const std::optional<std::string>& email) = 0;
+#endif
 };
 
 }  // namespace signin

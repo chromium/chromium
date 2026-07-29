@@ -21,6 +21,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kCctSignInPrompt,
     &switches::kCrossDeviceSignin,
+    &switches::kEnableAccountPreviewUseAppAccount,
     &switches::kEnableActivitylessSigninAllEntryPoint,
     &switches::kEnableAddSessionRedirect,
     &switches::kEnableAiSubscriptionAvatarRing,

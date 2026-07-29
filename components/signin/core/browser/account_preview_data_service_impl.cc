@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
@@ -111,6 +112,18 @@ AccountPreviewDataServiceImpl::GetAccountPreviewData(
   }
   return std::nullopt;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
+    const std::optional<std::string>& email) {
+  // TODO(crbug.com/532963639): convert to gaia id, cache as hashed with the
+  // timestamp, and recompute preference if needed.
+  // This needs to be removed if the corresponding account is removed from the
+  // device, per privacy requirement.
+  // Also, the id should not be taken into account if the id was saved 180 days
+  // ago per product discussion.
+}
+#endif
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {

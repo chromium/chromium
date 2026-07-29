@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
@@ -67,6 +68,11 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // Retrieves the cached preview data. Exposed specifically for testing.
   std::optional<AccountPreviewData> GetAccountPreviewData(
       const GaiaId& gaia_id) const;
+
+#if BUILDFLAG(IS_ANDROID)
+  void UpdateExternalAppAccount(
+      const std::optional<std::string>& email) override;
+#endif
 
   bool HasActiveFetcherForTesting(const GaiaId& gaia_id) const;
 

@@ -323,6 +323,12 @@ BASE_FEATURE(kEnableAccountPreviewPreferredAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// This flag controls whether the CCT captures the account name of the 1p app
+// account when triggered in this context, and passes it to the native
+// AccountPreviewService
+BASE_FEATURE(kEnableAccountPreviewUseAppAccount,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether activityless sign-in should be used for all entry points.
 // Extensions are not shipped on Android yet. The flow is newly implemented. We
 // enable activityless signin by default on this new userless entrypoint to

@@ -1539,6 +1539,16 @@ public class CustomTabsConnection {
     }
 
     /**
+     * Updates the account currently used by the external app for account preview.
+     *
+     * @param profile The current profile.
+     * @param intent The intent that launched the custom tab.
+     * @param clientPackageName The package name of the client app.
+     */
+    public void updateAppAccountForAccountPreview(
+            Profile profile, Intent intent, @Nullable String clientPackageName) {}
+
+    /**
      * Sends a callback using {@link CustomTabsCallback} with the first run result if necessary.
      *
      * @param intentExtras The extras for the initial VIEW intent that initiated first run.

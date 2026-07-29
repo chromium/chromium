@@ -38,10 +38,22 @@ public class AccountPreviewDataService {
                 .getPreferredAccountForPromo(mNativeAccountPreviewDataService);
     }
 
+    /** Updates the account currently used by the external app. */
+    @MainThread
+    public void updateExternalAppAccount(@Nullable String email) {
+        ThreadUtils.assertOnUiThread();
+        AccountPreviewDataServiceJni.get()
+                .updateExternalAppAccount(mNativeAccountPreviewDataService, email);
+    }
+
     @NativeMethods
     interface Natives {
         @JniType("std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>")
         @Nullable AccountPreviewPreference getPreferredAccountForPromo(
                 @JniType("AccountPreviewDataService*") long nativeAccountPreviewDataService);
+
+        void updateExternalAppAccount(
+                @JniType("AccountPreviewDataService*") long nativeAccountPreviewDataService,
+                @JniType("std::optional<std::string>") @Nullable String email);
     }
 }
