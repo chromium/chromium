@@ -56,6 +56,7 @@ _proto_files = [
 fuzzable_proto_library("metrics_proto") {
   sources = _proto_files
   proto_in_dir = "//"
+  use_experimental_fuzzable_proto = true
 }
 
 if (is_android) {
@@ -72,5 +73,4 @@ proto_extras("metrics_proto_with_extension_and_system_extras") {
   ]
   proto_in_dir = "//"
   deps = [ ":metrics_proto" ]
-  protobuf_full_support = true
 }

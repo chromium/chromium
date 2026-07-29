@@ -371,13 +371,13 @@ source_set("unit_tests") {
     "//components/actor/core:journal",
     "//components/affiliations/core/browser:test_support",
     "//components/affiliations/core/browser/domain_matching",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto_fuzzable",
     "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//testing/gtest",
+    "//third_party/fuzztest",
   ]
-  if (use_fuzzing_engine) {
-    deps += [ "//third_party/fuzztest" ]
-  }
   data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
 }
 

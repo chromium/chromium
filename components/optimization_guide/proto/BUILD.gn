@@ -114,6 +114,8 @@ fuzzable_proto_library("optimization_guide_proto") {
     "//third_party/metrics_proto",
   ]
   import_dirs = [ "//third_party/metrics_proto/" ]
+
+  use_experimental_fuzzable_proto = true
 }
 
 # Proto extras for optimization_guide_proto. This is not meant to be a complete
@@ -131,7 +133,6 @@ proto_extras("optimization_guide_proto_extras") {
   deps = [ ":optimization_guide_proto" ]
   extras_deps = [ "//third_party/metrics_proto:metrics_proto_with_extension_and_system_extras" ]
   import_dirs = [ "//third_party/metrics_proto/" ]
-  protobuf_full_support = true
 }
 
 if (is_android) {

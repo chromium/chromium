@@ -7,15 +7,14 @@
 #include <optional>
 #include <vector>
 
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data_fuzzable.pb.h"
 #include "components/origin_gating/core/actor_container_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(USE_FUZZING_ENGINE)
-#include "third_party/fuzztest/src/fuzztest/fuzztest.h"  // nogncheck
-#endif
 
 namespace actor {
 
@@ -333,13 +332,17 @@ TEST_F(ActorProtoConversionTest,
             }}));
 }
 
-#if BUILDFLAG(USE_FUZZING_ENGINE)
 void CanConvertAnyProto(
-    const optimization_guide::proto::AgentContainerConfig& config_proto) {
+    const fuzzable::optimization_guide::proto::AgentContainerConfig&
+        fuzzable_config_proto) {
+  std::string serialized;
+  CHECK(fuzzable_config_proto.SerializeToString(&serialized));
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  CHECK(config_proto.ParseFromString(serialized));
+
   ConvertAgentContainerConfig(config_proto);
 }
 
 FUZZ_TEST(ActorProtoConversionFuzzTest, CanConvertAnyProto);
-#endif
 
 }  // namespace actor

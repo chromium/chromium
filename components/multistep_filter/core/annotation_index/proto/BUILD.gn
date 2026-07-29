@@ -18,6 +18,7 @@ if (is_android) {
 fuzzable_proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "annotation_index.proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 if (is_android) {
