@@ -48,7 +48,7 @@ BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
 #endif
 
 // Use the CALayer contentsHeadroom attribute, if available.
-BASE_FEATURE(kUseCALayerContentsHeadroom, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseCALayerContentsHeadroom, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseCALayerContentsHeadroom() {
   if (@available(macOS 26, iOS 26, *)) {
