@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -74,6 +76,10 @@ void PrintViewManagerBasic::SetupScriptedPrintAndroid(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost& rfh = CurrentTargetFrame();
   DCHECK(rfh.IsRenderFrameLive());
+  if (!rfh.IsActive()) {
+    std::move(callback).Run();
+    return;
+  }
 
   // Start Printing Flow via PrinterQuery
   std::unique_ptr<PrinterQuery> printer_query =
@@ -101,7 +107,7 @@ void PrintViewManagerBasic::OnSetupScriptedPrintAndroidDone(
 void PrintViewManagerBasic::PdfWritingDone(int page_count) {
   pdf_writing_done_callback().Run(page_count);
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerBasic);
 
