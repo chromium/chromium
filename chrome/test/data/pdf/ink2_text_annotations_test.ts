@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {InkTextAnnotationsElement, TextAnnotationMessageData, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PdfViewerPrivateProxyImpl, TextBoxState, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PdfViewerPrivateProxyImpl, TextBoxState, TextStyle, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {InkTextAnnotationsElement, TextAnnotationMessageData} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertPositionAndSize, dragHandle, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
-import {getTestAnnotation, MockDocumentDimensions, setUpInkTestContext} from './test_util.js';
+import {createMockPdfPluginForTest, createWheelEvent, getTestAnnotation, MockDocumentDimensions, setUpInkTestContext} from './test_util.js';
 import type {MockPdfPluginElement} from './test_util.js';
 
 const DEFAULT_HEIGHT = 24;
@@ -809,6 +810,76 @@ chrome.test.runTests([
     chrome.test.assertEq(0, document.body.scrollTop);
     chrome.test.assertEq(0, document.documentElement.scrollTop);
 
+    chrome.test.succeed();
+  },
+
+  async function testWheelOnAnnotationScrolls() {
+    // Create real DOM elements instead of using MockElement to test native
+    // event bubbling from the annotation placeholder up to the scroll
+    // container.
+    document.body.innerHTML = getTrustedHTML`
+      <div id="main">
+        <div id="container" style="width: 100px; height: 100px;">
+          <div id="sizer"></div>
+          <div id="content"></div>
+        </div>
+      </div>
+    `;
+
+    const container = document.body.querySelector<HTMLElement>('#container')!;
+    const sizer = document.body.querySelector<HTMLElement>('#sizer')!;
+    const content = document.body.querySelector<HTMLElement>('#content')!;
+
+    const viewport = new Viewport(container, sizer, content, 15, 1);
+
+    const mockPlugin = createMockPdfPluginForTest();
+    mockPlugin.viewport = viewport;
+    viewport.setRemoteContent(mockPlugin);
+
+    // Set document dimensions larger than the container to make it scrollable.
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(100, 1000);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    // Initialize the annotations manager and UI element.
+    Ink2Manager.setInstance(null);
+    const manager = Ink2Manager.getInstance();
+    manager.setViewport(viewport);
+    await manager.initializeTextAnnotations();
+
+    const annotationsElement = document.createElement('ink-text-annotations');
+    annotationsElement.viewport = viewport;
+    viewport.setViewportChangedCallback(
+        () => annotationsElement.viewportChanged());
+    container.appendChild(annotationsElement);
+
+    // Add a placeholder text annotation.
+    const annotation = {
+      ...getTestAnnotation(1),
+      text: 'Test Annotation',
+      textBoxRect: {height: 50, locationX: 10, locationY: 10, width: 50},
+    };
+    manager.commitTextAnnotation(annotation, true, []);
+    await microtasksFinished();
+
+    const placeholders = getPlaceholders(annotationsElement);
+    chrome.test.assertEq(1, placeholders.length);
+    const placeholder = placeholders[0]!;
+
+    // Dispatch a wheel event on the placeholder. It should bubble up.
+    mockPlugin.clearMessages();
+    placeholder.dispatchEvent(
+        createWheelEvent(50, {clientX: 0, clientY: 0}, false));
+
+    // Assert that the wheel event was intercepted and forwarded to the plugin
+    // as a syncScrollToRemote message.
+    // TODO(crbug.com/539929603): The wheel event should be forwarded to the
+    // plugin.
+    const message = mockPlugin.findMessage('syncScrollToRemote');
+    chrome.test.assertFalse(!!message);
+
+    // Cleanup DOM.
+    document.body.innerHTML = '';
     chrome.test.succeed();
   },
 ]);
