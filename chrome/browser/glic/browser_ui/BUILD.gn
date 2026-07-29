@@ -31,7 +31,6 @@ source_set("browser_ui") {
       "glic_actor_nudge_controller.h",
       "glic_actor_task_icon_manager.h",
       "glic_actor_task_icon_manager_factory.h",
-      "glic_button_controller.h",
       "glic_iph_controller.h",
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
@@ -53,6 +52,8 @@ source_set("browser_ui") {
 
 source_set("impl") {
   sources = [
+    "glic_button_controller.cc",
+    "glic_button_controller.h",
     "glic_nudge_controller.cc",
     "glic_nudge_controller_impl.cc",
     "glic_nudge_controller_impl.h",
@@ -64,7 +65,6 @@ source_set("impl") {
       "glic_actor_nudge_controller.cc",
       "glic_actor_task_icon_manager.cc",
       "glic_actor_task_icon_manager_factory.cc",
-      "glic_button_controller.cc",
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",
       "glic_tab_indicator_helper.cc",
@@ -207,6 +207,7 @@ if (!is_android) {
     ]
     deps = [
       ":browser_ui",
+      ":impl",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser:global_features",

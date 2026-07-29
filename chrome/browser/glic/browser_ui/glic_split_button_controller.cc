@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
@@ -30,7 +31,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #endif
 
 namespace glic {
@@ -55,11 +55,11 @@ GlicSplitButtonController::GlicSplitButtonController(
   glic_nudge_controller_ =
       std::make_unique<GlicNudgeControllerImpl>(browser, this);
 
-  // TODO(crbug.com/518584352): Port these to Android.
-#if !BUILDFLAG(IS_ANDROID)
   glic_button_controller_ = std::make_unique<GlicButtonController>(
       browser->GetProfile(), *browser, this, glic_service);
 
+  // TODO(crbug.com/518584352): Port these to Android.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicActor) &&
       base::FeatureList::IsEnabled(features::kGlicActorUi) &&
       features::kGlicActorUiTaskIcon.Get() &&
@@ -77,20 +77,15 @@ GlicSplitButtonController::~GlicSplitButtonController() = default;
 void GlicSplitButtonController::SetHorizontalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
   horizontal_tabs_delegate_ = delegate;
-#if !BUILDFLAG(IS_ANDROID)
   glic_button_controller_->UpdateButton();
-#endif
 }
 
 void GlicSplitButtonController::SetVerticalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
   vertical_tabs_delegate_ = delegate;
-#if !BUILDFLAG(IS_ANDROID)
   glic_button_controller_->UpdateButton();
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void GlicSplitButtonController::OnGlicButtonClicked() {
   auto* delegate = GetActiveDelegate();
   if (!delegate) {
@@ -99,12 +94,15 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
     return;
   }
 
+// TODO(crbug.com/537848713): Maybe port to Android.
+#if !BUILDFLAG(IS_ANDROID)
   // Indicate that the glic button was pressed so that we can either close the
   // IPH promo (if present) or note that it has already been used to prevent
   // unnecessarily displaying the promo.
   BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHGlicPromoFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+#endif
 
   std::optional<std::string> prompt_suggestion =
       glic_nudge_controller_->GetPromptSuggestion();
@@ -131,7 +129,6 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
         glic::GlicNudgeActivity::kNudgeClicked);
   }
 }
-#endif
 
 void GlicSplitButtonController::CallOnBoth(
     base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn) {

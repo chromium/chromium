@@ -45,9 +45,7 @@ class GlicSplitButtonController {
   void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate);
   base::WeakPtr<GlicSplitButtonController> GetWeakPtr();
 
-#if !BUILDFLAG(IS_ANDROID)
   void OnGlicButtonClicked();
-#endif
 
   GlicSplitButtonDelegate* GetActiveDelegate();
   void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
@@ -56,9 +54,6 @@ class GlicSplitButtonController {
     return glic_nudge_controller_.get();
   }
 #if !BUILDFLAG(IS_ANDROID)
-  GlicButtonController* button_controller() {
-    return glic_button_controller_.get();
-  }
   GlicActorNudgeController* actor_nudge_controller() {
     return glic_actor_nudge_controller_.get();
   }
@@ -75,8 +70,8 @@ class GlicSplitButtonController {
   raw_ptr<GlicKeyedService> glic_service_ = nullptr;
 
   std::unique_ptr<GlicNudgeController> glic_nudge_controller_;
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicButtonController> glic_button_controller_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;
   std::unique_ptr<GlicActorNudgeController> glic_actor_nudge_controller_;
