@@ -43,6 +43,8 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link FuseboxSessionState}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxSessionStateUnitTest {
+    private static final GURL SAMPLE_PAGE_URL = new GURL("https://www.google.com");
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
@@ -117,9 +119,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testFrom() {
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
-        doReturn(new GURL("https://www.google.com"))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(1).when(mLocationBarDataProvider).getPageClassification(false);
 
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
@@ -227,9 +227,7 @@ public class FuseboxSessionStateUnitTest {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         UrlBarData.setShouldShowUrlForTesting(true);
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
-        doReturn(new GURL("https://www.google.com"))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(PageClassification.OTHER_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
@@ -245,9 +243,7 @@ public class FuseboxSessionStateUnitTest {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         UrlBarData.setShouldShowUrlForTesting(true);
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
-        doReturn(new GURL("https://www.google.com"))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(PageClassification.ANDROID_SEARCH_WIDGET_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
@@ -263,9 +259,7 @@ public class FuseboxSessionStateUnitTest {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         UrlBarData.setShouldShowUrlForTesting(true);
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
-        doReturn(new GURL("https://www.google.com"))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
@@ -287,5 +281,29 @@ public class FuseboxSessionStateUnitTest {
         assertEquals(
                 AutocompleteInput.AutocompleteState.DISABLED,
                 session.getAutocompleteInput().getAutocompleteState());
+    }
+
+    @Test
+    public void testActivate_ifDesktop_previewMatchUrlIsWebpage() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
+
+        assertEquals(SAMPLE_PAGE_URL, session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    public void testActivate_ifNotDesktop_previewMatchUrlNull() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
+
+        assertNull(session.getAutocompleteInput().getPreviewMatchUrl());
     }
 }

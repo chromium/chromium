@@ -806,8 +806,8 @@ public class LocationBarMediatorTest {
         AutocompleteInput input = new AutocompleteInput();
         input.setUserText("text");
         input.setRequestType(AutocompleteRequestType.SEARCH);
-        input.setPreviewMatchUrl(JUnitTestGURLs.RED_1);
         mMediator.beginInput(input);
+        mSessionState.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.RED_1);
         assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
 
         mMediator.suspendInput();

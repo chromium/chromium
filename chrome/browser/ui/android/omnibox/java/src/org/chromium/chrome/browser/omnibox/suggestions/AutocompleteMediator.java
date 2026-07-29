@@ -1195,7 +1195,16 @@ class AutocompleteMediator
         } else {
             input.resetPreviewText();
         }
-        input.setPreviewMatchUrl(getPreviewMatchUrl(defaultMatch));
+
+        // If the defaultMatch is null, but user text is non-empty, then we've just focused the url
+        // bar on a webpage on desktop. In that case, we don't want to overwrite the preview url
+        // set by FuseboxSessionState#activate. If the default match is null, and the user text is
+        // empty, then the only reasonable preview url is the default match, and given that's null,
+        // the preview url should be null. Currently, this happens when the user deletes their query
+        // on desktop.
+        if (defaultMatch != null || TextUtils.isEmpty(input.getUserText())) {
+            input.setPreviewMatchUrl(getPreviewMatchUrl(defaultMatch));
+        }
 
         if (!(mAutocompleteResult != null && mAutocompleteResult.equals(autocompleteResult))) {
             mAutocompleteResult = autocompleteResult;

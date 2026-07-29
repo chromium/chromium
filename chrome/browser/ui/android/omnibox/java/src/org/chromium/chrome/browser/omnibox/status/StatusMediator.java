@@ -400,6 +400,9 @@ public class StatusMediator
                     .getAutocompleteInput()
                     .getPreviewMatchUrlSupplier()
                     .addSyncObserver(mOnPreviewMatchUrlChanged);
+
+            onPreviewMatchUrlChanged(
+                    mInputSessionState.getAutocompleteInput().getPreviewMatchUrl());
         }
     }
 

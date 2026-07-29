@@ -952,6 +952,49 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void onSuggestionsReceived_withDefaultMatch_updatesPreviewUrl() {
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH);
+        session.getAutocompleteInput().setUserText(SAMPLE_QUERY);
+        session.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
+        mMediator.beginInput(session);
+        AutocompleteResult autocompleteResult =
+                createAutocompleteResult(createExactUrlMatch(JUnitTestGURLs.RED_1));
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+
+        assertEquals(JUnitTestGURLs.RED_1, session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionsReceived_noDefaultMatchAndNonEmptyUserText_doesNotChangePreviewUrl() {
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH);
+        session.getAutocompleteInput().setUserText(SAMPLE_QUERY);
+        session.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
+        mMediator.beginInput(session);
+        AutocompleteResult autocompleteResult = createAutocompleteResult();
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+
+        assertEquals(JUnitTestGURLs.BLUE_1, session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionsReceived_noDefaultMatchAndEmptyUserText_clearsPreviewUrl() {
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH);
+        session.getAutocompleteInput().setUserText("");
+        session.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
+        mMediator.beginInput(session);
+        AutocompleteResult autocompleteResult = createAutocompleteResult();
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+
+        assertNull(session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
     public void onSuggestionClicked_starterPack_extractsHintFromTemplateUrlService() {
         mMediator.onNativeInitialized();
         var session = createEmptySession();

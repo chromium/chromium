@@ -170,8 +170,10 @@ public class FuseboxSessionState implements UserData {
             if (canStripTrailingSlash(pageUrl)) {
                 initialUserText = UrlUtilities.stripTrailingSlash(initialUserText);
             }
+            mAutocompleteInput.setPreviewMatchUrl(pageUrl);
             mAutocompleteInput.setInitialUserText(initialUserText);
         } else {
+            mAutocompleteInput.setPreviewMatchUrl(null);
             mAutocompleteInput.setInitialUserText("");
         }
 
