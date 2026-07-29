@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_SEND_TAB_TO_SELF_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_SEND_TAB_TO_SELF_TAB_HELPER_H_
 
+#import <string>
+
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/web/public/web_state_observer.h"
@@ -32,6 +34,7 @@ class SendTabToSelfTabHelper
   SendTabToSelfTabHelper& operator=(const SendTabToSelfTabHelper&) = delete;
 
   // WebStateObserver:
+  void WasShown(web::WebState* web_state) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -40,6 +43,10 @@ class SendTabToSelfTabHelper
   // The WebState observation.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // GUID of the SendTabToSelfEntry awaiting scroll restoration when the
+  // WebState becomes visible.
+  std::string deferred_scroll_restoration_guid_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_MODEL_SEND_TAB_TO_SELF_TAB_HELPER_H_

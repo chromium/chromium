@@ -105,19 +105,22 @@ function scrollRangeIntoView(range: Range) {
     span.id = 'stts-scroll-target';
     range.insertNode(span);
 
-    // Find scrollable parent and scroll it into view, starting from the span.
-    span.scrollIntoView({
-      behavior: 'auto',
-      block: 'center',
-      inline: 'nearest',
-    });
+    // Synchronize scrolling with the next layout frame so WKWebView has
+    // completed visual geometry restoration after foregrounding.
+    window.requestAnimationFrame(() => {
+      span.scrollIntoView({
+        behavior: 'auto',
+        block: 'center',
+        inline: 'nearest',
+      });
 
-    // Delay removal to allow native scroll to complete in WKWebView.
-    window.setTimeout(() => {
-      span.remove();
-    }, 1000);
+      // Delay removal to allow native scroll to complete in WKWebView.
+      window.setTimeout(() => {
+        span.remove();
+      }, 1000);
+    });
   } catch (e: any) {
-    // Ignore errors during scroll; we don't want to crash page scripts.
+    // Ignore errors during scroll to avoid crashing page scripts.
   }
 }
 
@@ -154,6 +157,9 @@ async function scrollToTextFragment(fragment: string) {
 const sttsApi = new CrWebApi('stts');
 
 sttsApi.addFunction('getLinkToText', getLinkToTextForReadingPosition);
-sttsApi.addFunction('scrollToTextFragment', scrollToTextFragment);
+sttsApi.addFunction('scrollToTextFragment', (fragment: string) => {
+  scrollToTextFragment(fragment);
+  return true;
+});
 gCrWeb.registerApi(sttsApi);
 

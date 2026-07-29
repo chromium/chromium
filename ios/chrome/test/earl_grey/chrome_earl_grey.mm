@@ -445,6 +445,18 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [self waitForPageToFinishLoadingWithTimeout:kWaitForPageLoadTimeout]);
 }
 
+- (void)waitForAllWebStatesToFinishLoading {
+  GREYCondition* finishedLoading = [GREYCondition
+      conditionWithName:@"Waiting for all WebStates to finish loading"
+                  block:^{
+                    return ![ChromeEarlGreyAppInterface isAnyWebStateLoading];
+                  }];
+
+  GREYAssertTrue(
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()],
+      @"All WebStates failed to finish loading within timeout.");
+}
+
 - (void)sceneOpenURL:(const GURL&)URL {
   NSString* spec = base::SysUTF8ToNSString(URL.spec());
   [ChromeEarlGreyAppInterface sceneOpenURL:spec];
@@ -2243,6 +2255,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface openSendTabToSelfNewTabWithURL:url
                                                 textFragment:textFragment
                                                    entryGUID:guid];
+}
+
+- (void)openSendTabToSelfNewBackgroundTabWithURL:(NSString*)url
+                                    textFragment:(NSString*)textFragment
+                                       entryGUID:(NSString*)guid {
+  [ChromeEarlGreyAppInterface openSendTabToSelfNewBackgroundTabWithURL:url
+                                                          textFragment:textFragment
+                                                             entryGUID:guid];
 }
 
 - (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID {

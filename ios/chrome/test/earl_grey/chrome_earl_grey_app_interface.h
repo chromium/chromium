@@ -84,6 +84,9 @@ enum class TipsNotificationType;
 // Returns YES if the current WebState is loading.
 + (BOOL)isLoading;
 
+// Returns YES if any WebState across all foreground tabs is loading.
++ (BOOL)isAnyWebStateLoading;
+
 // Reloads the page without waiting for the page to load.
 + (void)startReloading;
 
@@ -171,6 +174,12 @@ enum class TipsNotificationType;
 + (void)openSendTabToSelfNewTabWithURL:(NSString*)url
                           textFragment:(NSString*)textFragment
                              entryGUID:(NSString*)guid;
+
+// Opens a new background tab with the given URL, text fragment, and marks it
+// as originating from Send Tab To Self with the given entry GUID.
++ (void)openSendTabToSelfNewBackgroundTabWithURL:(NSString*)url
+                                    textFragment:(NSString*)textFragment
+                                       entryGUID:(NSString*)guid;
 
 // Simulates opening a custom `URL` from another application.
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL;

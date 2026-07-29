@@ -432,6 +432,50 @@ void DismissSnackbar() {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that when a Send Tab To Self entry is opened in a background tab,
+// scroll position restoration is deferred until the user switches to that tab
+// in the foreground.
+- (void)testRestoreScrollPositionInBackgroundTab {
+  NSString* urlString = base::SysUTF8ToNSString(
+      self.testServer
+          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
+          .spec());
+  NSString* textFragment = @"This%20is%20a%20long,without%20any%20ambiguity.";
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+
+  NSString* guid =
+      [ChromeEarlGrey addFakeSendTabToSelfEntryWithURL:urlString
+                                                 title:@"Scroll Page"
+                                          textFragment:textFragment];
+
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
+  [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
+
+  // Open the new tab in the background.
+  [ChromeEarlGrey openSendTabToSelfNewBackgroundTabWithURL:urlString
+                                              textFragment:textFragment
+                                                 entryGUID:guid];
+
+  // Wait for the background tab to finish loading before switching to it.
+  [ChromeEarlGrey waitForAllWebStatesToFinishLoading];
+
+  // Switch to the newly opened background tab.
+  [ChromeEarlGrey selectTabAtIndex:1];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+
+  // Verify that after switching to the tab in the foreground, the page has
+  // scrolled down to the fragment.
+  NSString* checkScrollJS = @"window.scrollY > 0;";
+  [ChromeEarlGrey waitForJavaScriptCondition:checkScrollJS];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that an invalid text fragment is safely ignored and doesn't crash or
 // highlight.
 - (void)testRestoreScrollPositionInvalidFragment {

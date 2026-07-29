@@ -94,7 +94,7 @@ TEST_F(SendTabToSelfTabHelperTest, NoScrollPosition) {
 
   send_tab_to_self::PageContext page_context;
   const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
-      GURL("http://www.test.com"), "title", "device1", page_context,
+      GURL("https://www.test.com"), "title", "device1", page_context,
       send_tab_to_self::NavigationHistory());
 
   SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
@@ -115,7 +115,7 @@ TEST_F(SendTabToSelfTabHelperTest, EmptyTextFragment) {
   page_context.scroll_position.text_fragment =
       send_tab_to_self::TextFragmentData("", "", "", "");
   const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
-      GURL("http://www.test.com"), "title", "device1", page_context,
+      GURL("https://www.test.com"), "title", "device1", page_context,
       send_tab_to_self::NavigationHistory());
 
   SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
@@ -134,7 +134,7 @@ TEST_F(SendTabToSelfTabHelperTest, SttsLoad) {
   page_context.scroll_position.text_fragment =
       send_tab_to_self::TextFragmentData("start", "end", "", "");
   const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
-      GURL("http://www.test.com"), "title", "device1", page_context,
+      GURL("https://www.test.com"), "title", "device1", page_context,
       send_tab_to_self::NavigationHistory());
 
   SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
@@ -146,3 +146,7 @@ TEST_F(SendTabToSelfTabHelperTest, SttsLoad) {
   EXPECT_EQ(nullptr,
             SendTabToSelfLoadNavigationUserData::FromWebState(&web_state_));
 }
+
+// TODO(crbug.com/531685813): Add comprehensive unit tests by injecting
+// callbacks for ScrollToTextFragment() and FillWebState() to verify invocation
+// timing and coverage for pre-existing and deferred scroll restoration.

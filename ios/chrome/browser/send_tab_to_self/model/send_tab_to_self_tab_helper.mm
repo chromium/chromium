@@ -95,9 +95,26 @@ SendTabToSelfTabHelper::SendTabToSelfTabHelper(web::WebState* web_state) {
 
 SendTabToSelfTabHelper::~SendTabToSelfTabHelper() = default;
 
+void SendTabToSelfTabHelper::WasShown(web::WebState* web_state) {
+  // Do not restore scroll position if the document is still loading;
+  // PageLoaded will handle it once loading finishes.
+  if (deferred_scroll_restoration_guid_.empty() || web_state->IsLoading()) {
+    return;
+  }
+
+  const std::string guid = std::move(deferred_scroll_restoration_guid_);
+  deferred_scroll_restoration_guid_.clear();
+
+  const send_tab_to_self::SendTabToSelfEntry* entry = GetEntry(web_state, guid);
+  if (entry) {
+    MaybeRestoreScrollPosition(web_state, entry);
+  }
+}
+
 void SendTabToSelfTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  deferred_scroll_restoration_guid_.clear();
   SendTabToSelfLoadNavigationUserData* user_data =
       SendTabToSelfLoadNavigationUserData::FromWebState(web_state);
   if (!user_data) {
@@ -113,19 +130,31 @@ void SendTabToSelfTabHelper::PageLoaded(
       return;
   }
 
-  std::string guid = user_data->entry_guid();
+  const std::string guid = user_data->entry_guid();
 
   // Remove the tag immediately so it doesn't trigger again on subsequent
   // reloads of the same page, even if subsequent steps fail or return early.
   SendTabToSelfLoadNavigationUserData::RemoveFromWebState(web_state);
 
   const send_tab_to_self::SendTabToSelfEntry* entry = GetEntry(web_state, guid);
-  if (entry) {
-    MaybeRestoreScrollPosition(web_state, entry);
-    MaybePerformFormFilling(web_state, entry);
+  if (!entry) {
+    return;
   }
+
+  MaybePerformFormFilling(web_state, entry);
+
+  // Defer scroll restoration if the tab is hidden, as WKWebView lacks an
+  // active visual geometry in the background and resets scroll offset upon
+  // foregrounding.
+  if (!web_state->IsVisible()) {
+    deferred_scroll_restoration_guid_ = guid;
+    return;
+  }
+
+  MaybeRestoreScrollPosition(web_state, entry);
 }
 
 void SendTabToSelfTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  deferred_scroll_restoration_guid_.clear();
   web_state_observation_.Reset();
 }
