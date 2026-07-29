@@ -873,10 +873,10 @@ chrome.test.runTests([
 
     // Assert that the wheel event was intercepted and forwarded to the plugin
     // as a syncScrollToRemote message.
-    // TODO(crbug.com/539929603): The wheel event should be forwarded to the
-    // plugin.
     const message = mockPlugin.findMessage('syncScrollToRemote');
-    chrome.test.assertFalse(!!message);
+    chrome.test.assertTrue(!!message);
+    const scrollMessage = message as unknown as {x: number, y: number};
+    chrome.test.assertEq(50, scrollMessage.y);
 
     // Cleanup DOM.
     document.body.innerHTML = '';

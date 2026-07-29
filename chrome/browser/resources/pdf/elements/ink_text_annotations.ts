@@ -72,6 +72,8 @@ export class InkTextAnnotationsElement extends CrLitElement {
         manager, 'initialize-text-box',
         (e: Event) =>
             this.onInitializeTextBox_((e as CustomEvent<TextBoxInit>).detail));
+    this.eventTracker_.add(
+        this, 'wheel', (e: Event) => this.onWheel_(e as WheelEvent));
     this.updateAnnotations_();
   }
 
@@ -217,6 +219,17 @@ export class InkTextAnnotationsElement extends CrLitElement {
 
   protected onTextboxFocused_(e: CustomEvent<TextBoxRect>) {
     this.scrollToShowTextBox_(e.detail);
+  }
+
+  // Child placeholder elements intercept all pointer-events. Manually forward
+  // wheel events to the viewport.
+  private onWheel_(e: WheelEvent) {
+    assert(this.viewport);
+    if (e.ctrlKey) {
+      return;
+    }
+    e.preventDefault();
+    this.viewport.scrollBy({x: e.deltaX, y: e.deltaY});
   }
 
   private scrollToShowTextBox_(textBoxRect: TextBoxRect) {
