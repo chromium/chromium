@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BaseSwitches;
+import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
@@ -40,9 +40,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -153,9 +151,8 @@ public class MessageBannerRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
-    @RequiresRestart("Test alters low-end device command line flags")
-    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testBasicLowEndDevice() throws Exception {
+        SysUtils.setIsLowEndDeviceForTesting(true);
         Drawable drawable =
                 ApiCompatibilityUtils.getDrawable(
                         sActivity.getResources(), android.R.drawable.ic_delete);
