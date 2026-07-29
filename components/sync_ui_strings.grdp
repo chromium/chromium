@@ -83,4 +83,19 @@
     <message name="IDS_SYNC_DEVICE_NAME_WITH_MODEL_FORMAT" desc="Format for device name with model, combining the preferred device name and the model (e.g. 'Google Phone Pixel 2').">
       <ph name="DEVICE_NAME">$1<ex>Google Phone</ex></ph> <ph name="MODEL">$2<ex>Pixel 2</ex></ph>
     </message>
+    <message name="IDS_SYNC_DEVICE_NAME_WITH_DISAMBIGUATION_FORMAT" desc="Format for device name with a disambiguation label (such as channel or client name/profile) in parentheses, combining the device name and the label (e.g. 'Google Phone (Canary)').">
+      <ph name="DEVICE_NAME">$1<ex>Google Phone</ex></ph> (<ph name="DISAMBIGUATION_LABEL">$2<ex>Canary</ex></ph>)
+    </message>
+    <message name="IDS_SYNC_DEVICE_NAME_CANARY_CHANNEL" desc="Label for the Canary release channel of Chrome, used to disambiguate device names.">
+      Canary
+    </message>
+    <message name="IDS_SYNC_DEVICE_NAME_DEV_CHANNEL" desc="Label for the Dev release channel of Chrome, used to disambiguate device names.">
+      Dev
+    </message>
+    <message name="IDS_SYNC_DEVICE_NAME_BETA_CHANNEL" desc="Label for the Beta release channel of Chrome, used to disambiguate device names.">
+      Beta
+    </message>
+    <message name="IDS_SYNC_DEVICE_NAME_DEVELOPER_BUILD" desc="Label for developer builds of Chrome, used to disambiguate device names.">
+      developer build
+    </message>
 </grit-part>

@@ -35,11 +35,11 @@ struct DisplayNameCandidates {
   std::string fallback_full_name;
 };
 
-// TODO(crbug.com/522788942): Remove this struct once kSyncSimplifyDeviceNaming
-// is fully launched.
 struct DeviceInfoWithName {
   raw_ptr<const DeviceInfo> device;
   std::string display_name;
+
+  bool operator==(const DeviceInfoWithName& other) const = default;
 };
 
 // Returns display name candidates (primary and fallback) for `device`,

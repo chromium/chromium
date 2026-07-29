@@ -257,6 +257,10 @@ BASE_DECLARE_FEATURE(kSyncFixWebSigninSessionDurationForShortLivedSessions);
 // Tab to Self and Sharing features.
 BASE_DECLARE_FEATURE(kSyncSimplifyDeviceNaming);
 
+// If enabled alongside `kSyncSimplifyDeviceNaming`, disambiguates duplicate
+// device display names using release channel labels (e.g., "(Canary)").
+BASE_DECLARE_FEATURE(kSyncDisambiguateDeviceNamesWithChannel);
+
 // If enabled, uses the server-determined model name (marketing name) as the
 // preferred name (and fallback name) if available. This provides a more
 // recognizable name for the user.

@@ -2767,6 +2767,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfDynamicShortcuts,"
      "SendTabToSelfOpenNativeApp,"
      "SyncSimplifyDeviceNaming,"
+     "SyncDisambiguateDeviceNamesWithChannel,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
@@ -2782,6 +2783,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfDynamicShortcuts,"
      "SendTabToSelfOpenNativeApp,"
      "SyncSimplifyDeviceNaming,"
+     "SyncDisambiguateDeviceNamesWithChannel,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName"},
 };
