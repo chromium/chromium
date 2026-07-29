@@ -592,6 +592,9 @@ void CameraDeviceDelegate::SetPhotoOptions(
     int32_t min_diff = std::numeric_limits<int32_t>::max();
     for (const auto& mode : awb_available_modes) {
       auto it = map.find(mode);
+      if (it == map.end()) {
+        continue;
+      }
       // Find the nearest awb mode
       int32_t diff = std::abs(settings->color_temperature - it->second);
       if (diff < min_diff) {
@@ -1767,7 +1770,10 @@ void CameraDeviceDelegate::DoGetPhotoState(
     else {
       // Need to find current color temperature.
       photo_state->current_white_balance_mode = mojom::MeteringMode::MANUAL;
-      current_temperature = map.at(result_metadata_.awb_mode.value());
+      auto it = map.find(result_metadata_.awb_mode.value());
+      if (it != map.end()) {
+        current_temperature = it->second;
+      }
     }
 
     int32_t min = std::numeric_limits<int32_t>::max();
