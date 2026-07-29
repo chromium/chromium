@@ -92,10 +92,12 @@ class SkillsInteractiveUiTestBase
   ui::test::InteractiveTestApi::StepBuilder UpdateSkill(
       const std::string* skill_id_ptr);
 
-  // Verifies the skill invocation prompt in the test client matches
-  // `expected_prompt`.
+  // Verifies the skill invocation prompt, name, and icon in the test client
+  // match `expected_prompt`, `expected_name`, and `expected_icon`.
   ui::test::InteractiveTestApi::MultiStep VerifyInvocationInWebUI(
-      const std::string& expected_prompt);
+      const std::string& expected_prompt,
+      const std::string& expected_name = "",
+      const std::string& expected_icon = "");
 
   // Edits the value of an input field in the Skills Dialog at `query` to
   // `value`.

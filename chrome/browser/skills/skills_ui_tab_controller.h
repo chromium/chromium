@@ -57,8 +57,11 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
                   mojom::SkillsDialogType dialog_type,
                   std::unique_ptr<glic::Target> target) override;
 
-  // Invokes the skill with skill_id in sidepanel.
-  void InvokeSkill(std::string_view skill_id) override;
+  // Invokes the skill with skill_id, skill_name, skill_icon in sidepanel.
+  // skill_name and skill_icon are unused for skills v1.
+  void InvokeSkill(std::string_view skill_id,
+                   std::string_view skill_name,
+                   std::string_view skill_icon) override;
 
   // SkillsDialogDelegate override:
   void CloseDialog() override;

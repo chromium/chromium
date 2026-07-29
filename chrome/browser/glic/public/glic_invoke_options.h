@@ -287,6 +287,7 @@ struct GlicInvokeOptions {
   // If this invocation is used by the skill feature, this specifies its ID.
   // TODO(b/507074189): make this a source-specific payload rather than a
   // general option.
+  // Deprecated: use skills_payload.skill_id instead.
   std::optional<std::string> skill_id;
 
   // The FRE override, if any.

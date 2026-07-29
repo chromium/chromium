@@ -43,7 +43,9 @@ class SkillsUiTabControllerInterface {
                           std::unique_ptr<glic::Target> target) = 0;
 
   // Invokes the skill with skill_id in sidepanel.
-  virtual void InvokeSkill(std::string_view skill_id) = 0;
+  virtual void InvokeSkill(std::string_view skill_id,
+                           std::string_view skill_name,
+                           std::string_view skill_icon) = 0;
 
  private:
   ::ui::ScopedUnownedUserData<SkillsUiTabControllerInterface>

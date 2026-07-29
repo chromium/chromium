@@ -45,7 +45,12 @@ class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
                skills::mojom::SkillsDialogType dialog_type,
                std::unique_ptr<glic::Target> target),
               (override));
-  MOCK_METHOD(void, InvokeSkill, (std::string_view skill_id), (override));
+  MOCK_METHOD(void,
+              InvokeSkill,
+              (std::string_view skill_id,
+               std::string_view skill_name,
+               std::string_view skill_icon),
+              (override));
 };
 
 class SkillsPageHandlerV2Test : public ChromeRenderViewHostTestHarness {
@@ -86,9 +91,12 @@ TEST_F(SkillsPageHandlerV2Test, InvokeSkill) {
 
   MockSkillsUiTabController mock_tab_controller(mock_tab);
 
-  EXPECT_CALL(mock_tab_controller, InvokeSkill("test_skill_id")).Times(1);
+  EXPECT_CALL(mock_tab_controller,
+              InvokeSkill("test_skill_id", std::string_view("test_name"),
+                          std::string_view("test_icon")))
+      .Times(1);
 
-  remote_handler_->InvokeSkill("test_skill_id");
+  remote_handler_->InvokeSkill("test_skill_id", "test_name", "test_icon");
   remote_handler_.FlushForTesting();
 }
 

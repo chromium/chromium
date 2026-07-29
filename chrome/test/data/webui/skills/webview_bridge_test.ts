@@ -252,12 +252,17 @@ suite('SkillsWebviewBridgeTest', () => {
 
   test('HostReceivesInvokeSkillMessage', () => {
     let receivedSkillId: string|null = null;
+    let receivedSkillName: string|undefined = undefined;
+    let receivedSkillIcon: string|undefined = undefined;
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => {},
       onShowToast: () => {},
-      onInvokeSkill: (skillId: string) => {
-        receivedSkillId = skillId;
-      },
+      onInvokeSkill:
+          (skillId: string, skillName?: string, skillIcon?: string) => {
+            receivedSkillId = skillId;
+            receivedSkillName = skillName;
+            receivedSkillIcon = skillIcon;
+          },
       onUrlChanged: () => {},
       onCloseDialog: () => {},
       onHandshakeComplete: () => {},
@@ -285,6 +290,8 @@ suite('SkillsWebviewBridgeTest', () => {
       data: {
         type: SKILLS_INVOKE_SKILL,
         skillId: 'some_skill_id',
+        skillName: 'some_name',
+        skillIcon: 'some_icon',
       },
       origin: getPrimarySkillsOrigin(),
       source: window,
@@ -292,6 +299,8 @@ suite('SkillsWebviewBridgeTest', () => {
     window.dispatchEvent(invokeEvent);
 
     assertEquals('some_skill_id', receivedSkillId);
+    assertEquals('some_name', receivedSkillName);
+    assertEquals('some_icon', receivedSkillIcon);
   });
 
   test('HostReceivesUrlChangedEvent', () => {

@@ -90,6 +90,7 @@ export import SelectCredentialDialogResponse =
     generated.SelectCredentialDialogResponse;
 export import Skill = generated.Skill;
 export import SkillPreview = generated.SkillPreview;
+export import SkillsPayload = generated.SkillsPayload;
 export import SuggestionContent = generated.SuggestionContent;
 export import TabContextOptions = generated.TabContextOptions;
 export import TabContextResult = generated.TabContextResult;
@@ -199,6 +200,7 @@ export declare interface AdditionalContextPart {
 /** Union representing source-specific payloads. */
 export declare interface InvocationPayload {
   universalCart?: UniversalCartPayload;
+  skillsPayload?: SkillsPayload;
 }
 
 /**

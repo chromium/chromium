@@ -1012,6 +1012,17 @@ export declare interface PanelState {
   windowId?: string;
 }
 
+// Payload for invoking a skill.
+export declare interface SkillsPayload {
+  // Skill ID to trigger.
+  skillId: string;
+  // Skill name to show in the Glic client. Empty string is the null state.
+  skillName: string;
+  // Skill icon (emoji) to show in the Glic client.
+  // Empty string is the null state.
+  skillIcon: string;
+}
+
 // Payload for Universal Cart invocation.
 export declare interface UniversalCartPayload {
   // This metadata is received from the same Google endpoint we receive the
@@ -1036,6 +1047,7 @@ export declare interface InvokeOptions {
   // Whether to suppress Zero State Suggestions.
   disableZeroStateSuggestions: boolean;
   // Skill ID to trigger.
+  // Deprecated: Use payload.skills_payload.skill_id instead.
   skillId?: string;
   // Configuration to override the default ZSS behavior for the invocation.
   zssConfig?: ZssConfig;

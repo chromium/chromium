@@ -47,7 +47,9 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
   // ::skills::mojom::SkillsPageHandler:
   void SyncCookies(SyncCookiesCallback callback) override;
   void ShowToast(ToastType toast_type) override;
-  void InvokeSkill(const std::string& skill_id) override;
+  void InvokeSkill(const std::string& skill_id,
+                   const std::string& skill_name,
+                   const std::string& skill_icon) override;
   void CloseDialog() override;
 
  private:

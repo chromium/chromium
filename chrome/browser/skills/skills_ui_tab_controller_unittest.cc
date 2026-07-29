@@ -139,7 +139,7 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_CallsInvokeWithAutoSubmit) {
         return base::WeakPtr<glic::GlicInstance>();
       });
 
-  controller_->InvokeSkill(kTestSkillId);
+  controller_->InvokeSkill(kTestSkillId, "", "");
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
@@ -154,7 +154,7 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
               InvokeWithAutoSubmit(testing::_, testing::_))
       .Times(1);
 
-  controller_->InvokeSkill(kTestSkillId);
+  controller_->InvokeSkill(kTestSkillId, "", "");
 
   histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
                                       SkillsInvokeAction::kUserCreated, 1);
@@ -174,7 +174,7 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
               InvokeWithAutoSubmit(testing::_, testing::_))
       .Times(1);
 
-  controller_->InvokeSkill(kTestSkillId);
+  controller_->InvokeSkill(kTestSkillId, "", "");
 
   histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
                                       SkillsInvokeAction::kFirstParty, 1);
@@ -191,7 +191,7 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_SkillNotFound_LogsMetric) {
               InvokeWithAutoSubmit(testing::_, testing::_))
       .Times(0);
 
-  controller_->InvokeSkill("some_deleted_skill_id");
+  controller_->InvokeSkill("some_deleted_skill_id", "", "");
 
   histogram_tester_.ExpectUniqueSample(
       "Skills.Invoke.Result", skills::SkillsInvokeResult::kSkillNotFound, 1);
@@ -223,7 +223,7 @@ TEST_F(SkillsUiTabControllerV2Test, InvokeSkill_SkipsPrompt) {
         return base::WeakPtr<glic::GlicInstance>();
       });
 
-  controller_->InvokeSkill(kTestSkillId);
+  controller_->InvokeSkill(kTestSkillId, "", "");
 }
 
 }  // namespace skills

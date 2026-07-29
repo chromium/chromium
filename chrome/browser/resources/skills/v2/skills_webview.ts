@@ -96,7 +96,8 @@ export class SkillsWebview {
     const delegate: SkillsWebviewBridgeDelegate = {
       onError: () => this.showError(ErrorType.REMOTE_AUTHORITY_UNREACHABLE),
       onShowToast: (toastType: ToastType) => this.handler.showToast(toastType),
-      onInvokeSkill: (skillId: string) => this.handler.invokeSkill(skillId),
+      onInvokeSkill: (skillId: string, skillName: string, skillIcon: string) =>
+          this.handler.invokeSkill(skillId, skillName, skillIcon),
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),
       onCloseDialog: () => this.handler.closeDialog(),
       onHandshakeComplete: () => this.recordTotalInitLatencyMetric(),

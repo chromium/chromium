@@ -58,7 +58,7 @@ export function urlMatchesApiAllowedOrigin(url: URL): boolean {
 export interface SkillsWebviewBridgeDelegate {
   onError(): void;
   onShowToast(toastType: ToastType): void;
-  onInvokeSkill(skillId: string): void;
+  onInvokeSkill(skillId: string, skillName: string, skillIcon: string): void;
   onUrlChanged(url: URL): void;
   onCloseDialog(): void;
   onHandshakeComplete(): void;
@@ -247,9 +247,14 @@ export class SkillsWebviewBridge {
     }
   }
 
-  private handleInvokeSkillMessage(data: {skillId: string}) {
+  private handleInvokeSkillMessage(data: {
+    skillId: string,
+    skillName: string,
+    skillIcon: string,
+  }) {
     if (data.skillId) {
-      this.delegate_.onInvokeSkill(data.skillId);
+      this.delegate_.onInvokeSkill(
+          data.skillId, data.skillName, data.skillIcon);
     }
   }
   private handleLogMetricMessage(data: {metricName: string, valueMs: number}) {

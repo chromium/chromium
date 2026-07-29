@@ -63,14 +63,16 @@ void SkillsPageHandlerV2::ShowToast(ToastType toast_type) {
   }
 }
 
-void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id) {
+void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id,
+                                      const std::string& skill_name,
+                                      const std::string& skill_icon) {
   tabs::TabInterface* tab =
       tabs::TabInterface::GetFromContents(&web_contents_.get());
   if (!tab) {
     return;
   }
   if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
-    tab_controller->InvokeSkill(skill_id);
+    tab_controller->InvokeSkill(skill_id, skill_name, skill_icon);
   }
 }
 

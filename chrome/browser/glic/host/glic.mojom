@@ -1983,6 +1983,20 @@ enum ActuationTarget {
 };
 
 // @generate glic_api
+// Payload for invoking a skill.
+struct SkillsPayload {
+  // Skill ID to trigger.
+  string skill_id;
+
+  // Skill name to show in the Glic client. Empty string is the null state.
+  string skill_name;
+
+  // Skill icon (emoji) to show in the Glic client.
+  // Empty string is the null state.
+  string skill_icon;
+};
+
+// @generate glic_api
 // Payload for Universal Cart invocation.
 struct UniversalCartPayload {
   // This metadata is received from the same Google endpoint we receive the
@@ -1993,6 +2007,8 @@ struct UniversalCartPayload {
 
 union InvocationPayload {
   UniversalCartPayload universal_cart;
+  [MinVersion=3]
+  SkillsPayload skills_payload;
 };
 
 // @generate glic_api
@@ -2021,6 +2037,7 @@ struct InvokeOptions {
   bool disable_zero_state_suggestions;
 
   // Skill ID to trigger.
+  // Deprecated: Use payload.skills_payload.skill_id instead.
   string? skill_id;
 
   // Configuration to override the default ZSS behavior for the invocation.

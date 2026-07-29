@@ -148,7 +148,9 @@ interface SkillsPageHandler {
   ShowToast(ToastType toast_type);
 
   // Invokes a skill.
-  InvokeSkill(string skill_id);
+  // skill_name and skill_icon are only forwarded to the
+  // Glic WebUI and not used or stored in the browser.
+  InvokeSkill(string skill_id, string skill_name, string skill_icon);
 
   // Closes the skills dialog.
   CloseDialog();

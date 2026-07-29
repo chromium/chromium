@@ -314,6 +314,26 @@ class WebClient implements GlicWebClient {
         input.value = prompt;
       }
     }
+
+    if (options.payload?.skillsPayload) {
+      const idInput = $.skillIdInput as HTMLInputElement;
+      if (idInput) {
+        idInput.value = options.payload.skillsPayload.skillId;
+      }
+      const nameInput = $.skillNameInput as HTMLInputElement;
+      if (nameInput) {
+        nameInput.value = options.payload.skillsPayload.skillName;
+      }
+      const iconInput = $.skillIconInput as HTMLInputElement;
+      if (iconInput) {
+        iconInput.value = options.payload.skillsPayload.skillIcon;
+      }
+    } else if (options.skillId !== undefined) {
+      const input = $.skillIdInput as HTMLInputElement;
+      if (input) {
+        input.value = options.skillId;
+      }
+    }
   }
 
   getInitialized(): Promise<void> {

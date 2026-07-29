@@ -169,7 +169,9 @@ bool SkillsUiTabController::IsShowing() const {
   return dialog_widget_ != nullptr;
 }
 
-void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {
+void SkillsUiTabController::InvokeSkill(std::string_view skill_id,
+                                        std::string_view skill_name,
+                                        std::string_view skill_icon) {
   last_invoked_skill_id_for_testing_ = skill_id;
 
   const skills::Skill* skill = nullptr;
@@ -206,10 +208,27 @@ void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {
     glic::GlicInvokeOptions options(
         glic::Target(tab_.get(), glic::DefaultConversation()),
         glic::mojom::InvocationSource::kSkills);
+    // For v2, the skill would not exist.
     if (skill) {
       options.prompts.push_back(skill->prompt);
     }
+    // TODO(b/537830140): Remove this field entirely once we settled on the new
+    // struct and old web clients are updated.
     options.skill_id = std::string(skill_id);
+
+    auto mojo_skills_payload = glic::mojom::SkillsPayload::New();
+    mojo_skills_payload->skill_id = std::string(skill_id);
+    // Pass in extra items for skills v2.
+    if (base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
+      // We know these exist in V2, because they are mandatory in the page
+      // handler.
+      mojo_skills_payload->skill_name = std::string(skill_name);
+      mojo_skills_payload->skill_icon = std::string(skill_icon);
+    }
+    options.source_or_payload =
+        glic::mojom::InvocationPayload::NewSkillsPayload(
+            std::move(mojo_skills_payload));
+
     if (target_) {
       options.target = std::move(*target_);
       target_.reset();

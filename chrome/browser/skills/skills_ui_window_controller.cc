@@ -124,7 +124,8 @@ void SkillsUiWindowController::InvokeSkill(std::string_view skill_id) {
   if (auto* active_tab = browser_window_interface_->GetActiveTabInterface()) {
     if (auto* tab_controller =
             skills::SkillsUiTabControllerInterface::From(active_tab)) {
-      tab_controller->InvokeSkill(skill_id);
+      tab_controller->InvokeSkill(skill_id, /*skill_name=*/"",
+                                  /*skill_icon=*/"");
     }
   }
 }
