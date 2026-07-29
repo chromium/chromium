@@ -2763,7 +2763,6 @@ class LocationBarMediator
         if (state != null && state.isSessionActive()) {
             AutocompleteInput input = state.getAutocompleteInput();
             input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
-            input.setAutocompleteState(AutocompleteState.STANDBY);
             mUrlFocusedWithoutAnimations = true;
             beginInput(input);
         }
@@ -2882,12 +2881,18 @@ class LocationBarMediator
         mCurrentInput = null;
 
         if (input.getAutocompleteState() == AutocompleteState.ENABLED && input.hasPreviewText()) {
+            // TODO(https://crbug.com/540458873): Should not commit preview text here, but instead
+            // retain it. When resumed, use it to calculate the autocomplete text and update urlbar.
             input.commitPreviewText();
         } else {
             input.setSelection(
                     new TextSelection(
                             mUrlCoordinator.getSelectionStart(),
                             mUrlCoordinator.getSelectionEnd()));
+        }
+
+        if (input.getAutocompleteState() == AutocompleteState.ENABLED) {
+            input.setAutocompleteState(AutocompleteState.STANDBY);
         }
 
         updateReparentingState();

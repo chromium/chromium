@@ -815,6 +815,19 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testSuspendInput_enabledState_transitionsToStandby() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        mMediator.beginInput(input);
+
+        mMediator.suspendInput();
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+    }
+
+    @Test
     public void testOnUrlTextChanged_updatesShouldAutocomplete() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -4043,6 +4056,7 @@ public class LocationBarMediatorTest {
     public void testOnTabChanged_enabledState_transitionsToStandby() {
         mSessionState.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
         assertTrue(mSessionState.isSessionActive());
 
         mMediator.onTabChanged(null);
