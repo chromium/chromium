@@ -78,6 +78,17 @@ BASE_DECLARE_FEATURE(kRestructureMetricsConsentSettings);
 BASE_DECLARE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled);
 BASE_DECLARE_FEATURE(kNoopRuntimeMutableFeatureVariationsEnabled);
 
+// No-op features for testing all runtime mutable state transitions and
+// saturation.
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable1);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable2);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable3);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable4);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable5);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable6);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable7);
+BASE_DECLARE_FEATURE(kNoopRuntimeMutable8);
+
 // Enables log rotation and uploading in the background on iOS.
 BASE_DECLARE_FEATURE(kIOSBackgroundMetrics);
 

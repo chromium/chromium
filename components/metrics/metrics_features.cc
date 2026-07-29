@@ -48,6 +48,23 @@ BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled,
 BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutableFeatureVariationsEnabled,
                              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable1,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable2,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable3,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable4,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable5,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable6,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable7,
+                             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutable8,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 void OnNoopFeatureStateChanged(
@@ -69,6 +86,22 @@ void EnableNoopRuntimeMutableFeatures(base::FeatureList* feature_list) {
   feature_list->EnableRuntimeMutability(
       kNoopRuntimeMutableFeatureVariationsEnabled,
       base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable1, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable2, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable3, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable4, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable5, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable6, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable7, base::BindRepeating(&OnNoopFeatureStateChanged));
+  feature_list->EnableRuntimeMutability(
+      kNoopRuntimeMutable8, base::BindRepeating(&OnNoopFeatureStateChanged));
 }
 
 }  // namespace metrics::features
