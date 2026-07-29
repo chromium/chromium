@@ -115,6 +115,15 @@ source_set("unit_tests") {
   ]
 }
 
+# Temporary template to disable fuzzers that depend on openscreen protos.
+# TODO(crbug.com/505034799): Remove once upstream openscreen migrates to
+# `use_experimental_fuzzable_protos`.
+template("disabled_fuzzer_test") {
+  not_needed(invoker, "*")
+  group(target_name) {
+  }
+}
+
 # TODO(issuetracker.google.com/185815206): Fuzzers should also work with
 # openscreen code.
 if (use_fuzzing_engine) {
@@ -171,7 +180,7 @@ if (use_fuzzing_engine) {
   }
 }
 
-fuzzer_test("cast_auth_util_fuzzer") {
+disabled_fuzzer_test("cast_auth_util_fuzzer") {
   sources = [ "cast_auth_util_fuzzer.cc" ]
   deps = [
     ":cast_auth_util_fuzzer_certs",
@@ -209,7 +218,7 @@ fuzzer_test("cast_message_fuzzer") {
   libfuzzer_options = [ "max_len=65535" ]
 }
 
-fuzzer_test("cast_framer_serialize_fuzzer") {
+disabled_fuzzer_test("cast_framer_serialize_fuzzer") {
   sources = [ "cast_framer_serialize_fuzzer.cc" ]
   deps = [
     ":channel",
@@ -222,7 +231,7 @@ fuzzer_test("cast_framer_serialize_fuzzer") {
   is_fuzztest_compatible = false
 }
 
-fuzzer_test("cast_message_util_fuzzer") {
+disabled_fuzzer_test("cast_message_util_fuzzer") {
   sources = [ "cast_message_util_fuzzer.cc" ]
   dict = "fuzz.dict"
   deps = [
@@ -233,7 +242,7 @@ fuzzer_test("cast_message_util_fuzzer") {
   ]
 }
 
-fuzzer_test("openscreen_cast_auth_util_fuzzer") {
+disabled_fuzzer_test("openscreen_cast_auth_util_fuzzer") {
   sources = [ "openscreen_cast_auth_util_fuzzer.cc" ]
   deps = [
     ":cast_auth_util_fuzzer_certs",
