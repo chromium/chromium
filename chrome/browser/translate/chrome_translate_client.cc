@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/translate/translate_bubble_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/language/core/browser/accept_languages_service.h"
@@ -101,6 +102,12 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
     default:
       NOTREACHED();
   }
+}
+
+bool IsReadAnythingWebContents(content::WebContents* web_contents) {
+  return web_contents->GetLastCommittedURL().GetWithEmptyPath() ==
+         GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)
+             .GetWithEmptyPath();
 }
 #endif
 
@@ -503,6 +510,12 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_contents());
 
+  // If web_contents() is in a side panel, FindBrowserWithTab returns nullptr.
+  // Fall back to the last active browser window.
+  if (!browser && IsReadAnythingWebContents(web_contents())) {
+    browser = GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  }
+
   // |browser| might be NULL when testing. In this case, Show(...) should be
   // called because the implementation for testing is used.
   if (!browser) {
@@ -511,7 +524,8 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
                                         error_type, is_user_gesture);
   }
 
-  if (web_contents() != browser->GetTabStripModel()->GetActiveWebContents()) {
+  if (web_contents() != browser->GetTabStripModel()->GetActiveWebContents() &&
+      !IsReadAnythingWebContents(web_contents())) {
     return ShowTranslateBubbleResult::kWebContentsNotActive;
   }
 
