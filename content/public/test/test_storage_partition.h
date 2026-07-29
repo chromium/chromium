@@ -162,12 +162,6 @@ class TestStoragePartition : public StoragePartition {
 
   void DeleteStaleSessionData() override {}
 
-  void set_browsing_topics_site_data_manager(
-      BrowsingTopicsSiteDataManager* manager) {
-    browsing_topics_site_data_manager_ = manager;
-  }
-  BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() override;
-
   void set_devtools_background_services_context(
       DevToolsBackgroundServicesContext* context) {
     devtools_background_services_context_ = context;
@@ -270,8 +264,6 @@ class TestStoragePartition : public StoragePartition {
   raw_ptr<GeneratedCodeCacheContext> generated_code_cache_context_ = nullptr;
   raw_ptr<network::mojom::DeviceBoundSessionManager>
       device_bound_session_manager_ = nullptr;
-  raw_ptr<BrowsingTopicsSiteDataManager> browsing_topics_site_data_manager_ =
-      nullptr;
   raw_ptr<PlatformNotificationContext> platform_notification_context_ = nullptr;
   raw_ptr<DevToolsBackgroundServicesContext>
       devtools_background_services_context_ = nullptr;

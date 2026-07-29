@@ -148,11 +148,6 @@ TestStoragePartition::GetDeviceBoundSessionManager() {
   return device_bound_session_manager_;
 }
 
-BrowsingTopicsSiteDataManager*
-TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
-  return browsing_topics_site_data_manager_;
-}
-
 DevToolsBackgroundServicesContext*
 TestStoragePartition::GetDevToolsBackgroundServicesContext() {
   return devtools_background_services_context_;

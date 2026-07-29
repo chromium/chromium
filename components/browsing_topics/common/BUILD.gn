@@ -8,7 +8,6 @@ component("common") {
   defines = [ "IS_BROWSING_TOPICS_COMMON_IMPL" ]
 
   sources = [
-    "common_types.cc",
     "common_types.h",
     "semantic_tree.cc",
     "semantic_tree.h",
