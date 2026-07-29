@@ -12,12 +12,18 @@
 [package]
 edition = "2018"
 name = "cfg_aliases"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Zicklag <zicklag@katharostech.com>"]
+build = false
 exclude = [
     "modoc.config",
     "release.toml",
 ]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A tiny utility to help save you a lot of effort with long winded `#[cfg()]` checks."
 homepage = "https://github.com/katharostech/cfg_aliases"
 documentation = "https://docs.rs/cfg_aliases"
@@ -38,6 +44,14 @@ repository = "https://github.com/katharostech/cfg_aliases"
 
 [badges.maintenance]
 status = "passively-maintained"
+
+[lib]
+name = "cfg_aliases"
+path = "src/lib.rs"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
 
 [lints.clippy]
 str_to_string = "deny"

@@ -1,6 +1,6 @@
 # CFG Aliases
 
-CFG Aliases is a tiny utility to help save you a lot of effort with long winded `#[cfg()]` checks. This crate provides a single [`cfg_aliases!`] macro that doesn't have any dependencies and specifically avoids pulling in `syn` or `quote` so that the impact on your comile times should be negligible.
+CFG Aliases is a tiny utility to help save you a lot of effort with long winded `#[cfg()]` checks. This crate provides a single [`cfg_aliases!`] macro that doesn't have any dependencies and specifically avoids pulling in `syn` or `quote` so that the impact on your compile times should be negligible.
 
 You use the the [`cfg_aliases!`] macro in your `build.rs` script to define aliases such as `x11` that could then be used in the `cfg` attribute or macro for conditional compilation: `#[cfg(x11)]`.
 
@@ -10,7 +10,7 @@ You use the the [`cfg_aliases!`] macro in your `build.rs` script to define alias
 
 ```toml
 [build-dependencies]
-cfg_aliases = "0.1.0"
+cfg_aliases = "0.2.1"
 ```
 
 **build.rs:**

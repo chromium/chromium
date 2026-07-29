@@ -25,7 +25,7 @@ cargo_crate("buildrs_support") {
   cargo_pkg_name = "cfg_aliases"
   cargo_pkg_description = "A tiny utility to help save you a lot of effort with long winded `#[cfg()]` checks."
   cargo_pkg_repository = "https://github.com/katharostech/cfg_aliases"
-  cargo_pkg_version = "0.2.1"
+  cargo_pkg_version = "0.2.2"
 
   allow_unsafe = false
 
