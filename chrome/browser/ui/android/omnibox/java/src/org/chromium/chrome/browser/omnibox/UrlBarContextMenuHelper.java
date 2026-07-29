@@ -11,7 +11,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -32,11 +31,6 @@ class UrlBarContextMenuHelper {
     public interface Delegate {
         /** See {@link android.widget.TextView#onTextContextMenuItem(int)} */
         void onTextContextMenuItem(int id);
-
-        /**
-         * @return A callback to trigger the manage search engines flow.
-         */
-        @Nullable Runnable getManageSearchEnginesCallback();
     }
 
     private static final Set<Integer> ALLOWED_MENU_ITEMS =
@@ -159,13 +153,6 @@ class UrlBarContextMenuHelper {
 
     @VisibleForTesting
     void onMenuItemClicked(int id) {
-        if (id == R.id.url_bar_manage_search_engines) {
-            Runnable callback = mDelegate.getManageSearchEnginesCallback();
-            if (callback != null) {
-                callback.run();
-            }
-        } else {
-            mDelegate.onTextContextMenuItem(id);
-        }
+        mDelegate.onTextContextMenuItem(id);
     }
 }

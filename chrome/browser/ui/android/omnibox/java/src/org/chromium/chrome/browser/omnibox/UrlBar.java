@@ -484,20 +484,7 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mContextMenuHelper =
-                new UrlBarContextMenuHelper(
-                        this,
-                        new UrlBarContextMenuHelper.Delegate() {
-                            @Override
-                            public void onTextContextMenuItem(int id) {
-                                UrlBar.this.onTextContextMenuItem(id);
-                            }
-
-                            @Override
-                            public @Nullable Runnable getManageSearchEnginesCallback() {
-                                return mManageSearchEnginesCallback;
-                            }
-                        });
+        mContextMenuHelper = new UrlBarContextMenuHelper(this, this::onTextContextMenuItem);
         enforceMaxTextHeight();
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
@@ -889,6 +876,13 @@ public class UrlBar extends AutocompleteEditText {
             return true;
         }
 
+        if (id == R.id.url_bar_manage_search_engines) {
+            if (mManageSearchEnginesCallback != null) {
+                mManageSearchEnginesCallback.run();
+            }
+            return true;
+        }
+
         if (mTextContextMenuDelegate == null) return super.onTextContextMenuItem(id);
 
         boolean isCutOption = false;
@@ -990,36 +984,22 @@ public class UrlBar extends AutocompleteEditText {
                 && menu.findItem(R.id.url_bar_delete) == null) {
             MenuItem copyItem = menu.findItem(android.R.id.copy);
             if (copyItem != null) {
-                MenuItem item =
-                        menu.add(
-                                copyItem.getGroupId(),
-                                R.id.url_bar_delete,
-                                copyItem.getOrder(),
-                                R.string.omnibox_context_menu_delete);
-                item.setOnMenuItemClickListener(
-                        clickedItem -> {
-                            onTextContextMenuItem(R.id.url_bar_delete);
-                            return true;
-                        });
+                menu.add(
+                        copyItem.getGroupId(),
+                        R.id.url_bar_delete,
+                        copyItem.getOrder(),
+                        R.string.omnibox_context_menu_delete);
             }
         }
 
         if (mManageSearchEnginesCallback != null
                 && OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
                 && menu.findItem(R.id.url_bar_manage_search_engines) == null) {
-            MenuItem item =
-                    menu.add(
-                            Menu.NONE,
-                            R.id.url_bar_manage_search_engines,
-                            Menu.CATEGORY_SECONDARY,
-                            getContext().getString(R.string.manage_search_engines_and_site_search));
-            item.setOnMenuItemClickListener(
-                    clickedItem -> {
-                        if (mManageSearchEnginesCallback != null) {
-                            mManageSearchEnginesCallback.run();
-                        }
-                        return true;
-                    });
+            menu.add(
+                    Menu.NONE,
+                    R.id.url_bar_manage_search_engines,
+                    Menu.CATEGORY_SECONDARY,
+                    getContext().getString(R.string.manage_search_engines_and_site_search));
         }
 
         if (mContextMenuHelper != null) {

@@ -83,11 +83,8 @@ public class UrlBarContextMenuHelperUnitTest {
 
     @Test
     public void testMenuItemClick_manageSearchEngines() {
-        int[] called = {0};
-        Runnable callback = () -> called[0]++;
-        doReturn(callback).when(mDelegate).getManageSearchEnginesCallback();
         mHelper.onMenuItemClicked(R.id.url_bar_manage_search_engines);
-        assertEquals(1, called[0]);
+        verify(mDelegate).onTextContextMenuItem(R.id.url_bar_manage_search_engines);
     }
 
     @Test
