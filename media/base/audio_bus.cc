@@ -55,15 +55,6 @@ constexpr static bool IsValidChannelCount(int channels) {
          static_cast<size_t>(limits::kMaxChannels);
 }
 
-void AudioBus::CheckOverflow(int start_frame, int frames, int total_frames) {
-  CHECK_GE(start_frame, 0);
-  CHECK_GE(frames, 0);
-  CHECK_GT(total_frames, 0);
-  int sum = start_frame + frames;
-  CHECK_LE(sum, total_frames);
-  CHECK_GE(sum, 0);
-}
-
 AudioBus::AudioBus(int channels, int frames)
     : frames_(base::checked_cast<size_t>(frames)) {
   CHECK(IsValidChannelCount(channels));

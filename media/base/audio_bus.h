@@ -239,8 +239,6 @@ class MEDIA_EXPORT AudioBus {
   // must be at least CalculateMemorySize(...) bytes in size.
   void BuildChannelData(int channels, base::span<float> data);
 
-  static void CheckOverflow(int start_frame, int frames, int total_frames);
-
   template <class SourceSampleTypeTraits>
   static void CopyConvertFromInterleavedSourceToAudioBus(
       base::span<const typename SourceSampleTypeTraits::ValueType> source,
