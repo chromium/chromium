@@ -728,4 +728,60 @@ TEST_F(TransientWindowManagerTest, DeleteDuringHideUAF) {
   child->Show();
 }
 
+namespace {
+
+class DeleteParentOnHideObserver : public aura::WindowObserver {
+ public:
+  DeleteParentOnHideObserver(aura::Window* child,
+                             std::unique_ptr<aura::Window> parent)
+      : child_(child), parent_(std::move(parent)) {
+    child_->AddObserver(this);
+  }
+  ~DeleteParentOnHideObserver() override {
+    if (child_) {
+      child_->RemoveObserver(this);
+    }
+  }
+  // WindowObserver:
+  void OnWindowVisibilityChanged(aura::Window* window,
+                                 bool visible) override {
+    if (window == child_ && !visible) {
+      parent_.reset();
+    }
+  }
+  void OnWindowDestroyed(aura::Window* window) override {
+    if (window == child_) {
+      child_ = nullptr;
+    }
+  }
+
+ private:
+  raw_ptr<aura::Window> child_;
+  std::unique_ptr<aura::Window> parent_;
+};
+
+}  // namespace
+
+// Tests that there is no UAF if a window is destroyed while its transient
+// children are being hidden in a cascade update.
+TEST_F(TransientWindowManagerTest,
+       ParentDestroyedDuringTransientChildHideCascade) {
+  std::unique_ptr<aura::Window> parent = CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 0});
+  aura::Window* parent_ptr = parent.get();
+
+  std::unique_ptr<aura::Window> child_ptr = CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 1});
+  aura::Window* child = child_ptr.release();
+
+  TransientWindowManager::GetOrCreate(child)->set_parent_controls_visibility(
+      true);
+  AddTransientChild(parent_ptr, child);
+
+  auto observer =
+      std::make_unique<DeleteParentOnHideObserver>(child, std::move(parent));
+
+  parent_ptr->Hide();
+}
+
 }  // namespace wm
