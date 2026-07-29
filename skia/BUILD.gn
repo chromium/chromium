@@ -831,6 +831,11 @@ template("skia_source_set") {
 
     check_includes = false
 
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ "//base/allocator/partition_allocator:raw_ptr" ]
+
     if (!is_debug) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]
