@@ -1170,6 +1170,8 @@ source_set("core") {
     "//components/network_time",
     "//components/no_state_prefetch/browser",
     "//components/no_state_prefetch/common",
+    "//components/notebooks/internals/webui",
+    "//components/notebooks/internals/webui:mojo_bindings",
     "//components/notebooks/public",
     "//components/omnibox/common:features",
     "//components/open_from_clipboard:feature_flags",

@@ -85,6 +85,7 @@ source_set("configs") {
     "//chrome/browser/ui/webui/media",
     "//chrome/browser/ui/webui/metrics_internals",
     "//chrome/browser/ui/webui/net_internals",
+    "//chrome/browser/ui/webui/notebooks_internals:notebooks_internals_ui_config",
     "//chrome/browser/ui/webui/omnibox",
     "//chrome/browser/ui/webui/personal_context_internals",
     "//chrome/browser/ui/webui/policy",

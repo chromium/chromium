@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/notebooks/internals/webui/notebooks_internals.mojom.h"
+#include "components/notebooks/internals/webui/notebooks_internals_ui.h"
 #include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
@@ -24,6 +26,9 @@ void PopulateChromeWebUIFrameBindersPartsAndroid(
   RegisterWebUIControllerInterfaceBinder<
       notifications_internals::mojom::PageHandler, NotificationsInternalsUI>(
       map);
+  RegisterWebUIControllerInterfaceBinder<
+      notebooks_internals::mojom::PageHandlerFactory,
+      notebooks::NotebooksInternalsUI>(map);
 }
 
 }  // namespace chrome::internal

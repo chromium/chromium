@@ -4,9 +4,35 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #scheme=relative
  * #css_wrapper_metadata_end */
 
-h1 {
-  font-size: 20px;
+:host {
+  display: block;
+  padding: 16px;
+}
+
+table {
+  border-collapse: collapse;
+  max-width: 600px;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+.valid {
+  color: green;
+}
+
+.invalid {
+  color: red;
+  font-weight: bold;
 }

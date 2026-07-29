@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 group("unit_tests") {
   testonly = true
 
@@ -9,4 +11,8 @@ group("unit_tests") {
     "//components/notebooks/internal:unit_tests",
     "//components/notebooks/public:unit_tests",
   ]
+
+  if (use_blink) {
+    deps += [ "//components/notebooks/internals/webui:unit_tests" ]
+  }
 }

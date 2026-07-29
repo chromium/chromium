@@ -112,6 +112,8 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/lens/lens_features.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/notebooks/internals/webui/notebooks_internals.mojom.h"
+#include "components/notebooks/internals/webui/notebooks_internals_ui.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -642,6 +644,10 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       contextual_cueing_internals::mojom::PageHandler,
       contextual_cueing_internals::ContextualCueingInternalsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      notebooks_internals::mojom::PageHandlerFactory,
+      notebooks::NotebooksInternalsUI>(map);
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(

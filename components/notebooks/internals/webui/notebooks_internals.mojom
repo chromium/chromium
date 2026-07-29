@@ -1,0 +1,42 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module notebooks_internals.mojom;
+
+import "url/mojom/url.mojom";
+
+// Values of feature flags related to Notebooks.
+struct FeatureFlagState {
+  bool notebooks_feature_enabled;
+  url.mojom.Url notebook_home_url;
+};
+
+// Profile checks and eligibility status.
+struct ProfileEligibility {
+  bool user_eligible;
+  // TODO(b/536924822): Add more specific eligibility details.
+};
+
+// Factory interface for creating page handler.
+interface PageHandlerFactory {
+  // Creates a page handler and binds it to the receiver.
+  CreatePageHandler(
+      pending_remote<Page> page,
+      pending_receiver<PageHandler> handler);
+};
+
+// Interface for communication from WebUI page to browser process.
+interface PageHandler {
+  // Returns feature flag values related to Notebooks.
+  GetFeatureFlagState() => (FeatureFlagState flags);
+
+  // Returns profile eligibility details and status.
+  GetProfileEligibility() => (ProfileEligibility eligibility);
+};
+
+// Interface for communication from browser process to WebUI page.
+interface Page {
+  // Called when eligibility status changes.
+  OnProfileEligibilityChanged(ProfileEligibility eligibility);
+};

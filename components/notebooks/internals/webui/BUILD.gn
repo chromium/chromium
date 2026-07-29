@@ -2,16 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(use_blink)
+
+mojom("mojo_bindings") {
+  sources = [ "notebooks_internals.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}
+
 source_set("webui") {
   sources = [
+    "notebooks_internals_page_handler.cc",
+    "notebooks_internals_page_handler.h",
     "notebooks_internals_ui.cc",
     "notebooks_internals_ui.h",
   ]
+
+  public_deps = [ ":mojo_bindings" ]
 
   deps = [
     "//components/notebooks/internals/webui/resources",
     "//components/notebooks/public",
     "//content/public/browser",
     "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "notebooks_internals_page_handler_unittest.cc" ]
+
+  deps = [
+    ":webui",
+    "//base/test:test_support",
+    "//components/notebooks/public",
+    "//testing/gtest",
+    "//url",
   ]
 }
