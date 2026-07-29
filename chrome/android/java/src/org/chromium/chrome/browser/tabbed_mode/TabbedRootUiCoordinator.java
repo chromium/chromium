@@ -2410,9 +2410,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!VerticalTabUtils.isVerticalTabsEligible(mActivity)) return;
 
         // Restore the user's saved tab layout preference upon browser cold launch.
-        boolean useVerticalLayoutOnLaunch =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+        boolean useVerticalLayoutOnLaunch = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
 
         mIsVerticalTabsActiveSupplier.addSyncObserver(
                 active -> {
@@ -2501,11 +2499,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Toggle the visibility between horizontal tab strip and vertical tab list. */
     public void toggleTabStrip() {
-        boolean shouldShowVerticalTabs =
-                !ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, shouldShowVerticalTabs);
+        boolean shouldShowVerticalTabs = !VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        VerticalTabUtils.setVerticalTabsEnabled(shouldShowVerticalTabs);
 
         if (shouldShowVerticalTabs) {
             Profile profile = mProfileSupplier.get();
