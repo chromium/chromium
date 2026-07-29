@@ -638,9 +638,8 @@ bool ShouldAllowScriptURL(const String& url) {
     return true;
   }
 
-  KURL kurl(url);
-  return kurl.ProtocolIsData() || kurl.ProtocolIsInHttpFamily() ||
-         kurl.ProtocolIs("blob") || kurl.IsEmpty();
+  return url.empty() || ProtocolIs(url, "data") || ProtocolIs(url, "http") ||
+         ProtocolIs(url, "https") || ProtocolIs(url, "blob");
 }
 
 }  // namespace
@@ -720,8 +719,14 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPointInternal(
     return nullptr;
   }
 
-  if (!ShouldAllowScriptURL(script_info.source_location.url) ||
-      state_ == State::kIdle) {
+  if (state_ == State::kIdle) {
+    return nullptr;
+  }
+
+  // Only count entry points whose source URL we would surface. This excludes
+  // non-web scripts such as chrome-extension://, so scriptCount reflects the
+  // page's own top-level JS entry points.
+  if (!ShouldAllowScriptURL(script_info.source_location.url)) {
     return nullptr;
   }
 
