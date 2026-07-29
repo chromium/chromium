@@ -53,6 +53,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -141,7 +142,8 @@ import java.util.List;
 @DisableFeatures({
     ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
     ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.GLIC
+    ChromeFeatureList.GLIC,
+    ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP
 })
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -1344,10 +1346,24 @@ public class StripLayoutHelperManagerTest {
         // Verify initial state.
         assertFalse("Tab should not be loading initially.", stripTab.isLoading());
 
-        // 1. Test onLoadStarted with toDifferentDocument = false (should be ignored).
+        // 1. Test onLoadStarted with toDifferentDocument = false (ignored when fix is disabled,
+        // triggers when fix is enabled or on desktop).
         observer.onLoadStarted(tab, false);
-        assertFalse(
-                "Tab should not start loading for same-document navigation.", stripTab.isLoading());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP)
+                || DeviceInfo.isDesktop()) {
+            assertTrue(
+                    "Tab should start loading for same-document navigation when fix is enabled.",
+                    stripTab.isLoading());
+            // Reset state for next test.
+            observer.onLoadStopped(tab, false);
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+            assertFalse("Tab should stop loading.", stripTab.isLoading());
+        } else {
+            assertFalse(
+                    "Tab should not start loading for same-document navigation when fix is"
+                            + " disabled.",
+                    stripTab.isLoading());
+        }
 
         // 2. Test onLoadStarted with toDifferentDocument = true (should trigger).
         observer.onLoadStarted(tab, true);
@@ -1355,16 +1371,85 @@ public class StripLayoutHelperManagerTest {
                 "Tab should start loading for different-document navigation.",
                 stripTab.isLoading());
 
-        // 3. Test onLoadStopped with toDifferentDocument = false (should be ignored, so still
-        // loading).
+        // 3. Test onLoadStopped with toDifferentDocument = false (ignored when fix is disabled,
+        // stops loading when fix is enabled or on desktop).
         observer.onLoadStopped(tab, false);
-        assertTrue("Tab should still be loading after same-document stop.", stripTab.isLoading());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP)
+                || DeviceInfo.isDesktop()) {
+            // Advance clock and run delayed tasks to allow TabLoadTracker's 100ms delay to expire.
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+            assertFalse(
+                    "Tab should stop loading after same-document stop when fix is enabled.",
+                    stripTab.isLoading());
+        } else {
+            assertTrue(
+                    "Tab should still be loading after same-document stop when fix is disabled.",
+                    stripTab.isLoading());
 
-        // 4. Test onLoadStopped with toDifferentDocument = true (should trigger).
-        observer.onLoadStopped(tab, true);
-        // Advance clock and run delayed tasks to allow TabLoadTracker's 100ms delay to expire.
+            // 4. Test onLoadStopped with toDifferentDocument = true (should trigger).
+            observer.onLoadStopped(tab, true);
+            // Advance clock and run delayed tasks to allow TabLoadTracker's 100ms delay to expire.
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+            assertFalse(
+                    "Tab should stop loading after different-document stop.", stripTab.isLoading());
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP)
+    public void testLoadingStateChanged_spinnerFix() throws Exception {
+        // Setup: Create a tab and a corresponding StripLayoutTab.
+        Tab tab = mock(Tab.class);
+        int tabId = 1;
+        when(tab.getId()).thenReturn(tabId);
+        when(tab.isIncognitoBranded()).thenReturn(false);
+
+        StripLayoutHelper standardHelper = mStripLayoutHelperManager.getStripLayoutHelper(false);
+        var callback = mock(TabLoadTrackerCallback.class);
+        StripLayoutTab stripTab =
+                new StripLayoutTab(
+                        mActivity,
+                        tabId,
+                        null,
+                        null,
+                        null,
+                        null,
+                        callback,
+                        mUpdateHost,
+                        false,
+                        false,
+                        MediaState.NONE);
+
+        Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
+        tabsField.setAccessible(true);
+        tabsField.set(standardHelper, new StripLayoutTab[] {stripTab});
+
+        Field observerField =
+                StripLayoutHelperManager.class.getDeclaredField("mTabModelSelectorTabObserver");
+        observerField.setAccessible(true);
+        TabModelSelectorTabObserver observer =
+                (TabModelSelectorTabObserver) observerField.get(mStripLayoutHelperManager);
+
+        // 1. Test onLoadProgressChanged at 1.0f stops loading.
+        observer.onLoadStarted(tab, true);
+        assertTrue(stripTab.isLoading());
+        observer.onLoadProgressChanged(tab, 1.0f);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertFalse("Tab should stop loading after different-document stop.", stripTab.isLoading());
+        assertFalse(stripTab.isLoading());
+
+        // 2. Test onPageLoadFailed stops loading.
+        observer.onLoadStarted(tab, true);
+        assertTrue(stripTab.isLoading());
+        observer.onPageLoadFailed(tab, -1);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(stripTab.isLoading());
+
+        // 3. Test onDocumentLoadedInPrimaryMainFrame stops loading.
+        observer.onLoadStarted(tab, true);
+        assertTrue(stripTab.isLoading());
+        observer.onDocumentLoadedInPrimaryMainFrame(tab);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(stripTab.isLoading());
     }
 
     @Test

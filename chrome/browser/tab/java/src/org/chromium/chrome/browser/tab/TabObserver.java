@@ -234,14 +234,23 @@ public interface TabObserver {
     /**
      * Called when a navigation is finished i.e. committed, aborted or replaced by a new one, in the
      * primary main frame.
+     *
      * @param tab The notifying {@link Tab}.
-     * @param navigationHandle Pointer to a NavigationHandle representing the navigation.
-     *                         Its lifetime end at the end of this function.
+     * @param navigationHandle Pointer to a NavigationHandle representing the navigation. Its
+     *     lifetime end at the end of this function.
      */
     void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation);
 
     /**
+     * Called when the document has finished loading for the primary main frame.
+     *
+     * @param tab The notifying {@link Tab}.
+     */
+    default void onDocumentLoadedInPrimaryMainFrame(Tab tab) {}
+
+    /**
      * Called when the page has painted something non-empty.
+     *
      * @param tab The notifying {@link Tab}.
      */
     void didFirstVisuallyNonEmptyPaint(Tab tab);

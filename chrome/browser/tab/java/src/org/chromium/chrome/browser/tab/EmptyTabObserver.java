@@ -112,6 +112,9 @@ public class EmptyTabObserver implements TabObserver {
             Tab tab, NavigationHandle navigationHandle) {}
 
     @Override
+    public void onDocumentLoadedInPrimaryMainFrame(Tab tab) {}
+
+    @Override
     public void onDidFinishNavigationEnd() {}
 
     @Override

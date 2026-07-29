@@ -677,6 +677,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {
     "src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManagerTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripContextMenuTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripGroupContextMenuTest.java",
+    "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripNavigationFailureTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripPinUnpinTabsTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripTest.java",
     "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripTestUtils.java",

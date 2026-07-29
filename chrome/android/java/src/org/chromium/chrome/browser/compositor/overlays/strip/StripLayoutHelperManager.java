@@ -32,6 +32,8 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -1428,6 +1430,11 @@ public class StripLayoutHelperManager
         }
     }
 
+    private boolean isSpinnerFixEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP)
+                || DeviceInfo.isDesktop();
+    }
+
     /**
      * Sets the TabModelSelector that this StripLayoutHelperManager will visually represent, and
      * various objects associated with it.
@@ -1598,26 +1605,61 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                        if (!toDifferentDocument) return;
-                        getStripLayoutHelper(tab.isIncognitoBranded()).tabLoadStarted(tab.getId());
+                        if (!isSpinnerFixEnabled() && !toDifferentDocument) return;
+                        StripLayoutHelper helper = getStripLayoutHelper(tab.isIncognitoBranded());
+                        helper.tabLoadStarted(tab.getId());
                     }
 
                     @Override
                     public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                        if (!toDifferentDocument) return;
-                        getStripLayoutHelper(tab.isIncognitoBranded()).tabLoadFinished(tab.getId());
+                        if (!isSpinnerFixEnabled() && !toDifferentDocument) {
+                            return;
+                        }
+                        StripLayoutHelper helper = getStripLayoutHelper(tab.isIncognitoBranded());
+                        helper.tabLoadFinished(tab.getId());
+                    }
+
+                    @Override
+                    public void onLoadProgressChanged(Tab tab, float progress) {
+                        if (isSpinnerFixEnabled() && MathUtils.areFloatsEqual(progress, 1.0f)) {
+                            StripLayoutHelper helper =
+                                    getStripLayoutHelper(tab.isIncognitoBranded());
+                            helper.tabLoadFinished(tab.getId());
+                        }
+                    }
+
+                    @Override
+                    public void onPageLoadFailed(Tab tab, int errorCode) {
+                        if (isSpinnerFixEnabled()) {
+                            StripLayoutHelper helper =
+                                    getStripLayoutHelper(tab.isIncognitoBranded());
+                            helper.tabLoadFinished(tab.getId());
+                        }
                     }
 
                     @Override
                     public void onCrash(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognitoBranded()).tabLoadFinished(tab.getId());
+                        StripLayoutHelper helper = getStripLayoutHelper(tab.isIncognitoBranded());
+                        helper.tabLoadFinished(tab.getId());
+                    }
+
+                    @Override
+                    public void onDocumentLoadedInPrimaryMainFrame(Tab tab) {
+                        if (isSpinnerFixEnabled()) {
+                            StripLayoutHelper helper =
+                                    getStripLayoutHelper(tab.isIncognitoBranded());
+                            helper.tabLoadFinished(tab.getId());
+                        }
                     }
 
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
+                        StripLayoutHelper helper = getStripLayoutHelper(tab.isIncognitoBranded());
+                        if (isSpinnerFixEnabled()) {
+                            helper.tabLoadFinished(tab.getId());
+                        }
                         if (tab == mTabModelSelector.getCurrentTab()) {
-                            getStripLayoutHelper(tab.isIncognitoBranded())
-                                    .attemptToQueueGlicIph(tab);
+                            helper.attemptToQueueGlicIph(tab);
                         }
                     }
 

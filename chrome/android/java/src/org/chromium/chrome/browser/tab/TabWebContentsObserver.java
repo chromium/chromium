@@ -244,6 +244,17 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
+        public void documentLoadedInPrimaryMainFrame(
+                Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {
+            if (rfhLifecycleState == LifecycleState.ACTIVE) {
+                RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+                while (observers.hasNext()) {
+                    observers.next().onDocumentLoadedInPrimaryMainFrame(mTab);
+                }
+            }
+        }
+
+        @Override
         public void didFailLoad(
                 boolean isInPrimaryMainFrame,
                 int errorCode,
