@@ -146,22 +146,13 @@ ContentIDs OmniboxPositionContentIDsForAlternative(
 }
 
 // Returns the title and the body text ids for the lens promo notification.
-ContentIDs LensContentIDsForAlternative(
-    TipsNotificationsAlternativeStringVersion alternative) {
-  switch (alternative) {
-    case TipsNotificationsAlternativeStringVersion::kAlternative1:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative2:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT2_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative3:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT3_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_BODY};
-    case TipsNotificationsAlternativeStringVersion::kDefault:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY};
+ContentIDs LensContentIDsForAlternative(bool isAlternativeStringEnabled) {
+  if (isAlternativeStringEnabled) {
+    return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_TITLE,
+            IDS_IOS_NOTIFICATIONS_TIPS_LENS_ALT1_BODY};
   }
+  return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_TITLE,
+          IDS_IOS_NOTIFICATIONS_TIPS_LENS_BODY};
 }
 
 // Returns the title and the body text ids for the safe browsing promo
@@ -204,7 +195,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kOmniboxPosition:
       return OmniboxPositionContentIDsForAlternative(alternative);
     case TipsNotificationType::kLens:
-      return LensContentIDsForAlternative(alternative);
+      return LensContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kEnhancedSafeBrowsing:
       return SafeBrowsingContentIDsForAlternative(alternative);
     case TipsNotificationType::kCPE:
