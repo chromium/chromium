@@ -56,12 +56,13 @@ std::string ConvertMinorTextToPrintableString(Suggestion suggestion) {
 std::string_view ConvertAcceptabilityToPrintableString(
     Suggestion::Acceptability acceptability) {
   switch (acceptability) {
-    case Suggestion::Acceptability::kAcceptable:
-      return "kAcceptable";
-    case Suggestion::Acceptability::kUnacceptable:
-      return "kUnacceptable";
-    case Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle:
-      return "kUnacceptableWithDeactivatedStyle";
+    case Suggestion::Acceptability::kSelectableAndAcceptable:
+      return "kSelectableAndAcceptable";
+    case Suggestion::Acceptability::kSelectableButUnacceptable:
+      return "kSelectableButUnacceptable";
+    case Suggestion::Acceptability::
+        kUnselectableAndUnacceptableWithDeactivatedStyle:
+      return "kUnselectableAndUnacceptableWithDeactivatedStyle";
   }
   NOTREACHED();
 }
@@ -506,21 +507,23 @@ bool Suggestion::IsAcceptable() const {
     return false;
   }
   switch (acceptability) {
-    case Acceptability::kAcceptable:
+    case Acceptability::kSelectableAndAcceptable:
       return true;
-    case Acceptability::kUnacceptable:
-    case Acceptability::kUnacceptableWithDeactivatedStyle:
+    case Acceptability::kSelectableButUnacceptable:
+    case Acceptability::kUnselectableAndUnacceptableWithDeactivatedStyle:
       return false;
   }
   NOTREACHED();
 }
 
+// TODO(crbug.com/b/538019057): Remove this helper once styling is completely
+// decoupled from suggestion interaction contract.
 bool Suggestion::HasDeactivatedStyle() const {
   switch (acceptability) {
-    case Acceptability::kAcceptable:
-    case Acceptability::kUnacceptable:
+    case Acceptability::kSelectableAndAcceptable:
+    case Acceptability::kSelectableButUnacceptable:
       return false;
-    case Acceptability::kUnacceptableWithDeactivatedStyle:
+    case Acceptability::kUnselectableAndUnacceptableWithDeactivatedStyle:
       return true;
   }
   NOTREACHED();

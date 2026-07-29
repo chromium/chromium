@@ -11,7 +11,8 @@ namespace autofill {
 namespace {
 
 TEST(SuggestionTest, IsAcceptable) {
-  // Acceptable suggestion types with default (kAcceptable) acceptability.
+  // Acceptable suggestion types with default (kSelectableAndAcceptable)
+  // acceptability.
   EXPECT_TRUE(Suggestion(SuggestionType::kAddressEntry).IsAcceptable());
   EXPECT_TRUE(Suggestion(SuggestionType::kCreditCardEntry).IsAcceptable());
   EXPECT_TRUE(Suggestion(SuggestionType::kIbanEntry).IsAcceptable());
@@ -27,14 +28,16 @@ TEST(SuggestionTest, IsAcceptable) {
   EXPECT_FALSE(
       Suggestion(SuggestionType::kAtMemorySourceAttribution).IsAcceptable());
 
-  // Non-kAcceptable acceptability states return false for acceptable types.
+  // Non-kSelectableAndAcceptable acceptability states return false for
+  // acceptable types.
   using enum Suggestion::Acceptability;
   Suggestion unacceptable_suggestion(SuggestionType::kAddressEntry);
-  unacceptable_suggestion.acceptability = kUnacceptable;
+  unacceptable_suggestion.acceptability = kSelectableButUnacceptable;
   EXPECT_FALSE(unacceptable_suggestion.IsAcceptable());
 
   Suggestion deactivated_suggestion(SuggestionType::kAddressEntry);
-  deactivated_suggestion.acceptability = kUnacceptableWithDeactivatedStyle;
+  deactivated_suggestion.acceptability =
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   EXPECT_FALSE(deactivated_suggestion.IsAcceptable());
 }
 

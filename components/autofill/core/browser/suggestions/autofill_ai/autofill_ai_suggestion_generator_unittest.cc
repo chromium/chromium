@@ -1833,13 +1833,14 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
                SuggestionTypeHasTextAndAcceptability(
                    SuggestionType::kAutofillAiOtherOrders,
                    l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS),
-                   Suggestion::Acceptability::kUnacceptable),
-               ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                               SuggestionType::kFillAutofillAi, u"ORD_RECENT",
-                               Suggestion::Acceptability::kAcceptable),
-                           SuggestionTypeHasTextAndAcceptability(
-                               SuggestionType::kFillAutofillAi, u"ORD_OLD",
-                               Suggestion::Acceptability::kAcceptable)))));
+                   Suggestion::Acceptability::kSelectableButUnacceptable),
+               ChildrenAre(
+                   SuggestionTypeHasTextAndAcceptability(
+                       SuggestionType::kFillAutofillAi, u"ORD_RECENT",
+                       Suggestion::Acceptability::kSelectableAndAcceptable),
+                   SuggestionTypeHasTextAndAcceptability(
+                       SuggestionType::kFillAutofillAi, u"ORD_OLD",
+                       Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
 // Test that fallback suggestions (second-level children) follow the same
@@ -1865,15 +1866,15 @@ TEST_F(AutofillAiSuggestionGeneratorOrderShipmentTest,
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
   // Since `order_local` is a subset/duplicate of `order_server`, only one child
   // suggestion should be generated in the fallback menu.
-  EXPECT_THAT(
-      res, SuggestionsAre(
-               AllOf(SuggestionTypeHasTextAndAcceptability(
-                         SuggestionType::kAutofillAiOtherOrders,
-                         l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS),
-                         Suggestion::Acceptability::kUnacceptable),
-                     ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                         SuggestionType::kFillAutofillAi, u"123",
-                         Suggestion::Acceptability::kAcceptable)))));
+  EXPECT_THAT(res,
+              SuggestionsAre(AllOf(
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kAutofillAiOtherOrders,
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS),
+                      Suggestion::Acceptability::kSelectableButUnacceptable),
+                  ChildrenAre(SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kFillAutofillAi, u"123",
+                      Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
 class AutofillAiSuggestionGeneratorSplitManageSuggestionTest
@@ -2103,17 +2104,19 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherOrdersSuggestion) {
       SuggestionsAre(
           SuggestionTypeHasTextAndAcceptability(
               SuggestionType::kFillAutofillAi, u"Amazon",
-              Suggestion::Acceptability::kAcceptable),
-          AllOf(SuggestionTypeHasTextAndAcceptability(
-                    SuggestionType::kAutofillAiOtherOrders,
-                    l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
-                    Suggestion::Acceptability::kUnacceptable),
-                ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                                SuggestionType::kFillAutofillAi, u"BestBuy",
-                                Suggestion::Acceptability::kAcceptable),
-                            SuggestionTypeHasTextAndAcceptability(
-                                SuggestionType::kFillAutofillAi, u"Costco",
-                                Suggestion::Acceptability::kAcceptable)))));
+              Suggestion::Acceptability::kSelectableAndAcceptable),
+          AllOf(
+              SuggestionTypeHasTextAndAcceptability(
+                  SuggestionType::kAutofillAiOtherOrders,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_ORDERS),
+                  Suggestion::Acceptability::kSelectableButUnacceptable),
+              ChildrenAre(
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kFillAutofillAi, u"BestBuy",
+                      Suggestion::Acceptability::kSelectableAndAcceptable),
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kFillAutofillAi, u"Costco",
+                      Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
 // Tests that when there are no primary order suggestions (e.g. no orders
@@ -2147,18 +2150,20 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   // 1. The fallback parent suggestion (`kAutofillAiOtherOrders`), labeled
   //    "All orders", containing BestBuy and Costco as children.
   // 2. The footer separator and manage suggestions.
-  EXPECT_THAT(suggestions,
-              SuggestionsAre(AllOf(
-                  SuggestionTypeHasTextAndAcceptability(
-                      SuggestionType::kAutofillAiOtherOrders,
-                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS),
-                      Suggestion::Acceptability::kUnacceptable),
-                  ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                                  SuggestionType::kFillAutofillAi, u"BestBuy",
-                                  Suggestion::Acceptability::kAcceptable),
-                              SuggestionTypeHasTextAndAcceptability(
-                                  SuggestionType::kFillAutofillAi, u"Costco",
-                                  Suggestion::Acceptability::kAcceptable)))));
+  EXPECT_THAT(
+      suggestions,
+      SuggestionsAre(AllOf(
+          SuggestionTypeHasTextAndAcceptability(
+              SuggestionType::kAutofillAiOtherOrders,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_ORDERS),
+              Suggestion::Acceptability::kSelectableButUnacceptable),
+          ChildrenAre(
+              SuggestionTypeHasTextAndAcceptability(
+                  SuggestionType::kFillAutofillAi, u"BestBuy",
+                  Suggestion::Acceptability::kSelectableAndAcceptable),
+              SuggestionTypeHasTextAndAcceptability(
+                  SuggestionType::kFillAutofillAi, u"Costco",
+                  Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
 // Tests that the "Other shipments" suggestion is correctly generated when there
@@ -2199,17 +2204,19 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesOtherShipmentsSuggestion) {
       SuggestionsAre(
           SuggestionTypeHasTextAndAcceptability(
               SuggestionType::kFillAutofillAi, u"TR123",
-              Suggestion::Acceptability::kAcceptable),
-          AllOf(SuggestionTypeHasTextAndAcceptability(
-                    SuggestionType::kAutofillAiOtherShipments,
-                    l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_SHIPMENTS),
-                    Suggestion::Acceptability::kUnacceptable),
-                ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                                SuggestionType::kFillAutofillAi, u"TR456",
-                                Suggestion::Acceptability::kAcceptable),
-                            SuggestionTypeHasTextAndAcceptability(
-                                SuggestionType::kFillAutofillAi, u"TR789",
-                                Suggestion::Acceptability::kAcceptable)))));
+              Suggestion::Acceptability::kSelectableAndAcceptable),
+          AllOf(
+              SuggestionTypeHasTextAndAcceptability(
+                  SuggestionType::kAutofillAiOtherShipments,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_OTHER_SHIPMENTS),
+                  Suggestion::Acceptability::kSelectableButUnacceptable),
+              ChildrenAre(
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kFillAutofillAi, u"TR456",
+                      Suggestion::Acceptability::kSelectableAndAcceptable),
+                  SuggestionTypeHasTextAndAcceptability(
+                      SuggestionType::kFillAutofillAi, u"TR789",
+                      Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
 // Tests that when there are no primary shipment suggestions, fallback shipment
@@ -2240,18 +2247,20 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   // 1. The fallback parent suggestion (`kAutofillAiOtherShipments`), labeled
   //    "All shipments", containing TR456 and TR789 as children.
   // 2. The footer separator and manage suggestions.
-  EXPECT_THAT(suggestions,
-              SuggestionsAre(AllOf(
-                  SuggestionTypeHasTextAndAcceptability(
-                      SuggestionType::kAutofillAiOtherShipments,
-                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_SHIPMENTS),
-                      Suggestion::Acceptability::kUnacceptable),
-                  ChildrenAre(SuggestionTypeHasTextAndAcceptability(
-                                  SuggestionType::kFillAutofillAi, u"TR456",
-                                  Suggestion::Acceptability::kAcceptable),
-                              SuggestionTypeHasTextAndAcceptability(
-                                  SuggestionType::kFillAutofillAi, u"TR789",
-                                  Suggestion::Acceptability::kAcceptable)))));
+  EXPECT_THAT(
+      suggestions,
+      SuggestionsAre(AllOf(
+          SuggestionTypeHasTextAndAcceptability(
+              SuggestionType::kAutofillAiOtherShipments,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ALL_SHIPMENTS),
+              Suggestion::Acceptability::kSelectableButUnacceptable),
+          ChildrenAre(
+              SuggestionTypeHasTextAndAcceptability(
+                  SuggestionType::kFillAutofillAi, u"TR456",
+                  Suggestion::Acceptability::kSelectableAndAcceptable),
+              SuggestionTypeHasTextAndAcceptability(
+                  SuggestionType::kFillAutofillAi, u"TR789",
+                  Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
 }  // namespace

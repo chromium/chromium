@@ -81,8 +81,8 @@ Suggestion CreateFreeformFooter() {
       u"You recently changed a password found in a public data breach. In case "
       "of trouble, Google Password Manager can help you sign in.";
   Suggestion suggestion(kMainText, SuggestionType::kFreeformFooter);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   return suggestion;
 }
 
@@ -112,8 +112,8 @@ Suggestion CreateBnplSuggestion(const std::u16string& main_text,
                     BnplIssuer::IssuerId::kBnplZip, {});
   suggestion.payload = Suggestion::BnplIssuer(issuer);
   if (deactivated) {
-    suggestion.acceptability =
-        Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+    suggestion.acceptability = Suggestion::Acceptability::
+        kUnselectableAndUnacceptableWithDeactivatedStyle;
   }
   return suggestion;
 }

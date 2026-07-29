@@ -82,8 +82,8 @@ class PopupRowViewTest : public ChromeViewsTestBase {
     std::vector<Suggestion> suggestions(line_number + 1, Suggestion(type));
     suggestions[line_number].type = type;
     suggestions[line_number].acceptability =
-        is_acceptable ? Suggestion::Acceptability::kAcceptable
-                      : Suggestion::Acceptability::kUnacceptable;
+        is_acceptable ? Suggestion::Acceptability::kSelectableAndAcceptable
+                      : Suggestion::Acceptability::kSelectableButUnacceptable;
     suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
       suggestions[line_number].children = {Suggestion(type)};

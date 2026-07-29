@@ -75,7 +75,8 @@ bool ShouldShowMaximizeCreditCardBenefitsSuggestion(
 
 Suggestion CreateBnplFootnoteSuggestion() {
   Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
-  bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
+  bnpl_footnote.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   bnpl_footnote.tab_index = kPayLaterSuggestionTabIndex;
 
   return bnpl_footnote;
@@ -511,8 +512,9 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
     if (is_card_number_field_empty) {
       bnpl_suggestion.acceptability =
           issuer_context.IsEligible()
-              ? Suggestion::Acceptability::kAcceptable
-              : Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+              ? Suggestion::Acceptability::kSelectableAndAcceptable
+              : Suggestion::Acceptability::
+                    kUnselectableAndUnacceptableWithDeactivatedStyle;
       bnpl_suggestion.labels = {
           {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
               issuer_context.issuer.issuer_id(), app_locale,
@@ -520,8 +522,8 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
     } else {
       bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}};
-      bnpl_suggestion.acceptability =
-          Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+      bnpl_suggestion.acceptability = Suggestion::Acceptability::
+          kUnselectableAndUnacceptableWithDeactivatedStyle;
     }
     bnpl_suggestion.icon =
         payments::GetBnplSuggestionIcon(issuer_context.issuer.issuer_id());
@@ -537,7 +539,8 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
 Suggestion GetLoadingSuggestionForPayLaterTab(
     int expected_number_of_suggestions) {
   Suggestion loading_suggestion = Suggestion(SuggestionType::kLoadingThrobber);
-  loading_suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  loading_suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   loading_suggestion.expected_number_of_suggestions =
       expected_number_of_suggestions;
   loading_suggestion.tab_index = kPayLaterSuggestionTabIndex;

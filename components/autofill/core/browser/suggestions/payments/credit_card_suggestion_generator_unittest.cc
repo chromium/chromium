@@ -1807,7 +1807,7 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
                     bnpl_issuers[0].GetDisplayName()))}}),
             EqualSuggestionTabIndex(kDefaultSuggestionTabIndex)));
   EXPECT_EQ(updated_suggestions[current_suggestion_index++].acceptability,
-            Suggestion::Acceptability::kAcceptable);
+            Suggestion::Acceptability::kSelectableAndAcceptable);
 
   // Checks the footer suggestions stayed in the same order after the insertion.
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
@@ -1820,7 +1820,7 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
 }
 
 // Ensures that `GetSuggestionsForBnpl` sets the acceptability to
-// `kUnacceptableWithDeactivatedStyle` when there is an amount extraction error.
+// `kUnselectableAndUnacceptableWithDeactivatedStyle` when there is an amount extraction error.
 TEST_F(CreditCardSuggestionGeneratorBnplTest,
        GetSuggestionsForBnpl_AmountExtractionError) {
   payments::BnplIssuerContext issuer_context(
@@ -1834,7 +1834,8 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0].acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
 }
 
 // Ensures that the separator and pay over time option is generated with
@@ -2397,7 +2398,8 @@ TEST_F(
           Suggestion::Text(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}));
   EXPECT_EQ(disabled_bnpl_suggestion->acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
   EXPECT_TRUE(std::holds_alternative<Suggestion::BnplIssuer>(
       disabled_bnpl_suggestion->payload));
   EXPECT_EQ(std::get<Suggestion::BnplIssuer>(disabled_bnpl_suggestion->payload)
@@ -2461,7 +2463,8 @@ TEST_F(
       << "Expected a BNPL suggestion to be generated.";
 
   EXPECT_EQ(disabled_bnpl_suggestion->acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
 }
 
 TEST_F(
@@ -2573,7 +2576,7 @@ TEST_F(
       << "Expected a Loading Throbber suggestion to be generated.";
 
   EXPECT_EQ(loading_throbber_finder->acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_EQ(loading_throbber_finder->tab_index, kPayLaterSuggestionTabIndex);
 
   // 3 BNPL issuers were added.
@@ -2737,7 +2740,8 @@ TEST_F(
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(suggestions[1].type, SuggestionType::kBnplEntry);
   EXPECT_EQ(suggestions[1].acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
   EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplFootnote);
   EXPECT_EQ(suggestions[3].type, SuggestionType::kSeparator);
   EXPECT_EQ(suggestions[4].type, SuggestionType::kManageCreditCard);
@@ -2783,7 +2787,7 @@ TEST_F(
       << "Expected a BNPL footnote suggestion to be generated.";
 
   EXPECT_EQ(bnpl_footnote->acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_EQ(bnpl_footnote->tab_index, kPayLaterSuggestionTabIndex);
 }
 
@@ -3031,7 +3035,7 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
 
   EXPECT_EQ(loading_suggestion.type, SuggestionType::kLoadingThrobber);
   EXPECT_EQ(loading_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_EQ(loading_suggestion.tab_index, kPayLaterSuggestionTabIndex);
   EXPECT_EQ(loading_suggestion.expected_number_of_suggestions, 2u);
 }
@@ -3293,7 +3297,8 @@ TEST_F(CreditCardSuggestionGeneratorTest, CreateBnplSuggestion_OneIssuer) {
           /*icon=*/Suggestion::Icon::kBnplGeneric,
           /*labels=*/
           {{Suggestion::Text(bnpl_issuers[0].GetDisplayName())}}));
-  EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
+  EXPECT_EQ(suggestion.acceptability,
+            Suggestion::Acceptability::kSelectableAndAcceptable);
 }
 
 TEST_F(CreditCardSuggestionGeneratorTest, CreateBnplSuggestion_TwoIssuers) {
@@ -3319,7 +3324,8 @@ TEST_F(CreditCardSuggestionGeneratorTest, CreateBnplSuggestion_TwoIssuers) {
               // Affirm comes before Zip.
               bnpl_issuers[1].GetDisplayName(),
               bnpl_issuers[0].GetDisplayName()))}}));
-  EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
+  EXPECT_EQ(suggestion.acceptability,
+            Suggestion::Acceptability::kSelectableAndAcceptable);
 }
 
 TEST_F(CreditCardSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
@@ -3347,7 +3353,8 @@ TEST_F(CreditCardSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
               bnpl_issuers[2].GetDisplayName(),
               bnpl_issuers[0].GetDisplayName(),
               bnpl_issuers[1].GetDisplayName()))}}));
-  EXPECT_EQ(suggestion.acceptability, Suggestion::Acceptability::kAcceptable);
+  EXPECT_EQ(suggestion.acceptability,
+            Suggestion::Acceptability::kSelectableAndAcceptable);
 }
 
 TEST_F(CreditCardSuggestionGeneratorTest,
@@ -3368,7 +3375,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
           l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
           /*icon=*/Suggestion::Icon::kBnplGeneric));
   EXPECT_EQ(suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
 }
 
 TEST_F(CreditCardSuggestionGeneratorTest,
@@ -3389,7 +3397,8 @@ TEST_F(CreditCardSuggestionGeneratorTest,
           l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
           /*icon=*/Suggestion::Icon::kBnplGeneric));
   EXPECT_EQ(suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
 }
 
 TEST_F(CreditCardSuggestionGeneratorTest, CreateBnplSuggestion_FlagDisabled) {

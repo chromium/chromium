@@ -126,7 +126,7 @@ std::vector<Suggestion> CreateLoyaltyCardSuggestions() {
 
 std::vector<Suggestion> CreatePasswordSuggestions(
     Suggestion::Acceptability acceptability =
-        Suggestion::Acceptability::kAcceptable) {
+        Suggestion::Acceptability::kSelectableAndAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"Title suggestion", SuggestionType::kTitle);
   suggestions.back().acceptability = acceptability;
@@ -152,7 +152,7 @@ std::vector<Suggestion> CreatePasswordSuggestions(
 
 std::vector<Suggestion> CreateWebAuthnSuggestions(
     Suggestion::Acceptability acceptability =
-        Suggestion::Acceptability::kAcceptable) {
+        Suggestion::Acceptability::kSelectableAndAcceptable) {
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(
       u"cool passkey",
@@ -185,7 +185,7 @@ std::vector<Suggestion> CreateWebAuthnSuggestions(
 
 std::vector<Suggestion> CreatePasswordAndWebAuthnSuggestions(
     Suggestion::Acceptability acceptability =
-        Suggestion::Acceptability::kAcceptable) {
+        Suggestion::Acceptability::kSelectableAndAcceptable) {
   std::vector<Suggestion> suggestions =
       CreatePasswordSuggestions(acceptability);
   suggestions.pop_back();
@@ -212,7 +212,8 @@ Suggestion CreateBnplEntrySuggestion() {
 
 Suggestion CreateBnplFootnoteSuggestion() {
   Suggestion bnpl_footnote = Suggestion(SuggestionType::kBnplFootnote);
-  bnpl_footnote.acceptability = Suggestion::Acceptability::kUnacceptable;
+  bnpl_footnote.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   return bnpl_footnote;
 }
 
@@ -220,7 +221,7 @@ Suggestion CreateAtMemoryFetchingSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
       SuggestionType::kAtMemoryFetching);
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability = Suggestion::Acceptability::kSelectableButUnacceptable;
   return suggestion;
 }
 
@@ -400,7 +401,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_And_WebAuthn_Deactivated) {
   PrepareSuggestions(CreatePasswordAndWebAuthnSuggestions(
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle));
+      Suggestion::Acceptability::
+          kUnselectableAndUnacceptableWithDeactivatedStyle));
   ShowAndVerifyUi();
 }
 

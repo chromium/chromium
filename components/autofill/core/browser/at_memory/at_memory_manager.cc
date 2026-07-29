@@ -70,7 +70,7 @@ Suggestion CreateFetchingSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
       SuggestionType::kAtMemoryFetching);
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability = Suggestion::Acceptability::kSelectableButUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return suggestion;
 }
@@ -487,7 +487,8 @@ Suggestion CreateSourceAttributionSuggestion() {
   Suggestion source_info(SuggestionType::kAtMemorySourceAttribution);
   source_info.minor_texts.emplace_back(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE));
-  source_info.acceptability = Suggestion::Acceptability::kUnacceptable;
+  source_info.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return source_info;
 }
@@ -577,7 +578,7 @@ Suggestion CreateNoDataSuggestion() {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA),
       SuggestionType::kAtMemorySearchResult);
   suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptable;
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
@@ -590,8 +591,8 @@ Suggestion CreateNoConnectionSuggestion(std::u16string query) {
                         SuggestionType::kAtMemoryNoConnection);
   suggestion.labels = {{Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}};
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
@@ -603,7 +604,8 @@ Suggestion CreateGenericErrorSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR),
       SuggestionType::kAtMemoryGenericError);
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
@@ -1076,7 +1078,8 @@ Suggestion AtMemoryManager::CreateUnsupportedQuerySuggestion(
       SuggestionType::kOpenGemini);
   suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION))}};
-  suggestion.acceptability = Suggestion::Acceptability::kAcceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableAndAcceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.payload = Suggestion::OpenGeminiPayload(query);
   suggestion.icon = Suggestion::Icon::kSpark;
@@ -1095,8 +1098,8 @@ Suggestion AtMemoryManager::CreateSearchAffordanceSuggestion(
 
 Suggestion AtMemoryManager::CreateAiDisclosureSuggestion() const {
   Suggestion suggestion(SuggestionType::kAtMemoryAiDisclosure);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return suggestion;
 }

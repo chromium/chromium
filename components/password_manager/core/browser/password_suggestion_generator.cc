@@ -298,9 +298,10 @@ void AppendManualFallbackSuggestions(
         /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
     suggestion.payload = payload;
-    suggestion.acceptability = on_password_form.value()
-                                   ? Suggestion::Acceptability::kAcceptable
-                                   : Suggestion::Acceptability::kUnacceptable;
+    suggestion.acceptability =
+        on_password_form.value()
+            ? Suggestion::Acceptability::kSelectableAndAcceptable
+            : Suggestion::Acceptability::kSelectableButUnacceptable;
     if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)
             .IsValidWebFacetURI() &&
         domain_info.url.SchemeIs(url::kHttpsScheme)) {
@@ -581,8 +582,8 @@ PasswordSuggestionGenerator::GetProactiveRecoverySuggestions(
 
   Suggestion footer(footer_text, SuggestionType::kFreeformFooter);
   footer.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  footer.acceptability =
-      autofill::Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  footer.acceptability = autofill::Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   suggestions.emplace_back(std::move(footer));
 
   return suggestions;

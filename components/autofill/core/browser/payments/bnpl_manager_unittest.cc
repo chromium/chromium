@@ -2670,12 +2670,13 @@ TEST_F(BnplManagerTest, OnIssuerAccepted_ShowProgressSuggestion) {
       mock_update_suggestions_callback,
       Run(ElementsAre(
               Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-              AllOf(Field(&Suggestion::type, SuggestionType::kLoadingThrobber),
-                    Field(&Suggestion::acceptability,
-                          Suggestion::Acceptability::kUnacceptable),
-                    Field(&Suggestion::expected_number_of_suggestions,
-                          std::optional(2)),
-                    Field(&Suggestion::tab_index, kPayLaterSuggestionTabIndex)),
+              AllOf(
+                  Field(&Suggestion::type, SuggestionType::kLoadingThrobber),
+                  Field(&Suggestion::acceptability,
+                        Suggestion::Acceptability::kSelectableButUnacceptable),
+                  Field(&Suggestion::expected_number_of_suggestions,
+                        std::optional(2)),
+                  Field(&Suggestion::tab_index, kPayLaterSuggestionTabIndex)),
               Field(&Suggestion::type, SuggestionType::kBnplFootnote),
               Field(&Suggestion::type, SuggestionType::kManageCreditCard)),
           AutofillSuggestionTriggerSource::kFormControlElementClicked));

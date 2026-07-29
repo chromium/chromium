@@ -316,12 +316,13 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
                         SuggestionType::kDevtoolsTestAddresses);
   suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.icon = Suggestion::Icon::kCode;
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   suggestion.children.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY),
       SuggestionType::kDevtoolsTestAddressByCountry);
-  suggestion.children.back().acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.children.back().acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   suggestion.children.emplace_back(SuggestionType::kSeparator);
   for (const AutofillProfile& test_address : test_addresses) {
     CHECK(test_address.is_devtools_testing_profile());
@@ -599,7 +600,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     suggestion.payload = std::move(payloads[i]);
     suggestion.acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-    suggestion.acceptability = Suggestion::Acceptability::kAcceptable;
+    suggestion.acceptability =
+        Suggestion::Acceptability::kSelectableAndAcceptable;
     if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
       suggestion.field_by_field_filling_type_used =
           std::optional(trigger_field_type);

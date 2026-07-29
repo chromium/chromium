@@ -1394,8 +1394,9 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoData) {
                 testing::Field(&Suggestion::type,
                                SuggestionType::kAtMemorySearchResult),
                 testing::Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
-                testing::Field(&Suggestion::acceptability,
-                               Suggestion::Acceptability::kUnacceptable))));
+                testing::Field(
+                    &Suggestion::acceptability,
+                    Suggestion::Acceptability::kSelectableButUnacceptable))));
       });
 
   external_delegate().OnSearchSubmitted(u"shoe size");
@@ -1425,7 +1426,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoConnection) {
                 Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
                 Field(&Suggestion::acceptability,
                       Suggestion::Acceptability::
-                          kUnacceptableWithDeactivatedStyle))));
+                          kUnselectableAndUnacceptableWithDeactivatedStyle))));
       });
 
   external_delegate().OnSearchSubmitted(u"shoe size");
@@ -1462,7 +1463,7 @@ TEST_P(AutofillExternalDelegateAtMemoryGenericErrorTest,
                 Field(&Suggestion::type, SuggestionType::kAtMemoryGenericError),
                 Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
                 Field(&Suggestion::acceptability,
-                      Suggestion::Acceptability::kUnacceptable))));
+                      Suggestion::Acceptability::kSelectableButUnacceptable))));
       });
 
   external_delegate().OnSearchSubmitted(u"shoe size");
@@ -2750,7 +2751,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
         Field(&Suggestion::is_loading, Suggestion::IsLoading(true));
     auto is_deactivated =
         AllOf(Field(&Suggestion::acceptability,
-                    Suggestion::Acceptability::kUnacceptable),
+                    Suggestion::Acceptability::kSelectableButUnacceptable),
               Field(&Suggestion::is_loading, Suggestion::IsLoading(false)));
 
     EXPECT_CALL(
@@ -3302,8 +3303,9 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
       .Times(0);
 
   auto is_loading = Field(&Suggestion::is_loading, Suggestion::IsLoading(true));
-  auto is_unacceptable = Field(&Suggestion::acceptability,
-                               Suggestion::Acceptability::kUnacceptable);
+  auto is_unacceptable =
+      Field(&Suggestion::acceptability,
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
                   ElementsAre(AllOf(is_loading, is_unacceptable)),

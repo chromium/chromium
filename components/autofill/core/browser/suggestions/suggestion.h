@@ -477,17 +477,17 @@ struct Suggestion {
     kStatic,
   };
 
-  // Describes whether a suggestion can be accepted and how it should be styled
-  // when it cannot be.
+  // Describes the behavioral interaction contract of a suggestion: whether it
+  // can be selected/focused and whether it can be accepted (clicked/filled).
   enum class Acceptability {
-    // The suggestion can be accepted.
-    kAcceptable,
-    // The suggestion cannot be accepted (i.e. trying to accept it is ignored by
-    // the UI controller).
-    kUnacceptable,
-    // The suggestion cannot be accepted and is displayed in a
-    // disabled/grayed-out form.
-    kUnacceptableWithDeactivatedStyle,
+    // The suggestion can be selected and accepted.
+    kSelectableAndAcceptable,
+    // The suggestion can be selected, but cannot be accepted (i.e. trying to
+    // accept it is ignored by the UI controller).
+    kSelectableButUnacceptable,
+    // The suggestion cannot be selected/focused and cannot be accepted, and
+    // is displayed in a deactivated style.
+    kUnselectableAndUnacceptableWithDeactivatedStyle,
   };
 
   explicit Suggestion(SuggestionType type);
@@ -683,18 +683,21 @@ struct Suggestion {
   FiltrationPolicy filtration_policy = FiltrationPolicy::kFilterable;
 
   // The acceptability of the suggestion, see the enum values doc for details.
-  // Note that even if `acceptability` is `kAcceptable`, some `SuggestionType`
-  // are still not acceptable. See `IsAcceptable()` for details.
-  Acceptability acceptability = Acceptability::kAcceptable;
+  // Note that even if `acceptability` is `kSelectableAndAcceptable`, some
+  // `SuggestionType` are still not acceptable. See `IsAcceptable()` for
+  // details.
+  Acceptability acceptability = Acceptability::kSelectableAndAcceptable;
 
   // Returns whether the user is able to preview the suggestion by hovering on
   // it or accept it by clicking on it. Checks both whether the suggestion type
   // is acceptable (i.e. not a separator, title, etc.) and whether
-  // `acceptability == Acceptability::kAcceptable`.
+  // `acceptability == Acceptability::kSelectableAndAcceptable`.
   bool IsAcceptable() const;
 
   // Returns whether the user will see the suggestion in
   // a "disabled and grayed-out" form.
+  // TODO(crbug.com/b/538019057): Remove this helper once styling is completely
+  // decoupled from suggestion interaction contract.
   bool HasDeactivatedStyle() const;
 };
 

@@ -866,7 +866,8 @@ Suggestion CreateParentFallbackSuggestion(EntityType entity_type,
                                         ? IDS_AUTOFILL_AI_OTHER_ORDERS
                                         : IDS_AUTOFILL_AI_ALL_ORDERS),
           SuggestionType::kAutofillAiOtherOrders);
-      suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+      suggestion.acceptability =
+          Suggestion::Acceptability::kSelectableButUnacceptable;
       suggestion.children = std::move(children);
       return suggestion;
     }
@@ -876,7 +877,8 @@ Suggestion CreateParentFallbackSuggestion(EntityType entity_type,
                                         ? IDS_AUTOFILL_AI_OTHER_SHIPMENTS
                                         : IDS_AUTOFILL_AI_ALL_SHIPMENTS),
           SuggestionType::kAutofillAiOtherShipments);
-      suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+      suggestion.acceptability =
+          Suggestion::Acceptability::kSelectableButUnacceptable;
       suggestion.children = std::move(children);
       return suggestion;
     }

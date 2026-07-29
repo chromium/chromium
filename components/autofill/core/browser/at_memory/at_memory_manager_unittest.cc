@@ -307,7 +307,7 @@ Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
           ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)))),
       Field(&Suggestion::acceptability,
-            Suggestion::Acceptability::kUnacceptable));
+            Suggestion::Acceptability::kSelectableButUnacceptable));
 
   if constexpr (sizeof...(matchers) == 0) {
     return EqualsAtMemorySuggestion(
@@ -391,7 +391,7 @@ TEST_F(AtMemoryManagerTest,
                                      IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}}),
                 Field(&Suggestion::acceptability,
                       Suggestion::Acceptability::
-                          kUnacceptableWithDeactivatedStyle)),
+                          kUnselectableAndUnacceptableWithDeactivatedStyle)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(SuggestionType::kAtMemoryAiDisclosure)));
 }
@@ -665,7 +665,8 @@ TEST_F(AtMemoryManagerTest,
   EXPECT_EQ(final_suggestions[0].labels[0][0].value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION));
   EXPECT_EQ(final_suggestions[0].acceptability,
-            Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::
+                kUnselectableAndUnacceptableWithDeactivatedStyle);
 }
 
 // Tests that when filling an attribute (e.g. Passport Number), the manager
@@ -1431,7 +1432,7 @@ TEST_P(AtMemoryManagerPolicyTest, RespectsEnterprisePolicy) {
     EXPECT_EQ(resulting_suggestions[0].type,
               SuggestionType::kAtMemorySearchResult);
     EXPECT_EQ(resulting_suggestions[0].acceptability,
-              Suggestion::Acceptability::kUnacceptable);
+              Suggestion::Acceptability::kSelectableButUnacceptable);
   }
 }
 
@@ -1497,7 +1498,7 @@ TEST_P(AtMemoryManagerPrefTest, FiltersOutCreditCardsWhenPrefDisabled) {
     EXPECT_EQ(resulting_suggestions[0].type,
               SuggestionType::kAtMemorySearchResult);
     EXPECT_EQ(resulting_suggestions[0].acceptability,
-              Suggestion::Acceptability::kUnacceptable);
+              Suggestion::Acceptability::kSelectableButUnacceptable);
   }
 }
 

@@ -222,8 +222,8 @@ TEST_F(BnplPopupRowViewTest, LinkedPill_Deactivated) {
   BnplIssuer linked_issuer(/*instrument_id=*/1234,
                            BnplIssuer::IssuerId::kBnplZip, {});
   suggestion.payload = Suggestion::BnplIssuer(linked_issuer);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
 
   ShowSuggestion(suggestion);
 
@@ -237,8 +237,8 @@ TEST_F(BnplPopupRowViewTest, LinkedPill_Deactivated) {
 TEST_F(BnplPopupRowViewTest, Deactivated_IconOpacity) {
   Suggestion suggestion(u"Bnpl", SuggestionType::kBnplEntry);
   suggestion.icon = Suggestion::Icon::kBnplGeneric;
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
 
   ShowSuggestion(suggestion);
 

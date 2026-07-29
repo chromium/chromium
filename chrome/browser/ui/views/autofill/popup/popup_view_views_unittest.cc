@@ -1063,14 +1063,14 @@ TEST_F(PopupViewViewsTest, CursorUpWithNonSelectableCells) {
   // Set up the popup.
   Suggestion disabledSuggestion1(u"Virtual Card #1",
                                  SuggestionType::kVirtualCreditCardEntry);
-  disabledSuggestion1.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  disabledSuggestion1.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   Suggestion acceptableSuggestion1(u"Credit Card #1",
                                    SuggestionType::kCreditCardEntry);
   Suggestion disabledSuggestion2(u"Virtual Card #2",
                                  SuggestionType::kVirtualCreditCardEntry);
-  disabledSuggestion2.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  disabledSuggestion2.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
 
   Suggestion acceptableSuggestion2(u"Credit Card #2",
                                    SuggestionType::kCreditCardEntry);
@@ -1106,14 +1106,14 @@ TEST_F(PopupViewViewsTest, CursorDownWithNonSelectableCells) {
   // Set up the popup.
   Suggestion disabledSuggestion1(u"Virtual Card #1",
                                  SuggestionType::kVirtualCreditCardEntry);
-  disabledSuggestion1.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  disabledSuggestion1.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   Suggestion acceptableSuggestion1(u"Credit Card #1",
                                    SuggestionType::kCreditCardEntry);
   Suggestion disabledSuggestion2(u"Virtual Card #2",
                                  SuggestionType::kVirtualCreditCardEntry);
-  disabledSuggestion2.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  disabledSuggestion2.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   Suggestion acceptableSuggestion2(u"Credit Card #2",
                                    SuggestionType::kCreditCardEntry);
   Suggestion acceptableSuggestion3(u"Credit Card #3",
@@ -1143,14 +1143,14 @@ TEST_F(PopupViewViewsTest, OverflowWithNonSelectableCells) {
   // Set up the popup.
   Suggestion disabledSuggestion1(u"Virtual Card #1",
                                  SuggestionType::kVirtualCreditCardEntry);
-  disabledSuggestion1.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  disabledSuggestion1.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   Suggestion acceptableSuggestion1(u"Credit Card #1",
                                    SuggestionType::kCreditCardEntry);
   Suggestion disabledSuggestion2(u"Virtual Card #2",
                                  SuggestionType::kVirtualCreditCardEntry);
-  disabledSuggestion2.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  disabledSuggestion2.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   Suggestion acceptableSuggestion2(u"Credit Card #2",
                                    SuggestionType::kCreditCardEntry);
   controller().set_suggestions({disabledSuggestion1, acceptableSuggestion1,
@@ -2399,10 +2399,10 @@ TEST_F(PopupViewViewsTest, SubPopupOpensForNonSelectableContentSelection) {
   Suggestion suggestion = CreateSuggestionWithChildren(
       SuggestionType::kPasswordEntry,
       {Suggestion(u"Child", SuggestionType::kPasswordFieldByFieldFilling)});
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
-
   EXPECT_CALL(controller(), OpenSubPopup);
 
   view().SetSelectedCell(CellIndex{0, CellType::kContent},
@@ -2414,7 +2414,8 @@ TEST_F(PopupViewViewsTest, SubPopupNotOpenForSelectableContentSelection) {
   Suggestion suggestion = CreateSuggestionWithChildren(
       SuggestionType::kPasswordEntry,
       {Suggestion(u"Child", SuggestionType::kPasswordFieldByFieldFilling)});
-  suggestion.acceptability = Suggestion::Acceptability::kAcceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableAndAcceptable;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
 
@@ -2430,8 +2431,8 @@ TEST_F(PopupViewViewsTest,
   Suggestion suggestion = CreateSuggestionWithChildren(
       SuggestionType::kPasswordEntry,
       {Suggestion(u"Child", SuggestionType::kPasswordFieldByFieldFilling)});
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability = Suggestion::Acceptability::
+      kUnselectableAndUnacceptableWithDeactivatedStyle;
   controller().set_suggestions({suggestion});
   CreateAndShowView();
 
@@ -2467,7 +2468,7 @@ TEST_F(PopupViewViewsTest,
   Suggestion suggestion = CreateSuggestionWithChildren(
       SuggestionType::kAtMemorySearchResult,
       {Suggestion(u"Child", SuggestionType::kAtMemorySearchResult)});
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability = Suggestion::Acceptability::kSelectableButUnacceptable;
   suggestion.is_loading = Suggestion::IsLoading(true);
   controller().set_suggestions({suggestion});
   CreateAndShowView();

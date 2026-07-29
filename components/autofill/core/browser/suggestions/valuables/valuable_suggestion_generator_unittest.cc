@@ -198,7 +198,7 @@ TEST_F(ValuableSuggestionGeneratorTest, WithMatchingDomain) {
 #if !BUILDFLAG(IS_ANDROID)
   const Suggestion& lc_submenu_suggestion = suggestions_with_matching_domain[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(
@@ -240,7 +240,7 @@ TEST_F(ValuableSuggestionGeneratorTest, WithMatchingDomainAndFieldAutofilled) {
 #if !BUILDFLAG(IS_ANDROID)
   const Suggestion& lc_submenu_suggestion = suggestions_with_matching_domain[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(
@@ -380,7 +380,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
               l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES))));
   const Suggestion& lc_submenu_suggestion = email_suggestions[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(
@@ -513,7 +513,7 @@ TEST_F(ValuableSuggestionGeneratorTest,
               l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES))));
   const Suggestion& lc_submenu_suggestion = email_suggestions[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(
@@ -638,7 +638,7 @@ TEST_F(
   ASSERT_FALSE(suggestions.empty());
   const Suggestion& lc_submenu_suggestion = suggestions[0];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(
@@ -693,7 +693,7 @@ TEST_F(
 
   const Suggestion& lc_submenu_suggestion = suggestions_with_matching_domain[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(
@@ -764,7 +764,7 @@ TEST_F(ValuableSuggestionGeneratorWithNonAffiliationSupportTest,
 
   const Suggestion& lc_submenu_suggestion = suggestions_with_matching_domain[3];
   EXPECT_EQ(lc_submenu_suggestion.acceptability,
-            Suggestion::Acceptability::kUnacceptable);
+            Suggestion::Acceptability::kSelectableButUnacceptable);
   EXPECT_THAT(
       lc_submenu_suggestion.children,
       testing::ElementsAre(

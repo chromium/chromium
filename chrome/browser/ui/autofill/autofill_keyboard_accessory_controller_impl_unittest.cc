@@ -514,7 +514,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        DoesNotAcceptUnacceptableSuggestions) {
   Suggestion suggestion(u"Open the pod bay doors, HAL",
                         SuggestionType::kAutocompleteEntry);
-  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
