@@ -512,6 +512,8 @@ TEST_F(NavigationURLLoaderImplTest,
                               ->enabled_client_hints->origin);
 }
 
+// TODO(crbug.com/539424101): Flaky / timing out on macOS.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(NavigationURLLoaderImplTest, Redirect301Tests) {
   ASSERT_TRUE(http_test_server_.Start());
 
@@ -588,6 +590,7 @@ TEST_F(NavigationURLLoaderImplTest, Redirect308Tests) {
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "POST", "null",
                                true);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 namespace {
 
