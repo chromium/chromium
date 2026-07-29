@@ -823,9 +823,9 @@ ExtensionActionViewModel::GetIconImageSource(content::WebContents* web_contents,
   bool has_side_panel_action = false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   bool is_grayscale =
+      !action_is_visible && !has_side_panel_action &&
       GetSiteInteraction(web_contents) ==
-          extensions::SitePermissionsHelper::SiteInteraction::kNone &&
-      !action_is_visible && !has_side_panel_action;
+          extensions::SitePermissionsHelper::SiteInteraction::kNone;
   image_source->set_grayscale(is_grayscale);
 
   if (base::FeatureList::IsEnabled(
