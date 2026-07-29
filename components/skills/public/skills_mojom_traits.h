@@ -81,6 +81,12 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
     }
     return skill.image_url;
   }
+  static std::optional<std::string> category(const skills::Skill& skill) {
+    if (skill.category.empty()) {
+      return std::nullopt;
+    }
+    return skill.category;
+  }
   static base::Time creation_time(const skills::Skill& skill) {
     return skill.creation_time;
   }

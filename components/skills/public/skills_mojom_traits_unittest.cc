@@ -31,6 +31,7 @@ TEST(SkillsStructTraitsTest, SkillRoundtrip) {
   skill.curated_by = "test_curator";
   skill.image_url = GURL("https://example.com/image.png");
   skill.source = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
+  skill.category = "test_category";
 
   Skill roundtrip_skill;
   ASSERT_TRUE(skills::mojom::Skill::Deserialize(
@@ -44,6 +45,7 @@ TEST(SkillsStructTraitsTest, SkillRoundtrip) {
   EXPECT_EQ(skill.curated_by, roundtrip_skill.curated_by);
   EXPECT_EQ(skill.image_url, roundtrip_skill.image_url);
   EXPECT_EQ(skill.source, roundtrip_skill.source);
+  EXPECT_EQ(skill.category, roundtrip_skill.category);
 }
 
 TEST(SkillsStructTraitsTest, SkillDerivedRoundtrip) {

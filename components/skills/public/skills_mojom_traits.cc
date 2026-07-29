@@ -17,17 +17,20 @@ bool StructTraits<skills::mojom::SkillDataView, skills::Skill>::Read(
   std::optional<std::string> source_skill_id;
   std::optional<std::string> curated_by;
   std::optional<GURL> image_url;
+  std::optional<std::string> category;
   if (!data.ReadId(&out->id) || !data.ReadName(&out->name) ||
       !data.ReadIcon(&out->icon) || !data.ReadSourceSkillId(&source_skill_id) ||
       !data.ReadPrompt(&out->prompt) || !data.ReadSource(&out->source) ||
       !data.ReadDescription(&out->description) ||
       !data.ReadCuratedBy(&curated_by) || !data.ReadImageUrl(&image_url) ||
       !data.ReadCreationTime(&out->creation_time) ||
-      !data.ReadLastUpdateTime(&out->last_update_time)) {
+      !data.ReadLastUpdateTime(&out->last_update_time) ||
+      !data.ReadCategory(&category)) {
     return false;
   }
   out->curated_by = curated_by.value_or("");
   out->image_url = image_url.value_or(GURL());
+  out->category = category.value_or("");
 
   const bool is_derived_from_first_party =
       out->source ==

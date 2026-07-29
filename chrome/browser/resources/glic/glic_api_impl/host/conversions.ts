@@ -264,6 +264,7 @@ export function skillPreviewToClient(s: SkillPreviewMojo): SkillPreview {
     description: s.description,
     curatedBy: s.curatedBy || undefined,
     imageUrl: urlToClient(s.imageUrl),
+    category: optionalToClient(s.category),
   };
 }
 

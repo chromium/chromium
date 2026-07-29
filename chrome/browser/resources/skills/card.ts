@@ -82,6 +82,7 @@ export class SkillCardElement extends CrLitElement {
     imageUrl: '',
     creationTime: {internalValue: 0n},
     lastUpdateTime: {internalValue: 0n},
+    category: '',
   };
   accessor cardType: CardType = CardType.USER_SKILL_CARD;
   accessor saveDisabled: boolean = false;

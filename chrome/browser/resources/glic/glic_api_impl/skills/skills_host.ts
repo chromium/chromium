@@ -19,6 +19,7 @@ export function skillPreviewToClient(
     source: enumToClient(preview.source),
     curatedBy: optionalToClient(preview.curatedBy),
     imageUrl: urlToClient(preview.imageUrl),
+    category: optionalToClient(preview.category),
     isContextual,
   };
 }

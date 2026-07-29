@@ -42,6 +42,9 @@ struct Skill {
   // The image URL associated with the skill.
   GURL image_url;
 
+  // The category of the skill.
+  std::string category;
+
   // The source of the skill which can be 1P or user created.
   sync_pb::SkillSource source = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
 
@@ -60,7 +63,8 @@ struct Skill {
         const std::string& curated_by = "",
         const GURL& image_url = GURL(),
         const sync_pb::SkillSource& source =
-            sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED);
+            sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED,
+        const std::string& category = "");
   Skill(const Skill&);
   Skill& operator=(const Skill&);
   Skill(Skill&&);

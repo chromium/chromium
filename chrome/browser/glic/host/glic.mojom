@@ -919,6 +919,8 @@ struct SkillPreview {
   string? curated_by;
   // The image URL to show when rendering this skill.
   url.mojom.Url? image_url;
+  // The category of the skill.
+  string? category;
 };
 
 // @generate glic_api

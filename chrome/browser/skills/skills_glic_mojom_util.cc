@@ -54,10 +54,14 @@ glic::mojom::SkillPreviewPtr SkillToGlicMojomSkillPreview(
   if (!skill->curated_by.empty()) {
     curated_by = skill->curated_by;
   }
+  std::optional<std::string> category;
+  if (!skill->category.empty()) {
+    category = skill->category;
+  }
   return glic::mojom::SkillPreview::New(
       skill->id, skill->name, skill->icon,
       SyncPbToGlicMojomSkillSource(skill->source), skill->description,
-      curated_by, image_url);
+      curated_by, image_url, category);
 }
 
 }  // namespace skills

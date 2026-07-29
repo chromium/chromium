@@ -831,6 +831,8 @@ export declare interface SkillPreview {
   curatedBy?: string;
   // The image URL to show when rendering this skill.
   imageUrl?: string;
+  // The category of the skill.
+  category?: string;
 }
 
 // A single skill.

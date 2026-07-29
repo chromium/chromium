@@ -46,6 +46,7 @@ suite('UserSkillsPage', function() {
       source: SkillSource.kUserCreated,
       creationTime: {internalValue: 0n},
       lastUpdateTime: {internalValue: 0n},
+      category: '',
       ...overrides,
     };
   }

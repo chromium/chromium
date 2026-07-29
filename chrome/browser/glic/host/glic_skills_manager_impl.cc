@@ -45,9 +45,13 @@ mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
   if (!skill.curated_by().empty()) {
     curated_by = skill.curated_by();
   }
+  std::optional<std::string> category;
+  if (skill.has_category()) {
+    category = skill.category();
+  }
   return mojom::SkillPreview::New(
       skill.id(), skill.name(), skill.icon(), mojom::SkillSource::kFirstParty,
-      skill.description(), curated_by, /*image_url=*/std::nullopt);
+      skill.description(), curated_by, /*image_url=*/std::nullopt, category);
 }
 
 }  // namespace

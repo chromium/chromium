@@ -14,15 +14,18 @@ TEST(SkillTest, Construction) {
   const std::string name = "test_name";
   const std::string icon = "test_icon";
   const std::string prompt = "test_prompt";
+  const std::string category = "test_category";
 
   Skill skill(id, name, icon, prompt);
   skill.source_skill_id = source_skill_id;
+  skill.category = category;
 
   EXPECT_EQ(id, skill.id);
   EXPECT_EQ(source_skill_id, skill.source_skill_id);
   EXPECT_EQ(name, skill.name);
   EXPECT_EQ(icon, skill.icon);
   EXPECT_EQ(prompt, skill.prompt);
+  EXPECT_EQ(category, skill.category);
 }
 
 }  // namespace skills

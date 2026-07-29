@@ -60,6 +60,9 @@ struct Skill {
 
   // The Time when the skill was last updated.
   mojo_base.mojom.Time last_update_time;
+
+  // The category of the skill.
+  string? category;
 };
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.h:Skill, //chrome/browser/glic/host/glic.mojom:Skill)
