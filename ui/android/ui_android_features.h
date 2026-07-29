@@ -37,6 +37,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowOcclusion);
 // Guard changes to block mouse events on views.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kBlockMouseEventsOnView);
 
+// Kill switch for redundant remeasuring in BottomSheetListViewBase.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kBottomSheetRemeasureFix);
+
 // Guard the caching of WindowMetrics for gesture navigation detection.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCachedGestureNavMetrics);
 

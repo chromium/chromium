@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.Set;
@@ -248,7 +249,8 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
             return BottomSheetContent.HeightMode.DEFAULT;
         }
         @Px int requiredMaxHeight = getHeightWhenFullyExtendedPx();
-        if (requiredMaxHeight <= mBottomSheetController.getContainerHeight()) {
+        if (UiAndroidFeatureList.sBottomSheetRemeasureFix.isEnabled()
+                || requiredMaxHeight <= mBottomSheetController.getContainerHeight()) {
             return requiredMaxHeight;
         }
         remeasure();

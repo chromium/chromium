@@ -37,6 +37,9 @@ public class UiAndroidFeatureList {
             newMutableFlagWithSafeDefault(
                     UiAndroidFeatures.ANDROID_UPDATE_DISPLAY_FOR_CONTEXT, true);
 
+    public static final MutableFlagWithSafeDefault sBottomSheetRemeasureFix =
+            newMutableFlagWithSafeDefault(UiAndroidFeatures.BOTTOM_SHEET_REMEASURE_FIX, true);
+
     public static final CachedFlag sAndroidUseDisplayTopology =
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_USE_DISPLAY_TOPOLOGY,
