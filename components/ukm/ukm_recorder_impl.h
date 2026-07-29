@@ -164,11 +164,12 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   bool ShouldDropEntryForTesting(mojom::UkmEntry* entry);
 
-  void SetShouldUseMetricsConsentRestructure(bool value) {
-    use_metrics_consent_restructure_ = value;
-  }
-
  protected:
+  // Returns whether kRestructureMetricsConsentSettings feature is enabled.
+  // This is a pure virtual method to force subclasses to override this
+  // behavior.
+  virtual bool ShouldUseMetricsConsentRestructure() const = 0;
+
   // Calculates sampled in/out for a specific source/event based on internal
   // configuration. This function is guaranteed to always return the same
   // result over the life of this object for the same config & input parameters.
@@ -337,9 +338,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Whether recording new data is currently allowed.
   bool recording_enabled_ = false;
-
-  // Whether the new metrics consent model should be used.
-  bool use_metrics_consent_restructure_ = false;
 
   // Whether recording new data is enabled and what type is allowed.
   ukm::UkmConsentState recording_state_;

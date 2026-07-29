@@ -166,6 +166,9 @@ class UkmService : public UkmRecorderImpl {
   FRIEND_TEST_ALL_PREFIXES(UkmServiceTest, PurgeMsbbDataFromUnsentLogStore);
   FRIEND_TEST_ALL_PREFIXES(UkmServiceTest, PurgeAppDataLogMetadataUpdate);
 
+  // UkmRecorderImpl:
+  bool ShouldUseMetricsConsentRestructure() const override;
+
   // Updates the |recorder_client_registry_| about the changes in
   // UkmRecorderParameters. Thread-safe.
   void OnRecorderParametersChanged() override;

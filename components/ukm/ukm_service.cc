@@ -248,10 +248,6 @@ UkmService::UkmService(PrefService* pref_service,
   DCHECK(pref_service_);
   DCHECK(client_);
 
-  SetShouldUseMetricsConsentRestructure(
-      metrics::MetricsReportingChoiceService::
-          ShouldUseMetricsConsentRestructure());
-
   bool create_logs_event_observer;
 #ifdef NDEBUG
   // For non-debug builds, we only create |logs_event_observer_| if the
@@ -530,6 +526,11 @@ void UkmService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(prefs::kUkmClientId, 0);
   registry->RegisterIntegerPref(prefs::kUkmSessionId, 0);
   UkmReportingService::RegisterPrefs(registry);
+}
+
+bool UkmService::ShouldUseMetricsConsentRestructure() const {
+  return metrics::MetricsReportingChoiceService::
+      ShouldUseMetricsConsentRestructure();
 }
 
 void UkmService::OnRecorderParametersChanged() {
