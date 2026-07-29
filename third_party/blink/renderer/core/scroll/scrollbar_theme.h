@@ -190,7 +190,10 @@ class CORE_EXPORT ScrollbarTheme {
     return rect;
   }
 
+  // Register a scrollbar to be updated if the native theme changes.
+  // This is currently only implemented by ScrollbarThemeMac.
   virtual void RegisterScrollbar(Scrollbar&) {}
+  virtual bool IsScrollbarRegistered(Scrollbar&) const { return false; }
 
   virtual bool IsMockTheme() const { return false; }
 

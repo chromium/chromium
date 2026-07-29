@@ -76,6 +76,9 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
   void RegisterScrollbar(Scrollbar& scrollbar) override {
     return GetTheme().RegisterScrollbar(scrollbar);
   }
+  bool IsScrollbarRegistered(Scrollbar& scrollbar) const override {
+    return GetTheme().IsScrollbarRegistered(scrollbar);
+  }
 
   int MinimumThumbLength(const Scrollbar&) const override;
 

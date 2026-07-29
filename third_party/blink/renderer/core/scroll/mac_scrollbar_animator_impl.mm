@@ -28,21 +28,6 @@ ScrollbarToAnimatorV2Map& GetScrollbarToAnimatorV2Map() {
   return holder->Value();
 }
 
-blink::ScrollbarThemeMac* MacOverlayScrollbarTheme(
-    blink::ScrollbarTheme& scrollbar_theme) {
-  return !scrollbar_theme.IsMockTheme()
-             ? static_cast<blink::ScrollbarThemeMac*>(&scrollbar_theme)
-             : nullptr;
-}
-
-bool IsScrollbarRegistered(blink::Scrollbar& scrollbar) {
-  if (blink::ScrollbarThemeMac* scrollbar_theme =
-          MacOverlayScrollbarTheme(scrollbar.GetTheme())) {
-    return scrollbar_theme->IsScrollbarRegistered(scrollbar);
-  }
-  return false;
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -178,7 +163,7 @@ void MacScrollbarAnimatorV2::MouseExitedScrollbar(Scrollbar& scrollbar) const {
 }
 
 void MacScrollbarAnimatorV2::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
-  if (!IsScrollbarRegistered(scrollbar))
+  if (!scrollbar.GetTheme().IsScrollbarRegistered(scrollbar))
     return;
   DCHECK(!vertical_scrollbar_);
   vertical_scrollbar_ =
@@ -190,7 +175,7 @@ void MacScrollbarAnimatorV2::WillRemoveVerticalScrollbar(Scrollbar& scrollbar) {
 }
 
 void MacScrollbarAnimatorV2::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
-  if (!IsScrollbarRegistered(scrollbar))
+  if (!scrollbar.GetTheme().IsScrollbarRegistered(scrollbar))
     return;
   DCHECK(!horizontal_scrollbar_);
   horizontal_scrollbar_ =
