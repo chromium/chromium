@@ -124,8 +124,10 @@ TEST_F(FrameSensorProviderProxyTest, GetSensor_PermissionGranted) {
   // 1. Initial silent check says GRANTED.
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
-      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                        PermissionStatusSource::UNSPECIFIED)));
+      .Times(2)
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
 
   // 2. No prompt should be requested.
   EXPECT_CALL(*permission_manager(),
@@ -178,8 +180,10 @@ TEST_F(FrameSensorProviderProxyTest,
   // 1. Initial silent check says ASK.
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
-      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::ASK,
-                                        PermissionStatusSource::UNSPECIFIED)));
+      .Times(2)
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::ASK,
+                                  PermissionStatusSource::UNSPECIFIED)));
 
   // 2. Prompt is requested because there is a gesture.
   // We assert that the gesture bit is correctly passed into the description.
@@ -234,8 +238,10 @@ TEST_F(FrameSensorProviderProxyTest,
   // 1. Initial silent check says ASK.
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
-      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::ASK,
-                                        PermissionStatusSource::UNSPECIFIED)));
+      .Times(2)
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::ASK,
+                                  PermissionStatusSource::UNSPECIFIED)));
 
   // 2. Prompt is requested because there is a gesture.
   // We simulate the user clicking "Block".
@@ -263,8 +269,10 @@ TEST_F(FrameSensorProviderProxyTest,
        GetSensor_VisibilityChanged_SuspendsAndResumes) {
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
-      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                        PermissionStatusSource::UNSPECIFIED)));
+      .Times(2)
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
 
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -293,8 +301,10 @@ TEST_F(FrameSensorProviderProxyTest,
        GetSensor_InitiallyHidden_StartsSuspended) {
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
-      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                        PermissionStatusSource::UNSPECIFIED)));
+      .Times(2)
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
 
   web_contents()->WasHidden();
   auto provider = GetWebSensorProvider();
@@ -319,8 +329,10 @@ TEST_F(FrameSensorProviderProxyTest,
        GetSensor_HiddenDuringPendingRequest_SensorSuspended) {
   EXPECT_CALL(*permission_manager(),
               GetPermissionResultForCurrentDocument(_, _, _))
-      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
-                                        PermissionStatusSource::UNSPECIFIED)));
+      .Times(2)
+      .WillRepeatedly(
+          Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                  PermissionStatusSource::UNSPECIFIED)));
 
   auto provider = GetWebSensorProvider();
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
@@ -343,6 +355,24 @@ TEST_F(FrameSensorProviderProxyTest,
   device::FakeSensor* fake_sensor = fake_sensor_provider()->accelerometer();
   ASSERT_TRUE(fake_sensor);
   EXPECT_TRUE(fake_sensor->is_browser_suspended());
+}
+
+TEST_F(FrameSensorProviderProxyTest,
+       GetSensor_PermissionRevokedDuringInFlightHardwareCheck) {
+  // 1. Initial check in GetSensor returns GRANTED.
+  // 2. Second check in OnHardwareCheckCompleted returns DENIED.
+  EXPECT_CALL(*permission_manager(),
+              GetPermissionResultForCurrentDocument(_, _, _))
+      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::GRANTED,
+                                        PermissionStatusSource::UNSPECIFIED)))
+      .WillOnce(Return(PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                                        PermissionStatusSource::UNSPECIFIED)));
+
+  auto provider = GetWebSensorProvider();
+  auto result =
+      GetSensorSync(provider, device::mojom::SensorType::ACCELEROMETER,
+                    /*user_gesture=*/true);
+  EXPECT_EQ(result, device::mojom::SensorCreationResult::ERROR_NOT_ALLOWED);
 }
 
 }  // namespace

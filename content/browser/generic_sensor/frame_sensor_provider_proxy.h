@@ -60,7 +60,6 @@ class FrameSensorProviderProxy final
 
   void OnHardwareCheckCompleted(
       device::mojom::SensorType type,
-      blink::mojom::PermissionStatus permission_status,
       bool user_gesture,
       mojo::PendingRemote<device::mojom::SensorClientController> controller,
       GetSensorCallback callback,
