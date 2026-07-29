@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./webui_toolbar_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
@@ -57,9 +58,8 @@
 }
 
 #chip:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color),
-              var(--chip-box-shadow, none);
-  outline: none;
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 2px;
 }
 
 @media (forced-colors: active) {

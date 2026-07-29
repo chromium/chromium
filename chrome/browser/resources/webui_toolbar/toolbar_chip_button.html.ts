@@ -10,6 +10,7 @@ export function getHtml(this: ToolbarChipButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     <button id="button"
+      tabindex="-1"
       ?disabled="${this.disabled}"
       aria-label="${this.ariaLabel}"
       aria-description="${this.ariaDescription}"
