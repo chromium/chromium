@@ -801,19 +801,57 @@ TEST_F(ChangePasswordFormWaiterTest, ModelNotAvailable_Timeout) {
                     .SetTimeoutCallback(timeout_callback.Get())
                     .Build();
 
-  // Model is not available yet, so the callback should not be called.
+  static_cast<content::WebContentsObserver*>(waiter.get())->DidStopLoading();
+
+  // Fast forward less than model download timeout. Timeout should not be
+  // triggered.
   EXPECT_CALL(completion_callback, Run).Times(0);
   EXPECT_CALL(timeout_callback, Run).Times(0);
-
-  // Timeout should not be triggered even if the model is not available.
-  static_cast<content::WebContentsObserver*>(waiter.get())->DidStopLoading();
   task_environment()->FastForwardBy(
-      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout * 2);
+      ChangePasswordFormWaiter::kLocalMLModelDownloadTimeout / 2);
 
-  // Simulate the model becoming available.
+  // Fast forward past model download timeout. The model waiter falls back to
+  // Init(), which starts form waiting timeout.
+  EXPECT_CALL(completion_callback, Run).Times(0);
+  EXPECT_CALL(timeout_callback, Run).Times(0);
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kLocalMLModelDownloadTimeout / 2);
+
+  EXPECT_CALL(timeout_callback, Run());
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+}
+
+TEST_F(ChangePasswordFormWaiterTest,
+       ModelNotAvailable_Timeout_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier},
+      {password_change::features::
+           kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter});
+
+  model_handler()->SetModelAvailability(/*available=*/false);
+
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+  base::MockOnceClosure timeout_callback;
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .SetTimeoutCallback(timeout_callback.Get())
+                    .Build();
+
+  static_cast<content::WebContentsObserver*>(waiter.get())->DidStopLoading();
+
+  // Fast forward past model download timeout. Since feature is disabled, it
+  // should not time out.
+  EXPECT_CALL(completion_callback, Run).Times(0);
+  EXPECT_CALL(timeout_callback, Run).Times(0);
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kLocalMLModelDownloadTimeout * 2);
+
+  // Model becomes available.
   model_handler()->NotifyAboutModelChange();
 
-  static_cast<content::WebContentsObserver*>(waiter.get())->DidStopLoading();
   EXPECT_CALL(timeout_callback, Run());
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);

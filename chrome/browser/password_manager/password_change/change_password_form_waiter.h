@@ -36,6 +36,10 @@ class ChangePasswordFormWaiter
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
       base::Seconds(3);
 
+  // Timeout for local ML model availability before falling back to Init().
+  static constexpr base::TimeDelta kLocalMLModelDownloadTimeout =
+      base::Seconds(10);
+
   using PasswordFormFoundCallback =
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;
 
@@ -83,6 +87,7 @@ class ChangePasswordFormWaiter
   void DidStopLoading() override;
 
   void OnTimeout();
+  void OnLocalMLModelDownloadTimeout();
 
   static password_manager::PasswordFormManager* GetCorrespondingFormManager(
       base::WeakPtr<ChangePasswordFormWaiter> waiter,

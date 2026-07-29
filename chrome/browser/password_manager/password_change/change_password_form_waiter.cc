@@ -209,12 +209,30 @@ void ChangePasswordFormWaiter::WaitForLocalMLModelAvailability() {
       model_loaded_subscription_ =
           model_handler->RegisterModelChangeCallback(base::BindRepeating(
               &ChangePasswordFormWaiter::Init, weak_ptr_factory_.GetWeakPtr()));
+      if (base::FeatureList::IsEnabled(
+              password_change::features::
+                  kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter)) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ChangePasswordFormWaiter::OnLocalMLModelDownloadTimeout,
+                weak_ptr_factory_.GetWeakPtr()),
+            kLocalMLModelDownloadTimeout);
+      }
       return;
     }
   }
 
   // No downloading is required. Initialize waiter immediately.
   Init();
+}
+
+void ChangePasswordFormWaiter::OnLocalMLModelDownloadTimeout() {
+  // If the subscription is still valid, the model did not finish loading
+  // before the timeout expired. Proceed with initialization without waiting.
+  if (model_loaded_subscription_) {
+    Init();
+  }
 }
 
 void ChangePasswordFormWaiter::OnPasswordFormParsed(

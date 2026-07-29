@@ -18,4 +18,7 @@ BASE_FEATURE(kRecordDiscardedFormsToModelQualityLogs,
 BASE_FEATURE(kSkipModelExecutionAllowedCheckForPasswordChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTimeoutLocalMLModelDownloadInChangePasswordFormWaiter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace password_change::features
