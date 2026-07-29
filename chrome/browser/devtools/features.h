@@ -129,8 +129,6 @@ BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsTeasers);
 extern const base::FeatureParam<bool>
     kDevToolsConsoleInsightsTeasersAllowWithoutGpu;
 
-BASE_DECLARE_FEATURE(kDevToolsAiAssistanceV2);
-
 BASE_DECLARE_FEATURE(kDevToolsAiV2Architecture);
 
 BASE_DECLARE_FEATURE(kDevToolsProtocolMonitor);

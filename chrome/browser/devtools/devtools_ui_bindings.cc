@@ -1987,11 +1987,6 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                       std::move(ai_assistance_file_agent_dict));
   }
 
-  response_dict.Set("devToolsAiAssistanceV2",
-                    base::DictValue().Set(
-                        "enabled", base::FeatureList::IsEnabled(
-                                       ::features::kDevToolsAiAssistanceV2)));
-
   response_dict.Set("devToolsAiV2Architecture",
                     base::DictValue().Set(
                         "enabled", base::FeatureList::IsEnabled(
