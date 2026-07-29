@@ -26,8 +26,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/text_input_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using content::NavigationController;
@@ -772,7 +774,13 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, EditorKeyBindings) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   int tab_index = browser()->tab_strip_model()->active_index();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+  content::TextInputManagerTypeObserver type_observer(web_contents,
+                                                      ui::TEXT_INPUT_TYPE_TEXT);
   ASSERT_NO_FATAL_FAILURE(SetFocusedElement(tab_index, "A"));
+  type_observer.Wait();
+
   ASSERT_NO_FATAL_FAILURE(SetTextBoxValue(tab_index, "A", "Hello"));
   // Move the caret to the beginning of the line.
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestCtrlA));
