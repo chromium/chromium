@@ -110,9 +110,11 @@ InspectorMediaEventHandler::InspectorMediaEventHandler(
 // this method is no longer needed. Refactor MediaLogRecord at some point.
 void InspectorMediaEventHandler::SendQueuedMediaEvents(
     std::vector<media::MediaLogRecord> events_to_send) {
-  // If the video player is gone, the whole frame
-  if (video_player_destroyed_)
+  // If the video player is gone, drop the events to avoid a dangling pointer.
+  if (video_player_destroyed_) {
+    DCHECK(!inspector_context_);
     return;
+  }
 
   blink::InspectorPlayerProperties properties;
   blink::InspectorPlayerMessages messages;
@@ -167,7 +169,10 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
 
 void InspectorMediaEventHandler::OnWebMediaPlayerDestroyed() {
   video_player_destroyed_ = true;
-  inspector_context_->DestroyPlayer(player_id_);
+  if (inspector_context_) {
+    inspector_context_->DestroyPlayer(player_id_);
+    inspector_context_ = nullptr;
+  }
 }
 
 }  // namespace content
