@@ -179,6 +179,16 @@ AccountPreviewDataFetcher::AccountPreviewDataFetcher(
       channel_(channel),
       callback_(std::move(callback)) {
   CHECK(identity_manager_);
+}
+
+AccountPreviewDataFetcher::~AccountPreviewDataFetcher() = default;
+
+void AccountPreviewDataFetcher::Start() {
+  if (is_started_) {
+    return;
+  }
+  is_started_ = true;
+
   AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
   if (account_info.IsEmpty()) {
@@ -194,8 +204,6 @@ AccountPreviewDataFetcher::AccountPreviewDataFetcher(
                      weak_ptr_factory_.GetWeakPtr()),
       AccessTokenFetcher::Mode::kImmediate);
 }
-
-AccountPreviewDataFetcher::~AccountPreviewDataFetcher() = default;
 
 void AccountPreviewDataFetcher::OnAccessTokenReceived(
     GoogleServiceAuthError error,

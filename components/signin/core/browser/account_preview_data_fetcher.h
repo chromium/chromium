@@ -34,7 +34,7 @@ class IdentityManager;
 // the provided callback is invoked with the account preview data.
 // If the token acquisition or any network request fails or if the response
 // format is unexpected, the callback is invoked with no data (std::nullopt).
-// The fetching starts on construction.
+// The fetching only starts when Start() is called.
 class AccountPreviewDataFetcher {
  public:
   // LINT.IfChange(AccountPreviewDataFetchState)
@@ -62,6 +62,9 @@ class AccountPreviewDataFetcher {
       FetchCompleteCallback callback);
   ~AccountPreviewDataFetcher();
 
+  void Start();
+  bool is_started() const { return is_started_; }
+
  private:
   void OnAccessTokenReceived(GoogleServiceAuthError error,
                              AccessTokenInfo token_info);
@@ -84,6 +87,8 @@ class AccountPreviewDataFetcher {
   // responses from the API calls are malformed or failed.
   std::optional<AccountPreviewData> fetched_data_ = AccountPreviewData();
   base::RepeatingCallback<void(bool)> barrier_callback_;
+
+  bool is_started_ = false;
 
   base::WeakPtrFactory<AccountPreviewDataFetcher> weak_ptr_factory_{this};
 };

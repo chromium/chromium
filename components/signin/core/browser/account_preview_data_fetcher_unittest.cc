@@ -70,6 +70,7 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -111,6 +112,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -147,6 +149,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -180,6 +183,7 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       account_info.account_id,
@@ -206,6 +210,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -240,6 +245,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -273,6 +279,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -305,6 +312,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -336,6 +344,7 @@ TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
       account_info.gaia, identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);

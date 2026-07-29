@@ -68,9 +68,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   std::optional<AccountPreviewData> GetAccountPreviewData(
       const GaiaId& gaia_id) const;
 
-  bool HasActiveFetcherForTesting(const GaiaId& gaia_id) const {
-    return active_fetchers_.contains(gaia_id);
-  }
+  bool HasActiveFetcherForTesting(const GaiaId& gaia_id) const;
 
   void SetFetchCompleteCallbackForTesting(base::OnceClosure callback);
   void SetAllDataAvailableCallbackForTesting(base::OnceClosure callback);
@@ -95,10 +93,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void ResetTimer();
   std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
 
-  std::optional<AccountPreviewPreference> ReadPreviewPreferenceFromPrefs()
-      const;
-  void WritePreviewPreferenceToPrefs(
-      const AccountPreviewPreference& preference);
+  std::optional<AccountPreviewPreference> ReadPreferredAccountFromPrefs() const;
+  // Writing `std::nullopt` as `preference` clears the pref.
+  void WritePreferredAccountToPrefs(
+      std::optional<AccountPreviewPreference> preference);
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;

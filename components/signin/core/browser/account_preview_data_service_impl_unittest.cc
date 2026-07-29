@@ -299,8 +299,15 @@ TEST_F(AccountPreviewDataServiceTest,
   dict.Set("gaia_id", account1.gaia.ToString());
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
-  // 3. Remove account1. This triggers EnsureAllAccountsFetched().
+  ASSERT_TRUE(service_->GetPreferredAccountForPromo().has_value());
+  EXPECT_EQ(account1.gaia, service_->GetPreferredAccountForPromo()->gaia_id);
+
+  // 3. Remove account1. This triggers EnsureAllAccountsFetched() and clears the
+  // preferred account preference.
   identity_test_env_.RemoveRefreshTokenForAccount(account1.account_id);
+
+  // Preferred account pref should be cleared now since account1 was preferred.
+  EXPECT_FALSE(service_->GetPreferredAccountForPromo().has_value());
 
   // account1 is cleared. Fetch should start for the remaining uncached
   // account2.
@@ -680,10 +687,15 @@ TEST_F(AccountPreviewDataServiceTest,
   // Now remove account2 (which is NOT the preferred account).
   // Because it is not the preferred account, OnRefreshTokenRemovedForAccount
   // should NOT trigger a new fetch cycle (i.e. it should NOT call
-  // EnsureAllAccountsFetched()).
-  // We verify this by asserting that no active fetcher is started for the
-  // uncached account1.
+  // EnsureAllAccountsFetched()) and should NOT clear the preferred account
+  // pref. We verify this by asserting that no active fetcher is started for the
+  // uncached account1 and the preferred account pref remains intact.
   identity_test_env_.RemoveRefreshTokenForAccount(account2.account_id);
+
+  std::optional<AccountPreviewDataService::AccountPreviewPreference>
+      preferred_account_after = service_->GetPreferredAccountForPromo();
+  ASSERT_TRUE(preferred_account_after.has_value());
+  EXPECT_EQ(account1.gaia, preferred_account_after->gaia_id);
 
   EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
@@ -1008,6 +1020,24 @@ TEST_F(AccountPreviewDataServiceTest,
   // Fast forward 1 more hour (total 12 hours): timer fires.
   task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       OnRefreshTokenRemovedForAccountWithNullBarrier) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+
+  base::RunLoop all_fetches_run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_fetches_run_loop.QuitClosure());
+
+  // An active fetcher is created for account_info, along with a barrier that is
+  // not yet hit. Removing the refresh token for this account should safely
+  // erase the fetcher and hit the barrier.
+  service_->OnRefreshTokenRemovedForAccount(account_info.account_id);
+  // Removing the account should hit the barrier which would complete the fetch.
+  all_fetches_run_loop.Run();
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 }
 
 }  // namespace signin

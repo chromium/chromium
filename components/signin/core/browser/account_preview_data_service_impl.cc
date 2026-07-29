@@ -99,7 +99,7 @@ AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
-  return ReadPreviewPreferenceFromPrefs();
+  return ReadPreferredAccountFromPrefs();
 }
 
 std::optional<AccountPreviewData>
@@ -135,18 +135,25 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 
   cached_data_.erase(gaia_id);
   if (active_fetchers_.contains(gaia_id)) {
-    // `all_accounts_fetched_barrier_` relies on fecher results, so it should be
-    // called before clearing the active fetcher, if available.
-    if (all_accounts_fetched_barrier_) {
-      all_accounts_fetched_barrier_.Run();
-    }
+    // `all_accounts_fetched_barrier_` relies on fetcher results, so it should
+    // be called before clearing the active fetcher.
+    CHECK(all_accounts_fetched_barrier_);
+    all_accounts_fetched_barrier_.Run();
     active_fetchers_.erase(gaia_id);
   }
 
   auto preferred_account = GetPreferredAccountForPromo();
   if (preferred_account && preferred_account->gaia_id == gaia_id) {
+    // Clears the prefs.
+    WritePreferredAccountToPrefs(std::nullopt);
     EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenRemoved);
   }
+}
+
+bool AccountPreviewDataServiceImpl::HasActiveFetcherForTesting(
+    const GaiaId& gaia_id) const {
+  auto it = active_fetchers_.find(gaia_id);
+  return it != active_fetchers_.end() && it->second->is_started();
 }
 
 void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(
@@ -171,7 +178,7 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
   active_fetchers_.erase(gaia_id);
   // `gaia_id` is owned by the fetcher and should not be used beyond this point.
 
-  CHECK(!all_accounts_fetched_barrier_.is_null());
+  CHECK(all_accounts_fetched_barrier_);
   all_accounts_fetched_barrier_.Run();
 
   if (fetch_complete_callback_for_testing_) {
@@ -240,8 +247,11 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
     base::UmaHistogramEnumeration(
         "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable", cause);
 
-    all_accounts_fetched_barrier_.Reset();
-    OnAllFetchesCompleted(/*should_reset_periodic_timer=*/false);
+    // If there are no new accounts to fetch, we can just skip this request.
+    // - if there are on-going fetches, they will be cleared (via
+    // `OnRefreshTokenRemovedForAccount()`) or finalized when the result is
+    // fetched.
+    // - otherwise, there no need to force recomputing the preferred account.
     return;
   }
 
@@ -270,6 +280,15 @@ void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
   CHECK(identity_manager_);
   CHECK(identity_manager_->AreRefreshTokensLoaded());
 
+  if (active_fetchers_.contains(gaia_id)) {
+    return;
+  }
+
+  active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
+      gaia_id, identity_manager_, url_loader_factory_, channel_,
+      base::BindOnce(&AccountPreviewDataServiceImpl::OnSingleFetchCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // TODO(crbug.com/510760810): Consider adding the retry logic while an active
   // fetch is already in flight and the connection is lost.
   network_delay_helper_->DelayNetworkCall(
@@ -278,24 +297,16 @@ void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
 }
 
 void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
-  // Existing fetchers will still call `all_accounts_fetched_barrier_` as
-  // expected. It is safe to just ignore the request.
-  if (active_fetchers_.contains(gaia_id)) {
-    return;
-  }
-
-  // Ensures that the account was not removed while waiting for the network. If
-  // so, do not start the fetch.
-  if (!identity_manager_->HasAccountWithRefreshToken(
-          CoreAccountId::FromGaiaId(gaia_id))) {
+  // If the account's refresh token was removed while waiting for network delay,
+  // `OnRefreshTokenRemovedForAccount()` ran synchronously, notified the
+  // barrier, and erased the fetcher from `active_fetchers_`.
+  auto it = active_fetchers_.find(gaia_id);
+  if (it == active_fetchers_.end()) {
     return;
   }
 
   CHECK(!network_delay_helper_->AreNetworkCallsDelayed());
-  active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
-      gaia_id, identity_manager_, url_loader_factory_, channel_,
-      base::BindOnce(&AccountPreviewDataServiceImpl::OnSingleFetchCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  it->second->Start();
 }
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
@@ -316,11 +327,7 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
           switches::kEnableAccountPreviewPreferredAccount)) {
     std::optional<AccountPreviewPreference> preferred_account =
         ComputePreferredAccount();
-    if (preferred_account) {
-      WritePreviewPreferenceToPrefs(*preferred_account);
-    } else {
-      pref_service_->ClearPref(prefs::kAccountPreviewPreference);
-    }
+    WritePreferredAccountToPrefs(preferred_account);
   }
 
   if (should_reset_periodic_timer) {
@@ -333,7 +340,7 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
 }
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
-AccountPreviewDataServiceImpl::ReadPreviewPreferenceFromPrefs() const {
+AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
   const base::DictValue& dict =
       pref_service_->GetDict(prefs::kAccountPreviewPreference);
   const std::string* gaia_id_str =
@@ -361,12 +368,17 @@ AccountPreviewDataServiceImpl::ReadPreviewPreferenceFromPrefs() const {
   return preference;
 }
 
-void AccountPreviewDataServiceImpl::WritePreviewPreferenceToPrefs(
-    const AccountPreviewPreference& preference) {
+void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
+    std::optional<AccountPreviewPreference> preference) {
+  if (!preference.has_value()) {
+    pref_service_->ClearPref(prefs::kAccountPreviewPreference);
+    return;
+  }
+
   base::DictValue dict;
-  dict.Set(kPreferredAccountDictGaiaIdKey, preference.gaia_id.ToString());
+  dict.Set(kPreferredAccountDictGaiaIdKey, preference->gaia_id.ToString());
   base::ListValue data_types_list;
-  for (syncer::DataType data_type : preference.preferred_data_types) {
+  for (syncer::DataType data_type : preference->preferred_data_types) {
     data_types_list.Append(syncer::DataTypeToStableIdentifier(data_type));
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
