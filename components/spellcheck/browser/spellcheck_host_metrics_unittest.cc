@@ -58,7 +58,6 @@ TEST_F(SpellcheckHostMetricsTest, RecordWordCountsDiscardsDuplicates) {
       "SpellCheck.CheckedWords",
       "SpellCheck.MisspelledWords",
       "SpellCheck.ReplacedWords",
-      "SpellCheck.UniqueWords",
       "SpellCheck.ShownSuggestions",
   });
 
