@@ -294,9 +294,8 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   auto color_iterator = GapDataListIterator<StyleColor>(
       rule_colors.GetGapDataList(), total_gap_count);
 
-  // Reused across loop iterations: `GenerateIntersectionListForGap` resets the
-  // size but preserves capacity, so this allocates at most once per Paint call
-  // (or zero times if the loop is fully skipped, e.g. all multicol spanners).
+  // Reused across gaps. Grid and multicol allocate at most once per Paint;
+  // flex grows capacity only when a later gap needs more.
   Vector<GapIntersection> intersections;
 
   // Reset transient per-paint state. The `GapGeometry` may be reused across

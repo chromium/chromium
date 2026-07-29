@@ -243,32 +243,48 @@ void GapGeometry::GenerateMainIntersectionList(
     }
   }
 
+  switch (GetContainerType()) {
+    case ContainerType::kGridLanes: {
+      // TODO(javiercon): Implement full intersection support for grid-lanes.
+      intersections.reserve(2);
+      LayoutUnit content_start =
+          direction == kForColumns ? content_block_start_
+                                   : content_inline_start_;
+      intersections.emplace_back(content_start,
+                                 cursor.GetNextGapSegmentState());
+      LayoutUnit content_end =
+          direction == kForColumns ? content_block_end_ : content_inline_end_;
+      intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
+      break;
+    }
+    case ContainerType::kGrid:
+    case ContainerType::kMultiColumn:
+      GenerateMainIntersectionListForGridAndMulticol(direction, intersections,
+                                                     cursor);
+      break;
+    case ContainerType::kFlex:
+      GenerateMainIntersectionListForFlex(direction, gap_index, intersections,
+                                          cursor);
+      break;
+  }
+}
+
+void GapGeometry::GenerateMainIntersectionListForGridAndMulticol(
+    GridTrackSizingDirection direction,
+    Vector<GapIntersection>& intersections,
+    GapSegmentStateCursor& cursor) const {
   intersections.reserve(GetCrossGaps().size() + 2);
 
   LayoutUnit content_start =
       direction == kForColumns ? content_block_start_ : content_inline_start_;
   intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
 
-  switch (GetContainerType()) {
-    case ContainerType::kGridLanes:
-      // TODO(javiercon): Implement full intersection support for grid-lanes.
-      break;
-    case ContainerType::kGrid:
-    case ContainerType::kMultiColumn:
-      // For grid, the main axis is rows and intersections occur at the inline
-      // offset of each column gap. For multicol, the main gaps are created by
-      // `column-wrap` or by spanners (spanner main gaps were filtered above);
-      // intersections occur at the inline offset of each cross gap. In both
-      // cases the cross-gap inline offsets give the interior intersections.
-      CHECK_EQ(GetMainDirection(), kForRows);
-      for (const auto& cross_gap : GetCrossGaps()) {
-        intersections.emplace_back(cross_gap.GetGapOffset().inline_offset,
-                                   cursor.GetNextGapSegmentState());
-      }
-      break;
-    case ContainerType::kFlex:
-      GenerateMainIntersectionListForFlex(direction, gap_index, intersections);
-      break;
+  // Grid tracks and multicol columns align, so every main gap intersects every
+  // cross gap.
+  CHECK_EQ(GetMainDirection(), kForRows);
+  for (const auto& cross_gap : GetCrossGaps()) {
+    intersections.emplace_back(cross_gap.GetGapOffset().inline_offset,
+                               cursor.GetNextGapSegmentState());
   }
 
   LayoutUnit content_end =
@@ -279,13 +295,30 @@ void GapGeometry::GenerateMainIntersectionList(
 void GapGeometry::GenerateMainIntersectionListForFlex(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections) const {
+    Vector<GapIntersection>& intersections,
+    GapSegmentStateCursor& cursor) const {
   MainGap main_gap = GetMainGaps()[gap_index];
 
   const bool has_cross_gaps_before = main_gap.HasCrossGapsBefore();
   const bool has_cross_gaps_after = main_gap.HasCrossGapsAfter();
+  const wtf_size_t num_cross_gaps_before =
+      has_cross_gaps_before ? main_gap.GetCrossGapBeforeEnd() -
+                                  main_gap.GetCrossGapBeforeStart() + 1
+                            : 0u;
+  const wtf_size_t num_cross_gaps_after =
+      has_cross_gaps_after ? main_gap.GetCrossGapAfterEnd() -
+                                 main_gap.GetCrossGapAfterStart() + 1
+                           : 0u;
+  intersections.reserve(num_cross_gaps_before + num_cross_gaps_after + 2);
+
+  LayoutUnit content_start =
+      direction == kForColumns ? content_block_start_ : content_inline_start_;
+  intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
 
   if (!has_cross_gaps_before && !has_cross_gaps_after) {
+    LayoutUnit content_end =
+        direction == kForColumns ? content_block_end_ : content_inline_end_;
+    intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
     return;
   }
 
@@ -448,6 +481,10 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   if (intersections.back().IsOverlapWindowOpen()) {
     intersections.back().ResetOverlapState();
   }
+
+  LayoutUnit content_end =
+      direction == kForColumns ? content_block_end_ : content_inline_end_;
+  intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
 }
 
 void GapGeometry::GenerateCrossIntersectionList(

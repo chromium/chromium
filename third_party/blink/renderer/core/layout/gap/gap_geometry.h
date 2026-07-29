@@ -439,13 +439,21 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       wtf_size_t gap_index,
       Vector<GapIntersection>& intersections) const;
 
-  // Fills `intersections` for a flex main gap at `gap_index`, which includes:
+  // Fills `intersections` for a grid or multicol main gap.
+  void GenerateMainIntersectionListForGridAndMulticol(
+      GridTrackSizingDirection direction,
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
+
+  // Fills `intersections` for a flex main gap at `gap_index`, including the
+  // content edges and:
   // 1. Cross gaps that appear before the main gap
   // 2. Cross gaps that appear after the main gap
   void GenerateMainIntersectionListForFlex(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections) const;
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
 
   // Fills `intersections` for a cross gap at `gap_index`. For grid containers,
   // this includes the container content edges and every main gap offset. For
