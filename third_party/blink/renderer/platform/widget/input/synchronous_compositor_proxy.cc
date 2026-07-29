@@ -412,6 +412,10 @@ void SynchronousCompositorProxy::BindChannel(
 }
 
 void SynchronousCompositorProxy::HostDisconnected() {
+  control_host_.reset();
+  host_.reset();
+  receiver_.reset();
+
   // It is possible due to bugs that the Host is disconnected without pausing
   // begin frames. This causes hard-to-reproduce but catastrophic bug of
   // blocking the renderer main thread forever on a commit. See
