@@ -2420,10 +2420,6 @@ const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
   return GetWebView()->GetRendererPreferences();
 }
 
-void RenderFrameImpl::ShowVirtualKeyboard() {
-  GetLocalRootWebFrameWidget()->ShowVirtualKeyboard();
-}
-
 void RenderFrameImpl::ExecuteJavaScript(const std::u16string& javascript) {
   v8::HandleScope handle_scope(GetAgentGroupScheduler().Isolate());
   frame_->ExecuteScript(WebScriptSource(WebString::FromUtf16(javascript)));
