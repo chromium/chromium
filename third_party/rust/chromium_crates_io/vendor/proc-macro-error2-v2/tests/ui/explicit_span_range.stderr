@@ -1,5 +1,0 @@
-error: explicit SpanRange
- --> tests/ui/explicit_span_range.rs:3:22
-  |
-3 | explicit_span_range!(one, two, three, four);
-  |                      ^^^^^^^^^^^^^^^

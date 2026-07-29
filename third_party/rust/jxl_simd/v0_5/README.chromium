@@ -1,0 +1,11 @@
+Name: jxl_simd
+URL: https://crates.io/crates/jxl_simd
+Version: 0.5.1
+Revision: 41c164ccb634aa2ddf152d70b2582afedf7c9e9b
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/jxl_simd-v0_5/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: High performance Rust implementation of a JPEG XL decoder - SIMD support code

@@ -705,12 +705,6 @@ allow_unsafe = true
 [crate.primal-check]
 extra_kv = { allow_unsafe = false }
 
-[crate.proc-macro-error-attr2]
-extra_kv = { allow_unsafe = false }
-
-[crate.proc-macro-error2]
-extra_kv = { allow_unsafe = false }
-
 [crate.proc-macro2.extra_kv]
 allow_unsafe = true
 

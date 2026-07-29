@@ -2803,7 +2803,7 @@ source_set("blink_image_decoder_fuzzer_test_support") {
   ]
   deps = [ ":platform" ]
   if (enable_jxl_decoder) {
-    deps += [ "//third_party/rust/jxl/v0_4/wrapper:jxl_rs" ]
+    deps += [ "//third_party/rust/jxl/v0_5/wrapper:jxl_rs" ]
   }
 }
 
@@ -2928,7 +2928,7 @@ if (enable_jxl_decoder) {
     deps = [
       ":blink_image_decoder_fuzzer_test_support",
       ":platform",
-      "//third_party/rust/jxl/v0_4/wrapper:jxl_rs",
+      "//third_party/rust/jxl/v0_5/wrapper:jxl_rs",
     ]
     seed_corpuses =
         [ "//third_party/blink/web_tests/external/wpt/jpegxl/resources" ]
