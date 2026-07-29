@@ -26,8 +26,6 @@ namespace {
 using RepresentativenessMap =
     std::map<int, std::variant<int, std::pair<int, int>>>;
 
-constexpr size_t kInitialNumTopics = 349;
-
 constexpr Topic kNullTopic = Topic(0);
 
 // kChildToParent stores the first parent for each topic. This data structure
@@ -131,18 +129,6 @@ const std::vector<const TaxonomyUpdate*>& GetTaxonomyUpdates() {
       kTaxonomyUpdates{{GetTaxonomyUpdateForTaxonomy2()}};
   return *kTaxonomyUpdates;
 }
-
-// Stores pre-computed results from GetTopicsInTaxonomy for each
-// TaxonomyUpdate.
-std::vector<std::vector<Topic>>& GetTopicsForEachTaxonomyUpdate() {
-  static base::NoDestructor<std::vector<std::vector<Topic>>>
-      topics_in_taxonomies(GetTaxonomyUpdates().size());
-  return *topics_in_taxonomies;
-}
-
-static_assert(IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349 -
-                  IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 + 1 ==
-              kInitialNumTopics);
 
 // These asserts also have a side-effect of preventing unused resource
 // removal from removing them.
@@ -803,47 +789,6 @@ std::vector<Topic> GetParentTopics(Topic topic) {
   return parents;
 }
 
-bool IsAncestorTopic(Topic src, Topic target, bool only_direct = false) {
-  std::vector<Topic> parent_topics = GetParentTopics(src);
-  for (Topic topic : parent_topics) {
-    if (topic == target ||
-        (!only_direct && IsAncestorTopic(topic, target, only_direct))) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Get the topics that are part of a taxonomy for taxonomy_version. Use
-// this function only for taxonomy_version>1, since the first taxonomy is
-// trivial (1-349).
-const std::vector<Topic>& GetTopicsInTaxonomy(int taxonomy_version) {
-  CHECK_GT(taxonomy_version, 1);
-  CHECK_LE(taxonomy_version, SemanticTree::kMaxTaxonomyVersion);
-  if (GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2].empty()) {
-    // Include topics up to the maximum topic id for the `taxonomy_version`,
-    // and then remove the deleted topics.
-    uint16_t max_topic_id =
-        GetTaxonomyUpdates()[taxonomy_version - 2]->max_topic_id;
-    base::flat_set<Topic> topics;
-    for (uint16_t i = 1; i <= max_topic_id; ++i) {
-      topics.emplace(i);
-    }
-    for (int taxonomy_version_i = 2; taxonomy_version_i <= taxonomy_version;
-         ++taxonomy_version_i) {
-      for (uint16_t i :
-           GetTaxonomyUpdates()[taxonomy_version - 2]->deleted_topics) {
-        topics.erase(Topic(i));
-      }
-    }
-    CHECK_EQ(topics.size(),
-             GetTaxonomyUpdates()[taxonomy_version - 2]->taxonomy_size);
-    GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2] =
-        std::vector(topics.begin(), topics.end());
-  }
-  return GetTopicsForEachTaxonomyUpdate()[taxonomy_version - 2];
-}
-
 RepresentativenessMap GetInternalRepresentativenessMap() {
   return {{1, std::make_pair(12, 23)},     {57, std::make_pair(369, 373)},
           {86, std::make_pair(392, 99)},   {100, std::make_pair(396, 399)},
@@ -887,55 +832,6 @@ const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
 SemanticTree::SemanticTree() = default;
 SemanticTree::~SemanticTree() = default;
 
-Topic SemanticTree::GetRandomTopic(int taxonomy_version,
-                                   uint64_t random_topic_index_decision) {
-  CHECK(IsTaxonomySupported(taxonomy_version));
-  if (taxonomy_version == 1) {
-    size_t random_topic_index = random_topic_index_decision % kInitialNumTopics;
-    return Topic(base::checked_cast<int>(random_topic_index + 1));
-  }
-  auto topics = GetTopicsInTaxonomy(taxonomy_version);
-  size_t random_topic_index = random_topic_index_decision % topics.size();
-  return topics[random_topic_index];
-}
-
-std::vector<Topic> SemanticTree::GetFirstLevelTopicsInCurrentTaxonomy() {
-  static const base::NoDestructor<std::vector<Topic>> kFirstLevelTopics(
-      GetFirstLevelTopicsInCurrentTaxonomyInternal());
-  return *kFirstLevelTopics;
-}
-
-std::vector<Topic>
-SemanticTree::GetFirstLevelTopicsInCurrentTaxonomyInternal() {
-  std::set<int> current_topics = GetTopicsInCurrentTaxonomyInternal();
-  std::vector<Topic> first_level_topics;
-  const int kTopicWithNoParent = 0;
-  for (uint16_t i = 0; i < std::size(kChildToFirstParent); i++) {
-    if (kChildToFirstParent[i] == kTopicWithNoParent &&
-        current_topics.contains(i + 1)) {
-      first_level_topics.emplace_back(i + 1);
-    }
-  }
-  return first_level_topics;
-}
-
-std::set<int> SemanticTree::GetTopicsInCurrentTaxonomyInternal() {
-  int current_taxonomy = blink::features::kBrowsingTopicsTaxonomyVersion.Get();
-  std::vector<Topic> topics_in_current_taxonomy;
-  if (current_taxonomy == 1) {
-    for (size_t i = 1; i <= kInitialNumTopics; i++) {
-      topics_in_current_taxonomy.emplace_back(base::checked_cast<int>(i));
-    }
-  } else {
-    topics_in_current_taxonomy = GetTopicsInTaxonomy(current_taxonomy);
-  }
-
-  std::set<int> current_topics(std::begin(topics_in_current_taxonomy),
-                               std::end(topics_in_current_taxonomy));
-
-  return current_topics;
-}
-
 std::vector<Topic> SemanticTree::GetAtMostTwoRepresentativesInCurrentTaxonomy(
     const Topic& topic) {
   const RepresentativenessMap& map =
@@ -960,22 +856,6 @@ std::vector<Topic> SemanticTree::GetAtMostTwoRepresentativesInCurrentTaxonomy(
 bool SemanticTree::IsTaxonomySupported(int taxonomy_version) {
   return taxonomy_version > 0 &&
          taxonomy_version <= SemanticTree::kMaxTaxonomyVersion;
-}
-
-std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic,
-                                                     bool only_direct) {
-  if (!IsTopicValid(topic)) {
-    return {};
-  }
-
-  std::vector<Topic> ret;
-  for (size_t i = 0; i < kNumTopics; ++i) {
-    Topic cur_topic = Topic(i + 1);
-    if (IsAncestorTopic(cur_topic, topic, only_direct)) {
-      ret.push_back(cur_topic);
-    }
-  }
-  return ret;
 }
 
 std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {

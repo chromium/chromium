@@ -473,8 +473,6 @@ test("components_unittests") {
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
       "//components/browsing_data/content:unit_tests",
-      "//components/browsing_topics:unit_tests",
-      "//components/browsing_topics/common:unit_tests",
       "//components/captive_portal/content:unit_tests",
       "//components/capture_mode:unit_tests",
       "//components/cast_receiver:unit_tests",
