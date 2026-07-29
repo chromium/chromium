@@ -494,7 +494,7 @@ bool PopupRowView::HandleKeyPressEvent(
 
 bool PopupRowView::IsSelectable() const {
   return controller_ && line_number_ < controller_->GetLineCount() &&
-         !controller_->GetSuggestionAt(line_number_).HasDeactivatedStyle();
+         controller_->GetSuggestionAt(line_number_).IsSelectable();
 }
 
 bool PopupRowView::Accept(

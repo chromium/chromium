@@ -513,8 +513,7 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
       bnpl_suggestion.acceptability =
           issuer_context.IsEligible()
               ? Suggestion::Acceptability::kSelectableAndAcceptable
-              : Suggestion::Acceptability::
-                    kUnselectableAndUnacceptableWithDeactivatedStyle;
+              : Suggestion::Acceptability::kUnselectableAndUnacceptable;
       bnpl_suggestion.labels = {
           {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
               issuer_context.issuer.issuer_id(), app_locale,
@@ -522,8 +521,8 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
     } else {
       bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE))}};
-      bnpl_suggestion.acceptability = Suggestion::Acceptability::
-          kUnselectableAndUnacceptableWithDeactivatedStyle;
+      bnpl_suggestion.acceptability =
+          Suggestion::Acceptability::kUnselectableAndUnacceptable;
     }
     bnpl_suggestion.icon =
         payments::GetBnplSuggestionIcon(issuer_context.issuer.issuer_id());

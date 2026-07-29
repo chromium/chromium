@@ -70,7 +70,8 @@ Suggestion CreateFetchingSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
       SuggestionType::kAtMemoryFetching);
-  suggestion.acceptability = Suggestion::Acceptability::kSelectableButUnacceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return suggestion;
 }
@@ -591,8 +592,8 @@ Suggestion CreateNoConnectionSuggestion(std::u16string query) {
                         SuggestionType::kAtMemoryNoConnection);
   suggestion.labels = {{Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}};
-  suggestion.acceptability = Suggestion::Acceptability::
-      kUnselectableAndUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
@@ -1098,8 +1099,8 @@ Suggestion AtMemoryManager::CreateSearchAffordanceSuggestion(
 
 Suggestion AtMemoryManager::CreateAiDisclosureSuggestion() const {
   Suggestion suggestion(SuggestionType::kAtMemoryAiDisclosure);
-  suggestion.acceptability = Suggestion::Acceptability::
-      kUnselectableAndUnacceptableWithDeactivatedStyle;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return suggestion;
 }

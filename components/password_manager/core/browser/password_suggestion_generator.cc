@@ -582,8 +582,8 @@ PasswordSuggestionGenerator::GetProactiveRecoverySuggestions(
 
   Suggestion footer(footer_text, SuggestionType::kFreeformFooter);
   footer.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  footer.acceptability = autofill::Suggestion::Acceptability::
-      kUnselectableAndUnacceptableWithDeactivatedStyle;
+  footer.acceptability =
+      autofill::Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestions.emplace_back(std::move(footer));
 
   return suggestions;

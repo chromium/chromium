@@ -2208,7 +2208,7 @@ TEST_F(PasswordAutofillManagerTest,
   // Since a passkey is selected, the popup will be updated:
   EXPECT_TRUE(updatedSuggestions[0].is_loading);
   EXPECT_FALSE(updatedSuggestions[0].IsAcceptable());
-  EXPECT_TRUE(updatedSuggestions[1].HasDeactivatedStyle());
+  EXPECT_FALSE(updatedSuggestions[1].IsSelectable());
   EXPECT_FALSE(updatedSuggestions[1].IsAcceptable());
 
   // Show suggestions again.
@@ -2222,7 +2222,7 @@ TEST_F(PasswordAutofillManagerTest,
   // Verify that the loading state persisted.
   EXPECT_TRUE(open_args.suggestions[0].is_loading);
   EXPECT_FALSE(open_args.suggestions[0].IsAcceptable());
-  EXPECT_TRUE(open_args.suggestions[1].HasDeactivatedStyle());
+  EXPECT_FALSE(open_args.suggestions[1].IsSelectable());
   EXPECT_FALSE(open_args.suggestions[1].IsAcceptable());
 
   // After calling hide callback the loading state is not persisted anymore:
@@ -2238,7 +2238,7 @@ TEST_F(PasswordAutofillManagerTest,
 
   EXPECT_FALSE(open_args.suggestions[0].is_loading);
   EXPECT_TRUE(open_args.suggestions[0].IsAcceptable());
-  EXPECT_FALSE(open_args.suggestions[1].HasDeactivatedStyle());
+  EXPECT_TRUE(open_args.suggestions[1].IsSelectable());
   EXPECT_TRUE(open_args.suggestions[1].IsAcceptable());
 }
 

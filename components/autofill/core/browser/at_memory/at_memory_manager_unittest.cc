@@ -390,8 +390,7 @@ TEST_F(AtMemoryManagerTest,
                                  {{Suggestion::Text(l10n_util::GetStringUTF16(
                                      IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}}),
                 Field(&Suggestion::acceptability,
-                      Suggestion::Acceptability::
-                          kUnselectableAndUnacceptableWithDeactivatedStyle)),
+                      Suggestion::Acceptability::kUnselectableAndUnacceptable)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(SuggestionType::kAtMemoryAiDisclosure)));
 }
@@ -665,8 +664,7 @@ TEST_F(AtMemoryManagerTest,
   EXPECT_EQ(final_suggestions[0].labels[0][0].value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION));
   EXPECT_EQ(final_suggestions[0].acceptability,
-            Suggestion::Acceptability::
-                kUnselectableAndUnacceptableWithDeactivatedStyle);
+            Suggestion::Acceptability::kUnselectableAndUnacceptable);
 }
 
 // Tests that when filling an attribute (e.g. Passport Number), the manager

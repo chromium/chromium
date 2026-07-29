@@ -221,7 +221,8 @@ Suggestion CreateAtMemoryFetchingSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
       SuggestionType::kAtMemoryFetching);
-  suggestion.acceptability = Suggestion::Acceptability::kSelectableButUnacceptable;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   return suggestion;
 }
 
@@ -401,8 +402,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_And_WebAuthn_Deactivated) {
   PrepareSuggestions(CreatePasswordAndWebAuthnSuggestions(
-      Suggestion::Acceptability::
-          kUnselectableAndUnacceptableWithDeactivatedStyle));
+      Suggestion::Acceptability::kUnselectableAndUnacceptable));
   ShowAndVerifyUi();
 }
 

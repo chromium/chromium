@@ -160,7 +160,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowPaymentMethods(
             custom_icon_url ? url::GURLAndroid::FromNativeGURL(
                                   env, custom_icon_url->value())
                             : url::GURLAndroid::EmptyGURL(env),
-            android_icon_id, suggestion.HasDeactivatedStyle(),
+            android_icon_id, !suggestion.IsSelectable(),
             payments_payload.CreateJavaObject()));
   }
   Java_TouchToFillPaymentMethodViewBridge_showPaymentMethods(

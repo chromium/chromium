@@ -407,14 +407,12 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   }
 
   suggestion.type = SuggestionType::kVirtualCreditCardEntry;
-  // If a virtual card is non-acceptable, it needs to be displayed in
-  // grayed-out style.
   if (!suggestion.IsAcceptable()) {
-    suggestion.acceptability = Suggestion::Acceptability::
-        kUnselectableAndUnacceptableWithDeactivatedStyle;
+    suggestion.acceptability =
+        Suggestion::Acceptability::kUnselectableAndUnacceptable;
   }
   suggestion.iph_metadata = Suggestion::IPHMetadata(
-      suggestion.HasDeactivatedStyle()
+      !suggestion.IsSelectable()
           ? &feature_engagement::
                 kIPHAutofillDisabledVirtualCardSuggestionFeature
           : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
@@ -854,8 +852,7 @@ Suggestion CreateBnplSuggestion(
   bnpl_suggestion.acceptability =
       amount_extraction_status.has_timed_out_for_page_load ||
               amount_extraction_status.seen_unsupported_currency_for_page_load
-          ? Suggestion::Acceptability::
-                kUnselectableAndUnacceptableWithDeactivatedStyle
+          ? Suggestion::Acceptability::kUnselectableAndUnacceptable
           : Suggestion::Acceptability::kSelectableAndAcceptable;
 
   return bnpl_suggestion;
@@ -959,8 +956,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
           IsCardSuggestionAcceptable(credit_card, manager.client());
       suggestion.acceptability =
           acceptable ? Suggestion::Acceptability::kSelectableAndAcceptable
-                     : Suggestion::Acceptability::
-                           kUnselectableAndUnacceptableWithDeactivatedStyle;
+                     : Suggestion::Acceptability::kUnselectableAndUnacceptable;
       suggestion.labels.push_back(std::vector<Suggestion::Text>{
           Suggestion::Text(l10n_util::GetStringUTF16(
               acceptable

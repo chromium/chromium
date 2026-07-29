@@ -817,7 +817,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     return ConvertModelToImageView(
         ImageModelFromImageSkia(
             gfx::Image::CreateFrom1xBitmap(bitmap).AsImageSkia()),
-        suggestion.HasDeactivatedStyle());
+        !suggestion.IsSelectable());
   }
   if (auto* image = std::get_if<gfx::Image>(&suggestion.custom_icon);
       image && !image->IsEmpty()) {
@@ -828,11 +828,10 @@ std::unique_ptr<views::ImageView> GetIconImageView(
           image_skia, webid::kDesiredAvatarSizeInAutofillDropdown);
     }
     return ConvertModelToImageView(ImageModelFromImageSkia(image_skia),
-                                   suggestion.HasDeactivatedStyle());
+                                   !suggestion.IsSelectable());
   }
-  std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
-                              suggestion.HasDeactivatedStyle());
+  std::unique_ptr<views::ImageView> icon_image_view = ConvertModelToImageView(
+      GetIconImageModelFromIcon(suggestion.icon), !suggestion.IsSelectable());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
@@ -857,7 +856,7 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
   std::optional<ui::ImageModel> image_model =
       GetIconImageModelFromIcon(suggestion.trailing_icon);
   std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(image_model, suggestion.HasDeactivatedStyle());
+      ConvertModelToImageView(image_model, !suggestion.IsSelectable());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 

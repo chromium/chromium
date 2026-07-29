@@ -39,8 +39,7 @@ std::vector<Suggestion> PrepareLoadingStateSuggestions(
       suggestion.acceptability = kSelectableButUnacceptable;
       suggestion.is_loading = Suggestion::IsLoading(true);
     } else {
-      suggestion.acceptability =
-          kUnselectableAndUnacceptableWithDeactivatedStyle;
+      suggestion.acceptability = kUnselectableAndUnacceptable;
     }
   }
   return current_suggestions;

@@ -31,14 +31,20 @@ TEST(SuggestionTest, IsAcceptable) {
   // Non-kSelectableAndAcceptable acceptability states return false for
   // acceptable types.
   using enum Suggestion::Acceptability;
+  Suggestion acceptable_suggestion(SuggestionType::kAddressEntry);
+  EXPECT_TRUE(acceptable_suggestion.IsAcceptable());
+
   Suggestion unacceptable_suggestion(SuggestionType::kAddressEntry);
   unacceptable_suggestion.acceptability = kSelectableButUnacceptable;
   EXPECT_FALSE(unacceptable_suggestion.IsAcceptable());
 
-  Suggestion deactivated_suggestion(SuggestionType::kAddressEntry);
-  deactivated_suggestion.acceptability =
-      kUnselectableAndUnacceptableWithDeactivatedStyle;
-  EXPECT_FALSE(deactivated_suggestion.IsAcceptable());
+  Suggestion unselectable_suggestion(SuggestionType::kAddressEntry);
+  unselectable_suggestion.acceptability = kUnselectableAndUnacceptable;
+  EXPECT_FALSE(unselectable_suggestion.IsAcceptable());
+
+  EXPECT_TRUE(acceptable_suggestion.IsSelectable());
+  EXPECT_TRUE(unacceptable_suggestion.IsSelectable());
+  EXPECT_FALSE(unselectable_suggestion.IsSelectable());
 }
 
 }  // namespace

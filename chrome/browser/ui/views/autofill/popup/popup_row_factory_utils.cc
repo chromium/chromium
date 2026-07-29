@@ -125,7 +125,7 @@ bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
   switch (GetFillingProductFromSuggestionType(suggestion.type)) {
     case FillingProduct::kPassword:
     case FillingProduct::kPasskey:
-      return suggestion.HasDeactivatedStyle();
+      return !suggestion.IsSelectable();
     case FillingProduct::kAddress:
     case FillingProduct::kCreditCard:
     case FillingProduct::kIban:
@@ -149,7 +149,7 @@ bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
 // pending alignment from UX.
 bool IsDeactivatedBnplSuggestion(const Suggestion& suggestion) {
   return suggestion.type == SuggestionType::kBnplEntry &&
-         suggestion.HasDeactivatedStyle();
+         !suggestion.IsSelectable();
 }
 
 std::unique_ptr<views::BoxLayoutView> GetAlternativePaymentMethodBadge(
@@ -208,7 +208,7 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
     std::optional<user_education::DisplayNewBadge> show_new_badge,
     views::style::TextStyle primary_text_style = kMainTextStyle) {
   views::style::TextStyle main_text_label_style;
-  if (suggestion.HasDeactivatedStyle()) {
+  if (!suggestion.IsSelectable()) {
     main_text_label_style = kDisabledTextStyle;
   } else {
     main_text_label_style = suggestion.main_text.is_primary
@@ -243,8 +243,7 @@ std::vector<std::unique_ptr<views::View>> CreateMinorTextLabels(
     }
     auto label = std::make_unique<views::Label>(
         text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        suggestion.HasDeactivatedStyle() ? kDisabledTextStyle
-                                         : kMinorTextStyle);
+        suggestion.IsSelectable() ? kMinorTextStyle : kDisabledTextStyle);
     label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
     minor_text_labels.push_back(std::move(label));
   }
@@ -330,7 +329,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       suggestion, /*show_new_badge=*/std::nullopt, kMainTextStyleLight);
   // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
   // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
-  if (!suggestion.HasDeactivatedStyle()) {
+  if (suggestion.IsSelectable()) {
     main_text_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);
@@ -552,7 +551,7 @@ std::unique_ptr<PopupRowContentView> CreateBnplPopupRowContentView(
     minor_texts.push_back(std::move(spacer));
 
     auto linked_pill = std::make_unique<payments::BnplLinkedIssuerPill>();
-    linked_pill->SetEnabled(!suggestion.HasDeactivatedStyle());
+    linked_pill->SetEnabled(suggestion.IsSelectable());
     minor_texts.push_back(std::move(linked_pill));
   }
 
@@ -563,7 +562,7 @@ std::unique_ptr<PopupRowContentView> CreateBnplPopupRowContentView(
 
   std::unique_ptr<views::ImageView> icon =
       popup_cell_utils::GetIconImageView(suggestion);
-  if (suggestion.HasDeactivatedStyle()) {
+  if (!suggestion.IsSelectable()) {
     if (icon) {
       icon->SetPaintToLayer();
       icon->layer()->SetFillsBoundsOpaquely(false);

@@ -321,8 +321,8 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   suggestion.children.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY),
       SuggestionType::kDevtoolsTestAddressByCountry);
-  suggestion.children.back().acceptability = Suggestion::Acceptability::
-      kUnselectableAndUnacceptableWithDeactivatedStyle;
+  suggestion.children.back().acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestion.children.emplace_back(SuggestionType::kSeparator);
   for (const AutofillProfile& test_address : test_addresses) {
     CHECK(test_address.is_devtools_testing_profile());

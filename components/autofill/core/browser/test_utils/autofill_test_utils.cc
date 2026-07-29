@@ -1197,8 +1197,7 @@ Suggestion CreateAutofillSuggestion(SuggestionType type,
   suggestion.minor_texts.emplace_back(minor_text_value);
   suggestion.acceptability =
       has_deactivated_style
-          ? Suggestion::Acceptability::
-                kUnselectableAndUnacceptableWithDeactivatedStyle
+          ? Suggestion::Acceptability::kUnselectableAndUnacceptable
           : Suggestion::Acceptability::kSelectableAndAcceptable;
   return suggestion;
 }

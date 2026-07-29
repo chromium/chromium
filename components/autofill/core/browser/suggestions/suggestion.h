@@ -485,9 +485,8 @@ struct Suggestion {
     // The suggestion can be selected, but cannot be accepted (i.e. trying to
     // accept it is ignored by the UI controller).
     kSelectableButUnacceptable,
-    // The suggestion cannot be selected/focused and cannot be accepted, and
-    // is displayed in a deactivated style.
-    kUnselectableAndUnacceptableWithDeactivatedStyle,
+    // The suggestion cannot be selected/focused and cannot be accepted.
+    kUnselectableAndUnacceptable,
   };
 
   explicit Suggestion(SuggestionType type);
@@ -694,11 +693,8 @@ struct Suggestion {
   // `acceptability == Acceptability::kSelectableAndAcceptable`.
   bool IsAcceptable() const;
 
-  // Returns whether the user will see the suggestion in
-  // a "disabled and grayed-out" form.
-  // TODO(crbug.com/b/538019057): Remove this helper once styling is completely
-  // decoupled from suggestion interaction contract.
-  bool HasDeactivatedStyle() const;
+  // Returns whether the user is able to focus or select the suggestion.
+  bool IsSelectable() const;
 };
 
 void PrintTo(const Suggestion& suggestion, std::ostream* os);
