@@ -1393,15 +1393,27 @@ void TabDragController::AttachToNewContext(
   // the new model.
   CHECK(GetViewsMatchingDraggedContents(attached_context_).empty());
 
-  selection_model_before_attach_ = attached_context_->GetTabStripModel()
-                                       ->selection_model()
-                                       .GetListSelectionModel();
+  TabStripModel* tab_strip_model = attached_context_->GetTabStripModel();
+  selection_model_before_attach_ =
+      tab_strip_model->selection_model().GetListSelectionModel();
 
   // Insert at any valid index in the tabstrip. We'll fix up the insertion
   // index in MoveAttached() later, if we're transitioning to kDraggingTabs;
   // if we're transitioning to kDraggingWindow this is the correct index, 0.
-  size_t index =
-      attached_context_->GetTabStripModel()->IndexOfFirstNonPinnedTab();
+  size_t index = tab_strip_model->IndexOfFirstNonPinnedTab();
+  // When focus mode is active, initial insertion of attached dragged tabs
+  // should target the focused group's range to prevent index desync.
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    const std::optional<tab_groups::TabGroupId> focused_group =
+        tab_strip_model->GetFocusedGroup();
+    if (focused_group.has_value()) {
+      const TabGroup* group =
+          tab_strip_model->group_model()->GetTabGroup(*focused_group);
+      if (group && group->ListTabs().length() > 0) {
+        index = group->ListTabs().start();
+      }
+    }
+  }
 
   base::AutoReset<bool> setter(&is_mutating_, true);
 

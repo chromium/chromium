@@ -400,6 +400,28 @@ int TabStripModel::InsertDetachedTabAt(
     std::optional<tab_groups::TabGroupId> group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   tab->OnAddedToModel(this);
+
+  // Newly attached dragged tabs without an explicit group should join the
+  // focused group if focus mode is active, unless the tab is pinned.
+  const bool is_pinned = (add_types & ADD_PINNED) != 0;
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      !group.has_value() && !is_pinned) {
+    group = GetFocusedGroup();
+  }
+
+  // Ensure the insertion index stays within the group's range to preserve
+  // group contiguity when adding a tab into a group.
+  if (group_model_ && group.has_value()) {
+    const TabGroup* tab_group = group_model_->GetTabGroup(group.value());
+    if (tab_group) {
+      gfx::Range grouped_tabs = tab_group->ListTabs();
+      if (grouped_tabs.length() > 0) {
+        index = std::clamp(index, static_cast<int>(grouped_tabs.start()),
+                           static_cast<int>(grouped_tabs.end()));
+      }
+    }
+  }
+
   return InsertTabAtImpl(index, std::move(tab), add_types, group);
 }
 
