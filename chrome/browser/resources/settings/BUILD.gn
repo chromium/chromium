@@ -468,6 +468,8 @@ build_webui("build") {
     "downloads_page/downloads_page.css",
     "on_startup_page/startup_url_entry.css",
     "on_startup_page/startup_urls_page.css",
+    "performance_page/battery_page.css",
+    "performance_page/memory_page.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "reset_page/reset_profile_banner.css",
     "reset_page/reset_profile_dialog.css",

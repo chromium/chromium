@@ -50,20 +50,21 @@ suite('BatteryPage', function() {
   test('BatterySaverModeEnabledOnBattery', async function() {
     await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_ON_BATTERY);
+    await microtasksFinished();
     assertTrue(
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<SettingsToggleButtonElement>(
                 '#toggleButton')!.checked,
         'toggle should be checked when battery saver mode is enabled on ' +
             'battery');
     assertTrue(
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<CrCollapseElement>('#radioGroupCollapse')!.opened,
         'collapse should be open when battery saver mode is enabled on ' +
             'battery');
     assertEquals(
         String(BatterySaverModeState.ENABLED_ON_BATTERY),
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<SettingsRadioGroupElement>('#radioGroup')!.selected,
         'selected radio button should be enabled on battery');
   });
@@ -71,20 +72,21 @@ suite('BatteryPage', function() {
   test('BatterySaverModeEnabledBelowThreshold', async function() {
     await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_BELOW_THRESHOLD);
+    await microtasksFinished();
     assertTrue(
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<SettingsToggleButtonElement>(
                 '#toggleButton')!.checked,
         'toggle should be checked when battery saver mode is enabled below ' +
             'threshold');
     assertTrue(
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<CrCollapseElement>('#radioGroupCollapse')!.opened,
         'collapse should be open when battery saver mode is enabled below ' +
             'threshold');
     assertEquals(
         String(BatterySaverModeState.ENABLED_BELOW_THRESHOLD),
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<SettingsRadioGroupElement>('#radioGroup')!.selected,
         'selected radio button should be enabled below threshold');
   });
@@ -92,13 +94,14 @@ suite('BatteryPage', function() {
   test('BatterySaverModeDisabled', async function() {
     await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
+    await microtasksFinished();
     assertFalse(
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<SettingsToggleButtonElement>(
                 '#toggleButton')!.checked,
         'toggle should be unchecked when battery saver mode is disabled');
     assertFalse(
-        batteryPage.shadowRoot!
+        batteryPage.shadowRoot
             .querySelector<CrCollapseElement>('#radioGroupCollapse')!.opened,
         'collapse should be closed when battery saver mode is disabled');
   });
@@ -106,15 +109,16 @@ suite('BatteryPage', function() {
   test('BatterySaverModeMetrics', async function() {
     await prefService.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
+    await microtasksFinished();
 
-    batteryPage.shadowRoot!
+    batteryPage.shadowRoot
         .querySelector<SettingsToggleButtonElement>('#toggleButton')!.click();
     let state = await performanceMetricsProxy.whenCalled(
         'recordBatterySaverModeChanged');
     assertEquals(BatterySaverModeState.ENABLED_BELOW_THRESHOLD, state);
 
     performanceMetricsProxy.reset();
-    batteryPage.shadowRoot!
+    batteryPage.shadowRoot
         .querySelector<ControlledRadioButtonElement>(
             '#enabledOnBatteryButton')!.click();
     state = await performanceMetricsProxy.whenCalled(
@@ -122,7 +126,7 @@ suite('BatteryPage', function() {
     assertEquals(BatterySaverModeState.ENABLED_ON_BATTERY, state);
 
     performanceMetricsProxy.reset();
-    batteryPage.shadowRoot!
+    batteryPage.shadowRoot
         .querySelector<SettingsToggleButtonElement>('#toggleButton')!.click();
     state = await performanceMetricsProxy.whenCalled(
         'recordBatterySaverModeChanged');

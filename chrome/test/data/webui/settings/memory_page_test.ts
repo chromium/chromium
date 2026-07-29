@@ -4,7 +4,6 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsMemoryPageElement} from 'chrome://settings/settings.js';
 import {MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, MemorySaverModeAggressiveness, MemorySaverModeState, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
@@ -104,7 +103,7 @@ suite('MemorySaverAggressiveness', function() {
    */
   function getMemoryPageElement<T extends HTMLElement = HTMLElement>(
       id: string): T {
-    const el = memoryPage.shadowRoot!.querySelector<T>(`#${id}`);
+    const el = memoryPage.shadowRoot.querySelector<T>(`#${id}`);
     assertTrue(el !== null);
     assertTrue(el instanceof HTMLElement);
     return el;
@@ -124,7 +123,7 @@ suite('MemorySaverAggressiveness', function() {
 
     memoryPage = document.createElement('settings-memory-page');
     document.body.appendChild(memoryPage);
-    flush();
+    await microtasksFinished();
 
     conservativeButton = getMemoryPageElement('conservativeButton');
     mediumButton = getMemoryPageElement('mediumButton');
@@ -136,6 +135,7 @@ suite('MemorySaverAggressiveness', function() {
   test('MemorySaverModeDisabled', async function() {
     await prefService.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
+    await microtasksFinished();
     assertFalse(memoryPage.$.toggleButton.checked);
     assertFalse(radioGroupCollapse.opened);
   });
@@ -143,6 +143,7 @@ suite('MemorySaverAggressiveness', function() {
   test('MemorySaverModeEnabled', async function() {
     await prefService.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
+    await microtasksFinished();
     assertTrue(memoryPage.$.toggleButton.checked);
     assertTrue(radioGroupCollapse.opened);
     assertEquals(
@@ -201,7 +202,7 @@ suite('MemorySaverAggressiveness', function() {
         mode: MemorySaverModeAggressiveness, el: HTMLElement) {
       await prefService.setPrefValue(
           MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, mode);
-      flush();
+      await microtasksFinished();
       assertTrue(!!el.shadowRoot!.querySelector('cr-policy-pref-indicator'));
     }
 
