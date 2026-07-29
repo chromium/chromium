@@ -836,24 +836,33 @@ template("collect_proguard_configs") {
       rebase_path(invoker.output, root_build_dir),
       "--dep_file",
       rebase_path(depfile, root_build_dir),
-      rebase_path(_build_config, root_build_dir),
     ]
-    if (invoker.aosp_mode) {
-      args += [ "--aosp-mode" ]
+    if (defined(invoker.rename_rules)) {
+      foreach(rule, invoker.rename_rules) {
+        args += [
+          "--rename-rule",
+          rule,
+        ]
+      }
     }
+    args += [ rebase_path(_build_config, root_build_dir) ]
   }
 }
 
 collect_proguard_configs("httpengine_combine_proguard_flags") {
   output = "$target_gen_dir/httpengine_combined_proguard.cfg"
-  aosp_mode = true
+  rename_rules = [
+    "org.chromium=android.net.http.internal.org.chromium",
+    "com.google.protobuf=android.net.http.internal.com.google.protobuf",
+    "org.jni_zero=android.net.http.internal.org.jni_zero",
+    "androidx.annotation=android.net.http.internal.androidx.annotation",
+  ]
 }
 
 # TODO(b/313416274): Change the output name to something else
 # that doesn't actually exist.
 collect_proguard_configs("cronet_combine_proguard_flags") {
   output = "$target_gen_dir/cronet_impl_native_proguard.cfg"
-  aosp_mode = false
 }
 
 action("httpengine_combined_proguard_flags_golden_test") {
