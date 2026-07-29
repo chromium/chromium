@@ -75,6 +75,7 @@ if (safe_browsing_mode != 0) {
       sources = [ "client_side_phishing_fuzzer.cc" ]
       deps = [
         ":client_side_phishing_fuzzer_proto",
+        ":client_side_phishing_fuzzer_proto_fuzzable",
         ":phishing_classifier",
         "//base",
         "//components/safe_browsing/core/common/fbs:client_model",
@@ -93,6 +94,7 @@ if (safe_browsing_mode != 0) {
       sources = [ "client_side_phishing_fuzzer.proto" ]
       deps =
           [ "//components/safe_browsing/core/common/proto:client_model_proto" ]
+      use_experimental_fuzzable_proto = true
     }
   }
 }

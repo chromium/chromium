@@ -62,8 +62,28 @@ def process_file(infile, outfile):
 
   new_content = import_regex.sub(import_replacement, new_content)
 
-  # TODO(crbug.com/505034799): Support absolute type references by prepending
-  # 'fuzzable.' after leading dots.
+  # Rewrite absolute type references (e.g., .reporting.Record -> .fuzzable.reporting.Record).
+  abs_ref_regex = re.compile(
+      r"""
+      (?<![\w.)\]])     # Must NOT be preceded by a letter, number, dot, ), or ]
+      \.                # The literal leading dot of the absolute reference
+      (?P<type_path>    # Captured type_path.
+          [a-zA-Z_]     # Must start with a letter or underscore (prevents matching floats like .5)
+          [\w.]*        # Followed by any number of word characters or dots
+      )                 # End named capture group
+      """,
+      re.VERBOSE,
+  )
+  # Do not modify well-known system packages.
+  ignored_packages = ("google.protobuf.", "google.rpc.", "google.type.")
+
+  def abs_ref_replacement(match_obj):
+    type_path = match_obj.group("type_path")
+    if type_path.startswith(ignored_packages):
+      return match_obj.group(0)
+    return f".fuzzable.{type_path}"
+
+  new_content = abs_ref_regex.sub(abs_ref_replacement, new_content)
 
   with open(outfile, "w", encoding="utf-8") as f:
     f.write(new_content)

@@ -17,6 +17,7 @@ fuzzable_proto_library("log_upload_event_proto") {
   sources = [ "synced/log_upload_event.proto" ]
   import_dirs = [ "//components/reporting/proto/synced" ]
   deps = [ "//components/reporting/proto:upload_tracker_proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 if (is_chromeos) {

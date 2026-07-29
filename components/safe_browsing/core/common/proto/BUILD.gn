@@ -19,14 +19,12 @@ import("//third_party/protobuf/proto_library.gni")
 fuzzable_proto_library("csd_proto") {
   proto_in_dir = "//"
   sources = [ "csd.proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("csd_proto_extras") {
   sources = [ "csd.proto" ]
   deps = [ ":csd_proto" ]
-
-  # The fuzzable_proto_library rule above uses the full protobuf runtime.
-  protobuf_full_support = true
 }
 
 proto_library("crx_info_proto") {
@@ -44,6 +42,7 @@ fuzzable_proto_library("realtimeapi_proto") {
     ":csd_proto",
     "//components/enterprise/common/proto:connectors_proto",
   ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("realtimeapi_proto_extras") {
@@ -57,15 +56,13 @@ proto_extras("realtimeapi_proto_extras") {
     ":csd_proto_extras",
     "//components/enterprise/common/proto:connectors_proto_extras",
   ]
-
-  # The fuzzable_proto_library rule above uses the full protobuf runtime.
-  protobuf_full_support = true
 }
 
 fuzzable_proto_library("client_model_proto") {
   proto_in_dir = "//"
   sources = [ "client_model.proto" ]
   deps = [ ":csd_proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_library("safebrowsingv5_proto") {

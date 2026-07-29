@@ -14,12 +14,12 @@ fuzzable_proto_library("record_constants") {
   generate_javascript = true
 
   sources = [ "synced/record_constants.proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("record_constants_extras") {
   sources = [ "synced/record_constants.proto" ]
   deps = [ ":record_constants" ]
-  protobuf_full_support = true
 }
 
 # Record definitions for reporting.
@@ -35,6 +35,7 @@ fuzzable_proto_library("record_proto") {
     ":health_proto",
     ":record_constants",
   ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("record_proto_extras") {
@@ -48,7 +49,6 @@ proto_extras("record_proto_extras") {
     ":health_proto_extras",
     ":record_constants_extras",
   ]
-  protobuf_full_support = true
 }
 
 proto_library("interface_proto") {
@@ -78,6 +78,7 @@ fuzzable_proto_library("health_proto") {
     ":record_constants",
     ":status_proto",
   ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("health_proto_extras") {
@@ -91,7 +92,6 @@ proto_extras("health_proto_extras") {
     ":record_constants_extras",
     ":status_proto_extras",
   ]
-  protobuf_full_support = true
 }
 
 proto_library("session_affiliated_user_proto") {
@@ -130,12 +130,12 @@ fuzzable_proto_library("status_proto") {
   generate_javascript = true
 
   sources = [ "synced/status.proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 proto_extras("status_proto_extras") {
   sources = [ "synced/status.proto" ]
   deps = [ ":status_proto" ]
-  protobuf_full_support = true
 }
 
 fuzzable_proto_library("upload_tracker_proto") {
@@ -144,6 +144,7 @@ fuzzable_proto_library("upload_tracker_proto") {
   sources = [ "synced/upload_tracker.proto" ]
 
   deps = [ ":status_proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 fuzzable_proto_library("configuration_file_proto") {
@@ -152,4 +153,5 @@ fuzzable_proto_library("configuration_file_proto") {
   sources = [ "synced/configuration_file.proto" ]
 
   deps = [ ":record_constants" ]
+  use_experimental_fuzzable_proto = true
 }
