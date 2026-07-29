@@ -40,6 +40,10 @@ export function getHtml(this: GroupedActionMenuElement) {
               class="${this.getItemIconClass_(item)}"
               icon="${this.getItemIcon_(item)}">
           </cr-icon>
+          <cr-icon
+              class="button-image has-icon-${!!item.icon}"
+              icon="${item.icon || ''}">
+          </cr-icon>
           ${item.title}
         </button>
       `)}
