@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -19,7 +20,14 @@ class SignedExchangePageLoadMetricsBrowserTest
  public:
   SignedExchangePageLoadMetricsBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(ukm::kUkmFeature);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {ukm::kUkmFeature},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
   SignedExchangePageLoadMetricsBrowserTest(

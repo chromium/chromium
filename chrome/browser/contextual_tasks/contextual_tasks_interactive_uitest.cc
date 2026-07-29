@@ -246,9 +246,13 @@ namespace contextual_tasks {
 class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ContextualTasksInteractiveUiTest() {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove the two omnibox features below.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kContextualTasks},
-        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes});
+        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes,
+                               omnibox::internal::kWebUIOmniboxPopup,
+                               omnibox::internal::kWebUIOmniboxAimPopup});
     tab_context_override_ =
         tabs::TabFeatures::GetUserDataFactoryForTesting()
             .AddOverrideForTesting<

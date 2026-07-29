@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
@@ -680,10 +681,15 @@ class StorageAccessAPIOriginIsolationBrowserTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove the two omnibox Features below.
     if (!GetParam()) {
-      return {features::kOriginKeyedProcessesByDefault};
+      return {features::kOriginKeyedProcessesByDefault,
+              omnibox::internal::kWebUIOmniboxPopup,
+              omnibox::internal::kWebUIOmniboxAimPopup};
     }
-    return {};
+    return {omnibox::internal::kWebUIOmniboxPopup,
+            omnibox::internal::kWebUIOmniboxAimPopup};
   }
 };
 

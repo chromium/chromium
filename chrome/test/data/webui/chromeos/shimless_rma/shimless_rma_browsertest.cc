@@ -26,6 +26,10 @@ class ShimlessRmaBrowserTest : public WebUIMochaBrowserTest {
  protected:
   ShimlessRmaBrowserTest() {
     set_test_loader_host(::ash::kChromeUIShimlessRMAHost);
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+    // is enabled and then remove this.
+    webui_omnibox_feature_list_.InitFromCommandLine(
+        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -35,6 +39,7 @@ class ShimlessRmaBrowserTest : public WebUIMochaBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kShimlessRMAOsUpdate};
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, AllInputsDisabled) {

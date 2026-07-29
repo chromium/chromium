@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
@@ -58,10 +59,18 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
       delete;
 
   void SetUp() override {
-    // It is important to disable system keyboard lock as low-level test
-    // utilities may install a keyboard hook to listen for keyboard events and
-    // having an active system hook may cause issues with that mechanism.
-    scoped_feature_list_.InitWithFeatures({}, {features::kSystemKeyboardLock});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // It is important to disable system keyboard lock as low-level test
+        // utilities may install a keyboard hook to listen for keyboard events
+        // and having an active system hook may cause issues with that
+        // mechanism.
+        {features::kSystemKeyboardLock,
+         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+         // Omnibox is enabled and then remove these two Features.
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
     InProcessBrowserTest::SetUp();
   }
 

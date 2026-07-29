@@ -134,7 +134,15 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
 
  protected:
-  OmniboxViewViewsTest() = default;
+  OmniboxViewViewsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
   ~OmniboxViewViewsTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -1770,9 +1778,14 @@ class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
  public:
   OmniboxViewViewsPlaceholderTest() {
     scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {});
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

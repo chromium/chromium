@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -179,6 +180,16 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
 
 class TabSearchPageHandlerTest : public InProcessBrowserTest {
  public:
+  TabSearchPageHandlerTest() {
+    webui_omnibox_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -343,6 +354,7 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
  private:
   content::TestWebUI web_ui_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
   std::unique_ptr<TestTabSearchPageHandler> handler_;
   std::unique_ptr<TabSearchUI> webui_controller_;
 };

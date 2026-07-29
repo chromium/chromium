@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/metrics/structured/structured_metrics_service.h"
+
 #include <memory>
 #include <utility>
 
@@ -14,6 +16,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -21,7 +24,6 @@
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/metrics/structured/structured_metrics_service.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/sync/test/fake_server_network_resources.h"
@@ -107,7 +109,14 @@ class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
 class TestStructuredMetricsService : public StructuredMetricsServiceTestBase {
  public:
   TestStructuredMetricsService() {
-    feature_list_.InitAndEnableFeature(::features::kChromeStructuredMetrics);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {::features::kChromeStructuredMetrics},
+        /*disabled_features=*/
+        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
+        // is enabled and then remove these two Features.
+        {omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
   }
 
  private:

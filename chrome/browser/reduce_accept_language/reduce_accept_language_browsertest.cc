@@ -20,7 +20,6 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -3193,14 +3192,13 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
   }
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect 3 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
-  // is called (1 during initial profile setup, and twice more when
+  // Expect 5 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
+  // is called (1 during initial profile setup, twice more when
   // SetPrefsAcceptLanguage is called to sync the preference to the renderer and
-  // network services). When WebUI Omnibox is enabled, an additional sample is
-  // recorded for WebUI Omnibox's WebContents, bringing the expected count to 4.
+  // network services, 1 for WebUI Omnibox WebContents, and 1 for Omnibox Aim
+  // Popup Webcontents).
   histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
-                               kLargeLanguagesCount,
-                               omnibox::IsWebUIOmniboxPopupEnabled() ? 4 : 3);
+                               kLargeLanguagesCount, 5);
 }
 
 IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
@@ -3231,12 +3229,11 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Expect 3 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
-  // is called (1 during initial profile setup, and twice more when
+  // Expect 5 samples recorded for kLargeLanguages when SetPrefsAcceptLanguage
+  // is called (1 during initial profile setup, twice more when
   // SetPrefsAcceptLanguage is called to sync the preference to the renderer and
-  // network services). When WebUI Omnibox is enabled, an additional sample is
-  // recorded for WebUI Omnibox's WebContents, bringing the expected count to 4.
+  // network services, 1 for WebUI Omnibox WebContents, and 1 for Omnibox Aim
+  // Popup Webcontents).
   histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
-                               kLargeLanguagesCount,
-                               omnibox::IsWebUIOmniboxPopupEnabled() ? 4 : 3);
+                               kLargeLanguagesCount, 5);
 }

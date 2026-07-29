@@ -105,6 +105,10 @@ class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kDemoModeAppLandscapeLocked},
         /*disabled_features=*/{});
+    // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
+    // enabled and then remove this.
+    webui_omnibox_feature_list_.InitFromCommandLine(
+        "", "WebUIOmniboxPopup,WebUIOmniboxAimPopup");
   }
 
  protected:
@@ -147,6 +151,7 @@ class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
   DeviceStateMixin device_state_{
       &mixin_host_, ash::DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
 // Class that waits for, then asserts, that a widget has entered or exited
