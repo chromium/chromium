@@ -78,23 +78,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
   void DrawToBackingSharedImage(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
-  const gpu::SyncToken& acquire_sync_token() const {
-    return acquire_sync_token_;
-  }
-  void set_release_sync_token(const gpu::SyncToken& token) {
-    release_sync_token_ = token;
-  }
-
-  // Invokes `overwrite_callback` with the ClientSharedImage backing this
-  // this instance and a SyncToken that should be
-  // waited on before writing to the contents. When the callback finishes,
-  // it should return the SyncToken that should be waited on to ensure that
-  // the service-side operations of the overwrite have completed.
-  void WriteToBackingSharedImage(
-      base::FunctionRef<
-          gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
-                         const gpu::SyncToken&)> overwrite_callback);
-
   // Copies the contents of the passed-in SharedImage at `copy_rect` into this
   // instance's SharedImage. Waits on `ready_sync_token` before copying; pass
   // SyncToken() if no sync is required. Synthesizes a new sync token in
@@ -109,6 +92,18 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
+  gpu::raster::RasterInterface* RasterInterface() const;
+  bool IsGpuContextLost() const;
+
+  // Temporarily public for WebGpuSharedImageWrapperLease migration.
+  const gfx::HDRMetadata hdr_metadata_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
+  const scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  gpu::SyncToken acquire_sync_token_;
+  gpu::SyncToken release_sync_token_;
+  bool is_cleared_ = false;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+
  private:
   WebGpuSharedImageWrapper(gfx::Size,
                            viz::SharedImageFormat,
@@ -117,25 +112,9 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
                            const gfx::HDRMetadata&,
                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
-  bool IsGpuContextLost() const;
-
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
-
-  gpu::raster::RasterInterface* RasterInterface() const;
-
-  const gfx::HDRMetadata hdr_metadata_;
-
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
-
-  const scoped_refptr<gpu::ClientSharedImage> shared_image_;
-  gpu::SyncToken acquire_sync_token_;
-  gpu::SyncToken release_sync_token_;
-
-  bool is_cleared_ = false;
-
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };
 
 }  // namespace blink

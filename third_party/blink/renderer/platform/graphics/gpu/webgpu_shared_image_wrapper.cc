@@ -182,44 +182,7 @@ bool WebGpuSharedImageWrapper::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-void WebGpuSharedImageWrapper::WriteToBackingSharedImage(
-    base::FunctionRef<
-        gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
-                       const gpu::SyncToken&)> overwrite_callback) {
-  if (IsGpuContextLost()) {
-    return;
-  }
 
-  // NOTE: Invoking BeginRasterAccess() ensures that this invocation of
-  // EndAccess() will generate a new sync token.
-  auto access =
-      shared_image_->BeginRasterAccess(RasterInterface(), acquire_sync_token_,
-                                       /*readonly=*/false);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  release_sync_token_ = sync_token;
-  shared_image_->UpdateDestructionSyncToken(sync_token);
-
-  gpu::SyncToken external_write_sync_token =
-      overwrite_callback(shared_image_, release_sync_token_);
-
-  if (IsGpuContextLost()) {
-    return;
-  }
-
-  // Ensure that any subsequent internal accesses wait for the external write to
-  // complete.
-  WaitSyncToken(external_write_sync_token);
-
-  // Additionally ensure that the next external read waits for the external
-  // write to complete by ensuring that a new sync token is generated on the
-  // internal interface. This new sync token will be chained after
-  // `external_write_sync_token` thanks to the wait above.
-  access = shared_image_->BeginRasterAccess(
-      RasterInterface(), acquire_sync_token_, /*readonly=*/true);
-  sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  release_sync_token_ = sync_token;
-  shared_image_->UpdateDestructionSyncToken(sync_token);
-}
 
 void WebGpuSharedImageWrapper::DrawToBackingSharedImage(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {

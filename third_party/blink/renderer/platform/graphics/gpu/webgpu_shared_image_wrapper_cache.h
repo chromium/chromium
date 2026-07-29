@@ -57,6 +57,11 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
   const gpu::SyncToken& acquire_sync_token() const;
   void set_release_sync_token(const gpu::SyncToken& token);
 
+  // Invokes `overwrite_callback` with the ClientSharedImage backing this
+  // instance and a SyncToken that should be waited on before writing to the
+  // contents. When the callback finishes, it should return the SyncToken
+  // that should be waited on to ensure that the service-side operations of the
+  // overwrite have completed.
   void WriteToBackingSharedImage(
       base::FunctionRef<
           gpu::SyncToken(const scoped_refptr<gpu::ClientSharedImage>&,
