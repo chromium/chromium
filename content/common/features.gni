@@ -19,11 +19,4 @@ declare_args() {
   # Enables the chrome://memory-coordinator-internals debug webui.
   enable_memory_coordinator_internals =
       is_win || is_linux || is_mac || is_chromeos
-
-  # Enables separate renderer binary.
-  enable_separate_renderer_binary = false
 }
-
-assert(
-    !enable_separate_renderer_binary || is_win || is_mac || is_linux,
-    "Separate renderer binary is only supported on desktop platforms (Windows, macOS, Linux).")
