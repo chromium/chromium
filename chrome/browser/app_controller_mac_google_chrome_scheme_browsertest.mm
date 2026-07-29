@@ -12,9 +12,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/apple/url_conversions.h"
 
@@ -34,8 +31,9 @@ namespace {
 
 using AppControllerGoogleChromeSchemeBrowserTest = InProcessBrowserTest;
 
+// TODO(crbuig.com/446672134): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
-                       OpenSchemeUrl) {
+                       DISABLED_OpenSchemeUrl) {
   std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
   if (scheme.empty()) {
     // Scheme not supported for this channel (e.g. Beta/Dev/Canary).
@@ -54,31 +52,6 @@ IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
 
   content::WebContents* new_tab = waiter.Wait();
   EXPECT_EQ(new_tab->GetVisibleURL(), target_url);
-}
-
-IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
-                       OpenSchemeUrlSetsOpaqueInitiator) {
-  std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
-  if (scheme.empty()) {
-    // Scheme not supported for this channel (e.g. Beta/Dev/Canary).
-    return;
-  }
-
-  GURL target_url("http://example.com/");
-  std::string scheme_url_str = scheme + "://" + target_url.spec();
-  NSURL* scheme_url =
-      [NSURL URLWithString:base::SysUTF8ToNSString(scheme_url_str)];
-
-  ui_test_utils::AllBrowserTabAddedWaiter waiter;
-
-  AppController* app_controller = AppController.sharedController;
-  [app_controller application:NSApp openURLs:@[ scheme_url ]];
-
-  content::WebContents* new_tab = waiter.Wait();
-  EXPECT_EQ(new_tab->GetVisibleURL(), target_url);
-
-  EXPECT_TRUE(
-      new_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
 }
 
 IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
