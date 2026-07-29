@@ -52,6 +52,14 @@ DisplayNameCandidates GetDisplayNameCandidates(const DeviceInfo* device);
 // filtering. It simply returns the preferred display name.
 std::string GetDeviceDisplayName(const DeviceInfo* device);
 
+// Returns a list of display names for the given devices.
+// When `kSyncDisambiguateDeviceNamesWithChannel` is enabled, this resolves
+// duplicate display names across `devices` and against `local_device` (if
+// provided) by appending release channel labels.
+std::vector<std::string> GetDeviceNames(
+    const std::vector<const DeviceInfo*>& devices,
+    const DeviceInfo* local_device = nullptr);
+
 // Returns a list of display names for the given devices. This handles:
 // 1. De-duplication by fallback full name: only the first occurrence in
 // `devices` is
