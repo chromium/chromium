@@ -71,11 +71,11 @@ std::vector<blink::mojom::AILanguageCodePtr> MakeLanguageCodeVector(
   return result;
 }
 
-class MockCreateSemanticEmbedderClient
+class TestCreateSemanticEmbedderClient
     : public blink::mojom::AIManagerCreateSemanticEmbedderClient {
  public:
-  MockCreateSemanticEmbedderClient() = default;
-  ~MockCreateSemanticEmbedderClient() override = default;
+  TestCreateSemanticEmbedderClient() = default;
+  ~TestCreateSemanticEmbedderClient() override = default;
 
   void OnResult(
       mojo::PendingRemote<blink::mojom::AISemanticEmbedder> embedder) override {
@@ -537,7 +537,7 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderWaitsForModel) {
   // Model is not yet available.
   EXPECT_FALSE(service_launcher->controller()->IsModelAvailable());
 
-  MockCreateSemanticEmbedderClient client;
+  TestCreateSemanticEmbedderClient client;
   MockDownloadObserver monitor;
 
   ai_manager_->CreateSemanticEmbedder(client.BindNewPipeAndPassRemote(),
@@ -571,7 +571,7 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderDownloadProgress) {
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   service_launcher->RecordSuccessfulUse();
 
-  MockCreateSemanticEmbedderClient client;
+  TestCreateSemanticEmbedderClient client;
   MockDownloadObserver monitor;
 
   EXPECT_CALL(monitor,
@@ -634,7 +634,7 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderCrashLimit) {
 
   EXPECT_FALSE(service_launcher->AllowedToLaunch());
 
-  MockCreateSemanticEmbedderClient client;
+  TestCreateSemanticEmbedderClient client;
   MockDownloadObserver monitor;
 
   ai_manager_->CreateSemanticEmbedder(client.BindNewPipeAndPassRemote(),
@@ -653,7 +653,7 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderComponentUpdateFailed) {
   // Model is not yet available.
   EXPECT_FALSE(service_launcher->controller()->IsModelAvailable());
 
-  MockCreateSemanticEmbedderClient client;
+  TestCreateSemanticEmbedderClient client;
   MockDownloadObserver monitor;
 
   // Expect OnDemandUpdate and capture the callback.
