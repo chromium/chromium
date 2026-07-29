@@ -29,12 +29,14 @@ namespace autofill {
 namespace {
 
 // Creates a Java `AutofillSuggestion` from a C++ `Suggestion`:
-// - `main_text.value` -> `label`
+// - `main_text.value` (or `minor_texts[0].value` if `main_text` is empty) ->
+// `label`
 // - `labels[0]` (joined with spaces) -> `sublabel`
 // - `icon` -> `iconId` (mapped via ResourceMapper)
 // - `type` -> `suggestionType`
 // - `children` -> `children`
-// TODO(crbug.com/536821036): Add support for `payload` and pass name of the type there.
+// TODO(crbug.com/536821036): Add support for `payload` and pass name of the
+// type there.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
     JNIEnv* env,
     const Suggestion& suggestion) {
@@ -61,10 +63,18 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
         return CreateJavaSuggestion(env, child);
       });
 
+  // Some suggestions (e.g. `kAtMemorySourceAttribution`) store their display
+  // text in `minor_texts` for Desktop Views styling. Fall back to `minor_texts`
+  // so Java `AutofillSuggestion` gets a non-empty label.
+  std::u16string label = suggestion.main_text.value;
+  if (label.empty() && !suggestion.minor_texts.empty()) {
+    label = suggestion.minor_texts[0].value;
+  }
+
   return Java_AtMemoryBottomSheetBridge_createAutofillSuggestion(
-      env, suggestion.main_text.value, secondary_label, sub_label,
-      android_icon_id, std::to_underlying(suggestion.type), children,
-      suggestion.IsAcceptable(), suggestion.HasDeactivatedStyle());
+      env, label, secondary_label, sub_label, android_icon_id,
+      std::to_underlying(suggestion.type), children, suggestion.IsAcceptable(),
+      suggestion.HasDeactivatedStyle());
 }
 
 }  // namespace
