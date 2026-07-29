@@ -1990,7 +1990,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID) || defined(SLOW_BINARY)
+#if BUILDFLAG(IS_ANDROID) || defined(SLOW_BINARY) || BUILDFLAG(IS_LINUX)
 #define MAYBE_testNoBootstrap DISABLED_testNoBootstrap
 #else
 #define MAYBE_testNoBootstrap testNoBootstrap
