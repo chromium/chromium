@@ -27,6 +27,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/task_environment.h"
@@ -582,5 +583,39 @@ TEST_F(SysInfoTest, MaxFrequencyPerProcessor) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
+
+TEST_F(SysInfoTest, MemoryOverride_LowEndDevice) {
+  {
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(MiBU(512));
+    EXPECT_TRUE(SysInfo::IsLowEndDevice());
+  }
+  {
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(4));
+    EXPECT_FALSE(SysInfo::IsLowEndDevice());
+  }
+}
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(SysInfoTest, MemoryOverride_IsNGbDevice) {
+  {
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(3));
+    EXPECT_TRUE(SysInfo::Is3GbDevice());
+    EXPECT_FALSE(SysInfo::Is4GbDevice());
+    EXPECT_FALSE(SysInfo::Is6GbDevice());
+  }
+  {
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(4));
+    EXPECT_FALSE(SysInfo::Is3GbDevice());
+    EXPECT_TRUE(SysInfo::Is4GbDevice());
+    EXPECT_FALSE(SysInfo::Is6GbDevice());
+  }
+  {
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(6));
+    EXPECT_FALSE(SysInfo::Is3GbDevice());
+    EXPECT_FALSE(SysInfo::Is4GbDevice());
+    EXPECT_TRUE(SysInfo::Is6GbDevice());
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base
