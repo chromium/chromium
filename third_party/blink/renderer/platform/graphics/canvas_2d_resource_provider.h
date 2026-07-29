@@ -234,11 +234,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
   void ReleaseImageProviderImages();
-  const std::optional<cc::PaintRecord>& LastRecording();
-  void SetLastRecording(cc::PaintRecord recording) {
-    last_recording_ = std::move(recording);
-  }
-  void ClearLastRecording() { last_recording_ = std::nullopt; }
 
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
@@ -417,7 +412,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   uint32_t snapshot_sk_image_id_ = 0u;
 
   bool clear_frame_ = true;
-  std::optional<cc::PaintRecord> last_recording_;
 
   base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };

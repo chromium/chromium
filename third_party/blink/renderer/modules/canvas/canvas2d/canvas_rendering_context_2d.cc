@@ -304,6 +304,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (element != nullptr) [[likely]] {
     shared_image_provider_ = nullptr;
     bitmap_provider_ = nullptr;
+    last_recording_ = std::nullopt;
     element->DiscardResources();
     element->DiscardResourceDispatcher();
 
@@ -385,14 +386,11 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
   if (shared_image_provider_) {
     result =
         shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
-    if (result) {
-      shared_image_provider_->ClearLastRecording();
-    }
   } else {
     result = bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
-    if (result) {
-      bitmap_provider_->ClearLastRecording();
-    }
+  }
+  if (result) {
+    last_recording_ = std::nullopt;
   }
   return result;
 }
@@ -606,18 +604,10 @@ void CanvasRenderingContext2D::DidFlushRecording(
   bool want_to_print = (Host() && Host()->IsPrinting()) ||
                        reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
-  if (shared_image_provider_) {
-    if (want_to_print && clear_frame) {
-      shared_image_provider_->SetLastRecording(recording);
-    } else {
-      shared_image_provider_->ClearLastRecording();
-    }
-  } else if (bitmap_provider_) {
-    if (want_to_print && clear_frame) {
-      bitmap_provider_->SetLastRecording(recording);
-    } else {
-      bitmap_provider_->ClearLastRecording();
-    }
+  if (want_to_print && clear_frame) {
+    last_recording_ = recording;
+  } else {
+    last_recording_ = std::nullopt;
   }
 }
 
@@ -860,13 +850,7 @@ CanvasRenderingContext2D::PaintRenderingResultsToSnapshot(
 
 const std::optional<cc::PaintRecord>&
 CanvasRenderingContext2D::GetLastRecording() {
-  if (shared_image_provider_) {
-    return shared_image_provider_->LastRecording();
-  }
-  if (bitmap_provider_) {
-    return bitmap_provider_->LastRecording();
-  }
-  return empty_recording_;
+  return last_recording_;
 }
 
 bool CanvasRenderingContext2D::CanCreateResourceProvider() {
@@ -1181,6 +1165,7 @@ UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
 void CanvasRenderingContext2D::SizeChanged() {
   shared_image_provider_ = nullptr;
   bitmap_provider_ = nullptr;
+  last_recording_ = std::nullopt;
   did_fail_to_create_resource_provider_ = false;
 }
 
@@ -1194,6 +1179,7 @@ void CanvasRenderingContext2D::Dispose() {
   hibernation_handler_ = nullptr;
   shared_image_provider_ = nullptr;
   bitmap_provider_ = nullptr;
+  last_recording_ = std::nullopt;
   CanvasRenderingContext::Dispose();
 }
 
@@ -1359,6 +1345,7 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
 void CanvasRenderingContext2D::ResetResourceProvider() {
   auto old_shared = std::move(shared_image_provider_);
   auto old_bitmap = std::move(bitmap_provider_);
+  last_recording_ = std::nullopt;
   if (canvas()) {
     canvas()->UpdateMemoryUsage();
   }

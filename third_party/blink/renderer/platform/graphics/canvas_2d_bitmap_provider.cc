@@ -207,10 +207,6 @@ void Canvas2DBitmapProvider::ReleaseImageProviderImages() {
   }
 }
 
-const std::optional<cc::PaintRecord>& Canvas2DBitmapProvider::LastRecording() {
-  return last_recording_;
-}
-
 sk_sp<SkSurface> Canvas2DBitmapProvider::CreateSkSurface() const {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::CreateSkSurface");
 

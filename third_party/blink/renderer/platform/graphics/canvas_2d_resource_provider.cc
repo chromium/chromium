@@ -529,11 +529,6 @@ void Canvas2DResourceProvider::ReleaseImageProviderImages() {
   }
 }
 
-const std::optional<cc::PaintRecord>&
-Canvas2DResourceProvider::LastRecording() {
-  return last_recording_;
-}
-
 scoped_refptr<UnacceleratedStaticBitmapImage>
 Canvas2DResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   if (!IsValid()) {
