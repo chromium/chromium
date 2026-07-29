@@ -307,6 +307,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Permission request failed"/>
   <int value="1" label="Permission denied"/>
   <int value="2" label="Permission granted"/>
+  <int value="3" label="Permission previously denied"/>
+  <int value="4" label="Permission previously granted"/>
 </enum>
 
 <enum name="UNNotificationPermissionStatus">
