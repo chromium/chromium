@@ -20,4 +20,10 @@
 #endif
 #endif
 
+#if __has_cpp_attribute(clang::trivial_abi)
+#define JNI_ZERO_TRIVIAL_ABI [[clang::trivial_abi]]
+#else
+#define JNI_ZERO_TRIVIAL_ABI
+#endif
+
 #endif  // JNI_ZERO_COMPILER_SPECIFIC_H_

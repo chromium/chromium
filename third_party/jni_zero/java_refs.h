@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "third_party/jni_zero/compiler_specific.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/logging.h"
 
@@ -207,7 +208,7 @@ concept HasCalledByNatives =
 // other JavaRef<> template types. This allows you to e.g. pass
 // ScopedJavaLocalRef<jstring> into a function taking const JavaRef<jobject>&
 template <>
-class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
+class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI JavaRef<jobject> {
  public:
   // Initializes a null reference.
   constexpr JavaRef() {}
@@ -257,6 +258,9 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   }
 
  protected:
+  JavaRef(JavaRef&&) = default;
+  JavaRef& operator=(JavaRef&&) = default;
+
 // Takes ownership of the |obj| reference passed; requires it to be a local
 // reference type.
 #if JNI_ZERO_DCHECK_IS_ON()
@@ -297,11 +301,18 @@ class ScopedJavaLocalRef;
 // whether it is a local or global type.
 template <typename T>
   requires internal::IsJobject<T>
-class JavaRef : public JavaRef<jobject> {
+class JNI_ZERO_TRIVIAL_ABI JavaRef : public JavaRef<jobject> {
  public:
   constexpr JavaRef() {}
   constexpr JavaRef(std::nullptr_t) {}
 
+ protected:
+  JavaRef(JavaRef&&) = default;
+  JavaRef& operator=(JavaRef&&) = default;
+
+  JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobject>(env, obj) {}
+
+ public:
   JavaRef(const JavaRef&) = delete;
   JavaRef& operator=(const JavaRef&) = delete;
 
@@ -363,18 +374,26 @@ class JavaRef : public JavaRef<jobject> {
     return JArrayView<ElementType>(
         env, static_cast<JArray<ElementType>>(this->obj()));
   }
-
- protected:
-  JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobject>(env, obj) {}
 };
 
 // JavaRef specialization for JArray<T> where T is a jobject subclass.
 template <typename T>
   requires internal::IsJobject<T>
-class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
+class JNI_ZERO_TRIVIAL_ABI
+    JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
  public:
   constexpr JavaRef() = default;
   explicit constexpr JavaRef(std::nullptr_t) {}
+
+ protected:
+  JavaRef(JavaRef&&) = default;
+  JavaRef& operator=(JavaRef&&) = default;
+
+  JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobjectArray>(env, obj) {}
+
+ public:
+  JavaRef(const JavaRef&) = delete;
+  JavaRef& operator=(const JavaRef&) = delete;
 
   JArray<T> obj() const {
     return static_cast<JArray<T>>(JavaRef<jobject>::obj());
@@ -402,9 +421,6 @@ class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
   JArrayView<T> CreateView(JNIEnv* env) const [[clang::lifetimebound]] {
     return JArrayView<T>(env, obj());
   }
-
- protected:
-  JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobjectArray>(env, obj) {}
 };
 
 template <typename T>
@@ -423,7 +439,7 @@ JavaRef<T> CreateLeaky(JNIEnv* env, T obj) {
 // callstack (e.g. as a class member) or you wish to pass it across threads,
 // use a ScopedJavaGlobalRef instead.
 template <typename T>
-class ScopedJavaLocalRef : public JavaRef<T> {
+class JNI_ZERO_TRIVIAL_ABI ScopedJavaLocalRef : public JavaRef<T> {
  public:
   // Take ownership of a bare jobject. This does not create a new reference.
   // This should only be used by JNI helper functions, or in cases where code
@@ -576,7 +592,7 @@ ScopedJavaLocalRef<T> AdoptRef(JNIEnv* env, T obj) {
 // passed to it, hence it is safe to use across threads (within the constraints
 // imposed by the underlying Java object that it references).
 template <typename T = jobject>
-class ScopedJavaGlobalRef : public JavaRef<T> {
+class JNI_ZERO_TRIVIAL_ABI ScopedJavaGlobalRef : public JavaRef<T> {
  public:
   constexpr ScopedJavaGlobalRef() {}
   constexpr ScopedJavaGlobalRef(std::nullptr_t) {}
@@ -734,13 +750,16 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaGlobalWeakRef {
 
 // A global JavaRef that will never be released.
 template <typename T = jobject>
-class JNI_ZERO_COMPONENT_BUILD_EXPORT LeakedJavaGlobalRef : public JavaRef<T> {
+class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI LeakedJavaGlobalRef
+    : public JavaRef<T> {
  public:
   constexpr LeakedJavaGlobalRef() = default;
   constexpr LeakedJavaGlobalRef(std::nullptr_t) {}
 
   LeakedJavaGlobalRef(const LeakedJavaGlobalRef& other) = delete;
-  LeakedJavaGlobalRef(const LeakedJavaGlobalRef&& other) = delete;
+  LeakedJavaGlobalRef& operator=(const LeakedJavaGlobalRef&) = delete;
+  LeakedJavaGlobalRef(LeakedJavaGlobalRef&& other) = default;
+  LeakedJavaGlobalRef& operator=(LeakedJavaGlobalRef&&) = default;
   ~LeakedJavaGlobalRef() = default;
 
   void Reset() { JavaRef<T>::ResetGlobalRef(); }
