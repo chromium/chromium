@@ -12,10 +12,15 @@ import android.os.Process;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 
+@JNINamespace("cronet")
 final class CronetPccAuditLogger {
     private static final String TAG = "CronetPccAuditLogger";
 
@@ -85,7 +90,8 @@ final class CronetPccAuditLogger {
      * The audit mode needs to be enabled for the log to be written, but there is intentionally no
      * public API to check if the mode is enabled.
      */
-    public static void maybeWrite(String url) {
+    @CalledByNative
+    public static void maybeWrite(@JniType("std::string") String url) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) return;
 
         if (sIsPrivateComputeUid == null) {

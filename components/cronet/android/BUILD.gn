@@ -38,6 +38,7 @@ generate_jni("cronet_jni_headers") {
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
     "java/src/org/chromium/net/impl/CronetMetrics.java",
+    "java/src/org/chromium/net/impl/CronetPccAuditLogger.java",
     "java/src/org/chromium/net/impl/CronetUmaRecorder.java",
     "java/src/org/chromium/net/impl/CronetUploadDataStream.java",
     "java/src/org/chromium/net/impl/CronetUrlRequest.java",

@@ -61,6 +61,10 @@ source_set("cronet_common") {
     "//net",
   ]
 
+  if (is_android) {
+    deps += [ "//components/cronet/android:cronet_jni_headers" ]
+  }
+
   public_deps = [ "//components/metrics:library_support" ]
 }
 

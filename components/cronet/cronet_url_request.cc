@@ -13,6 +13,13 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/cronet/android/cronet_jni_headers/CronetPccAuditLogger_jni.h"
+#endif
+
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/metrics_util.h"
 #include "net/base/idempotency.h"
@@ -219,6 +226,13 @@ void CronetURLRequest::NetworkTasks::OnReceivedRedirect(
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   received_byte_count_from_redirects_ +=
       request->GetTotalReceivedBytes().InBytes();
+#if BUILDFLAG(IS_ANDROID)
+  {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    cronet::Java_CronetPccAuditLogger_maybeWrite(env,
+                                                 redirect_info.new_url.spec());
+  }
+#endif
   callback_->OnReceivedRedirect(
       redirect_info.new_url.spec(), redirect_info.status_code,
       request->response_headers()->GetStatusText(), request->response_headers(),
@@ -352,6 +366,12 @@ void CronetURLRequest::NetworkTasks::Start(
     NOTREACHED();
 #endif
   }
+#if BUILDFLAG(IS_ANDROID)
+  {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    cronet::Java_CronetPccAuditLogger_maybeWrite(env, initial_url_.spec());
+  }
+#endif
   url_request_->Start();
 }
 

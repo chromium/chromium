@@ -330,6 +330,7 @@ public class CronetLibraryLoader {
             NetworkChangeNotifier.setAutoDetectConnectivityState(
                     new RegistrationPolicyAlwaysRegister(), /* forceUpdateNetworkState= */ false);
 
+            CronetPccAuditLogger.initialize();
             final var traceNetLogCaptureMode = getTraceNetLogCaptureMode();
 
             try (var libLoadTraceEvent =

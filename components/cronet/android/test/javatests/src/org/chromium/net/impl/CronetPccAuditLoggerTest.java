@@ -93,6 +93,19 @@ public class CronetPccAuditLoggerTest {
 
     @Test
     @SmallTest
+    public void testMaybeWrite_noIsPrivateComputeUid_throwsUninitialized() throws Exception {
+        assume().that(Build.VERSION.SDK_INT).isAtLeast(Build.VERSION_CODES.CINNAMON_BUN);
+
+        CronetPccAuditLogger.PccSandboxManagerDelegate mockDelegate =
+                mock(CronetPccAuditLogger.PccSandboxManagerDelegate.class);
+        CronetPccAuditLogger.setPccSandboxManagerDelegateForTesting(mockDelegate);
+        CronetPccAuditLogger.setIsPrivateComputeUidForTesting(null);
+
+        assertThrows(IllegalStateException.class, () -> CronetPccAuditLogger.maybeWrite(mUrl));
+    }
+
+    @Test
+    @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason =
@@ -138,30 +151,6 @@ public class CronetPccAuditLoggerTest {
         ArgumentCaptor<PersistableBundle> bundleCaptor =
                 ArgumentCaptor.forClass(PersistableBundle.class);
         verify(mMockDelegate, never()).writeToAuditLog(bundleCaptor.capture());
-    }
-
-    @Test
-    @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason =
-                    "Not testing against FALLBACK as it doesn't support PCC auditing. Not testing"
-                        + " against AOSP_PLATFORM as the test has to change static state which is"
-                        + " inaccessible when going through HttpEngine.")
-    public void testStartRequest_noIsPrivateComputeUid_throwsUninitialized() throws Exception {
-        assume().that(Build.VERSION.SDK_INT).isAtLeast(Build.VERSION_CODES.CINNAMON_BUN);
-
-        CronetPccAuditLogger.PccSandboxManagerDelegate mockDelegate =
-                mock(CronetPccAuditLogger.PccSandboxManagerDelegate.class);
-        CronetPccAuditLogger.setPccSandboxManagerDelegateForTesting(mockDelegate);
-        CronetPccAuditLogger.setIsPrivateComputeUidForTesting(null);
-
-        UrlRequest request = mRequestBuilder.build();
-        assertThrows(IllegalStateException.class, () -> request.start());
-
-        ArgumentCaptor<PersistableBundle> bundleCaptor =
-                ArgumentCaptor.forClass(PersistableBundle.class);
-        verify(mockDelegate, never()).writeToAuditLog(bundleCaptor.capture());
     }
 
     @Test
