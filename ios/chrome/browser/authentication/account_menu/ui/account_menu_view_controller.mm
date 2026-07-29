@@ -213,7 +213,13 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     height = kViewControllerDefaultPreferredHeight;
   }
   CGFloat width = self.tableView.frame.size.width;
-  self.preferredContentSize = CGSize(width, height);
+  // During initial layout passes or transitions (especially in Multi-window or
+  // Split-screen mode on iPad), the table view's frame width can be 0. Setting
+  // preferredContentSize with 0 width causes unsatisfiable constraints inside
+  // UIKit's popover layout engine, leading to crashes. See crbug.com/505638993.
+  if (width > 0) {
+    self.preferredContentSize = CGSize(width, height);
+  }
 }
 
 // Creates a button for the navigation bar.
