@@ -8484,6 +8484,7 @@ from previous Chrome versions.
   <int value="-1907000073"
       label="AutofillEnablePaymentSettingsServerCardSave:disabled"/>
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
+  <int value="-1906302720" label="AutofillEnableWalletReminderNotice:enabled"/>
   <int value="-1905470520" label="FirmwareUpdaterApp:enabled"/>
   <int value="-1905351186" label="FeedAblation:disabled"/>
   <int value="-1903909635"
@@ -16697,6 +16698,8 @@ from previous Chrome versions.
   <int value="696786796" label="EnableKeyboardRewriterFix:disabled"/>
   <int value="697211154" label="ContextManagementInOmnibox:enabled"/>
   <int value="697247166" label="AIPromptAPIParams:enabled"/>
+  <int value="697330923"
+      label="autofill-enable-wallet-reminder-notice:disabled"/>
   <int value="697503858" label="SharingPeerConnectionSender:disabled"/>
   <int value="698077921" label="ComposeboxSkillsOmniboxPopup:disabled"/>
   <int value="698253616"
@@ -20167,6 +20170,7 @@ from previous Chrome versions.
       label="AssistantEnableMediaSessionIntegration:disabled"/>
   <int value="1786724316" label="OmniboxIgnoreIntermediateResults:enabled"/>
   <int value="1787279386" label="VirtualKeyboardMultitouch:enabled"/>
+  <int value="1787372217" label="AutofillEnableWalletReminderNotice:disabled"/>
   <int value="1787572807" label="PrefixWebAppWindowsWithAppName:enabled"/>
   <int value="1788097134" label="DefaultBrowserPromptSurfaces:enabled"/>
   <int value="1788323093" label="AuxiliaryNavigationStaysInPWA:disabled"/>
@@ -21300,6 +21304,8 @@ from previous Chrome versions.
   <int value="2142661816" label="AllowRemoteContextForNotifications:disabled"/>
   <int value="2142979536" label="EnableManualFallbacksFilling:disabled"/>
   <int value="2144581598" label="UpcomingSharingFeatures:enabled"/>
+  <int value="2145007054"
+      label="autofill-enable-wallet-reminder-notice:enabled"/>
   <int value="2145077452" label="BlockCrossPartitionBlobUrlFetching:disabled"/>
   <int value="2145140507" label="WebViewRecordAppDataDirectorySize:enabled"/>
   <int value="2146769089" label="CustomizeTabGroupColorPalette:disabled"/>

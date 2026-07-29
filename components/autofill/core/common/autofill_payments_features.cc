@@ -298,6 +298,12 @@ BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillEnableWalletBrandingV2,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, shows the Wallet Reminder Notice after payment form submission
+// if higher-priority Autofill features (such as mandatory re-auth, VCN, or card
+// save) do not take precedence.
+BASE_FEATURE(kAutofillEnableWalletReminderNotice,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, PaymentsFormDataImporter prefers FormFieldData::user_input() over
 // FormFieldData::value() for import to avoid silently importing obfuscated
 // values.
