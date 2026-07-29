@@ -57,7 +57,8 @@ class ChromeContentClient : public content::ContentClient {
   std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) override;
   std::string GetDataResourceString(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
   std::string GetProcessTypeNameInEnglish(int type) override;

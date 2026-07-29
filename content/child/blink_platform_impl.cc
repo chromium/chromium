@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
@@ -169,7 +170,7 @@ std::string BlinkPlatformImpl::GetDataResourceString(int resource_id) {
   return GetContentClient()->GetDataResourceString(resource_id);
 }
 
-base::RefCountedMemory* BlinkPlatformImpl::GetDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> BlinkPlatformImpl::GetDataResourceBytes(
     int resource_id) {
   return GetContentClient()->GetDataResourceBytes(resource_id);
 }

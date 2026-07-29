@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -300,7 +301,7 @@ std::string_view ChromeContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* ChromeContentClient::GetDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> ChromeContentClient::GetDataResourceBytes(
     int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);

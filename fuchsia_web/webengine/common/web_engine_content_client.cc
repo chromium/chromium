@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "fuchsia_web/common/fuchsia_dir_scheme.h"
@@ -31,8 +32,8 @@ std::string_view WebEngineContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* WebEngineContentClient::GetDataResourceBytes(
-    int resource_id) {
+scoped_refptr<base::RefCountedMemory>
+WebEngineContentClient::GetDataResourceBytes(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }

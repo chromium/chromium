@@ -412,7 +412,8 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns the raw bytes of a data resource for the specified `resource_id`.
   // Can be called from any thread.
-  virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id) {
+  virtual scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) {
     return nullptr;
   }
 

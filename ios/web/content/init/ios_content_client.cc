@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#import "base/memory/ref_counted_memory.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
@@ -34,7 +35,7 @@ std::string_view IOSContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* IOSContentClient::GetDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> IOSContentClient::GetDataResourceBytes(
     int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);

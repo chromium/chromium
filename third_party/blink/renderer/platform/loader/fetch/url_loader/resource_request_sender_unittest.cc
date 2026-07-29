@@ -2158,8 +2158,9 @@ class TestingPlatformForWebUIBundledCodeCache : public TestingPlatformSupport {
   ~TestingPlatformForWebUIBundledCodeCache() override = default;
 
   // TestingPlatformSupport:
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override {
-    return resource_data_.get();
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) override {
+    return resource_data_;
   }
   std::optional<int> GetWebUIBundledCodeCacheResourceId(
       const GURL& resource_url) override {

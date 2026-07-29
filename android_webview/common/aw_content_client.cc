@@ -16,6 +16,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cdm/common/android_cdm_registration.h"
@@ -68,7 +69,8 @@ std::string_view AwContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* AwContentClient::GetDataResourceBytes(int resource_id) {
+scoped_refptr<base::RefCountedMemory> AwContentClient::GetDataResourceBytes(
+    int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }

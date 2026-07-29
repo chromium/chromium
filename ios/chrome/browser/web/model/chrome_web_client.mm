@@ -13,6 +13,7 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
+#import "base/memory/ref_counted_memory.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/notreached.h"
@@ -372,7 +373,7 @@ std::string_view ChromeWebClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* ChromeWebClient::GetDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> ChromeWebClient::GetDataResourceBytes(
     int resource_id) const {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);

@@ -13,6 +13,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/ns_error_util.h"
+#import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
@@ -90,7 +91,7 @@ std::string_view WebViewWebClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* WebViewWebClient::GetDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> WebViewWebClient::GetDataResourceBytes(
     int resource_id) const {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);

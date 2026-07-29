@@ -31,7 +31,8 @@ class WebViewWebClient : public web::WebClient {
   std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) const override;
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) const override;
   std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
       web::BrowserState* browser_state) const override;
   void PrepareErrorPage(web::WebState* web_state,

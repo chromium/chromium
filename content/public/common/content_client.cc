@@ -120,7 +120,8 @@ std::string_view ContentClient::GetDataResource(
   return std::string_view();
 }
 
-base::RefCountedMemory* ContentClient::GetDataResourceBytes(int resource_id) {
+scoped_refptr<base::RefCountedMemory> ContentClient::GetDataResourceBytes(
+    int resource_id) {
   return nullptr;
 }
 

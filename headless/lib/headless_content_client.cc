@@ -4,6 +4,7 @@
 
 #include "headless/lib/headless_content_client.h"
 
+#include "base/memory/ref_counted_memory.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -25,8 +26,8 @@ std::string_view HeadlessContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* HeadlessContentClient::GetDataResourceBytes(
-    int resource_id) {
+scoped_refptr<base::RefCountedMemory>
+HeadlessContentClient::GetDataResourceBytes(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }

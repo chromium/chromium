@@ -44,16 +44,17 @@ class TestClient : public TestContentClient {
     return std::u16string();
   }
 
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override {
-    base::RefCountedStaticMemory* bytes = nullptr;
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) override {
+    scoped_refptr<base::RefCountedMemory> bytes;
     if (resource_id == kDummyDefaultResourceId) {
-      bytes = new base::RefCountedStaticMemory(
+      bytes = base::MakeRefCounted<base::RefCountedStaticMemory>(
           base::byte_span_with_nul_from_cstring(kDummyDefaultResource));
     } else if (resource_id == kDummyResourceId) {
-      bytes = new base::RefCountedStaticMemory(
+      bytes = base::MakeRefCounted<base::RefCountedStaticMemory>(
           base::byte_span_with_nul_from_cstring(kDummyResource));
     } else if (resource_id == kDummyJSResourceId) {
-      bytes = new base::RefCountedStaticMemory(
+      bytes = base::MakeRefCounted<base::RefCountedStaticMemory>(
           base::byte_span_with_nul_from_cstring(kDummyJSResource));
     }
     return bytes;

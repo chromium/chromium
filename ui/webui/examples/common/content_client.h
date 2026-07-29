@@ -23,7 +23,8 @@ class ContentClient : public content::ContentClient {
   std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) override;
 };
 
 }  // namespace webui_examples

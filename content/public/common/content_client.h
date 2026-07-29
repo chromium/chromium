@@ -177,7 +177,8 @@ class CONTENT_EXPORT ContentClient {
       ui::ResourceScaleFactor scale_factor);
 
   // Returns the raw bytes of a scale independent data resource.
-  virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id);
+  virtual scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id);
 
   // Returns the string contents of a resource given the resource id.
   virtual std::string GetDataResourceString(int resource_id);

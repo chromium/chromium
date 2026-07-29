@@ -38,7 +38,8 @@ class ChromeWebClient : public web::WebClient {
   std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) const override;
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) const override;
   void GetAdditionalWebUISchemes(
       std::vector<std::string>* additional_schemes) override;
   void PostBrowserURLRewriterCreation(

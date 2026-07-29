@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
@@ -147,7 +148,7 @@ std::string_view CastContentClient::GetDataResource(
       resource_id, scale_factor);
 }
 
-base::RefCountedMemory* CastContentClient::GetDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> CastContentClient::GetDataResourceBytes(
     int resource_id) {
   // Chromecast loads localized resources for the home screen via this code
   // path. See crbug.com/643886 for details.

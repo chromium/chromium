@@ -148,6 +148,7 @@ _CONFIG = [
             'base::RangeAsRvalues',
             'base::raw_span',
             'base::RefCountedData',
+            'base::RefCountedMemory',
             'base::RemoveChars',
             'base::RepeatingTimer',
             'base::RunLoop',

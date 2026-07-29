@@ -56,7 +56,7 @@ void WebUIBundledCodeCacheFetcher::Start() {
             [](int code_cache_resource_id,
                scoped_refptr<base::SequencedTaskRunner> host_task_runner,
                base::WeakPtr<WebUIBundledCodeCacheFetcher> weak_this) {
-              base::RefCountedMemory* buffer_data =
+              scoped_refptr<base::RefCountedMemory> buffer_data =
                   Platform::Current()->GetDataResourceBytes(
                       code_cache_resource_id);
               PostCrossThreadTask(

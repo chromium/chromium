@@ -31,7 +31,8 @@ class ShellWebClient : public WebClient {
   std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) const override;
-  base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) const override;
   void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) override;
