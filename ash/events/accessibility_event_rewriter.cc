@@ -17,6 +17,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -85,11 +86,8 @@ void DumpWithoutCrashingHelper(const std::string& message) {
 AccessibilityEventRewriter::PendingEventInfo::PendingEventInfo(
     unsigned int id,
     std::unique_ptr<ui::Event> event,
-    ui::EventRewriter::Continuation continuation) {
-  this->id = id;
-  this->event = std::move(event);
-  this->continuation = std::move(continuation);
-}
+    ui::EventRewriter::Continuation continuation)
+    : id(id), event(std::move(event)), continuation(std::move(continuation)) {}
 
 AccessibilityEventRewriter::PendingEventInfo::~PendingEventInfo() = default;
 
@@ -160,10 +158,10 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
     // empty, so somehow the event was lost from the queue or the ChromeVox
     // extension sent the wrong event ID, indicating a bug.
     DumpWithoutCrashingHelper(
-        std::string("AccessibilityEventRewriter: empty queue with correct "
-                    "session ID. Event ID: " +
-                    base::NumberToString(id) +
-                    ", session ID: " + base::NumberToString(session_id)));
+        base::StrCat({"AccessibilityEventRewriter: empty queue with correct "
+                      "session ID. Event ID: ",
+                      base::NumberToString(id),
+                      ", session ID: ", base::NumberToString(session_id)}));
     return;
   }
 
@@ -187,21 +185,22 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
     // This is unexpected: We have the correct session ID but the queue is
     // empty when we got to this ID, so somehow the event was lost from the
     // queue.
-    DumpWithoutCrashingHelper(std::string(
-        "AccessibilityEventRewriter: emptied queue to reach event with correct "
-        "session ID, but it was missing. Event ID: " +
-        base::NumberToString(id) +
-        ", session ID: " + base::NumberToString(session_id)));
+    DumpWithoutCrashingHelper(
+        base::StrCat({"AccessibilityEventRewriter: emptied queue to reach "
+                      "event with correct session ID, but it was missing. "
+                      "Event ID: ",
+                      base::NumberToString(id),
+                      ", session ID: ", base::NumberToString(session_id)}));
     return;
   }
 
   if (id != pending_key_events_.front().id) {
     // This is unexpected: it may happen if ChromeVox sends an event twice or
     // if the events are not ordered.
-    DumpWithoutCrashingHelper(std::string(
-        "AccessibilityEventRewriter: mismatched event ID. Expected: " +
-        base::NumberToString(pending_key_events_.front().id) +
-        ", got: " + base::NumberToString(id)));
+    DumpWithoutCrashingHelper(base::StrCat(
+        {"AccessibilityEventRewriter: mismatched event ID. Expected: ",
+         base::NumberToString(pending_key_events_.front().id),
+         ", got: ", base::NumberToString(id)}));
     return;
   }
 
@@ -245,8 +244,9 @@ void AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
 
     // Map device types from Switch Access's internal representation.
     std::set<ui::InputDeviceType> device_types;
-    for (const std::string& switch_access_device : key_code.second)
+    for (const std::string& switch_access_device : key_code.second) {
       device_types.insert(GetInputDeviceType(switch_access_device));
+    }
 
     switch_access_key_codes_to_capture_.insert({key_code.first, device_types});
     key_code_to_switch_access_command_.insert({key_code.first, command});
@@ -268,11 +268,11 @@ void AccessibilityEventRewriter::SetSpokenFeedbackMv3KeyHandlingEnabled(
     // However, it's not worth crashing over this since it is set in JS and the
     // user might change their system clock.
     if (session_id <= current_session_id_) {
-      DumpWithoutCrashingHelper(std::string(
-          "AccessibilityEventRewriter: Restarted with session ID less than "
-          "previous ID. New ID: " +
-          base::NumberToString(session_id) +
-          ", old ID: " + base::NumberToString(current_session_id_)));
+      DumpWithoutCrashingHelper(base::StrCat(
+          {"AccessibilityEventRewriter: Restarted with session ID less than "
+           "previous ID. New ID: ",
+           base::NumberToString(session_id),
+           ", old ID: ", base::NumberToString(current_session_id_)}));
     }
     current_session_id_ = session_id;
     // Immediately flush any leftover events from the old session.
@@ -339,9 +339,9 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
       chromevox_mv3_key_handling_enabled_) {
     if (pending_key_events_.size() >= kMaxPendingEvents) {
-      DumpWithoutCrashingHelper(std::string(
-          "AccessibilityEventRewriter: dropping key event due to full queue: " +
-          rewritten_key_event->ToString()));
+      DumpWithoutCrashingHelper(base::StrCat(
+          {"AccessibilityEventRewriter: dropping key event due to full queue: ",
+           rewritten_key_event->ToString()}));
       return true;
     }
 
@@ -390,8 +390,9 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
 bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     const ui::Event& event,
     const Continuation continuation) {
-  if (!event.IsKeyEvent() || suspend_switch_access_key_handling_)
+  if (!event.IsKeyEvent() || suspend_switch_access_key_handling_) {
     return false;
+  }
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
   ui::EventRewriterAsh::MutableKeyState state(key_event);
@@ -404,8 +405,9 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
 
   const auto& key =
       switch_access_key_codes_to_capture_.find(rewritten_key_event->key_code());
-  if (key == switch_access_key_codes_to_capture_.end())
+  if (key == switch_access_key_codes_to_capture_.end()) {
     return false;
+  }
 
   int source_device_id = key_event->source_device_id();
   ui::InputDeviceType keyboard_type = ui::INPUT_DEVICE_UNKNOWN;
@@ -447,8 +449,9 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
 bool AccessibilityEventRewriter::RewriteEventForMagnifier(
     const ui::Event& event,
     const Continuation continuation) {
-  if (!event.IsKeyEvent())
+  if (!event.IsKeyEvent()) {
     return false;
+  }
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
 
@@ -459,8 +462,9 @@ bool AccessibilityEventRewriter::RewriteEventForMagnifier(
 
   if (key_event->type() == ui::EventType::kKeyPressed) {
     // If first time key is pressed (e.g. not repeat), start scrolling.
-    if (!(key_event->flags() & ui::EF_IS_REPEAT))
+    if (!(key_event->flags() & ui::EF_IS_REPEAT)) {
       OnMagnifierKeyPressed(key_event);
+    }
 
     // Either way (first or repeat), capture key press.
     return true;
@@ -531,8 +535,9 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
   bool captured = false;
-  if (!delegate_)
+  if (!delegate_) {
     return SendEvent(continuation, &event);
+  }
 
   // TODO(259372916): Switch to using the tray icon visibility.
   if (::features::IsAccessibilityMouseKeysEnabled()) {
