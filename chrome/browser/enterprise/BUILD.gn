@@ -257,7 +257,6 @@ source_set("enterprise") {
   if (is_linux || is_win || is_mac || is_chromeos) {
     public += [
       "connectors/device_trust/attestation/browser/attestation_switches.h",
-      "connectors/device_trust/attestation/browser/attester.h",
       "connectors/device_trust/attestation/browser/browser_attestation_service.h",
       "connectors/device_trust/attestation/browser/crypto_utility.h",
       "connectors/device_trust/attestation/browser/google_keys.h",

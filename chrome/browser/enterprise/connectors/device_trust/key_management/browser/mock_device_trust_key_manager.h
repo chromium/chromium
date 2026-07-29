@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_MOCK_DEVICE_TRUST_KEY_MANAGER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_MOCK_DEVICE_TRUST_KEY_MANAGER_H_
 
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors {

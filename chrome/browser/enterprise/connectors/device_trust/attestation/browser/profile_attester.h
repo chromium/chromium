@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_PROFILE_ATTESTER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_PROFILE_ATTESTER_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
-
 #include "base/memory/raw_ptr.h"
+#include "components/enterprise/device_trust/core/attestation/attester.h"
 
 namespace enterprise {
 class ProfileIdService;

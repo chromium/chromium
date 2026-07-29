@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "content/public/browser/browsing_data_remover.h"
 

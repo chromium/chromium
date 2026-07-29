@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_device_trust_key_manager.h"
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

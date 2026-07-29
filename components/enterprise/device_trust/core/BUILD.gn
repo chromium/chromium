@@ -13,9 +13,15 @@ source_set("core") {
   public = [
     "common_types.h",
     "device_trust_constants.h",
+    "device_trust_key_manager.h",
   ]
 
   deps = [ "//base" ]
+
+  public_deps = [
+    "//components/policy/proto",
+    "//crypto",
+  ]
 }
 
 source_set("unit_tests") {

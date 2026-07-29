@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
+#include "components/enterprise/device_trust/core/attestation/attester.h"
 
 namespace policy {
 class BrowserDMTokenStorage;

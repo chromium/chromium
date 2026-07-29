@@ -49,7 +49,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/device_signals/core/browser/pref_names.h"
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/interaction/element_identifier.h"
 #endif

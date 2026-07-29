@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_FLEX_ATTESTER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
+#include "components/enterprise/device_trust/core/attestation/attester.h"
 
 class Profile;
 

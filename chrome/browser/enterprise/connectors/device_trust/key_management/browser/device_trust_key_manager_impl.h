@@ -16,7 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader.h"
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 
 namespace enterprise_connectors {
 

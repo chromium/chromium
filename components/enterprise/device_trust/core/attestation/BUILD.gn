@@ -10,6 +10,7 @@ source_set("attestation") {
   public = [
     "attestation_service.h",
     "attestation_utils.h",
+    "attester.h",
   ]
 
   public_deps = [
@@ -17,6 +18,7 @@ source_set("attestation") {
     "//base",
     "//components/device_signals/core/common",
     "//components/enterprise/device_trust/core",
+    "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
     "//third_party/abseil-cpp:absl",
   ]
 }

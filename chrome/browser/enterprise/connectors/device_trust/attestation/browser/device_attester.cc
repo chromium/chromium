@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/device_trust_key_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace enterprise_connectors {

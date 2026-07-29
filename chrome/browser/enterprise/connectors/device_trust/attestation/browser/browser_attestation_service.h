@@ -14,9 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_runner.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_service.h"
+#include "components/enterprise/device_trust/core/attestation/attester.h"
 #include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
 
 namespace enterprise_connectors {
