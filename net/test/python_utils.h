@@ -5,18 +5,9 @@
 #ifndef NET_TEST_PYTHON_UTILS_H_
 #define NET_TEST_PYTHON_UTILS_H_
 
-#include <vector>
-
-#include "base/environment.h"
-
 namespace base {
 class CommandLine;
-class FilePath;
 }
-
-// Modifies |map| to use the specified Python path.
-void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
-                                base::EnvironmentMap* map);
 
 // Returns the command that should be used to launch Python 3.
 [[nodiscard]] bool GetPython3Command(base::CommandLine* python_cmd);

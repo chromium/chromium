@@ -57,11 +57,6 @@ is_arm_cast_shell_build = (is_castos || is_cast_android) &&
 enable_python_utils =
     !is_arm_cast_shell_build && !is_android && !is_fuchsia && !is_ios
 
-# Platforms that cannot use python_utils (like Android but see full
-# list above) will instead use a remote server.
-use_remote_test_server =
-    !enable_python_utils && (enable_websockets || (is_cronet_build && !is_ios))
-
 # Whether //net should use an external GSSAPI library for implementing HTTP
 # Negotiate authentication. All platforms for which use_kerberos is true should
 # have some external implementation since //net doesn't have intrinsic support
@@ -73,12 +68,6 @@ use_remote_test_server =
 #    Android : Uses an external authenticator. See
 #              https://www.chromium.org/developers/design-documents/http-authentication/writing-a-spnego-authenticator-for-chrome-on-android
 use_external_gssapi = use_kerberos && !is_android && !is_win
-
-config("net_test_config") {
-  if (use_remote_test_server) {
-    defines = [ "USE_REMOTE_TEST_SERVER" ]
-  }
-}
 
 buildflag_header("buildflags") {
   header = "net_buildflags.h"
@@ -2444,8 +2433,6 @@ static_library("test_support") {
   if (use_nss_certs) {
     configs += [ "//build/config/linux/nss" ]
   }
-
-  public_configs = [ ":net_test_config" ]
 
   if (enable_python_utils) {
     sources += [

@@ -610,10 +610,7 @@ if (is_mac) {
 }
 
 test("headless_browsertests") {
-  configs += [
-    "//net:net_test_config",
-    "//v8:external_startup_data",
-  ]
+  configs += [ "//v8:external_startup_data" ]
   sources = [
     "test/headless_browser_browsertest.cc",
     "test/headless_browser_context_browsertest.cc",
