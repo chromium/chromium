@@ -260,6 +260,14 @@ void StreamBufferManager::SetUpStreamsAndBuffers(
       case StreamType::kRecordingOutput: {
         stream_context->buffer_dimension = gfx::Size(
             stream_context->stream->width, stream_context->stream->height);
+        // HAL must not change stream width/height in configure_streams(). A
+        // mismatch here causes AcquireBufferForClientById to allocate the
+        // rotated destination at |capture_format.frame_size| while libyuv
+        // writes |buffer_dimension worth of data, producing a
+        // controlled-content OOB write in the unsandboxed Video Capture
+        // Service.
+        CHECK_EQ(stream_context->buffer_dimension,
+                 stream_context->capture_format.frame_size);
         stream_context->buffer_usage =
             gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
         break;
