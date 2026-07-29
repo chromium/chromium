@@ -1094,6 +1094,67 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       AccessibleNameUpdatesWithAnchoredMessageState) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Contextual cueing anchored message not implemented for Android";
+#endif
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  page_actions::PageActionController* page_action_controller =
+      GetPageActionController();
+  CHECK(page_action_controller);
+
+  // 1. Setup observer to track accessible name.
+  class AccessibleNameObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      accessible_name_ = model.GetAccessibleName();
+    }
+    std::u16string accessible_name_;
+  };
+
+  AccessibleNameObserver name_observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      name_observation(&name_observer);
+  page_action_controller->AddObserver(kActionAnchoredContextualCue,
+                                      name_observation);
+
+  // Also keep standard observer to wait for states.
+  page_actions::PageActionObserver state_observer(kActionAnchoredContextualCue);
+  state_observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  base::HistogramTester histogram_tester;
+
+  // 2. Trigger the cue.
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  // 3. Verify it is shown and has the short cue as the accessible name.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return state_observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  EXPECT_EQ(name_observer.accessible_name_, u"Action text");
+
+  // 4. Hide the anchored message.
+  page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !state_observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // 5. Verify name persists with it hiding into smaller action / icon.
+  EXPECT_EQ(name_observer.accessible_name_, u"Action text");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        NoLongerActiveTabAfterResponse) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.activetab.com/abc"),
