@@ -512,8 +512,10 @@ bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
   if (!ShouldGetValueFromAccountStore(key)) {
     return false;
   }
-  auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
-                      .GetSyncablePrefMetadata(key);
+  const SyncablePrefMetadata* metadata =
+      pref_model_associator_client_->GetSyncablePrefsDatabase()
+          .GetSyncablePrefMetadata(key);
+  CHECK(metadata);
   bool is_pref_type_enabled = false;
   if (base::FeatureList::IsEnabled(syncer::kSyncPreferencesUseSelectedTypes)) {
     if (metadata->data_type() == syncer::PREFERENCES ||
@@ -555,10 +557,11 @@ bool DualLayerUserPrefStore::ShouldGetValueFromAccountStore(
     // Safer this way.
     return false;
   }
-  auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
-                      .GetSyncablePrefMetadata(key);
+  const SyncablePrefMetadata* metadata =
+      pref_model_associator_client_->GetSyncablePrefsDatabase()
+          .GetSyncablePrefMetadata(key);
   // Checks if the pref is a syncable pref.
-  if (!metadata.has_value()) {
+  if (!metadata) {
     return false;
   }
   // Checks if the pref requires a history opt-in.
@@ -599,11 +602,12 @@ bool DualLayerUserPrefStore::ShouldSetValueInLocalStore(
     // Safer this way.
     return true;
   }
-  auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
-                      .GetSyncablePrefMetadata(key);
+  const SyncablePrefMetadata* metadata =
+      pref_model_associator_client_->GetSyncablePrefsDatabase()
+          .GetSyncablePrefMetadata(key);
   // Prefs are written to the local store by default, unless explicitly tagged
   // as account-only.
-  return !metadata.has_value() ||
+  return !metadata ||
          metadata->write_behavior() != WriteBehavior::kWriteToAccountOnly;
 }
 
@@ -617,11 +621,12 @@ bool DualLayerUserPrefStore::ShouldGetValueFromLocalStore(
     // Safer this way.
     return true;
   }
-  auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
-                      .GetSyncablePrefMetadata(key);
+  const SyncablePrefMetadata* metadata =
+      pref_model_associator_client_->GetSyncablePrefsDatabase()
+          .GetSyncablePrefMetadata(key);
   // Prefs are read from the local store by default, unless explicitly tagged
   // as account-only.
-  return !metadata.has_value() ||
+  return !metadata ||
          // Account-only prefs should ideally not exist in the local store,
          // except in case of a bug somewhere.
          metadata->write_behavior() != WriteBehavior::kWriteToAccountOnly;
@@ -647,10 +652,10 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
   // Clear all synced preferences from the account store.
   for (const std::string& pref_name :
        GetSyncablePrefNamesInStore(account_pref_store_.get())) {
-    std::optional<SyncablePrefMetadata> metadata =
+    const SyncablePrefMetadata* metadata =
         pref_model_associator_client_->GetSyncablePrefsDatabase()
             .GetSyncablePrefMetadata(pref_name);
-    CHECK(metadata.has_value());
+    CHECK(metadata);
     if (metadata->data_type() != data_type) {
       continue;
     }
@@ -1034,9 +1039,10 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
   std::map<std::string, std::optional<base::Value>> old_values;
   for (const std::string& pref_name :
        GetSyncablePrefNamesInStore(account_pref_store_.get())) {
-    auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
-                        .GetSyncablePrefMetadata(pref_name);
-    CHECK(metadata.has_value());
+    const SyncablePrefMetadata* metadata =
+        pref_model_associator_client_->GetSyncablePrefsDatabase()
+            .GetSyncablePrefMetadata(pref_name);
+    CHECK(metadata);
     if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
       old_values.emplace(pref_name, value->Clone());
     } else {

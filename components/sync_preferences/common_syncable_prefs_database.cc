@@ -509,14 +509,14 @@ constexpr auto kCommonSyncablePrefsAllowlist =
 
 }  // namespace
 
-std::optional<SyncablePrefMetadata>
+const SyncablePrefMetadata*
 CommonSyncablePrefsDatabase::GetSyncablePrefMetadata(
     std::string_view pref_name) const {
   const auto it = kCommonSyncablePrefsAllowlist.find(pref_name);
   if (it == kCommonSyncablePrefsAllowlist.end()) {
-    return std::nullopt;
+    return nullptr;
   }
-  return it->second;
+  return &it->second;
 }
 
 std::map<std::string_view, SyncablePrefMetadata>

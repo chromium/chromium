@@ -23,7 +23,7 @@ class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
   explicit TestSyncablePrefsDatabase(const PrefsMap& syncable_prefs_map);
   ~TestSyncablePrefsDatabase() override;
 
-  std::optional<sync_preferences::SyncablePrefMetadata> GetSyncablePrefMetadata(
+  const sync_preferences::SyncablePrefMetadata* GetSyncablePrefMetadata(
       std::string_view pref_name) const override;
 
  private:

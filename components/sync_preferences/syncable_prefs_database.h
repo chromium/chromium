@@ -134,7 +134,7 @@ class SyncablePrefsDatabase {
 
   // Returns the metadata associated to the pref and null if `pref_name` is not
   // syncable.
-  virtual std::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+  virtual const SyncablePrefMetadata* GetSyncablePrefMetadata(
       std::string_view pref_name) const = 0;
 
   // Returns true if `pref_name` is part of the allowlist of syncable
