@@ -2837,13 +2837,6 @@ StyleDifference LayoutObject::AdjustStyleDifference(
     }
   }
 
-  // TODO(1088373): Pixel_WebGLHighToLowPower fails without this. This isn't the
-  // right way to ensure GPU switching. Investigate and do it in the right way.
-  if (!diff.NeedsNormalPaintInvalidation() && IsLayoutView() && Style() &&
-      !StyleRef().GetFont()->IsFallbackValid()) {
-    diff.SetNeedsNormalPaintInvalidation();
-  }
-
   // The answer to layerTypeRequired() for plugins, iframes, and canvas can
   // change without the actual style changing, since it depends on whether we
   // decide to composite these elements. When the/ layer status of one of these
