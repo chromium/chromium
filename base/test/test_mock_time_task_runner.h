@@ -291,7 +291,7 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   // Returns the |next_task| to run if there is any with a running time that is
   // at most |reference| + |max_delta|. This additional complexity is required
   // so that |max_delta| == TimeDelta::Max() can be supported.
-  bool DequeueNextTask(const TimeTicks& reference,
+  bool DequeueNextTask(TimeTicks reference,
                        TimeDelta max_delta,
                        TestPendingTask* next_task);
 
