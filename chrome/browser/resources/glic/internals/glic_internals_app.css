@@ -9,7 +9,7 @@
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
-#contents {
+.tab-contents {
   background-color: var(--cr-fallback-color-surface);
   border-radius: var(--cr-card-border-radius);
   border: 1px solid var(--cr-fallback-color-outline);
