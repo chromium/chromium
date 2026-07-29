@@ -82,6 +82,8 @@ constexpr char kGoogleAllowedUrlPattern[] =
     "*://googlechromelabs.github.io/cros-sample-telemetry-extension/test-page/"
     "*";
 constexpr char kUserEmail[] = "user@example.com";
+constexpr char kSecondUserEmail[] = "second@example.com";
+constexpr GaiaId::Literal kSecondUserGaiaId("fakegaia2");
 
 const std::vector<ExtensionInfoTestParams>& GetAllExtensionInfoTestParams() {
   static const base::NoDestructor<std::vector<ExtensionInfoTestParams>> val({
@@ -624,6 +626,61 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
   ASSERT_TRUE(future.Wait());
   std::optional<std::string> error = future.Get();
   EXPECT_FALSE(error.has_value()) << error.value();
+}
+
+TEST_P(ApiGuardDelegateTest, OwnerCheckUsesCallingProfile) {
+  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+
+  // Log in a second user, mark them as the device owner and make them the
+  // active user. The calling profile still belongs to the first user.
+  const AccountId second_user =
+      AccountId::FromUserEmailGaiaId(kSecondUserEmail, kSecondUserGaiaId);
+  LogIn(kSecondUserEmail, kSecondUserGaiaId);
+  user_manager()->SetOwnerId(second_user);
+  user_manager()->SwitchActiveUser(second_user);
+  ASSERT_TRUE(user_manager()->IsCurrentUserOwner());
+
+  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  base::test::TestFuture<std::optional<std::string>> future;
+  api_guard_delegate->CanAccessApi(profile(), extension(),
+                                   future.GetCallback());
+
+  std::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("This extension is not run by the device owner", error.value());
+}
+
+TEST_P(ApiGuardDelegateTest, AffiliationCheckUsesCallingProfile) {
+  {
+    extensions::ExtensionManagementPrefUpdater<
+        sync_preferences::TestingPrefServiceSyncable>
+        updater(profile()->GetTestingPrefService());
+    updater.SetIndividualExtensionAutoInstalled(
+        extension_id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+  OpenAppUIUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+
+  // Log in a second user, mark them as the device owner and affiliated, and
+  // make them the active user. The calling profile still belongs to the first
+  // (unaffiliated, non-owner) user.
+  const AccountId second_user =
+      AccountId::FromUserEmailGaiaId(kSecondUserEmail, kSecondUserGaiaId);
+  LogIn(kSecondUserEmail, kSecondUserGaiaId);
+  user_manager()->SetOwnerId(second_user);
+  user_manager()->SetUserPolicyStatus(second_user,
+                                      /*is_managed=*/true,
+                                      /*is_affiliated=*/true);
+  user_manager()->SwitchActiveUser(second_user);
+
+  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  base::test::TestFuture<std::optional<std::string>> future;
+  api_guard_delegate->CanAccessApi(profile(), extension(),
+                                   future.GetCallback());
+
+  std::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
 
 INSTANTIATE_TEST_SUITE_P(
