@@ -41,6 +41,7 @@ static_library("browser") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/device_signals/core/common",
     "//components/device_signals/core/common:features",
     "//components/enterprise/connectors/core:constants",
@@ -95,12 +96,12 @@ static_library("browser") {
     sources += [ "mac/browser_utils_mac.cc" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "linux/browser_utils_linux.cc" ]
   }
 
   if (is_chromeos) {
-    sources += [ "chromeos/browser_utils_chromeos.cc" ]
+    deps += [ "//chromeos/dbus/constants" ]
   }
 
   if (is_android) {

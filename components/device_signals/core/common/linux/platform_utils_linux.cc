@@ -28,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -50,11 +51,19 @@ std::string ReadFile(std::string path_str) {
 namespace device_signals {
 
 std::string GetDeviceModel() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return ReadFile("/run/chromeos-config/v1/name");
+#else
   return ReadFile("/sys/class/dmi/id/product_name");
+#endif
 }
 
 std::string GetSerialNumber() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return ReadFile("/sys/firmware/vpd/ro/serial_number");
+#else
   return ReadFile("/sys/class/dmi/id/product_serial");
+#endif
 }
 
 base::FilePath GetCrowdStrikeZtaFilePath() {
@@ -67,7 +76,10 @@ base::FilePath GetCrowdStrikeZtaFilePath() {
 // currently active desktop environment.
 // The current implementation support Gnone and Cinnamon only.
 SettingValue GetScreenlockSecured() {
-#if defined(USE_GIO)
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS handles screen lock via user preferences, not OS-level tools.
+  return SettingValue::UNKNOWN;
+#elif defined(USE_GIO)
   static constexpr char kLockScreenKey[] = "lock-enabled";
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -105,6 +117,10 @@ SettingValue GetScreenlockSecured() {
 // Implements the logic from the native host installation script. First find the
 // root device identifier, then locate its parent and get its type.
 SettingValue GetDiskEncrypted() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS user partitions are always encrypted via cryptohome.
+  return SettingValue::ENABLED;
+#else
   struct stat info;
   // First figure out the device identifier. Fail fast if this fails.
   if (stat("/", &info) != 0) {
@@ -128,6 +144,7 @@ SettingValue GetDiskEncrypted() {
     return SettingValue::UNKNOWN;
   }
   return SettingValue::DISABLED;
+#endif
 }
 
 std::vector<std::string> internal::GetMacAddressesImpl() {
