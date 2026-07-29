@@ -610,9 +610,13 @@ bool WebPluginContainerImpl::IsRectTopmost(const gfx::Rect& rect) {
   if (!frame)
     return false;
 
-  gfx::Rect frame_rect = rect;
-  frame_rect.Offset(DeprecatedLocation().OffsetFromOrigin());
-  HitTestLocation location((PhysicalRect(frame_rect)));
+  PhysicalRect frame_rect(rect);
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    frame_rect = element_->GetLayoutObject()->LocalToAbsoluteRect(frame_rect);
+  } else {
+    frame_rect.Move(PhysicalOffset(DeprecatedLocation().OffsetFromOrigin()));
+  }
+  HitTestLocation location(frame_rect);
   HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive |
                     HitTestRequest::kListBased);
@@ -880,12 +884,17 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
       data_transfer->GetDataObject()->ToWebDragData(nullptr);
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
-  gfx::Point location(DeprecatedLocation());
-  gfx::PointF drag_location(event.AbsoluteLocation().x() - location.x(),
-                            event.AbsoluteLocation().y() - location.y());
+  gfx::PointF drag_local_location;
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    drag_local_location = element_->GetLayoutObject()->AbsoluteToLocalPoint(
+        event.AbsoluteLocation());
+  } else {
+    drag_local_location =
+        event.AbsoluteLocation() - DeprecatedLocation().OffsetFromOrigin();
+  }
 
   web_plugin_->HandleDragStatusUpdate(drag_status, drag_data,
-                                      drag_operation_mask, drag_location,
+                                      drag_operation_mask, drag_local_location,
                                       drag_screen_location);
 }
 
@@ -1109,12 +1118,15 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
   unclipped_root_frame_rect =
       root_view->GetFrameView()->DocumentToFrame(unclipped_root_frame_rect);
 
-  // The frameRect is already in absolute space of the local frame to the
-  // plugin so map it up to the root frame.
-  window_rect = DeprecatedFrameRect();
-  PhysicalRect layout_window_rect =
-      element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
-          PhysicalRect(window_rect), kTraverseDocumentBoundaries);
+  PhysicalRect layout_window_rect;
+  if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
+    layout_window_rect = box->LocalToAbsoluteRect(box->PhysicalContentBoxRect(),
+                                                  kTraverseDocumentBoundaries);
+  } else {
+    layout_window_rect =
+        element_->GetDocument().View()->GetLayoutView()->LocalToAbsoluteRect(
+            PhysicalRect(DeprecatedFrameRect()), kTraverseDocumentBoundaries);
+  }
 
   window_rect = ToPixelSnappedRect(layout_window_rect);
 
