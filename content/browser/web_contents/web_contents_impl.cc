@@ -10728,12 +10728,16 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
       CHECK(GetOuterWebContents());
       SetFocusedFrameTree(&node->frame_tree());
     }
-  } else if (!GetOuterWebContents() || GetFocusedWebContents() == this) {
+  } else if ((!GetOuterWebContents() && !surface_embed_connector_) ||
+             GetFocusedWebContents() == this) {
     // This is an outermost WebContents or we are currently focused so allow
     // the requested node's frame tree to be focused. The
     // (GetFocusedWebContents() == this) is needed when there are multiple
     // frame trees within an inner WebContents (ie. a GuestView with fenced
     // frames).
+    //
+    // A SurfaceEmbed child is not an outermost WebContents and cannot take
+    // focus through a renderer request alone.
     SetFocusedFrameTree(&node->frame_tree());
   }
 
@@ -10931,11 +10935,6 @@ void WebContentsImpl::FocusOwningWebContents(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::FocusOwningWebContents",
                         "render_widget_host", render_widget_host);
 
-  if (surface_embed_connector_) {
-    // Requests focus for the embedding element in the parent page.
-    surface_embed_connector_->GetDelegate()->RequestFocus();
-  }
-
   RenderWidgetHostImpl* main_frame_widget_host =
       GetPrimaryMainFrame()->GetRenderWidgetHost();
   RenderWidgetHostImpl* focused_widget =
@@ -10955,6 +10954,12 @@ void WebContentsImpl::FocusOwningWebContents(
 #if BUILDFLAG(IS_ANDROID)
     UMA_HISTOGRAM_BOOLEAN("Android.FocusChanged.FocusOwningWebContents", false);
 #endif
+  }
+
+  if (surface_embed_connector_) {
+    // Requests focus for the embedding element after its owning frame got
+    // focus as part of SetAsFocusedWebContentsIfNecessary.
+    surface_embed_connector_->RequestFocusOnEmbedElement();
   }
 }
 

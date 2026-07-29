@@ -195,11 +195,20 @@ void SurfaceEmbedHost::OnEmbedElementFocused(
     return;
   }
 
+  // A page-focus event is fired for the active element when the window receives
+  // OS focus and the page becomes focused. It does not indicate that the
+  // focused element changed.
+  if (focus_type == blink::mojom::FocusType::kPage) {
+    return;
+  }
+
   if (focus_type == blink::mojom::FocusType::kForward) {
     child_contents_->FocusThroughTabTraversal(/*reverse=*/false);
   } else if (focus_type == blink::mojom::FocusType::kBackward) {
     child_contents_->FocusThroughTabTraversal(/*reverse=*/true);
-  } else {
+  }
+
+  if (!child_contents_->ContainsOrIsFocusedWebContents()) {
     child_contents_->Focus();
   }
 }
@@ -234,7 +243,7 @@ void SurfaceEmbedHost::DetachedByHost() {
   DetachConnector();
 }
 
-void SurfaceEmbedHost::RequestFocus() {
+void SurfaceEmbedHost::RequestFocusOnEmbedElement() {
   if (pending_request_focus_on_embed_element_) {
     return;
   }

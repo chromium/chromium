@@ -137,6 +137,9 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // associated with the child WebContents.
   void UpdateViewForCurrentRenderFrameHost();
 
+  // Requests focus for the embed element in the parent.
+  void RequestFocusOnEmbedElement();
+
   // Returns nullptr if the focus is outside of this connector's child
   // WebContents.
   FrameTree* GetFocusFrameTreeIfContainsFocus();
@@ -201,6 +204,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // WeakPtr to the parent WebContents. Automatically clears to nullptr when the
   // observed parent is destroyed, safely notifying all consumers.
   base::WeakPtr<WebContents> parent_web_contents_;
+  // The RenderFrameHost in the parent that hosts the embed element.
+  base::WeakPtr<RenderFrameHostImpl> embedder_rfh_;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
   // The last received FrameSinkId from the guest WebContents's view.

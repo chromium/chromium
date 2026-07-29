@@ -56,7 +56,7 @@ class MockSurfaceEmbedConnectorDelegate
   MOCK_METHOD(void, DetachedByHost, (), (override));
   MOCK_METHOD(bool, IsAttachedForTesting, (), (const, override));
   MOCK_METHOD(void, ChildProcessGone, (), (override));
-  MOCK_METHOD(void, RequestFocus, (), (override));
+  MOCK_METHOD(void, RequestFocusOnEmbedElement, (), (override));
 };
 
 }  // namespace
@@ -493,8 +493,6 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
                     viz::LocalSurfaceId(1, base::UnguessableToken::Create()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_TRUE(
-      NavigateToURL(context.parent_web_contents.get(), GURL("about:blank")));
 
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
   EXPECT_TRUE(NavigateToURL(context.child_web_contents.get(), url_a));

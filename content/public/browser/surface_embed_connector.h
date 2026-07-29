@@ -64,7 +64,7 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
     virtual void ChildProcessGone() = 0;
 
     // Requests focus for the embedding element in the parent.
-    virtual void RequestFocus() = 0;
+    virtual void RequestFocusOnEmbedElement() = 0;
   };
 
   // Attach a child WebContents to a parent WebContents. This creates a
