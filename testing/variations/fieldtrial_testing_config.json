@@ -24251,6 +24251,21 @@
             ]
         }
     ],
+    "TcpPortRandomizationMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TcpPortRandomizationMac"
+                    ]
+                }
+            ]
+        }
+    ],
     "TextClassifierTimeout": [
         {
             "platforms": [

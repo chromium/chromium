@@ -165,6 +165,15 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
   }
   server_loop.Run();
   EXPECT_EQ(1U, request_attempts.load());
+#if BUILDFLAG(IS_MAC)
+  base::RunLoop close_run_loop;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        socket->Close();
+        close_run_loop.Quit();
+      }));
+  close_run_loop.Run();
+#endif
 }
 
 }  // namespace
