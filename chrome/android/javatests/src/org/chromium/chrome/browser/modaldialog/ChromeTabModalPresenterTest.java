@@ -151,6 +151,7 @@ public class ChromeTabModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    @DisabledTest(message = "b/540394692")
     public void testShow_UrlBarFocused() throws Exception {
         // Show a tab modal dialog. The dialog should be shown on top of the toolbar.
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
