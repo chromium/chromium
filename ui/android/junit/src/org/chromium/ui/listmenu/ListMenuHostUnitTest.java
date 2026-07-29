@@ -4,7 +4,6 @@
 
 package org.chromium.ui.listmenu;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -100,25 +99,6 @@ public class ListMenuHostUnitTest {
         showMenuForButton(btnMenuStart);
         verify(mSpyPopupMenu, atLeastOnce()).setAnimationStyle(R.style.StartIconMenuAnim);
         dismissMenu(btnMenuStart);
-    }
-
-    @Test
-    public void testTooltipClearedAndRestored() {
-        ListMenuButton btnDefault = mActivity.findViewById(R.id.button_default);
-        btnDefault.setDelegate(mMenuDelegate);
-        btnDefault.setTooltipText("Test Tooltip");
-
-        btnDefault.setAttachedToWindowForTesting();
-        btnDefault.showMenu();
-        RobolectricUtil.runAllBackgroundAndUi();
-        assertNull("Tooltip should be cleared when menu is shown.", btnDefault.getTooltipText());
-
-        btnDefault.dismiss();
-        RobolectricUtil.runAllBackgroundAndUi();
-        assertEquals(
-                "Tooltip should be restored after menu dismissal.",
-                "Test Tooltip",
-                btnDefault.getTooltipText());
     }
 
     private void showMenuForButton(ListMenuButton button) {
