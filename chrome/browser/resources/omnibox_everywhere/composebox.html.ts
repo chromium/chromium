@@ -104,6 +104,15 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         @open-image-upload="${this.onOpenImageUpload}"
                         @open-file-upload="${this.onOpenFileUpload}"
                         @open-drive-upload="${this.onOpenDriveUpload}"
+                        @smart-tab-sharing-active-changed="${
+                            this.onSmartTabSharingActiveChanged}"
+                        @share-tabs-flyout-open-changed="${
+                            this.onShareTabsFlyoutOpenChanged}"
+                        @request-tab-suggestions-load="${
+                            this.onRequestTabSuggestionsLoad}"
+                        .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
+                        .smartTabSharingVisible="${this.smartTabSharingVisible}"
+                        .tabSuggestionsState="${this.tabSuggestionsState}"
                         .inputState="${this.inputState}"
                         .usePecApi="${this.usePecApi}"
                         .smartTabSharingActive="${this.smartTabSharingActive}"
