@@ -137,6 +137,26 @@ const CGFloat kPromoMaxImpressionCount = 3;
                       country:nsCountry];
 }
 
+- (BOOL)shouldShowPromoForFirstRunType:(GeminiFirstRunType)firstRunType {
+  return self.shouldShowPromo && (firstRunType != GeminiFirstRunType::kLive);
+}
+
+- (BOOL)shouldShowBrandingHeaderForFirstRunType:
+    (GeminiFirstRunType)firstRunType {
+  return firstRunType != GeminiFirstRunType::kLive;
+}
+
+- (std::vector<GeminiFirstRunStepIdentifier>)stepsForFirstRunType:
+    (GeminiFirstRunType)firstRunType {
+  // Using std::vector to avoid boxing C++ enum class values into NSNumber.
+  std::vector<GeminiFirstRunStepIdentifier> steps;
+  if ([self shouldShowPromoForFirstRunType:firstRunType]) {
+    steps.push_back(GeminiFirstRunStepIdentifier::kPromo);
+  }
+  steps.push_back(GeminiFirstRunStepIdentifier::kConsent);
+  return steps;
+}
+
 #pragma mark - Private
 
 - (void)logPromoShown {

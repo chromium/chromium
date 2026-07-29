@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
 @protocol SceneCommands;
@@ -50,6 +53,17 @@ class IdentityManager;
 
 // Returns the consent configuration for the given First Run type.
 - (GeminiConsentConfiguration*)consentConfigurationForFirstRunType:
+    (GeminiFirstRunType)firstRunType;
+
+// Returns whether to show the promo for the given First Run type.
+- (BOOL)shouldShowPromoForFirstRunType:(GeminiFirstRunType)firstRunType;
+
+// Returns whether to show the branding header for the given First Run type.
+- (BOOL)shouldShowBrandingHeaderForFirstRunType:
+    (GeminiFirstRunType)firstRunType;
+
+// Returns the ordered list of steps to show for the given First Run type.
+- (std::vector<GeminiFirstRunStepIdentifier>)stepsForFirstRunType:
     (GeminiFirstRunType)firstRunType;
 
 // Disconnects the mediator, firing the completion callback with failure.

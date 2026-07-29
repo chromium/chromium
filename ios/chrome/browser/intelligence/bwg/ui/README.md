@@ -7,9 +7,20 @@ Following iOS UI development guidelines and branded asset requirements, the cont
 
 ## Onboarding (FRE) Presentation Flow
 
+Depending on the `kGeminiFRERefactor` feature flag, `GeminiFirstRunCoordinator` launches either the new step-based page container or the legacy wrapper:
+
+### When `kGeminiFRERefactor` is Enabled (Refactored Flow)
 ```mermaid
 graph TD
-    Wrapper[GeminiFREWrapperViewController]
+    Container[GeminiFirstRunPageViewController]
+    Container -->|Presents Step 0| Promo[GeminiPromoViewController]
+    Container -->|Presents Step 1| Consent[GeminiConsentViewController]
+```
+
+### When `kGeminiFRERefactor` is Disabled (Legacy Flow)
+```mermaid
+graph TD
+    Wrapper[GeminiFirstRunWrapperViewController]
     Wrapper -->|Presents Initial Info| Promo[GeminiPromoViewController]
     Wrapper -->|Transitions to Consent/Live| Consent[GeminiConsentViewController]
 ```
@@ -19,10 +30,14 @@ graph TD
 ## Component Details
 
 ### 1. UI Wrapper & Orchestrator
-*   **[gemini_fre_wrapper_view_controller.h](./gemini_fre_wrapper_view_controller.h) & [gemini_fre_wrapper_view_controller.mm](./gemini_fre_wrapper_view_controller.mm)**:
+*   **[gemini_first_run_page_view_controller.h](./gemini_first_run_page_view_controller.h) & [gemini_first_run_page_view_controller.mm](./gemini_first_run_page_view_controller.mm)** *(Refactored Flow)*:
+    A generic horizontally-scrolling page container `UIViewController` utilizing sheets presentation. It paginates an array of onboarding steps (`UIViewController<GeminiFirstRunStep>*`) and handles adaptive height transitions.
+*   **[gemini_first_run_wrapper_view_controller.h](./gemini_first_run_wrapper_view_controller.h) & [gemini_first_run_wrapper_view_controller.mm](./gemini_first_run_wrapper_view_controller.mm)** *(Legacy Flow)*:
     A container `UIViewController` utilizing sheets presentation. It orchestrates transitions between the Promotional intro page (`GeminiPromoViewController`) and the main Consent/Permissions page (`GeminiConsentViewController`).
+*   **[gemini_first_run_step.h](./gemini_first_run_step.h)**:
+    Defines the `GeminiFirstRunStep` protocol, step identifiers, and height delegate interface used by the refactored page container.
 *   **[gemini_fre_view_controller_protocol.h](./gemini_fre_view_controller_protocol.h)**:
-    Defines standard interface protocols for nested onboarding view controllers.
+    Defines standard interface protocols used by the legacy wrapper flow.
 *   **[gemini_first_run_mutator.h](./gemini_first_run_mutator.h)**:
     Defines mutator protocols for updating states and opening hyperlinks, bridging UI actions to the background mediator layer.
 
@@ -51,6 +66,7 @@ graph TD
 *   **Unit Tests**:
     *   `gemini_promo_view_controller_unittest.mm`
     *   `gemini_consent_view_controller_unittest.mm`
+    *   `gemini_first_run_page_view_controller_unittest.mm`
     *   `gemini_fre_wrapper_view_controller_unittest.mm`
     *   `gemini_ui_utils_unittest.mm`
 *   **Integration Tests (EarlGrey 2)**:

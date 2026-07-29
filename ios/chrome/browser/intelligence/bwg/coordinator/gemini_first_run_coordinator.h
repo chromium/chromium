@@ -29,6 +29,9 @@
 // coordinator.
 - (void)stopWithCompletion:(ProceduralBlock)completion;
 
+// Whether the presentation of the FRE view controller should be animated.
+@property(nonatomic, assign) BOOL animatedPresentation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_FIRST_RUN_COORDINATOR_H_
