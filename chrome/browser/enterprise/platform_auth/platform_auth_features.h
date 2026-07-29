@@ -13,6 +13,10 @@ BASE_DECLARE_FEATURE(kEnableExtensibleEnterpriseSSO);
 
 BASE_DECLARE_FEATURE(kAndroidEntraSSO);
 
+// Kill switch for the new data queuing and concurrent request handling in
+// CloudApProviderWin. Enabled by default. See http://crbug.com/520389619.
+BASE_DECLARE_FEATURE(kCloudApAuthDataQueueing);
+
 }  // namespace enterprise_auth
 
 #endif  // CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_PLATFORM_AUTH_FEATURES_H_

@@ -3599,6 +3599,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.PlatformAuth.GetAuthData.QueueOverflow"
+    enum="BooleanOccurred" expires_after="2027-07-28">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>chromium-enterprise@chromium.org</owner>
+  <summary>
+    Recorded when an incoming request for proof-of-possession cookies from the
+    platform is dropped because the maximum number of enqueued requests has been
+    reached.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PlatformAuth.GetAuthData.{Result}Time" units="ms"
     expires_after="2026-10-28">
   <owner>igorruvinov@chromium.org</owner>

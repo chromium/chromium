@@ -437,16 +437,43 @@ void CloudApProviderWin::FetchOrigins(FetchOriginsCallback on_fetch_complete) {
 void CloudApProviderWin::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  get_data_subscriptions_.push_back(
-      on_get_data_callback_list_.Add(std::move(callback)));
-  if (!base::ThreadPool::CreateCOMSTATaskRunner(
-           {base::TaskPriority::USER_BLOCKING,
-            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
-           ->PostTaskAndReplyWithResult(
-               FROM_HERE, base::BindOnce(&GetAuthData, url),
-               base::BindOnce(&CloudApProviderWin::OnGetDataCallback,
-                              base::Unretained(this)))) {
-    OnGetDataCallback(net::HttpRequestHeaders());
+  if (!base::FeatureList::IsEnabled(
+          enterprise_auth::kCloudApAuthDataQueueing)) {
+    get_data_subscriptions_.push_back(
+        on_get_data_callback_list_.Add(std::move(callback)));
+    if (!base::ThreadPool::CreateCOMSTATaskRunner(
+             {base::TaskPriority::USER_BLOCKING,
+              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+              base::MayBlock()})
+             ->PostTaskAndReplyWithResult(
+                 FROM_HERE, base::BindOnce(&GetAuthData, url),
+                 base::BindOnce(&CloudApProviderWin::OnGetDataCallback,
+                                base::Unretained(this)))) {
+      OnGetDataCallback(net::HttpRequestHeaders());
+    }
+    return;
+  }
+
+  if (total_enqueued_requests_ >= kMaxQueueSize) {
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Enqueued requests limit (" << kMaxQueueSize
+        << ") exceeded. Failing request.";
+    base::UmaHistogramBoolean(
+        "Enterprise.PlatformAuth.GetAuthData.QueueOverflow", true);
+    // Global queue limit exceeded, fail the request asynchronously.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), net::HttpRequestHeaders()));
+    return;
+  }
+
+  total_enqueued_requests_++;
+  auto& callbacks = request_queues_[url];
+  bool is_first_request = callbacks.empty();
+  callbacks.push_back(std::move(callback));
+
+  if (is_first_request) {
+    StartFetch(url);
   }
 }
 
@@ -470,6 +497,40 @@ void CloudApProviderWin::ParseCookieInfoForTesting(
     const DWORD cookie_info_count,
     net::HttpRequestHeaders& auth_headers) {
   ParseCookieInfo(cookie_info, cookie_info_count, auth_headers);
+}
+
+void CloudApProviderWin::StartFetch(const GURL& url) {
+  if (!base::ThreadPool::CreateCOMSTATaskRunner(
+           {base::TaskPriority::USER_BLOCKING,
+            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
+           ->PostTaskAndReplyWithResult(
+               FROM_HERE, base::BindOnce(&GetAuthData, url),
+               base::BindOnce(&CloudApProviderWin::OnFetchCompleted,
+                              weak_factory_.GetWeakPtr(), url))) {
+    OnFetchCompleted(url, net::HttpRequestHeaders());
+  }
+}
+
+void CloudApProviderWin::OnFetchCompleted(
+    const GURL& url,
+    net::HttpRequestHeaders auth_headers) {
+  auto it = request_queues_.find(url);
+  CHECK(it != request_queues_.end());
+  CHECK(!it->second.empty());
+
+  std::vector<PlatformAuthProviderManager::GetDataCallback> callbacks =
+      std::move(it->second);
+  request_queues_.erase(it);
+
+  CHECK_GE(total_enqueued_requests_, callbacks.size());
+  total_enqueued_requests_ -= callbacks.size();
+
+  for (size_t i = 0; i < callbacks.size(); ++i) {
+    auto callback = std::move(callbacks[i]);
+    net::HttpRequestHeaders headers =
+        (i + 1 == callbacks.size()) ? std::move(auth_headers) : auth_headers;
+    std::move(callback).Run(std::move(headers));
+  }
 }
 
 }  // namespace enterprise_auth
