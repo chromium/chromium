@@ -46,7 +46,8 @@ def CheckChange(input_api, output_api):
   ]
   results += input_api.canned_checks.RunPylint(
       input_api, output_api, extra_paths_list=pylint_extra_paths,
-      files_to_skip=files_to_skip)
+      files_to_skip=files_to_skip, pylintrc='pylintrc',
+      version='3.2')
   return results
 
 def CheckGoldenFilesUpToDate(input_api, output_api):
