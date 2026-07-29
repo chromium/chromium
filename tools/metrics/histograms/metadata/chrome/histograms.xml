@@ -395,25 +395,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn" units="%"
-    expires_after="2027-03-02">
-  <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
-  <summary>
-    Tracks the animation smoothness for the fade-in animation of tab hover card.
-  </summary>
-</histogram>
-
-<histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeOut" units="%"
-    expires_after="2027-03-02">
-  <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
-  <summary>
-    Tracks the animation smoothness for the fade-out animation of tab hover
-    card.
-  </summary>
-</histogram>
-
 <histogram name="Chrome.Tabs.AnimationSmoothness.TabLoading" units="%"
     expires_after="2027-01-09">
   <owner>yichenz@chromium.org</owner>
