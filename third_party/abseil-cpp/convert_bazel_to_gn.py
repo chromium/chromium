@@ -27,6 +27,8 @@ _SKIP_TARGETS = {
     'Conflicts at link_time with "parse_test" because defines the same flags.',
     'flags:reflection_test':
     'Conflicts at link time with "flag_test" because defines the same flags.',
+    'log:check_test': 'Overlaps with absl_check_test',
+    'log:log_basic_test': 'Overlaps with absl_log_basic_test',
     'profiling:sample_recorder_test':
     'TODO: Re-enable once the issue with gmock activating generic gtest printers hitting issues with -Wmicrosoft-cast.',
     'random/internal:nanobenchmark': 'Only used for benchmarking',
@@ -49,6 +51,19 @@ config("absl_flags_config") {
   defines = [ "ABSL_FLAGS_STRIP_NAMES=0" ]
  }
  ''',
+    'log:check':
+    '''# This target is banned both for 1st party and 3rd party code, use absl_check
+# in third_party code instead.
+# This header introduces CHECK macros that collides with chromium's macros.
+# Instead libraries should use ABSL_CHECK that provides the same functionality.''',
+    'log:log':
+    '''# This target is banned both for 1st party and 3rd party code. Use absl_log
+# in third_party code instead.
+# This header introduces LOG macros that collides with chromium's macros.
+# Instead libraries should use ABSL_LOG that provides the same functionality.''',
+    'log:vlog_is_on':
+    '''# This target is banned both for 1st party and 3rd party code, use ABSL_
+# prefixed macros and absl_vlog_is_on in third_party code instead.'''
 }
 
 # Extra build rules added at the end. The reason they are needed vary per target.
@@ -60,6 +75,9 @@ _ADD_CONTENT = {
     'deps = [ "//third_party/abseil-cpp/absl/base:config", "//third_party/googletest:gtest" ]',
     'flags:config': 'public_configs = [ ":absl_flags_config" ]',
     'flags:parse_test': 'if (is_ios) { sources = [] }',
+    'log:absl_check_test': 'if (is_ios) { sources = [] }',
+    'log:log_sink_test': 'if (is_ios) { sources = [] }',
+    'log:scoped_mock_log_test': 'if (is_ios) { sources = [] }',
     'random:uniform_real_distribution_test': 'if (is_ios) { sources = [] }',
     'random/internal:seed_material': 'if (is_win) {  libs = [ "bcrypt.lib" ]}',
 }
@@ -97,6 +115,8 @@ class _Converter:
     def _translate_dep(self, dep):
         if dep.startswith(':'):
             return dep
+        if dep.startswith('//absl/' + self.rel_path + ':'):
+            return dep[7 + len(self.rel_path):]
         if dep.startswith('//absl'):
             return '//third_party/abseil-cpp/' + dep[2:]
         if dep.startswith('@googletest'):
@@ -322,6 +342,7 @@ def convert_all(root_dir):
             'flags',
             'functional',
             'hash',
+            'log',
             'memory',
             'meta',
             'numeric',

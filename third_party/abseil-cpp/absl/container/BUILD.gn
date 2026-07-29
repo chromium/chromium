@@ -743,8 +743,8 @@ absl_source_set("heterogeneous_lookup_testing") {
   public = [ "internal/heterogeneous_lookup_testing.h" ]
   visibility = [ ":*" ]
   deps = [
+    ":test_instance_tracker",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/container:test_instance_tracker",
     "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
   ]
@@ -754,26 +754,26 @@ absl_source_set("linked_hash_set") {
   public = [ "linked_hash_set.h" ]
   deps = [
     ":common",
+    ":flat_hash_set",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/container:flat_hash_set",
   ]
 }
 
 absl_test("linked_hash_set_test") {
   sources = [ "linked_hash_set_test.cc" ]
   deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
     ":heterogeneous_lookup_testing",
     ":linked_hash_set",
     ":test_allocator",
+    ":test_instance_tracker",
+    ":unordered_set_constructor_test",
+    ":unordered_set_lookup_test",
+    ":unordered_set_members_test",
+    ":unordered_set_modifiers_test",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/container:hash_generator_testing",
-    "//third_party/abseil-cpp/absl/container:hash_policy_testing",
-    "//third_party/abseil-cpp/absl/container:test_instance_tracker",
-    "//third_party/abseil-cpp/absl/container:unordered_set_constructor_test",
-    "//third_party/abseil-cpp/absl/container:unordered_set_lookup_test",
-    "//third_party/abseil-cpp/absl/container:unordered_set_members_test",
-    "//third_party/abseil-cpp/absl/container:unordered_set_modifiers_test",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
@@ -782,28 +782,28 @@ absl_source_set("linked_hash_map") {
   public = [ "linked_hash_map.h" ]
   deps = [
     ":common",
+    ":flat_hash_set",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:throw_delegate",
-    "//third_party/abseil-cpp/absl/container:flat_hash_set",
   ]
 }
 
 absl_test("linked_hash_map_test") {
   sources = [ "linked_hash_map_test.cc" ]
   deps = [
+    ":hash_generator_testing",
+    ":hash_policy_testing",
     ":heterogeneous_lookup_testing",
     ":linked_hash_map",
     ":test_allocator",
+    ":test_instance_tracker",
+    ":unordered_map_constructor_test",
+    ":unordered_map_lookup_test",
+    ":unordered_map_members_test",
+    ":unordered_map_modifiers_test",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:exception_testing",
-    "//third_party/abseil-cpp/absl/container:hash_generator_testing",
-    "//third_party/abseil-cpp/absl/container:hash_policy_testing",
-    "//third_party/abseil-cpp/absl/container:test_instance_tracker",
-    "//third_party/abseil-cpp/absl/container:unordered_map_constructor_test",
-    "//third_party/abseil-cpp/absl/container:unordered_map_lookup_test",
-    "//third_party/abseil-cpp/absl/container:unordered_map_members_test",
-    "//third_party/abseil-cpp/absl/container:unordered_map_modifiers_test",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
