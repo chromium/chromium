@@ -1270,15 +1270,11 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
   bool MayHaveRelativeUnit() const final;
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(
-      const TreeScope*) const final {
-    NOTREACHED();
-  }
+      const TreeScope*) const final;
   const CSSMathExpressionNode* TransformAnchors(
       LogicalAxis,
       const TryTacticTransform&,
-      const WritingDirectionMode&) const final {
-    NOTREACHED();
-  }
+      const WritingDirectionMode&) const final;
   bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final;
   const RandomCacheKey* GetRandomCacheKey() const { return random_cache_key_; }
   const CSSMathExpressionNode* Min() const { return min_; }

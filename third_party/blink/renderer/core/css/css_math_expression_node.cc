@@ -5789,6 +5789,27 @@ CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
       max_(max),
       step_(step) {
   value_feature_flags_ = kHasRandomFunctions;
+  if (min_->HasComparisons() || max_->HasComparisons() ||
+      (step_ && step_->HasComparisons())) {
+    value_feature_flags_ |= kHasComparisons;
+  }
+  if (min_->HasAnchorFunctions() || max_->HasAnchorFunctions() ||
+      (step_ && step_->HasAnchorFunctions())) {
+    value_feature_flags_ |= kHasAnchorFunctions;
+  }
+  if (min_->HasRandomFunctions() || max_->HasRandomFunctions() ||
+      (step_ && step_->HasRandomFunctions())) {
+    value_feature_flags_ |= kHasRandomFunctions;
+  }
+  if (!min_->IsScopedValue() || !max_->IsScopedValue() ||
+      (step_ && !step_->IsScopedValue())) {
+    value_feature_flags_ |= kNeedsTreeScopePopulation;
+  }
+  if (min_->HasUnresolvablePercentages() ||
+      max_->HasUnresolvablePercentages() ||
+      (step_ && step_->HasUnresolvablePercentages())) {
+    value_feature_flags_ |= kHasUnresolvablePercentages;
+  }
   if (category == kCalcPercent && percentages_depend_on_used_value) {
     value_feature_flags_ |= kHasUnresolvablePercentages;
   }
@@ -5817,9 +5838,12 @@ CSSMathExpressionNode* CSSMathExpressionRandomFunction::Copy() const {
 }
 
 bool CSSMathExpressionRandomFunction::IsComputationallyIndependent() const {
+  if (!random_cache_key_->IsFixed()) {
+    return false;
+  }
   return min_->IsComputationallyIndependent() &&
          max_->IsComputationallyIndependent() &&
-         (step_ && step_->IsComputationallyIndependent());
+         (!step_ || step_->IsComputationallyIndependent());
 }
 
 bool CSSMathExpressionRandomFunction::IsElementDependent() const {
@@ -5831,6 +5855,43 @@ bool CSSMathExpressionRandomFunction::HasInvalidAnchorFunctions(
   return min_->HasInvalidAnchorFunctions(length_resolver) ||
          max_->HasInvalidAnchorFunctions(length_resolver) ||
          (step_ && step_->HasInvalidAnchorFunctions(length_resolver));
+}
+
+const CSSMathExpressionNode&
+CSSMathExpressionRandomFunction::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  const CSSMathExpressionNode* populated_min =
+      &min_->EnsureScopedValue(tree_scope);
+  const CSSMathExpressionNode* populated_max =
+      &max_->EnsureScopedValue(tree_scope);
+  const CSSMathExpressionNode* populated_step =
+      step_ ? &step_->EnsureScopedValue(tree_scope) : nullptr;
+  return *MakeGarbageCollected<CSSMathExpressionRandomFunction>(
+      base::PassKey<CSSMathExpressionRandomFunction>(), category_,
+      random_cache_key_, populated_min, populated_max, populated_step,
+      HasUnresolvablePercentages());
+}
+
+const CSSMathExpressionNode* CSSMathExpressionRandomFunction::TransformAnchors(
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) const {
+  const CSSMathExpressionNode* transformed_min =
+      min_->TransformAnchors(logical_axis, transform, writing_direction);
+  const CSSMathExpressionNode* transformed_max =
+      max_->TransformAnchors(logical_axis, transform, writing_direction);
+  const CSSMathExpressionNode* transformed_step =
+      step_
+          ? step_->TransformAnchors(logical_axis, transform, writing_direction)
+          : nullptr;
+  if (transformed_min != min_ || transformed_max != max_ ||
+      transformed_step != step_) {
+    return MakeGarbageCollected<CSSMathExpressionRandomFunction>(
+        base::PassKey<CSSMathExpressionRandomFunction>(), category_,
+        random_cache_key_, transformed_min, transformed_max, transformed_step,
+        HasUnresolvablePercentages());
+  }
+  return this;
 }
 
 bool CSSMathExpressionRandomFunction::MayHaveRelativeUnit() const {
