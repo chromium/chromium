@@ -362,8 +362,9 @@ void FrameNodeImpl::OnTraceSessionStart() {
 
 void FrameNodeImpl::TraceEdges() {
   page_node_->TraceFrame(base::PassKey<FrameNodeImpl>(), this);
-  TRACE_EVENT_BEGIN("performance_manager.graph", "AttachedPage",
-                    perfetto::NamedTrack("Page", 0, tracing_track_),
+  auto track = perfetto::NamedTrack("Page", 0, tracing_track_);
+  TRACE_EVENT_END("performance_manager.graph", track);
+  TRACE_EVENT_BEGIN("performance_manager.graph", "AttachedPage", track,
                     perfetto::Flow::Global(
                         base::UnguessableTokenHash()(frame_token_.value())));
 }
