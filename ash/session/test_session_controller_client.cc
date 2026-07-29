@@ -282,8 +282,6 @@ void TestSessionControllerClient::ShowMultiProfileLogin() {
   multi_profile_login_widget_->Show();
 }
 
-void TestSessionControllerClient::EmitAshInitialized() {}
-
 PrefService* TestSessionControllerClient::GetSigninScreenPrefService() {
   return prefs_provider_->GetSigninPrefs();
 }

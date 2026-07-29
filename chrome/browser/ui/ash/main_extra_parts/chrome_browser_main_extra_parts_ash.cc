@@ -354,9 +354,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>(
       CHECK_DEREF(g_browser_process->local_state()));
   session_controller_client_->Init();
-  // By this point ash shell should have initialized its D-Bus signal
-  // listeners, so inform the session manager that Ash is initialized.
-  session_controller_client_->EmitAshInitialized();
+
+  // Emit the ash-initialized upstart signal to start Chrome OS tasks that
+  // expect that Ash is listening to D-Bus signals they emit. For example,
+  // hammerd, which handles detachable base state, communicates the base state
+  // purely by emitting D-Bus signals, and thus has to be run whenever Ash is
+  // started so Ash (DetachableBaseHandler in particular) gets the proper view
+  // of the current detachable base state.
+  ash::SessionManagerClient::Get()->EmitAshInitialized();
 
   system_tray_client_ = std::make_unique<SystemTrayClientImpl>(
       CHECK_DEREF(g_browser_process->platform_part()->GetSystemClock()),

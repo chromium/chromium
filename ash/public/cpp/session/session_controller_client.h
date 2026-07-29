@@ -43,10 +43,6 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Show the multi-profile login UI to add another user to this session.
   virtual void ShowMultiProfileLogin() = 0;
 
-  // Emits the ash-initialized upstart signal to start Chrome OS tasks that
-  // expect that Ash is listening to D-Bus signals they emit.
-  virtual void EmitAshInitialized() = 0;
-
   // Returns the sign-in screen pref service if available.
   virtual PrefService* GetSigninScreenPrefService() = 0;
 
