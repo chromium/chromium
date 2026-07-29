@@ -56,6 +56,10 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
 
   size_t FindClosestDeadlineByPresentation(
       const PossibleDeadlines& possible_deadlines) const;
+  void RecordSelectedSustainableDeadlineHistogram(
+      base::TimeDelta selected_present_delta,
+      base::TimeDelta vsync_interval,
+      int max_allowed_buffers) const;
 
   struct FrameSequenceState {
     base::TimeDelta present_delta;
