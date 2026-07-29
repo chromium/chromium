@@ -35,6 +35,9 @@ TEST(FormatUtilsTest, SharedImageFormatToVideoPixelFormat) {
       PIXEL_FORMAT_ARGB);
   EXPECT_EQ(
       SharedImageFormatToVideoPixelFormat(viz::SinglePlaneFormat::kRGBX_8888),
+      PIXEL_FORMAT_XBGR);
+  EXPECT_EQ(
+      SharedImageFormatToVideoPixelFormat(viz::SinglePlaneFormat::kBGRX_8888),
       PIXEL_FORMAT_XRGB);
 }
 

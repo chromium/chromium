@@ -14,12 +14,7 @@ std::optional<VideoPixelFormat> SharedImageFormatToVideoPixelFormat(
   } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
     return PIXEL_FORMAT_ARGB;
   } else if (format == viz::SinglePlaneFormat::kRGBX_8888) {
-    // There is no PIXEL_FORMAT_XBGR which would have been the right mapping.
-    // See ui/ozone drm_util.cc::GetFourCCFormatFromSharedImageFormat as
-    // reference. But here it is only about indicating to not consider the alpha
-    // channel. Useful for the compositor to avoid drawing behind as mentioned
-    // in https://chromium-review.googlesource.com/590772.
-    return PIXEL_FORMAT_XRGB;
+    return PIXEL_FORMAT_XBGR;
   } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return PIXEL_FORMAT_ABGR;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
