@@ -90,11 +90,14 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/performance_controls",
     "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",
+    "//chrome/test/user_education:impl",
     "//components/performance_manager/test_support:test_support_common",
+    "//components/prefs:test_support",
     "//ui/events:test_support",
   ]
 }
