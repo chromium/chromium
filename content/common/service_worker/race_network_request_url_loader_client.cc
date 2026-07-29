@@ -70,6 +70,19 @@ enum class DataTransferCompletionResult {
   kMaxValue = kBothNotCompleted
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:RaceNetworkRequestDataTransferResult)
+
+// Omit navigation-only fields before forwarding the response head to the fetch
+// handler. The fetch handler observes the response as a subresource fetch and
+// does not require internal timing or SSL info.
+void SanitizeResponseHeadForFetchHandler(
+    network::mojom::URLResponseHeadPtr& head) {
+  if (!head) {
+    return;
+  }
+  head->load_timing_internal_info.reset();
+  head->ssl_info.reset();
+}
+
 }  // namespace
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -249,6 +262,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // This happens when the response is faster than the fetch handler.
       owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
+      SanitizeResponseHeadForFetchHandler(head);
       forwarding_client_->OnReceiveRedirect(forwarding_redirect_info,
                                             std::move(head));
       MaybeCompleteRedirectResponse(/*run_completion_callback=*/false);
@@ -259,6 +273,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       // handler is already executed but in rare case in-flight request may be
       // used. Let the fetch handler side client to handle the rest. The fetch
       // handler side close the connection if it's not needed anyway.
+      SanitizeResponseHeadForFetchHandler(head);
       forwarding_client_->OnReceiveRedirect(forwarding_redirect_info,
                                             std::move(head));
       MaybeCompleteRedirectResponse(/*run_completion_callback=*/true);
@@ -763,6 +778,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ForwardResponseToClient(
   // debug crbug.com/463388771.
   CHECK(!has_forwarded_response_);
   has_forwarded_response_ = true;
+  SanitizeResponseHeadForFetchHandler(head);
   forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
                                         std::move(cached_metadata));
 }
