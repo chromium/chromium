@@ -87,7 +87,6 @@ build_webui("build") {
     "extensions.css",
     "page_action_icon.css",
     "page_action_icons.css",
-    "home_button.css",
     "location_bar.css",
     "location_icon.css",
     "performance_intervention_button.css",
