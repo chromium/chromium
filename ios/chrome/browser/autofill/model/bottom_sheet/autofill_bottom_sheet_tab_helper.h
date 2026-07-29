@@ -138,6 +138,10 @@ class AutofillBottomSheetTabHelper
   // sheet on all frames.
   void DetachPaymentsListenersForAllFrames(bool refocus);
 
+  // Detach the Ambient Autofill notice listeners, which will deactivate the
+  // Ambient Autofill notice bottom sheet on all frames.
+  void DetachAmbientAutofillNoticeListenersForAllFrames(bool refocus);
+
   // Refocuses on the last field that triggered a bottom sheet (which can be a
   // login field or any other field associated with a bottom sheet) and restores
   // first responder focus to the web view once JavaScript refocusing completes.
@@ -189,6 +193,15 @@ class AutofillBottomSheetTabHelper
                                       autofill::FormGlobalId form_id,
                                       bool only_new);
 
+  // Updates the page listeners for the Ambient Autofill notice. If the user is
+  // eligible to see the notice, this method scans the fields of the form
+  // specified by `form_id` and attaches focus event listeners to the fields
+  // that have Autofill AI types. Tapping or focusing on these fields will
+  // trigger the notice bottom sheet.
+  void UpdateListenersForAmbientAutofillForm(autofill::AutofillManager& manager,
+                                             autofill::FormGlobalId form_id,
+                                             bool only_new);
+
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
@@ -218,6 +231,9 @@ class AutofillBottomSheetTabHelper
 
   // Send command to show the Credential Bottom Sheet.
   void ShowCredentialBottomSheet(const autofill::FormActivityParams& params);
+
+  // Send command to show the Ambient Autofill notice bottom sheet.
+  void ShowAmbientAutofillNotice(const autofill::FormActivityParams& params);
 
   // Conditionally show the payments bottom sheet based on the Autofill
   // suggestions that can be retrieved for the form that corresponds to
@@ -271,6 +287,11 @@ class AutofillBottomSheetTabHelper
   // TODO(crbug.com/40266699): Migrate to FieldGlobalIds.
   std::map<std::string, std::set<autofill::FieldRendererId>>
       registered_payments_renderer_ids_;
+
+  // List of Ambient Autofill notice bottom sheet related renderer ids, mapped
+  // to a frame id.
+  std::map<std::string, std::set<autofill::FieldRendererId>>
+      registered_ambient_renderer_ids_;
 
   // Set of proactive password generation bottom sheet related renderer ids,
   // mapped to their frame id.

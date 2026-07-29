@@ -21,10 +21,12 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -36,11 +38,54 @@
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/OCMock/OCMockMacros.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "url/origin.h"
+
+namespace {
+
+// Fake implementation of PersonalContextFirstRunService to control the notice
+// state.
+class FakePersonalContextFirstRunService
+    : public personal_context::PersonalContextFirstRunService {
+ public:
+  FakePersonalContextFirstRunService() = default;
+  ~FakePersonalContextFirstRunService() override = default;
+
+  void MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() override {
+    acknowledged_ = true;
+  }
+  bool ShouldShowPersonalContextAmbientAutofillNotice() const override {
+    return should_show_;
+  }
+  void MarkPersonalContextInAtMemoryNoticeAsAcknowledged() override {}
+  bool ShouldShowPersonalContextAtMemoryNotice() const override {
+    return false;
+  }
+
+  void set_should_show(bool should_show) { should_show_ = should_show; }
+  bool acknowledged() const { return acknowledged_; }
+
+ private:
+  bool should_show_ = false;
+  bool acknowledged_ = false;
+};
+
+}  // namespace
+
+// Fake implementation of AutofillCommands to capture ambient notice triggers.
+@interface FakeAutofillCommandsForBottomSheet : NSObject
+@property(nonatomic, assign) BOOL showAmbientAutofillNoticeCalled;
+@end
+
+@implementation FakeAutofillCommandsForBottomSheet
+- (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params {
+  _showAmbientAutofillNoticeCalled = YES;
+}
+@end
 
 // Test fixture to test AutofillBottomSheetTabHelper class.
 class AutofillBottomSheetTabHelperTest : public PlatformTest {
@@ -69,20 +114,85 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
                               /*request_url=*/std::nullopt, url::Origin());
   }
 
+  // Helper to set up a page, form, and fake service, returning the main web
+  // frame and autofill manager.
+  void SetupAmbientNoticeForm(autofill::FieldRendererId renderer_id,
+                              web::WebFrame*& out_frame,
+                              autofill::AutofillManager*& out_manager,
+                              autofill::FormGlobalId& out_form_id,
+                              bool should_show_ambient_notice = true) {
+    web::test::LoadHtml(@"<html><body></body></html>", web_state_.get());
+    web::WebFrame* frame = AutofillBottomSheetJavaScriptFeature::GetInstance()
+                               ->GetWebFramesManager(web_state_.get())
+                               ->GetMainWebFrame();
+    ASSERT_NE(frame, nullptr);
+    out_frame = frame;
+
+    autofill::AutofillDriverIOS* driver =
+        autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state_.get(),
+                                                             frame);
+    autofill::LocalFrameToken frame_token = driver->GetFrameToken();
+    out_manager = &driver->GetAutofillManager();
+
+    autofill::FormData form;
+    form.set_url(GURL("https://myform.com"));
+    form.set_action(GURL("https://myform.com/submit"));
+
+    autofill::FormFieldData field;
+    field.set_form_control_type(autofill::FormControlType::kInputText);
+    field.set_id_attribute(u"id1");
+    field.set_name(u"name1");
+    field.set_name_attribute(field.name());
+    field.set_renderer_id(renderer_id);
+    field.set_host_frame(frame_token);
+
+    form.set_fields({field});
+    out_form_id = form.global_id();
+
+    autofill::TestAutofillManagerWaiter waiter(
+        *out_manager, {autofill::AutofillManagerEvent::kFormsSeen});
+    out_manager->OnFormsSeen({form}, {},
+                             autofill::AutofillManagerTestApi::pass_key());
+    ASSERT_TRUE(waiter.Wait(1));
+
+    autofill::FormStructure* form_structure =
+        const_cast<autofill::FormStructure*>(
+            out_manager->FindCachedFormById(out_form_id));
+    ASSERT_NE(nullptr, form_structure);
+    form_structure->field(0)->SetTypeTo(
+        autofill::AutofillType(autofill::NAME_FULL),
+        autofill::AutofillPredictionSource::kHeuristics);
+
+    FakePersonalContextFirstRunService* first_run_service =
+        static_cast<FakePersonalContextFirstRunService*>(
+            IOSPersonalContextFirstRunServiceFactory::GetForProfile(
+                profile_.get()));
+    ASSERT_NE(first_run_service, nullptr);
+    first_run_service->set_should_show(should_show_ambient_notice);
+  }
+
  protected:
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactories({TestProfileIOS::TestingFactory{
-        (ProfileKeyedServiceFactoryIOS*)
-            autofill::PersonalDataManagerFactory::GetInstance(),
-        base::BindOnce(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              std::unique_ptr<autofill::TestPersonalDataManager> service =
-                  std::make_unique<autofill::TestPersonalDataManager>();
-              service->SetPrefService(profile->GetPrefs());
-              return std::unique_ptr<KeyedService>(service.release());
-            })}});
+    builder.AddTestingFactories(
+        {TestProfileIOS::TestingFactory{
+             static_cast<ProfileKeyedServiceFactoryIOS*>(
+                 autofill::PersonalDataManagerFactory::GetInstance()),
+             base::BindOnce(
+                 [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+                   std::unique_ptr<autofill::TestPersonalDataManager> service =
+                       std::make_unique<autofill::TestPersonalDataManager>();
+                   service->SetPrefService(profile->GetPrefs());
+                   return std::unique_ptr<KeyedService>(service.release());
+                 })},
+         TestProfileIOS::TestingFactory{
+             static_cast<ProfileKeyedServiceFactoryIOS*>(
+                 IOSPersonalContextFirstRunServiceFactory::GetInstance()),
+             base::BindOnce([](ProfileIOS* profile)
+                                -> std::unique_ptr<KeyedService> {
+               return std::make_unique<FakePersonalContextFirstRunService>();
+             })}});
     profile_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
@@ -327,4 +437,106 @@ TEST_F(
         }
         return false;
       }));
+}
+
+// Tests that we attach the listeners when the form has fields with Autofill AI
+// types.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       UpdateListenersForAmbientAutofillFormAttachesListeners) {
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  SetupAmbientNoticeForm(autofill::FieldRendererId(1), frame, manager, form_id);
+
+  // Inject a spy script to verify api calls to attach the listeners.
+  NSString* apiCallListenerScript =
+      @"window.attachListenersCallCount = 0;"
+      @"const originalAttach = "
+      @"__gCrWeb.registeredApis.bottomSheet.functions.attachListeners;"
+      @"__gCrWeb.registeredApis.bottomSheet.functions.attachListeners = "
+      @"function(...args) { "
+      @"    ++window.attachListenersCallCount;"
+      @"    return originalAttach.apply(this, args);};";
+  web::test::ExecuteJavaScriptForFeature(
+      web_state_.get(), apiCallListenerScript,
+      AutofillBottomSheetJavaScriptFeature::GetInstance());
+
+  // Register the listeners.
+  helper_->UpdateListenersForAmbientAutofillForm(*manager, form_id,
+                                                 /*only_new=*/false);
+
+  // Wait and verify that there was an api call to attach the listeners.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, ^bool(void) {
+        id result = web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+            web_state_.get(), @"window.attachListenersCallCount",
+            AutofillBottomSheetJavaScriptFeature::GetInstance());
+        if ([result isKindOfClass:[NSNumber class]] && [result intValue] == 1) {
+          return true;
+        }
+        return false;
+      }));
+}
+
+// Tests that we do not attach listeners when the first run service returns
+// false for showing the ambient notice.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       UpdateListenersForAmbientAutofillFormDoesNotAttachIfShouldShowIsFalse) {
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  SetupAmbientNoticeForm(autofill::FieldRendererId(1), frame, manager, form_id,
+                         /*should_show_ambient_notice=*/false);
+
+  // Inject a spy script to verify api calls.
+  NSString* apiCallListenerScript =
+      @"window.attachListenersCallCount = 0;"
+      @"const originalAttach = "
+      @"__gCrWeb.registeredApis.bottomSheet.functions.attachListeners;"
+      @"__gCrWeb.registeredApis.bottomSheet.functions.attachListeners = "
+      @"function(...args) { "
+      @"    ++window.attachListenersCallCount;"
+      @"    return originalAttach.apply(this, args);};";
+  web::test::ExecuteJavaScriptForFeature(
+      web_state_.get(), apiCallListenerScript,
+      AutofillBottomSheetJavaScriptFeature::GetInstance());
+
+  // Try to register the listeners.
+  helper_->UpdateListenersForAmbientAutofillForm(*manager, form_id,
+                                                 /*only_new=*/false);
+
+  // Wait a bit and check that count is still 0.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(100));
+  id result = web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+      web_state_.get(), @"window.attachListenersCallCount",
+      AutofillBottomSheetJavaScriptFeature::GetInstance());
+  EXPECT_NSEQ(result, @0);
+}
+
+// Tests that receiving a focused message for a registered ambient renderer ID
+// triggers the ambient notice sheet.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       OnFormMessageReceivedTriggersAmbientNotice) {
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  SetupAmbientNoticeForm(autofill::FieldRendererId(0), frame, manager, form_id);
+
+  // Register the listeners.
+  helper_->UpdateListenersForAmbientAutofillForm(*manager, form_id,
+                                                 /*only_new=*/false);
+
+  // Set up the fake command handler.
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  // Simulate focus trigger event message.
+  web::ScriptMessage form_message =
+      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()));
+  helper_->OnFormMessageReceived(form_message);
+
+  // Verify that showAmbientAutofillNotice: is triggered.
+  EXPECT_TRUE(commands_handler.showAmbientAutofillNoticeCalled);
 }
