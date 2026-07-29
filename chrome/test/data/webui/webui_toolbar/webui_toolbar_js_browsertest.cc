@@ -110,3 +110,8 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, BatterySaverButton) {
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, CrLazyIconset) {
   RunTest("webui_toolbar/cr_lazy_iconset_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PerformanceInterventionButton) {
+  RunTest("webui_toolbar/performance_intervention_button_test.js",
+          "mocha.run();");
+}

@@ -368,4 +368,17 @@ void ToolbarUIService::AdjustOmniboxTextForCopy(
         "ToolbarUIService: null delegate_ for AdjustOmniboxTextForCopy")));
   }
 }
+
+void ToolbarUIService::OnPerformanceInterventionButtonClicked(
+    bool is_mouse_interaction) {
+  if (delegate_) {
+    delegate_->OnPerformanceInterventionButtonClicked(is_mouse_interaction);
+  }
+}
+
+void ToolbarUIService::OnPerformanceInterventionButtonMousePressed() {
+  if (delegate_) {
+    delegate_->OnPerformanceInterventionButtonMousePressed();
+  }
+}
 }  // namespace toolbar_ui_api

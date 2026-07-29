@@ -37,8 +37,8 @@ class PerformanceInterventionButton
   // PerformanceInterventionButtonControllerDelegate:
   void Show() override;
   void Hide() override;
-  bool IsButtonShowing() override;
-  bool IsBubbleShowing() override;
+  bool IsButtonShowing() const override;
+  bool IsBubbleShowing() const override;
 
   // views::View:
   void OnThemeChanged() override;

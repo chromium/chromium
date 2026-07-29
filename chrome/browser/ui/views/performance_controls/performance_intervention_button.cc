@@ -21,6 +21,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_class_properties.h"
@@ -65,42 +66,16 @@ void PerformanceInterventionButton::Hide() {
   PreferredSizeChanged();
 }
 
-bool PerformanceInterventionButton::IsButtonShowing() {
+bool PerformanceInterventionButton::IsButtonShowing() const {
   return GetVisible();
 }
 
-bool PerformanceInterventionButton::IsBubbleShowing() {
+bool PerformanceInterventionButton::IsBubbleShowing() const {
   return bubble_dialog_model_host_ != nullptr;
 }
 
 void PerformanceInterventionButton::OnWidgetDestroying(views::Widget* widget) {
-  InterventionBubbleActionType type = InterventionBubbleActionType::kUnknown;
-  switch (widget->closed_reason()) {
-    case views::Widget::ClosedReason::kUnspecified:
-      type = InterventionBubbleActionType::kUnknown;
-      break;
-    case views::Widget::ClosedReason::kEscKeyPressed:
-      type = InterventionBubbleActionType::kClose;
-      break;
-    case views::Widget::ClosedReason::kCloseButtonClicked:
-      type = InterventionBubbleActionType::kClose;
-      break;
-    case views::Widget::ClosedReason::kLostFocus:
-      type = InterventionBubbleActionType::kIgnore;
-      break;
-    case views::Widget::ClosedReason::kCancelButtonClicked:
-      type = InterventionBubbleActionType::kDismiss;
-      break;
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
-      type = InterventionBubbleActionType::kAccept;
-      break;
-  }
-
-  RecordInterventionBubbleClosedReason(
-      performance_manager::user_tuning::PerformanceDetectionManager::
-          ResourceType::kCpu,
-      type);
-
+  PerformanceInterventionBubble::RecordCloseReason(widget->closed_reason());
   bubble_dialog_model_host_ = nullptr;
   scoped_widget_observation_.Reset();
 }
@@ -123,8 +98,8 @@ void PerformanceInterventionButton::OnClicked() {
 
 void PerformanceInterventionButton::CreateBubble() {
   CHECK(GetWidget());
-  bubble_dialog_model_host_ =
-      PerformanceInterventionBubble::CreateBubble(this, controller_.get());
+  bubble_dialog_model_host_ = PerformanceInterventionBubble::CreateBubble(
+      views::BubbleAnchor(this), controller_.get());
   scoped_widget_observation_.Observe(bubble_dialog_model_host_->GetWidget());
 }
 

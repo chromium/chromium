@@ -200,6 +200,14 @@ class MockToolbarUIDelegate
   MOCK_METHOD(void, OnHomeButtonDropUrl, (const GURL&), (override));
   MOCK_METHOD(void, OnHomeButtonDropFile, (const gfx::PointF&), (override));
   MOCK_METHOD(void, OnToolbarDropFile, (const gfx::PointF&), (override));
+  MOCK_METHOD(void,
+              OnPerformanceInterventionButtonClicked,
+              (bool is_mouse_interaction),
+              (override));
+  MOCK_METHOD(void,
+              OnPerformanceInterventionButtonMousePressed,
+              (),
+              (override));
   MOCK_METHOD((base::expected<std::monostate, mojo_base::mojom::ErrorPtr>),
               OnOmniboxAction,
               (toolbar_ui_api::mojom::OmniboxActionPtr action_ptr),

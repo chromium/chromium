@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUBBLE_H_
 
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/widget/widget.h"
 
-class PerformanceInterventionButton;
 class PerformanceInterventionButtonController;
 
 namespace views {
@@ -35,13 +36,13 @@ class PerformanceInterventionBubble {
   // Creates the performance intervention bubble dialog anchored to the
   // intervention toolbar button.
   static views::BubbleDialogModelHost* CreateBubble(
-      PerformanceInterventionButton* anchor_view,
+      views::BubbleAnchor anchor,
       PerformanceInterventionButtonController* button_controller);
 
   // Hides performance intervention bubble dialog.
   static void CloseBubble(views::BubbleDialogModelHost*);
 
-  static void RecordCloseReason();
+  static void RecordCloseReason(views::Widget::ClosedReason closed_reason);
 
  private:
   static DialogStrings GetStrings(int count);

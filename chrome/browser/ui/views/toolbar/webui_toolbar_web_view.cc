@@ -273,6 +273,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       reload_control_(this),
       split_tabs_control_(this),
       home_control_(this),
+      performance_intervention_control_(this),
       app_menu_control_(*this),
       battery_saver_control_(this),
       avatar_control_(this, browser->GetBrowserForMigrationOnly()),
@@ -294,6 +295,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::HomeControlState::New();
   last_queued_state_.battery_saver_button_visible =
       battery_saver_control_.IsVisible();
+  last_queued_state_.performance_intervention_control_state =
+      toolbar_ui_api::mojom::PerformanceInterventionControlState::New();
   last_queued_state_.location_bar_state =
       toolbar_ui_api::mojom::LocationBarState::New();
   last_queued_state_.location_bar_state->omnibox_view_state =
@@ -440,6 +443,9 @@ void WebUIToolbarWebView::AddedToWidget() {
     }
     if (features::IsWebUIBatterySaverButtonEnabled()) {
       battery_saver_control_.Init();
+    }
+    if (features::IsWebUIPerformanceInterventionButtonEnabled()) {
+      performance_intervention_control_.Init();
     }
     if (features::IsWebUIPinnedToolbarActionsEnabled()) {
       pinned_toolbar_actions_.Init();
@@ -769,6 +775,15 @@ WebUIToolbarWebView::AdjustOmniboxTextForCopy(const std::u16string& text,
     result->page_title = std::nullopt;
   }
   return result;
+}
+
+void WebUIToolbarWebView::OnPerformanceInterventionButtonClicked(
+    bool is_mouse_interaction) {
+  performance_intervention_control_.OnClicked(is_mouse_interaction);
+}
+
+void WebUIToolbarWebView::OnPerformanceInterventionButtonMousePressed() {
+  performance_intervention_control_.OnMousePressed();
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
@@ -1281,6 +1296,15 @@ void WebUIToolbarWebView::OnHomeControlStateChanged(
   }
 }
 
+void WebUIToolbarWebView::OnPerformanceInterventionControlStateChanged(
+    toolbar_ui_api::mojom::PerformanceInterventionControlStatePtr state) {
+  if (*state != *last_queued_state_.performance_intervention_control_state) {
+    last_queued_state_.performance_intervention_control_state =
+        std::move(state);
+    PostPushNavigationState();
+  }
+}
+
 void WebUIToolbarWebView::OnAppMenuControlStateChanged(
     toolbar_ui_api::mojom::AppMenuControlStatePtr state) {
   if (*state != *last_queued_state_.app_menu_control_state) {
@@ -1519,6 +1543,8 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
   button_count += features::IsWebUIAvatarButtonEnabled();
   button_count += features::IsWebUIBatterySaverButtonEnabled() &&
                   battery_saver_control_.IsVisible();
+  button_count += features::IsWebUIPerformanceInterventionButtonEnabled() &&
+                  performance_intervention_control_.IsButtonShowing();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);

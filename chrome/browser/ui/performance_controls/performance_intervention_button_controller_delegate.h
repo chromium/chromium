@@ -19,11 +19,11 @@ class PerformanceInterventionButtonControllerDelegate {
 
   // Returns true if the performance intervention button is currently
   // showing in the toolbar.
-  virtual bool IsButtonShowing() = 0;
+  virtual bool IsButtonShowing() const = 0;
 
   // Returns true if there is a dialog bubble currently anchored on the
   // performance intervention toolbar button.
-  virtual bool IsBubbleShowing() = 0;
+  virtual bool IsBubbleShowing() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUTTON_CONTROLLER_DELEGATE_H_

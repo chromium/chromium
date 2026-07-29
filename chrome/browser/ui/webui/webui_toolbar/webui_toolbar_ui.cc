@@ -195,6 +195,10 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       {"forwardButtonTooltip", IDS_TOOLTIP_FORWARD},
       {"homeButtonAccName", IDS_ACCNAME_HOME},
       {"homeButtonTooltip", IDS_TOOLTIP_HOME},
+      {"performanceInterventionButtonAccName",
+       IDS_PERFORMANCE_INTERVENTION_BUTTON_ACCNAME},
+      {"performanceInterventionButtonTooltip",
+       IDS_PERFORMANCE_INTERVENTION_BUTTON_TOOLTIP},
       {"reloadButtonAccNameReload", IDS_ACCNAME_RELOAD},
       {"reloadButtonTooltipReload", IDS_TOOLTIP_RELOAD},
       {"reloadButtonTooltipReloadWithMenu", IDS_TOOLTIP_RELOAD_WITH_MENU},
@@ -228,6 +232,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
           AvatarToolbarButtonInterface::CanShowForProfile(profile));
   source->AddBoolean("enableExtensionsContainer",
                      features::IsWebUIExtensionsContainerEnabled());
+  source->AddBoolean("enablePerformanceInterventionButton",
+                     features::IsWebUIPerformanceInterventionButtonEnabled());
   source->AddBoolean(
       "initialWebUISurfaceSyncEnabled",
       base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync));
@@ -458,6 +464,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kPinnedToolbarActionShowSidePanelContextualTasksElementId,
        kPinnedToolbarActionSendTabToSelfElementId,
        kToolbarAvatarButtonElementId,
+       kToolbarPerformanceInterventionButtonElementId,
        PermissionChipView::kPermissionRequestChipElementId,
        PermissionChipView::kIndicatorChipElementId,
        kToolbarBatterySaverButtonElementId,

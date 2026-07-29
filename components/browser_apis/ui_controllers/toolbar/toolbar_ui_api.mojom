@@ -172,4 +172,12 @@ interface ToolbarUIService {
   // the adjusted URL, and whether a URL should be written to the payload.
   AdjustOmniboxTextForCopy(mojo_base.mojom.String16 text, int32 selection_start)
       => result<AdjustOmniboxTextForCopyResult, mojo_base.mojom.Error>;
+
+  // Called when the performance intervention button is clicked.
+  // `is_mouse_interaction` is true if the click was triggered by a mouse event.
+  OnPerformanceInterventionButtonClicked(bool is_mouse_interaction);
+
+  // Called when the performance intervention button is pressed
+  // (e.g. pointerdown).
+  OnPerformanceInterventionButtonMousePressed();
 };

@@ -214,6 +214,15 @@ struct HomeControlState {
   bool is_context_menu_visible;
 };
 
+struct PerformanceInterventionControlState {
+  bool should_be_shown;
+  // Boolean that keeps track if the intervention button icon should be shown
+  // in the active color. The intervention button should show the active color
+  // when it becomes visible and stay in the active color until the user clicks
+  // on the button.
+  bool is_active;
+};
+
 // The type of icon state for the app menu. These values drive the visual
 // "chip" state (colored background + label) but do not change the underlying
 // three-dot icon glyph.
@@ -691,6 +700,7 @@ struct NavigationControlsState {
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
   HomeControlState home_control_state;
+  PerformanceInterventionControlState performance_intervention_control_state;
   AppMenuControlState app_menu_control_state;
   AvatarControlState avatar_control_state;
   bool battery_saver_button_visible;

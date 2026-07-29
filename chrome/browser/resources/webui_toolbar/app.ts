@@ -8,6 +8,7 @@ import './location_bar.js';
 import './split_tabs_button.js';
 import './home_button.js';
 import './battery_saver_button.js';
+import './performance_intervention_button.js';
 import './pinned_toolbar_actions.js';
 import './extensions.js';
 import './app_menu_button.js';
@@ -149,6 +150,10 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
   {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
   {selector: '#battery-saver', id: 'kToolbarBatterySaverButtonElementId'},
+  {
+    selector: '#performance-intervention',
+    id: 'kToolbarPerformanceInterventionButtonElementId',
+  },
 ];
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
@@ -280,6 +285,7 @@ export class ToolbarAppElement extends AppElementBase {
       isPinnedToolbarActionsEnabled_: {type: Boolean},
       isExtensionsContainerEnabled_: {type: Boolean},
       isAvatarButtonEnabled_: {type: Boolean},
+      isPerformanceInterventionButtonEnabled_: {type: Boolean},
       isInitialized_: {type: Boolean},
       isInitializedSyncForTesting_: {type: Boolean},
       initialSyncBootSuccess_: {type: Boolean},
@@ -306,6 +312,8 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enableExtensionsContainer');
   protected accessor isAvatarButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableAvatarButton');
+  protected accessor isPerformanceInterventionButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enablePerformanceInterventionButton');
   /**
    * Tracks whether the element has received its first navigation state
    * update from the browser and completed its initial visual render.
@@ -355,6 +363,10 @@ export class ToolbarAppElement extends AppElementBase {
       shouldBeShown:
           getTypedBoolean(ToolbarStateKey.HOME_BUTTON_SHOULD_BE_SHOWN),
       isContextMenuVisible: false,
+    },
+    performanceInterventionControlState: {
+      shouldBeShown: false,
+      isActive: true,
     },
     appMenuControlState: {
       iconType: AppMenuIconType.kNone,
@@ -554,6 +566,7 @@ export class ToolbarAppElement extends AppElementBase {
       '#extensions',
       '#pinnedToolbarActions',
       '#battery-saver',
+      '#performance-intervention',
       '#avatar',
       '#app-menu',
     ];

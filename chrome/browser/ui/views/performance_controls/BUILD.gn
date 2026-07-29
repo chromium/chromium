@@ -137,6 +137,7 @@ source_set("interactive_ui_tests") {
     "memory_saver_interactive_ui_test.cc",
     "memory_saver_iph_interactive_uitest.cc",
     "performance_intervention_interactive_ui_test.cc",
+    "webui_performance_intervention_interactive_uitest.cc",
   ]
   deps = [
     ":performance_controls",

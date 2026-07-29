@@ -61,6 +61,15 @@ ${this.isBackForwardButtonEnabled_ ? html`
         .hidden="${!this.navigationControlsState_.batterySaverButtonVisible}">
     </battery-saver-button>
   ` : ''}
+  ${this.isPerformanceInterventionButtonEnabled_ ? html`
+    <performance-intervention-button id="performance-intervention"
+      .state="${
+        this.navigationControlsState_.performanceInterventionControlState}"
+      .hidden="${
+        !this.navigationControlsState_.performanceInterventionControlState
+            .shouldBeShown}">
+    </performance-intervention-button>
+  ` : ''}
   ${this.isAvatarButtonEnabled_ ? html`
     <avatar-button id="avatar"
         .state="${this.navigationControlsState_.avatarControlState}">

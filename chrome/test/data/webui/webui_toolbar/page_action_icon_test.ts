@@ -81,6 +81,10 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
       pageTitle: null,
     });
   }
+
+  onPerformanceInterventionButtonClicked(_isMouseInteraction: boolean) {}
+
+  onPerformanceInterventionButtonMousePressed() {}
 }
 
 class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
