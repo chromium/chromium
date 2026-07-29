@@ -22,7 +22,7 @@ class MockOidcAuthenticationSigninInterceptor
   MockOidcAuthenticationSigninInterceptor& operator=(
       const MockOidcAuthenticationSigninInterceptor&) = delete;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               MaybeInterceptOidcAuthentication,
               (content::WebContents * intercepted_contents,
                const ProfileManagementOidcTokens& oidc_tokens,

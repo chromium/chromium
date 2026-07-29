@@ -35,6 +35,10 @@ BASE_DECLARE_FEATURE(kOidcEnrollmentAuthSource);
 // usual URL params is permitted. This flag only works on Chrome Canary or Dev.
 BASE_DECLARE_FEATURE(kOidcAuthHeaderInterception);
 
+// Controls OIDC navigation throttle execution mode (async/non-blocking if
+// enabled).
+BASE_DECLARE_FEATURE(kOidcNavigationThrottleAsyncMode);
+
 // Oidc authentication related feature params.
 extern const base::FeatureParam<std::string> kOidcAuthStubDmToken;
 extern const base::FeatureParam<std::string> kOidcAuthStubProfileId;
