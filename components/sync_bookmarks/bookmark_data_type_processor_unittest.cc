@@ -48,7 +48,11 @@ namespace sync_bookmarks {
 namespace {
 
 using base::ASCIIToUTF16;
+using bookmarks::test::HasUuid;
+using bookmarks::test::IsFolder;
+using bookmarks::test::IsFolderWithUuid;
 using bookmarks::test::IsUrlBookmark;
+using bookmarks::test::IsUrlBookmarkWithUuid;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
@@ -593,10 +597,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
   processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
-  ASSERT_THAT(bookmark_bar->children().front().get(), NotNull());
-  EXPECT_THAT(bookmark_bar->children().front()->GetTitle(),
-              Eq(ASCIIToUTF16(kTitle)));
-  EXPECT_THAT(bookmark_bar->children().front()->url(), Eq(GURL(kUrl)));
+  EXPECT_THAT(bookmark_bar->children(),
+              ElementsAre(IsUrlBookmark(ASCIIToUTF16(kTitle), GURL(kUrl))));
 
   // Incremental updates to not contribute to Sync.DataTypeConfigurationTime.
   histogram_tester.ExpectTotalCount(

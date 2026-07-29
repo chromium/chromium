@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/bookmarks/test/test_matchers.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
@@ -39,6 +40,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
+using bookmarks::test::HasUuid;
+using bookmarks::test::IsFolder;
+using bookmarks::test::IsFolderWithUuid;
+using bookmarks::test::IsUrlBookmark;
+using bookmarks::test::IsUrlBookmarkWithUuid;
 using testing::_;
 using testing::AnyOf;
 using testing::ElementsAre;
@@ -737,10 +743,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // All nodes should have been added to the model in the correct order.
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(3u));
-  EXPECT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid0));
-  EXPECT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid1));
-  EXPECT_THAT(bookmark_bar_node->children()[2]->uuid(), Eq(kGuid2));
+  EXPECT_THAT(bookmark_bar_node->children(),
+              ElementsAre(HasUuid(kGuid0), HasUuid(kGuid1), HasUuid(kGuid2)));
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -801,8 +805,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
 
   // Model should have been updated.
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(5u));
-  EXPECT_THAT(bookmark_bar_node->children()[2]->uuid(), Eq(guids[3]));
+  EXPECT_THAT(
+      bookmark_bar_node->children(),
+      ElementsAre(HasUuid(guids[0]), HasUuid(guids[1]), HasUuid(guids[3]),
+                  HasUuid(guids[2]), HasUuid(guids[4])));
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -840,7 +846,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
-  EXPECT_THAT(bookmark_bar_node->children().size(), Eq(5u));
+  EXPECT_THAT(
+      bookmark_bar_node->children(),
+      ElementsAre(HasUuid(guids[0]), HasUuid(guids[1]), HasUuid(guids[2]),
+                  HasUuid(guids[3]), HasUuid(guids[4])));
 
   // Change it to this structure by moving node1 after node3.
   // bookmark_bar
@@ -863,8 +872,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
 
   // Model should have been updated.
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(5u));
-  EXPECT_THAT(bookmark_bar_node->children()[3]->uuid(), Eq(guids[1]));
+  EXPECT_THAT(
+      bookmark_bar_node->children(),
+      ElementsAre(HasUuid(guids[0]), HasUuid(guids[2]), HasUuid(guids[3]),
+                  HasUuid(guids[1]), HasUuid(guids[4])));
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -889,9 +900,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
-  ASSERT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid0));
-  ASSERT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid1));
+  EXPECT_THAT(bookmark_bar_node->children(),
+              ElementsAre(HasUuid(kGuid0), HasUuid(kGuid1)));
 
   // Reorder node1 (Yahoo) to be before node0 (Google).
   syncer::UniquePosition new_pos1 = syncer::UniquePosition::Before(
@@ -904,9 +914,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
 
   // Model should have been updated so node1 (Yahoo) is first.
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
-  EXPECT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid1));
-  EXPECT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid0));
+  EXPECT_THAT(bookmark_bar_node->children(),
+              ElementsAre(HasUuid(kGuid1), HasUuid(kGuid0)));
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -1842,9 +1851,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
-  ASSERT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid0));
-  ASSERT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid1));
+  EXPECT_THAT(bookmark_bar_node->children(),
+              ElementsAre(HasUuid(kGuid0), HasUuid(kGuid1)));
 
   // Mark node1 (Yahoo) as modified locally to force conflict resolution.
   SyncedBookmarkTrackerEntity* entity1 = tracker()->GetEntityForUuid(kGuid1);
@@ -1866,9 +1874,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // Server should win conflict resolution. Model should have been updated so
   // node1 (Yahoo) is first and its unsynced status is cleared.
   EXPECT_THAT(entity1->IsUnsynced(), Eq(false));
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
-  EXPECT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid1));
-  EXPECT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid0));
+  EXPECT_THAT(bookmark_bar_node->children(),
+              ElementsAre(HasUuid(kGuid1), HasUuid(kGuid0)));
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
