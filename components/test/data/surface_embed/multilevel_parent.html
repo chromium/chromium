@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+</style>
+<script>
+  function createEmbed(contentId, embedId) {
+    const embed = document.createElement('embed');
+    embed.setAttribute('data-content-id', contentId);
+    embed.setAttribute('type', 'application/x-chromium-surface-embed');
+    embed.style.position = 'absolute';
+    embed.style.left = '10px';
+    embed.style.top = '40px';
+    embed.style.width = '100px';
+    embed.style.height = '100px';
+    if (embedId !== undefined) {
+      embed.id = embedId;
+    }
+    document.body.appendChild(embed);
+  }
+</script>
+</head>
+<body>
+  <input id="parent_input" style="position: absolute; top: 5px; left: 10px;">
+</body>
+</html>

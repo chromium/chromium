@@ -137,7 +137,17 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // associated with the child WebContents.
   void UpdateViewForCurrentRenderFrameHost();
 
-  // Requests focus for the embed element in the parent.
+  // Called by WebContentsImpl after the connector is set. Notifies the parent
+  // WebContents and updates the view.
+  void OnAttachedToParent();
+
+  // Called by WebContentsImpl before the connector is cleared. Notifies the
+  // parent WebContents.
+  void OnDetachedFromParent();
+
+  // Requests focus for all ancestor embed elements up the chain. This ensures
+  // that in a multi-level embedding scenario, each ancestor's <embed> element
+  // becomes the active element in its respective document.
   void RequestFocusOnEmbedElement();
 
   // Returns nullptr if the focus is outside of this connector's child

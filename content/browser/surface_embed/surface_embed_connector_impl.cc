@@ -96,10 +96,6 @@ void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
       child_web_contents, parent_web_contents, outer_document_rfh, delegate));
   static_cast<WebContentsImpl*>(child_web_contents)
       ->SetSurfaceEmbedConnector(std::move(connector));
-
-  static_cast<WebContentsImpl*>(parent_web_contents)
-      ->SurfaceEmbedChildWebContentsAttached(child_web_contents,
-                                             outer_document_rfh);
 }
 
 // static
@@ -111,12 +107,6 @@ void SurfaceEmbedConnector::Detach(WebContents* child_web_contents) {
     // SHOULD have the visibility of kNotRendered, to prevent
     // visibility/intersection notifications from being sent to it.
     connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
-
-    if (WebContentsImpl* parent_web_contents =
-            connector->parent_web_contents()) {
-      parent_web_contents->SurfaceEmbedChildWebContentsDetached(
-          child_web_contents);
-    }
   }
 
   // Connector will be freed by ClearSurfaceEmbedConnector().
@@ -735,8 +725,36 @@ void SurfaceEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
   }
 }
 
+void SurfaceEmbedConnectorImpl::OnAttachedToParent() {
+  UpdateViewForCurrentRenderFrameHost();
+  if (parent_web_contents()) {
+    CHECK(embedder_rfh_);
+    parent_web_contents()->SurfaceEmbedChildWebContentsAttached(
+        child_web_contents_, embedder_rfh_.get());
+  }
+}
+
+void SurfaceEmbedConnectorImpl::OnDetachedFromParent() {
+  if (parent_web_contents()) {
+    parent_web_contents()->SurfaceEmbedChildWebContentsDetached(
+        child_web_contents_);
+  }
+}
+
 void SurfaceEmbedConnectorImpl::RequestFocusOnEmbedElement() {
+  // Walk up the embedding chain, requesting focus for each ancestor's
+  // <embed> element so that all levels show the correct active element.
   delegate_->RequestFocusOnEmbedElement();
+  WebContentsImpl* parent = parent_web_contents();
+  while (parent) {
+    auto* parent_connector = static_cast<SurfaceEmbedConnectorImpl*>(
+        parent->GetSurfaceEmbedConnector());
+    if (!parent_connector) {
+      break;
+    }
+    parent_connector->GetDelegate()->RequestFocusOnEmbedElement();
+    parent = parent_connector->parent_web_contents();
+  }
 }
 
 void SurfaceEmbedConnectorImpl::ResetRectInParentView() {

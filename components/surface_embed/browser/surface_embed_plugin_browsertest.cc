@@ -18,6 +18,7 @@
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
@@ -45,6 +46,10 @@ constexpr std::string_view kBlueBoxUrl = "/surface_embed/blue_box.html";
 constexpr std::string_view kRedBoxUrl = "/surface_embed/red_box.html";
 constexpr std::string_view kFocusHarnessUrl =
     "/surface_embed/focus_harness.html";
+constexpr std::string_view kMultilevelHarnessUrl =
+    "/surface_embed/multilevel_harness.html";
+constexpr std::string_view kMultilevelParentUrl =
+    "/surface_embed/multilevel_parent.html";
 constexpr std::string_view kInnerPageUrl = "/surface_embed/inner_page.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr float kTestDeviceScaleFactor = 1.5f;
@@ -346,6 +351,57 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
 
     EXPECT_TRUE(CheckHasPixelInColorInBitmapBounds(
         SK_ColorRED, scaled_embed_bounds, out_bitmap));
+  }
+
+  // Waits until the active element in |wc| has the expected id.
+  void WaitForActiveElement(content::WebContents* wc,
+                            const std::string& expected_id) {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(wc, "document.activeElement.id") == expected_id;
+    }));
+  }
+
+  void WaitForMultilevelFocusState(content::WebContents* parent_contents,
+                                   content::WebContents* child_contents,
+                                   const std::string& root_active_element_id) {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::GetFocusedWebContents(web_contents()) == child_contents;
+    }));
+
+    WaitForActiveElement(child_contents, "inner");
+    WaitForActiveElement(parent_contents, "child_embed");
+    WaitForActiveElement(web_contents(), root_active_element_id);
+
+    for (content::WebContents* contents :
+         {web_contents(), parent_contents, child_contents}) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return content::EvalJs(contents, "document.hasFocus()").ExtractBool();
+      }));
+    }
+  }
+
+  void WaitForMultilevelViewSizes(content::WebContents* parent_contents,
+                                  content::WebContents* child_contents) {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      auto* parent_view = parent_contents->GetRenderWidgetHostView();
+      return parent_view &&
+             parent_view->GetViewBounds().size() == gfx::Size(200, 150);
+    }));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      auto* child_view = child_contents->GetRenderWidgetHostView();
+      return child_view &&
+             child_view->GetViewBounds().size() == gfx::Size(100, 100);
+    }));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      auto* connector = parent_contents->GetSurfaceEmbedConnector();
+      return connector && connector->GetLocalFrameSizeInPixelsForTesting() ==
+                              gfx::Size(300, 225);
+    }));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      auto* connector = child_contents->GetSurfaceEmbedConnector();
+      return connector && connector->GetLocalFrameSizeInPixelsForTesting() ==
+                              gfx::Size(150, 150);
+    }));
   }
 
  private:
@@ -1154,6 +1210,156 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByShiftTabKey) {
            content::EvalJs(child_contents.get(), "document.activeElement.id") ==
                "inner2";
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, MultilevelDetachIntermediate) {
+  NavigateToAttachHarness();
+
+  auto parent_contents = CreateChildWebContents();
+  NavigateChildToUrl(parent_contents.get(), kAttachHarnessUrl);
+  AttachChildToEmbedWithId(parent_contents.get(), "parent_embed");
+
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kRedBoxUrl);
+
+  guest_contents::GuestContentsHandle* child_guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(child_guest_handle, nullptr);
+
+  std::string attach_child_script = "createEmbed('" +
+                                    child_guest_handle->id().ToString() +
+                                    "', 'child_embed');";
+  size_t expected_attachments = GetAttachedHostCount() + 1;
+  ASSERT_TRUE(content::ExecJs(parent_contents.get(), attach_child_script));
+  ASSERT_TRUE(WaitForHostAttachment(expected_attachments));
+  EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+  EXPECT_NE(parent_contents->GetSurfaceEmbedConnector(), nullptr);
+  EXPECT_EQ(content::Visibility::VISIBLE, child_contents->GetVisibility());
+
+  // Verify the child's red content renders through the 2-level chain.
+  const gfx::Rect embed_bounds(10, 10, 100, 100);
+  VerifyRedPixelInBounds(embed_bounds);
+
+  // Remove the parent embed from the grandparent page, detaching the parent.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('parent_embed').remove();"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetSurfaceEmbedConnector() == nullptr;
+  }));
+
+  // The child remains attached to the parent.
+  EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, MultilevelFocusAndInput) {
+  NavigateToTestUrl(kMultilevelHarnessUrl);
+
+  auto parent_contents = CreateChildWebContents();
+  NavigateChildToUrl(parent_contents.get(), kMultilevelParentUrl);
+  AttachChildToEmbedWithId(parent_contents.get(), "parent_embed");
+  EXPECT_NE(parent_contents->GetSurfaceEmbedConnector(), nullptr);
+
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kInnerPageUrl);
+
+  guest_contents::GuestContentsHandle* child_guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(child_guest_handle, nullptr);
+
+  std::string attach_child_script = "createEmbed('" +
+                                    child_guest_handle->id().ToString() +
+                                    "', 'child_embed');";
+  size_t expected_attachments = GetAttachedHostCount() + 1;
+  ASSERT_TRUE(content::ExecJs(parent_contents.get(), attach_child_script));
+  ASSERT_TRUE(WaitForHostAttachment(expected_attachments));
+  EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+
+  // Focus outer1 in the grandparent and verify keyboard input.
+  content::ReadyForInputObserver(web_contents()).Wait();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "outer1");
+  EXPECT_EQ("outer1", content::EvalJsAfterLifecycleUpdate(
+                          web_contents(), "", "document.activeElement.id"));
+  EXPECT_EQ(web_contents(), content::GetFocusedWebContents(web_contents()));
+
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('g'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EQ("g",
+            content::EvalJsAfterLifecycleUpdate(
+                web_contents(), "", "document.getElementById('outer1').value"));
+
+  // Click the child's input through grandparent -> parent -> child.
+  WaitForMultilevelViewSizes(parent_contents.get(), child_contents.get());
+  // Parent is at (10, 50) in the root, and child is at (10, 40) in
+  // parent, so the child's bounds in root coordinates are (20, 90, 100, 100).
+  const gfx::Rect child_embed_bounds(20, 90, 100, 100);
+  VerifyRedPixelInBounds(child_embed_bounds);
+  content::WaitForHitTestData(parent_contents.get());
+  content::WaitForHitTestData(child_contents.get());
+  auto inner_center = content::GetCenterCoordinatesOfElementWithId(
+      child_contents.get(), "inner");
+  // Offset by embed positions: child in parent (10, 40) + parent in
+  // grandparent (10, 50).
+  gfx::Point click_point(static_cast<int>(inner_center.x()) + 10 + 10,
+                         static_cast<int>(inner_center.y()) + 40 + 50);
+
+  content::SimulateMouseClickAt(
+      web_contents(), 0, blink::WebMouseEvent::Button::kLeft, click_point);
+
+  WaitForMultilevelFocusState(parent_contents.get(), child_contents.get(),
+                              "parent_embed");
+
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('c'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EQ("c", content::EvalJsAfterLifecycleUpdate(
+                     child_contents.get(), "",
+                     "document.getElementById('inner').value"));
+
+  // Detach parent from grandparent and re-attach with child still connected.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('parent_embed').remove();"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetSurfaceEmbedConnector() == nullptr;
+  }));
+  EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !HasPixelInColor(SK_ColorRED); }));
+
+  AttachChildToEmbedWithId(parent_contents.get(), "reattached_embed");
+  EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+
+  // Wait for child to become visible again after re-attach.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+
+  // Click the child's input after re-attach.
+  WaitForMultilevelViewSizes(parent_contents.get(), child_contents.get());
+  VerifyRedPixelInBounds(child_embed_bounds);
+  content::WaitForHitTestData(parent_contents.get());
+  content::WaitForHitTestData(child_contents.get());
+  inner_center = content::GetCenterCoordinatesOfElementWithId(
+      child_contents.get(), "inner");
+  click_point = gfx::Point(static_cast<int>(inner_center.x()) + 10 + 10,
+                           static_cast<int>(inner_center.y()) + 40 + 50);
+  content::SimulateMouseClickAt(
+      web_contents(), 0, blink::WebMouseEvent::Button::kLeft, click_point);
+
+  WaitForMultilevelFocusState(parent_contents.get(), child_contents.get(),
+                              "reattached_embed");
+
+  EXPECT_TRUE(content::ExecJs(child_contents.get(),
+                              "document.getElementById('inner').value = '';"));
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('r'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EQ("r", content::EvalJsAfterLifecycleUpdate(
+                     child_contents.get(), "",
+                     "document.getElementById('inner').value"));
 }
 
 }  // namespace surface_embed

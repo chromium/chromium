@@ -106,6 +106,10 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
     }
     ConnectorTestContext& operator=(ConnectorTestContext&& other) {
       if (this != &other) {
+        // Clear raw_ptrs before closing the shell, since auto-detach in the
+        // parent's destructor will destroy the connector and its view.
+        connector = nullptr;
+        rwhvcf = nullptr;
         parent_web_contents = nullptr;
         if (parent_shell) {
           Shell* shell = parent_shell;
@@ -125,6 +129,10 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
       return *this;
     }
     ~ConnectorTestContext() {
+      // Clear raw_ptrs before closing the shell, since auto-detach in the
+      // parent's destructor will destroy the connector and its view.
+      connector = nullptr;
+      rwhvcf = nullptr;
       parent_web_contents = nullptr;
       if (parent_shell) {
         Shell* shell = parent_shell;
@@ -219,23 +227,21 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
                        ParentDestruction) {
   MockSurfaceEmbedConnectorDelegate delegate;
   auto context = SetupConnectorTest(&delegate);
-  auto* connector = context.connector.get();
-  auto* parent_impl =
-      static_cast<WebContentsImpl*>(context.parent_web_contents.get());
 
-  EXPECT_EQ(connector->GetParentWebContentsView(), parent_impl->GetView());
-  EXPECT_TRUE(HasParentWCObserver(connector));
-
+  // Clear raw_ptrs that will dangle when parent is destroyed and auto-detach
+  // triggers.
+  context.connector = nullptr;
+  context.rwhvcf = nullptr;
   context.parent_web_contents = nullptr;
   Shell* shell = context.parent_shell;
   context.parent_shell = nullptr;
   shell->Close();
 
-  // Verify connector handles missing parent gracefully where checks exist.
-  EXPECT_EQ(connector->GetParentWebContentsView(), nullptr);
-  EXPECT_EQ(connector->GetParentRenderViewHostDelegateView(), nullptr);
-  EXPECT_EQ(connector->GetInputEventRouter(), nullptr);
-  EXPECT_EQ(connector->GetTextInputManager(), nullptr);
+  // After parent destruction, child should be auto-detached: connector is
+  // destroyed.
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+  EXPECT_EQ(child_impl->GetSurfaceEmbedConnector(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, ConstGetters) {
@@ -1004,22 +1010,6 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, UpdateCursor) {
         GetView(context.connector.get()), cursor));
     EXPECT_EQ(ui::mojom::CursorType::kHand, cursor.type());
   }
-
-  // Verify that updating the cursor does not crash when there is no root view
-  // (e.g. parent is destroyed).
-  auto* connector_ptr = context.connector.get();
-  context.connector = nullptr;  // Clear raw_ptr to avoid DanglingPtr check.
-  context.rwhvcf = nullptr;     // Clear raw_ptr to avoid DanglingPtr check.
-
-  context.parent_web_contents = nullptr;
-  Shell* shell = context.parent_shell;
-  context.parent_shell = nullptr;
-  if (shell) {
-    shell->Close();
-  }
-
-  // This should not crash.
-  connector_ptr->UpdateCursor(ui::Cursor(ui::mojom::CursorType::kPointer));
 }
 
 class MockPointerLockWebContentsDelegate : public WebContentsDelegate {

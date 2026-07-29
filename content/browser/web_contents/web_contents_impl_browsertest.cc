@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <initializer_list>
 #include <optional>
 #include <tuple>
 #include <utility>
@@ -5880,6 +5881,25 @@ class SurfaceEmbedConnectorWebContentsBrowserTest
         &surface_embed_connector_delegate_));
   }
 
+  void ExpectRegisteredViews(
+      input::RenderWidgetHostInputEventRouter* event_router,
+      TextInputManager* text_input_manager,
+      std::initializer_list<WebContentsImpl*> web_contents_list) {
+    ASSERT_TRUE(event_router);
+    ASSERT_TRUE(text_input_manager);
+    EXPECT_EQ(web_contents_list.size(),
+              event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(web_contents_list.size(),
+              text_input_manager->GetRegisteredViewsCountForTesting());
+    for (WebContentsImpl* web_contents : web_contents_list) {
+      auto* view = static_cast<RenderWidgetHostViewBase*>(
+          web_contents->GetRenderWidgetHostView());
+      ASSERT_TRUE(view);
+      EXPECT_TRUE(event_router->IsViewInMap(view));
+      EXPECT_TRUE(text_input_manager->IsRegistered(view));
+    }
+  }
+
  private:
   // Mock SurfaceEmbedConnector::Delegate that does nothing (no-op)
   class MockSurfaceEmbedConnectorDelegate
@@ -6084,6 +6104,89 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
     EXPECT_EQ(0U,
               inner_text_input_manager->GetRegisteredViewsCountForTesting());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       NestedRegistrationAndUnregistration) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  auto* root = static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContents::CreateParams create_params(root->GetBrowserContext());
+  auto parent = WebContents::Create(create_params);
+  auto child = WebContents::Create(create_params);
+  auto* parent_impl = static_cast<WebContentsImpl*>(parent.get());
+  auto* child_impl = static_cast<WebContentsImpl*>(child.get());
+  ASSERT_TRUE(NavigateToURL(parent.get(), GURL("about:blank")));
+  ASSERT_TRUE(NavigateToURL(child.get(), GURL("about:blank")));
+
+  auto* root_event_router = root->GetInputEventRouter();
+  auto* root_text_input_manager = root->GetTextInputManager();
+  auto* parent_event_router = parent_impl->GetInputEventRouter();
+  auto* parent_text_input_manager = parent_impl->GetTextInputManager();
+  auto* child_event_router = child_impl->GetInputEventRouter();
+  auto* child_text_input_manager = child_impl->GetTextInputManager();
+  ExpectRegisteredViews(root_event_router, root_text_input_manager, {root});
+  ExpectRegisteredViews(parent_event_router, parent_text_input_manager,
+                        {parent_impl});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager,
+                        {child_impl});
+
+  child_impl->SetSurfaceEmbedConnector(
+      CreateConnector(child_impl, parent_impl));
+  ExpectRegisteredViews(root_event_router, root_text_input_manager, {root});
+  ExpectRegisteredViews(parent_event_router, parent_text_input_manager,
+                        {parent_impl, child_impl});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager, {});
+
+  parent_impl->SetSurfaceEmbedConnector(CreateConnector(parent_impl, root));
+  ExpectRegisteredViews(root_event_router, root_text_input_manager,
+                        {root, parent_impl, child_impl});
+  ExpectRegisteredViews(parent_event_router, parent_text_input_manager, {});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager, {});
+
+  parent_impl->ClearSurfaceEmbedConnector();
+  ExpectRegisteredViews(root_event_router, root_text_input_manager, {root});
+  ExpectRegisteredViews(parent_event_router, parent_text_input_manager,
+                        {parent_impl, child_impl});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager, {});
+
+  child_impl->ClearSurfaceEmbedConnector();
+  ExpectRegisteredViews(root_event_router, root_text_input_manager, {root});
+  ExpectRegisteredViews(parent_event_router, parent_text_input_manager,
+                        {parent_impl});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager,
+                        {child_impl});
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       DestructionWithNestedChildWebContents) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  auto* root = static_cast<WebContentsImpl*>(shell()->web_contents());
+  WebContents::CreateParams create_params(root->GetBrowserContext());
+  auto parent = WebContents::Create(create_params);
+  auto child = WebContents::Create(create_params);
+  auto* parent_impl = static_cast<WebContentsImpl*>(parent.get());
+  auto* child_impl = static_cast<WebContentsImpl*>(child.get());
+  ASSERT_TRUE(NavigateToURL(parent.get(), GURL("about:blank")));
+  ASSERT_TRUE(NavigateToURL(child.get(), GURL("about:blank")));
+
+  auto* root_event_router = root->GetInputEventRouter();
+  auto* root_text_input_manager = root->GetTextInputManager();
+  auto* child_event_router = child_impl->GetInputEventRouter();
+  auto* child_text_input_manager = child_impl->GetTextInputManager();
+
+  parent_impl->SetSurfaceEmbedConnector(CreateConnector(parent_impl, root));
+  child_impl->SetSurfaceEmbedConnector(
+      CreateConnector(child_impl, parent_impl));
+  ExpectRegisteredViews(root_event_router, root_text_input_manager,
+                        {root, parent_impl, child_impl});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager, {});
+
+  parent.reset();
+
+  EXPECT_EQ(nullptr, child_impl->GetSurfaceEmbedConnector());
+  ExpectRegisteredViews(root_event_router, root_text_input_manager, {root});
+  ExpectRegisteredViews(child_event_router, child_text_input_manager,
+                        {child_impl});
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,

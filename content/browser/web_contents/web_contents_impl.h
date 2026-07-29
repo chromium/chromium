@@ -2374,6 +2374,9 @@ class CONTENT_EXPORT WebContentsImpl
   // nullptr if not embedded.
   std::unique_ptr<SurfaceEmbedConnectorImpl> surface_embed_connector_;
 
+  // WebContents that are embedded in this WebContents via SurfaceEmbed.
+  std::vector<base::WeakPtr<WebContents>> surface_embed_children_;
+
   // Helper classes ------------------------------------------------------------
 
   // Contains information about the WebContents tree structure.
