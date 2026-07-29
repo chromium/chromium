@@ -53,6 +53,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/native_view_focus_manager.h"
+#include "ui/views/input_protection/default_input_protection_policy.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/input_protection/occlusion_aware_input_protection_policy.h"
 #include "ui/views/input_protection/window_activation_input_protection_policy.h"
@@ -1342,11 +1343,8 @@ void Widget::EnableInputEventActivationProtection(
     return;
   }
 
-  input_protector_ = std::make_unique<InputEventActivationProtector>();
-  // TODO(crbug.com/467460499): `DefaultInputProtectionPolicy` is installed by
-  // default (inside `InputEventActivationProtector`), but it won't work fully
-  // because visibility changes are not yet forwarded from the Widget.
-  // This will be addressed in a follow-up CL.
+  input_protector_ = std::make_unique<InputEventActivationProtector>(
+      std::make_unique<DefaultInputProtectionPolicy>(GetRootView()));
   input_protector_->AddPolicy(
       std::make_unique<OcclusionAwareInputProtectionPolicy>());
   input_protector_->AddPolicy(

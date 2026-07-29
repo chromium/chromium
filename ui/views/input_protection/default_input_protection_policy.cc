@@ -7,9 +7,23 @@
 #include "ui/events/event.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/metrics.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
+
+DefaultInputProtectionPolicy::DefaultInputProtectionPolicy(
+    View* protected_view) {
+  if (protected_view) {
+    view_observation_.Observe(protected_view);
+    if (protected_view->IsDrawn() && protected_view->GetWidget() &&
+        protected_view->GetWidget()->IsVisible()) {
+      OnProtectionStarted();
+    }
+  }
+}
+
+DefaultInputProtectionPolicy::~DefaultInputProtectionPolicy() = default;
 
 bool DefaultInputProtectionPolicy::IsPossiblyUnintendedInteraction(
     const ui::Event& event,
@@ -62,6 +76,20 @@ void DefaultInputProtectionPolicy::OnProtectionReset() {
   if (!view_protected_time_stamp_.is_null()) {
     view_protected_time_stamp_ = base::TimeTicks::Now();
   }
+}
+
+void DefaultInputProtectionPolicy::OnViewVisibilityChanged(View* observed_view,
+                                                           View* starting_view,
+                                                           bool visible) {
+  if (visible) {
+    OnProtectionStarted();
+  } else {
+    OnProtectionStopped();
+  }
+}
+
+void DefaultInputProtectionPolicy::OnViewIsDeleting(View* observed_view) {
+  view_observation_.Reset();
 }
 
 }  // namespace views

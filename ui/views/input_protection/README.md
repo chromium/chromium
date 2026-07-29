@@ -70,7 +70,9 @@ ______________________________________________________________________
 
 1. **`DefaultInputProtectionPolicy`**:
    - **Show Cooldown**: Blocks all input events for a short period (cooldown)
-     immediately after the view becomes visible.
+     immediately after the view becomes visible. It can automatically observe
+     the protected `View`'s visibility when initialized with the view, or rely
+     on manual visibility forwarding from the protector otherwise.
    - **Click-Spam Protection**: Blocks rapid successive clicks (key repeats or
      click-spam) by enforcing a minimum delay between interactions.
 2. **`WindowActivationInputProtectionPolicy`**:
@@ -89,34 +91,44 @@ ______________________________________________________________________
 To protect a view, add an `InputEventActivationProtector` member to your view
 class.
 
-### Step 1: Configure the Protector (Choose one alternative)
+### Step 1: Configure the Protector
 
-#### Alternative A: Default Configuration (With Default Policy)
+The constructor you use determines whether the protector automatically installs
+the default policy or uses a custom configuration.
+
+#### Default Configuration (Constructor without arguments)
 
 If you instantiate the protector using the default constructor, it automatically
-installs the `DefaultInputProtectionPolicy` (which handles show cooldown and
-click-spam protection).
+installs a `DefaultInputProtectionPolicy` initialized without a view.
 
-You can then add additional policies if needed:
+First, initialize the protector and add any additional policies (typically in
+your view's constructor):
 
 ```cpp
 // Instantiates with DefaultInputProtectionPolicy installed automatically.
 input_protector_ = std::make_unique<InputEventActivationProtector>();
 
-// Add an additional policy (both will be active).
+// Add additional policies if needed (all registered policies will be active).
 input_protector_->AddPolicy(
     std::make_unique<WindowActivationInputProtectionPolicy>(widget));
 ```
 
-#### Alternative B: Custom Configuration (Without Default Policy)
+Then, because the automatically installed default policy does not observe the
+view, you must manually forward visibility events when the protected view's
+visibility changes:
 
-If you want to use a custom policy *instead* of the default one (e.g., in tests
-or for specialized UIs), use the parameterized constructor. This constructor
-installs **only** the passed policy and does not install the default policy.
+```cpp
+input_protector_->VisibilityChanged(is_visible);
+```
+
+#### Custom Configuration (Constructor with arguments)
+
+If you use the parameterized constructor, the protector installs **only** the
+passed policy. Use this to configure custom policies (e.g., in tests to bypass
+the default cooldown, or for specialized UIs).
 
 ```cpp
 // Instantiates with ONLY the window activation policy.
-// DefaultInputProtectionPolicy is NOT installed.
 input_protector_ = std::make_unique<InputEventActivationProtector>(
     std::make_unique<WindowActivationInputProtectionPolicy>(widget));
 
@@ -130,7 +142,7 @@ Before handling a sensitive event (e.g., a button click), query the protector:
 
 ```cpp
 void MyView::OnButtonPressed(const ui::Event& event) {
-  if (input_protector_.IsPossiblyUnintendedInteraction(event, this)) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event, this)) {
     return; // Block the event
   }
   // Handle the event...

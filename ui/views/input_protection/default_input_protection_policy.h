@@ -5,8 +5,10 @@
 #ifndef UI_VIEWS_INPUT_PROTECTION_DEFAULT_INPUT_PROTECTION_POLICY_H_
 #define UI_VIEWS_INPUT_PROTECTION_DEFAULT_INPUT_PROTECTION_POLICY_H_
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/views/input_protection/input_protection_policy.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
 
 namespace views {
@@ -26,10 +28,13 @@ class InputEventActivationProtector;
 // 3. Events that occur too quickly after the protection starts, which usually
 // happens when the view becomes visible or resets (to prevent unintentional
 // clicks immediately after a UI change).
-class VIEWS_EXPORT DefaultInputProtectionPolicy : public InputProtectionPolicy {
+class VIEWS_EXPORT DefaultInputProtectionPolicy : public InputProtectionPolicy,
+                                                  public ViewObserver {
  public:
-  DefaultInputProtectionPolicy() = default;
-  ~DefaultInputProtectionPolicy() override = default;
+  // If `protected_view` is provided, the policy will automatically observe
+  // its visibility changes to start and stop protection.
+  explicit DefaultInputProtectionPolicy(View* protected_view = nullptr);
+  ~DefaultInputProtectionPolicy() override;
 
   // InputProtectionPolicy:
   bool IsPossiblyUnintendedInteraction(
@@ -48,6 +53,15 @@ class VIEWS_EXPORT DefaultInputProtectionPolicy : public InputProtectionPolicy {
   base::TimeTicks last_event_timestamp_;
   // Number of repeated UI events with short intervals.
   size_t repeated_event_count_ = 0;
+
+  // ViewObserver:
+  void OnViewVisibilityChanged(View* observed_view,
+                               View* starting_view,
+                               bool visible) override;
+  void OnViewIsDeleting(View* observed_view) override;
+
+ private:
+  base::ScopedObservation<View, ViewObserver> view_observation_{this};
 };
 
 }  // namespace views

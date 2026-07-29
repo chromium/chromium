@@ -1366,6 +1366,7 @@ test("views_unittests") {
     "focus/focus_manager_unittest.cc",
     "focus/focus_traversal_unittest.cc",
     "input_event_activation_protector_unittest.cc",
+    "input_protection/default_input_protection_policy_unittest.cc",
     "input_protection/occluded_widget_input_protector_unittest.cc",
     "input_protection/occlusion_aware_input_protection_policy_unittest.cc",
     "input_protection/window_activation_input_protection_policy_unittest.cc",
