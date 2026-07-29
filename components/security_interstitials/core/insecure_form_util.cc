@@ -43,8 +43,10 @@ void SetInsecureFormPortsForTesting(int source_url_port_treated_as_secure,
 
 bool IsInsecureFormActionOnSecureSource(const url::Origin& source_origin,
                                         const GURL& action_url) {
-  if (!base::EqualsCaseInsensitiveASCII(source_origin.scheme(),
-                                        url::kHttpsScheme)) {
+  // For opaque origins the precursos tuple must be examined.
+  if (!base::EqualsCaseInsensitiveASCII(
+          source_origin.GetTupleOrPrecursorTupleIfOpaque().scheme(),
+          url::kHttpsScheme)) {
 #if BUILDFLAG(IS_IOS)
     // On iOS, tests can't use an HTTPS server that serves a valid HTTPS
     // response. Check if the URL is treated as secure for testing purposes.

@@ -54,4 +54,19 @@ TEST_F(InsecureFormUtilTest, IsInsecureFormActionOnSecureSource) {
       url::Origin::Create(GURL("http://127.0.0.1:123")),
       GURL("http://example.com")));
 #endif
+
+  // Opaque https source with insecure action still counts.
+  EXPECT_TRUE(IsInsecureFormActionOnSecureSource(
+      url::Origin::Create(GURL("https://example.com")).DeriveNewOpaqueOrigin(),
+      GURL("http://example.com")));
+
+  // Other combinations do not.
+  EXPECT_FALSE(IsInsecureFormActionOnSecureSource(
+      url::Origin::Create(GURL("https://example.com")).DeriveNewOpaqueOrigin(),
+      GURL("https://example.com")));
+  EXPECT_FALSE(IsInsecureFormActionOnSecureSource(
+      url::Origin::Create(GURL("http://example.com")).DeriveNewOpaqueOrigin(),
+      GURL("http://example.com")));
+  EXPECT_FALSE(IsInsecureFormActionOnSecureSource(url::Origin(),
+                                                  GURL("http://example.com")));
 }
