@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -141,14 +144,22 @@ public class BookmarkOpenerTest {
         openRootFolder();
 
         // Mobile bookmarks is merged into all bookmarks when improved bookmark is enabled.
-        onView(withText("Mobile bookmarks")).perform(click());
+        onView(
+                        allOf(
+                                withText("Mobile bookmarks"),
+                                isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
+                .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     void openReadingList() {
         openRootFolder();
 
-        onView(withText("Reading list")).perform(click());
+        onView(
+                        allOf(
+                                withText("Reading list"),
+                                isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
+                .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 

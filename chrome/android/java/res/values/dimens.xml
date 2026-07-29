@@ -213,14 +213,13 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_favicon_text_size">18dp</dimen>
 
     <!-- Bookmarks Desktop Layout dimensions -->
-    <dimen name="bookmark_desktop_navigation_pane_width" tools:ignore="UnusedResources">240dp</dimen>
-    <dimen name="bookmark_desktop_navigation_header_top_margin" tools:ignore="UnusedResources">34dp</dimen>
-    <dimen name="bookmark_desktop_navigation_header_start_margin" tools:ignore="UnusedResources">32dp</dimen>
-    <dimen name="bookmark_desktop_navigation_header_end_margin" tools:ignore="UnusedResources">16dp</dimen>
-    <dimen name="bookmark_desktop_navigation_header_bottom_margin" tools:ignore="UnusedResources">36dp</dimen>
+    <dimen name="bookmark_desktop_navigation_pane_width">240dp</dimen>
+    <dimen name="bookmark_desktop_navigation_header_top_margin">34dp</dimen>
+    <dimen name="bookmark_desktop_navigation_header_start_margin">32dp</dimen>
+    <dimen name="bookmark_desktop_navigation_header_end_margin">16dp</dimen>
+    <dimen name="bookmark_desktop_navigation_header_bottom_margin">36dp</dimen>
     <dimen
-        name="bookmark_desktop_navigation_list_horizontal_padding"
-        tools:ignore="UnusedResources">24dp</dimen>
+        name="bookmark_desktop_navigation_list_horizontal_padding">24dp</dimen>
 
      <!-- Improved bookmark row properties. -->
      <!-- The size of the start image for compact rows. -->

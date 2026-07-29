@@ -28,6 +28,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -78,6 +79,7 @@ import java.util.Collection;
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN
 })
+@Features.DisableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
 public class BookmarkManagerCoordinatorTest {
 
     @Rule(order = Rule.DEFAULT_ORDER - 1)
@@ -131,6 +133,7 @@ public class BookmarkManagerCoordinatorTest {
                 mIsIdentityManagerSourceOfAccounts);
         // Setup JNI mocks.
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
+        doReturn(1L).when(mFaviconHelperJni).init();
         ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
@@ -219,5 +222,31 @@ public class BookmarkManagerCoordinatorTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         assertEquals(targetHeight, emptyStateView.getLayoutParams().height);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    public void testDesktopLayoutEnabled() {
+        mCoordinator.onDestroyed();
+        DeviceInfo.setIsDesktopForTesting(true);
+        BookmarkManagerCoordinator desktopCoordinator =
+                new BookmarkManagerCoordinator(
+                        mWindowAndroid,
+                        mActivity,
+                        /* isDialogUi= */ false,
+                        mSnackbarManager,
+                        () -> mBottomSheetController,
+                        mActivityResultTracker,
+                        mProfile,
+                        mBookmarkUiPrefs,
+                        mBookmarkOpener,
+                        mBookmarkManagerOpener,
+                        mPriceDropNotificationManager,
+                        /* edgeToEdgePadAdjusterGenerator= */ null,
+                        /* backPressManager= */ null);
+
+        assertNotNull(desktopCoordinator.getView());
+        assertNotNull(desktopCoordinator.getView().findViewById(R.id.navigation_pane));
+        desktopCoordinator.onDestroyed();
     }
 }

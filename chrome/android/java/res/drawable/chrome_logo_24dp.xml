@@ -6,12 +6,10 @@ found in the LICENSE file.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
-    xmlns:tools="http://schemas.android.com/tools"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24"
-    tools:ignore="UnusedResources">
+    android:viewportHeight="24">
   <path
       android:pathData="M12,17.995C15.314,17.995 18,15.308 18,11.995C18,8.681 15.314,5.995 12,5.995C8.686,5.995 6,8.681 6,11.995C6,15.308 8.686,17.995 12,17.995Z"
       android:fillColor="#ffffff"/>

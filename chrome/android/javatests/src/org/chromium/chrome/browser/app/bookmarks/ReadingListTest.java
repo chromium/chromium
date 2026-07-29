@@ -11,10 +11,12 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -175,7 +177,11 @@ public class ReadingListTest {
     }
 
     void openReadingList() {
-        onView(withText("Reading list")).perform(click());
+        onView(
+                        allOf(
+                                withText("Reading list"),
+                                isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
+                .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -394,7 +400,8 @@ public class ReadingListTest {
         pressBack();
         BookmarkTestUtil.waitForBookmarkActivity();
 
-        onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(allOf(withText("Reading list"), isDescendantOfA(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -430,7 +437,8 @@ public class ReadingListTest {
         pressBack();
         BookmarkTestUtil.waitForBookmarkActivity();
 
-        onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(allOf(withText("Reading list"), isDescendantOfA(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -442,8 +450,15 @@ public class ReadingListTest {
         openRootFolder();
 
         // Reading list should show in the root folder.
-        onView(withText("Reading list")).check(matches(isDisplayed()));
-        onView(withText("Reading list"))
+        onView(
+                        allOf(
+                                withText("Reading list"),
+                                isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withText("Reading list"),
+                                isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .check(
                         matches(
                                 new TypeSafeMatcher<>() {

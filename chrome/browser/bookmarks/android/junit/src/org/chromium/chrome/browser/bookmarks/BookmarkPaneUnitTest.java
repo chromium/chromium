@@ -61,7 +61,10 @@ import java.util.function.DoubleConsumer;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.BOOKMARK_PANE_ANDROID, SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
-@DisableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
+@DisableFeatures({
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
+    ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT
+})
 public class BookmarkPaneUnitTest {
     @Rule(order = Rule.DEFAULT_ORDER - 1)
     public final BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();

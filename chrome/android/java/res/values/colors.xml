@@ -46,9 +46,9 @@ found in the LICENSE file.
 
     <!-- Bookmarks Desktop Layout Colors -->
     <macro name="bookmark_desktop_navigation_pane_bg"
-        tools:ignore="UnusedResources">?attr/colorSurfaceContainer</macro>
+        >?attr/colorSurfaceContainer</macro>
     <macro name="bookmark_desktop_content_pane_bg"
-        tools:ignore="UnusedResources">?attr/colorSurfaceContainerLowest</macro>
+        >?attr/colorSurfaceContainerLowest</macro>
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>

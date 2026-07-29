@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -1443,8 +1444,15 @@ public class BookmarkTest {
         } else {
             onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
         }
-        onViewWaiting(allOf(withText("Reading list"), isDisplayed()));
-        onView(withText("Bookmarks bar"))
+        onViewWaiting(
+                allOf(
+                        withText("Reading list"),
+                        isDescendantOfA(withId(R.id.selectable_list_recycler_view)),
+                        isDisplayed()));
+        onView(
+                        allOf(
+                                withText("Bookmarks bar"),
+                                isDescendantOfA(withId(R.id.selectable_list_recycler_view))))
                 .check(
                         BookmarkBarUtils.isDeviceBookmarkBarCompatible(
                                         mActivityTestRule.getActivity())

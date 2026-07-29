@@ -144,6 +144,7 @@ public class BookmarkManagerCoordinator
     private final ModalDialogManager mModalDialogManager;
     private final ModelList mModelList;
     private final @Nullable BackPressManager mBackPressManager;
+    private @Nullable BookmarkDesktopNavigationCoordinator mDesktopNavigationCoordinator;
 
     // TODO(https://crbug.com/475144764): Investigate whether activity can be replaced by a Context.
     /**
@@ -187,7 +188,10 @@ public class BookmarkManagerCoordinator
                         GlobalDiscardableReferencePool.getReferencePool());
         mSnackbarManager = snackbarManager;
 
-        mMainView = (ViewGroup) LayoutInflater.from(activity).inflate(R.layout.bookmark_main, null);
+        final boolean isDesktopLayoutEnabled = BookmarkUtils.isDesktopBookmarksLayoutEnabled();
+        int layoutId =
+                isDesktopLayoutEnabled ? R.layout.bookmark_main_desktop : R.layout.bookmark_main;
+        mMainView = (ViewGroup) LayoutInflater.from(activity).inflate(layoutId, null);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
         mBookmarkOpener = bookmarkOpener;
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
@@ -230,6 +234,12 @@ public class BookmarkManagerCoordinator
         // Using OneshotSupplier as an alternative to a 2-step initialization process.
         OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
                 new OneshotSupplierImpl<>();
+        if (isDesktopLayoutEnabled) {
+            View navigationPane = assumeNonNull(mMainView.findViewById(R.id.navigation_pane));
+            mDesktopNavigationCoordinator =
+                    new BookmarkDesktopNavigationCoordinator(
+                            activity, navigationPane, mBookmarkModel, bookmarkDelegateSupplier);
+        }
         mBookmarkToolbarCoordinator =
                 new BookmarkToolbarCoordinator(
                         activity,
@@ -376,6 +386,9 @@ public class BookmarkManagerCoordinator
         mSelectableListLayout.onDestroyed();
         mMediator.onDestroy();
         mSigninPromoCoordinator.destroy();
+        if (mDesktopNavigationCoordinator != null) {
+            mDesktopNavigationCoordinator.destroy();
+        }
     }
 
     /** Returns the view that shows the main bookmarks UI. */
