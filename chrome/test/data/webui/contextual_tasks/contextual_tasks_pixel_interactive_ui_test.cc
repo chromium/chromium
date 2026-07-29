@@ -29,6 +29,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/data/webui/webui_composebox_pixel_test.h"
@@ -74,12 +76,18 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{contextual_tasks::kContextualTasks,
           {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
          {contextual_tasks::kContextualTasksContextMenu, {}},
          {contextual_tasks::kContextualTasksUseStratusDarkModeColors, {}}},
-        {contextual_tasks::kContextualTasksAnimatedCaret});
+        /*disabled_features=*/
+        {contextual_tasks::kContextualTasksAnimatedCaret,
+         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+         // Omnibox is enabled and then remove these two Features.
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
     WebUIComposeBoxPixelTest::SetUp();
   }
 

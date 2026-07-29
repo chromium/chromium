@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/grit/branded_strings.h"
@@ -59,7 +61,8 @@ class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enable_features*/ {kDefaultBrowserFramework,
                              kDefaultBrowserChangedOsNotification},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup,
+                               omnibox::internal::kWebUIOmniboxAimPopup});
   }
   ~DefaultBrowserManagerWinBrowserTest() override = default;
 
