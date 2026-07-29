@@ -977,6 +977,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // is.
   // These should also be above receiver_ so the bindings are destroyed prior to
   // the callbacks themselves.
+  // Pending removers are explicitly cleared in ~NetworkContext() to cancel
+  // in-flight tasks prior to context teardown.
   std::vector<std::unique_ptr<HttpCacheDataRemover>> http_cache_data_removers_;
   std::vector<std::unique_ptr<HttpCacheDataCounter>> http_cache_data_counters_;
   std::set<std::unique_ptr<ProxyLookupRequest>, base::UniquePtrComparator>

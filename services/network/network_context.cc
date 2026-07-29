@@ -999,6 +999,11 @@ void NetworkContext::CreateNetLogEntriesForActiveWebSockets(
 NetworkContext::~NetworkContext() {
   is_destructing_ = true;
 
+  // Clear pending HttpCacheDataRemovers and counters explicitly to cancel
+  // any in-flight background operations and avoid callback races.
+  http_cache_data_removers_.clear();
+  http_cache_data_counters_.clear();
+
   // May be nullptr in tests.
   if (network_service_) {
     network_service_->DeregisterNetworkContext(this);

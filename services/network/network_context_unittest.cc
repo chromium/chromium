@@ -2622,6 +2622,35 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
   // If all the callbacks were invoked, we should terminate.
 }
 
+TEST_F(NetworkContextTest, DestroyWithPendingHttpCacheDataRemovers) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->http_cache_enabled = true;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  context_params->file_paths->http_cache_directory = temp_dir.GetPath();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  bool callback_called = false;
+  network_context->ClearHttpCache(
+      base::Time(), base::Time(), nullptr /* filter */,
+      base::BindOnce([](bool* called) { *called = true; }, &callback_called));
+
+  // Destroy the NetworkContext while HttpCacheDataRemover operations are
+  // in-flight.
+  network_context.reset();
+
+  // Run pending tasks to ensure clean teardown without dangling pointers or
+  // races.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(callback_called);
+}
+
 TEST_F(NetworkContextTest, LogicalClearHttpCache) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
