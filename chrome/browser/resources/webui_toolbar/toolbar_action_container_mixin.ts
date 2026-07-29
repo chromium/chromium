@@ -25,7 +25,9 @@ export interface KeyedActionState<T> {
 type Constructor<T> = new (...args: any[]) => T;
 
 // Class to track whether the user desires animations to be shown. This is
-// exposed via `AnimationTracker.showAnimations`.
+// exposed via `AnimationTracker.showAnimations`. For testing, `showAnimations`
+// can be directly set, then `resetForTesting()` can be used to reset it during
+// test teardown.
 export class AnimationTracker {
   private static reducedMotion_: MediaQueryList =
       window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -37,6 +39,12 @@ export class AnimationTracker {
       AnimationTracker.showAnimations =
           !AnimationTracker.reducedMotion_.matches;
     });
+  }
+
+  // If tests directly modify `showAnimations`, the tests should call this
+  // method during teardown to reset it.
+  static resetForTesting() {
+    AnimationTracker.showAnimations = !AnimationTracker.reducedMotion_.matches;
   }
 }
 

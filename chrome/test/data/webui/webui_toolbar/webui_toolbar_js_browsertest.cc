@@ -87,6 +87,11 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarActionMixin) {
   RunTest("webui_toolbar/toolbar_action_mixin_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarActionContainerMixin) {
+  RunTest("webui_toolbar/toolbar_action_container_mixin_test.js",
+          "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarButton) {
   RunTest("webui_toolbar/toolbar_button_test.js", "mocha.run();");
 }

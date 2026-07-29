@@ -71,6 +71,8 @@ import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
+import {AnimationTracker, ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
+import type {KeyedActionState, ToolbarActionContainerMixinInterface} from './toolbar_action_container_mixin.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
@@ -82,6 +84,7 @@ import {getTrustedHTML} from '//resources/js/static_types.js';
 
 // TODO(crbug.com/535392412): do not export these from app.ts, find a better place for them instead.
 export {
+  AnimationTracker,
   AppMenuButtonElement,
   AppMenuIconType,
   AppMenuSeverity,
@@ -120,12 +123,14 @@ export {
   PressHandler,
   ReadonlyOmniboxElement,
   resetInitialStateForTesting,
+  ToolbarActionContainerMixin,
   ToolbarActionMixin,
   ToolbarChipButtonElement,
   TrackedElementManager,
 };
 export type {
   IconFromTableElement,
+  KeyedActionState,
   LocationBarState,
   OmniboxAction,
   PageActionState,
@@ -135,6 +140,7 @@ export type {
   PinnedToolbarActionElement,
   PinnedToolbarActionsElement,
   PointerProxy,
+  ToolbarActionContainerMixinInterface,
   ToolbarActionMixinInterface,
   ToolbarFlatStateSchema,
 };
