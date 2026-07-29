@@ -36,4 +36,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN focusable label='Year When' actions='{SET_VALUE}' value='2008'
 ++++++++++++++++STATIC_TEXT label='2008'
 ++++++++++++++++++UNKNOWN label='2008'
-++++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Show date picker When' actions='{DEFAULT}'

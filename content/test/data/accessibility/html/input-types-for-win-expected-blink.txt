@@ -39,7 +39,7 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Date:' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='yyyy'
 ++++++++++++++++++++inlineTextBox name='yyyy'
-++++++++++++popUpButton name='Show date picker' nameFrom=title
+++++++++++++popUpButton name='Show date picker Date:' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Datetime: '
 ++++++++++inlineTextBox name='Datetime: '
@@ -80,7 +80,7 @@ rootWebArea
 ++++++++++++++++spinButton name='AM/PM Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++++++staticText name='--'
 ++++++++++++++++++++inlineTextBox name='--'
-++++++++++++popUpButton name='Show local date and time picker' nameFrom=title
+++++++++++++popUpButton name='Show local date and time picker Datetime-local:' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Email: '
 ++++++++++inlineTextBox name='Email: '
@@ -125,7 +125,7 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Month:' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='----'
 ++++++++++++++++++++inlineTextBox name='----'
-++++++++++++popUpButton name='Show month picker' nameFrom=title
+++++++++++++popUpButton name='Show month picker Month:' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
@@ -192,7 +192,7 @@ rootWebArea
 ++++++++++++++++spinButton name='AM/PM Time:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++++++staticText name='--'
 ++++++++++++++++++++inlineTextBox name='--'
-++++++++++++popUpButton name='Show time picker' nameFrom=title
+++++++++++++popUpButton name='Show time picker Time:' nameFrom=title
 ++++++labelText
 ++++++++staticText name='Url: '
 ++++++++++inlineTextBox name='Url: '
@@ -215,4 +215,4 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Week:' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='----'
 ++++++++++++++++++++inlineTextBox name='----'
-++++++++++++popUpButton name='Show week picker' nameFrom=title
+++++++++++++popUpButton name='Show week picker Week:' nameFrom=title

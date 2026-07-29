@@ -5123,15 +5123,21 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
 
   // Fields inside a datetime control need to merge the field name with
   // the name of the <input> element.
-  if (RoleValue() == ax::mojom::blink::Role::kSpinButton &&
+  if ((RoleValue() == ax::mojom::blink::Role::kSpinButton ||
+       RoleValue() == ax::mojom::blink::Role::kPopUpButton) &&
       DatetimeAncestor()) {
     if (name_objects) {
       name_objects->clear();
     }
-    String input_name =
-        DatetimeAncestor()->GetName(name_from, name_objects, name_sources);
-    if (!input_name.empty())
+    ax::mojom::blink::NameFrom ancestor_name_from;
+    String input_name = DatetimeAncestor()->GetName(ancestor_name_from,
+                                                    name_objects, name_sources);
+    if (!input_name.empty()) {
+      if (name.empty()) {
+        name_from = ancestor_name_from;
+      }
       return StrCat({name, " ", input_name});
+    }
   }
 
   // Handle ::scroll-button(*) pseudo-element names.
@@ -7754,7 +7760,8 @@ String AXNodeObject::Description(
 
   result = result.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 
-  if (RoleValue() == ax::mojom::blink::Role::kSpinButton &&
+  if ((RoleValue() == ax::mojom::blink::Role::kSpinButton ||
+       RoleValue() == ax::mojom::blink::Role::kPopUpButton) &&
       DatetimeAncestor()) {
     // Fields inside a datetime control need to merge the field description
     // with the description of the <input> element.
@@ -7763,12 +7770,18 @@ String AXNodeObject::Description(
     datetime_ancestor->GetName(datetime_ancestor_name_from, nullptr, nullptr);
     if (description_objects)
       description_objects->clear();
+    ax::mojom::blink::DescriptionFrom ancestor_description_from;
     String ancestor_description = DatetimeAncestor()->Description(
-        datetime_ancestor_name_from, description_from, description_objects);
-    if (!result.empty() && !ancestor_description.empty())
+        datetime_ancestor_name_from, ancestor_description_from,
+        description_objects);
+    if (!result.empty() && !ancestor_description.empty()) {
+      description_from = ancestor_description_from;
       return StrCat({result, " ", ancestor_description});
-    if (!ancestor_description.empty())
+    }
+    if (!ancestor_description.empty()) {
+      description_from = ancestor_description_from;
       return ancestor_description;
+    }
   }
 
   return result;

@@ -17,5 +17,5 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++AXIncrementor AXDescription='Minutes Breakfast' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
 ++++++++++AXIncrementor AXDescription='AM/PM Breakfast' AXRoleDescription='stepper' AXValue=1
-++++++AXPopUpButton AXDescription='Show time picker' AXRoleDescription='pop up button'
+++++++AXPopUpButton AXDescription='Show time picker Breakfast' AXRoleDescription='pop up button'
 ++++AXComboBox AXAutocompleteValue='list' AXRoleDescription='combo box'

@@ -37,15 +37,15 @@ AXWebArea
 ++++++++AXIncrementor AXDescription='Minutes aria label' AXValue=5
 ++++++++AXStaticText AXValue=' '
 ++++++++AXIncrementor AXDescription='AM/PM aria label' AXValue=2
-++++AXPopUpButton AXDescription='Show time picker'
+++++AXPopUpButton AXDescription='Show time picker aria label'
 ++AXTimeField AXTitle='Test label' AXValue='12:05'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXIncrementor AXTitle='Hours Test label' AXValue=12
+++++++++AXIncrementor AXDescription='Hours Test label' AXValue=12
 ++++++++AXStaticText AXValue=':'
-++++++++AXIncrementor AXTitle='Minutes Test label' AXValue=5
+++++++++AXIncrementor AXDescription='Minutes Test label' AXValue=5
 ++++++++AXStaticText AXValue=' '
-++++++++AXIncrementor AXTitle='AM/PM Test label' AXValue=2
-++++AXPopUpButton AXDescription='Show time picker'
+++++++++AXIncrementor AXDescription='AM/PM Test label' AXValue=2
+++++AXPopUpButton AXDescription='Show time picker Test label'
 ++AXColorWell AXDescription='aria label' AXValue='rgb 0.89412 0.89412 0.89412 1'
 ++AXColorWell AXTitle='Test label' AXValue='rgb 0.89412 0.89412 0.89412 1'

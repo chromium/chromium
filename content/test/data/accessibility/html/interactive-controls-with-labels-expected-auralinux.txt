@@ -1,5 +1,5 @@
 [document web]
-++[label] label-for=[combo box,combo box,dateeditor,entry,push button,push button,section,spin button,spin button,spin button]
+++[label] label-for=[combo box,combo box,dateeditor,entry,push button,push button,push button,section,spin button,spin button,spin button]
 ++++[static] name='Test label'
 ++[section] name='aria label'
 ++++[static] name='Generic container'
@@ -37,7 +37,7 @@
 ++++++++[spin button] name='Minutes aria label' current=5.000000 minimum=0.000000 maximum=59.000000
 ++++++++[static] name=' '
 ++++++++[spin button] name='AM/PM aria label' current=2.000000 minimum=1.000000 maximum=2.000000
-++++[push button] name='Show time picker'
+++++[push button] name='Show time picker aria label'
 ++[dateeditor] name='Test label' labelled-by=[label]
 ++++[section]
 ++++++[section]
@@ -46,6 +46,6 @@
 ++++++++[spin button] name='Minutes Test label' labelled-by=[label] current=5.000000 minimum=0.000000 maximum=59.000000
 ++++++++[static] name=' '
 ++++++++[spin button] name='AM/PM Test label' labelled-by=[label] current=2.000000 minimum=1.000000 maximum=2.000000
-++++[push button] name='Show time picker'
+++++[push button] name='Show time picker Test label' labelled-by=[label]
 ++[push button] name='aria label'
 ++[push button] name='Test label' labelled-by=[label]

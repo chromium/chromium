@@ -17,4 +17,4 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++AXIncrementor AXDescription='Day When' AXRoleDescription='stepper' AXValue=1
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
 ++++++++++AXIncrementor AXDescription='Year When' AXRoleDescription='stepper' AXValue=2008
-++++++AXPopUpButton AXDescription='Show date picker' AXRoleDescription='pop up button'
+++++++AXPopUpButton AXDescription='Show date picker When' AXRoleDescription='pop up button'

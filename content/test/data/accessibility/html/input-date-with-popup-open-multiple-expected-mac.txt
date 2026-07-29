@@ -26,7 +26,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++++AXIncrementor AXDescription='Day Third date picker' AXRoleDescription='stepper' AXValue=1
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
 ++++++++++AXIncrementor AXDescription='Year Third date picker' AXRoleDescription='stepper' AXValue=2008
-++++++AXPopUpButton AXDescription='Show date picker' AXRoleDescription='pop up button'
+++++++AXPopUpButton AXDescription='Show date picker Third date picker' AXRoleDescription='pop up button'
 ++++++AXGroup AXSubrole=AXApplicationGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
 ++++++++++AXGroup AXRoleDescription='group'

@@ -37,7 +37,7 @@ Document
 ++++++++Spinner Name='Minutes aria label' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=5.00 Value.Value='05'
 ++++++++Text Name=' '
 ++++++++Spinner Name='AM/PM aria label' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=2.00 RangeValue.Minimum=1.00 RangeValue.Value=2.00 Value.Value='PM'
-++++Button Name='Show time picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='Show time picker aria label' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++Group Name='Test label' Value.Value='12:05'
 ++++Group IsControlElement=false
 ++++++Group IsControlElement=false
@@ -46,6 +46,6 @@ Document
 ++++++++Spinner Name='Minutes Test label' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=5.00 Value.Value='05'
 ++++++++Text Name=' '
 ++++++++Spinner Name='AM/PM Test label' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=2.00 RangeValue.Minimum=1.00 RangeValue.Value=2.00 Value.Value='PM'
-++++Button Name='Show time picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='Show time picker Test label' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++Button Name='aria label' Value.Value='89% red 89% green 89% blue'
 ++Button Name='Test label' Value.Value='89% red 89% green 89% blue'

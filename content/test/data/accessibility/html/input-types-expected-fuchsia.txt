@@ -39,7 +39,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN focusable label='Year Date:' actions='{SET_VALUE}'
 ++++++++++++++++++STATIC_TEXT label='yyyy'
 ++++++++++++++++++++UNKNOWN label='yyyy'
-++++++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}'
+++++++++++++UNKNOWN focusable label='Show date picker Date:' actions='{DEFAULT}'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Datetime: '
 ++++++++++UNKNOWN label='Datetime: '
@@ -80,7 +80,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN focusable label='AM/PM Datetime-local:' actions='{SET_VALUE}'
 ++++++++++++++++++STATIC_TEXT label='--'
 ++++++++++++++++++++UNKNOWN label='--'
-++++++++++++UNKNOWN focusable label='Show local date and time picker' actions='{DEFAULT}'
+++++++++++++UNKNOWN focusable label='Show local date and time picker Datetime-local:' actions='{DEFAULT}'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Email: '
 ++++++++++UNKNOWN label='Email: '
@@ -125,7 +125,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN focusable label='Year Month:' actions='{SET_VALUE}'
 ++++++++++++++++++STATIC_TEXT label='----'
 ++++++++++++++++++++UNKNOWN label='----'
-++++++++++++UNKNOWN focusable label='Show month picker' actions='{DEFAULT}'
+++++++++++++UNKNOWN focusable label='Show month picker Month:' actions='{DEFAULT}'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Number: '
 ++++++++++UNKNOWN label='Number: '
@@ -192,7 +192,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN focusable label='AM/PM Time:' actions='{SET_VALUE}'
 ++++++++++++++++++STATIC_TEXT label='--'
 ++++++++++++++++++++UNKNOWN label='--'
-++++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++++++++UNKNOWN focusable label='Show time picker Time:' actions='{DEFAULT}'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Url: '
 ++++++++++UNKNOWN label='Url: '
@@ -215,4 +215,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++UNKNOWN focusable label='Year Week:' actions='{SET_VALUE}'
 ++++++++++++++++++STATIC_TEXT label='----'
 ++++++++++++++++++++UNKNOWN label='----'
-++++++++++++UNKNOWN focusable label='Show week picker' actions='{DEFAULT}'
+++++++++++++UNKNOWN focusable label='Show week picker Week:' actions='{DEFAULT}'

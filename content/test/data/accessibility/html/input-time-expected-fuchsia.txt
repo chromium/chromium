@@ -36,7 +36,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN focusable label='AM/PM Breakfast' actions='{SET_VALUE}' value='AM'
 ++++++++++++++++STATIC_TEXT label='AM'
 ++++++++++++++++++UNKNOWN label='AM'
-++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Show time picker Breakfast' actions='{DEFAULT}'
 ++++++TEXT_FIELD_WITH_COMBO_BOX focusable actions='{DEFAULT, SET_VALUE}'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
