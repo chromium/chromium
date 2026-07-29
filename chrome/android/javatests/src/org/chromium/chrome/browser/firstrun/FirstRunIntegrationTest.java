@@ -471,7 +471,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
@@ -500,7 +499,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/431982831")
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos().withCctTosDisabled());
@@ -591,7 +589,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         HistogramWatcher histograms =
