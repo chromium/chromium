@@ -7,13 +7,27 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 
-#define LOG_FCP_METHOD_EXECUTION(name) DVLOG(4) << "FCP event: " << name
-
-#define LOG_FCP_EVENT(name, event)                          \
-  base::UmaHistogramEnumeration(kFcpEventHistogram, event), \
-      LOG_FCP_METHOD_EXECUTION(name)
-
 namespace private_insights {
+
+namespace {
+
+void LogFcpMethodExecution(absl::string_view name,
+                           absl::string_view details = "") {
+  if (details.empty()) {
+    VLOG(2) << "FCP event: " << name;
+  } else {
+    VLOG(2) << "FCP event: " << name << ": " << details;
+  }
+}
+
+void LogFcpEvent(absl::string_view name,
+                 FcpEvent event,
+                 absl::string_view details = "") {
+  base::UmaHistogramEnumeration(kFcpEventHistogram, event);
+  LogFcpMethodExecution(name, details);
+}
+
+}  // namespace
 
 FcpSecAggEventPublisher::FcpSecAggEventPublisher() = default;
 FcpSecAggEventPublisher::~FcpSecAggEventPublisher() = default;
@@ -32,426 +46,443 @@ FcpEventPublisher::FcpEventPublisher() = default;
 FcpEventPublisher::~FcpEventPublisher() = default;
 
 void FcpEventPublisher::PublishEligibilityEvalCheckin() {
-  LOG_FCP_EVENT("EligibilityEvalCheckin", FcpEvent::kEligibilityEvalCheckin);
+  LogFcpEvent("EligibilityEvalCheckin", FcpEvent::kEligibilityEvalCheckin);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalPlanUriReceived(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalPlanUriReceived",
-                FcpEvent::kEligibilityEvalPlanUriReceived);
+  LogFcpEvent("EligibilityEvalPlanUriReceived",
+              FcpEvent::kEligibilityEvalPlanUriReceived);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalPlanReceived(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalPlanReceived",
-                FcpEvent::kEligibilityEvalPlanReceived);
+  LogFcpEvent("EligibilityEvalPlanReceived",
+              FcpEvent::kEligibilityEvalPlanReceived);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalNotConfigured(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalNotConfigured",
-                FcpEvent::kEligibilityEvalNotConfigured);
+  LogFcpEvent("EligibilityEvalNotConfigured",
+              FcpEvent::kEligibilityEvalNotConfigured);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalRejected(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalRejected", FcpEvent::kEligibilityEvalRejected);
+  LogFcpEvent("EligibilityEvalRejected", FcpEvent::kEligibilityEvalRejected);
 }
 
 void FcpEventPublisher::PublishCheckin() {
-  LOG_FCP_EVENT("Checkin", FcpEvent::kCheckin);
+  LogFcpEvent("Checkin", FcpEvent::kCheckin);
 }
 
 void FcpEventPublisher::PublishCheckinFinished(const fcp::client::NetworkStats&,
                                                FcpDuration) {
-  LOG_FCP_EVENT("CheckinFinished", FcpEvent::kCheckinFinished);
+  LogFcpEvent("CheckinFinished", FcpEvent::kCheckinFinished);
 }
 
 void FcpEventPublisher::PublishRejected() {
-  LOG_FCP_EVENT("Rejected", FcpEvent::kRejected);
+  LogFcpEvent("Rejected", FcpEvent::kRejected);
 }
 
-void FcpEventPublisher::PublishTensorFlowError(int, absl::string_view) {
-  LOG_FCP_EVENT("TensorFlowError", FcpEvent::kTensorFlowError);
+void FcpEventPublisher::PublishTensorFlowError(
+    int,
+    absl::string_view error_message) {
+  LogFcpEvent("TensorFlowError", FcpEvent::kTensorFlowError, error_message);
 }
 
-void FcpEventPublisher::PublishIoError(absl::string_view s) {
-  LOG_FCP_EVENT("IoError", FcpEvent::kIoError) << ": " << s;
+void FcpEventPublisher::PublishIoError(absl::string_view error_message) {
+  LogFcpEvent("IoError", FcpEvent::kIoError, error_message);
 }
 
-void FcpEventPublisher::PublishExampleSelectorError(int, absl::string_view s) {
-  LOG_FCP_EVENT("ExampleSelectorError", FcpEvent::kExampleSelectorError)
-      << ": " << s;
+void FcpEventPublisher::PublishExampleSelectorError(
+    int,
+    absl::string_view error_message) {
+  LogFcpEvent("ExampleSelectorError", FcpEvent::kExampleSelectorError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishInterruption(const fcp::client::ExampleStats&,
                                             FcpTime) {
-  LOG_FCP_EVENT("Interruption", FcpEvent::kInterruption);
+  LogFcpEvent("Interruption", FcpEvent::kInterruption);
 }
 
-void FcpEventPublisher::PublishTaskNotStarted(absl::string_view s) {
-  LOG_FCP_EVENT("TaskNotStarted", FcpEvent::kTaskNotStarted) << ": " << s;
+void FcpEventPublisher::PublishTaskNotStarted(absl::string_view error_message) {
+  LogFcpEvent("TaskNotStarted", FcpEvent::kTaskNotStarted, error_message);
 }
 
 void FcpEventPublisher::PublishNonfatalInitializationError(
-    absl::string_view s) {
-  LOG_FCP_EVENT("NonfatalInitializationError",
-                FcpEvent::kNonfatalInitializationError)
-      << ": " << s;
+    absl::string_view error_message) {
+  LogFcpEvent("NonfatalInitializationError",
+              FcpEvent::kNonfatalInitializationError, error_message);
 }
 
-void FcpEventPublisher::PublishFatalInitializationError(absl::string_view s) {
-  LOG_FCP_EVENT("FatalInitializationError", FcpEvent::kFatalInitializationError)
-      << ": " << s;
+void FcpEventPublisher::PublishFatalInitializationError(
+    absl::string_view error_message) {
+  LogFcpEvent("FatalInitializationError", FcpEvent::kFatalInitializationError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalCheckinIoError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalCheckinIoError",
-                FcpEvent::kEligibilityEvalCheckinIoError);
+  LogFcpEvent("EligibilityEvalCheckinIoError",
+              FcpEvent::kEligibilityEvalCheckinIoError, error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalCheckinClientInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalCheckinClientInterrupted",
-                FcpEvent::kEligibilityEvalCheckinClientInterrupted);
+  LogFcpEvent("EligibilityEvalCheckinClientInterrupted",
+              FcpEvent::kEligibilityEvalCheckinClientInterrupted,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalCheckinServerAborted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalCheckinServerAborted",
-                FcpEvent::kEligibilityEvalCheckinServerAborted);
+  LogFcpEvent("EligibilityEvalCheckinServerAborted",
+              FcpEvent::kEligibilityEvalCheckinServerAborted, error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalCheckinErrorInvalidPayload(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalCheckinErrorInvalidPayload",
-                FcpEvent::kEligibilityEvalCheckinErrorInvalidPayload);
+  LogFcpEvent("EligibilityEvalCheckinErrorInvalidPayload",
+              FcpEvent::kEligibilityEvalCheckinErrorInvalidPayload,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationStarted() {
-  LOG_FCP_EVENT("EligibilityEvalComputationStarted",
-                FcpEvent::kEligibilityEvalComputationStarted);
+  LogFcpEvent("EligibilityEvalComputationStarted",
+              FcpEvent::kEligibilityEvalComputationStarted);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationInvalidArgument(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalComputationInvalidArgument",
-                FcpEvent::kEligibilityEvalComputationInvalidArgument);
+  LogFcpEvent("EligibilityEvalComputationInvalidArgument",
+              FcpEvent::kEligibilityEvalComputationInvalidArgument,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationIOError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalComputationIOError",
-                FcpEvent::kEligibilityEvalComputationIOError);
+  LogFcpEvent("EligibilityEvalComputationIOError",
+              FcpEvent::kEligibilityEvalComputationIOError, error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationExampleIteratorError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalComputationExampleIteratorError",
-                FcpEvent::kEligibilityEvalComputationExampleIteratorError);
+  LogFcpEvent("EligibilityEvalComputationExampleIteratorError",
+              FcpEvent::kEligibilityEvalComputationExampleIteratorError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationTensorflowError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalComputationTensorflowError",
-                FcpEvent::kEligibilityEvalComputationTensorflowError);
+  LogFcpEvent("EligibilityEvalComputationTensorflowError",
+              FcpEvent::kEligibilityEvalComputationTensorflowError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalComputationInterrupted",
-                FcpEvent::kEligibilityEvalComputationInterrupted);
+  LogFcpEvent("EligibilityEvalComputationInterrupted",
+              FcpEvent::kEligibilityEvalComputationInterrupted, error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationErrorNonfatal(
-    absl::string_view) {
-  LOG_FCP_EVENT("EligibilityEvalComputationErrorNonfatal",
-                FcpEvent::kEligibilityEvalComputationErrorNonfatal);
+    absl::string_view error_message) {
+  LogFcpEvent("EligibilityEvalComputationErrorNonfatal",
+              FcpEvent::kEligibilityEvalComputationErrorNonfatal,
+              error_message);
 }
 
 void FcpEventPublisher::PublishEligibilityEvalComputationCompleted(
     const fcp::client::ExampleStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("EligibilityEvalComputationCompleted",
-                FcpEvent::kEligibilityEvalComputationCompleted);
+  LogFcpEvent("EligibilityEvalComputationCompleted",
+              FcpEvent::kEligibilityEvalComputationCompleted);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsStarted() {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsStarted",
-                FcpEvent::kMultipleTaskAssignmentsStarted);
+  LogFcpEvent("MultipleTaskAssignmentsStarted",
+              FcpEvent::kMultipleTaskAssignmentsStarted);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsIOError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsIOError",
-                FcpEvent::kMultipleTaskAssignmentsIOError);
+  LogFcpEvent("MultipleTaskAssignmentsIOError",
+              FcpEvent::kMultipleTaskAssignmentsIOError, error_message);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsPayloadIOError(
-    absl::string_view) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsPayloadIOError",
-                FcpEvent::kMultipleTaskAssignmentsPayloadIOError);
+    absl::string_view error_message) {
+  LogFcpEvent("MultipleTaskAssignmentsPayloadIOError",
+              FcpEvent::kMultipleTaskAssignmentsPayloadIOError, error_message);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsInvalidPayload(
-    absl::string_view) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsInvalidPayload",
-                FcpEvent::kMultipleTaskAssignmentsInvalidPayload);
+    absl::string_view error_message) {
+  LogFcpEvent("MultipleTaskAssignmentsInvalidPayload",
+              FcpEvent::kMultipleTaskAssignmentsInvalidPayload, error_message);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsClientInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsClientInterrupted",
-                FcpEvent::kMultipleTaskAssignmentsClientInterrupted);
+  LogFcpEvent("MultipleTaskAssignmentsClientInterrupted",
+              FcpEvent::kMultipleTaskAssignmentsClientInterrupted,
+              error_message);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsServerAborted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsServerAborted",
-                FcpEvent::kMultipleTaskAssignmentsServerAborted);
+  LogFcpEvent("MultipleTaskAssignmentsServerAborted",
+              FcpEvent::kMultipleTaskAssignmentsServerAborted, error_message);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsTurnedAway(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsTurnedAway",
-                FcpEvent::kMultipleTaskAssignmentsTurnedAway);
+  LogFcpEvent("MultipleTaskAssignmentsTurnedAway",
+              FcpEvent::kMultipleTaskAssignmentsTurnedAway);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsPlanUriReceived(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsPlanUriReceived",
-                FcpEvent::kMultipleTaskAssignmentsPlanUriReceived);
+  LogFcpEvent("MultipleTaskAssignmentsPlanUriReceived",
+              FcpEvent::kMultipleTaskAssignmentsPlanUriReceived);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsPlanUriPartialReceived(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsPlanUriPartialReceived",
-                FcpEvent::kMultipleTaskAssignmentsPlanUriPartialReceived);
+  LogFcpEvent("MultipleTaskAssignmentsPlanUriPartialReceived",
+              FcpEvent::kMultipleTaskAssignmentsPlanUriPartialReceived);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsPartialCompleted(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsPartialCompleted",
-                FcpEvent::kMultipleTaskAssignmentsPartialCompleted);
+  LogFcpEvent("MultipleTaskAssignmentsPartialCompleted",
+              FcpEvent::kMultipleTaskAssignmentsPartialCompleted);
 }
 
 void FcpEventPublisher::PublishMultipleTaskAssignmentsCompleted(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("MultipleTaskAssignmentsCompleted",
-                FcpEvent::kMultipleTaskAssignmentsCompleted);
+  LogFcpEvent("MultipleTaskAssignmentsCompleted",
+              FcpEvent::kMultipleTaskAssignmentsCompleted);
 }
 
-void FcpEventPublisher::PublishCheckinIoError(absl::string_view,
+void FcpEventPublisher::PublishCheckinIoError(absl::string_view error_message,
                                               const fcp::client::NetworkStats&,
                                               FcpDuration) {
-  LOG_FCP_EVENT("CheckinIoError", FcpEvent::kCheckinIoError);
+  LogFcpEvent("CheckinIoError", FcpEvent::kCheckinIoError, error_message);
 }
 
 void FcpEventPublisher::PublishCheckinClientInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("CheckinClientInterrupted",
-                FcpEvent::kCheckinClientInterrupted);
+  LogFcpEvent("CheckinClientInterrupted", FcpEvent::kCheckinClientInterrupted,
+              error_message);
 }
 
 void FcpEventPublisher::PublishCheckinServerAborted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("CheckinServerAborted", FcpEvent::kCheckinServerAborted);
+  LogFcpEvent("CheckinServerAborted", FcpEvent::kCheckinServerAborted,
+              error_message);
 }
 
 void FcpEventPublisher::PublishCheckinInvalidPayload(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("CheckinInvalidPayload", FcpEvent::kCheckinInvalidPayload);
+  LogFcpEvent("CheckinInvalidPayload", FcpEvent::kCheckinInvalidPayload,
+              error_message);
 }
 
 void FcpEventPublisher::PublishRejected(const fcp::client::NetworkStats&,
                                         FcpDuration) {
-  LOG_FCP_EVENT("Rejected", FcpEvent::kRejected);
+  LogFcpEvent("Rejected", FcpEvent::kRejected);
 }
 
 void FcpEventPublisher::PublishCheckinPlanUriReceived(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("CheckinPlanUriReceived", FcpEvent::kCheckinPlanUriReceived);
+  LogFcpEvent("CheckinPlanUriReceived", FcpEvent::kCheckinPlanUriReceived);
 }
 
 void FcpEventPublisher::PublishCheckinFinishedV2(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("CheckinFinishedV2", FcpEvent::kCheckinFinishedV2);
+  LogFcpEvent("CheckinFinishedV2", FcpEvent::kCheckinFinishedV2);
 }
 
 void FcpEventPublisher::PublishComputationStarted() {
-  LOG_FCP_EVENT("ComputationStarted", FcpEvent::kComputationStarted);
+  LogFcpEvent("ComputationStarted", FcpEvent::kComputationStarted);
 }
 
 void FcpEventPublisher::PublishComputationInvalidArgument(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationInvalidArgument",
-                FcpEvent::kComputationInvalidArgument);
+  LogFcpEvent("ComputationInvalidArgument",
+              FcpEvent::kComputationInvalidArgument, error_message);
 }
 
 void FcpEventPublisher::PublishComputationIOError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationIOError", FcpEvent::kComputationIOError);
+  LogFcpEvent("ComputationIOError", FcpEvent::kComputationIOError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishComputationExampleIteratorError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationExampleIteratorError",
-                FcpEvent::kComputationExampleIteratorError);
+  LogFcpEvent("ComputationExampleIteratorError",
+              FcpEvent::kComputationExampleIteratorError, error_message);
 }
 
 void FcpEventPublisher::PublishComputationTensorflowError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationTensorflowError",
-                FcpEvent::kComputationTensorflowError);
+  LogFcpEvent("ComputationTensorflowError",
+              FcpEvent::kComputationTensorflowError, error_message);
 }
 
 void FcpEventPublisher::PublishComputationInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationInterrupted", FcpEvent::kComputationInterrupted);
+  LogFcpEvent("ComputationInterrupted", FcpEvent::kComputationInterrupted,
+              error_message);
 }
 
 void FcpEventPublisher::PublishComputationCompleted(
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationCompleted", FcpEvent::kComputationCompleted);
+  LogFcpEvent("ComputationCompleted", FcpEvent::kComputationCompleted);
 }
 
 void FcpEventPublisher::PublishComputationInsufficientData(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::ExampleStats&,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ComputationInsufficientData",
-                FcpEvent::kComputationInsufficientData);
+  LogFcpEvent("ComputationInsufficientData",
+              FcpEvent::kComputationInsufficientData, error_message);
 }
 
 void FcpEventPublisher::PublishResultUploadStarted() {
-  LOG_FCP_EVENT("ResultUploadStarted", FcpEvent::kResultUploadStarted);
+  LogFcpEvent("ResultUploadStarted", FcpEvent::kResultUploadStarted);
 }
 
 void FcpEventPublisher::PublishResultUploadIOError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ResultUploadIOError", FcpEvent::kResultUploadIOError);
+  LogFcpEvent("ResultUploadIOError", FcpEvent::kResultUploadIOError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishResultUploadClientInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ResultUploadClientInterrupted",
-                FcpEvent::kResultUploadClientInterrupted);
+  LogFcpEvent("ResultUploadClientInterrupted",
+              FcpEvent::kResultUploadClientInterrupted, error_message);
 }
 
 void FcpEventPublisher::PublishResultUploadServerAborted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ResultUploadServerAborted",
-                FcpEvent::kResultUploadServerAborted);
+  LogFcpEvent("ResultUploadServerAborted", FcpEvent::kResultUploadServerAborted,
+              error_message);
 }
 
 void FcpEventPublisher::PublishResultUploadCompleted(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("ResultUploadCompleted", FcpEvent::kResultUploadCompleted);
+  LogFcpEvent("ResultUploadCompleted", FcpEvent::kResultUploadCompleted);
 }
 
 void FcpEventPublisher::PublishFailureUploadStarted() {
-  LOG_FCP_EVENT("FailureUploadStarted", FcpEvent::kFailureUploadStarted);
+  LogFcpEvent("FailureUploadStarted", FcpEvent::kFailureUploadStarted);
 }
 
 void FcpEventPublisher::PublishFailureUploadIOError(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("FailureUploadIOError", FcpEvent::kFailureUploadIOError);
+  LogFcpEvent("FailureUploadIOError", FcpEvent::kFailureUploadIOError,
+              error_message);
 }
 
 void FcpEventPublisher::PublishFailureUploadClientInterrupted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("FailureUploadClientInterrupted",
-                FcpEvent::kFailureUploadClientInterrupted);
+  LogFcpEvent("FailureUploadClientInterrupted",
+              FcpEvent::kFailureUploadClientInterrupted, error_message);
 }
 
 void FcpEventPublisher::PublishFailureUploadServerAborted(
-    absl::string_view,
+    absl::string_view error_message,
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("FailureUploadServerAborted",
-                FcpEvent::kFailureUploadServerAborted);
+  LogFcpEvent("FailureUploadServerAborted",
+              FcpEvent::kFailureUploadServerAborted, error_message);
 }
 
 void FcpEventPublisher::PublishFailureUploadCompleted(
     const fcp::client::NetworkStats&,
     FcpDuration) {
-  LOG_FCP_EVENT("FailureUploadCompleted", FcpEvent::kFailureUploadCompleted);
+  LogFcpEvent("FailureUploadCompleted", FcpEvent::kFailureUploadCompleted);
 }
 
 void FcpEventPublisher::SetModelIdentifier(
     const std::string& model_identifier) {
-  LOG_FCP_METHOD_EXECUTION("SetModelIdentifier") << ": " << model_identifier;
+  LogFcpMethodExecution("SetModelIdentifier", model_identifier);
 }
 
 fcp::client::SecAggEventPublisher* FcpEventPublisher::secagg_event_publisher() {

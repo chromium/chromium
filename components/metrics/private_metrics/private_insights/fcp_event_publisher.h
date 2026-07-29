@@ -125,66 +125,71 @@ class FcpEventPublisher : public fcp::client::EventPublisher {
   void PublishCheckinFinished(const fcp::client::NetworkStats&,
                               FcpDuration) override;
   void PublishRejected() override;
-  void PublishTensorFlowError(int, absl::string_view) override;
-  void PublishIoError(absl::string_view s) override;
-  void PublishExampleSelectorError(int, absl::string_view s) override;
+  void PublishTensorFlowError(int, absl::string_view error_message) override;
+  void PublishIoError(absl::string_view error_message) override;
+  void PublishExampleSelectorError(int,
+                                   absl::string_view error_message) override;
   void PublishInterruption(const fcp::client::ExampleStats&, FcpTime) override;
-  void PublishTaskNotStarted(absl::string_view s) override;
-  void PublishNonfatalInitializationError(absl::string_view s) override;
-  void PublishFatalInitializationError(absl::string_view s) override;
-  void PublishEligibilityEvalCheckinIoError(absl::string_view,
+  void PublishTaskNotStarted(absl::string_view error_message) override;
+  void PublishNonfatalInitializationError(
+      absl::string_view error_message) override;
+  void PublishFatalInitializationError(
+      absl::string_view error_message) override;
+  void PublishEligibilityEvalCheckinIoError(absl::string_view error_message,
                                             const fcp::client::NetworkStats&,
                                             FcpDuration) override;
   void PublishEligibilityEvalCheckinClientInterrupted(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::NetworkStats&,
       FcpDuration) override;
   void PublishEligibilityEvalCheckinServerAborted(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::NetworkStats&,
       FcpDuration) override;
   void PublishEligibilityEvalCheckinErrorInvalidPayload(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::NetworkStats&,
       FcpDuration) override;
   void PublishEligibilityEvalComputationStarted() override;
   void PublishEligibilityEvalComputationInvalidArgument(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::ExampleStats&,
       FcpDuration) override;
   void PublishEligibilityEvalComputationIOError(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::ExampleStats&,
       FcpDuration) override;
   void PublishEligibilityEvalComputationExampleIteratorError(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::ExampleStats&,
       FcpDuration) override;
   void PublishEligibilityEvalComputationTensorflowError(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::ExampleStats&,
       FcpDuration) override;
   void PublishEligibilityEvalComputationInterrupted(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::ExampleStats&,
       FcpDuration) override;
   void PublishEligibilityEvalComputationErrorNonfatal(
-      absl::string_view) override;
+      absl::string_view error_message) override;
   void PublishEligibilityEvalComputationCompleted(
       const fcp::client::ExampleStats&,
       FcpDuration) override;
   void PublishMultipleTaskAssignmentsStarted() override;
-  void PublishMultipleTaskAssignmentsIOError(absl::string_view,
+  void PublishMultipleTaskAssignmentsIOError(absl::string_view error_message,
                                              const fcp::client::NetworkStats&,
                                              FcpDuration) override;
-  void PublishMultipleTaskAssignmentsPayloadIOError(absl::string_view) override;
-  void PublishMultipleTaskAssignmentsInvalidPayload(absl::string_view) override;
+  void PublishMultipleTaskAssignmentsPayloadIOError(
+      absl::string_view error_message) override;
+  void PublishMultipleTaskAssignmentsInvalidPayload(
+      absl::string_view error_message) override;
   void PublishMultipleTaskAssignmentsClientInterrupted(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::NetworkStats&,
       FcpDuration) override;
   void PublishMultipleTaskAssignmentsServerAborted(
-      absl::string_view,
+      absl::string_view error_message,
       const fcp::client::NetworkStats&,
       FcpDuration) override;
   void PublishMultipleTaskAssignmentsTurnedAway(
@@ -201,16 +206,16 @@ class FcpEventPublisher : public fcp::client::EventPublisher {
       FcpDuration) override;
   void PublishMultipleTaskAssignmentsCompleted(const fcp::client::NetworkStats&,
                                                FcpDuration) override;
-  void PublishCheckinIoError(absl::string_view,
+  void PublishCheckinIoError(absl::string_view error_message,
                              const fcp::client::NetworkStats&,
                              FcpDuration) override;
-  void PublishCheckinClientInterrupted(absl::string_view,
+  void PublishCheckinClientInterrupted(absl::string_view error_message,
                                        const fcp::client::NetworkStats&,
                                        FcpDuration) override;
-  void PublishCheckinServerAborted(absl::string_view,
+  void PublishCheckinServerAborted(absl::string_view error_message,
                                    const fcp::client::NetworkStats&,
                                    FcpDuration) override;
-  void PublishCheckinInvalidPayload(absl::string_view,
+  void PublishCheckinInvalidPayload(absl::string_view error_message,
                                     const fcp::client::NetworkStats&,
                                     FcpDuration) override;
   void PublishRejected(const fcp::client::NetworkStats&, FcpDuration) override;
@@ -219,53 +224,53 @@ class FcpEventPublisher : public fcp::client::EventPublisher {
   void PublishCheckinFinishedV2(const fcp::client::NetworkStats&,
                                 FcpDuration) override;
   void PublishComputationStarted() override;
-  void PublishComputationInvalidArgument(absl::string_view,
+  void PublishComputationInvalidArgument(absl::string_view error_message,
                                          const fcp::client::ExampleStats&,
                                          const fcp::client::NetworkStats&,
                                          FcpDuration) override;
-  void PublishComputationIOError(absl::string_view,
+  void PublishComputationIOError(absl::string_view error_message,
                                  const fcp::client::ExampleStats&,
                                  const fcp::client::NetworkStats&,
                                  FcpDuration) override;
-  void PublishComputationExampleIteratorError(absl::string_view,
+  void PublishComputationExampleIteratorError(absl::string_view error_message,
                                               const fcp::client::ExampleStats&,
                                               const fcp::client::NetworkStats&,
                                               FcpDuration) override;
-  void PublishComputationTensorflowError(absl::string_view,
+  void PublishComputationTensorflowError(absl::string_view error_message,
                                          const fcp::client::ExampleStats&,
                                          const fcp::client::NetworkStats&,
                                          FcpDuration) override;
-  void PublishComputationInterrupted(absl::string_view,
+  void PublishComputationInterrupted(absl::string_view error_message,
                                      const fcp::client::ExampleStats&,
                                      const fcp::client::NetworkStats&,
                                      FcpDuration) override;
   void PublishComputationCompleted(const fcp::client::ExampleStats&,
                                    const fcp::client::NetworkStats&,
                                    FcpDuration) override;
-  void PublishComputationInsufficientData(absl::string_view,
+  void PublishComputationInsufficientData(absl::string_view error_message,
                                           const fcp::client::ExampleStats&,
                                           const fcp::client::NetworkStats&,
                                           FcpDuration) override;
   void PublishResultUploadStarted() override;
-  void PublishResultUploadIOError(absl::string_view,
+  void PublishResultUploadIOError(absl::string_view error_message,
                                   const fcp::client::NetworkStats&,
                                   FcpDuration) override;
-  void PublishResultUploadClientInterrupted(absl::string_view,
+  void PublishResultUploadClientInterrupted(absl::string_view error_message,
                                             const fcp::client::NetworkStats&,
                                             FcpDuration) override;
-  void PublishResultUploadServerAborted(absl::string_view,
+  void PublishResultUploadServerAborted(absl::string_view error_message,
                                         const fcp::client::NetworkStats&,
                                         FcpDuration) override;
   void PublishResultUploadCompleted(const fcp::client::NetworkStats&,
                                     FcpDuration) override;
   void PublishFailureUploadStarted() override;
-  void PublishFailureUploadIOError(absl::string_view,
+  void PublishFailureUploadIOError(absl::string_view error_message,
                                    const fcp::client::NetworkStats&,
                                    FcpDuration) override;
-  void PublishFailureUploadClientInterrupted(absl::string_view,
+  void PublishFailureUploadClientInterrupted(absl::string_view error_message,
                                              const fcp::client::NetworkStats&,
                                              FcpDuration) override;
-  void PublishFailureUploadServerAborted(absl::string_view,
+  void PublishFailureUploadServerAborted(absl::string_view error_message,
                                          const fcp::client::NetworkStats&,
                                          FcpDuration) override;
   void PublishFailureUploadCompleted(const fcp::client::NetworkStats&,
