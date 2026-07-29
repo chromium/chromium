@@ -129,6 +129,13 @@
       <property name="message" value="Avoid StringBuffer; use StringBuilder instead, which is faster (it's not thread-safe, but this is almost never needed)"/>
     </module>
     <module name="RegexpSinglelineJava">
+      <property name="id" value="LogStringConcatenationCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="Log\.(d|v)\([^)]*(?:&quot;\s*\+|\+\s*&quot;)[^)]*\)"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="String concatenation (+) inside Log.d or Log.v is discouraged. Please use string formatters (e.g., %s) instead. This allows ProGuard/R8 to safely strip the log arguments in release builds."/>
+    </module>
+    <module name="RegexpSinglelineJava">
       <property name="id" value="AlertDialogCheck"/>
       <property name="severity" value="warning"/>
       <property name="format" value="android\.app\.AlertDialog"/>
