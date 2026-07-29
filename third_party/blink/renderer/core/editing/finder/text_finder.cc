@@ -669,8 +669,6 @@ void TextFinder::InvalidateFindMatchRects() {
 }
 
 void TextFinder::UpdateFindMatchRects() {
-  GetFrame()->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
   gfx::Size current_document_size = OwnerFrame().DocumentSize();
   if (document_size_for_current_find_match_rects_ != current_document_size) {
     document_size_for_current_find_match_rects_ = current_document_size;
@@ -710,8 +708,6 @@ gfx::RectF TextFinder::ActiveFindMatchRect() {
   if (!current_active_match_frame_ || !active_match_)
     return gfx::RectF();
 
-  GetFrame()->GetDocument()->UpdateStyleAndLayoutForRange(
-      active_match_.Get(), DocumentUpdateReason::kFindInPage);
   return FindInPageRectFromRange(EphemeralRange(ActiveMatch()));
 }
 
@@ -787,9 +783,6 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
     // Make sure no node is focused. See http://crbug.com/38700.
     OwnerFrame().GetFrame()->GetDocument()->ClearFocusedElement();
   }
-
-  OwnerFrame().GetFrame()->GetDocument()->UpdateStyleAndLayoutForRange(
-      active_match_.Get(), DocumentUpdateReason::kFindInPage);
 
   gfx::Rect active_match_rect;
   gfx::Rect active_match_bounding_box =
