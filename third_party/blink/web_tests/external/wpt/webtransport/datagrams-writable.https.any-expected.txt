@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] createWritable returns WebTransportDatagramsWritable which extends WritableStream
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] WebTransportDatagramsWritable attributes have correct defaults
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] createWritable respects sendOrder option
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] sendOrder attribute can be get and set
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] sendGroup attribute can be get and set
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] WebTransportDatagramsWritable can write and receive datagrams
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] multiple WebTransportDatagramsWritable streams can be created
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] multiple writes through WebTransportDatagramsWritable work correctly
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] WebTransportDatagramsWritable writer.ready works correctly
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+[FAIL] createWritable throws InvalidStateError on closed transport
+  assert_throws_dom: createWritable should throw InvalidStateError on closed transport function "() => {\n    wt.datagrams.createWritable();\n  }" threw object "TypeError: wt.datagrams.createWritable is not a function" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+[FAIL] createWritable throws InvalidStateError when sendGroup is from different transport
+  assert_throws_dom: createWritable should throw InvalidStateError when sendGroup is from different transport function "() => {\n    wt2.datagrams.createWritable({ sendGroup: sendGroupFromWt1 });\n  }" threw object "TypeError: wt2.datagrams.createWritable is not a function" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+[FAIL] WebTransportDatagramsWritable can write max-size datagrams
+  promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
+Harness: the test ran to completion.
+

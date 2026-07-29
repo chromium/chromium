@@ -1362,6 +1362,15 @@
        ]
       }
      },
+     "mix-blend-mode": {
+      "mix-blend-mode-root-element-transform-crash.html": [
+       "7f435249f8563bb2f1b59063f7fe9f688030e978",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "opacity-and-transform-animation-crash.html": [
       "294a823cd8ee0b7e5f289d2b623d59c7ceaa9f18",
       [
@@ -6794,6 +6803,13 @@
       ]
      ],
      "crashtests": {
+      "chrome-536997542-crash.html": [
+       "77991629f9f473414f5b41826ec7e914af93a9a6",
+       [
+        null,
+        {}
+       ]
+      ],
       "first-letter-inherit-position.html": [
        "4405be6a442a54e802678900ea1125a073aefa03",
        [
@@ -7428,6 +7444,13 @@
       ],
       "remove-table-column-group.html": [
        "c34c94a7abdc072b8196c4baca8068453011bbf4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "row-size-distribution-rowspan-sorting.html": [
+       "e6ab8450419ac05482ffe21ba00db3935388f85d",
        [
         null,
         {}
@@ -13722,6 +13745,13 @@
      ],
      "selection-modify-line-from-contenteditable-to-textarea.html": [
       "41d377a9a60f30c8ccc8995832995c2d4450a902",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selection-modify-line-into-svg-use.html": [
+      "23a189d014e7c75f0b36f5069fcbd6150b5d14d0",
       [
        null,
        {}
@@ -114198,7 +114228,7 @@
       ]
      ],
      "composited-filters-under-opacity.html": [
-      "f325d08b13bc6558ebeb633a95f381fbaed3e4e8",
+      "d7e674c4ba9e37a635ee62de1c7069b82170a377",
       [
        null,
        [
@@ -114214,7 +114244,7 @@
           [
            [
             0,
-            1
+            2
            ],
            [
             0,
@@ -187024,6 +187054,19 @@
         {}
        ]
       ],
+      "text-box-trim-end-003.html": [
+       "58b530c9cded823a3942749ecda07a814d4fc456",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-end-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-end-empty-line-001.html": [
        "ab6bc8ec55343c20806d4cd77b4252159e198454",
        [
@@ -187979,6 +188022,19 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vrl,text",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-start-002.html": [
+       "a27eee948875343d8212ea80ec95615a5e64ff3c",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-002-ref.html",
           "=="
          ]
         ],
@@ -221833,6 +221889,32 @@
         [
          "/css/reference/ref-filled-green-100px-square.xht",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selection-background-color-revert.html": [
+      "b51bda7319ee8eb81a9c678e418746bfd59fe414",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-background-color-revert-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selection-background-color-transparent.html": [
+      "a2ec12bd4968f17747a3ee39728bed70ddab1da8",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-background-color-transparent-notref.html",
+         "!="
         ]
        ],
        {}
@@ -256707,7 +256789,7 @@
        ]
       ],
       "seg-break-transformation-018.tentative.html": [
-       "2faf185856baf75b4820b57cd9b4ffe4161f7a29",
+       "f78816481ae43c3f1f4200e8253fc9404c057640",
        [
         null,
         [
@@ -256720,7 +256802,7 @@
        ]
       ],
       "seg-break-transformation-019.tentative.html": [
-       "afbba2642524209eda0378577305b5c0e48d1232",
+       "2c8de3ce82185b9fe4be8fed700f4d4ca06c4e20",
        [
         null,
         [
@@ -378123,7 +378205,7 @@
       []
      ],
      "util.js": [
-      "cabf0cbc024c5142e3d92c18844f5fcfcc352f01",
+      "9082b764567ab85e0b89dd12fdc35bf1013a92d2",
       []
      ]
     },
@@ -381611,6 +381693,10 @@
        "de2e894012c7c7b5236c7989b4907a8a6d60e74a",
        []
       ],
+      "embedded-enforcement-child.py": [
+       "655b29a2f8646e57e0bba11ae5d1228661facb36",
+       []
+      ],
       "empty.js": [
        "6ac4ed94da59af7f4c59d51e5bcc22f4abfeb9c1",
        []
@@ -381810,6 +381896,10 @@
      ],
      "webrtc-block-default.sub.window.js.headers": [
       "0dd919403b86564e91e96d180f34d21b82815b0e",
+      []
+     ],
+     "webrtc-block-interactions.sub.window.js.headers": [
+      "e5b38445d1142e5652004f6838f7fbe977f05bce",
       []
      ],
      "webrtc-block.sub.window.js.headers": [
@@ -419269,6 +419359,10 @@
        "d7e869fe8f0c617cc007587e9cd8d05597b3edcd",
        []
       ],
+      "text-box-trim-end-003-ref.html": [
+       "17cffb4fa40c6b51d6c586cd69b76d84edfe329b",
+       []
+      ],
       "text-box-trim-end-empty-line-001-ref.html": [
        "980bbb7f7a6795566320cb8b43f44d177db677fa",
        []
@@ -419431,6 +419525,10 @@
       ],
       "text-box-trim-start-001-ref.html": [
        "89df426320d226387b4f91ea33af080b337a73f8",
+       []
+      ],
+      "text-box-trim-start-002-ref.html": [
+       "a816468444b122640072a9a50c6f2d2a4a8dc016",
        []
       ],
       "text-box-trim-tall-line-001-ref.html": [
@@ -426788,6 +426886,14 @@
      },
      "relative-box-order-of-pseudo-elements-ref.html": [
       "b427c986e37e189ea2b4065c47d6d834a396e7d8",
+      []
+     ],
+     "selection-background-color-revert-ref.html": [
+      "54e6dca7f2586883b798ba2b617588aa0917796d",
+      []
+     ],
+     "selection-background-color-transparent-notref.html": [
+      "6856435e3cf9317593448dd2c2dba2e772f8d4cb",
       []
      ],
      "selection-background-painting-order-ref1.html": [
@@ -434612,27 +434718,27 @@
        ]
       },
       "seg-break-transformation-001.tentative-expected.txt": [
-       "0f1002f1e47ab77d658f2c94713e9ff453ea1319",
+       "659d4ac7a5c40277f07ec01d06505547a09dc93b",
        []
       ],
       "seg-break-transformation-002.tentative-expected.txt": [
-       "931f4d3f55d0f39ed0329ae9d964e60312a17e57",
+       "a2c316f4a1c5e434990e8cdb820e98a18c34be8c",
        []
       ],
       "seg-break-transformation-003.tentative-expected.txt": [
-       "e99e9fbdfb3cf9450c084df4280a8e6a2c8e8937",
+       "f51ebc45a7bd5b365ae2b7662324b1aaec5504ca",
        []
       ],
       "seg-break-transformation-004.tentative-expected.txt": [
-       "8ddf3e6ef6ea0d036bf9818ee987e7a90cc5d848",
+       "6294181bf4ed288f1767434f3baed84d28e845a8",
        []
       ],
       "seg-break-transformation-008.tentative-expected.txt": [
-       "138943e2e6b30ecba8456a435676bf7810d9e284",
+       "929df41fe3a14be224cedfda68bd113260af3869",
        []
       ],
       "seg-break-transformation-009.tentative-expected.txt": [
-       "1399f3628a2a5f7a74018050170a9ebc8c914d0c",
+       "659d4ac7a5c40277f07ec01d06505547a09dc93b",
        []
       ],
       "support": {
@@ -455066,10 +455172,6 @@
       "56b53edb4ac72d0262a8f525a37c320198f43455",
       []
      ],
-     "compressed-large-resources-001.tentative.https-expected.txt": [
-      "a2dda21a8e2dd5d06f692707939ddc94cdbd5e84",
-      []
-     ],
      "dictionary-fetch-with-link-connect-src-nonce.tentative.https.html.headers": [
       "97f2d0d2c018dd6accc36aaba7a3bc85273a57bc",
       []
@@ -455161,15 +455263,7 @@
       ],
       "static": {
        "Makefile": [
-        "90901b097aef3afb136eff3a77cdbe7f8f866623",
-        []
-       ],
-       "dcb-header": [
-        "60573deb5cdad1a91bdc0fc72163a3c40fa53af3",
-        []
-       ],
-       "dcz-header": [
-        "d185f292dcb23cc08101d9ab23fb998d0a85275b",
+        "03b53d9e0a4c563ce21eb48ac44d72dd5508209a",
         []
        ],
        "image-001.png": [
@@ -455189,7 +455283,7 @@
         []
        ],
        "self-compressed-image-001.png.dcb": [
-        "5e0b90c088e808284565ec074abe3c0adef95eca",
+        "7e5276f8311a5f98d19dc5612f10091118fa4be2",
         []
        ],
        "self-compressed-image-001.png.dcb.headers": [
@@ -455237,7 +455331,7 @@
         []
        ],
        "self-compressed-subframe-001.html.dcb": [
-        "5ad3038785f2c04bdf9c907bd0753eee6f0156a3",
+        "77fce90c696770f1d3f974f9a9bece9520791834",
         []
        ],
        "self-compressed-subframe-001.html.dcb.headers": [
@@ -472692,6 +472786,22 @@
          []
         ]
        },
+       "media-playback-while-not-visible-permission-policy": {
+        "resources": {
+         "intermediate-frame.html": [
+          "439b0e52674486001bb94705980ddfd26b787dfb",
+          []
+         ],
+         "media-frame.html": [
+          "1475b05e58e376359fdbeb69cbc0dba2cd151312",
+          []
+         ],
+         "media-playback-while-not-visible-utils.js": [
+          "12f8b4e5fea900ed2fb133ad6d6b1f3dc3a752aa",
+          []
+         ]
+        }
+       },
        "networkState_during_progress-expected.txt": [
         "9868d68bd2f097da2a5c94cd2a8073d56009c33b",
         []
@@ -473735,7 +473845,7 @@
         []
        ],
        "relevant-mutations-expected.txt": [
-        "9b068648cbd2c79f173d624047e65f2b785332ec",
+        "b1fd50e6edc5abde41020c55f7b60ab12629d09f",
         []
        ],
        "relevant-mutations-lazy-expected.txt": [
@@ -473872,7 +473982,7 @@
          []
         ],
         "relevant-mutations.js": [
-         "7105b037084be829e6319ab730ed10b034c544cb",
+         "8f7647bf0482d5e156c3574741c01c4f56273b42",
          []
         ]
        },
@@ -476512,10 +476622,6 @@
           "2269183d446cced43528ac89d25776469f77e8ee",
           []
          ],
-         "cyclic-tla-fn-defer-eval.tentative-expected.txt": [
-          "2269183d446cced43528ac89d25776469f77e8ee",
-          []
-         ],
          "dynamic-imports-credentials-setTimeout.sub-expected.txt": [
           "0dbc81fe34f226241b7a827d9b89feb308710757",
           []
@@ -476603,14 +476709,6 @@
           ],
           "cyclic-tla-dep-b.js": [
            "efe60d9baddaffa84b0611a587e76a3b44dec65f",
-           []
-          ],
-          "cyclic-tla-fn-dep-a.js": [
-           "c0a7ca1bc5cf8a68c7ece851d270eadc0ee584e5",
-           []
-          ],
-          "cyclic-tla-fn-dep-b.js": [
-           "b5b18682226cb7f1d41e3972954c8e761b12aa98",
            []
           ],
           "empty-iframe.html": [
@@ -500731,6 +500829,10 @@
        "0b1995d4ef4a6b31c56bd6ad68e3ebb66a13bdbd",
        []
       ],
+      "a.hyperlink-getter-01-expected.txt": [
+       "f5674a833e385f7f9caa45d10df9fd17132d8d49",
+       []
+      ],
       "href-animate-element-expected.txt": [
        "67f0c5ed9f5b5dedb54d172ae42549398a7b2a86",
        []
@@ -502111,12 +502213,12 @@
        "ac5159143dbeaf1eec81d63127b215e6dd092309",
        []
       ],
-      "SVGMatrix-tentative-expected.txt": [
-       "cecf734d7dee6cf55d05cf568aabc022ab6d6c17",
+      "SVGMatrix-expected.txt": [
+       "9da09a753fc25721ccb084521dc699d2d966a7f0",
        []
       ],
       "WEB_FEATURES.yml": [
-       "6944ad0fbbb18cd17d514778cdf885e8cab89e33",
+       "c72b52f71acacac312ce38836e3bca34bb272dd8",
        []
       ],
       "resources": {
@@ -504624,11 +504726,11 @@
        []
       ],
       "return_call.wast.js": [
-       "5c9dd26c708c31994dbf14b9038af33d65b4de52",
+       "ebcfdfa2ab770f792cc4b3bcf64c18f6dd0a0131",
        []
       ],
       "return_call_indirect.wast.js": [
-       "9fc8c076f5a6af2fde64cad5c49e4ad6fd609b67",
+       "5471bf805542477c41db27003a280531f2cf4668",
        []
       ],
       "return_call_ref.wast.js": [
@@ -510444,7 +510546,7 @@
      []
     ],
     "RTCPeerConnection-helper.js": [
-     "ed870488422ab64211a0640c524a923d1b4e719f",
+     "4dcce325be850027cd164e33f6339ed1f05bfe47",
      []
     ],
     "RTCPeerConnection-iceConnectionState-disconnected.https-expected.txt": [
@@ -511497,6 +511599,10 @@
      "4f1ab829324d52248b8773fc3ab196217a100335",
      []
     ],
+    "datagrams-writable.https.any-expected.txt": [
+     "2cad7d756fdf539106cd61d9673a5095441fdbf1",
+     []
+    ],
     "datagrams.https.any-expected.txt": [
      "b811c36d12145d164ee0b4b7ed67ce2183ee1169",
      []
@@ -511511,6 +511617,22 @@
     ],
     "datagrams.https.any.worker-expected.txt": [
      "b811c36d12145d164ee0b4b7ed67ce2183ee1169",
+     []
+    ],
+    "draining.https.any-expected.txt": [
+     "485ab6b37fa9476ebeaf73c715900def626d28a8",
+     []
+    ],
+    "draining.https.any.serviceworker-expected.txt": [
+     "485ab6b37fa9476ebeaf73c715900def626d28a8",
+     []
+    ],
+    "draining.https.any.sharedworker-expected.txt": [
+     "485ab6b37fa9476ebeaf73c715900def626d28a8",
+     []
+    ],
+    "draining.https.any.worker-expected.txt": [
+     "485ab6b37fa9476ebeaf73c715900def626d28a8",
      []
     ],
     "export-keying-material.https.any-expected.txt": [
@@ -511574,6 +511696,10 @@
       "0246b84f9476726a0f7a9a22bdb7d563093b804b",
       []
      ],
+     "server-drain.py": [
+      "f1c110758f2534a067385cd12bd6d7ebb176be0c",
+      []
+     ],
      "server-read-then-close.py": [
       "7f992e0dcca3ae62277cac0fa39355fce3e57be0",
       []
@@ -511617,10 +511743,26 @@
     ],
     "resources": {
      "webtransport-test-helpers.sub.js": [
-      "88e9bfc74e2b9d5b091d303f1621d3926fc8c346",
+      "b74f15f0924b87e80196aff77f7f3b54a725c4a3",
       []
      ]
     },
+    "sendgroup.https.any-expected.txt": [
+     "14cbfd43f6f0210b0609d3fe188340418f979f4e",
+     []
+    ],
+    "sendgroup.https.any.serviceworker-expected.txt": [
+     "14cbfd43f6f0210b0609d3fe188340418f979f4e",
+     []
+    ],
+    "sendgroup.https.any.sharedworker-expected.txt": [
+     "14cbfd43f6f0210b0609d3fe188340418f979f4e",
+     []
+    ],
+    "sendgroup.https.any.worker-expected.txt": [
+     "14cbfd43f6f0210b0609d3fe188340418f979f4e",
+     []
+    ],
     "stats.https.any-expected.txt": [
      "170dd673d8af489abb6f09a752cb38c55f26f76b",
      []
@@ -550716,6 +550858,59 @@
         "timeout": "long"
        }
       ]
+     ],
+     "semantic-embedder-downloadprogress-abort.tentative.https.window.js": [
+      "1417f0b697d39d52adff0bc8f61b7aa5f023cedd",
+      [
+       "ai/semantic_embedder/semantic-embedder-downloadprogress-abort.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Semantic Embedder Download Progress Abort"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "semantic-embedder-downloadprogress.tentative.https.window.js": [
+      "ba7cac9dac8262d8b6750fa5559affa33530acd2",
+      [
+       "ai/semantic_embedder/semantic-embedder-downloadprogress.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ]
+        ]
+       }
+      ]
      ]
     },
     "summarizer": {
@@ -563809,8 +564004,22 @@
        }
       ]
      ],
+     "iframe-connectionallowlist-embedded-enforcement.https.html": [
+      "11c5efbb970f3f6cde4dbe9edaa08417c1420fb5",
+      [
+       null,
+       {}
+      ]
+     ],
      "iframe-connectionallowlist-reflection.html": [
       "c08cc10c8686b17689709bf40886f7551b3fd260",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-connectionallowlist-request-header.https.html": [
+      "e435312236ba21e16601993a1609f7f224424513",
       [
        null,
        {}
@@ -564715,7 +564924,7 @@
       ]
      ],
      "webrtc-allow.sub.window.js": [
-      "c2861cba38329efbbc1d305ecc7fcb0645bf9058",
+      "285a085fb4cb3352521f916d03509450edfc3a32",
       [
        "connection-allowlist/tentative/webrtc-allow.sub.window.html",
        {
@@ -564723,13 +564932,17 @@
          [
           "script",
           "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/content-security-policy/webrtc/webrtc.js"
          ]
         ]
        }
       ]
      ],
      "webrtc-block-default.sub.window.js": [
-      "07a4f1c410a14289914c80105c99d0f3ade08d4e",
+      "c496b042fd7c19d72027fa22fc22adbf7cf683c5",
       [
        "connection-allowlist/tentative/webrtc-block-default.sub.window.html",
        {
@@ -564737,13 +564950,35 @@
          [
           "script",
           "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/content-security-policy/webrtc/webrtc.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "webrtc-block-interactions.sub.window.js": [
+      "6e1cf52108b1a9a5721e1bd33b59579ebbda6966",
+      [
+       "connection-allowlist/tentative/webrtc-block-interactions.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/content-security-policy/webrtc/webrtc.js"
          ]
         ]
        }
       ]
      ],
      "webrtc-block.sub.window.js": [
-      "d5949ce1fc25b1af35a25675620e8d27c8efde23",
+      "6617a18f767ce83fd6bf14940020f671b357b988",
       [
        "connection-allowlist/tentative/webrtc-block.sub.window.html",
        {
@@ -564751,13 +564986,17 @@
          [
           "script",
           "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/content-security-policy/webrtc/webrtc.js"
          ]
         ]
        }
       ]
      ],
      "webrtc-queuereport-enforce.https.sub.window.js": [
-      "938c4707b84fe4337fd789751bf10ba4f8bd5d96",
+      "2d4a06aca5bcf44b5d62d4118b5fa75ee4842c62",
       [
        "connection-allowlist/tentative/webrtc-queuereport-enforce.https.sub.window.html",
        {
@@ -564769,13 +565008,17 @@
          [
           "script",
           "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "/content-security-policy/webrtc/webrtc.js"
          ]
         ]
        }
       ]
      ],
      "webrtc-queuereport-report-only.https.sub.window.js": [
-      "dfc58c6ec1887ba48eaab7825f1bf23d92b736cf",
+      "ce7de0fe04b6d21c1aaaf60874f931e25d624c9a",
       [
        "connection-allowlist/tentative/webrtc-queuereport-report-only.https.sub.window.html",
        {
@@ -564787,6 +565030,10 @@
          [
           "script",
           "/reporting/resources/report-helper.js"
+         ],
+         [
+          "script",
+          "/content-security-policy/webrtc/webrtc.js"
          ]
         ]
        }
@@ -596321,7 +596568,7 @@
        ]
       ],
       "text-box-trim-multicol-013.html": [
-       "33b32cd544d7aa4ef722d46a4eff2181b06ae8df",
+       "d651d4b0b1a778c3ea759e2886ed908025edc485",
        [
         null,
         {}
@@ -611564,119 +611811,119 @@
        ]
       ],
       "seg-break-transformation-000.tentative.html": [
-       "cb7b0f30b566320c1022f61fde44bc09695badb1",
+       "029070693c932cc0445545a138cfc543cdf1e516",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-001.tentative.html": [
-       "1640878a00bd128dce6f55b76bcba8c852398b07",
+       "4118e3a999a68026f24c39b0619e1ffae1e2a5a7",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-002.tentative.html": [
-       "de51bf6f81e2c5ed0347c4ff1527131ab508cf65",
+       "f0a129821ffd7f31fc040982d0819a8649e1870e",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-003.tentative.html": [
-       "15b98b69176f689cf28f944f4b6e78fb0485f761",
+       "4dd558a54bd9ed5871509dc1a25c25de0aecfa70",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-004.tentative.html": [
-       "19edef5435eab3e7bb314f98aff9e9296629cd9c",
+       "d02cc2755c81139dd618fcbe815b6f596703529c",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-005.tentative.html": [
-       "92f91c3bf83734137c9e441ddd9865773faed99e",
+       "95c2ca8a8c886963977d0b63a076704f10b4f8c2",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-006.tentative.html": [
-       "c4fed83d3d0cab5925e76dcf793dd1853d639fe3",
+       "ebe2e8ddc8db4dec76520333b78500e437900db4",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-007.tentative.html": [
-       "4f4f4ab7a4c5b4ed028d15b3bbdcddf6dde354e7",
+       "06a643476ab86aef49cbd1cbef1dfa8dac9a9eb4",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-008.tentative.html": [
-       "6d04366bb6a85766fd9f8a089c7fcec1a17530f6",
+       "6aefdf8ee76ea11ef749de61614c13479b8a587c",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-009.tentative.html": [
-       "c7a79cecac463a88d149d03e15f14dbd8f042e12",
+       "6ed532930cf6083e0ec30b310f249e28e026784d",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-010.tentative.html": [
-       "43b4218df3bb9968f8e175e799d86cb40adb3639",
+       "dc7197bbd0727a5d930e89d5c85b0908b8497bf6",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-011.tentative.html": [
-       "d88a8efd34122972faf9275f7bb04821cde9afa1",
+       "fcbf647fa2ef83f65e3368fca731e1835f2f8704",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-012.tentative.html": [
-       "2c8b186c3b97c2c129dbec543bd200d21b2cfe87",
+       "a323ae063584380c43c73fbee3614234de53bbfc",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-014.tentative.html": [
-       "93dc18a8c9775d2c3d448fbef9213afa4fec4cd2",
+       "833404f49cf3c68aebcf96e741f612913be04d4f",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-015.tentative.html": [
-       "095fcd0dd92388603de0856bf19bc361964f759b",
+       "e6aeb4a5c99bc6568c0886ee86d5b112e885bead",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-016.tentative.html": [
-       "2cb36a5b1e8fc28c5ba42a3f8b45645fc45b8eb0",
+       "3299408b1601215db902152727a7c92f7ea04f86",
        [
         null,
         {}
        ]
       ],
       "seg-break-transformation-017.tentative.html": [
-       "52b7ce1f6ab15ac1833067cdf957b1e4c6b4af21",
+       "086c3796939a44084d7ec7405e4f9f394cca34d3",
        [
         null,
         {}
@@ -635006,7 +635253,7 @@
        ]
       ],
       "custom-element-move-reactions.html": [
-       "c5702eb7bc17153af75f5135daea80deb024b58d",
+       "68f28deb8ccd51a48e28d3d353c4a2efa0b053bf",
        [
         null,
         {}
@@ -636414,7 +636661,7 @@
      ]
     ],
     "DOMParser-parseFromString-xml-parsererror.html": [
-     "f6985aa20a3eb76c2c0ae9f65a0bed3cdbb4672d",
+     "f57125f6ea4e2f2d0dd98cb73d889267e914341b",
      [
       null,
       {}
@@ -636598,6 +636845,13 @@
      ],
      "stream-append-html.html": [
       "e8e7259e1a3ed3d9d11f3ae7d9ac407d91db7fcf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "stream-html-custom-element-sanitizer.html": [
+      "5bec06b30bc3c656ae590857bc697b27821a1368",
       [
        null,
        {}
@@ -637086,6 +637340,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "edit-context-selection-outside-host.tentative.html": [
+      "c61ad86bf5400113c0467421753fc356c8b23dea",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "edit-context-textformat.tentative.html": [
@@ -724888,6 +725151,225 @@
          ]
         ]
        },
+       "media-playback-while-not-visible-permission-policy": {
+        "cant-play-if-hidden.tentative.sub.html": [
+         "820b089bc7b015ac09218b368a1efbf7087c52a2",
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=zero-size&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=zero-size&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=zero-size&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/cant-play-if-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=zero-size&media=video",
+          {}
+         ]
+        ],
+        "pause-when-hidden.tentative.sub.html": [
+         "13df89bf83d6cc438e093d6b62c5fb53fa754bf7",
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=direct&visibility=zero-size&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=cross-origin&frame=nested&visibility=zero-size&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=direct&visibility=zero-size&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=display&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=display&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=visibility&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=visibility&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=zero-size&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/pause-when-hidden.tentative.sub.html?origin=same-origin&frame=nested&visibility=zero-size&media=video",
+          {}
+         ]
+        ],
+        "viewport.tentative.sub.html": [
+         "58374021c100b59dbf7d47be888a402597a1bdb9",
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/viewport.tentative.sub.html?origin=cross-origin&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/viewport.tentative.sub.html?origin=cross-origin&media=video",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/viewport.tentative.sub.html?origin=same-origin&media=audio",
+          {}
+         ],
+         [
+          "html/semantics/embedded-content/media-elements/media-playback-while-not-visible-permission-policy/viewport.tentative.sub.html?origin=same-origin&media=video",
+          {}
+         ]
+        ]
+       },
        "media_fragment_seek.html": [
         "2a0106ce166cef7f826efca55d447f0621048bc0",
         [
@@ -728201,6 +728683,13 @@
         ]
        ],
        "environment-changes": {
+        "picture-resize-complete.html": [
+         "c436374aead395072e67ad85802b1330dc1fe20b",
+         [
+          null,
+          {}
+         ]
+        ],
         "viewport-change.html": [
          "f6ae65708c661c5ff1a957c3a8606d75a44827fb",
          [
@@ -734093,6 +734582,25 @@
          {}
         ]
        ],
+       "menu-content-model-violation.html": [
+        "628de3a0be5cc0036fcb8816befb009180a1ea00",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "menu-dialog-mode-focus.html": [
+        "122c2acf57843584cb1d0b37c091687fe2c9cdc4",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ]
+       ],
        "menu-elements-pageup-pagedown.optional.html": [
         "f40cf401d4cf782246d544969f8092ea2ac957bf",
         [
@@ -737624,14 +738132,7 @@
           ]
          ],
          "cyclic-tla-defer-eval.tentative.html": [
-          "8b16c77759a2e41b63ceca9f85addd4aca44affc",
-          [
-           null,
-           {}
-          ]
-         ],
-         "cyclic-tla-fn-defer-eval.tentative.html": [
-          "015320fb4b666826e743519769a0e7420ddf356b",
+          "37f63c54edec772bfdd39b227bcec76f15976493",
           [
            null,
            {}
@@ -744860,7 +745361,7 @@
         ]
        ],
        "new-scroll-event-dispatched-at-next-updating-rendering-time.html": [
-        "0de3b1c9af9429bf73038664e05d1c877d00e049",
+        "8a774294fa7192a80aff89450031905bd0b77d35",
         [
          null,
          {}
@@ -788590,6 +789091,13 @@
       {}
      ]
     ],
+    "sanitizer-custom-elements-constructor.html": [
+     "2cd2c62f18cfc640d55f0d6bd41c2ce5cbfe3acb",
+     [
+      null,
+      {}
+     ]
+    ],
     "sanitizer-custom-elements-is.tentative.html": [
      "62cf4e868709f1ef64ed961fb434a7edf17b927b",
      [
@@ -815520,6 +816028,13 @@
         {}
        ]
       ],
+      "a.hyperlink-getter-01.svg": [
+       "b9a5e22114a2c150296a6bb2ea3a376dcf0f801d",
+       [
+        null,
+        {}
+       ]
+      ],
       "a.ping-functionality.html": [
        "435f8eb141a208d036d14040613a69b3716c6dba",
        [
@@ -817678,8 +818193,8 @@
         {}
        ]
       ],
-      "SVGMatrix-tentative.html": [
-       "8b3382d6032ffca7a11f87b546465b11c3cb3132",
+      "SVGMatrix.html": [
+       "fa59e28dcc8d64c492df7100511470ef36b663b6",
        [
         null,
         {}
@@ -840881,7 +841396,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "a63edd04d75ea1c3921456a7179ade7cf39a8375",
+     "02010237f929277af6a303b3082874973eed501e",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
@@ -847542,7 +848057,7 @@
      ]
     ],
     "videoFrame-createImageBitmap.https.any.js": [
-     "8bcff0e5e6a8c22e05cde194aa2a7c251bd1a44b",
+     "2cae654e7e487ddf1320e570fde55859f83c1e64",
      [
       "webcodecs/videoFrame-createImageBitmap.https.any.html",
       {
@@ -877151,12 +877666,10 @@
      ]
     ],
     "RTCPeerConnection-helper-test.html": [
-     "b7f656cb20f08d72f887e9a3dc321dde357deda9",
+     "42f6652ac4c4b2165d918929977888c55daddd56",
      [
       null,
-      {
-       "timeout": "long"
-      }
+      {}
      ]
     ],
     "RTCPeerConnection-iceConnectionState-disconnected.https.html": [
@@ -894298,6 +894811,28 @@
       {}
      ]
     ],
+    "datagrams-writable.https.any.js": [
+     "306deaa2a424bcfa8d86c14d330c8f20badd78f7",
+     [
+      "webtransport/datagrams-writable.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "datagrams.https.any.js": [
      "37d2ceb63176d2e341fa52e71511c076f4cc44cf",
      [
@@ -894356,6 +894891,101 @@
         [
          "script",
          "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "draining.https.any.js": [
+     "73a874c7e10672dbf7e51cdaf5816d2bfa78b1ae",
+     [
+      "webtransport/draining.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/draining.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/draining.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/draining.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
         ]
        ]
       }
@@ -894771,6 +895401,101 @@
       }
      ]
     ],
+    "sendgroup.https.any.js": [
+     "ef72f16c2224d3661d806b9fd29dd003d75cfaec",
+     [
+      "webtransport/sendgroup.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/sendgroup.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/sendgroup.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/sendgroup.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "sendorder.https.any.js": [
      "65bbf39afbc2ac4b75917b921429ba54ece7881a",
      [
@@ -895056,7 +895781,7 @@
      ]
     ],
     "streams-close.https.any.js": [
-     "4b2a5158bd736ea518d0d417e9da6f7053e18de6",
+     "3684754d1b1cee135e926bbcc4e44145a2c4cb4a",
      [
       "webtransport/streams-close.https.any.html",
       {

@@ -5,6 +5,6 @@ rules:
 - SVGGraphicsElement*: [svg]
 - SVGLength-*: [svg]
 - SVGLengthList-*: [svg]
-- SVGMatrix-tentative.html: [svg]
+- SVGMatrix.html: [svg]
 - SVGPathElement.getTotalLength-01.html: [svg]
 - SVGRect.html: [svg]

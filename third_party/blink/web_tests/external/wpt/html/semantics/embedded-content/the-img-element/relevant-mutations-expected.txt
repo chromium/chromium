@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
 Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] parent is picture, following sibling source inserted
-  assert_unreached: update the image data was run Reached unreachable code
+  assert_equals: complete shouldn't have changed expected true but got false
 [FAIL] parent is picture, following sibling source removed
-  assert_unreached: update the image data was run Reached unreachable code
+  assert_equals: complete shouldn't have changed expected true but got false
 [FAIL] parent is picture, following sibling source has srcset set
-  assert_unreached: update the image data was run Reached unreachable code
+  assert_equals: complete shouldn't have changed expected true but got false
 Harness: the test ran to completion.
 

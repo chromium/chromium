@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] createSendGroup() throws InvalidStateError on a closed transport
+  assert_throws_dom: createSendGroup on closed transport should throw InvalidStateError function "() => {\n    wt.createSendGroup();\n  }" did not throw
+[FAIL] WebTransportDatagramsWritable supports sendGroup and sendOrder
+  promise_test: Unhandled rejection with value: object "TypeError: datagrams.createWritable is not a function"
+Harness: the test ran to completion.
+

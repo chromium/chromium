@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Loading self-compressed-image-001.png.dcb using image-001.png as a dictionary works
-  promise_test: Unhandled rejection with value: "load failed"
-Harness: the test ran to completion.
-

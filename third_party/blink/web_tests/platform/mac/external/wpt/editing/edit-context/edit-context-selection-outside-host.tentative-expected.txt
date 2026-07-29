@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Test that DOM selection is not changed when keyboard shortcut sendArrowLeftKey is used with canvas EditContext focused.
+  assert_equals: DOM selection offsets should be unchanged. expected "5-5" but got "4-4"
+[FAIL] Test that DOM selection is not changed when keyboard shortcut sendArrowRightKey is used with canvas EditContext focused.
+  assert_equals: DOM selection offsets should be unchanged. expected "5-5" but got "6-6"
+[FAIL] Test that DOM selection is not changed when keyboard shortcut sendMoveWordLeftKey is used with canvas EditContext focused.
+  assert_equals: DOM selection offsets should be unchanged. expected "5-5" but got "0-0"
+[FAIL] Test that DOM selection is not changed when keyboard shortcut sendMoveWordRightKey is used with canvas EditContext focused.
+  assert_equals: DOM selection offsets should be unchanged. expected "5-5" but got "9-9"
+[FAIL] Test that DOM selection is not changed when keyboard shortcut sendHomeKey is used with canvas EditContext focused.
+  assert_equals: DOM selection offsets should be unchanged. expected "5-5" but got "0-0"
+[FAIL] Test that DOM selection is not changed when keyboard shortcut sendEndKey is used with canvas EditContext focused.
+  assert_equals: DOM selection offsets should be unchanged. expected "5-5" but got "17-17"
+Harness: the test ran to completion.
+

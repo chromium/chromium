@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] multiply
+  Failed to execute 'multiply' on 'SVGMatrix': parameter 1 is not of type 'SVGMatrix'.
+[FAIL] multiply accepts the m11..m42 spelling
+  Failed to execute 'multiply' on 'SVGMatrix': parameter 1 is not of type 'SVGMatrix'.
+[FAIL] multiply accepts m41/m42 as the translation components
+  Failed to execute 'multiply' on 'SVGMatrix': parameter 1 is not of type 'SVGMatrix'.
+[FAIL] multiply accepts an alias and its element when they hold the same value
+  Failed to execute 'multiply' on 'SVGMatrix': parameter 1 is not of type 'SVGMatrix'.
+[FAIL] multiply compares an alias and its element with SameValueZero
+  Failed to execute 'multiply' on 'SVGMatrix': parameter 1 is not of type 'SVGMatrix'.
+[FAIL] multiply with no argument multiplies by the identity matrix
+  Failed to execute 'multiply' on 'SVGMatrix': 1 argument required, but only 0 present.
+[FAIL] multiply with an object holding no recognized members multiplies by the identity matrix
+  Failed to execute 'multiply' on 'SVGMatrix': parameter 1 is not of type 'SVGMatrix'.
+Harness: the test ran to completion.
+
