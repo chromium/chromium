@@ -1860,5 +1860,512 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProtoBothFormats) {
   }
 }
 
+class TrustStoreChromeMtcCosignerPolicyTest : public ::testing::Test {
+ public:
+  static constexpr uint8_t kCaId1[] = {0x03, 0x08, 0x04, 0x09, 0x01};
+  static constexpr uint8_t kCaId2[] = {0x04, 0x08, 0x04, 0x09};
+  static constexpr uint8_t kMirrorId1[] = {0x03, 0x08, 0x04, 0x09, 0x02};
+  static constexpr uint8_t kMirrorId2[] = {0x04, 0x08, 0x04, 0x10};
+  static constexpr uint8_t kUnknownId[] = {0x99, 0x08, 0x04, 0x10};
+  static constexpr char kOperator1[] = "op1";
+  static constexpr char kOperator2[] = "op2";
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+
+    chrome_root_store::RootStore root_store;
+
+    // Unused traditional root, necessary for ChromeRootStoreData parsing to
+    // succeed.
+    scoped_refptr<X509Certificate> root = MakeTestRoot();
+    root_store.add_trust_anchors()->set_der(
+        base::as_string_view(root->cert_span()));
+
+    root_store_data_ =
+        ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+    ASSERT_TRUE(root_store_data_);
+
+    now_ = base::Time::Now();
+    uint64_t now_seconds = now_.InSecondsFSinceUnixEpoch();
+    signer_set_.mutable_timestamp()->set_seconds(now_seconds);
+
+    ca1_signer_ = AddSignerSetIssuer(signer_set_, kCaId1, kOperator1, 1);
+
+    ca2_signer_ = AddSignerSetIssuer(signer_set_, kCaId2, kOperator2, 2);
+
+    mirror1_signer_ = AddSignerSetMirror(signer_set_, kMirrorId1, kOperator1);
+
+    mirror2_signer_ = AddSignerSetMirror(signer_set_, kMirrorId2, kOperator2);
+  }
+
+  // Create a TrustStoreChrome using the configured SignerSet proto. Changes to
+  // the proto or the Signer objects can be made by the test function before
+  // calling this.
+  std::unique_ptr<TrustStoreChrome> CreateTrustStoreChromeWithSignerSetProto() {
+    std::optional<ChromeRootStoreSignerSet> signer_set_data =
+        ChromeRootStoreSignerSet::CreateFromProto(signer_set_);
+    if (!signer_set_data) {
+      ADD_FAILURE();
+      return nullptr;
+    }
+    root_store_data_->SetSignerSet(*signer_set_data);
+
+    return std::make_unique<TrustStoreChrome>(&root_store_data_.value(),
+                                              nullptr);
+  }
+
+  std::shared_ptr<const bssl::ParsedCertificate> CreateCa1LeafCert(
+      base::Time cert_not_before) {
+    std::unique_ptr<net::CertBuilder> mtc_leaf_builder =
+        std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+    mtc_leaf_builder->SetValidity(cert_not_before,
+                                  cert_not_before + base::Days(10));
+    uint64_t leaf_index_1 = mtc_log_1_.AddEntry(*mtc_leaf_builder);
+
+    // Note: the cosigner list used in creating the test cert here doesn't
+    // actually matter for the IsMtcCosignerPolicySatisfied implementation,
+    // which only depends on the list of valid_additional_cosigners that are
+    // passed in from the verification results.
+    auto leaf_1_der =
+        mtc_log_1_.CreateStandaloneCertificate(leaf_index_1, {&ca1_cosigner_});
+    if (!leaf_1_der) {
+      ADD_FAILURE();
+      return nullptr;
+    }
+    return ToParsedCertificate(x509_util::CreateCryptoBuffer(*leaf_1_der));
+  }
+
+  base::Time now_;
+  std::optional<ChromeRootStoreData> root_store_data_;
+  chrome_root_store::SignerSet signer_set_;
+
+  // These point to fields of `signer_set_`.
+  chrome_root_store::Signer* ca1_signer_;
+  chrome_root_store::Signer* ca2_signer_;
+  chrome_root_store::Signer* mirror1_signer_;
+  chrome_root_store::Signer* mirror2_signer_;
+
+  net::MtcLogBuilder mtc_log_1_{kCaId1, /*log_number=*/1};
+  MtcLogBuilder::Cosigner ca1_cosigner_{
+      base::ToVector(kCaId1), crypto::keypair::PrivateKey::GenerateMldsa44(),
+      bssl::SignatureAlgorithm::kMldsa44};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TrustStoreChromeMtcCosignerPolicyTest, SimpleTests) {
+  std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+      CreateTrustStoreChromeWithSignerSetProto();
+
+  // GetMTCAnchorData should only return for issuers, not mirrors.
+  const auto* ca1_data = trust_store_chrome->GetMTCAnchorData(kCaId1);
+  ASSERT_TRUE(ca1_data);
+  EXPECT_EQ(1, ca1_data->signer_config.crs_root_id);
+
+  const auto* ca2_data = trust_store_chrome->GetMTCAnchorData(kCaId2);
+  ASSERT_TRUE(ca2_data);
+  EXPECT_EQ(2, ca2_data->signer_config.crs_root_id);
+
+  EXPECT_FALSE(trust_store_chrome->GetMTCAnchorData(kMirrorId1));
+  EXPECT_FALSE(trust_store_chrome->GetMTCAnchorData(kMirrorId2));
+  EXPECT_FALSE(trust_store_chrome->GetMTCAnchorData(kUnknownId));
+
+  // GetMtcMirrorKey should only return mirrors, not issuers.
+  EXPECT_NE(std::nullopt, trust_store_chrome->GetMtcMirrorKey(kMirrorId1));
+  EXPECT_NE(std::nullopt, trust_store_chrome->GetMtcMirrorKey(kMirrorId2));
+
+  EXPECT_EQ(std::nullopt, trust_store_chrome->GetMtcMirrorKey(kCaId1));
+  EXPECT_EQ(std::nullopt, trust_store_chrome->GetMtcMirrorKey(kCaId2));
+  EXPECT_EQ(std::nullopt, trust_store_chrome->GetMtcMirrorKey(kUnknownId));
+
+  std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+      CreateCa1LeafCert(now_);
+  ASSERT_TRUE(leaf_1);
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_1 =
+      trust_store_chrome->GetTrustedMTCIssuerOf(leaf_1.get());
+  ASSERT_TRUE(mtc_anchor_1);
+
+  // Policy is satisfied at current time, as long as one usable, independent
+  // mirror is valid.
+  EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+      *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  // Unknown or unusable mirrors being present in the valid cosigners list are
+  // ignored, so the result is still valid.
+  EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+      *leaf_1, now_, mtc_anchor_1.get(),
+      {base::ToVector(kUnknownId), base::ToVector(kMirrorId1),
+       base::ToVector(kMirrorId2)}));
+
+  // Mirror 1 has same operator as CA 1, so this is not valid.
+  EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+      *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId1)}));
+  // ... but if the signer_set is older than the timebomb, then policy checks
+  // are skipped and it should be allowed.
+  EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+      *leaf_1, now_ + base::Days(71), mtc_anchor_1.get(),
+      {base::ToVector(kMirrorId1)}));
+}
+
+TEST_F(TrustStoreChromeMtcCosignerPolicyTest,
+       DisableMirroringRequirementsKillSwitch) {
+  for (bool disable_mtc_mirroring_requirements : {false, true}) {
+    root_store_data_->SetDisableMtcMirroringRequirements(
+        disable_mtc_mirroring_requirements);
+    std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+        CreateTrustStoreChromeWithSignerSetProto();
+
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(now_);
+    ASSERT_TRUE(leaf_1);
+    std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_1 =
+        trust_store_chrome->GetTrustedMTCIssuerOf(leaf_1.get());
+    ASSERT_TRUE(mtc_anchor_1);
+
+    // With an independent mirror cosigner, verification should succeed in both
+    // cases.
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+
+    // Mirror 1 has same operator as CA 1, so this is not valid, but will
+    // succeed if the mirroring requirements are disabled.
+    EXPECT_EQ(
+        disable_mtc_mirroring_requirements,
+        trust_store_chrome->IsMtcCosignerPolicySatisfied(
+            *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId1)}));
+  }
+}
+
+// Test a CA signer that goes from candidate -> usable -> frozen.
+TEST_F(TrustStoreChromeMtcCosignerPolicyTest, IssuerStateChange) {
+  base::Time candidate_start_time = now_ - base::Days(20);
+  base::Time usable_start_time = now_ - base::Days(10);
+  base::Time frozen_start_time = now_;
+
+  auto* state = ca1_signer_->mutable_state_history(0);
+  state->set_state(chrome_root_store::STATE_FROZEN);
+  state->mutable_state_start()->set_seconds(
+      frozen_start_time.InSecondsFSinceUnixEpoch());
+
+  state = ca1_signer_->add_state_history();
+  state->set_state(chrome_root_store::STATE_USABLE);
+  state->mutable_state_start()->set_seconds(
+      usable_start_time.InSecondsFSinceUnixEpoch());
+
+  state = ca1_signer_->add_state_history();
+  state->set_state(chrome_root_store::STATE_CANDIDATE);
+  state->mutable_state_start()->set_seconds(
+      candidate_start_time.InSecondsFSinceUnixEpoch());
+
+  std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+      CreateTrustStoreChromeWithSignerSetProto();
+
+  std::shared_ptr<const bssl::ParsedCertificate> leaf_1_now =
+      CreateCa1LeafCert(now_);
+  ASSERT_TRUE(leaf_1_now);
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_1 =
+      trust_store_chrome->GetTrustedMTCIssuerOf(leaf_1_now.get());
+  ASSERT_TRUE(mtc_anchor_1);
+
+  {
+    // Policy fails for a cert issued before the state history starts.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(candidate_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the candidate state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(candidate_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued at the end of the candidate state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(usable_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the start of the usable state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(usable_start_time);
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the end of the usable state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(frozen_start_time - base::Seconds(1));
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the frozen state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(frozen_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+}
+
+// Test a mirror signer that goes from candidate -> usable -> frozen.
+// (Essentially the same test as IssuerStateChange but for mirror state.)
+TEST_F(TrustStoreChromeMtcCosignerPolicyTest, MirrorStateChange) {
+  base::Time candidate_start_time = now_ - base::Days(20);
+  base::Time usable_start_time = now_ - base::Days(10);
+  base::Time frozen_start_time = now_;
+
+  auto* state = mirror2_signer_->mutable_state_history(0);
+  state->set_state(chrome_root_store::STATE_FROZEN);
+  state->mutable_state_start()->set_seconds(
+      frozen_start_time.InSecondsFSinceUnixEpoch());
+
+  state = mirror2_signer_->add_state_history();
+  state->set_state(chrome_root_store::STATE_USABLE);
+  state->mutable_state_start()->set_seconds(
+      usable_start_time.InSecondsFSinceUnixEpoch());
+
+  state = mirror2_signer_->add_state_history();
+  state->set_state(chrome_root_store::STATE_CANDIDATE);
+  state->mutable_state_start()->set_seconds(
+      candidate_start_time.InSecondsFSinceUnixEpoch());
+
+  std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+      CreateTrustStoreChromeWithSignerSetProto();
+
+  std::shared_ptr<const bssl::ParsedCertificate> leaf_1_now =
+      CreateCa1LeafCert(now_);
+  ASSERT_TRUE(leaf_1_now);
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_1 =
+      trust_store_chrome->GetTrustedMTCIssuerOf(leaf_1_now.get());
+  ASSERT_TRUE(mtc_anchor_1);
+
+  {
+    // Policy fails for a cert issued before the state history starts.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(candidate_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the candidate state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(candidate_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued at the end of the candidate state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(usable_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the start of the usable state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(usable_start_time);
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the end of the usable state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(frozen_start_time - base::Seconds(1));
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the frozen state.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(frozen_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+}
+
+// Test a CA signer with operator history changes.
+TEST_F(TrustStoreChromeMtcCosignerPolicyTest, IssuerOperatorChange) {
+  // Going back and forth from the same operator is a bit unrealistic, but
+  // good enough to test the policy logic.
+  base::Time op2_1st_start_time = now_ - base::Days(20);
+  base::Time op1_start_time = now_ - base::Days(10);
+  base::Time op2_2nd_start_time = now_;
+
+  auto* operator_history = ca1_signer_->mutable_operator_history(0);
+  operator_history->set_name(kOperator2);
+  operator_history->mutable_operator_start()->set_seconds(
+      op2_2nd_start_time.InSecondsFSinceUnixEpoch());
+
+  operator_history = ca1_signer_->add_operator_history();
+  operator_history->set_name(kOperator1);
+  operator_history->mutable_operator_start()->set_seconds(
+      op1_start_time.InSecondsFSinceUnixEpoch());
+
+  operator_history = ca1_signer_->add_operator_history();
+  operator_history->set_name(kOperator2);
+  operator_history->mutable_operator_start()->set_seconds(
+      op2_1st_start_time.InSecondsFSinceUnixEpoch());
+
+  std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+      CreateTrustStoreChromeWithSignerSetProto();
+
+  std::shared_ptr<const bssl::ParsedCertificate> leaf_1_now =
+      CreateCa1LeafCert(now_);
+  ASSERT_TRUE(leaf_1_now);
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_1 =
+      trust_store_chrome->GetTrustedMTCIssuerOf(leaf_1_now.get());
+  ASSERT_TRUE(mtc_anchor_1);
+
+  {
+    // Policy fails for a cert issued before the operator history starts.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op2_1st_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the 1st period where the CA has
+    // operator 2, which is the same as the operator of mirror 2.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op2_1st_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued at the end of that period.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op1_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the start of period where it has
+    // operator 1.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op1_start_time);
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the end of the operator 1 period.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op2_2nd_start_time - base::Seconds(1));
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the 2nd period with operator 2.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op2_2nd_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+}
+
+// Test a mirror signer with operator history changes.
+// (Essentially the same test as IssuerOperatorChange but for mirror operator.)
+TEST_F(TrustStoreChromeMtcCosignerPolicyTest, MirrorOperatorChange) {
+  // Going back and forth from the same operator is a bit unrealistic, but
+  // good enough to test the policy logic.
+  base::Time op1_1st_start_time = now_ - base::Days(20);
+  base::Time op2_start_time = now_ - base::Days(10);
+  base::Time op1_2nd_start_time = now_;
+
+  auto* operator_history = mirror2_signer_->mutable_operator_history(0);
+  operator_history->set_name(kOperator1);
+  operator_history->mutable_operator_start()->set_seconds(
+      op1_2nd_start_time.InSecondsFSinceUnixEpoch());
+
+  operator_history = mirror2_signer_->add_operator_history();
+  operator_history->set_name(kOperator2);
+  operator_history->mutable_operator_start()->set_seconds(
+      op2_start_time.InSecondsFSinceUnixEpoch());
+
+  operator_history = mirror2_signer_->add_operator_history();
+  operator_history->set_name(kOperator1);
+  operator_history->mutable_operator_start()->set_seconds(
+      op1_1st_start_time.InSecondsFSinceUnixEpoch());
+
+  std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+      CreateTrustStoreChromeWithSignerSetProto();
+
+  std::shared_ptr<const bssl::ParsedCertificate> leaf_1_now =
+      CreateCa1LeafCert(now_);
+  ASSERT_TRUE(leaf_1_now);
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_1 =
+      trust_store_chrome->GetTrustedMTCIssuerOf(leaf_1_now.get());
+  ASSERT_TRUE(mtc_anchor_1);
+
+  {
+    // Policy fails for a cert issued before the operator history starts.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op1_1st_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the 1st period where the mirror has
+    // operator 1, which is the same as the operator of CA 1.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op1_1st_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued at the end of that period.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op2_start_time - base::Seconds(1));
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the start of period where the
+    // mirror has operator 2.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op2_start_time);
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy succeeds for a cert issued at the end of the operator 2 period.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op1_2nd_start_time - base::Seconds(1));
+    EXPECT_TRUE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+
+  {
+    // Policy fails for a cert issued during the 2nd period with operator 1.
+    std::shared_ptr<const bssl::ParsedCertificate> leaf_1 =
+        CreateCa1LeafCert(op1_2nd_start_time);
+    EXPECT_FALSE(trust_store_chrome->IsMtcCosignerPolicySatisfied(
+        *leaf_1, now_, mtc_anchor_1.get(), {base::ToVector(kMirrorId2)}));
+  }
+}
+
 }  // namespace
 }  // namespace net

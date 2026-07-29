@@ -749,6 +749,113 @@ TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore(
   return ca_ids;
 }
 
+std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
+TrustStoreChrome::GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const {
+  auto it = signer_set_mirrors_.find(cosigner_id);
+  if (it == signer_set_mirrors_.end()) {
+    return std::nullopt;
+  }
+  return bssl::VerifyCertificateChainDelegate::MTCCosigner{
+      it->second.signature_algorithm, bssl::UpRef(it->second.key.get())};
+}
+
+namespace {
+std::string GetOperatorForSignerIfUsableAtTime(const Signer& signer,
+                                               base::Time timestamp) {
+  bool valid_state = false;
+  for (const auto& state_entry : signer.state_history) {
+    if (timestamp >= state_entry.state_start) {
+      if (state_entry.state == chrome_root_store::STATE_QUALIFIED ||
+          state_entry.state == chrome_root_store::STATE_USABLE) {
+        // Signer is usable at `timestamp`, fall through to looking at operator
+        // history.
+        valid_state = true;
+        break;
+      }
+      // Found the state history entry that matches `timestamp`, but the state
+      // at that time was not usable. Return failure.
+      return {};
+    }
+  }
+  if (!valid_state) {
+    return {};
+  }
+
+  for (const auto& operator_entry : signer.operator_history) {
+    if (timestamp >= operator_entry.operator_start) {
+      return operator_entry.name;
+    }
+  }
+
+  return {};
+}
+
+// TODO(crbug.com/452983502): max age from CT policy. Is it good here too?
+constexpr base::TimeDelta kMaxSignerSetAge = base::Days(70);
+}  // namespace
+
+bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
+    const bssl::ParsedCertificate& target_cert,
+    base::Time current_time,
+    const bssl::MTCAnchor* mtc_anchor,
+    base::span<const std::vector<uint8_t>> valid_additional_cosigners) const {
+  if (disable_mtc_mirroring_requirements_) {
+    return true;
+  }
+
+  if (current_time - signer_set_timestamp_ > kMaxSignerSetAge) {
+    // Fail open on old component data.
+    return true;
+  }
+
+  // policy:  from cqrp draft 0.2.0:
+  // Standalone certificates MUST have at least two cosignatures. One of these
+  // MUST be from the MTC CA Operator, and one MUST be from a Mirroring Cosigner
+  // recognized by Chrome and not operated by the MTC CA Operator.
+
+  // Evaluate operator and state changes relative to the cert notBefore.
+  // This isn't ideal but there is no obviously best solution here.
+  // TODO(crbug.com/452983502): revisit this?
+  base::Time cert_not_before;
+  if (!GeneralizedTimeToTime(target_cert.tbs().validity_not_before,
+                             &cert_not_before)) {
+    return false;
+  }
+
+  const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
+      GetMTCAnchorData(mtc_anchor->ca_id());
+  if (!mtc_anchor_data) {
+    return false;
+  }
+  const Signer& ca_signer = mtc_anchor_data->signer_config;
+
+  std::string ca_operator =
+      GetOperatorForSignerIfUsableAtTime(ca_signer, cert_not_before);
+  if (ca_operator.empty()) {
+    return false;
+  }
+
+  for (const auto& cosigner_id : valid_additional_cosigners) {
+    auto it = signer_set_mirrors_.find(cosigner_id);
+    if (it == signer_set_mirrors_.end()) {
+      continue;
+    }
+    const Signer& mirror = it->second;
+    std::string mirror_operator =
+        GetOperatorForSignerIfUsableAtTime(mirror, cert_not_before);
+    if (mirror_operator.empty()) {
+      continue;
+    }
+
+    if (mirror_operator != ca_operator) {
+      // Found a mirror that satisfies the policy requirements.
+      return true;
+    }
+  }
+
+  return false;
+}
+
 int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
 }
