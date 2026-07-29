@@ -19,11 +19,52 @@ import readelf
 
 
 # E.g. "  400540:	55                    \tpush   %rbp"
-_DISASSEMBLY_RE = re.compile(r'^\s*([0-9a-f]+):\s*(.*)')
+_DISASSEMBLY_RE = re.compile(r'^\s*([0-9a-f]+):\s*(.*)', re.IGNORECASE)
 # E.g. "callq  400450 <some_func>" or "je     40055b <frame_dummy+0x10>"
 _HEX_ADDR_WITH_SYM_RE = re.compile(r'\b([0-9a-f]{4,16})\s+<([^>]+)>')
 # E.g. "0x200aa3" or "401060"
 _RAW_HEX_ADDR_RE = re.compile(r'\b(0x[0-9a-f]{6,16}|[0-9a-f]{6,16})\b')
+# E.g. "02a1fd44 <android_webview::JsSandboxIsolate::ReadFileDescriptorOnThread>:"
+_HEADER_SYMBOL_LINE_RE = re.compile(r'^[0-9a-f]+\s+<.*>:$', re.IGNORECASE)
+# E.g. "55", "e8 06 00 00 00", "4b00 1a2b"
+_HEX_TOKEN_RE = re.compile(r'[0-9a-fA-F]{2}|[0-9a-fA-F]{4}|[0-9a-fA-F]{8}',
+                           re.IGNORECASE)
+# E.g. "base::internal::IntToStringT(...) (.llvm.13055180170483094575)"
+_LLVM_HASH_RE = re.compile(r'\(\.llvm\.[0-9a-f]+\)')
+# E.g. "<my_func+0x404>" or "<my_func-16>"
+_SYM_OFFSET_RE = re.compile(r'[\+\-](?:0x)?[0-9a-f]+\s*>', re.IGNORECASE)
+# E.g. "@ imm = #0xac" or "@ imm = #-0x126"
+_IMM_COMMENT_RE = re.compile(
+    r'@\s*imm\s*=\s*#-?(?:0x[0-9a-f]+|[0-9]+|<target>)')
+# E.g. "@ <target> <my_func+0x404>"
+_TARGET_COMMENT_RE = re.compile(r'@\s*<target>.*')
+# E.g. "[sp, #0x90]" or "[sp, #136]"
+_SP_OFFSET_BRACKET_RE = re.compile(r'\[sp,\s*#-?(?:0x[0-9a-f]+|[0-9]+)\]',
+                                   re.IGNORECASE)
+# E.g. "sp, #0xac" or "sp, sp, #0x10000"
+_SP_OFFSET_NO_BRACKET_RE = re.compile(
+    r'\bsp,\s*(?:sp,\s*)?#-?(?:0x[0-9a-f]+|[0-9]+)\b', re.IGNORECASE)
+# E.g. "r5, sp, #0x88"
+_REG_SP_OFFSET_RE = re.compile(
+    r'\b([a-z0-9]+),\s*sp,\s*#-?(?:0x[0-9a-f]+|[0-9]+)\b', re.IGNORECASE)
+# E.g. "-0x10(%rsp)" or "0x18(%rbp)"
+_X86_RSP_OFFSET_RE = re.compile(r'-?(?:0x[0-9a-f]+|[0-9]+)\(%r[sb]p\)',
+                                re.IGNORECASE)
+# E.g. "[rsp + 0x18]" or "[rbp - 16]"
+_X86_RSP_BRACKET_OFFSET_RE = re.compile(
+    r'\[r[sb]p\s*[\+\-]\s*(?:0x[0-9a-f]+|[0-9]+)\]', re.IGNORECASE)
+# E.g. "sub $0x20,%rsp" or "add $0x10,%rbp"
+_X86_RSP_SUB_ADD_RE = re.compile(r'(sub|add)\s+\$0x[0-9a-f]+,\s*%r[sb]p',
+                                 re.IGNORECASE)
+# E.g. "[pc, #0x3f4]" or "[lr, #0xa8]"
+_BASE_REG_OFFSET_RE = re.compile(r'\[(pc|lr),\s*#-?(?:0x[0-9a-f]+|[0-9]+)\]',
+                                 re.IGNORECASE)
+# E.g. "x0", "w29"
+_ARM64_REG_RE = re.compile(r'\b[xw]([0-9]|[12][0-9]|3[01])\b')
+# E.g. "r0", "r12"
+_ARM_REG_RE = re.compile(r'\br([0-9]|1[0-5])\b')
+# E.g. "%r8", "%r15d"
+_X86_REG_RE = re.compile(r'%r([89]|1[0-5])[dbw]?\b')
 
 
 def _NormalizeLines(lines):
@@ -45,12 +86,57 @@ def _NormalizeLines(lines):
     if m:
       addr = int(m.group(1), 16)
       if addr in target_addresses:
-        ret.append('<target>:\n')
+        if not ret or ret[-1] != '<target>:\n':
+          ret.append('<target>:\n')
 
-      # Example: "  400540:\t55                   \tpush   %rbp"
-      instr = line.split('\t', 2)[-1]
+      # Extract instruction opcode/operands stripping address & hex bytes
+      line_no_addr = m.group(2)
+      parts = line_no_addr.split('\t')
+      instr_parts = []
+      for part in parts:
+        p = part.strip()
+        if not p:
+          continue
+        tokens = p.split()
+        if tokens and all(
+            _HEX_TOKEN_RE.fullmatch(t) or (len(t) == 1 and ord(t) > 127)
+            for t in tokens):
+          continue
+        instr_parts.append(p)
+      instr = ' '.join(instr_parts) if instr_parts else line_no_addr.strip()
+
       instr = _HEX_ADDR_WITH_SYM_RE.sub(r'<\2>', instr)
       instr = _RAW_HEX_ADDR_RE.sub('<target>', instr)
+
+      # LLVM hash suffixes: (.llvm.12345) -> (.llvm)
+      instr = _LLVM_HASH_RE.sub('(.llvm)', instr)
+
+      # Remove relative byte offsets from symbol references:
+      # <symbol+0x123> -> <symbol>
+      instr = _SYM_OFFSET_RE.sub('>', instr)
+
+      # Immediate comments from objdump: @ imm = #0xac -> @ imm = <imm>
+      instr = _IMM_COMMENT_RE.sub('@ imm = <imm>', instr)
+
+      # PC-relative comment annotations e.g. @ <target> ...
+      instr = _TARGET_COMMENT_RE.sub('@ <target>', instr)
+
+      # Stack pointer offsets (ARM, ARM64, x86)
+      instr = _SP_OFFSET_BRACKET_RE.sub('[sp, #<offset>]', instr)
+      instr = _SP_OFFSET_NO_BRACKET_RE.sub('sp, #<offset>', instr)
+      instr = _REG_SP_OFFSET_RE.sub(r'\1, sp, #<offset>', instr)
+      instr = _X86_RSP_OFFSET_RE.sub('<offset>(%rsp)', instr)
+      instr = _X86_RSP_BRACKET_OFFSET_RE.sub('[rsp + <offset>]', instr)
+      instr = _X86_RSP_SUB_ADD_RE.sub(r'\1 $<offset>, %rsp', instr)
+
+      # Base register load offsets (PC / LR)
+      instr = _BASE_REG_OFFSET_RE.sub(r'[\1, #<offset>]', instr)
+
+      # Register normalization: ARM r0-r15, x0-x31, w0-w31
+      instr = _ARM64_REG_RE.sub('xN', instr)
+      instr = _ARM_REG_RE.sub('rN', instr)
+      instr = _X86_REG_RE.sub('%rN', instr)
+
       ret.append(instr.rstrip() + '\n')
     else:
       ret.append(line.rstrip() + '\n')
