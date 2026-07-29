@@ -45,6 +45,7 @@ mod handles;
 mod internal_options;
 mod result;
 
+pub mod buffer;
 pub mod data_pipe;
 pub mod functions;
 pub mod message;

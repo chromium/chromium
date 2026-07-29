@@ -8,6 +8,7 @@ import("//build/rust/rust_static_library.gni")
 rust_static_library("c_mojo_api") {
   crate_root = "lib.rs"
   sources = [
+    "buffer.rs",
     "data_pipe.rs",
     "functions.rs",
     "handles.rs",
