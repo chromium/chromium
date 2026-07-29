@@ -20,6 +20,7 @@
 #include "base/types/optional_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -629,7 +630,8 @@ void CorsURLLoader::OnReceiveResponse(
 
   std::optional<std::string> use_as_dictionary_header = GetHeaderString(
       *response_head, shared_dictionary::kUseAsDictionaryHeaderName);
-  if (use_as_dictionary_header) {
+  if (use_as_dictionary_header &&
+      !net::IsCertStatusError(response_head->cert_status)) {
     base::expected<scoped_refptr<SharedDictionaryWriter>,
                    mojom::SharedDictionaryError>
         writer_or_error = SharedDictionaryStorage::MaybeCreateWriter(

@@ -4,7 +4,9 @@
 
 #include "base/feature_list.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/network_context.h"
@@ -194,6 +196,31 @@ TEST_F(CorsURLLoaderSharedDictionaryTest, SameOriginUrlSameOriginModeRequest) {
   // The response of SameOrigin request should be stored to the
   // dictionary storage.
   CheckDictionaryInStorage(/*expect_exists=*/true);
+}
+
+TEST_F(CorsURLLoaderSharedDictionaryTest, CertStatusErrorPreventStorage) {
+  ResetFactory();
+  ResourceRequest request = CreateResourceRequest();
+  request.mode = mojom::RequestMode::kSameOrigin;
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  CreateDataPipeAndWriteTestData();
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 200 OK\n"
+      "Use-As-Dictionary: match=\"/path*\"\n"
+      "Cache-Control: max-age=2592000\n");
+  response_head->cert_status = net::CERT_STATUS_AUTHORITY_INVALID;
+  NotifyLoaderClientOnReceiveResponse(std::move(response_head),
+                                      std::move(consumer_handle_));
+  NotifyLoaderClientOnComplete(net::OK);
+  producer_handle_.reset();
+
+  RunUntilComplete();
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+
+  CheckDictionaryInStorage(/*expect_exists=*/false);
 }
 
 TEST_F(CorsURLLoaderSharedDictionaryTest, SameOriginUrlNoCorsModeRequest) {
