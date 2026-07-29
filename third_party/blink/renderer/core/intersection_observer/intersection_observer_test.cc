@@ -2871,6 +2871,71 @@ TEST_F(IntersectionObserverV2Test, TableRowOcclusion) {
   EXPECT_FALSE(observer_delegate->LastEntry()->isVisible());
 }
 
+TEST_F(IntersectionObserverV2Test, Preserve3DOcclusion) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+      #GP {
+        transform: translateX(0);
+        transform-style: preserve-3d;
+      }
+      #TC {
+        position: absolute;
+        width: 1px; height: 1px;
+        transform: translateZ(5px);
+        transform-style: preserve-3d;
+      }
+      #L {
+        position: absolute;
+        width: 1px; height: 1px;
+        isolation: isolate;
+      }
+      #occluder, #target {
+        position: absolute;
+        left: 100px; top: 100px;
+        width: 100; height: 100;
+      }
+    </style>
+    <div id="GP">
+      <div id="TC">
+        <div>
+          <div id="L">
+            <div id="occluder"></div>
+          </div>
+        </div>
+      </div>
+      <div id="target"></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setTrackVisibility(true);
+  observer_init->setDelay(100);
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate,
+      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  observer->observe(target);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  // #target is occluded by #occluder which is in front of it (z=5 vs z=0).
+  EXPECT_FALSE(observer_delegate->LastEntry()->isVisible());
+}
+
 TEST_F(IntersectionObserverV2Test, TableCellOcclusion) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");

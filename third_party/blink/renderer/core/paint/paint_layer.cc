@@ -1976,7 +1976,11 @@ PaintLayer* PaintLayer::HitTestChildren(
     }
 
     if (IsHitCandidateForDepthOrder(
-            hit_layer, depth_sort_descendants, z_offset, local_transform_state,
+            hit_layer, depth_sort_descendants, z_offset,
+            RuntimeEnabledFeatures::
+                    HitTestContainerTransformStateForPreserve3dEnabled()
+                ? container_transform_state
+                : local_transform_state,
             result.GetHitTestRequest().IsHitTestVisualOverflow())) {
       result_layer = hit_layer;
       if (!result.GetHitTestRequest().ListBased())
