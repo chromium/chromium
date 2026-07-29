@@ -72,6 +72,17 @@ public interface XrSurfaceEntityHolder<EntityType> extends XrTransformableEntity
      */
     void setSurfacePixelDimensions(int width, int height);
 
+    /**
+     * Sets rectangular edge feathering parameters for the surface entity.
+     *
+     * @param leftRight The edge fadeout radius on the left and right edges.
+     * @param topBottom The edge fadeout radius on the top and bottom edges.
+     */
+    void setRectangleEdgeFeathering(float leftRight, float topBottom);
+
+    /** Removes edge feathering from the surface entity. */
+    void removeEdgeFeathering();
+
     /** Callback interface for surface lifecycle events. */
     interface Callback {
         /**

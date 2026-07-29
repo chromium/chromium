@@ -35,21 +35,28 @@ public class ImmersiveVideoPlayerViewBinder {
             view.setSurfaceStereoMode(model.get(ImmersiveVideoPlayerProperties.STEREO_MODE));
         } else if (propertyKey == ImmersiveVideoPlayerProperties.SHAPE) {
             int shape = model.get(ImmersiveVideoPlayerProperties.SHAPE);
-            boolean isQuad = shape == XrSurfaceEntityShape.QUAD;
+            boolean resizable = shape == XrSurfaceEntityShape.QUAD;
+            boolean movable = shape == XrSurfaceEntityShape.QUAD;
             view.setSurfaceShape(shape);
+            view.removeEdgeFeathering();
+            view.getResizableComponent().setResizable(resizable, /* maintainAspectRatio= */ true);
+            view.getMovableComponent().setMovable(movable, /* scaleInZ= */ false);
 
-            view.getResizableComponent()
-                    .setResizable(/* resizable= */ isQuad, /* maintainAspectRatio= */ true);
-            view.getMovableComponent().setMovable(/* movable= */ isQuad, /* scaleInZ= */ false);
-
-            if (isQuad && view.getSurfaceShape() == XrSurfaceEntityShape.QUAD) {
+            if (shape == XrSurfaceEntityShape.QUAD) {
                 Float aspectRatio = model.get(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO);
                 Float width = model.get(ImmersiveVideoPlayerProperties.DEFAULT_SPATIAL_WIDTH);
                 if (width != null && aspectRatio != null && width > 0 && aspectRatio > 0) {
                     float height = width / aspectRatio;
                     view.setEntitySize(width, height);
                 }
-            } else if (view instanceof XrCurvedSurfaceEntityHolder) {
+            } else if (shape == XrSurfaceEntityShape.HEMISPHERE) {
+                Float featherRadius =
+                        model.get(ImmersiveVideoPlayerProperties.DEFAULT_FEATHER_RADIUS);
+                float feather = featherRadius != null ? featherRadius : 0f;
+                view.setRectangleEdgeFeathering(feather, feather);
+            }
+
+            if (view instanceof XrCurvedSurfaceEntityHolder) {
                 Float radius = model.get(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS);
                 if (radius != null && radius > 0) {
                     ((XrCurvedSurfaceEntityHolder) view).setEntityRadius(radius);

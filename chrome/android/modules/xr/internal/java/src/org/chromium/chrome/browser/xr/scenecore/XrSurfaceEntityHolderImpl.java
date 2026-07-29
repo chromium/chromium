@@ -158,7 +158,8 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         }
     }
 
-    private void updateSurfaceCallbacks(@Nullable Surface oldSurface, @Nullable Surface newSurface) {
+    private void updateSurfaceCallbacks(
+            @Nullable Surface oldSurface, @Nullable Surface newSurface) {
         if (oldSurface != newSurface) {
             if (oldSurface != null) {
                 notifySurfaceDestroyed();
@@ -236,6 +237,19 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
                             maxSize.getWidth() / aspectRatio,
                             maxSize.getDepth()));
         }
+    }
+
+    @Override
+    public void setRectangleEdgeFeathering(float leftRight, float topBottom) {
+        assertDisposed();
+        mEntity.setEdgeFeatheringParams(
+                new SurfaceEntity.EdgeFeatheringParams.RectangleFeather(leftRight, topBottom));
+    }
+
+    @Override
+    public void removeEdgeFeathering() {
+        assertDisposed();
+        mEntity.setEdgeFeatheringParams(new SurfaceEntity.EdgeFeatheringParams.NoFeathering());
     }
 
     @Override

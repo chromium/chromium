@@ -61,6 +61,7 @@ public class ImmersiveVideoPlayerCoordinator {
                     .with(ImmersiveVideoPlayerProperties.DEFAULT_MAX_WIDTH, 3f)
                     .with(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS, 5f)
                     .with(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO, 16f / 9f)
+                    .with(ImmersiveVideoPlayerProperties.DEFAULT_FEATHER_RADIUS, 0.1f)
                     .with(
                             ImmersiveVideoPlayerProperties.STEREO_MODE,
                             XrSurfaceEntityStereoMode.MONO)

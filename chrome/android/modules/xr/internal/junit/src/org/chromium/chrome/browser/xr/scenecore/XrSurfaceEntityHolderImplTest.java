@@ -145,6 +145,22 @@ public class XrSurfaceEntityHolderImplTest {
     }
 
     @Test
+    public void testEdgeFeathering() {
+        mHolder.setRectangleEdgeFeathering(0.05f, 0.02f);
+        SurfaceEntity.EdgeFeatheringParams params = mSurfaceEntity.getEdgeFeatheringParams();
+        assertTrue(params instanceof SurfaceEntity.EdgeFeatheringParams.RectangleFeather);
+        SurfaceEntity.EdgeFeatheringParams.RectangleFeather rectFeather =
+                (SurfaceEntity.EdgeFeatheringParams.RectangleFeather) params;
+        assertEquals(0.05f, rectFeather.getLeftRight(), DELTA);
+        assertEquals(0.02f, rectFeather.getTopBottom(), DELTA);
+
+        mHolder.removeEdgeFeathering();
+        assertTrue(
+                mSurfaceEntity.getEdgeFeatheringParams()
+                        instanceof SurfaceEntity.EdgeFeatheringParams.NoFeathering);
+    }
+
+    @Test
     public void testSetEntitySize_UpdatesMovableComponent() {
         mHolder.setSurfaceShape(XrSurfaceEntityShape.QUAD);
         mHolder.setEntitySize(10f, 20f);
