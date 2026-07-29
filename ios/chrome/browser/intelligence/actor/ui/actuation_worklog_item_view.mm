@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -11,13 +12,11 @@
 
 namespace {
 
-// Spacing values
-const CGFloat kSpacingTiny = 4.0;
-const CGFloat kSpacingSmall = 8.0;
-const CGFloat kSpacingMedium = 12.0;
-const CGFloat kSpacingLarge = 16.0;
-
-const CGFloat kTimelineGutterWidth = 50.0;
+using intelligence::actor::kSpacingLarge;
+using intelligence::actor::kSpacingMedium;
+using intelligence::actor::kSpacingSmall;
+using intelligence::actor::kSpacingTiny;
+using intelligence::actor::kTimelineGutterWidth;
 
 const CGFloat kDashLength = 6.0;
 const CGFloat kConnectorLineWidth = 2.0;
