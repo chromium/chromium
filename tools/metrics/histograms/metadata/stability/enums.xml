@@ -643,6 +643,19 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Rebooted"/>
 </enum>
 
+<enum name="CommitLimitTerminatedTabReloadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed: Repeated OOM"/>
+  <int value="2" label="Failed: Other Error"/>
+  <int value="3" label="Failed: Hidden Tab Not Discarded"/>
+</enum>
+
+<enum name="CommitLimitTerminatedTabVisibility">
+  <int value="0" label="Hidden"/>
+  <int value="1" label="Occluded"/>
+  <int value="2" label="Visible"/>
+</enum>
+
 <enum name="CrashpadExceptionCaptureResult">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kUnexpectedExceptionBehavior"/>

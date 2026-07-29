@@ -120,6 +120,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/metrics/oom/commit_limit_oom_recovery_tracker.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_navigation_observer.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #endif
@@ -551,6 +552,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         GetUserDataFactory().CreateInstance<SearchPromotionNavigationObserver>(
             tab, tab);
   }
+  commit_limit_oom_recovery_tracker_ =
+      GetUserDataFactory().CreateInstance<CommitLimitOOMRecoveryTracker>(tab,
+                                                                         tab);
 #endif
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {

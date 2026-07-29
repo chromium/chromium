@@ -35,34 +35,35 @@
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class AskBeforeHttpDialogController;
+class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
 class CollaborationMessagingPageActionController;
+class CommitLimitOOMRecoveryTracker;
 class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HttpAuthCacheStatus;
 class IntentPickerViewPageActionController;
+class JsOptimizationsPageActionController;
 class LensOverlayController;
 class LensOverlayHomeworkPageActionController;
 class LensSearchController;
+class ManagePasswordsPageActionController;
 class MemorySaverChipTabHelper;
+class NewTabPagePreloadPipelineManager;
 class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
-class RecordReplayPageActionController;
-class JsOptimizationsPageActionController;
+class QwacWebContentsObserver;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
+class RecordReplayPageActionController;
 class RollBackModeBInfoBarController;
+class SearchPromotionNavigationObserver;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class TranslatePageActionController;
-class QwacWebContentsObserver;
-class ManagePasswordsPageActionController;
-class BookmarkBarPreloadPipelineManager;
-class NewTabPagePreloadPipelineManager;
-class SearchPromotionNavigationObserver;
 
 namespace skills {
 class SkillsUiTabControllerInterface;
@@ -643,6 +644,8 @@ class TabFeatures {
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<SearchPromotionNavigationObserver>
       search_promotion_navigation_observer_;
+  std::unique_ptr<CommitLimitOOMRecoveryTracker>
+      commit_limit_oom_recovery_tracker_;
 #endif
 
   std::unique_ptr<accessibility_annotator::ContentAnnotatorTabHelper>

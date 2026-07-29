@@ -184,6 +184,7 @@ source_set("metrics") {
       "antivirus_metrics_provider_win.h",
       "google_update_metrics_provider_win.h",
       "key_credential_manager_support_reporter_win.h",
+      "oom/commit_limit_oom_recovery_tracker.h",
       "system_memory_list_metrics_provider_win.h",
       "system_pdh_metrics_provider_win.h",
       "tpm_metrics_provider_win.h",
@@ -449,6 +450,7 @@ source_set("impl") {
       "antivirus_metrics_provider_win.cc",
       "google_update_metrics_provider_win.cc",
       "key_credential_manager_support_reporter_win.cc",
+      "oom/commit_limit_oom_recovery_tracker.cc",
       "system_memory_list_metrics_provider_win.cc",
       "system_pdh_metrics_provider_win.cc",
       "tpm_metrics_provider_win.cc",
@@ -574,12 +576,14 @@ source_set("unit_tests") {
     sources += [
       "accessibility_state_provider_win_unittest.cc",
       "antivirus_metrics_provider_win_unittest.cc",
+      "oom/commit_limit_oom_recovery_tracker_unittest.cc",
       "system_memory_list_metrics_provider_win_unittest.cc",
       "system_pdh_metrics_provider_win_unittest.cc",
       "tpm_metrics_provider_win_unittest.cc",
     ]
     deps += [
       "//chrome/services/util_win:lib",
+      "//components/tabs:test_support",
       "//components/variations",
       "//ui/accessibility",
     ]
