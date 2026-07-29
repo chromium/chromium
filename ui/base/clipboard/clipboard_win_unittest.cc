@@ -898,4 +898,80 @@ INSTANTIATE_TEST_SUITE_P(SupportedBitDepths,
 
 }  // namespace
 
+// Reads a CF_DIB through ReadBitmapInternal and covers the heap out-of-bounds
+// read fixed there. Because the web clipboard API never exposes raw DIB bytes
+// (it re-encodes images), the crafted DIB models what a native application can
+// place on the OS clipboard for a page to read via navigator.clipboard.read().
+namespace {
+
+// Writes `dib` to the clipboard as CF_DIB and returns the PNG that ReadPng
+// produces, which is empty when the DIB is rejected.
+std::vector<uint8_t> WriteDibAndReadPng(std::vector<uint8_t> dib) {
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB), std::move(dib));
+  }
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  Clipboard::GetForCurrentThread()->ReadPng(
+      ClipboardBuffer::kCopyPaste, std::nullopt, png_future.GetCallback());
+  std::vector<uint8_t> png = png_future.Get();
+  Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
+  return png;
+}
+
+}  // namespace
+
+TEST_F(ClipboardWinTest, ReadBitmapRejectsDibWithColorTablePastEnd) {
+  BITMAPINFOHEADER hdr = {};
+  hdr.biSize = sizeof(BITMAPINFOHEADER);
+  hdr.biWidth = 256;
+  hdr.biHeight = 256;
+  hdr.biPlanes = 1;
+  hdr.biBitCount = 8;
+  hdr.biCompression = BI_RGB;
+  // biClrUsed comes from the clipboard writer; 0x4000 entries * sizeof(RGBQUAD)
+  // moves the pixel-data offset ~256 KiB beyond the payload, so the pre-fix
+  // read begins far past the end of the allocation.
+  hdr.biClrUsed = 0x4000;
+
+  // The whole payload is only a header, leaving no room for the declared color
+  // table or pixels.
+  std::vector<uint8_t> dib(sizeof(BITMAPINFOHEADER), 0);
+  base::as_writable_byte_span(dib)
+      .first(sizeof(BITMAPINFOHEADER))
+      .copy_from(base::byte_span_from_ref(hdr));
+
+  // A non-empty PNG here would mean adjacent heap was read and disclosed.
+  EXPECT_TRUE(WriteDibAndReadPng(std::move(dib)).empty());
+}
+
+TEST_F(ClipboardWinTest, ReadBitmapRejectsDibWithPixelDataPastEnd) {
+  constexpr int kWidth = 64;
+  constexpr int kHeight = 64;
+  constexpr size_t kPaletteEntries = 256;  // Full 8bpp palette.
+  constexpr size_t kRowStride =
+      kWidth;  // 64px * 8bpp = 64 DWORD-aligned bytes.
+
+  BITMAPINFOHEADER hdr = {};
+  hdr.biSize = sizeof(BITMAPINFOHEADER);
+  hdr.biWidth = kWidth;
+  hdr.biHeight = kHeight;
+  hdr.biPlanes = 1;
+  hdr.biBitCount = 8;
+  hdr.biCompression = BI_RGB;
+  hdr.biClrUsed = kPaletteEntries;
+
+  // The header and full palette are in-bounds, but only one of the declared 64
+  // scanlines is supplied, so the pre-fix read walks ~63 rows past the end
+  // while the offset itself is valid.
+  std::vector<uint8_t> dib(
+      sizeof(BITMAPINFOHEADER) + kPaletteEntries * sizeof(RGBQUAD) + kRowStride,
+      0);
+  base::as_writable_byte_span(dib)
+      .first(sizeof(BITMAPINFOHEADER))
+      .copy_from(base::byte_span_from_ref(hdr));
+
+  EXPECT_TRUE(WriteDibAndReadPng(std::move(dib)).empty());
+}
+
 }  // namespace ui

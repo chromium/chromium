@@ -30,6 +30,7 @@
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -235,6 +236,12 @@ bool ReadFilenamesAvailable() {
 // Limit the size of clipboard data to 256 MiB to prevent allocation failures.
 // See https://crbug.com/1164680.
 constexpr auto kMaxClipboardSize = base::MiBU(256);
+
+// A DIB scanline is padded up to a whole number of 4-byte (32-bit DWORD)
+// boundaries, so its byte length depends on this alignment rather than on
+// width * bytes-per-pixel alone.
+constexpr size_t kDibRowAlignmentBits = 32;
+constexpr size_t kDibRowAlignmentBytes = 4;
 
 HANDLE GetClipboardDataWithLimit(UINT format) {
   HANDLE data = ::GetClipboardData(format);
@@ -1231,9 +1238,8 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
     return SkBitmap();
   }
 
-  // We use a DIB rather than a DDB here since ::GetObject() with the
-  // HBITMAP returned from ::GetClipboardData(CF_BITMAP) always reports a color
-  // depth of 32bpp.
+  // CF_DIB includes the source BITMAPINFOHEADER, whose bit depth is needed to
+  // locate the color table and pixel data correctly.
   HANDLE hdata = ::GetClipboardData(CF_DIB);
   if (!hdata) {
     return SkBitmap();
@@ -1242,6 +1248,16 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
   BITMAPINFO* bitmap = locked.data();
   if (!bitmap)
     return SkBitmap();
+
+  // The clipboard payload size is the only trustworthy bound on the DIB; the
+  // header fields read below are supplied by whoever wrote the clipboard data
+  // and are validated against it before any offset is dereferenced.
+  const size_t dib_size = locked.size();
+  // Reading any BITMAPINFOHEADER field when the payload is smaller than the
+  // header would itself be out of bounds.
+  if (dib_size < sizeof(BITMAPINFOHEADER)) {
+    return SkBitmap();
+  }
 
   // Reject LONG_MIN because abs(LONG_MIN) is undefined behavior,
   // and LONG_MIN is clearly not a valid image height.
@@ -1297,9 +1313,47 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
       // Return an empty image for unsupported bit depths.
       return SkBitmap();
   }
-  const void* bitmap_bits = UNSAFE_TODO(reinterpret_cast<const char*>(bitmap) +
-                                        bitmap->bmiHeader.biSize +
-                                        color_table_length * sizeof(RGBQUAD));
+  // The pixel bits follow the header and color table. Both offsets come from
+  // header fields the clipboard writer controls, so their sum can already point
+  // past the end of the payload.
+  base::CheckedNumeric<size_t> checked_bits_offset = base::CheckAdd(
+      size_t{bitmap->bmiHeader.biSize},
+      base::CheckMul(static_cast<size_t>(color_table_length), sizeof(RGBQUAD)));
+
+  // GDI reads each scanline as a run of bytes padded up to a DWORD, so the
+  // pixel data spans row_stride * height; deriving it from width *
+  // bytes-per-pixel would under-count a narrow sub-32bpp row and leave a
+  // readable overrun.
+  base::CheckedNumeric<size_t> checked_row_stride =
+      (base::CheckMul(base::CheckedNumeric<size_t>(bitmap->bmiHeader.biWidth),
+                      bitmap->bmiHeader.biBitCount) +
+       (kDibRowAlignmentBits - 1)) /
+      kDibRowAlignmentBits * kDibRowAlignmentBytes;
+
+  // The full read extent is the pixel-data offset plus every padded scanline.
+  base::CheckedNumeric<size_t> checked_required_size =
+      checked_bits_offset +
+      (checked_row_stride * static_cast<size_t>(bi_height_abs));
+
+  // If a bogus header field overflowed the offset arithmetic, treat it as
+  // invalid.
+  size_t bits_offset = 0;
+  if (!checked_bits_offset.AssignIfValid(&bits_offset)) {
+    return SkBitmap();
+  }
+  // Likewise if the total read extent overflowed.
+  size_t required_size = 0;
+  if (!checked_required_size.AssignIfValid(&required_size)) {
+    return SkBitmap();
+  }
+  // The declared geometry does not fit the payload; proceeding would let
+  // ::SetDIBitsToDevice read adjacent process heap and expose it to the page
+  // through async clipboard reads.
+  if (required_size > dib_size) {
+    return SkBitmap();
+  }
+  const void* bitmap_bits =
+      UNSAFE_TODO(reinterpret_cast<const char*>(bitmap) + bits_offset);
 
   void* dst_bits;
   // dst_hbitmap is freed by the release_proc in skia_bitmap (below)
