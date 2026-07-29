@@ -20,9 +20,6 @@ BASE_FEATURE(kOidcEnrollmentTimeout,
              "kOidcEnrollmentTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableGenericOidcAuthProfileManagement,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOidcEnrollmentAuthSource, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOidcAuthHeaderInterception, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -8637,11 +8637,6 @@ inline constexpr char kGlicTabGroupsName[] = "Glic Tab Groups";
 inline constexpr char kGlicTabGroupsDescription[] =
     "Enables Glic to integrate with tab groups.";
 
-inline constexpr char kEnableGenericOidcAuthProfileManagementName[] =
-    "Enable generic OIDC profile management";
-inline constexpr char kEnableGenericOidcAuthProfileManagementDescription[] =
-    "Enables profile management triggered by generic OIDC authentications.";
-
 inline constexpr char kProfilesReorderingName[] = "Profiles Reordering";
 inline constexpr char kProfilesReorderingDescription[] =
     "Enables profiles reordering in the Profile Picker main view by drag and "
