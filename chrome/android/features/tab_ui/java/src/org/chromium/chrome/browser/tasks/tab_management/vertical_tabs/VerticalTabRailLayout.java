@@ -74,15 +74,22 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         mGridButton = findViewById(R.id.grid_button);
         assert mGridButton != null;
+        TooltipCompat.setTooltipText(
+                mGridButton, getContext().getString(R.string.accessibility_tab_groups));
 
         mSearchButton = findViewById(R.id.tab_search_button);
         assert mSearchButton != null;
+        TooltipCompat.setTooltipText(
+                mSearchButton,
+                getContext().getString(R.string.accessibility_search_loupe_tooltip_text));
 
         mHeaderSpacer = findViewById(R.id.header_spacer);
         assert mHeaderSpacer != null;
 
         mNewTabButton = findViewById(R.id.new_tab_button);
         assert mNewTabButton != null;
+        TooltipCompat.setTooltipText(
+                mNewTabButton, getContext().getString(R.string.accessibility_toolbar_btn_new_tab));
     }
 
     /** Returns the main tab list recycler view. */

@@ -68,6 +68,30 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
+    public void testHeaderAndNewTabButtonTooltips() {
+        View gridButton = mRailLayout.findViewById(R.id.grid_button);
+        assertNotNull(gridButton);
+        assertEquals(
+                mRailLayout.getContext().getString(R.string.accessibility_tab_groups),
+                gridButton.getTooltipText());
+
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        assertNotNull(searchButton);
+        assertEquals(
+                mRailLayout
+                        .getContext()
+                        .getString(R.string.accessibility_search_loupe_tooltip_text),
+                searchButton.getTooltipText());
+
+        View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);
+        assertNotNull(newTabButton);
+        assertEquals(
+                mRailLayout.getContext().getString(R.string.accessibility_toolbar_btn_new_tab),
+                newTabButton.getTooltipText());
+    }
+
+    @Test
+    @SmallTest
     public void testSetCollapseState_ExpandedAndCollapsed() {
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
         LinearLayout header = mRailLayout.getHeaderContainer();
