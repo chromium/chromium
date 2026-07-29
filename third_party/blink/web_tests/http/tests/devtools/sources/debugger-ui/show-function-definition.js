@@ -45,7 +45,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     },
 
     function testDumpFunctionDefinition(next) {
-      TestRunner.addSniffer(ObjectUI.ObjectPropertiesSection.ObjectPropertiesSection, 'formatObjectAsFunction', onConsoleMessagesReceived);
+      TestRunner.addSniffer(
+          Console.ConsoleViewMessage.ConsoleViewMessage.prototype,
+          'formattedParameterAsFunctionForTest', onConsoleMessagesReceived);
       var consoleView = Console.ConsoleView.ConsoleView.instance();
       consoleView.prompt.appendCommand('jumpToMe', true);
 
