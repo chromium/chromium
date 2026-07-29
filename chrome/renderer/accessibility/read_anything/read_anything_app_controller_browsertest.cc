@@ -2965,6 +2965,8 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnAXTreeDestroyed(tree_id_);
   ASSERT_FALSE(model().ContainsActiveTree());
 
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
   model().set_reset_draw_timer(true);
   model().set_requires_distillation(false);
 
@@ -2979,6 +2981,8 @@ TEST_F(ReadAnythingAppControllerTest,
   // There's already an Active tree from Setup() so we don't need to create it.
   ASSERT_TRUE(model().ContainsActiveTree());
 
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
   model().set_reset_draw_timer(true);
   model().set_requires_distillation(false);
 
@@ -6253,6 +6257,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnNodeWillBeDeleted_InactiveTree_Ignored) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
   // Create an inactive tree.
   ui::AXTreeID inactive_tree_id = ui::AXTreeID::CreateNewAXTreeID();
 
@@ -6298,6 +6304,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnNodeWillBeDeleted_ActiveTree_Processed) {
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
   // Create a node with ID 2 in the active tree, and mark it as visible.
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
