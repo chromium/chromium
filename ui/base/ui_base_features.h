@@ -353,6 +353,14 @@ BASE_DECLARE_FEATURE(kWebUIRoundedIcons);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kChromeDarkNeutrals26);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// When enabled, reads the system accent color from the xdg-desktop-portal (the
+// org.freedesktop.appearance "accent-color" setting) and applies it as the
+// NativeTheme user color.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUsePortalAccentColor);
+#endif
+
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsGlassFrameEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
