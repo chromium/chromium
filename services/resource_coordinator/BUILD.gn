@@ -49,6 +49,7 @@ source_set("tests") {
     "memory_instrumentation/global_dump_graph_converter_unittest.cc",
     "memory_instrumentation/graph_unittest.cc",
     "memory_instrumentation/memory_dump_map_converter_unittest.cc",
+    "public/cpp/memory_instrumentation/client_process_impl_unittest.cc",
     "public/cpp/memory_instrumentation/memory_instrumentation_mojom_traits_unittest.cc",
     "public/cpp/memory_instrumentation/os_metrics_unittest.cc",
     "public/cpp/memory_instrumentation/tracing_integration_unittest.cc",

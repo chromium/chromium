@@ -191,17 +191,23 @@ void ClientProcessImpl::PerformOSMemoryDump(OSMemoryDumpArgs args) {
   mojom::RequestOutcome outcome = mojom::RequestOutcome::kSuccess;
   base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
   for (const base::ProcessId& pid : args.pids) {
-    auto handle = base::Process::Open(pid).Handle();
     mojom::RawOSMemDumpPtr result = mojom::RawOSMemDump::New();
     result->platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-
-    if (!OSMetrics::FillOSMemoryDump(handle, args.flags, result.get())) {
+    const base::Process process = pid == base::kNullProcessId
+                                      ? base::Process::Current()
+                                      : base::Process::Open(pid);
+    if (!process.IsValid()) {
+      DLOG(ERROR) << "OS memory dump failed for pid " << pid
+                  << " (OpenProcess)";
+      outcome = mojom::RequestOutcome::kProcessNotFound;
+    } else if (!OSMetrics::FillOSMemoryDump(process.Handle(), args.flags,
+                                            result.get())) {
       DLOG(ERROR) << "OS memory dump failed for pid " << pid
                   << " (FillOSMemoryDump)";
       outcome = mojom::RequestOutcome::kFillOsMemoryDumpFailed;
     } else if (args.mmap_option != mojom::MemoryMapOption::NONE &&
-               !OSMetrics::FillProcessMemoryMaps(handle, args.mmap_option,
-                                                 result.get())) {
+               !OSMetrics::FillProcessMemoryMaps(
+                   process.Handle(), args.mmap_option, result.get())) {
       DLOG(ERROR) << "OS memory dump failed for pid " << pid
                   << " (FillProcessMemoryMaps)";
       outcome = mojom::RequestOutcome::kFillProcessMemoryMapsFailed;
