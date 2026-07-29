@@ -75,7 +75,7 @@ class RegistryOverrideManager {
   };
 
   // Used for testing only.
-  RegistryOverrideManager(const base::Time& timestamp,
+  RegistryOverrideManager(base::Time timestamp,
                           const std::wstring& test_key_root);
 
   // Whether or not to allow using the RegistryOverrideManager for HKLM (e.g. in

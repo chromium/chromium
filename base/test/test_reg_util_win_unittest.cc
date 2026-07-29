@@ -61,12 +61,12 @@ class RegistryOverrideManagerTest : public testing::Test {
               key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_ALL_ACCESS));
   }
 
-  std::wstring FakeOverrideManagerPath(const base::Time& time) {
+  std::wstring FakeOverrideManagerPath(base::Time time) {
     return fake_test_key_root_ + L"\\" +
            base::AsWString(base::NumberToString16(time.ToInternalValue()));
   }
 
-  void CreateManager(const base::Time& timestamp) {
+  void CreateManager(base::Time timestamp) {
     manager_.reset(new RegistryOverrideManager(timestamp, fake_test_key_root_));
     manager_->OverrideRegistry(HKEY_CURRENT_USER);
   }
