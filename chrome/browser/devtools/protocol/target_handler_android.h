@@ -7,16 +7,20 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/target.h"
 #include "net/base/host_port_pair.h"
 
 using RemoteLocations = std::set<net::HostPortPair>;
 
+class BrowserHandlerAndroid;
+
 class TargetHandlerAndroid : public protocol::Target::Backend {
  public:
   TargetHandlerAndroid(protocol::UberDispatcher* dispatcher,
                        bool is_trusted,
-                       bool may_read_local_files);
+                       bool may_read_local_files,
+                       BrowserHandlerAndroid* browser_handler);
 
   TargetHandlerAndroid(const TargetHandlerAndroid&) = delete;
   TargetHandlerAndroid& operator=(const TargetHandlerAndroid&) = delete;
@@ -48,6 +52,7 @@ class TargetHandlerAndroid : public protocol::Target::Backend {
  private:
   bool is_trusted_ = false;
   bool may_read_local_files_ = false;
+  raw_ptr<BrowserHandlerAndroid> browser_handler_;
   RemoteLocations remote_locations_;
 };
 

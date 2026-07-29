@@ -78,6 +78,10 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/protocol/browser_handler_android.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -555,6 +559,61 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_AutoAttachToUnloadedTab) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       AutoAttachedWindowTargetCanQueryPendingBrowserWindow) {
+  AttachToBrowserTarget();
+
+  SendCommandSync("Target.setAutoAttach",
+                  base::DictValue()
+                      .Set("autoAttach", true)
+                      .Set("waitForDebuggerOnStart", false)
+                      .Set("flatten", true));
+  ASSERT_TRUE(result());
+  ClearNotifications();
+
+  SendCommandAsync(
+      "Target.createTarget",
+      base::DictValue().Set("url", "about:blank").Set("newWindow", true));
+
+  // The target is exposed during command dispatch, before Android can finish
+  // creating and globally registering its Activity-backed browser window.
+  auto is_page_target = [](const base::DictValue& params) {
+    const std::string* type = params.FindStringByDottedPath("targetInfo.type");
+    return type && *type == "page";
+  };
+  ASSERT_TRUE(HasExistingNotificationMatching(
+      [&is_page_target](const base::DictValue& notification) {
+        const std::string* method = notification.FindString("method");
+        const base::DictValue* params = notification.FindDict("params");
+        return method && *method == "Target.attachedToTarget" && params &&
+               is_page_target(*params);
+      }));
+  const base::DictValue attached = WaitForMatchingNotification(
+      "Target.attachedToTarget", base::BindRepeating(is_page_target));
+  const std::string* target_id =
+      attached.FindStringByDottedPath("targetInfo.targetId");
+  ASSERT_TRUE(target_id);
+
+  const base::DictValue* window_result =
+      SendCommandSync("Browser.getWindowForTarget",
+                      base::DictValue().Set("targetId", *target_id));
+  ASSERT_TRUE(window_result);
+  const std::optional<int> window_id = window_result->FindInt("windowId");
+  ASSERT_TRUE(window_id.has_value());
+  const base::DictValue* bounds = window_result->FindDict("bounds");
+  ASSERT_TRUE(bounds);
+  EXPECT_TRUE(bounds->FindInt("left").has_value());
+  EXPECT_TRUE(bounds->FindInt("top").has_value());
+  EXPECT_TRUE(bounds->FindInt("width").has_value());
+  EXPECT_TRUE(bounds->FindInt("height").has_value());
+  EXPECT_TRUE(bounds->FindString("windowState"));
+
+  EXPECT_EQ(nullptr,
+            BrowserHandlerAndroid::FindBrowserWindowById(window_id.value()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NoInputEventsSentToBrowserWhenDisallowed) {

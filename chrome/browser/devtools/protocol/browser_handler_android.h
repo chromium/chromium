@@ -5,7 +5,22 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_ANDROID_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_ANDROID_H_
 
+#include <optional>
+
+#include "base/callback_list.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/browser.h"
+
+class BrowserWindowInterface;
+
+namespace content {
+class WebContents;
+}
+
+namespace ui {
+class BaseWindow;
+}
 
 class BrowserHandlerAndroid : public protocol::Browser::Backend {
  public:
@@ -16,6 +31,27 @@ class BrowserHandlerAndroid : public protocol::Browser::Backend {
   BrowserHandlerAndroid& operator=(const BrowserHandlerAndroid&) = delete;
 
   ~BrowserHandlerAndroid() override;
+
+  // Tracks a window returned synchronously by CreateBrowserWindow() while
+  // Android materializes its Activity. The close subscription bounds the raw
+  // pointer's lifetime.
+  void TrackBrowserWindow(BrowserWindowInterface* browser_window);
+
+  static std::optional<int> ResolveWindowIdForWebContents(
+      content::WebContents* web_contents);
+
+  // Returns the ui::BaseWindow registered with the given window_id, or nullptr
+  // if no registered AndroidBrowserWindow owns that session id.
+  static ui::BaseWindow* FindBrowserWindowById(int window_id);
+
+  // Builds a Browser::Bounds payload from the given window.
+  static std::unique_ptr<protocol::Browser::Bounds> BuildBrowserWindowBounds(
+      ui::BaseWindow* window);
+
+  // Precedence: fullscreen > maximized > minimized > normal.
+  static std::string ComputeWindowStateString(bool is_fullscreen,
+                                              bool is_maximized,
+                                              bool is_minimized);
 
   // Browser::Backend:
   protocol::Response GetWindowForTarget(
@@ -41,7 +77,15 @@ class BrowserHandlerAndroid : public protocol::Browser::Backend {
       const std::string& in_url) override;
 
  private:
+  protocol::Response BuildBoundsForWindowId(
+      int window_id,
+      std::unique_ptr<protocol::Browser::Bounds>* out_bounds);
+  void OnBrowserWindowClosed(BrowserWindowInterface* browser_window);
+
   const std::string target_id_;
+  base::flat_map<int, raw_ptr<BrowserWindowInterface>> tracked_browser_windows_;
+  base::flat_map<BrowserWindowInterface*, base::CallbackListSubscription>
+      window_close_subscriptions_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_ANDROID_H_
