@@ -14119,18 +14119,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE" desc="The label of item for click to call in context menu for showing device name when one device is available.">
           Call from <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
         </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE_UNKNOWN_DEVICE" desc="Title text displayed in a shared clipboard notification when the source device name is unknown.">
-          Text shared from other device
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE" desc="The title of the notification shown when a clipboard was shared.">
-          Text shared from <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_DESCRIPTION" desc="The description of the notification shown when a clipboard was shared.">
-          Copied to your clipboard
-        </message>
-        <message name="IDS_OMNIBOX_TOOLTIP_SHARED_CLIPBOARD" desc="The tooltip for the shared clipboard omnibox icon.">
-          Copy to your device
-        </message>
       </if>
 
       <if expr="use_titlecase">
@@ -14139,18 +14127,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_SINGLE_DEVICE" desc="In Title Case: The label of item for click to call in context menu when single device is available.">
           Call from <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE_UNKNOWN_DEVICE" desc="Title text displayed in a shared clipboard notification when the source device name is unknown.">
-          Text shared from Other Device
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE" desc="In Title Case: The title of the notification shown when a clipboard was shared.">
-          Text shared from <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph>
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_DESCRIPTION" desc="In Title Case: The description of the notification shown when a clipboard was shared.">
-          Copied to Your Clipboard
-        </message>
-        <message name="IDS_OMNIBOX_TOOLTIP_SHARED_CLIPBOARD" desc="The tooltip for the shared clipboard omnibox icon.">
-          Copy to Your Device
         </message>
       </if>
 

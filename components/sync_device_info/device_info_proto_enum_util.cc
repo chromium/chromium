@@ -250,8 +250,6 @@ DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
       return DeviceInfo::SharingFeature::kSmsFetcher;
     case sync_pb::SharingSpecificFields::REMOTE_COPY:
       return DeviceInfo::SharingFeature::kRemoteCopy;
-    case sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2:
-      return DeviceInfo::SharingFeature::kSharedClipboardV2;
     case sync_pb::SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION:
       return DeviceInfo::SharingFeature::kOptimizationGuidePushNotification;
     case sync_pb::SharingSpecificFields::ONE_TIME_TOKEN_BACKEND_NOTIFICATION:
@@ -273,8 +271,6 @@ sync_pb::SharingSpecificFields_EnabledFeatures ToSharingFeatureProto(
     case DeviceInfo::SharingFeature::kRemoteCopy:
       return sync_pb::SharingSpecificFields::REMOTE_COPY;
 
-    case DeviceInfo::SharingFeature::kSharedClipboardV2:
-      return sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2;
     case DeviceInfo::SharingFeature::kOptimizationGuidePushNotification:
       return sync_pb::SharingSpecificFields::
           OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;

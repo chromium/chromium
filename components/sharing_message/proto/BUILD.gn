@@ -15,7 +15,6 @@ proto_library("proto") {
     "optimization_guide_push_notification.proto",
     "peer_connection_messages.proto",
     "remote_copy_message.proto",
-    "shared_clipboard_message.proto",
     "sharing_message.proto",
     "sharing_message_type.proto",
     "sms_fetch_message_test_proto3_optional.proto",

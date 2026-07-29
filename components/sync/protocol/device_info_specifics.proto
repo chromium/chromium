@@ -171,8 +171,8 @@ message SharingSpecificFields {
     REMOTE_COPY = 4;
     reserved 7;
     reserved "CLICK_TO_CALL_V2";
-    // Supports Shared Clipboard via sender ID.
-    SHARED_CLIPBOARD_V2 = 8;
+    reserved 8;
+    reserved "SHARED_CLIPBOARD_V2";
     // Supports optimization guide push notification.
     OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
     // Supports receiving notifications about new OneTimeTokens in the backend.

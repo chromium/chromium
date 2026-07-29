@@ -23,8 +23,6 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
   void UnregisterDevice(
       SharingDeviceRegistration::RegistrationCallback callback) override {}
 
-  bool IsSharedClipboardSupported() const override { return false; }
-
   bool IsSmsFetcherSupported() const override { return false; }
 
   bool IsRemoteCopySupported() const override { return false; }

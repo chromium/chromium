@@ -91,7 +91,7 @@ syncer::DeviceInfo::SharingInfo CreateSharingInfo() {
       {"sender_id_fcm_token", "sender_id_p256dh", "sender_id_auth_secret"},
       "chime_representative_target_id",
       std::set<syncer::DeviceInfo::SharingFeature>{
-          syncer::DeviceInfo::SharingFeature::kSharedClipboardV2});
+          syncer::DeviceInfo::SharingFeature::kRemoteCopy});
 }
 
 SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
@@ -290,7 +290,7 @@ TEST_P(SharingMessageSenderNamingTest, MessageSent_AckReceived) {
   SharingTargetDeviceInfo device_info = SetupReceiverDevice();
 
   components_sharing_message::SharingMessage sent_message;
-  sent_message.mutable_shared_clipboard_message()->set_text("999999");
+  sent_message.mutable_remote_copy_message()->set_text("999999");
 
   components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
@@ -350,7 +350,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceivedBeforeMessageId) {
   SharingTargetDeviceInfo device_info = SetupReceiverDevice();
 
   components_sharing_message::SharingMessage sent_message;
-  sent_message.mutable_shared_clipboard_message()->set_text("999999");
+  sent_message.mutable_remote_copy_message()->set_text("999999");
 
   components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
@@ -414,7 +414,7 @@ TEST_F(SharingMessageSenderTest, SendMessageToServerTarget_Success) {
   server_channel.set_auth_secret("test_auth_secret");
 
   components_sharing_message::SharingMessage sent_message;
-  sent_message.mutable_shared_clipboard_message()->set_text("999999");
+  sent_message.mutable_remote_copy_message()->set_text("999999");
 
   components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;

@@ -127,8 +127,6 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
     std::move(callback).Run(result_);
   }
 
-  bool IsSharedClipboardSupported() const override { return false; }
-
   bool IsSmsFetcherSupported() const override { return false; }
 
   bool IsRemoteCopySupported() const override { return false; }
@@ -271,7 +269,7 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Empty) {
 
   std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
-          syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
+          syncer::DeviceInfo::SharingFeature::kRemoteCopy);
   EXPECT_TRUE(candidates.empty());
 }
 
@@ -288,7 +286,7 @@ TEST_F(SharingServiceTest, GetDeviceCandidates_Tracked) {
 
   std::vector<SharingTargetDeviceInfo> candidates =
       GetSharingService()->GetDeviceCandidates(
-          syncer::DeviceInfo::SharingFeature::kSharedClipboardV2);
+          syncer::DeviceInfo::SharingFeature::kRemoteCopy);
 
   ASSERT_EQ(1u, candidates.size());
 }
@@ -603,12 +601,12 @@ TEST_F(SharingServiceTest, AddSharingHandler) {
       .Times(1);
   GetSharingService()->RegisterSharingHandler(
       nullptr,
-      components_sharing_message::SharingMessage::kSharedClipboardMessage);
+      components_sharing_message::SharingMessage::kSmsFetchRequest);
 }
 
 TEST_F(SharingServiceTest, RemoveSharingHandler) {
   EXPECT_CALL(*handler_registry_, UnregisterSharingHandler(testing::_))
       .Times(1);
   GetSharingService()->UnregisterSharingHandler(
-      components_sharing_message::SharingMessage::kSharedClipboardMessage);
+      components_sharing_message::SharingMessage::kSmsFetchRequest);
 }

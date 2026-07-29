@@ -136,7 +136,6 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #include "components/security_interstitials/core/pref_names.h"
-#include "components/sharing_message/pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/skills/internal/enterprise_published_skills_policy_handler.h"
@@ -1081,9 +1080,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::STRING },
   { key::kPromptForDownloadLocation,
     prefs::kPromptForDownload,
-    base::Value::Type::BOOLEAN },
-  { key::kSharedClipboardEnabled,
-    prefs::kSharedClipboardEnabled,
     base::Value::Type::BOOLEAN },
 
   { key::kSensorsAllowedForUrls,

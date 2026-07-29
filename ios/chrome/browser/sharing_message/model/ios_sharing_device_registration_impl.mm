@@ -207,10 +207,6 @@ IOSSharingDeviceRegistrationImpl::GetEnabledFeatures() const {
 }
 
 
-bool IOSSharingDeviceRegistrationImpl::IsSharedClipboardSupported() const {
-  return false;
-}
-
 bool IOSSharingDeviceRegistrationImpl::IsSmsFetcherSupported() const {
   return false;
 }

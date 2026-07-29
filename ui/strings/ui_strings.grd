@@ -1073,14 +1073,6 @@ need to be translated for each locale.-->
         Something went wrong. Try again later.
       </message>
 
-      <!-- Shared clipboard error message. Could potentially be made generic -->
-      <message name="IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TITLE_PAYLOAD_TOO_LARGE" desc="The label to be shown as the title of the dialog when the text shared is too large.">
-        Text is too large
-      </message>
-      <message name="IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TEXT_PAYLOAD_TOO_LARGE" desc="The text to be shown on the dialog when the text shared is too large.">
-        Try sharing the text in smaller chunks.
-      </message>
-
       <if expr="is_android">
         <!-- DevUI DFM Loader error strings -->
         <message name="IDS_DEV_UI_LOADER_ERROR_HEADING" desc="Heading text for error page shown when Chrome fails to dynamically install the DevUI module.">

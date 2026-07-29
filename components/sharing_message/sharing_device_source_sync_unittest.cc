@@ -125,7 +125,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceByGuid_Ready) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceByGuid_NotReady) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/false);
   fake_device_info_tracker_.Add(local_device_info_);
-  // Even if local device is not ready we should be able to query devices.
+  // Even if local device is not ready, querying devices should succeed.
   EXPECT_TRUE(device_source->GetDeviceByGuid(local_device_info_->guid()));
 }
 
@@ -143,10 +143,10 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceByGuid_SyncDisabled) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Ready) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info =
-      CreateDeviceInfo("client_name", SharingFeature::kSharedClipboardV2);
+      CreateDeviceInfo("client_name", SharingFeature::kRemoteCopy);
   fake_device_info_tracker_.Add(device_info.get());
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   ASSERT_EQ(1u, devices.size());
   EXPECT_EQ(device_info->guid(), devices[0].guid());
 }
@@ -155,11 +155,11 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NotReady) {
   fake_local_device_info_provider_.SetReady(false);
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/false);
   auto device_info =
-      CreateDeviceInfo("client_name", SharingFeature::kSharedClipboardV2);
+      CreateDeviceInfo("client_name", SharingFeature::kRemoteCopy);
   fake_device_info_tracker_.Add(device_info.get());
   // Local device needs to be ready for deduplication.
   EXPECT_TRUE(
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2)
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy)
           .empty());
 }
 
@@ -196,35 +196,35 @@ TEST_P(SharingDeviceSourceSyncNamingTest,
   // Add two devices with the same |client_name| without hardware info.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_1 =
-      CreateDeviceInfo("client_name_1", SharingFeature::kSharedClipboardV2);
+      CreateDeviceInfo("client_name_1", SharingFeature::kRemoteCopy);
   fake_device_info_tracker_.Add(device_info_1.get());
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_2 =
-      CreateDeviceInfo("client_name_1", SharingFeature::kSharedClipboardV2);
+      CreateDeviceInfo("client_name_1", SharingFeature::kRemoteCopy);
   fake_device_info_tracker_.Add(device_info_2.get());
 
   // Add two devices with the same hardware info.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_3 =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
                        "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_3.get());
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
                        "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_4.get());
 
   // Add a device with the same info as the local device (but different GUID).
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_5 = CreateDeviceInfo(local_device_info_->client_name(),
-                                        SharingFeature::kSharedClipboardV2,
+                                        SharingFeature::kRemoteCopy,
                                         local_device_info_->manufacturer_name(),
                                         local_device_info_->model_name());
   fake_device_info_tracker_.Add(device_info_5.get());
 
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
 
   if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
     // With kSyncSimplifyDeviceNaming enabled:
@@ -256,29 +256,29 @@ TEST_P(SharingDeviceSourceSyncNamingTest, GetDeviceCandidates_DeviceNaming) {
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_1 =
-      CreateDeviceInfo("client_name", SharingFeature::kSharedClipboardV2);
+      CreateDeviceInfo("client_name", SharingFeature::kRemoteCopy);
   fake_device_info_tracker_.Add(device_info_1.get());
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_2 =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
                        "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_2.get());
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_3 =
-      CreateDeviceInfo("model 2", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 2", SharingFeature::kRemoteCopy,
                        "manufacturer 1", "model 2");
   fake_device_info_tracker_.Add(device_info_3.get());
 
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
                        "manufacturer 2", "model 1");
   fake_device_info_tracker_.Add(device_info_4.get());
 
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   ASSERT_EQ(4u, devices.size());
 
   if (GetParam() == DeviceNamingMode::kSimplifiedWithoutDeduplication) {
@@ -316,11 +316,11 @@ TEST_P(SharingDeviceSourceSyncNamingTest, GetDeviceCandidates_DeviceNaming) {
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
-  // Create device in advance so we can forward time before calling
+  // Create device in advance so time can be forwarded before calling
   // GetDeviceCandidates.
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
                        "manufacturer 2", "model 1");
   fake_device_info_tracker_.Add(device_info.get());
 
@@ -329,16 +329,16 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
                                   base::Milliseconds(1));
 
   std::vector<SharingTargetDeviceInfo> candidates =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
 
   EXPECT_TRUE(candidates.empty());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
-  // Create device in with Shared Clipboard feature.
+  // Create device with SMS fetcher feature.
   auto device_info =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kSmsFetcher,
                        "manufacturer 2", "model 1");
   fake_device_info_tracker_.Add(device_info.get());
 
@@ -349,38 +349,39 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   EXPECT_TRUE(candidates.empty());
 }
 
-TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
+TEST_F(SharingDeviceSourceSyncTest,
+       GetDeviceCandidates_ExpiredAndMissingRequirements) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
 
   // This device will be filtered out because its older than |min_updated_time|.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_1 =
-      CreateDeviceInfo("model 3", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 3", SharingFeature::kRemoteCopy,
                        "manufacturer 2", "model 3");
   fake_device_info_tracker_.Add(device_info_1.get());
 
   // This device will be displayed with its short name.
   task_environment_.FastForwardBy(kSharingDeviceExpiration);
   auto device_info_2 =
-      CreateDeviceInfo("model 1", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
                        "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_2.get());
 
-  // This device will be filtered out since shared clipboard is not enabled.
+  // This device will be filtered out since remote copy is not enabled.
   task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_3 = CreateDeviceInfo("model 1", SharingFeature::kRemoteCopy,
+  auto device_info_3 = CreateDeviceInfo("model 1", SharingFeature::kSmsFetcher,
                                         "manufacturer 1", "model 1");
   fake_device_info_tracker_.Add(device_info_3.get());
 
   // This device will be displayed with its short name.
   task_environment_.FastForwardBy(base::Seconds(10));
   auto device_info_4 =
-      CreateDeviceInfo("model 2", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("model 2", SharingFeature::kRemoteCopy,
                        "manufacturer 2", "model 2");
   fake_device_info_tracker_.Add(device_info_4.get());
 
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   ASSERT_EQ(2u, devices.size());
   EXPECT_EQ(device_info_4->guid(), devices[0].guid());
   EXPECT_EQ(
@@ -395,26 +396,26 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_RenameAfterFiltering) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NoChannel) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info =
-      CreateDeviceInfo("client_name", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("client_name", SharingFeature::kRemoteCopy,
                        "manufacturer", "model",
                        /*sender_id_target_info=*/{});
   fake_device_info_tracker_.Add(device_info.get());
 
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   EXPECT_TRUE(devices.empty());
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info =
-      CreateDeviceInfo("client_name", SharingFeature::kSharedClipboardV2,
+      CreateDeviceInfo("client_name", SharingFeature::kRemoteCopy,
                        "manufacturer", "model",
                        /*sender_id_target_info=*/{});
   fake_device_info_tracker_.Add(device_info.get());
 
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
 
   // FCM channel is not supported.
   ASSERT_EQ(0u, devices.size());
@@ -423,12 +424,12 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_FCMChannel) {
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_SenderIDChannel) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
   auto device_info = CreateDeviceInfo(
-      "client_name", SharingFeature::kSharedClipboardV2, "manufacturer",
+      "client_name", SharingFeature::kRemoteCopy, "manufacturer",
       "model", {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret});
   fake_device_info_tracker_.Add(device_info.get());
 
   auto devices =
-      device_source->GetDeviceCandidates(SharingFeature::kSharedClipboardV2);
+      device_source->GetDeviceCandidates(SharingFeature::kRemoteCopy);
   ASSERT_EQ(1u, devices.size());
   EXPECT_EQ(device_info->guid(), devices[0].guid());
 }

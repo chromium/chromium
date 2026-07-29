@@ -20,7 +20,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sharing_message/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -166,7 +165,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   // We need to register the type of these preferences in order to query
   // them even though they're only typically controlled via policy.
   registry->RegisterBooleanPref(policy::policy_prefs::kHideWebStoreIcon, false);
-  registry->RegisterBooleanPref(prefs::kSharedClipboardEnabled, true);
 
 #if BUILDFLAG(IS_MAC)
   // This really belongs in platform code, but there's no good place to

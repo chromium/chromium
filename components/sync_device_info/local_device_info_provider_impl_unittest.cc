@@ -30,7 +30,7 @@ const char kSharingSenderIdAuthSecret[] = "test_sender_id_auth_secret";
 const char kSharingChimeRepresentativeTargetId[] =
     "chime_representative_target_id";
 const DeviceInfo::SharingFeature kSharingEnabledFeatures[] = {
-    DeviceInfo::SharingFeature::kSharedClipboardV2};
+    DeviceInfo::SharingFeature::kRemoteCopy};
 
 using testing::NiceMock;
 using testing::NotNull;

@@ -125,8 +125,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile);
   auto sharing_device_registration =
       std::make_unique<SharingDeviceRegistrationImpl>(
-          profile->GetPrefs(), sync_prefs.get(), instance_id_service->driver(),
-          sync_service);
+          sync_prefs.get(), instance_id_service->driver(), sync_service);
 
   SharingMessageBridge* message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(profile);
