@@ -62,6 +62,10 @@ class AttemptOtpFillingTool : public Tool {
  private:
   void OnGmailOtpOptInResponse(ToolCallback callback,
                                webui::mojom::GmailOtpOptInResultPtr response);
+  void OnGmailOtpConfirmationResponse(
+      ToolCallback callback,
+      std::string otp,
+      webui::mojom::GmailOtpConfirmationResultPtr response);
   void OnOtpRetrieved(
       ToolCallback callback,
       base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>
@@ -78,6 +82,7 @@ class AttemptOtpFillingTool : public Tool {
   bool for_signin_;
   AttemptOtpFillingToolRequest::OtpType predicted_otp_type_;
 
+  bool requires_confirmation_ = false;
   std::unique_ptr<ActorLoginFlowVerifier> actor_login_flow_verifier_;
 
   base::WeakPtrFactory<AttemptOtpFillingTool> weak_factory_{this};

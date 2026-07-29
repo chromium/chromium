@@ -186,20 +186,21 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
         AffiliationServiceFactory::GetForProfile(GetProfile()));
   }
 
-  void SetExpectedOtp(std::optional<std::string> otp) {
+  void SetExpectedOtp(std::optional<std::string> otp,
+                      std::string sender = "sender@example.com") {
     EXPECT_CALL(GetMockOtpService(),
                 Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
         .WillOnce(
-            [otp](one_time_tokens::OneTimeTokenSource source,
-                  base::Time expiration,
-                  one_time_tokens::OneTimeTokenService::Callback callback,
-                  base::OnceClosure expiration_callback) {
+            [otp, sender](
+                one_time_tokens::OneTimeTokenSource source,
+                base::Time expiration,
+                one_time_tokens::OneTimeTokenService::Callback callback,
+                base::OnceClosure expiration_callback) {
               if (otp) {
-                callback.Run(
-                    one_time_tokens::OneTimeTokenSource::kGmail,
-                    one_time_tokens::OneTimeToken(
-                        one_time_tokens::OneTimeTokenType::kGmail, *otp,
-                        base::TimeTicks::Now(), "sender@example.com"));
+                callback.Run(one_time_tokens::OneTimeTokenSource::kGmail,
+                             one_time_tokens::OneTimeToken(
+                                 one_time_tokens::OneTimeTokenType::kGmail,
+                                 *otp, base::TimeTicks::Now(), sender));
               } else {
                 callback.Run(
                     one_time_tokens::OneTimeTokenSource::kGmail,
@@ -506,11 +507,13 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/false);
+  SeedTestServerAffiliation("example.com");
+  SetExpectedOtp("1234", "sender@example.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpUnableToFill);
   EXPECT_THAT(JournalEntries(),
               testing::Contains(testing::ContainsRegex(
                   "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
@@ -733,10 +736,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  SeedTestServerAffiliation("example.com");
+  SetExpectedOtp("1234", "sender@example.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpUnableToFill);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -814,10 +819,12 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  SeedTestServerAffiliation("sub1.example.com");
+  SetExpectedOtp("1234", "sender@sub1.example.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpUnableToFill);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -908,10 +915,12 @@ IN_PROC_BROWSER_TEST_F(
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  SeedTestServerAffiliation("example.com");
+  SetExpectedOtp("1234", "sender@example.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpUnableToFill);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
@@ -956,11 +965,13 @@ IN_PROC_BROWSER_TEST_F(
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{*otp_field},
           /*for_signin=*/true);
+  SeedTestServerAffiliation("a.com");
+  SetExpectedOtp("1234", "sender@a.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kOtpSigninContextMismatch);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpUnableToFill);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
