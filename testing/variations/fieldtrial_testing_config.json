@@ -16151,25 +16151,6 @@
             ]
         }
     ],
-    "LiveCaptionWithOnDeviceTranslation": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LiveCaptionOnDeviceTranslation",
-                        "LiveCaptionOnDeviceTranslationEnglishOnly"
-                    ]
-                }
-            ]
-        }
-    ],
     "LoadAllTabsAtStartup": [
         {
             "platforms": [

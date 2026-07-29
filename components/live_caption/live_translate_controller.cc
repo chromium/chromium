@@ -84,8 +84,9 @@ void LiveTranslateController::GetTranslation(const std::string& result,
       base::HashMetricName(target_language));
 
   base::TimeTicks total_start_time = base::TimeTicks::Now();
-  bool use_on_device = base::FeatureList::IsEnabled(
-      live_caption::kLiveCaptionOnDeviceTranslation);
+  bool use_on_device = on_device_dispatcher_ &&
+                       base::FeatureList::IsEnabled(
+                           live_caption::kLiveCaptionOnDeviceTranslation);
   if (use_on_device &&
       base::FeatureList::IsEnabled(
           live_caption::kLiveCaptionOnDeviceTranslationEnglishOnly)) {

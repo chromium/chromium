@@ -6,13 +6,12 @@
 
 namespace live_caption {
 
-// By default, keep the existing cloud/default translation behavior until the
-// on-device model is ready to be rolled out.
-BASE_FEATURE(kLiveCaptionOnDeviceTranslation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the on-device translation model by default.
+BASE_FEATURE(kLiveCaptionOnDeviceTranslation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// By default, do not restrict on-device translation to English-only.
+// Restricts on-device translation by default to only enable translations for
+// language pairs that contain English.
 BASE_FEATURE(kLiveCaptionOnDeviceTranslationEnglishOnly,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace live_caption

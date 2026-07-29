@@ -65,14 +65,7 @@ MockLiveTranslateController::MockLiveTranslateController(
     content::BrowserContext* browser_context)
     : LiveTranslateController(
           profile_prefs,
-          std::make_unique<TranslationDispatcherOnDevice>(
-              std::make_unique<
-                  on_device_translation::OnDeviceTranslationServiceController>(
-                  on_device_translation::
-                      CreateOnDeviceTranslationServiceLauncher(),
-                  "",
-                  on_device_translation::OnDeviceTranslationInstaller::
-                      GetInstance())),
+          std::make_unique<TranslationDispatcherOnDevice>(),
           std::make_unique<GoogleApiTranslationDispatcher>("dummy_api_key",
                                                            browser_context)) {}
 

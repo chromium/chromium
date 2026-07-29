@@ -42,6 +42,13 @@ OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
     return it->second.get();
   }
 
+  OnDeviceTranslationInstaller* installer =
+      installer_for_test_ ? installer_for_test_.get()
+                          : OnDeviceTranslationInstaller::GetInstance();
+  if (installer == nullptr) {
+    return nullptr;
+  }
+
   // If we are at maximum capacity and the least-used item is running, we cannot
   // add a new service.
   if (service_controllers_.size() == service_controllers_.max_size() &&
@@ -51,9 +58,7 @@ OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
 
   auto service_controller =
       std::make_unique<OnDeviceTranslationServiceController>(
-          launcher_factory_.Run(), origin.Serialize(),
-          installer_for_test_ ? installer_for_test_.get()
-                              : OnDeviceTranslationInstaller::GetInstance());
+          launcher_factory_.Run(), origin.Serialize(), installer);
   auto it_inserted =
       service_controllers_.Put(origin, std::move(service_controller));
   return it_inserted->second.get();
@@ -110,9 +115,11 @@ void ServiceControllerManager::SetServiceIdleTimeoutForTesting(
     base::TimeDelta service_idle_timeout) {
   CHECK_IS_TEST();
 
-  static_cast<OnDeviceTranslationServiceController*>(
-      GetOrCreateController(origin))
-      ->SetServiceIdleTimeoutForTesting(service_idle_timeout);
+  auto* controller = GetOrCreateController(origin);
+  if (controller) {
+    static_cast<OnDeviceTranslationServiceController*>(controller)
+        ->SetServiceIdleTimeoutForTesting(service_idle_timeout);  // IN-TEST
+  }
 }
 
 void ServiceControllerManager::SetInstallerForTesting(  // IN-TEST

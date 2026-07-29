@@ -62,9 +62,11 @@ LiveTranslateControllerFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<TranslationDispatcher> on_device_dispatcher;
   std::unique_ptr<TranslationDispatcher> google_api_dispatcher;
 
-  // Only set on_device_dispatcher if feature flag is set.
+  // Only set on_device_dispatcher if feature flag is set and installer is
+  // available.
   if (base::FeatureList::IsEnabled(
-          live_caption::kLiveCaptionOnDeviceTranslation)) {
+          live_caption::kLiveCaptionOnDeviceTranslation) &&
+      on_device_translation::OnDeviceTranslationInstaller::GetInstance()) {
     on_device_dispatcher = std::make_unique<TranslationDispatcherOnDevice>(
         std::make_unique<
             on_device_translation::OnDeviceTranslationServiceController>(

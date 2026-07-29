@@ -34,20 +34,27 @@ class ComponentManagerImpl : public ComponentManager {
   ComponentManagerImpl& operator=(const ComponentManagerImpl&) = delete;
 
   void RegisterTranslateKitComponentImpl() override {
-    OnDeviceTranslationInstaller::GetInstance()->Init(base::DoNothing());
+    auto* installer = OnDeviceTranslationInstaller::GetInstance();
+    if (installer) {
+      installer->Init(base::DoNothing());
+    }
   }
 
   void RegisterTranslateKitLanguagePackComponent(
       LanguagePackKey language_pack) override {
-    OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
-        language_pack);
+    auto* installer = OnDeviceTranslationInstaller::GetInstance();
+    if (installer) {
+      installer->InstallLanguagePack(language_pack);
+    }
   }
 
   void UninstallTranslateKitLanguagePackComponent(
       LanguagePackKey language_pack) override {
     // Uninstalls the TranslateKit language pack component.
-    OnDeviceTranslationInstaller::GetInstance()->UnInstallLanguagePack(
-        language_pack);
+    auto* installer = OnDeviceTranslationInstaller::GetInstance();
+    if (installer) {
+      installer->UnInstallLanguagePack(language_pack);
+    }
   }
 
   base::FilePath GetTranslateKitComponentPathImpl() override {
@@ -104,12 +111,16 @@ bool ComponentManager::RegisterTranslateKitComponent() {
 
 // static
 std::set<LanguagePackKey> ComponentManager::GetRegisteredLanguagePacks() {
-  return OnDeviceTranslationInstaller::GetInstance()->RegisteredLanguagePacks();
+  auto* installer = OnDeviceTranslationInstaller::GetInstance();
+  return installer ? installer->RegisteredLanguagePacks()
+                   : std::set<LanguagePackKey>();
 }
 
 // static
 std::set<LanguagePackKey> ComponentManager::GetInstalledLanguagePacks() {
-  return OnDeviceTranslationInstaller::GetInstance()->InstalledLanguagePacks();
+  auto* installer = OnDeviceTranslationInstaller::GetInstance();
+  return installer ? installer->InstalledLanguagePacks()
+                   : std::set<LanguagePackKey>();
 }
 
 // static
