@@ -19,10 +19,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/ui/webui/default_browser/settings_window_finder_win.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -138,7 +141,12 @@ class TestVisualGuidedSetterControllerWin
   TestSettingsWindowFinderWin* test_finder() const { return test_finder_; }
 
   // VisualGuidedSetterControllerWin:
-  bool IsSettingsWindowValid() const override { return settings_window_valid_; }
+  bool IsSettingsWindowAlive() const override {
+    return settings_hwnd_for_testing() != nullptr;
+  }
+  bool IsSettingsWindowValid() const override {
+    return settings_window_valid_ && IsSettingsWindowAlive();
+  }
   bool IsSettingsWindowClosed() const override {
     return settings_window_closed_;
   }
@@ -186,22 +194,27 @@ class TestVisualGuidedSetterControllerWin
 
 }  // namespace
 
-class VisualGuidedSetterControllerWinTest : public views::ViewsTestBase {
+class VisualGuidedSetterControllerWinTest : public ChromeViewsTestBase {
  protected:
-  VisualGuidedSetterControllerWinTest()
-      : views::ViewsTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  VisualGuidedSetterControllerWinTest() {
     scoped_feature_list_.InitAndEnableFeature(
         default_browser::kVisualGuidedSetterDocking);
   }
 
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
+    ChromeViewsTestBase::SetUp();
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->Show();
 
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    content::WebContentsTester::For(web_contents_.get())
+        ->SetLastCommittedURL(GURL("chrome://default-browser"));
+
     controller_ =
         std::make_unique<TestVisualGuidedSetterControllerWin>(widget_.get());
+    controller_->SetWebContents(web_contents_.get());
 
     gfx::Rect anchor(400, 300, 600, 400);
     controller_->SetAnchorRect(anchor);
@@ -210,11 +223,16 @@ class VisualGuidedSetterControllerWinTest : public views::ViewsTestBase {
 
   void TearDown() override {
     controller_.reset();
+    web_contents_.reset();
+    profile_.reset();
     widget_.reset();
-    views::ViewsTestBase::TearDown();
+    ChromeViewsTestBase::TearDown();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<TestVisualGuidedSetterControllerWin> controller_;
 };
@@ -380,6 +398,7 @@ TEST_F(VisualGuidedSetterControllerWinTest, ContinuousDockingDisabled) {
   // at construction.
   controller_ =
       std::make_unique<TestVisualGuidedSetterControllerWin>(widget_.get());
+  controller_->SetWebContents(web_contents_.get());
   gfx::Rect anchor(400, 300, 600, 400);
   controller_->SetAnchorRect(anchor);
   controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
@@ -424,6 +443,7 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   // at construction.
   controller_ =
       std::make_unique<TestVisualGuidedSetterControllerWin>(widget_.get());
+  controller_->SetWebContents(web_contents_.get());
   gfx::Rect anchor(400, 300, 600, 400);
   controller_->SetAnchorRect(anchor);
   controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
@@ -449,4 +469,126 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   // Stopping the controller should call StopObservingLocationChanges.
   controller_->Stop();
   EXPECT_EQ(controller_->test_finder()->stop_observing_called_count(), 1);
+}
+
+// Verifies that continuous docking layout updates pause when the tab is
+// hidden and resume when returning to the tab.
+TEST_F(VisualGuidedSetterControllerWinTest,
+       OnVisibilityChangedHidesAndRestoresLayout) {
+  gfx::Rect anchor(400, 300, 600, 400);
+  controller_->SetAnchorRect(anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  controller_->clear_applied_rects();
+
+  web_contents_->WasHidden();
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(controller_->applied_rects().size(), 0u);
+
+  web_contents_->WasShown();
+  controller_->clear_applied_rects();
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(controller_->applied_rects().size(), 2u);
+
+  controller_->Stop();
+}
+
+// Verifies that location change observation stops when the tab is hidden and
+// restarts when returning to the tab (when continuous docking is disabled).
+TEST_F(VisualGuidedSetterControllerWinTest,
+       OnVisibilityChangedHidesAndRestoresLayoutWhenContinuousDockingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      default_browser::kVisualGuidedSetterDocking);
+
+  controller_ =
+      std::make_unique<TestVisualGuidedSetterControllerWin>(widget_.get());
+  controller_->SetWebContents(web_contents_.get());
+  gfx::Rect anchor(400, 300, 600, 400);
+  controller_->SetAnchorRect(anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  EXPECT_EQ(controller_->test_finder()->start_observing_called_count(), 1);
+
+  web_contents_->WasHidden();
+  EXPECT_EQ(controller_->test_finder()->stop_observing_called_count(), 1);
+
+  web_contents_->WasShown();
+  EXPECT_EQ(controller_->test_finder()->start_observing_called_count(), 2);
+
+  controller_->Stop();
+}
+
+// Verifies that finding the Settings window while the tab is hidden suppresses
+// starting docking layout updates.
+TEST_F(VisualGuidedSetterControllerWinTest,
+       OnSettingsWindowFoundHidesIfTabHidden) {
+  gfx::Rect anchor(400, 300, 600, 400);
+  controller_->SetAnchorRect(anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  web_contents_->WasHidden();
+
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(controller_->applied_rects().size(), 0u);
+
+  controller_->Stop();
+}
+
+// Verifies that navigating away from chrome://default-browser stops the
+// controller and tears down docking.
+TEST_F(VisualGuidedSetterControllerWinTest,
+       PrimaryPageChangedStopsControllerWhenNavigatedAway) {
+  content::WebContentsTester::For(web_contents_.get())
+      ->SetLastCommittedURL(GURL("https://www.google.com"));
+
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  EXPECT_TRUE(controller_->is_running());
+
+  controller_->PrimaryPageChanged(web_contents_->GetPrimaryPage());
+
+  EXPECT_FALSE(controller_->is_running());
+}
+
+// Verifies that returning to a tab does not resume layout observation if the
+// Settings window was closed while hidden.
+TEST_F(VisualGuidedSetterControllerWinTest,
+       OnVisibilityChangedDoesNotRestoreIfSettingsWindowClosed) {
+  gfx::Rect anchor(400, 300, 600, 400);
+  controller_->SetAnchorRect(anchor);
+  controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+
+  web_contents_->WasHidden();
+  controller_->SetSettingsWindowValid(false);
+  controller_->clear_applied_rects();
+
+  web_contents_->WasShown();
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(controller_->applied_rects().size(), 0u);
+
+  controller_->Stop();
 }

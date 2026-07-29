@@ -30,6 +30,15 @@
 #include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
 
+namespace {
+
+bool IsDefaultBrowserWebUiUrl(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         url.host().starts_with("default-browser");
+}
+
+}  // namespace
+
 VisualGuidedSetterControllerWin::VisualGuidedSetterControllerWin(
     views::Widget* parent_widget)
     : parent_widget_(parent_widget),
@@ -93,13 +102,8 @@ void VisualGuidedSetterControllerWin::SetTopmostPolicy(TopmostPolicy policy) {
 void VisualGuidedSetterControllerWin::SetWebContents(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents_ = web_contents;
-
-  if (!is_continuous_docking_enabled_) {
-    return;
-  }
-
   content::WebContentsObserver::Observe(web_contents);
+
   if (is_running_) {
     UpdateDockedLayout();
   }
@@ -160,22 +164,15 @@ void VisualGuidedSetterControllerWin::OnWidgetVisibilityChanged(
     return;
   }
   if (!visible) {
-    if (overlay_) {
-      overlay_->Hide();
-    }
-    if (IsSettingsWindowValid()) {
-      ::ShowWindow(settings_hwnd_, SW_HIDE);
-      has_settings_being_hidden_ = true;
-    }
-    dock_timer_.Stop();
+    OnWebContentsHidden();
     return;
   }
-  if (settings_hwnd_ && ::IsWindow(settings_hwnd_)) {
-    if (has_settings_being_hidden_) {
-      ::ShowWindow(settings_hwnd_, SW_SHOWNOACTIVATE);
-      has_settings_being_hidden_ = false;
-    }
-    StartRuntimeTimers();
+  if (web_contents() &&
+      web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    return;
+  }
+  if (IsSettingsWindowValid()) {
+    ResumeLayoutObservation();
   }
   UpdateDockedLayout();
 }
@@ -215,12 +212,27 @@ void VisualGuidedSetterControllerWin::OnVisibilityChanged(
   if (!is_running_) {
     return;
   }
+  if (visibility != content::Visibility::VISIBLE) {
+    OnWebContentsHidden();
+    return;
+  }
+  if (parent_widget_ && !parent_widget_->IsVisible()) {
+    return;
+  }
+  if (IsSettingsWindowValid()) {
+    ResumeLayoutObservation();
+  }
   UpdateDockedLayout();
 }
 
 void VisualGuidedSetterControllerWin::PrimaryPageChanged(content::Page& page) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_running_) {
+    return;
+  }
+  if (!web_contents() ||
+      !IsDefaultBrowserWebUiUrl(web_contents()->GetLastCommittedURL())) {
+    Stop();
     return;
   }
   UpdateDockedLayout();
@@ -268,22 +280,14 @@ void VisualGuidedSetterControllerWin::OnSettingsWindowFound(HWND hwnd) {
 
   settings_hwnd_ = hwnd;
 
-  if (!is_continuous_docking_enabled_) {
-    settings_window_finder_->StartObservingLocationChanges(
-        settings_hwnd_,
-        base::BindRepeating(
-            &VisualGuidedSetterControllerWin::UpdateDockedLayout,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (parent_widget_ && !parent_widget_->IsVisible()) {
-    ::ShowWindow(settings_hwnd_, SW_HIDE);
+  if ((web_contents() &&
+       web_contents()->GetVisibility() != content::Visibility::VISIBLE) ||
+      (parent_widget_ && !parent_widget_->IsVisible())) {
+    OnWebContentsHidden();
     return;
   }
 
-  if (is_continuous_docking_enabled_) {
-    StartRuntimeTimers();
-  }
+  ResumeLayoutObservation();
   UpdateDockedLayout();
 }
 
@@ -309,14 +313,62 @@ void VisualGuidedSetterControllerWin::StartRuntimeTimers() {
 }
 
 void VisualGuidedSetterControllerWin::StopAllTimers() {
-  settings_window_finder_->Stop();
-  settings_window_finder_->StopObservingLocationChanges();
+  if (settings_window_finder_) {
+    settings_window_finder_->Stop();
+    settings_window_finder_->StopObservingLocationChanges();
+  }
   dock_timer_.Stop();
+}
+
+void VisualGuidedSetterControllerWin::ResumeLayoutObservation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_continuous_docking_enabled_) {
+    StartRuntimeTimers();
+  } else if (settings_window_finder_) {
+    settings_window_finder_->StartObservingLocationChanges(
+        settings_hwnd_,
+        base::BindRepeating(
+            &VisualGuidedSetterControllerWin::UpdateDockedLayout,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void VisualGuidedSetterControllerWin::PauseLayoutObservation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (settings_window_finder_) {
+    settings_window_finder_->StopObservingLocationChanges();
+  }
+  dock_timer_.Stop();
+}
+
+void VisualGuidedSetterControllerWin::OnWebContentsHidden() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (overlay_) {
+    overlay_->Hide();
+  }
+  if (IsSettingsWindowAlive()) {
+    // Drop HWND_TOPMOST so the Settings window behaves like a normal floating
+    // window and doesn't remain pinned on top of Chrome while viewing other
+    // tabs. We avoid calling ::ShowWindow(SW_HIDE) because hiding external
+    // UWP apps (SystemSettings.exe) suspends their UI thread and breaks input
+    // control.
+    HWND insert_after = (chrome_hwnd_ && ::IsWindow(chrome_hwnd_))
+                            ? chrome_hwnd_
+                            : HWND_NOTOPMOST;
+    ::SetWindowPos(
+        settings_hwnd_, insert_after, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
+  }
+  PauseLayoutObservation();
 }
 
 void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_running_) {
+    return;
+  }
+  if (!web_contents() ||
+      web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
     return;
   }
   if (IsSettingsWindowClosed()) {
@@ -350,9 +402,9 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
                   .id())
           .screen_work_rect();
   gfx::Rect anchor_rect_screen_dip = anchor_rect_in_webui_;
-  if (web_contents_) {
+  if (web_contents()) {
     anchor_rect_screen_dip.Offset(
-        web_contents_->GetViewBounds().OffsetFromOrigin());
+        web_contents()->GetViewBounds().OffsetFromOrigin());
   } else if (parent_widget_ && parent_widget_->GetContentsView()) {
     anchor_rect_screen_dip.Offset(parent_widget_->GetContentsView()
                                       ->GetBoundsInScreen()
@@ -385,9 +437,12 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
   UpdateOverlay();
 }
 
+bool VisualGuidedSetterControllerWin::IsSettingsWindowAlive() const {
+  return settings_hwnd_ && ::IsWindow(settings_hwnd_);
+}
+
 bool VisualGuidedSetterControllerWin::IsSettingsWindowValid() const {
-  return settings_hwnd_ && ::IsWindow(settings_hwnd_) &&
-         ::IsWindowVisible(settings_hwnd_);
+  return IsSettingsWindowAlive() && ::IsWindowVisible(settings_hwnd_);
 }
 
 bool VisualGuidedSetterControllerWin::IsSettingsWindowClosed() const {
@@ -422,8 +477,9 @@ void VisualGuidedSetterControllerWin::EnterDegradedFloating(Outcome reason) {
     overlay_->Hide();
   }
   if (IsSettingsWindowValid()) {
-    ::SetWindowPos(settings_hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0,
-                   SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    ::SetWindowPos(
+        settings_hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
   }
   is_degraded_ = true;
   NotifyErrorState(true);
@@ -473,18 +529,11 @@ void VisualGuidedSetterControllerWin::UpdateOverlay() {
     return;
   }
 
-  if (web_contents_) {
-    if (web_contents_->GetVisibility() != content::Visibility::VISIBLE) {
-      overlay_->Hide();
-      return;
-    }
-
-    const GURL url = web_contents_->GetVisibleURL();
-    if (!url.SchemeIs(content::kChromeUIScheme) ||
-        !url.host().starts_with("default-browser")) {
-      overlay_->Hide();
-      return;
-    }
+  if (!web_contents() ||
+      web_contents()->GetVisibility() != content::Visibility::VISIBLE ||
+      !IsDefaultBrowserWebUiUrl(web_contents()->GetLastCommittedURL())) {
+    overlay_->Hide();
+    return;
   }
 
   std::optional<gfx::Rect> anchor_rect_screen = GetAnchorRectScreen();
@@ -527,9 +576,9 @@ void VisualGuidedSetterControllerWin::UpdateOverlayColor() {
 }
 
 gfx::Rect VisualGuidedSetterControllerWin::GetAnchorRectScreenDip() const {
-  CHECK(web_contents_);
+  CHECK(web_contents());
   gfx::Rect anchor_rect_dip = anchor_rect_in_webui_;
-  anchor_rect_dip.Offset(web_contents_->GetViewBounds().OffsetFromOrigin());
+  anchor_rect_dip.Offset(web_contents()->GetViewBounds().OffsetFromOrigin());
   return anchor_rect_dip;
 }
 
@@ -561,12 +610,10 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
     overlay_.reset();
   }
 
-  if (settings_hwnd_ && ::IsWindow(settings_hwnd_)) {
-    if (has_settings_being_hidden_) {
-      ::ShowWindow(settings_hwnd_, SW_SHOWNOACTIVATE);
-    }
-    ::SetWindowPos(settings_hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0,
-                   SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+  if (IsSettingsWindowAlive()) {
+    ::SetWindowPos(
+        settings_hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
   }
 
   settings_hwnd_ = nullptr;
@@ -582,5 +629,4 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
 
   is_running_ = false;
   is_degraded_ = false;
-  has_settings_being_hidden_ = false;
 }

@@ -85,12 +85,17 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   void SetWebContents(content::WebContents* web_contents);
   void SetErrorCallback(ErrorCallback callback);
 
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
+  void PrimaryPageChanged(content::Page& page) override;
+
   bool is_running() const { return is_running_; }
   bool has_anchor_rect() const { return has_anchor_rect_; }
   HWND settings_hwnd_for_testing() const { return settings_hwnd_; }
 
  protected:
   // Virtual for testing.
+  virtual bool IsSettingsWindowAlive() const;
   virtual bool IsSettingsWindowValid() const;
   virtual bool IsSettingsWindowClosed() const;
   virtual std::optional<gfx::Rect> GetAnchorRectScreen() const;
@@ -112,10 +117,6 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   void OnWidgetShowStateChanged(views::Widget* widget) override;
   void OnWidgetThemeChanged(views::Widget* widget) override;
 
-  // content::WebContentsObserver:
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void PrimaryPageChanged(content::Page& page) override;
-
   // Starts the polling and event-hooking logic to find the Settings window.
   void StartFindSettingsWindow();
   void OnSettingsWindowFound(HWND hwnd);
@@ -124,6 +125,9 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   // Asynchronously spawns the OS Default Apps settings URI.
   void StartRuntimeTimers();
   void StopAllTimers();
+  void PauseLayoutObservation();
+  void ResumeLayoutObservation();
+  void OnWebContentsHidden();
 
   // Synchronizes the docked Settings window to the Chrome anchor.
   void UpdateDockedLayout();
@@ -147,7 +151,6 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   std::optional<bool> last_reported_error_;
 
   raw_ptr<views::Widget> parent_widget_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
   HWND chrome_hwnd_ = nullptr;
   HWND settings_hwnd_ = nullptr;
 
@@ -164,7 +167,6 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   bool is_running_ = false;
   bool is_degraded_ = false;
   bool last_known_chrome_active_ = true;
-  bool has_settings_being_hidden_ = false;
 
   gfx::Rect anchor_rect_in_webui_;
   bool has_anchor_rect_ = false;

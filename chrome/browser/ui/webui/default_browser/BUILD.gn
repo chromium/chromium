@@ -110,6 +110,8 @@ if (is_win) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/default_browser",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
       "//testing/gtest",
       "//ui/gfx",
       "//ui/views",
