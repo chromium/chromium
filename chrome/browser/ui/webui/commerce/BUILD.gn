@@ -78,4 +78,71 @@ if (!is_android) {
       "//ui/webui",
     ]
   }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "price_insights_handler_browsertest.cc",
+      "price_tracking_handler_browsertest.cc",
+      "shopping_ui_handler_delegate_browsertest.cc",
+    ]
+    deps = [
+      ":commerce",
+      ":impl",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/webui/feedback",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/test",
+      "//components/commerce/core:account_checker",
+      "//components/commerce/core:account_checker_test_support",
+      "//components/commerce/core:shopping_service_test_support",
+      "//components/commerce/core/mojom:mojo_bindings",
+      "//components/feature_engagement/test:test_support",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync_bookmarks",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "price_tracking_handler_unittest.cc",
+      "shopping_list_context_menu_controller_unittest.cc",
+    ]
+    deps = [
+      ":commerce",
+      ":impl",
+      "//chrome/app:command_ids",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/test",
+      "//components/commerce/core:account_checker_test_support",
+      "//components/commerce/core:shopping_service_test_support",
+      "//components/commerce/core/mojom:mojo_bindings",
+      "//components/feature_engagement/test:test_support",
+      "//components/power_bookmarks/core",
+      "//components/power_bookmarks/core:proto",
+      "//components/prefs:test_support",
+      "//components/strings:components_strings_grit",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/menus",
+    ]
+  }
 }
