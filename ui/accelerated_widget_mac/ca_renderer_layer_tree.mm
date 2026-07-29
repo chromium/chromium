@@ -38,6 +38,8 @@ namespace ui {
 // https://crbug.com/1441762
 BASE_FEATURE(kFullscreenLowPowerBackdropMac, base::FEATURE_DISABLED_BY_DEFAULT);
 
+namespace {
+
 #if BUILDFLAG(IS_MAC)
 // Show borders around RenderPassDrawQuad CALayers. which is the output of a
 // non-root render pass.
@@ -45,7 +47,17 @@ BASE_FEATURE(kShowMacRenderPassDrawQuadBorders,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-namespace {
+// Use the CALayer contentsHeadroom attribute, if available.
+BASE_FEATURE(kUseCALayerContentsHeadroom, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool UseCALayerContentsHeadroom() {
+  if (@available(macOS 26, iOS 26, *)) {
+    static bool feature_enabled =
+        base::FeatureList::IsEnabled(kUseCALayerContentsHeadroom);
+    return feature_enabled;
+  }
+  return false;
+}
 
 class ComparatorSkColor4f {
  public:
@@ -768,7 +780,8 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   }
 
   // Determine which type of CALayer subclass we should use.
-  if (metal::ShouldUseHDRCopier(io_surface.get(), hdr_metadata_,
+  if (!UseCALayerContentsHeadroom() &&
+      metal::ShouldUseHDRCopier(io_surface.get(), hdr_metadata_,
                                 io_surface_color_space)) {
     type_ = CALayerType::kHDRCopier;
   } else if (io_surface) {
@@ -1110,6 +1123,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     std::swap(av_layer_, old_layer_->av_layer_);
     update_contents =
         old_layer_->io_surface_ != io_surface_ ||
+        old_layer_->io_surface_color_space_ != io_surface_color_space_ ||
         old_layer_->cv_pixel_buffer_ != cv_pixel_buffer_ ||
         old_layer_->solid_color_contents_ != solid_color_contents_ ||
         old_layer_->hdr_metadata_ != hdr_metadata_;
@@ -1221,6 +1235,22 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         ca_layer_.contentsScale = tree()->scale_factor_;
       }
       break;
+  }
+
+  if (UseCALayerContentsHeadroom() && update_contents) {
+    if (@available(macOS 26, iOS 26, *)) {
+      if (io_surface_color_space_.IsHDR()) {
+        // Assume that all HDR content uses the full 4 stops (16x linear)
+        // headroom that an XDR display supports. Replace this when an accurate
+        // TODO(https://crbug.com/540031280): Accurately track content HDR
+        // headroom.
+        ca_layer_.contentsHeadroom = 16.f;
+        ca_layer_.preferredDynamicRange = CADynamicRangeHigh;
+      } else {
+        ca_layer_.contentsHeadroom = 0.f;
+        ca_layer_.preferredDynamicRange = CADynamicRangeStandard;
+      }
+    }
   }
 
   if (update_contents_rect) {
