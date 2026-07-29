@@ -2663,11 +2663,6 @@ crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-bas
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-bottom [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-top [ Failure ]
 
-
-crbug.com/515679398 external/wpt/mathml/relations/html5-tree/href-click-001.html [ Failure ]
-crbug.com/515679398 external/wpt/mathml/relations/html5-tree/href-click-002.html [ Failure ]
-crbug.com/515679398 external/wpt/mathml/relations/html5-tree/link-color-001.html [ Failure ]
-
 crbug.com/515750300 external/wpt/fullscreen/api/keyboard-lock-cross-origin-iframe.sub.html [ Skip Timeout ]
 crbug.com/515728343 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/abort-document-window-stop.sub.window.html [ Timeout ]
 crbug.com/515776378 external/wpt/wasm/serialization/memory/window-nested-dedicated-worker-failure.tentative.https.html [ Timeout ]
