@@ -4153,6 +4153,12 @@ bool GLES2DecoderImpl::CheckFramebufferValid(
     if (surfaceless_)
       return false;
     if (backbuffer_needs_clear_bits_) {
+      // glClear and glDrawBuffers operate on GL_DRAW_FRAMEBUFFER, so make
+      // sure the backbuffer is bound there before clearing it.
+      Framebuffer* draw_framebuffer = GetBoundDrawFramebuffer();
+      if (draw_framebuffer) {
+        BindFramebuffer(GL_DRAW_FRAMEBUFFER, GetBackbufferServiceId());
+      }
       api()->glClearColorFn(0, 0, 0, 1.0f);
       state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
       api()->glClearStencilFn(0);
@@ -4182,6 +4188,10 @@ bool GLES2DecoderImpl::CheckFramebufferValid(
       }
       backbuffer_needs_clear_bits_ = 0;
       RestoreClearState();
+      // Restore any previously bound GL_DRAW_FRAMEBUFFER.
+      if (draw_framebuffer) {
+        BindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_framebuffer->service_id());
+      }
     }
     return true;
   }
