@@ -163,7 +163,8 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
   bool is_active_universal_cart_task =
       IsActiveUniversalCartTask(state.value(), feature_mode);
   bool is_active_task = IsActiveExperimentalTask(state.value(), feature_mode) ||
-                        is_active_universal_cart_task;
+                        is_active_universal_cart_task ||
+                        IsActivePasswordChangeTask(state.value(), feature_mode);
 
   if (is_active_task && actor_task_list_bubble_rows_.contains(task_id) &&
       actor_task_list_bubble_rows_[task_id]) {
@@ -243,7 +244,8 @@ bool GlicActorTaskIconManager::RequiresTaskProcessing(
   return GlicActorTaskIconManager::RequiresAttention(state) ||
          state == TaskState::kFinished || state == TaskState::kFailed ||
          IsActiveExperimentalTask(state, feature_mode) ||
-         IsActiveUniversalCartTask(state, feature_mode);
+         IsActiveUniversalCartTask(state, feature_mode) ||
+         IsActivePasswordChangeTask(state, feature_mode);
 }
 
 // static
@@ -269,6 +271,14 @@ bool GlicActorTaskIconManager::IsActiveUniversalCartTask(
     TaskState state,
     glic::mojom::FeatureMode feature_mode) {
   return feature_mode == glic::mojom::FeatureMode::kUniversalCart &&
+         (state == TaskState::kActing || state == TaskState::kReflecting);
+}
+
+// static
+bool GlicActorTaskIconManager::IsActivePasswordChangeTask(
+    TaskState state,
+    glic::mojom::FeatureMode feature_mode) {
+  return feature_mode == glic::mojom::FeatureMode::kPasswordChange &&
          (state == TaskState::kActing || state == TaskState::kReflecting);
 }
 

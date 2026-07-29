@@ -292,6 +292,8 @@ std::string FeatureModeToString(glic::mojom::FeatureMode mode) {
       return "kUniversalCart";
     case glic::mojom::FeatureMode::kPromotionPage:
       return "kPromotionPage";
+    case glic::mojom::FeatureMode::kPasswordChange:
+      return "kPasswordChange";
   }
   LOG(ERROR) << "Unexpected value for FeatureMode: " << static_cast<int>(mode);
   return "Unknown";

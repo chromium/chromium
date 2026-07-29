@@ -422,6 +422,7 @@ bool GlicInvokeHandler::IsActuatingFeatureMode() const {
     case mojom::FeatureMode::kActuation:
     case mojom::FeatureMode::kExperimentalTriggering:
     case mojom::FeatureMode::kUniversalCart:
+    case mojom::FeatureMode::kPasswordChange:
       return true;
     default:
       return false;

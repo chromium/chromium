@@ -6,7 +6,7 @@ module glic.mojom;
 
 // @generate glic_api
 // Mode for specific feature behaviors.
-// Next version: 3
+// Next version: 4
 [Stable, Extensible]
 enum FeatureMode {
   [Default] kUnspecified = 0,
@@ -18,4 +18,6 @@ enum FeatureMode {
   [MinVersion=1] kUniversalCart = 4,
   // Client feature mode for Promotion Page.
   [MinVersion=2] kPromotionPage = 5,
+  // Client feature mode to initiate actuation for Password Change.
+  [MinVersion=3] kPasswordChange = 6,
 };
