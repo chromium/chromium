@@ -103,7 +103,7 @@ double GetGlassFrameTintOpacity(bool is_dark_mode, bool is_vertical_tabs) {
                              : features::kGlassTintOpacityForLightMode.Get();
 
   constexpr double kLiquidGlassOpacityLightMode = 0.55;
-  constexpr double kLiquidGlassOpacityDarkMode = 0.80;
+  constexpr double kLiquidGlassOpacityDarkMode = 0.90;
 
   double opacity = opacity_value >= 0.0
                        ? opacity_value
