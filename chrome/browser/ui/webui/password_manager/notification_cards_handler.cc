@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -39,114 +38,9 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #endif
 
-#include "base/json/values_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "components/prefs/pref_service.h"
-
 namespace password_manager {
 
 namespace {
-
-constexpr char kIdKey[] = "id";
-constexpr char kLastTimeShownKey[] = "last_time_shown";
-constexpr char kNumberOfTimesShownKey[] = "number_of_times_shown";
-constexpr char kWasDismissedKey[] = "was_dismissed";
-
-base::DictValue CreateNotificationCardPrefEntry(const std::string& id) {
-  base::DictValue entry;
-  entry.Set(kIdKey, id);
-  entry.Set(kLastTimeShownKey, base::TimeToValue(base::Time()));
-  entry.Set(kNumberOfTimesShownKey, 0);
-  entry.Set(kWasDismissedKey, false);
-  return entry;
-}
-
-NotificationCardPrefState GetCardPrefState(PrefService* prefs,
-                                           const std::string& id) {
-  NotificationCardPrefState state;
-  const base::ListValue& card_prefs =
-      prefs->GetList(prefs::kPasswordManagerPromoCardsList);
-  for (const auto& card_pref : card_prefs) {
-    const std::string* card_id = card_pref.GetDict().FindString(kIdKey);
-    if (card_id == nullptr || *card_id != id) {
-      continue;
-    }
-    state.number_of_times_shown =
-        card_pref.GetDict().FindInt(kNumberOfTimesShownKey).value_or(0);
-    state.last_time_shown =
-        base::ValueToTime(card_pref.GetDict().Find(kLastTimeShownKey))
-            .value_or(base::Time());
-    state.was_dismissed =
-        card_pref.GetDict().FindBool(kWasDismissedKey).value_or(false);
-    return state;
-  }
-  return state;
-}
-
-void MarkCardShown(PrefService* prefs,
-                   const std::string& id,
-                   NotificationCardType type) {
-  ScopedListPrefUpdate update(prefs, prefs::kPasswordManagerPromoCardsList);
-  bool found = false;
-  for (auto& notification_card_pref : update.Get()) {
-    const std::string* card_id =
-        notification_card_pref.GetDict().FindString(kIdKey);
-    if (card_id && *card_id == id) {
-      int times_shown = notification_card_pref.GetDict()
-                            .FindInt(kNumberOfTimesShownKey)
-                            .value_or(0);
-      notification_card_pref.GetDict().Set(kNumberOfTimesShownKey,
-                                           times_shown + 1);
-      notification_card_pref.GetDict().Set(
-          kLastTimeShownKey, base::TimeToValue(base::Time::Now()));
-      found = true;
-      break;
-    }
-  }
-  if (!found) {
-    base::DictValue entry = CreateNotificationCardPrefEntry(id);
-    entry.Set(kNumberOfTimesShownKey, 1);
-    entry.Set(kLastTimeShownKey, base::TimeToValue(base::Time::Now()));
-    update.Get().Append(std::move(entry));
-  }
-  base::UmaHistogramEnumeration("PasswordManager.PromoCard.Shown", type);
-}
-
-void MarkCardDismissed(PrefService* prefs, const std::string& id) {
-  ScopedListPrefUpdate update(prefs, prefs::kPasswordManagerPromoCardsList);
-  for (auto& notification_card_pref : update.Get()) {
-    const std::string* card_id =
-        notification_card_pref.GetDict().FindString(kIdKey);
-    if (card_id && *card_id == id) {
-      notification_card_pref.GetDict().Set(kWasDismissedKey, true);
-      return;
-    }
-  }
-  base::DictValue entry = CreateNotificationCardPrefEntry(id);
-  entry.Set(kWasDismissedKey, true);
-  update.Get().Append(std::move(entry));
-}
-
-using NotificationCardCandidate =
-    std::pair<PasswordNotificationCardBase*, NotificationCardPrefState>;
-
-bool CompareNotificationCardCandidates(const NotificationCardCandidate& lhs,
-                                       const NotificationCardCandidate& rhs) {
-  auto l_type = lhs.first->GetNotificationSeverity();
-  auto r_type = rhs.first->GetNotificationSeverity();
-  if (l_type != r_type) {
-    if (l_type == NotificationSeverity::kCritical) {
-      return true;
-    }
-    return false;
-  }
-
-  if (lhs.second.last_time_shown != rhs.second.last_time_shown) {
-    return lhs.second.last_time_shown < rhs.second.last_time_shown;
-  }
-
-  return lhs.first->GetCardID() < rhs.first->GetCardID();
-}
 
 // Returns the base::Value associated with the notification card.
 base::DictValue NotificationCardToValueDict(
@@ -158,7 +52,6 @@ base::DictValue NotificationCardToValueDict(
   if (!notification_card->GetActionButtonText().empty()) {
     dict.Set("actionButtonText", notification_card->GetActionButtonText());
   }
-  dict.Set("isDismissible", notification_card->IsDismissible());
   return dict;
 }
 
@@ -173,10 +66,11 @@ NotificationCardsHandler::NotificationCardsHandler(Profile* profile)
                                                                         false)
           .get()));
   notification_cards_.push_back(std::make_unique<WebPasswordManagerPromo>(
-      SyncServiceFactory::GetForProfile(profile)));
+      profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile)));
   notification_cards_.push_back(
       std::make_unique<PasswordManagerShortcutPromo>(profile));
-  notification_cards_.push_back(std::make_unique<AccessOnAnyDevicePromo>());
+  notification_cards_.push_back(
+      std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
   notification_cards_.push_back(std::make_unique<MovePasswordsPromo>(
       profile,
@@ -187,7 +81,8 @@ NotificationCardsHandler::NotificationCardsHandler(Profile* profile)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  auto relaunch_banner = std::make_unique<RelaunchChromeBanner>();
+  auto relaunch_banner =
+      std::make_unique<RelaunchChromeBanner>(profile->GetPrefs());
   relaunch_chrome_banner_ = relaunch_banner.get();
   notification_cards_.push_back(std::move(relaunch_banner));
 #endif
@@ -261,10 +156,7 @@ void NotificationCardsHandler::HandleRecordNotificationDismissed(
 
   for (auto& notification_card : notification_cards_) {
     if (notification_card->GetCardID() == card_id) {
-      if (!notification_card->IsDismissible()) {
-        return;
-      }
-      MarkCardDismissed(profile_->GetPrefs(), card_id);
+      notification_card->OnNotificationCardDismissed();
       return;
     }
   }
@@ -272,23 +164,30 @@ void NotificationCardsHandler::HandleRecordNotificationDismissed(
 
 PasswordNotificationCardBase*
 NotificationCardsHandler::GetNotificationCardToShowAndUpdatePref() {
-  std::vector<NotificationCardCandidate> candidates;
-  for (const auto& card : notification_cards_) {
-    NotificationCardPrefState state =
-        GetCardPrefState(profile_->GetPrefs(), card->GetCardID());
-    if (card->ShouldShowCard(state)) {
-      candidates.emplace_back(card.get(), state);
+  std::vector<PasswordNotificationCardBase*>
+      notification_card_to_show_candidates;
+  for (const auto& notification_card : notification_cards_) {
+    if (notification_card->ShouldShowCard()) {
+      // If there's a reason to show relaunch Chrome bubble, it should take the
+      // highest priority.
+      if (notification_card->GetNotificationCardType() ==
+          NotificationCardType::kRelauchChrome) {
+        notification_card->OnNotificationCardShown();
+        return notification_card.get();
+      }
+      notification_card_to_show_candidates.push_back(notification_card.get());
     }
   }
-  if (candidates.empty()) {
+  if (notification_card_to_show_candidates.empty()) {
     return nullptr;
   }
-  auto it =
-      std::ranges::min_element(candidates, CompareNotificationCardCandidates);
+  // Sort based on last time shown.
+  auto* card_to_show = *std::ranges::min_element(
+      notification_card_to_show_candidates, [](auto* lhs, auto* rhs) {
+        return lhs->last_time_shown() < rhs->last_time_shown();
+      });
 
-  PasswordNotificationCardBase* card_to_show = it->first;
-  MarkCardShown(profile_->GetPrefs(), card_to_show->GetCardID(),
-                card_to_show->GetNotificationCardType());
+  card_to_show->OnNotificationCardShown();
   return card_to_show;
 }
 

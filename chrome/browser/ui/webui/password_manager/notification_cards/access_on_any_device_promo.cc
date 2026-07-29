@@ -13,7 +13,9 @@ extern const char16_t kGetStartedOnIOS[] =
     u"https://support.google.com/chrome/?p=gpm_desktop_promo_ios";
 constexpr char kAccessOnAnyDevicePromoId[] = "access_on_any_device_promo";
 
-AccessOnAnyDevicePromo::AccessOnAnyDevicePromo() = default;
+AccessOnAnyDevicePromo::AccessOnAnyDevicePromo(PrefService* prefs)
+    : password_manager::PasswordNotificationCardBase(kAccessOnAnyDevicePromoId,
+                                                     prefs) {}
 
 std::string AccessOnAnyDevicePromo::GetCardID() const {
   return kAccessOnAnyDevicePromoId;
@@ -24,10 +26,9 @@ AccessOnAnyDevicePromo::GetNotificationCardType() const {
   return password_manager::NotificationCardType::kAccessOnAnyDevice;
 }
 
-bool AccessOnAnyDevicePromo::ShouldShowCard(
-    const password_manager::NotificationCardPrefState& pref_state) const {
-  return !pref_state.was_dismissed &&
-         pref_state.number_of_times_shown <
+bool AccessOnAnyDevicePromo::ShouldShowCard() const {
+  return !was_dismissed_ &&
+         number_of_times_shown_ <
              PasswordNotificationCardBase::kPromoDisplayLimit;
 }
 

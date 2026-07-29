@@ -11,15 +11,14 @@
 class AccessOnAnyDevicePromo
     : public password_manager::PasswordNotificationCardBase {
  public:
-  AccessOnAnyDevicePromo();
+  explicit AccessOnAnyDevicePromo(PrefService* prefs);
 
  private:
   // PasswordNotificationCardBase implementation.
   std::string GetCardID() const override;
   password_manager::NotificationCardType GetNotificationCardType()
       const override;
-  bool ShouldShowCard(const password_manager::NotificationCardPrefState&
-                          pref_state) const override;
+  bool ShouldShowCard() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
 };

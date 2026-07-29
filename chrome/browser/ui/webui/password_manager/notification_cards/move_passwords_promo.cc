@@ -56,7 +56,9 @@ int GetLocalPasswordsCount(extensions::PasswordsPrivateDelegate* delegate) {
 MovePasswordsPromo::MovePasswordsPromo(
     Profile* profile,
     extensions::PasswordsPrivateDelegate* delegate)
-    : profile_(profile) {
+    : password_manager::PasswordNotificationCardBase(kMovePasswordsId,
+                                                     profile->GetPrefs()),
+      profile_(profile) {
   CHECK(delegate);
   delegate_ = delegate->AsWeakPtr();
 }
@@ -72,8 +74,7 @@ MovePasswordsPromo::GetNotificationCardType() const {
   return password_manager::NotificationCardType::kMovePasswords;
 }
 
-bool MovePasswordsPromo::ShouldShowCard(
-    const password_manager::NotificationCardPrefState& pref_state) const {
+bool MovePasswordsPromo::ShouldShowCard() const {
   CHECK(profile_);
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (!sync_service ||
@@ -84,13 +85,13 @@ bool MovePasswordsPromo::ShouldShowCard(
 
   // If notification card was dismissed or shown already for
   // `kPromoDisplayLimit` times, show it in a week next time.
-  bool should_suppress = pref_state.was_dismissed ||
-                         pref_state.number_of_times_shown >=
-                             PasswordNotificationCardBase::kPromoDisplayLimit;
+  bool should_suppress =
+      was_dismissed_ || number_of_times_shown_ >=
+                            PasswordNotificationCardBase::kPromoDisplayLimit;
 
   bool bubble_is_not_over_prompted =
-      !should_suppress || base::Time::Now() - pref_state.last_time_shown >
-                              kMovePasswordsPromoPeriod;
+      !should_suppress ||
+      base::Time().Now() - last_time_shown_ > kMovePasswordsPromoPeriod;
 
   return bubble_is_not_over_prompted &&
          GetLocalPasswordsCount(delegate_.get()) > 0;

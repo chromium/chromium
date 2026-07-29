@@ -15,7 +15,10 @@
 constexpr char kWebPasswordManagerPromoId[] = "passwords_on_web_promo";
 
 WebPasswordManagerPromo::WebPasswordManagerPromo(
-    const syncer::SyncService* sync_service) {
+    PrefService* prefs,
+    const syncer::SyncService* sync_service)
+    : password_manager::PasswordNotificationCardBase(kWebPasswordManagerPromoId,
+                                                     prefs) {
   sync_enabled_ =
       syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? password_manager::sync_util::GetPasswordSyncState(sync_service) !=
@@ -33,14 +36,13 @@ WebPasswordManagerPromo::GetNotificationCardType() const {
   return password_manager::NotificationCardType::kWebPasswordManager;
 }
 
-bool WebPasswordManagerPromo::ShouldShowCard(
-    const password_manager::NotificationCardPrefState& pref_state) const {
+bool WebPasswordManagerPromo::ShouldShowCard() const {
   if (!sync_enabled_) {
     return false;
   }
 
-  return !pref_state.was_dismissed &&
-         pref_state.number_of_times_shown <
+  return !was_dismissed_ &&
+         number_of_times_shown_ <
              PasswordNotificationCardBase::kPromoDisplayLimit;
 }
 

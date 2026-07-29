@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/password_manager/notification_cards_handler.h"
 
-#include <limits>
 #include <memory>
 
 #include "base/json/values_util.h"
@@ -23,13 +22,11 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::testing::_;
 using testing::IsEmpty;
 using testing::Matcher;
 using ::testing::Return;
@@ -43,28 +40,33 @@ namespace {
 
 const char kTestCallbackId[] = "test-callback-id";
 
+auto HasSameNotificationCards(
+    const std::vector<std::string>& notification_cards) {
+  std::vector<Matcher<const base::Value&>> matchers;
+  for (const auto& p : notification_cards) {
+    matchers.push_back(Truly([p](const base::Value& a) {
+      return p == *a.GetDict().FindString("id");
+    }));
+  }
+  return UnorderedElementsAreArray(matchers);
+}
+
 class MockNotificationCard : public PasswordNotificationCardBase {
  public:
-  MockNotificationCard() {
-    ON_CALL(*this, GetNotificationSeverity)
-        .WillByDefault(Return(NotificationSeverity::kPromo));
-  }
+  MockNotificationCard(const std::string& id, PrefService* prefs)
+      : PasswordNotificationCardBase(id, prefs) {}
 
   MOCK_METHOD(std::string, GetCardID, (), (const, override));
   MOCK_METHOD(NotificationCardType,
               GetNotificationCardType,
               (),
               (const, override));
-  MOCK_METHOD(NotificationSeverity,
-              GetNotificationSeverity,
-              (),
-              (const, override));
   MOCK_METHOD(std::u16string, GetTitle, (), (const, override));
-  MOCK_METHOD(bool,
-              ShouldShowCard,
-              (const NotificationCardPrefState&),
-              (const, override));
+  MOCK_METHOD(bool, ShouldShowCard, (), (const, override));
   MOCK_METHOD(std::u16string, GetDescription, (), (const, override));
+
+  int number_of_times_shown() const { return number_of_times_shown_; }
+  bool was_dismissed() const { return was_dismissed_; }
 };
 
 }  // namespace
@@ -79,12 +81,16 @@ class NotificationCardsHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     profile_store_ = CreateAndUseTestPasswordStore(profile());
 
+    prefs_.registry()->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
+
     std::vector<std::unique_ptr<password_manager::PasswordNotificationCardBase>>
         cards;
-    cards.emplace_back(std::make_unique<MockNotificationCard>());
+    cards.emplace_back(std::make_unique<MockNotificationCard>(
+        "password_checkup_promo", &prefs_));
     card1_ = static_cast<MockNotificationCard*>(cards.back().get());
     ON_CALL(*card1_, GetCardID).WillByDefault(Return("password_checkup_promo"));
-    cards.emplace_back(std::make_unique<MockNotificationCard>());
+    cards.emplace_back(std::make_unique<MockNotificationCard>(
+        "password_shortcut_promo", &prefs_));
     card2_ = static_cast<MockNotificationCard*>(cards.back().get());
     ON_CALL(*card2_, GetCardID)
         .WillByDefault(Return("password_shortcut_promo"));
@@ -133,66 +139,58 @@ class NotificationCardsHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
-  PrefService* pref_service() { return profile()->GetPrefs(); }
+  TestingPrefServiceSimple* pref_service() { return &prefs_; }
   MockNotificationCard* first_card() { return card1_; }
   MockNotificationCard* second_card() { return card2_; }
 
-  int GetTimesShown(const std::string& card_id) {
-    const auto& list =
-        pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
-    for (const auto& entry : list) {
-      const std::string* id = entry.GetDict().FindString("id");
-      if (id && *id == card_id) {
-        return entry.GetDict().FindInt("number_of_times_shown").value_or(0);
-      }
-    }
-    return 0;
-  }
-  base::Time GetLastTimeShown(const std::string& card_id) {
-    const auto& list =
-        pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
-    for (const auto& entry : list) {
-      const std::string* id = entry.GetDict().FindString("id");
-      if (id && *id == card_id) {
-        return base::ValueToTime(entry.GetDict().Find("last_time_shown"))
-            .value_or(base::Time());
-      }
-    }
-    return base::Time();
-  }
-  bool WasDismissed(const std::string& card_id) {
-    const auto& list =
-        pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
-    for (const auto& entry : list) {
-      const std::string* id = entry.GetDict().FindString("id");
-      if (id && *id == card_id) {
-        return entry.GetDict().FindBool("was_dismissed").value_or(false);
-      }
-    }
-    return false;
-  }
-
-  void MarkCardShownInTest(const std::string& card_id) {
-    ScopedListPrefUpdate update(pref_service(),
-                                prefs::kPasswordManagerPromoCardsList);
-    base::DictValue entry;
-    entry.Set("id", card_id);
-    entry.Set("number_of_times_shown", 1);
-    entry.Set("last_time_shown", base::TimeToValue(base::Time::Now()));
-    update.Get().Append(std::move(entry));
-  }
-
  private:
   scoped_refptr<TestPasswordStore> profile_store_;
+  TestingPrefServiceSimple prefs_;
   content::TestWebUI web_ui_;
   raw_ptr<NotificationCardsHandler> handler_;
   raw_ptr<MockNotificationCard> card1_;
   raw_ptr<MockNotificationCard> card2_;
 };
 
+TEST_F(NotificationCardsHandlerTest, GetAllNotificationCards) {
+  pref_service()->ClearPref(prefs::kPasswordManagerPromoCardsList);
+  task_environment()->RunUntilIdle();
+
+  // Enforce delegate creation before retrieving notification cards.
+  scoped_refptr<extensions::PasswordsPrivateDelegate> delegate =
+      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
+          profile(), true);
+
+  auto notification_card_handler = NotificationCardsHandler(profile());
+  task_environment()->RunUntilIdle();
+
+  const base::ListValue& list =
+      profile()->GetPrefs()->GetList(prefs::kPasswordManagerPromoCardsList);
+  task_environment()->RunUntilIdle();
+
+  std::vector<std::string> notification_cards = {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      "password_checkup_promo", "passwords_on_web_promo",
+      "password_shortcut_promo", "access_on_any_device_promo"
+#endif
+  };
+
+#if (BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  notification_cards.emplace_back("move_passwords_promo");
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  notification_cards.emplace_back("relaunch_chrome_promo");
+#endif
+
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(list, HasSameNotificationCards(notification_cards));
+}
+
 TEST_F(NotificationCardsHandlerTest, GetAvailableNotificationCard) {
-  ASSERT_EQ(0, GetTimesShown(first_card()->GetCardID()));
-  ASSERT_EQ(0, GetTimesShown(second_card()->GetCardID()));
+  ASSERT_EQ(0, first_card()->number_of_times_shown());
+  ASSERT_EQ(0, second_card()->number_of_times_shown());
 
   base::ListValue args;
   args.Append(kTestCallbackId);
@@ -209,8 +207,8 @@ TEST_F(NotificationCardsHandlerTest, GetAvailableNotificationCard) {
 
   // Verify that notification card was shown and content returned matches card
   // content.
-  EXPECT_EQ(0, GetTimesShown(first_card()->GetCardID()));
-  EXPECT_EQ(1, GetTimesShown(second_card()->GetCardID()));
+  EXPECT_EQ(0, first_card()->number_of_times_shown());
+  EXPECT_EQ(1, second_card()->number_of_times_shown());
 
   const base::DictValue& response = GetLastSuccessfulResponse();
   EXPECT_EQ(second_card()->GetCardID(), *response.FindString("id"));
@@ -222,14 +220,13 @@ TEST_F(NotificationCardsHandlerTest, GetAvailableNotificationCard) {
 
 TEST_F(NotificationCardsHandlerTest, TheOldestCardReturned) {
   // Mark both notification cards as shown.
-  MarkCardShownInTest(first_card()->GetCardID());
+  first_card()->OnNotificationCardShown();
   AdvanceClock(base::Days(1));
-  MarkCardShownInTest(second_card()->GetCardID());
-  ASSERT_LT(GetLastTimeShown(first_card()->GetCardID()),
-            GetLastTimeShown(second_card()->GetCardID()));
+  second_card()->OnNotificationCardShown();
+  ASSERT_LT(first_card()->last_time_shown(), second_card()->last_time_shown());
 
-  ASSERT_EQ(1, GetTimesShown(first_card()->GetCardID()));
-  ASSERT_EQ(1, GetTimesShown(second_card()->GetCardID()));
+  ASSERT_EQ(1, first_card()->number_of_times_shown());
+  ASSERT_EQ(1, second_card()->number_of_times_shown());
 
   base::ListValue args;
   args.Append(kTestCallbackId);
@@ -241,16 +238,16 @@ TEST_F(NotificationCardsHandlerTest, TheOldestCardReturned) {
                                 std::move(args));
 
   // Verify that notification card was shown.
-  EXPECT_EQ(2, GetTimesShown(first_card()->GetCardID()));
-  EXPECT_EQ(1, GetTimesShown(second_card()->GetCardID()));
+  EXPECT_EQ(2, first_card()->number_of_times_shown());
+  EXPECT_EQ(1, second_card()->number_of_times_shown());
 
   const base::DictValue& response = GetLastSuccessfulResponse();
   EXPECT_EQ(first_card()->GetCardID(), *response.FindString("id"));
 }
 
 TEST_F(NotificationCardsHandlerTest, NoAvailableCard) {
-  ASSERT_EQ(0, GetTimesShown(first_card()->GetCardID()));
-  ASSERT_EQ(0, GetTimesShown(second_card()->GetCardID()));
+  ASSERT_EQ(0, first_card()->number_of_times_shown());
+  ASSERT_EQ(0, second_card()->number_of_times_shown());
 
   base::ListValue args;
   args.Append(kTestCallbackId);
@@ -261,13 +258,13 @@ TEST_F(NotificationCardsHandlerTest, NoAvailableCard) {
   web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
                                 std::move(args));
   VerifyLastRequestRejected();
-  EXPECT_EQ(0, GetTimesShown(first_card()->GetCardID()));
-  EXPECT_EQ(0, GetTimesShown(second_card()->GetCardID()));
+  EXPECT_EQ(0, first_card()->number_of_times_shown());
+  EXPECT_EQ(0, second_card()->number_of_times_shown());
 }
 
 TEST_F(NotificationCardsHandlerTest, RecordCardDismissed) {
-  ASSERT_FALSE(WasDismissed(first_card()->GetCardID()));
-  ASSERT_FALSE(WasDismissed(second_card()->GetCardID()));
+  ASSERT_FALSE(first_card()->was_dismissed());
+  ASSERT_FALSE(second_card()->was_dismissed());
 
   base::ListValue args;
   args.Append(first_card()->GetCardID());
@@ -275,8 +272,8 @@ TEST_F(NotificationCardsHandlerTest, RecordCardDismissed) {
   web_ui()->ProcessWebUIMessage(GURL(), "recordNotificationDismissed",
                                 std::move(args));
 
-  EXPECT_TRUE(WasDismissed(first_card()->GetCardID()));
-  EXPECT_FALSE(WasDismissed(second_card()->GetCardID()));
+  EXPECT_TRUE(first_card()->was_dismissed());
+  EXPECT_FALSE(second_card()->was_dismissed());
 }
 
 TEST_F(NotificationCardsHandlerTest,
@@ -284,11 +281,8 @@ TEST_F(NotificationCardsHandlerTest,
   MockNotificationCard* some_card = first_card();
   MockNotificationCard* relaunch_chrome_card = second_card();
 
-  ON_CALL(*relaunch_chrome_card, GetNotificationSeverity)
-      .WillByDefault(Return(NotificationSeverity::kCritical));
-
-  ASSERT_EQ(0, GetTimesShown(some_card->GetCardID()));
-  ASSERT_EQ(0, GetTimesShown(relaunch_chrome_card->GetCardID()));
+  ASSERT_EQ(0, some_card->number_of_times_shown());
+  ASSERT_EQ(0, relaunch_chrome_card->number_of_times_shown());
 
   base::ListValue args;
   args.Append(kTestCallbackId);
@@ -296,13 +290,15 @@ TEST_F(NotificationCardsHandlerTest,
   EXPECT_CALL(*some_card, ShouldShowCard).WillRepeatedly(Return(true));
   EXPECT_CALL(*relaunch_chrome_card, ShouldShowCard)
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(*relaunch_chrome_card, GetNotificationCardType)
+      .WillRepeatedly(Return(NotificationCardType::kRelauchChrome));
 
   web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
                                 std::move(args));
 
   // Verify that notification card was shown.
-  EXPECT_EQ(0, GetTimesShown(some_card->GetCardID()));
-  EXPECT_EQ(1, GetTimesShown(relaunch_chrome_card->GetCardID()));
+  EXPECT_EQ(0, some_card->number_of_times_shown());
+  EXPECT_EQ(1, relaunch_chrome_card->number_of_times_shown());
 }
 
 }  // namespace password_manager

@@ -17,7 +17,9 @@
 constexpr char kShortcutPromoId[] = "password_shortcut_promo";
 
 PasswordManagerShortcutPromo::PasswordManagerShortcutPromo(Profile* profile)
-    : profile_(profile) {
+    : password_manager::PasswordNotificationCardBase(kShortcutPromoId,
+                                                     profile->GetPrefs()),
+      profile_(profile) {
   is_shortcut_installed_ =
       web_app::FindInstalledAppWithUrlInScope(
           profile, GURL(chrome::kChromeUIPasswordManagerURL))
@@ -33,8 +35,7 @@ PasswordManagerShortcutPromo::GetNotificationCardType() const {
   return password_manager::NotificationCardType::kAddShortcut;
 }
 
-bool PasswordManagerShortcutPromo::ShouldShowCard(
-    const password_manager::NotificationCardPrefState& pref_state) const {
+bool PasswordManagerShortcutPromo::ShouldShowCard() const {
   if (is_shortcut_installed_ || !web_app::AreWebAppsEnabled(profile_)) {
     return false;
   }
@@ -47,8 +48,8 @@ bool PasswordManagerShortcutPromo::ShouldShowCard(
     }
   }
 
-  return !pref_state.was_dismissed &&
-         pref_state.number_of_times_shown <
+  return !was_dismissed_ &&
+         number_of_times_shown_ <
              PasswordNotificationCardBase::kPromoDisplayLimit;
 }
 

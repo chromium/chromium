@@ -329,7 +329,7 @@ suite('PasswordManagerAppTest', function() {
   });
 
   // TODO(crbug.com/331450809): This test is flaky.
-  test.skip('notification card password moved toast', async () => {
+  test.skip('promo card password moved toast', async () => {
     const testEmail = 'test.user@gmail.com';
     const group = createCredentialGroup({
       name: 'test.com',

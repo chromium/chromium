@@ -10,7 +10,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 constexpr base::TimeDelta kPasswordCheckupPromoPeriod = base::Days(7);
@@ -19,7 +18,7 @@ constexpr char kCheckupPromoId[] = "password_checkup_promo";
 PasswordCheckupPromo::PasswordCheckupPromo(
     PrefService* prefs,
     extensions::PasswordsPrivateDelegate* delegate)
-    : prefs_(prefs) {
+    : password_manager::PasswordNotificationCardBase(kCheckupPromoId, prefs) {
   CHECK(delegate);
   delegate_ = delegate->AsWeakPtr();
 }
@@ -35,8 +34,7 @@ PasswordCheckupPromo::GetNotificationCardType() const {
   return password_manager::NotificationCardType::kCheckup;
 }
 
-bool PasswordCheckupPromo::ShouldShowCard(
-    const password_manager::NotificationCardPrefState& pref_state) const {
+bool PasswordCheckupPromo::ShouldShowCard() const {
   // Don't show promo if checkup is disabled by policy.
   if (!prefs_->GetBoolean(
           password_manager::prefs::kPasswordLeakDetectionEnabled)) {
@@ -48,11 +46,11 @@ bool PasswordCheckupPromo::ShouldShowCard(
   }
   // If notification card was dismissed or shown already for
   // `kPromoDisplayLimit` times, show it in a week next time.
-  bool should_suppress = pref_state.was_dismissed ||
-                         pref_state.number_of_times_shown >=
-                             PasswordNotificationCardBase::kPromoDisplayLimit;
-  return !should_suppress || base::Time::Now() - pref_state.last_time_shown >
-                                 kPasswordCheckupPromoPeriod;
+  bool should_suppress =
+      was_dismissed_ || number_of_times_shown_ >=
+                            PasswordNotificationCardBase::kPromoDisplayLimit;
+  return !should_suppress ||
+         base::Time().Now() - last_time_shown_ > kPasswordCheckupPromoPeriod;
 }
 
 std::u16string PasswordCheckupPromo::GetTitle() const {
