@@ -269,7 +269,6 @@ try_.builder(
             "official_optimize",
             # TODO(crbug.com/433988303): Swap to stable.
             "dev_channel",
-            "v8_release_branch",
         ],
     ),
     cores = 32,
@@ -312,7 +311,6 @@ try_.builder(
             "official_optimize",
             # TODO(crbug.com/433988303): Swap to stable.
             "dev_channel",
-            "v8_release_branch",
         ],
     ),
     cores = 32,

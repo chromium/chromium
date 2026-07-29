@@ -1188,9 +1188,6 @@ gn_args.config(
     args = {
         "chrome_pgo_phase": 1,
     },
-    configs = [
-        "v8_release_branch",
-    ],
 )
 
 gn_args.config(
@@ -1486,14 +1483,6 @@ gn_args.config(
     configs = [
         "x86",
     ],
-)
-
-# V8 flag that disables v8_enable_runtime_call_stats on release branches.
-gn_args.config(
-    name = "v8_release_branch",
-    args = {
-        "v8_is_on_release_branch": True,
-    },
 )
 
 gn_args.config(
