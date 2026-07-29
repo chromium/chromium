@@ -34,9 +34,9 @@ features:
 owners:
 - antoli@google.com
 - cbe-eng@google.com
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:152-
+- chrome_os:152-
 schema:
   items:
     properties:
