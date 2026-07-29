@@ -49,9 +49,9 @@ config("warnings_config") {
 }
 
 # The "public" target for all litert/litert files.
-group("litert") {
+tflite_group("litert") {
   public_deps = [ ":litert_headers" ]
-  deps = [
+  conditional_deps = [
     ":litert_c",
     ":litert_compiler",
     ":litert_core",
@@ -218,6 +218,9 @@ source_set("litert_headers") {
     "src/litert/c/internal/litert_delegate_wrapper.h",
     "src/litert/c/internal/litert_external_litert_buffer_context.h",
     "src/litert/c/internal/litert_logging.h",
+    "src/litert/c/internal/litert_logging_helper.h",
+    "src/litert/c/internal/litert_logging_helper_with_compiler_context.h",
+    "src/litert/c/internal/litert_logging_helper_with_runtime_context.h",
     "src/litert/c/internal/litert_runtime_api_export.h",
     "src/litert/c/internal/litert_runtime_builtin.h",
     "src/litert/c/internal/litert_runtime_c_api.h",
@@ -366,12 +369,8 @@ source_set("litert_headers") {
   }
 
   visibility = [
-    ":litert",
-    ":litert_c",
-    ":litert_compiler",
-    ":litert_core",
-    ":litert_runtime",
-    ":litert_runtime_accelerators",
+    ":*",
+    "//components/optimization_guide/internal/*",
   ]
 }
 
@@ -380,7 +379,7 @@ copy("litert_build_config") {
   outputs = [ "$target_gen_dir/src/litert/build_common/build_config.h" ]
 }
 
-static_library("litert_c") {
+tflite_static_library("litert_c") {
   sources = [
     "src/litert/c/internal/litert_accelerator.cc",
     "src/litert/c/internal/litert_accelerator_registration.cc",
@@ -388,6 +387,9 @@ static_library("litert_c") {
     "src/litert/c/internal/litert_delegate_wrapper.cc",
     "src/litert/c/internal/litert_external_litert_buffer_context.cc",
     "src/litert/c/internal/litert_logging.cc",
+    "src/litert/c/internal/litert_logging_helper.cc",
+    "src/litert/c/internal/litert_logging_helper_with_compiler_context.cc",
+    "src/litert/c/internal/litert_logging_helper_with_runtime_context.cc",
     "src/litert/c/internal/litert_runtime_api_export.cc",
     "src/litert/c/internal/litert_runtime_builtin.cc",
     "src/litert/c/internal/litert_runtime_context.cc",
@@ -419,12 +421,12 @@ static_library("litert_c") {
     "src/litert/c/options/litert_webnn_options.cc",
   ]
   deps = [ ":litert_headers" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  visibility = [ ":litert" ]
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":*" ]
 }
 
-static_library("litert_compiler") {
+tflite_static_library("litert_compiler") {
   sources = [
     "src/litert/compiler/plugin/algo.cc",
     "src/litert/compiler/plugin/compiler_plugin.cc",
@@ -433,15 +435,15 @@ static_library("litert_compiler") {
   deps = [ ":litert_headers" ]
 
   if (build_litert_with_xnnpack) {
-    deps += [ "//third_party/xnnpack" ]
+    conditional_deps = [ "//third_party/xnnpack" ]
   }
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  visibility = [ ":litert" ]
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":*" ]
 }
 
-static_library("litert_runtime_accelerators") {
+tflite_static_library("litert_runtime_accelerators") {
   sources = [
     "src/litert/runtime/accelerators/auto_registration.cc",
     "src/litert/runtime/accelerators/cpu_registry.cc",
@@ -459,15 +461,16 @@ static_library("litert_runtime_accelerators") {
   if (build_litert_with_xnnpack) {
     sources +=
         [ "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.cc" ]
+    conditional_deps = [ "//third_party/xnnpack" ]
   }
 
   deps = [ ":litert_headers" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  visibility = [ ":litert" ]
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":*" ]
 }
 
-static_library("litert_core") {
+tflite_static_library("litert_core") {
   sources = [
     "src/litert/core/buffer_error_reporter.cc",
     "src/litert/core/build_stamp.cc",
@@ -491,15 +494,15 @@ static_library("litert_core") {
     sources += [ "src/litert/core/dynamic_loading.cc" ]
   }
   deps = [ ":litert_headers" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     "//build/config/compiler:rtti",
   ]
-  visibility = [ ":litert" ]
+  visibility = [ ":*" ]
 }
 
-static_library("litert_runtime") {
+tflite_static_library("litert_runtime") {
   sources = [
     "src/litert/runtime/accelerator_registry.cc",
     "src/litert/runtime/compiled_model.cc",
@@ -533,17 +536,21 @@ static_library("litert_runtime") {
   }
   deps = [ ":litert_headers" ]
   if (use_litert_tflite) {
-    deps += [
+    conditional_deps = [
       ":tflite",
       ":tflite_builtin_op_resolver",
     ]
   }
 
   if (build_litert_with_xnnpack) {
-    deps += [ "//third_party/xnnpack" ]
+    if (defined(conditional_deps)) {
+      conditional_deps += [ "//third_party/xnnpack" ]
+    } else {
+      conditional_deps = [ "//third_party/xnnpack" ]
+    }
   }
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
     "//build/config/compiler:no_chromium_code",
     "//build/config/compiler:rtti",
   ]
@@ -563,6 +570,7 @@ if (use_litert_tflite) {
     ]
     cc_generator_options = "lite=true:"
     deps = [ "//third_party/tflite:tflite_xla_proto" ]
+    link_public_deps = [ ":tflite_public_headers" ]
   }
 
   proto_library("benchmark_result_proto") {
@@ -696,7 +704,10 @@ if (use_litert_tflite) {
     _configs = configs
     configs = []
     configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
-    public_configs = [ "//third_party/tflite:tflite_shim_config" ]
+    public_configs = [
+      ":tflite_config",
+      "//third_party/tflite:tflite_shim_config",
+    ]
     public = [
       "//third_party/tflite/shims/tensorflow/lite/types/fp16.h",
       "src/tflite/acceleration/configuration/flatbuffer_to_proto.h",
