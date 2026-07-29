@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -332,6 +333,48 @@ public final class AnchoredPopupWindowTest {
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean());
+    }
+
+    @Test
+    public void testPopupResizesOnRotationFromPortraitToLandscape() {
+        UiWidgetFactory mockFactory = mock(UiWidgetFactory.class);
+        UiWidgetFactory.setInstance(mockFactory);
+        ChromePopupWindow mockPopup = mock(ChromePopupWindow.class);
+        when(mockFactory.createPopupWindow(any())).thenReturn(mockPopup);
+        when(mockPopup.getBackground()).thenReturn(mock(Drawable.class));
+        when(mockPopup.isShowing()).thenReturn(false);
+
+        View view = mock(View.class, Answers.RETURNS_DEEP_STUBS);
+        DisplayMetrics fakeMetrics = new DisplayMetrics();
+        fakeMetrics.density = 1;
+        when(view.getRootView().getResources().getDisplayMetrics()).thenReturn(fakeMetrics);
+        when(view.getRootView().isAttachedToWindow()).thenReturn(true);
+        when(view.getRootView().getWidth()).thenReturn(1200);
+
+        View contentView = mock(ViewGroup.class);
+        when(contentView.getMeasuredWidth()).thenReturn(800);
+        when(contentView.getMeasuredHeight()).thenReturn(200);
+        when(mockPopup.getContentView()).thenReturn(contentView);
+
+        // Initial portrait viewport (width: 400px, height: 1000px).
+        RectProvider viewportRectProvider = new RectProvider(new Rect(0, 0, 400, 1000));
+        AnchoredPopupWindow popupWindow =
+                new AnchoredPopupWindow.Builder(
+                                mActivity, view, mDrawable, () -> contentView, new RectProvider(new Rect(0, 0, 100, 100)))
+                        .setViewportRectProvider(viewportRectProvider)
+                        .setAllowNonTouchableSize(true)
+                        .setUpdateOrientationOnChange(true)
+                        .setSmartAnchorWithMaxWidth(true)
+                        .setMaxWidth(1000)
+                        .build();
+
+        popupWindow.show();
+        when(mockPopup.isShowing()).thenReturn(true);
+        clearInvocations(mockPopup);
+
+        // Rotate to landscape: Viewport width expands from 400px -> 800px.
+        viewportRectProvider.setRect(new Rect(0, 0, 800, 600));
+        verify(mockPopup).update(anyInt(), anyInt(), eq(800), anyInt());
     }
 
     private AnchoredPopupWindow createAnchorPopupWindow() {

@@ -31,6 +31,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.After;
@@ -81,6 +83,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
@@ -90,7 +93,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-/** Unit tests for {@link FuseboxCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @NullMarked
 public class FuseboxCoordinatorUnitTest {
@@ -110,10 +112,12 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private PrefService mPrefService;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
+    @Mock private InsetObserver mInsetObserver;
+    @Mock private WindowInsetsCompat mWindowInsetsCompat;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private AutocompleteInput mAutocompleteInput;
     private ActivityController<TestActivity> mActivityController;
-    private WindowAndroid mWindowAndroid;
     private ConstraintLayout mParent;
     private FuseboxCoordinator mCoordinator;
 
@@ -137,10 +141,13 @@ public class FuseboxCoordinatorUnitTest {
 
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
-        mWindowAndroid = new WindowAndroid(activity, false);
         mParent = new ConstraintLayout(activity);
         activity.setContentView(mParent);
         LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, mParent, true);
+
+        lenient().doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
+        lenient().doReturn(mWindowInsetsCompat).when(mInsetObserver).getLastRawWindowInsets();
+        lenient().doReturn(Insets.NONE).when(mWindowInsetsCompat).getInsets(anyInt());
 
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFunction);
 
@@ -191,7 +198,6 @@ public class FuseboxCoordinatorUnitTest {
     @After
     public void tearDown() {
         mActivityController.close();
-        mWindowAndroid.destroy();
     }
 
     @Test
@@ -330,7 +336,10 @@ public class FuseboxCoordinatorUnitTest {
     public void viewportRectProvider() {
         Activity activity = mActivityController.get();
         View view = new View(activity);
-        ViewportRectProvider viewportRectProvider = new ViewportRectProvider(activity, view);
+        doReturn(Insets.of(0, 40, 0, 0)).when(mWindowInsetsCompat).getInsets(anyInt());
+
+        ViewportRectProvider viewportRectProvider =
+                new ViewportRectProvider(activity, mInsetObserver, view);
         viewportRectProvider.startObserving(mRectProviderObserver);
 
         org.robolectric.RuntimeEnvironment.setQualifiers("w1000dp-h800dp");
@@ -339,7 +348,7 @@ public class FuseboxCoordinatorUnitTest {
                 WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
         var bounds = windowMetrics.getBounds();
         assertEquals(
-                new Rect(0, 0, bounds.width(), bounds.height()), viewportRectProvider.getRect());
+                new Rect(0, 40, bounds.width(), bounds.height()), viewportRectProvider.getRect());
         verify(mRectProviderObserver).onRectChanged();
         org.robolectric.shadows.ShadowLooper.idleMainLooper();
     }

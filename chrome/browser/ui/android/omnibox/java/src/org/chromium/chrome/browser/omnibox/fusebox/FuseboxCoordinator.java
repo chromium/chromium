@@ -19,6 +19,8 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsCompat.Type;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
@@ -54,6 +56,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.AsyncLayoutInflater;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -244,7 +247,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         DynamicRectProvider dynamicRectProvider =
                 new DynamicRectProvider(floatingViewRectProvider, mBottomSheetRectProvider);
-        mViewportRectProvider = new ViewportRectProvider(mActivity, mParent);
+        mViewportRectProvider =
+                new ViewportRectProvider(mActivity, mWindowAndroid.getInsetObserver(), mParent);
 
         var popupWindowBuilder =
                 new AnchoredPopupWindow.Builder(
@@ -593,15 +597,28 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * small quantity using PopupWindow's default viewport rect.
      */
     static class ViewportRectProvider extends RectProvider
-            implements ComponentCallbacks, View.OnLayoutChangeListener {
+            implements ComponentCallbacks,
+                    View.OnLayoutChangeListener,
+                    InsetObserver.WindowInsetObserver {
         private final Activity mActivity;
+        private final @Nullable InsetObserver mInsetObserver;
         private final View mView;
 
-        public ViewportRectProvider(Activity activity, View view) {
+        public ViewportRectProvider(
+                Activity activity, @Nullable InsetObserver insetObserver, View view) {
             mActivity = activity;
+            mInsetObserver = insetObserver;
+            if (mInsetObserver != null) {
+                mInsetObserver.addObserver(this);
+            }
             mView = view;
             mActivity.registerComponentCallbacks(this);
             mView.addOnLayoutChangeListener(this);
+            updateRect();
+        }
+
+        @Override
+        public void onInsetChanged() {
             updateRect();
         }
 
@@ -624,11 +641,21 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateRect);
         }
 
+        private int getTopInset() {
+            if (mInsetObserver == null) return 0;
+
+            @Nullable WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
+            if (insets == null) return 0;
+
+            int topInset = insets.getInsets(Type.systemBars()).top;
+            return topInset;
+        }
+
         private void updateRect() {
             var windowMetrics =
                     WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
             var bounds = windowMetrics.getBounds();
-            Rect newRect = new Rect(0, 0, bounds.width(), bounds.height());
+            Rect newRect = new Rect(0, getTopInset(), bounds.width(), bounds.height());
             if (!newRect.equals(mRect)) {
                 mRect.set(newRect);
                 notifyRectChanged();
@@ -641,6 +668,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         public void destroy() {
             mActivity.unregisterComponentCallbacks(this);
             mView.removeOnLayoutChangeListener(this);
+            if (mInsetObserver != null) {
+                mInsetObserver.removeObserver(this);
+            }
         }
     }
 }

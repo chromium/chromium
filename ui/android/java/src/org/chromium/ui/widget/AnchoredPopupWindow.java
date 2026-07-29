@@ -1158,7 +1158,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                         mViewportRectProvider.getRect(),
                         anchorRect,
                         getOrCreateContentView(),
-                        mRootView.getWidth(),
+                        mViewportRectProvider.getRect().width(),
                         paddingX,
                         paddingY,
                         mMarginPx,
