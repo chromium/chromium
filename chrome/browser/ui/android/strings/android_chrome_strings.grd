@@ -3566,6 +3566,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_FRE_FOOTER_METRICS_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Preferably, ensure consistency with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy).">
         To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK">&lt;UMA_LINK&gt;</ph>Manage<ph name="END_UMA_LINK">&lt;/UMA_LINK&gt;</ph>
       </message>
+      <message name="IDS_SIGNIN_FRE_FOOTER_METRICS_REPORTING_SETTINGS" is_accessibility_with_no_ui="true" desc="The content description for the manage button to access usage and crash data settings. Used with the string IDS_SIGNIN_FRE_FOOTER_METRICS_REPORTING.">
+        Manage usage and crash data settings
+      </message>
       <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title of the dialog where users can change their Chrome metric sharing settings, like usage data. This appears when they open the Chrome app for the first time on their phone.">
         Make Chrome better
       </message>

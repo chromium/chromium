@@ -948,7 +948,11 @@ public class FullscreenSigninMediator
         if (!isMetricsReportingDisabled) {
             footerString += " " + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
             final ChromeClickableSpan clickableUMADialogSpan =
-                    new ChromeClickableSpan(mContext, view -> openUmaDialog());
+                    new ChromeClickableSpan(
+                            mContext,
+                            view -> openUmaDialog(),
+                            mContext.getString(
+                                    R.string.signin_fre_footer_metrics_reporting_settings));
             spans.add(
                     new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
         }
