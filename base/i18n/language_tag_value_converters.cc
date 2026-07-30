@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/values.h"
 
 namespace base::i18n {
@@ -23,10 +22,7 @@ std::optional<LanguageTag> ValueToLanguageTag(const base::Value* value) {
 
 std::optional<LanguageTag> ValueToLanguageTag(const base::Value& value) {
   const std::string* str = value.GetIfString();
-  if (!str) {
-    return std::nullopt;
-  }
-  return LanguageTagConverter::GetInstance().FromString(*str);
+  return str ? ParseKnownLanguageTag(*str) : std::nullopt;
 }
 
 }  // namespace base::i18n

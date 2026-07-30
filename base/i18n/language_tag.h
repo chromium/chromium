@@ -23,6 +23,9 @@ namespace base::i18n {
 class BASE_I18N_EXPORT LanguageTagConverter;
 
 class LanguageTag;
+
+constexpr std::optional<LanguageTag> ParseKnownLanguageTag(
+    std::string_view tag);
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
 
 namespace mojo {
@@ -177,6 +180,8 @@ class BASE_I18N_EXPORT LanguageTag {
 
  private:
   friend class LanguageTagConverter;
+  friend constexpr std::optional<LanguageTag> ParseKnownLanguageTag(
+      std::string_view tag);
   friend consteval LanguageTag GetKnownLanguageTag(std::string_view tag);
   // Allow Mojo StructTraits to default-construct an instance during IPC
   // deserialization
@@ -192,6 +197,7 @@ class BASE_I18N_EXPORT LanguageTag {
   std::string_view GetExtensionStringInternal(char key) const;
   LanguageTag WithExtensionStringInternal(char key,
                                           std::string_view subtags) const;
+
   // This constructor is intended for internal use by `LanguageTagConverter`.
   // Do not call this directly.
   explicit LanguageTag(ImmutableStringType tag);
@@ -216,21 +222,22 @@ BASE_I18N_EXPORT std::ostream& operator<<(
     std::ostream& os,
     const std::optional<LanguageTag>& opt);
 
+// Parses a LanguageTag from a string_view.
+// Returns std::nullopt if `tag` is not a valid BCP 47 language tag or has
+// unknown subtags.
+constexpr std::optional<LanguageTag> ParseKnownLanguageTag(
+    std::string_view tag) {
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag);
+  if (!parsed || !i18n_internal::AreSubtagsKnown(*parsed)) {
+    return std::nullopt;
+  }
+  return LanguageTag(base::span<const std::string_view>({tag}));
+}
+
 // Returns a LanguageTag checked at compile time. does not compile if tag is
 // not one of the predefined supported language tags.
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
-  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
-      i18n_internal::ParseBcp47Tag(tag);
-  if (!parsed) {
-    void ERROR_TagIsMalformed();
-    ERROR_TagIsMalformed();
-  }
-
-  if (!i18n_internal::AreSubtagsKnown(*parsed)) {
-    void ERROR_TagIsUnknown();
-    ERROR_TagIsUnknown();
-  }
-
   // It is only possible to construct `LanguageTag`s at compile-time if they
   // are small.
   if (tag.size() > i18n_internal::ImmutableString::kSmallBufferSize) {
@@ -238,7 +245,13 @@ consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
     ERROR_TagIsTooLarge();
   }
 
-  return LanguageTag(base::span<const std::string_view>({tag}));
+  std::optional<LanguageTag> language_tag = ParseKnownLanguageTag(tag);
+  if (!language_tag) {
+    void ERROR_TagIsUnknown();
+    ERROR_TagIsUnknown();
+  }
+
+  return *language_tag;
 }
 
 constexpr std::optional<LanguageTag> LanguageTag::GetParentTag() const {
