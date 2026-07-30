@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/connection_allowlist_violation_report_body.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
@@ -24,7 +25,10 @@ void ConnectionAllowlistViolationReportBody::QueueServiceWorkerReport(
     const KURL& connection,
     V8ConnectionAllowlistDisposition::Enum disposition,
     const ExecutionContext& execution_context) {
-  QueueReport(connection.GetString(), disposition, execution_context);
+  const String safe_connection = ContentSecurityPolicy::StripURLForUseInReport(
+      execution_context.GetSecurityOrigin(), connection,
+      CSPDirectiveName::Unknown);
+  QueueReport(safe_connection, disposition, execution_context);
 }
 
 void ConnectionAllowlistViolationReportBody::BuildJSONValue(
@@ -82,14 +86,17 @@ void ConnectionAllowlistViolationReportBody::QueueReport(
           : V8ConnectionAllowlistDisposition(
                 V8ConnectionAllowlistDisposition::Enum::kReport);
 
+  const String safe_document_url =
+      ContentSecurityPolicy::StripURLForUseInReport(
+          execution_context.GetSecurityOrigin(), execution_context.Url(),
+          CSPDirectiveName::Unknown);
+
   ConnectionAllowlistViolationReportBody* body =
       MakeGarbageCollected<ConnectionAllowlistViolationReportBody>(
-          execution_context.Url().GetString(), connection, blink_allowlist,
-          disposition_obj);
+          safe_document_url, connection, blink_allowlist, disposition_obj);
 
-  Report* report =
-      MakeGarbageCollected<Report>(ReportType::kConnectionAllowlistViolation,
-                                   execution_context.Url().GetString(), body);
+  Report* report = MakeGarbageCollected<Report>(
+      ReportType::kConnectionAllowlistViolation, safe_document_url, body);
   const std::optional<std::string> endpoint = allowlist->reporting_endpoint;
 
   if (endpoint.has_value()) {
