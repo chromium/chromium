@@ -1,6 +1,6 @@
 [package]
 name = "anyhow"
-version = "1.0.103"
+version = "1.0.104"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["rust-patterns", "no-std"]
 description = "Flexible concrete Error type built on std::error::Error"
@@ -21,7 +21,7 @@ backtrace = []
 [dev-dependencies]
 futures = { version = "0.3", default-features = false }
 rustversion = "1.0.6"
-syn = { version = "2.0", features = ["full"] }
+syn = { version = "3", features = ["full"] }
 thiserror = "2"
 trybuild = { version = "1.0.108", features = ["diff"] }
 

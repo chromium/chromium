@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.68"
 name = "anyhow"
-version = "1.0.103"
+version = "1.0.104"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false
@@ -118,7 +118,7 @@ default-features = false
 version = "1.0.6"
 
 [dev-dependencies.syn]
-version = "2.0"
+version = "3"
 features = ["full"]
 
 [dev-dependencies.thiserror]
