@@ -3018,7 +3018,8 @@
     ],
     "bases": [
       "external/wpt/speculation-rules/prefetch",
-      "external/wpt/speculation-rules/speculation-tags"
+      "external/wpt/speculation-rules/speculation-tags",
+      "external/wpt/speculation-rules/speculation-measurement"
     ],
     "exclusive_tests": [],
     "args": [

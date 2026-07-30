@@ -18,6 +18,8 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   using Candidates = Vector<mojom::blink::SpeculationCandidatePtr>;
 
   const Candidates& candidates() const { return candidates_; }
+  // Candidates the renderer asked the browser to enact via EnactCandidate
+  // (the renderer-side link-selection heuristics), in call order.
   const Candidates& enacted_candidates() const { return enacted_candidates_; }
   void SetDoneClosure(base::OnceClosure done) {
     done_closure_ = std::move(done);

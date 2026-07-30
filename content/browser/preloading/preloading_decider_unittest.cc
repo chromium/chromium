@@ -172,6 +172,14 @@ enum class EventType {
 
 class PreloadingDeciderTest : public RenderViewHostTestHarness {
  public:
+  PreloadingDeciderTest() {
+    // These tests cover the browser-driven enactment path, which is bypassed
+    // when the renderer selects and enacts candidates itself. Tests for the
+    // renderer-driven path enable the feature explicitly.
+    renderer_side_heuristics_feature_list_.InitAndDisableFeature(
+        blink::features::kSpeculationRulesRendererSideHeuristics);
+  }
+
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -227,6 +235,10 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
 
  private:
   test::ScopedPrerenderFeatureList prerender_feature_list_;
+  // Initialized in the constructor body, i.e. after `prerender_feature_list_`,
+  // so it must be declared after it to be destroyed first (ScopedFeatureList
+  // requires strict LIFO destruction).
+  base::test::ScopedFeatureList renderer_side_heuristics_feature_list_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;

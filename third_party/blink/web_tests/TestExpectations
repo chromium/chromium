@@ -3110,6 +3110,17 @@ crbug.com/450776558 external/wpt/css/css-text/line-breaking/segment-break-transf
 crbug.com/450513406 external/wpt/css/css-writing-modes/text-shadow-sideways-001.html [ Failure ]
 crbug.com/450555241 [ Win ] external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect [ Pass Timeout ]
 crbug.com/450555241 external/wpt/speculation-rules/prefetch/tentative/cookie-indices.https.html?include=changedWithRedirect3 [ Skip Timeout ]
+
+# performance.getSpeculations().navigations reports the renderer's activated
+# candidate set, which only excludes non-immediate (moderate/conservative)
+# candidates before interaction when SpeculationRulesRendererSideHeuristics is
+# enabled. That feature is off by default, so these run only in the
+# virtual/speculation-rules-renderer-side-heuristics suite.
+crbug.com/532860179 external/wpt/speculation-rules/speculation-measurement/performance-speculations-navigations-eagerness.tentative.https.html [ Failure ]
+crbug.com/532860179 external/wpt/speculation-rules/speculation-measurement/performance-speculations-navigations.tentative.https.html [ Failure ]
+crbug.com/532860179 virtual/speculation-rules-renderer-side-heuristics/external/wpt/speculation-rules/speculation-measurement/performance-speculations-navigations-eagerness.tentative.https.html [ Pass ]
+crbug.com/532860179 virtual/speculation-rules-renderer-side-heuristics/external/wpt/speculation-rules/speculation-measurement/performance-speculations-navigations.tentative.https.html [ Pass ]
+
 crbug.com/450508310 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Crash Failure Timeout ]
 crbug.com/448843863 [ Win11-arm64 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]
 crbug.com/448843863 [ Mac14 ] external/wpt/fetch/fetch-later/basic.https.window.html [ Pass Timeout ]

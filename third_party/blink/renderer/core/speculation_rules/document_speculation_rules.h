@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ class SpeculationRuleLoader;
 // This corresponds to the document's list of speculation rule sets.
 //
 // Updates are pushed asynchronously.
-class CORE_EXPORT DocumentSpeculationRules
+class CORE_EXPORT DocumentSpeculationRules final
     : public GarbageCollected<DocumentSpeculationRules>,
       public Supplement<Document> {
  public:
@@ -84,6 +85,17 @@ class CORE_EXPORT DocumentSpeculationRules
     return sent_candidates_;
   }
 
+  // Returns the speculation candidates the renderer has actually activated: a
+  // superset-free view of what was prefetched/prerendered, rather than merely
+  // proposed. Contains immediate-eagerness candidates (enacted as soon as they
+  // are sent) plus non-immediate candidates enacted by the renderer-side
+  // link-selection heuristics (pointerdown/hover/viewport). Populated only
+  // when SpeculationRulesRendererSideHeuristics is enabled; used by
+  // performance.getSpeculations() to report the enacted navigation set.
+  const HeapVector<Member<SpeculationCandidate>>& activated_candidates() const {
+    return activated_candidates_;
+  }
+
   // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
   void OnPointerDownHeuristic(const KURL& url);
   void OnHoverHeuristic(const KURL& url,
@@ -112,6 +124,10 @@ class CORE_EXPORT DocumentSpeculationRules
       const KURL& url,
       const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
       mojom::blink::SpeculationHeuristic heuristic);
+
+  // Records `candidate` as activated for the SpeculationMeasurement API,
+  // deduplicating against already-recorded candidates.
+  void MarkCandidateActivated(SpeculationCandidate* candidate);
 
   // Executes in a microtask after QueueUpdateSpeculationCandidates.
   void UpdateSpeculationCandidatesMicrotask();
@@ -216,6 +232,18 @@ class CORE_EXPORT DocumentSpeculationRules
   // sent to the browser and represent what the page has requested via
   // speculation rules.
   HeapVector<Member<SpeculationCandidate>> sent_candidates_;
+
+  // Subset of `sent_candidates_` that the renderer has actually activated
+  // (immediate candidates + heuristic-enacted candidates). See
+  // activated_candidates(). Deduplicated the same way as `sent_candidates_`.
+  HeapVector<Member<SpeculationCandidate>> activated_candidates_;
+
+  // Indexes `sent_candidates_` by each candidate's URL with the query and
+  // fragment removed. An exact or No-Vary-Search match requires an identical
+  // scheme/host/port/path, so EnactMatchingCandidates only has to look at the
+  // bucket for the interaction URL instead of scanning every candidate. The
+  // stored indices stay valid because `sent_candidates_` is append-only.
+  HashMap<String, Vector<wtf_size_t>> sent_candidates_by_match_key_;
 };
 
 }  // namespace blink

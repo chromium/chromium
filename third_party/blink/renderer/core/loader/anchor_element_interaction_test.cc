@@ -799,7 +799,9 @@ class AnchorElementInteractionViewportHeuristicsTest
          {features::kPreloadingEagerViewportHeuristics,
           {{"viewport_present_time", "100ms"}}},
          {features::kPreloadingEligibilityCheckOnRenderer, {}}},
-        {});
+        // These tests cover the browser-notification path, which is bypassed
+        // when the renderer selects and enacts candidates itself.
+        {features::kSpeculationRulesRendererSideHeuristics});
     config_scope_ =
         std::make_unique<ModerateViewportHeuristicConfigTestingScope>();
   }
