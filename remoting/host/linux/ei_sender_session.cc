@@ -105,8 +105,6 @@ namespace remoting {
 
 namespace {
 
-constexpr int kPixelsPerTick = 120;
-
 // Some libei APIs, such as ei_device_get_name(), return a const char* but
 // do not document that the returned pointer will always be non-null. This
 // helper is useful for safely logging these strings.
@@ -293,42 +291,13 @@ void EiSenderSession::InjectScrollDelta(double delta_x, double delta_y) {
     return;
   }
 
-  // Don't use ei_device_scroll_delta because Chrome overscrolls by about 16x.
-  // Instead accumulate pixels until there's enough for one "tick", which is
-  // what we do on X11.
-
-  // Discard any accumulated pixels if the scroll direction changes.
-  if (delta_x != 0) {
-    if ((delta_x > 0) != (subtick_pixels_x_ > 0)) {
-      subtick_pixels_x_ = 0;
-    }
-  }
-  if (delta_y != 0) {
-    if ((delta_y > 0) != (subtick_pixels_y_ > 0)) {
-      subtick_pixels_y_ = 0;
-    }
-  }
-
-  subtick_pixels_x_ += delta_x;
-  subtick_pixels_y_ += delta_y;
-  int ticks_x = subtick_pixels_x_ / kPixelsPerTick;
-  int ticks_y = subtick_pixels_y_ / kPixelsPerTick;
-  subtick_pixels_x_ %= kPixelsPerTick;
-  subtick_pixels_y_ %= kPixelsPerTick;
-
-  if (ticks_x == 0 && ticks_y == 0) {
-    return;
-  }
-
   // Use the first device, for consistency with button-injection.
   auto& scroll_device = button_devices_.front();
 
-  // This function takes values representing 120ths of a tick, so 120 would be
-  // one wheel tick, 240 would be two ticks, and 60 would be half of a tick.
-  // Additionally, positive value as scroll down or to the right (the opposite
-  // of the Chromoting protocol), so we need to flip the sign.
-  ei_device_scroll_discrete(scroll_device.get(), -ticks_x * 120,
-                            -ticks_y * 120);
+  // Mutter interprets ei_device_scroll_delta() as wheel ticks, overscrolling
+  // by 12x. See https://gitlab.gnome.org/GNOME/mutter/-/work_items/4372 for
+  // more details.
+  ei_device_scroll_delta(scroll_device.get(), -delta_x / 12.0, -delta_y / 12.0);
   ei_device_frame(scroll_device.get(), ei_now(ei_.get()));
 }
 
@@ -339,9 +308,6 @@ void EiSenderSession::InjectScrollDiscrete(float ticks_x, float ticks_y) {
     LOG(ERROR) << "Received scroll event but there's no scroll device";
     return;
   }
-
-  subtick_pixels_x_ = 0;
-  subtick_pixels_y_ = 0;
 
   // Use the first device, for consistency with button-injection.
   auto& scroll_device = button_devices_.front();
