@@ -15,7 +15,7 @@
     }
   }
 
-  cr-icon[icon='cr:error'] {
+  cr-icon[icon='cr:error-filled'] {
     --iron-icon-fill-color: var(--settings-error-color);
     height: var(--cr-icon-size);
     margin-inline-end: 8px;
@@ -103,7 +103,7 @@
                 [[item.language.displayName]]
                 <div hidden="[[!errorsGreaterThan_(
                     item.downloadDictionaryFailureCount, 0)]]">
-                  <cr-icon icon="cr:error"></cr-icon>
+                  <cr-icon icon="cr:error-filled"></cr-icon>
                   $i18n{languagesDictionaryDownloadError}
                 </div>
                 <div hidden="[[!errorsGreaterThan_(

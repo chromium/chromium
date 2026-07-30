@@ -32,7 +32,7 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureElement) {
       </div>
     </section>
     <section class="disclaimer">
-      <cr-icon class="icon" icon="cr:phonelink"></cr-icon>
+      <cr-icon class="icon" icon="cr:devices"></cr-icon>
       <div>
         <h2>${this.i18n('deviceInformationTitle')}</h2>
         <p>${this.i18n('deviceInformationDetails')}</p>

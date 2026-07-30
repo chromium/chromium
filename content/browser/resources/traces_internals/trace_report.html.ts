@@ -60,7 +60,7 @@ export function getHtml(this: TraceReportElement) {
           @click="${this.onUploadTraceClick_}">
       </cr-icon-button>
       <cr-icon-button class="action-button download"
-          iron-icon="cr:file-download" title="${
+          iron-icon="cr:download" title="${
             this.getDownloadTooltip_(this.trace)}"
           @click="${this.onDownloadTraceClick_}"
           ?disabled="${this.isDownloadDisabled_(this.trace)}">

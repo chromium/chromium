@@ -8,7 +8,7 @@ import type {ViewerDownloadControlsElement} from './viewer_download_controls.js'
 
 export function getHtml(this: ViewerDownloadControlsElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button id="save" iron-icon="cr:file-download" part="button"
+<cr-icon-button id="save" iron-icon="cr:download" part="button"
     @click="${this.onSaveClick}" aria-label="$i18n{tooltipDownload}"
     aria-haspopup="${this.getAriaHasPopup()}"
     title="$i18n{tooltipDownload}"></cr-icon-button>

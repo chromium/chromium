@@ -43,7 +43,7 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureRefreshElement) 
       <p>$i18n{profileInformationDetails}</p>
     </section>
     <section class="disclaimer">
-      <cr-icon class="icon" icon="cr:phonelink"></cr-icon>
+      <cr-icon class="icon" icon="cr:devices"></cr-icon>
       <h2>$i18n{deviceInformationTitle}</h2>
       <p>$i18n{deviceInformationDetails}</p>
     </section>

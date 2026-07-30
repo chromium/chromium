@@ -48,7 +48,7 @@ export class SettingsSafetyHubCardElement extends PolymerElement {
     switch (state) {
       case CardState.WARNING:
       case CardState.WEAK:
-        return 'cr:error';
+        return 'cr:error-filled';
       case CardState.INFO:
         return 'cr:info-filled';
       case CardState.SAFE:

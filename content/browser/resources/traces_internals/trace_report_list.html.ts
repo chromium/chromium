@@ -36,7 +36,7 @@ export function getHtml(this: TraceReportListElement) {
   <div class="report-list-container">
     ${!this.hasTraces_() ? html`
       <div class="empty-message">
-        <cr-icon icon="cr:warning"></cr-icon>
+        <cr-icon icon="cr:warning-filled"></cr-icon>
         <h1>Could not find any traces saved locally.</h1>
       </div>
     ` : html`

@@ -183,7 +183,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   protected computeErrorIcon_(error: ManifestError|RuntimeError): string {
     // Do not i18n these strings, they're icon names.
     return getErrorSeverityText(
-        error, 'cr:info-filled', 'cr:warning', 'cr:error');
+        error, 'cr:info-filled', 'cr:warning-filled', 'cr:error-filled');
   }
 
   protected computeErrorTypeLabel_(error: ManifestError|RuntimeError): string {

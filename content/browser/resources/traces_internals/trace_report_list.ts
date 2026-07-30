@@ -111,7 +111,7 @@ export class TraceReportListElement extends CrLitElement {
       case NotificationType.UPDATE:
         return 'cr:sync';
       default:
-        return 'cr:warning';
+        return 'cr:warning-filled';
     }
   }
 

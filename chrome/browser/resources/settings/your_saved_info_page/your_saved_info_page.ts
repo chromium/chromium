@@ -176,7 +176,7 @@ export class SettingsYourSavedInfoPageElement extends
           {
             id: YourSavedInfoDataChip.PASSWORDS,
             label: this.i18n('passwordsLabel'),
-            icon: 'cr20:password',
+            icon: 'cr20:password-manager',
             isVisibleWhenNoEntitiesOfTypeExists: () => true,
           },
           {

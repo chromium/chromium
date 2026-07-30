@@ -11,7 +11,7 @@ export function getHtml(this: ViewerAttachmentElement) {
 <div id="item">
   <span id="title">${this.attachment.name}</span>
   <cr-icon-button id="download" tabindex="0" ?hidden="${!this.saveAllowed_}"
-      title="$i18n{tooltipDownloadAttachment}" iron-icon="cr:file-download"
+      title="$i18n{tooltipDownloadAttachment}" iron-icon="cr:download"
       @click="${this.onDownloadClick_}">
   </cr-icon-button>
 </div>

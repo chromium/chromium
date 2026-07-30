@@ -12,7 +12,7 @@ export function getHtml(this: AppListElement) {
 <!--_html_template_start_-->
 ${this.error ? html`
   <div class="error-card">
-    <cr-icon icon="cr:warning"></cr-icon>
+    <cr-icon icon="cr:warning-filled"></cr-icon>
     <div id="error-message">$i18n{appStatesQueryFailed}</div>
   </div>
 ` : ''}

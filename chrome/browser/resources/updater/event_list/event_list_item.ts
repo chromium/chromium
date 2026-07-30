@@ -278,7 +278,7 @@ export class EventListItemElement extends CrLitElement {
           case 'NO_UPDATE':
             return 'cr:sync';
           case 'UPDATE_ERROR':
-            return 'cr:warning';
+            return 'cr:warning-filled';
           default:
             return undefined;
         }

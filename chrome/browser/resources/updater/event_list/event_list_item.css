@@ -95,7 +95,7 @@ cr-expand-button {
   --iron-icon-fill-color: var(--success-icon-color);
 }
 
-.event-description-icon-column cr-icon[icon='cr:warning'] {
+.event-description-icon-column cr-icon[icon='cr:warning-filled'] {
   --iron-icon-fill-color: var(--error-icon-color);
 }
 

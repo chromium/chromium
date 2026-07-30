@@ -42,7 +42,7 @@ export function getHtml(this: AppElement) {
         Import
       </cr-tooltip>
       <cr-icon-button id="experiment-export"
-          iron-icon="cr:file-download"
+          iron-icon="cr:download"
           aria-label="Export"
           @click="${this.onExportClick_}"
           ?hidden="${!this.isImportExportEnabled_}">

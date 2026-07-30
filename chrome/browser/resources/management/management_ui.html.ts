@@ -34,7 +34,7 @@ export function getHtml(this: ManagementUiElement) {
 <if expr="is_chromeos">
       <section class="eol-section" ?hidden="${!this.eolMessage_}">
         <div class="eol-warning-icon">
-          <cr-icon icon="cr20:banner-warning"></cr-icon>
+          <cr-icon icon="cr20:warning"></cr-icon>
         </div>
         <div class="eol-message">
           <div>${this.eolMessage_}</div>

@@ -390,9 +390,9 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       issues: chrome.passwordsPrivate.PasswordUiEntry[],
       checkForError: boolean): string {
     if (checkForError && this.status_ && this.didCompromiseCheckFail_()) {
-      return 'cr:error';
+      return 'cr:error-filled';
     }
-    return !!issues && issues.length ? 'cr:error' : 'cr:check-circle';
+    return !!issues && issues.length ? 'cr:error-filled' : 'cr:check-circle';
   }
 
   private hasAnyIssues_(): boolean {

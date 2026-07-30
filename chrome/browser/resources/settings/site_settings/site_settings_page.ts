@@ -89,7 +89,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
       id: Id.AUTOMATIC_DOWNLOADS,
       label: 'siteSettingsAutomaticDownloads',
-      icon: 'cr:file-download',
+      icon: 'cr:download',
       enabledLabel: 'siteSettingsAutomaticDownloadsAsk',
       disabledLabel: 'siteSettingsAutomaticDownloadsBlocked',
     },

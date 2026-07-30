@@ -685,9 +685,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         case DisplayType.INSECURE:
         case DisplayType.UNVERIFIED:
         case DisplayType.SUSPICIOUS:
-          return 'cr:warning';
+          return 'cr:warning-filled';
         case DisplayType.ERROR:
-          return 'cr:error';
+          return 'cr:error-filled';
         case DisplayType.NORMAL:
           break;
         default:
@@ -698,7 +698,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       const dangerType: DangerType = this.data.dangerType;
       if (this.isSuspiciousEnterpriseApVerdict_(
               loadTimeData.getBoolean('requestsApVerdicts'), dangerType)) {
-        return 'cr:warning';
+        return 'cr:warning-filled';
       }
 
       switch (dangerType) {
@@ -709,7 +709,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         case DangerType.kBlockedPasswordProtected:
         case DangerType.kForcedSaveToGdrive:
         case DangerType.kForcedSaveToOnedrive:
-          return 'cr:error';
+          return 'cr:error-filled';
         case DangerType.kNoApplicableDangerType:
         case DangerType.kDangerousFile:
         case DangerType.kDangerousUrl:
@@ -733,7 +733,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         case State.kAsyncScanning:
         case State.kPromptForScanning:
         case State.kPromptForLocalPasswordScanning:
-          return 'cr:warning';
+          return 'cr:warning-filled';
         case State.kInProgress:
         case State.kCancelled:
         case State.kComplete:

@@ -135,7 +135,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         <div id="runtime-warnings"
             ?hidden="${!this.data.runtimeWarnings.length}"
             class="cr-row continuation warning control-line">
-          <cr-icon class="warning-icon" icon="cr:error"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:error-filled"></cr-icon>
           <span>
             ${this.data.runtimeWarnings.map(item => html`${item}`)}
           </span>
@@ -147,7 +147,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </div>
         <div class="cr-row continuation warning" id="suspicious-warning"
             ?hidden="${!this.data.disableReasons.suspiciousInstall}">
-          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>
             $i18n{itemSuspiciousInstall}
             <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
@@ -158,7 +158,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </div>
         <div class="cr-row continuation warning control-line"
             id="corrupted-warning" ?hidden="${!this.showRepairButton_()}">
-          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>$i18n{itemCorruptInstall}</span>
           <cr-button id="repair-button" class="action-button"
               @click="${this.onRepairClick_}">
@@ -167,24 +167,24 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </div>
         <div class="cr-row continuation warning" id="blocklisted-warning"
             ?hidden="${!this.shouldShowBlocklistText_()}">
-          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>${this.data.blocklistText}</span>
         </div>
         <div class="cr-row continuation warning" id="update-required-warning"
             ?hidden="${!this.data.disableReasons.updateRequired}">
-          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>$i18n{updateRequiredByPolicy}</span>
         </div>
         <div class="cr-row continuation warning"
             id="published-in-store-required-warning"
             ?hidden="${!this.data.disableReasons.publishedInStoreRequired}">
-          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>$i18n{publishedInStoreRequiredByPolicy}</span>
         </div>
         <div class="cr-row continuation warning"
             id="unsupported-developer-extension-warning"
             ?hidden="${!this.shouldShowUnsupportedDeveloperExtensionText_()}">
-          <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+          <cr-icon class="warning-icon" icon="cr:warning-filled"></cr-icon>
           <span>$i18n{itemUnsupportedDeveloperModeDetails}</span>
         </div>
       </div>` : ''}

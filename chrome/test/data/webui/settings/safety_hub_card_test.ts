@@ -60,13 +60,13 @@ suite('SafetyHubCard', function() {
     // Check icon for WEAK state.
     testElement.data = getMockDataForState(CardState.WEAK);
     flushTasks();
-    assertEquals('cr:error', testElement.$.icon.icon);
+    assertEquals('cr:error-filled', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('yellow'));
 
     // Check icon for WARNING state.
     testElement.data = getMockDataForState(CardState.WARNING);
     flushTasks();
-    assertEquals('cr:error', testElement.$.icon.icon);
+    assertEquals('cr:error-filled', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('red'));
   });
 });

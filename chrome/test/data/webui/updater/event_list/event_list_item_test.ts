@@ -855,7 +855,7 @@ suite('EventListItemElement', () => {
       const icon = item.shadowRoot.querySelector(
           '.event-description-icon-column cr-icon');
       assertTrue(!!icon);
-      assertEquals('cr:warning', icon.getAttribute('icon'));
+      assertEquals('cr:warning-filled', icon.getAttribute('icon'));
     });
 
     test('does not display for other events', async () => {

@@ -25,7 +25,7 @@ export function getHtml(this: HistorySideBarElement) {
   <a id="syncedTabs" role="menuitem" href="/syncedTabs"
       class="page-item cr-nav-menu-item"
       path="syncedTabs" @click="${this.onItemClick_}">
-    <cr-icon icon="cr:phonelink"></cr-icon>
+    <cr-icon icon="cr:devices"></cr-icon>
     $i18n{openTabsMenuItem}
     <cr-ripple></cr-ripple>
   </a>

@@ -19,7 +19,7 @@ export function getHtml(this: AppElement) {
     <cr-button title="Export requests in JSON format"
         @click="${this.onExportClick_}">
       Export
-      <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
+      <cr-icon icon="cr:download" slot="suffix-icon"></cr-icon>
     </cr-button>
     <cr-button title="Import requests in JSON format"
         @click="${this.onImportClick_}">

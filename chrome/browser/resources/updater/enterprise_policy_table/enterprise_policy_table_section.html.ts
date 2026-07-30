@@ -33,7 +33,7 @@ export function getHtml(this: EnterprisePolicyTableSectionElement) {
         </div>
         <div class="column-warning" role="cell">
           ${item.hasConflict ? html`
-            <cr-icon class="warning-icon" icon="cr:warning" role="img"
+            <cr-icon class="warning-icon" icon="cr:warning-filled" role="img"
                 aria-label="$i18n{policyConflictWarning}"
                 title="$i18n{policyConflictWarning}">
             </cr-icon>

@@ -144,7 +144,7 @@ suite('AllBuilds', function() {
     fireStatusChanged(UpdateStatus.FAILED);
     await microtasksFinished();
     await assertSpinnerVisible(false);
-    assertEquals('cr:error', icon.icon);
+    assertEquals('cr:error-filled', icon.icon);
     assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.DISABLED);
@@ -239,21 +239,21 @@ suite('AllBuilds', function() {
     fireStatusChanged(UpdateStatus.CHECKING);
     await microtasksFinished();
     await assertSpinnerVisible(false);
-    assertEquals('cr:error', icon.icon);
+    assertEquals('cr:error-filled', icon.icon);
     assertFalse(page.$.deprecationWarning.hidden);
     assertTrue(page.$.updateStatusMessage.hidden);
 
     fireStatusChanged(UpdateStatus.FAILED);
     await microtasksFinished();
     await assertSpinnerVisible(false);
-    assertEquals('cr:error', icon.icon);
+    assertEquals('cr:error-filled', icon.icon);
     assertFalse(page.$.deprecationWarning.hidden);
     assertTrue(page.$.updateStatusMessage.hidden);
 
     fireStatusChanged(UpdateStatus.UPDATED);
     await microtasksFinished();
     await assertSpinnerVisible(false);
-    assertEquals('cr:error', icon.icon);
+    assertEquals('cr:error-filled', icon.icon);
     assertFalse(page.$.deprecationWarning.hidden);
     assertTrue(page.$.updateStatusMessage.hidden);
   });

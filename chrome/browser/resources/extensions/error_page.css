@@ -22,12 +22,12 @@ cr-icon {
   width: var(--cr-icon-size);
 }
 
-cr-icon[icon='cr:warning'] {
+cr-icon[icon='cr:warning-filled'] {
   /* TODO(dbeam): find dark mode equivalent for this orange. */
   --iron-icon-fill-color: #ff9800;  /* --paper-orange-500 */
 }
 
-cr-icon[icon='cr:error'] {
+cr-icon[icon='cr:error-filled'] {
   --iron-icon-fill-color: var(--error-color);
 }
 
