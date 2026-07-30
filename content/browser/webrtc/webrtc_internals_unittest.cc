@@ -607,6 +607,74 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Regression test for crbug.com/521719721: if a PeerConnection is already
+// connected (e.g. a call running on another page) before webrtc-internals is
+// opened, attaching an observer must start polling stats and update the wake
+// lock. The real flow is AddObserver() followed by UpdateObserver() when the
+// page finishes loading.
+TEST_F(WebRtcInternalsTest, StatsTimerStartsWhenObserverAddedAfterConnection) {
+  WebRTCInternalsForTest webrtc_internals;
+
+  // Simulate a call that started on a separate page before webrtc-internals
+  // was opened: a PeerConnection is added and becomes connected while no
+  // observer is present.
+  webrtc_internals.OnPeerConnectionAdded(kFrameId, kLid, kPid, kUrl,
+                                         kRtcConfiguration);
+  webrtc_internals.OnPeerConnectionUpdated(
+      kFrameId, kLid, "oniceconnectionstatechange", "\"connected\"");
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 1);
+
+  // Without an observer, stats are not being polled even though the wake lock
+  // is held for the active connection.
+  EXPECT_FALSE(webrtc_internals.IsStatsTimerRunningForTesting());
+  EXPECT_TRUE(webrtc_internals.HasWakeLock());
+
+  // Open webrtc-internals: an observer is added and then asked to sync the
+  // current state.
+  MockWebRtcInternalsProxy observer;
+  webrtc_internals.AddObserver(&observer);
+  webrtc_internals.UpdateObserver(&observer);
+
+  // Stats polling should now be running and the wake lock still held.
+  EXPECT_TRUE(webrtc_internals.IsStatsTimerRunningForTesting());
+  EXPECT_TRUE(webrtc_internals.HasWakeLock());
+
+  // Removing the last connected PeerConnection stops the polling again
+  // and releases the wake lock.
+  webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);
+  EXPECT_FALSE(webrtc_internals.IsStatsTimerRunningForTesting());
+  EXPECT_FALSE(webrtc_internals.HasWakeLock());
+
+  webrtc_internals.RemoveObserver(&observer);
+}
+
+// Closing the last webrtc-internals page must stop stats polling even if a
+// PeerConnection is still active, otherwise stats keep being requested from all
+// renderers with nobody to display them.
+TEST_F(WebRtcInternalsTest, StatsTimerStopsWhenLastObserverRemoved) {
+  WebRTCInternalsForTest webrtc_internals;
+
+  // Open webrtc-internals while a call is active: stats are being polled.
+  MockWebRtcInternalsProxy observer;
+  webrtc_internals.AddObserver(&observer);
+  webrtc_internals.OnPeerConnectionAdded(kFrameId, kLid, kPid, kUrl,
+                                         kRtcConfiguration);
+  webrtc_internals.OnPeerConnectionUpdated(
+      kFrameId, kLid, "oniceconnectionstatechange", "\"connected\"");
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 1);
+  EXPECT_TRUE(webrtc_internals.IsStatsTimerRunningForTesting());
+
+  // Close webrtc-internals while the PeerConnection stays connected. Polling
+  // should stop, but the wake lock remains held for the active connection.
+  webrtc_internals.RemoveObserver(&observer);
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 1);
+  EXPECT_FALSE(webrtc_internals.IsStatsTimerRunningForTesting());
+  EXPECT_TRUE(webrtc_internals.HasWakeLock());
+
+  webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
+}
+
 TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
   base::RunLoop loop;
   MockWebRtcInternalsProxy observer(&loop);

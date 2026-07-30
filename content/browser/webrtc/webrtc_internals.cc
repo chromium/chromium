@@ -520,6 +520,11 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   if (!observers_.empty())
     return;
 
+  // The last webrtc-internals page is going away. Stop polling stats since
+  // there is no longer anyone to display them, even if PeerConnections remain
+  // active.
+  UpdateStatsTimer();
+
   // Disables event log and audio debug recordings if enabled and the last
   // webrtc-internals page is going away.
   DisableAudioDebugRecordings();

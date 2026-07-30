@@ -146,6 +146,13 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
 
   int num_connected_connections() const { return num_connected_connections_; }
 
+  // Returns whether the stats polling timer is currently running. Used by tests
+  // to verify that stats polling starts when an observer attaches to an
+  // already-active PeerConnection.
+  bool IsStatsTimerRunningForTesting() const {
+    return stats_timer_.IsRunning();
+  }
+
  protected:
   // Constructor/Destructor are protected to allow tests to derive from the
   // class and do per-instance testing without having to use the global
