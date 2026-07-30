@@ -1809,6 +1809,8 @@
     "numeric",
     "additive",
     "extends",
+    // symbols() function (https://drafts.csswg.org/css-counter-styles-3/#symbols-function)
+    "symbols",
     // Predefined counter styles that don't use the above systems
     "-internal-simp-chinese-informal",
     "-internal-simp-chinese-formal",

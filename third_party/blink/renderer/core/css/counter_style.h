@@ -18,6 +18,10 @@ namespace blink {
 
 class CSSValue;
 
+namespace cssvalue {
+class CSSSymbolsValue;
+}  // namespace cssvalue
+
 enum class CounterStyleSystem {
   kCyclic,
   kFixed,
@@ -57,6 +61,13 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // Returns nullptr if the @counter-style rule is invalid.
   static CounterStyle* Create(
       const CascadeLayered<const StyleRuleCounterStyle>&);
+
+  // Creates the anonymous counter style described by a symbols() function
+  // value, applying the implied descriptor values from the spec, along with any
+  // fallback behavior.
+  // https://drafts.csswg.org/css-counter-styles-3/#symbols-function
+  static CounterStyle* CreateAnonymousCounterStyle(
+      const cssvalue::CSSSymbolsValue&);
 
   const StyleRuleCounterStyle& GetStyleRule() const { return *style_rule_; }
   CascadeLayered<const StyleRuleCounterStyle> GetLayeredStyleRule() const {

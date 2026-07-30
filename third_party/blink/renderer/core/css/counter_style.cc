@@ -33,7 +33,9 @@
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_symbols_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -705,6 +707,46 @@ CounterStyle* CounterStyle::Create(
   }
 
   return MakeGarbageCollected<CounterStyle>(rule);
+}
+
+// static
+CounterStyle* CounterStyle::CreateAnonymousCounterStyle(
+    const cssvalue::CSSSymbolsValue& symbols_value) {
+  auto* properties = MakeGarbageCollected<MutableCSSPropertyValueSet>(
+      kCSSCounterStyleRuleMode);
+
+  // A `StyleRuleCounterStyle` with no `system` descriptor already defaults to
+  // `symbolic`, so we only set it for non-default systems.
+  if (symbols_value.GetSystem() != CSSValueID::kSymbolic) {
+    properties->SetProperty(
+        CSSPropertyID::kSystem,
+        *CSSIdentifierValue::Create(symbols_value.GetSystem()));
+  }
+  properties->SetProperty(CSSPropertyID::kSymbols, symbols_value.Symbols());
+
+  // Unlike an @counter-style rule (whose `suffix` descriptor is author-settable
+  // and defaults to ". "), symbols() has no suffix descriptor, so per spec its
+  // suffix is always a single space.
+  properties->SetProperty(CSSPropertyID::kSuffix,
+                          *MakeGarbageCollected<CSSStringValue>(" "));
+
+  // The counter style is anonymous: it is created with an empty name and is
+  // never registered along with other custom counter styles in a
+  // `CounterStyleMap`.
+  auto* rule =
+      MakeGarbageCollected<StyleRuleCounterStyle>(g_empty_atom, properties);
+
+  // symbols() is parsed only after its symbol list is validated (>= 1 symbol,
+  // and >= 2 for the 'alphabetic' and 'numeric' systems), so the rule will
+  // always be valid.
+  CounterStyle* counter_style = CounterStyle::Create(
+      CascadeLayered<const StyleRuleCounterStyle>(rule, /*layer=*/nullptr));
+  CHECK(counter_style);
+
+  // Out-of-range counter values (e.g. 0 or negatives) fall back to 'decimal'.
+  // Resolve the fallback now so rendering never dereferences a null fallback.
+  counter_style->ResolveFallback(GetDecimal());
+  return counter_style;
 }
 
 CounterStyle::CounterStyle(

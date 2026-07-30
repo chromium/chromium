@@ -866,6 +866,9 @@ CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream&,
 AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenStream&,
                                               const CSSParserContext&);
 
+// https://drafts.csswg.org/css-counter-styles-3/#symbols-function
+CSSValue* ConsumeCounterStyleSymbolsFunction(CSSParserTokenStream&);
+
 CSSValue* ConsumeFontSizeAdjust(CSSParserTokenStream&,
                                 const CSSParserContext&,
                                 CSSParserLocalContext&);

@@ -9197,6 +9197,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="443" label="DRAFT_HTMLSetterMethods"/>
   <int value="444" label="DRAFT_HTMLStreamMethods"/>
   <int value="445" label="CanvasHtml"/>
+  <int value="446" label="DRAFT_Symbols"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

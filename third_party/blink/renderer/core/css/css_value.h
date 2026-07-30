@@ -170,6 +170,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsShadowValue() const { return class_type_ == kShadowClass; }
   bool IsStringValue() const { return class_type_ == kStringClass; }
   bool IsSuperellipseValue() const { return class_type_ == kSuperellipseClass; }
+  bool IsSymbolsValue() const { return class_type_ == kSymbolsClass; }
   bool IsURIValue() const { return class_type_ == kURIClass; }
   bool IsURLPatternValue() const { return class_type_ == kURLPatternClass; }
   bool IsLinearTimingFunctionValue() const {
@@ -381,6 +382,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kRepeatStyleClass,
 
     kSuperellipseClass,
+
+    kSymbolsClass,
 
     kTriggerAttachmentClass,
 

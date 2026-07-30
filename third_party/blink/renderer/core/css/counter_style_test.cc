@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/css/counter_style.h"
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
+#include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_symbols_value.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -66,6 +69,67 @@ TEST_F(CounterStyleTest, ExtendsAdditive) {
 
   // Can't represent 0. Fallback to 'decimal'.
   EXPECT_EQ("0", foo.GenerateRepresentation(0));
+}
+
+TEST_F(CounterStyleTest, SymbolsFunction) {
+  auto MakeAnonymousCounterStyle =
+      [](CSSValueID system, const Vector<String>& symbols) -> CounterStyle& {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    for (const String& symbol : symbols) {
+      list->Append(*MakeGarbageCollected<CSSStringValue>(symbol));
+    }
+    return *CounterStyle::CreateAnonymousCounterStyle(
+        *MakeGarbageCollected<cssvalue::CSSSymbolsValue>(system, list));
+  };
+
+  // The default system is 'symbolic', and the suffix is a single space (not the
+  // '. ' default of an @counter-style rule).
+  CounterStyle& symbolic =
+      MakeAnonymousCounterStyle(CSSValueID::kSymbolic, {"a", "b", "c"});
+  EXPECT_EQ("a ", symbolic.GenerateRepresentationWithPrefixAndSuffix(1));
+  EXPECT_EQ("c ", symbolic.GenerateRepresentationWithPrefixAndSuffix(3));
+  EXPECT_EQ("aa ", symbolic.GenerateRepresentationWithPrefixAndSuffix(4));
+  // Out-of-range values fall back to 'decimal'.
+  EXPECT_EQ("0", symbolic.GenerateRepresentation(0));
+  EXPECT_EQ("-2", symbolic.GenerateRepresentation(-2));
+
+  CounterStyle& cyclic =
+      MakeAnonymousCounterStyle(CSSValueID::kCyclic, {"a", "b"});
+  EXPECT_EQ("a", cyclic.GenerateRepresentation(1));
+  EXPECT_EQ("b", cyclic.GenerateRepresentation(2));
+  EXPECT_EQ("a", cyclic.GenerateRepresentation(3));
+
+  CounterStyle& numeric =
+      MakeAnonymousCounterStyle(CSSValueID::kNumeric, {"0", "1"});
+  EXPECT_EQ("0", numeric.GenerateRepresentation(0));
+  EXPECT_EQ("1", numeric.GenerateRepresentation(1));
+  EXPECT_EQ("10", numeric.GenerateRepresentation(2));
+
+  CounterStyle& alphabetic =
+      MakeAnonymousCounterStyle(CSSValueID::kAlphabetic, {"a", "b"});
+  EXPECT_EQ("a", alphabetic.GenerateRepresentation(1));
+  EXPECT_EQ("b", alphabetic.GenerateRepresentation(2));
+  EXPECT_EQ("aa", alphabetic.GenerateRepresentation(3));
+
+  // The 'fixed' system always starts at 1; out-of-range values fall back to
+  // 'decimal'.
+  CounterStyle& fixed =
+      MakeAnonymousCounterStyle(CSSValueID::kFixed, {"a", "b"});
+  EXPECT_EQ("a", fixed.GenerateRepresentation(1));
+  EXPECT_EQ("b", fixed.GenerateRepresentation(2));
+  EXPECT_EQ("3", fixed.GenerateRepresentation(3));
+  EXPECT_EQ("0", fixed.GenerateRepresentation(0));
+
+  // Serialization omits the default 'symbolic' type.
+  CSSValueList* one_symbol = CSSValueList::CreateSpaceSeparated();
+  one_symbol->Append(*MakeGarbageCollected<CSSStringValue>("a"));
+  EXPECT_EQ("symbols(\"a\")", MakeGarbageCollected<cssvalue::CSSSymbolsValue>(
+                                  CSSValueID::kSymbolic, one_symbol)
+                                  ->CssText());
+  EXPECT_EQ("symbols(cyclic \"a\")",
+            MakeGarbageCollected<cssvalue::CSSSymbolsValue>(CSSValueID::kCyclic,
+                                                            one_symbol)
+                ->CssText());
 }
 
 TEST_F(CounterStyleTest, AdditiveLengthLimit) {
