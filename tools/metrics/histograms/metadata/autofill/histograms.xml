@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a form or field with password credentials."/>
 </variants>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/filling/filling_product.cc:FillingProductToString) -->
+<!-- LINT.ThenChange(//components/autofill/core/browser/filling/filling_product.cc:FillingProductToString) -->
 
 <variants name="Autofill.FormEventWithMetadata">
   <variant name="FilledWithMetadata" summary="A card with metadata was filled"/>
@@ -4592,6 +4592,38 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Hiragana to Katakana. It will be true if conversion is required and false
     otherwise. Recorded during the preview and field filling moment.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Filling.TriggerFieldType" enum="AutofillFieldType"
+    expires_after="2027-08-08">
+  <owner>taminob@chromium.org</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of the field that was used to trigger Autofill filling.
+    This is logged every time a form is filled using the `FieldType` stored in
+    `AutofillField::autofilled_type()`. The histogram is not triggered for
+    field-by-field or other non-form filling.
+
+    This is the aggregated histogram across all filling products for
+    `Autofill.Filling.TriggerFieldType.{FillingProduct}`.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Filling.TriggerFieldType.{FillingProduct}"
+    enum="AutofillFieldType" expires_after="2027-08-08">
+  <owner>taminob@chromium.org</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of the field that was used to trigger Autofill filling.
+    This is logged every time a form is filled using the `FieldType` stored in
+    `AutofillField::autofilled_type()`. The histogram is not triggered for
+    field-by-field or other non-form filling.
+
+    {FillingProduct}
+  </summary>
+  <token key="FillingProduct" variants="Autofill.FillingProduct"/>
 </histogram>
 
 <histogram name="Autofill.FocusedField.FieldType{Origin}"

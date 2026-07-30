@@ -22,6 +22,9 @@ void LogNumberOfFieldsModifiedByAutofill(size_t modified_fields_count,
 
 void LogRefillTriggerReason(RefillTriggerReason refill_trigger_reason);
 
+void LogFieldTypeOfFillingTriggerField(FieldType field_type,
+                                       FillingProduct filling_product);
+
 void LogNumberOfFieldsModifiedByRefill(
     RefillTriggerReason refill_trigger_reason,
     size_t num_modified_fields);

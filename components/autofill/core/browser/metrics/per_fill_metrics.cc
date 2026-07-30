@@ -59,6 +59,16 @@ void LogRefillTriggerReason(RefillTriggerReason refill_trigger_reason) {
                                 refill_trigger_reason);
 }
 
+void LogFieldTypeOfFillingTriggerField(FieldType field_type,
+                                       FillingProduct filling_product) {
+  base::UmaHistogramExactLinear("Autofill.Filling.TriggerFieldType.Any",
+                                field_type, MAX_VALID_FIELD_TYPE);
+  base::UmaHistogramExactLinear(
+      base::StrCat({"Autofill.Filling.TriggerFieldType.",
+                    FillingProductToString(filling_product)}),
+      field_type, MAX_VALID_FIELD_TYPE);
+}
+
 void LogNumberOfFieldsModifiedByRefill(
     RefillTriggerReason refill_trigger_reason,
     size_t num_modified_fields) {

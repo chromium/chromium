@@ -37,11 +37,13 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
 
   void TearDown() override { TearDownHelper(); }
 
-  void FillForm(FormData form, FillingPayload filling_payload) {
+  void FillForm(FormData form,
+                FillingPayload filling_payload,
+                std::optional<FieldGlobalId> trigger_field_id = std::nullopt) {
     FormStructure& form_structure = CHECK_DEREF(
         test_api(autofill_manager()).FindCachedFormById(form.global_id()));
-    AutofillField& autofill_field = CHECK_DEREF(
-        form_structure.GetFieldById(form.fields().front().global_id()));
+    AutofillField& autofill_field = CHECK_DEREF(form_structure.GetFieldById(
+        trigger_field_id.value_or(form.fields().front().global_id())));
     test_api(autofill_manager())
         .form_filler()
         .FillOrPreviewForm(
@@ -220,6 +222,63 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
   // only the newly added field to be modified by the refill operation.
   histogram_tester.ExpectUniqueSample(
       "Autofill.Refill.ModifiedFieldsCount.FormChanged", 1, 1);
+}
+
+// Tests that the histogram logging of the `FieldType` of the trigger field
+// works.
+TEST_F(PerFillMetricsTest, LogFieldTypeOfTriggerFieldAddressForm) {
+  base::HistogramTester histogram_tester;
+
+  const FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = ADDRESS_HOME_LINE1}}});
+  SeeForm({form});
+
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
+      .WillOnce(
+          Return(base::ToVector(form.fields(), &FormFieldData::global_id)));
+
+  const AutofillProfile autofill_profile = test::GetFullProfile();
+  FillForm(form, &autofill_profile);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Filling.TriggerFieldType.Any"),
+      base::BucketsAre(base::Bucket(NAME_FIRST, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Filling.TriggerFieldType.Address"),
+              base::BucketsAre(base::Bucket(NAME_FIRST, 1)));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Filling.TriggerFieldType.CreditCard", 0);
+}
+
+// Tests that `FillingProduct`-specific logging of the `FieldType` of the
+// trigger field works for credit cards when triggering Autofill on a field
+// in the form that is not the first.
+TEST_F(PerFillMetricsTest, LogFieldTypeOfTriggerFieldCreditCardForm) {
+  base::HistogramTester histogram_tester;
+
+  const FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER},
+                                    {.role = CREDIT_CARD_EXP_MONTH},
+                                    {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR}}});
+  SeeForm({form});
+
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
+      .WillOnce(
+          Return(base::ToVector(form.fields(), &FormFieldData::global_id)));
+
+  const CreditCard credit_card = test::GetCreditCard();
+  FillForm(form, &credit_card, form.fields()[1].global_id());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Filling.TriggerFieldType.Any"),
+      base::BucketsAre(base::Bucket(CREDIT_CARD_EXP_MONTH, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Filling.TriggerFieldType.CreditCard"),
+              base::BucketsAre(base::Bucket(CREDIT_CARD_EXP_MONTH, 1)));
+  histogram_tester.ExpectTotalCount("Autofill.Filling.TriggerFieldType.Address",
+                                    0);
 }
 
 }  // namespace

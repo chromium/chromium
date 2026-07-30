@@ -2833,6 +2833,10 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     autofill_metrics::LogNumberOfFieldsModifiedByRefill(
         *refill_trigger_reason, safe_filled_fields.size());
   }
+  if (std::optional<FieldType> field_type = trigger_field.autofilled_type()) {
+    autofill_metrics::LogFieldTypeOfFillingTriggerField(
+        *field_type, trigger_field.filling_product());
+  }
 
   std::visit(
       absl::Overload{[&](const AutofillProfile* profile) {
