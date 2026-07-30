@@ -679,10 +679,7 @@ mojom("surfaces") {
       traits_headers = [
         "//services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h",
       ]
-      traits_public_deps = [
-        "//components/viz/common",
-        "//services/viz/public/cpp:crash_keys",
-      ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

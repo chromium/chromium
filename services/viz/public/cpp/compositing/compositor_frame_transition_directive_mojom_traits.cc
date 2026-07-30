@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
-#include "services/viz/public/cpp/crash_keys.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -67,14 +66,9 @@ bool StructTraits<
     Read(viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView
              data,
          viz::CompositorFrameTransitionDirective::SharedElement* out) {
-  if (!data.ReadRenderPassId(&out->render_pass_id) ||
-      !data.ReadViewTransitionElementResourceId(
-          &out->view_transition_element_resource_id)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorFrameTransitionDirective::SharedElement");
-    return false;
-  }
-  return true;
+  return data.ReadRenderPassId(&out->render_pass_id) &&
+         data.ReadViewTransitionElementResourceId(
+             &out->view_transition_element_resource_id);
 }
 
 // static
@@ -93,8 +87,6 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   if (!data.ReadTransitionToken(&transition_token) || !data.ReadType(&type) ||
       !data.ReadSharedElements(&shared_elements) ||
       !data.ReadDisplayColorSpaces(&display_color_spaces)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorFrameTransitionDirective");
     return false;
   }
 
@@ -102,8 +94,6 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   // elements.
   if (type != viz::CompositorFrameTransitionDirective::Type::kSave &&
       !shared_elements.empty()) {
-    viz::SetDeserializationCrashKeyString(
-        "Unexpected shared elements in transition directive");
     return false;
   }
 

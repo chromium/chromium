@@ -7,21 +7,11 @@
 
 #include <string_view>
 
-#include "base/component_export.h"
-
 namespace viz {
 
 // Sets a crash key to indicate what structure triggered a deserialization error
-// in viz mojom code. Up to 3 crash keys are stored in order of invocation
-// ("viz_deserialization", "viz_deserialization_2", "viz_deserialization_3").
-//
-// These crash keys should be cleared after a bad message is handled by calling
-// ClearDeserializationCrashKeys().
-COMPONENT_EXPORT(VIZ_PUBLIC_CPP)
+// in viz mojom code.
 void SetDeserializationCrashKeyString(std::string_view str);
-
-// Clears the deserialization crash keys.
-COMPONENT_EXPORT(VIZ_PUBLIC_CPP) void ClearDeserializationCrashKeys();
 
 }  // namespace viz
 
