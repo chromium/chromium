@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_post_action_provider.h"
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_promo_coordinator.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
@@ -32,9 +33,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -328,6 +331,36 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   return browser->GetProfile()->GetOriginalProfile();
 }
 
+// Presents any follow up promos after the first run experience is finished and
+// dismissed.
+- (void)maybePresentPostFREPromos {
+  ProfileIOS* profile = [self originalProfile];
+  if (!profile) {
+    return;
+  }
+
+  if (IsAppStoreInAppEventsEnabled() && profile->GetPrefs() &&
+      profile->GetPrefs()->GetBoolean(prefs::kAppStoreGeminiPromoTriggered)) {
+    // If first run started due to app store external action, do not show
+    // any follow up IPH.
+    return;
+  }
+
+  CommandDispatcher* dispatcher = [self commandDispatcher];
+  if (!dispatcher) {
+    return;
+  }
+
+  if (IsBestOfAppLensAnimatedPromoEnabled()) {
+    // Present the Lens entrypoint IPH.
+    [HandlerForProtocol(dispatcher, NewTabPageCommands) presentLensIconBubble];
+  } else {
+    // Present feed swipe IPH.
+    [HandlerForProtocol(dispatcher, NewTabPageCommands)
+        presentFeedSwipeFirstRunBubble];
+  }
+}
+
 // Handles the First Run stage of app startup.
 - (void)handleFirstRunStage {
   // Skip the FRE because it wasn't determined to be needed.
@@ -402,6 +435,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
       break;
     case kStepsCompleted:
       _postActionsCompleted = YES;
+      if (first_run::IsPostFREIphInProfileAgentEnabled()) {
+        [self maybePresentPostFREPromos];
+      }
       [self releaseUILocks];
       if (self.profileState.initStage >= ProfileInitStage::kFirstRun) {
         [self.profileState removeAgent:self];

@@ -17,6 +17,7 @@ enum class GuidedTourStep;
 - (void)showFirstRunUI;
 - (void)startGuidedTour;
 - (void)performNextPostFirstRunAction;
+- (void)maybePresentPostFREPromos;
 
 @end
 

@@ -171,30 +171,32 @@ class FirstRunCoordinatorMetricsHelper final {
     WriteFirstRunSentinel();
     [self.delegate didFinishFirstRun];
 
-    if (self.browser == nullptr) {
-      // Speculative fix for some of the crashes in crbug.com/474279386. There
-      // is most likely an underlying issue somewhere in the cleanup logic, but
-      // null checking here should at least prevent some crashes.
-      return;
-    }
+    if (!first_run::IsPostFREIphInProfileAgentEnabled()) {
+      if (self.browser == nullptr) {
+        // Speculative fix for some of the crashes in crbug.com/474279386. There
+        // is most likely an underlying issue somewhere in the cleanup logic,
+        // but null checking here should at least prevent some crashes.
+        return;
+      }
 
-    if (IsAppStoreInAppEventsEnabled() && self.profile &&
-        self.profile->GetPrefs() &&
-        self.profile->GetPrefs()->GetBoolean(
-            prefs::kAppStoreGeminiPromoTriggered)) {
-      // If first run started due to app store external action, do not show
-      // any follow up IPH.
-      return;
-    }
+      if (IsAppStoreInAppEventsEnabled() && self.profile &&
+          self.profile->GetPrefs() &&
+          self.profile->GetPrefs()->GetBoolean(
+              prefs::kAppStoreGeminiPromoTriggered)) {
+        // If first run started due to app store external action, do not show
+        // any follow up IPH.
+        return;
+      }
 
-    if (IsBestOfAppLensAnimatedPromoEnabled()) {
-      // Present the Lens entrypoint IPH.
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          NewTabPageCommands) presentLensIconBubble];
-    } else {
-      // Present feed swipe IPH.
-      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                          NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+      if (IsBestOfAppLensAnimatedPromoEnabled()) {
+        // Present the Lens entrypoint IPH.
+        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            NewTabPageCommands) presentLensIconBubble];
+      } else {
+        // Present feed swipe IPH.
+        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+      }
     }
 
     return;
