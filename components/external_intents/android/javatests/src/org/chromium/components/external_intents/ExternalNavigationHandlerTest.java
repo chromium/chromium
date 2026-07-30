@@ -3352,6 +3352,24 @@ public class ExternalNavigationHandlerTest {
                 "tel:012345678", mDelegate.intentReportedToSafeBrowsing().getDataString());
     }
 
+    @Test
+    @SmallTest
+    public void testHttpBlockBypassedByMarketCategory() {
+        mDelegate.setAllowExternalNavigationForHttpProtocols(false);
+
+        // 1. Resolve to a specialized app (not market). It should be blocked.
+        mDelegate.add(new IntentActivity("https://example.com", "com.example.app"));
+        checkUrl("https://example.com", redirectHandlerForLinkClick())
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        // 2. Resolve to a market app. It should NOT be blocked.
+        mDelegate.setResolvesToMarketApp(true);
+        checkUrl("https://example.com", redirectHandlerForLinkClick())
+                .expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -3364,6 +3382,13 @@ public class ExternalNavigationHandlerTest {
         ResolveInfo ri = new ResolveInfo();
         ri.activityInfo = ai;
         return ri;
+    }
+
+    private static ResolveInfo newMarketResolveInfo(String packageName) {
+        ResolveInfo info = newResolveInfo(packageName);
+        info.filter = new IntentFilter(Intent.ACTION_VIEW);
+        info.filter.addCategory(Intent.CATEGORY_APP_MARKET);
+        return info;
     }
 
     private static ResolveInfo newSpecializedResolveInfo(
@@ -3557,6 +3582,7 @@ public class ExternalNavigationHandlerTest {
 
     private static class TestExternalNavigationDelegate implements ExternalNavigationDelegate {
         private WindowAndroid mWindowAndroid;
+        private boolean mAllowExternalNavigationForHttpProtocols = true;
 
         public List<ResolveInfo> queryIntentActivities(Intent intent) {
             List<ResolveInfo> list = new ArrayList<>();
@@ -3591,6 +3617,9 @@ public class ExternalNavigationHandlerTest {
             if (mResolvesToOtherBrowser) {
                 list.add(newResolveInfo(OTHER_BROWSER_PACKAGE));
             }
+            if (mResolvesToMarketApp) {
+                list.add(newMarketResolveInfo("com.example.market"));
+            }
             return list;
         }
 
@@ -3600,6 +3629,9 @@ public class ExternalNavigationHandlerTest {
             }
             if (mResolvesToOtherBrowser) {
                 return newResolveInfo(OTHER_BROWSER_PACKAGE);
+            }
+            if (mResolvesToMarketApp) {
+                return newMarketResolveInfo("com.example.market");
             }
 
             List<ResolveInfo> list = queryIntentActivities(intent);
@@ -3770,9 +3802,13 @@ public class ExternalNavigationHandlerTest {
         @Override
         public void setExternalNavigationHelper(ExternalNavigationHelper helper) {}
 
+        public void setAllowExternalNavigationForHttpProtocols(boolean value) {
+            mAllowExternalNavigationForHttpProtocols = value;
+        }
+
         @Override
         public boolean allowExternalNavigationForHttpProtocols(GURL url) {
-            return false;
+            return mAllowExternalNavigationForHttpProtocols;
         }
 
         public void reset() {
@@ -3843,6 +3879,10 @@ public class ExternalNavigationHandlerTest {
             mResolvesToOtherBrowser = value;
         }
 
+        public void setResolvesToMarketApp(boolean value) {
+            mResolvesToMarketApp = value;
+        }
+
         public void setWindowAndroid(WindowAndroid windowAndroid) {
             mWindowAndroid = windowAndroid;
         }
@@ -3879,6 +3919,7 @@ public class ExternalNavigationHandlerTest {
         private boolean mWillResolveToDisambiguationDialog;
         private Context mContext;
         private boolean mResolvesToOtherBrowser;
+        private boolean mResolvesToMarketApp;
         private boolean mShouldDisableAllExternalIntents;
         private boolean mShouldReturnAsActivityResult;
         private Intent mSafeBrowsingIntent;

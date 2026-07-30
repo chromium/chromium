@@ -192,7 +192,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public boolean allowExternalNavigationForHttpProtocols(GURL url) {
-            return false;
+            return true;
         }
 
         public void resumeDelayedVerificationForTesting() {

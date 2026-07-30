@@ -208,8 +208,9 @@ public interface ExternalNavigationDelegate {
     void setExternalNavigationHelper(ExternalNavigationHelper helper);
 
     /**
-     * Returns whether the external navigation should be blocked now because an app should be set
-     * for the current page to be opened by the user on demand at a later time.
+     * Returns whether the external navigation should be allowed for HTTP protocols. If this returns
+     * true, normal external navigation checks will continue. If this returns false, the navigation
+     * will be kept inside the browser to be opened by the user on demand at a later time.
      *
      * @param url The {@link GURL} of the current page.
      */

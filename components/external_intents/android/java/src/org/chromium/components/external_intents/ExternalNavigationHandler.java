@@ -1917,9 +1917,11 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
         boolean shouldReturnAsResult = mDelegate.shouldReturnAsActivityResult(intentTargetUrl);
 
-        if (allowExternalNavigationForHttpProtocols(
+        ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
+        if (shouldBlockExternalNavigationForHttpProtocols(
                 mDelegate.allowExternalNavigationForHttpProtocols(params.getUrl()),
-                shouldReturnAsResult)) {
+                shouldReturnAsResult,
+                resolveActivity)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -1963,7 +1965,6 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         if (isNavigationToSelf(resolvingInfos, resolveActivity, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNavigateTab(intentTargetUrl, params);
         }
@@ -2044,13 +2045,25 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                 intentTargetUrl);
     }
 
-    private boolean allowExternalNavigationForHttpProtocols(
-            boolean allowExternalNavigation, boolean shouldReturnAsResult) {
-        if (allowExternalNavigation && !shouldReturnAsResult) {
-            if (debug()) Log.i(TAG, "External navigation allowed for HTTP protocols.");
-            return true;
+    private boolean shouldBlockExternalNavigationForHttpProtocols(
+            boolean allowExternalNavigation,
+            boolean shouldReturnAsResult,
+            ResolveActivitySupplier resolveActivity) {
+        if (allowExternalNavigation || shouldReturnAsResult) {
+            return false;
         }
-        return false;
+
+        ResolveInfo defaultActivity = resolveActivity.get();
+        if (defaultActivity != null && defaultActivity.activityInfo != null) {
+            if (PLAY_APP_PACKAGE.equals(defaultActivity.activityInfo.packageName)
+                    || (defaultActivity.filter != null
+                            && defaultActivity.filter.hasCategory(Intent.CATEGORY_APP_MARKET))) {
+                return false;
+            }
+        }
+
+        if (debug()) Log.i(TAG, "External navigation blocked for HTTP protocols.");
+        return true;
     }
 
     // https://crbug.com/1249964

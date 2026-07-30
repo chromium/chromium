@@ -346,7 +346,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean allowExternalNavigationForHttpProtocols(GURL url) {
-        return OpenInAppUtils.isOpenInAppAvailable() && UrlUtilities.isHttpOrHttps(url);
+        return !OpenInAppUtils.isOpenInAppAvailable() || !UrlUtilities.isHttpOrHttps(url);
     }
 
     /**
