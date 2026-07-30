@@ -121,6 +121,13 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
     // we lose focus from ::scroll-marker upon activation.
     GetDocument().ClearFocusedElement();
   }
+  // Focus changes (SetFocusedElement / ClearFocusedElement) fire synchronous
+  // events whose handlers may remove the scroll container, disposing this
+  // group and its markers.
+  if (!isConnected() || !scroll_marker->isConnected() ||
+      !scroll_marker->parentElement()) {
+    return;
+  }
   SetSelected(*scroll_marker, apply_snap_alignment);
   // If the scroller's scroll-marker-group property is set to `links`,
   // per https://drafts.csswg.org/css-overflow-5/#scroll-target-focus

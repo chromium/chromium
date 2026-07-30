@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -1323,6 +1324,77 @@ TEST_F(FocusControllerTest, InsideInactiveColumnTab) {
   Element* next =
       FindFocusableElementAfter(*target, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next, nullptr);
+}
+
+// A helper event listener that removes the scroller from the DOM
+// when a focus event occurs during scroll marker activation.
+// This is used to test that the focus and activation logic handles
+// the destruction of the scroller (and its associated pseudo-elements)
+// gracefully and doesn't crash.
+class ActivateScrollMarkerDisposeListener final : public NativeEventListener {
+ public:
+  explicit ActivateScrollMarkerDisposeListener(Element* scroller)
+      : scroller_(scroller) {}
+  void Invoke(ExecutionContext*, Event* event) override {
+    if (scroller_ && scroller_->isConnected()) {
+      scroller_->remove();
+    }
+  }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(scroller_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<Element> scroller_;
+};
+
+TEST_F(FocusControllerTest, ActivateScrollMarkerDisposePseudoElement) {
+  SetBodyContent(R"HTML(
+    <style>
+      #scroller {
+        scroll-marker-group: after tabs;
+        overflow-x: auto;
+        columns: 1;
+        height: 100px;
+        scroll-snap-type: x mandatory;
+      }
+      #scroller::column {
+        scroll-snap-align: center;
+      }
+      #scroller::column::scroll-marker {
+        content: "*";
+      }
+    </style>
+    <div id="scroller">
+      <div id="item">Item</div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* scroller = GetElementById("scroller");
+  auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  const ColumnPseudoElement* first_column =
+      scroller->GetColumnPseudoElements()->front();
+  Element* first_scroller_marker =
+      first_column->GetPseudoElement(kPseudoIdScrollMarker);
+
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+
+  GetDocument().addEventListener(
+      event_type_names::kFocusin,
+      MakeGarbageCollected<ActivateScrollMarkerDisposeListener>(scroller),
+      /*use_capture=*/true);
+
+  // This should not crash, but safely return early due to our isConnected()
+  // check.
+  scroll_marker_group->ActivateScrollMarker(
+      To<ScrollMarkerPseudoElement>(first_scroller_marker));
+
+  EXPECT_FALSE(scroller->isConnected());
 }
 
 }  // namespace blink
