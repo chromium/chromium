@@ -60,6 +60,10 @@ class VectorWithCustomIterators {
 
 }  // namespace
 
+TEST(ZipTest, Alias) {
+  static_assert(std::is_same_v<decltype(base::zip), decltype(std::views::zip)>);
+}
+
 TEST(ZipTest, Basics) {
   std::vector<int> a = {1, 2, 3};
   std::vector<double> b = {4.5, 5.5, 6.5};
@@ -205,16 +209,6 @@ TEST(ZipTest, NotCopyableOrMovableRange) {
     EXPECT_EQ(20, y.value);
     EXPECT_EQ(30, z.value);
   }
-}
-
-TEST(ZipTest, CheckForIterationPastTheEnd) {
-  std::vector<int> a = {7, 8, 9};
-  std::vector<int> b = {4, 5};
-
-  auto ranges = zip(a, b);
-  auto it = ranges.begin();
-  std::advance(it, 2);
-  EXPECT_CHECK_DEATH(std::advance(it, 1));
 }
 
 // Tests that std::ranges algorithms can be used with zip.
