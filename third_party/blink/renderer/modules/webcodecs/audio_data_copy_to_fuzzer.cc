@@ -4,12 +4,14 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
+#include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs_fuzzable.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -19,7 +21,13 @@
 
 namespace blink {
 
-DEFINE_TEXT_PROTO_FUZZER(const wc_fuzzer::AudioDataCopyToCase& proto) {
+DEFINE_TEXT_PROTO_FUZZER(
+    const fuzzable::wc_fuzzer::AudioDataCopyToCase& fuzzable_proto) {
+  std::string serialized;
+  CHECK(fuzzable_proto.SerializeToString(&serialized));
+  wc_fuzzer::AudioDataCopyToCase proto;
+  CHECK(proto.ParseFromString(serialized));
+
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>();
