@@ -157,6 +157,15 @@ void PushMessagingManager::AddPushMessagingReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+bool PushMessagingManager::IsRequestFromFencedFrame() const {
+  if (!IsRequestFromDocument(render_frame_id_)) {
+    return false;
+  }
+  RenderFrameHostImpl* render_frame_host = RenderFrameHostImpl::FromID(
+      render_process_host_->GetDeprecatedID(), render_frame_id_);
+  return render_frame_host && render_frame_host->IsNestedWithinFencedFrame();
+}
+
 // Subscribe methods, merged in order of use.
 // -----------------------------------------------------------------------------
 
@@ -167,6 +176,15 @@ void PushMessagingManager::Subscribe(
     SubscribeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(options);
+
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::PushManager. Ignore the request
+  // and mark it as bad if it didn't happen for some reason.
+  if (IsRequestFromFencedFrame()) {
+    bad_message::ReceivedBadMessage(&*render_process_host_,
+                                    bad_message::PMM_SUBSCRIBE_IN_FENCED_FRAME);
+    return;
+  }
 
   RegisterData data;
 
@@ -186,9 +204,11 @@ void PushMessagingManager::Subscribe(
     return;
   }
 
-  // The renderer should have checked and disallowed the request for fenced
-  // frames and thrown an exception in blink::PushManager. Report a bad message
-  // if the renderer if the renderer side check didn't happen for some reason.
+  // Registrations created on behalf of a fenced frame may not have push
+  // subscriptions. Together with the IsRequestFromFencedFrame() check above
+  // this also catches requests from service workers running in such a frame
+  // (which use a worker-bound instance of this class) when they target their
+  // own registration.
   if (service_worker_registration->ancestor_frame_type() ==
       blink::mojom::AncestorFrameType::kFencedFrame) {
     bad_message::ReceivedBadMessage(render_process_host_->GetDeprecatedID(),
@@ -505,6 +525,13 @@ void PushMessagingManager::SendSubscriptionSuccess(
 void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
                                        UnsubscribeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (IsRequestFromFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        &*render_process_host_, bad_message::PMM_UNSUBSCRIBE_IN_FENCED_FRAME);
+    return;
+  }
+
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
@@ -600,6 +627,13 @@ void PushMessagingManager::GetSubscription(
     int64_t service_worker_registration_id,
     GetSubscriptionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (IsRequestFromFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        &*render_process_host_,
+        bad_message::PMM_GET_SUBSCRIPTION_IN_FENCED_FRAME);
+    return;
+  }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       service_worker_context_->GetLiveRegistration(

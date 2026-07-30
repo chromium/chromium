@@ -172,6 +172,10 @@ class CONTENT_EXPORT PushMessagingManager : public blink::mojom::PushMessaging {
       const std::vector<std::string>& push_subscription_id_and_sender_info,
       blink::ServiceWorkerStatusCode service_worker_status);
 
+  // Returns whether this is a frame-bound instance whose owning frame is nested
+  // within a fenced frame.
+  bool IsRequestFromFencedFrame() const;
+
   PushMessagingService* GetService();
 
   const raw_ref<RenderProcessHost> render_process_host_;
