@@ -173,6 +173,11 @@ bool SupportsAtkTextScrollingInterface() {
   return atk_text_scroll_substring_to_point;
 }
 
+bool SupportsAtkDocumentTextSelections() {
+  return base::Version(atk_get_version()).CompareTo(base::Version("2.52.0")) >=
+         0;
+}
+
 // TODO(https://crbug.com/40549424): This may be removed when support for
 // Ubuntu 18.04 is dropped.
 AtkRole GetAtkRoleContentDeletion() {
@@ -747,9 +752,40 @@ AtkAttributeSet* GetDocumentAttributes(AtkDocument* atk_doc) {
   return obj->GetDocumentAttributes();
 }
 
+GArray* GetTextSelections(AtkDocument* atk_doc) {
+  g_return_val_if_fail(ATK_IS_DOCUMENT(atk_doc), nullptr);
+
+  AXPlatformNodeAuraLinux* obj =
+      AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(atk_doc));
+  if (!obj) {
+    return nullptr;
+  }
+
+  return obj->GetDocumentTextSelections();
+}
+
+gboolean SetTextSelections(AtkDocument* atk_doc, GArray* selections) {
+  g_return_val_if_fail(ATK_IS_DOCUMENT(atk_doc), false);
+
+  AXPlatformNodeAuraLinux* obj =
+      AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(atk_doc));
+  if (!obj) {
+    return false;
+  }
+
+  return obj->SetDocumentTextSelections(selections);
+}
+
 void Init(AtkDocumentIface* iface) {
   iface->get_document_attribute_value = GetDocumentAttributeValue;
   iface->get_document_attributes = GetDocumentAttributes;
+
+  if (SupportsAtkDocumentTextSelections()) {
+    auto* iface_with_text_selections =
+        reinterpret_cast<AtkDocumentIfaceWithTextSelections*>(iface);
+    iface_with_text_selections->get_text_selections = GetTextSelections;
+    iface_with_text_selections->set_text_selections = SetTextSelections;
+  }
 }
 
 const GInterfaceInfo Info = {reinterpret_cast<GInterfaceInitFunc>(Init),
@@ -4625,6 +4661,143 @@ AtkAttributeSet* AXPlatformNodeAuraLinux::GetDocumentAttributes() const {
   }
 
   return attribute_set;
+}
+
+GArray* AXPlatformNodeAuraLinux::GetDocumentTextSelections() {
+  GArray* selections = g_array_new(false, true, sizeof(AtkTextSelectionCompat));
+
+  TextSelection selection;
+  if (GetTextSelection(&selection) != TextSelectionResult::kSuccess) {
+    return selections;
+  }
+
+  auto promote_endpoint_to_hypertext_parent =
+      [](raw_ptr<AXPlatformNodeBase>& endpoint_object, int& endpoint_offset) {
+        auto* endpoint_node =
+            static_cast<AXPlatformNodeAuraLinux*>(endpoint_object.get());
+        if (!endpoint_node->IsText()) {
+          return;
+        }
+
+        auto* parent = FromAtkObject(endpoint_node->GetParent());
+        if (!parent || !ATK_IS_TEXT(parent->GetNativeViewAccessible())) {
+          return;
+        }
+
+        // AT-SPI clients consume text from hypertext objects rather than their
+        // static-text leaves, so expose an endpoint relative to its hypertext
+        // parent.
+        int parent_offset = parent->GetHypertextOffsetFromEndpoint(
+            endpoint_node, endpoint_offset);
+        if (parent_offset >= 0) {
+          endpoint_object = parent;
+          endpoint_offset = parent_offset;
+        }
+      };
+  promote_endpoint_to_hypertext_parent(selection.start_object,
+                                       selection.start_offset);
+  promote_endpoint_to_hypertext_parent(selection.end_object,
+                                       selection.end_offset);
+
+  // Deliberately report a collapsed range as no selection from AT-SPI
+  // Document.GetTextSelections(). AT-SPI does not consider a caret to be a
+  // text selection, regardless of whether the range was collapsed through
+  // SetTextSelections() or by user interaction.
+  if (selection.start_object == selection.end_object &&
+      selection.start_offset == selection.end_offset) {
+    return selections;
+  }
+
+  AtkObject* start_object = selection.start_object->GetNativeViewAccessible();
+  AtkObject* end_object = selection.end_object->GetNativeViewAccessible();
+  if (!ATK_IS_TEXT(start_object) || !ATK_IS_TEXT(end_object)) {
+    return selections;
+  }
+
+  auto* start_node = FromAtkObject(start_object);
+  auto* end_node = FromAtkObject(end_object);
+  if (!start_node || !end_node) {
+    return selections;
+  }
+
+  AtkTextSelectionCompat atk_selection = {
+      .start_object = start_object,
+      .start_offset = static_cast<gint>(
+          start_node->UTF16ToUnicodeOffsetInText(selection.start_offset)),
+      .end_object = end_object,
+      .end_offset = static_cast<gint>(
+          end_node->UTF16ToUnicodeOffsetInText(selection.end_offset)),
+      .start_is_active = selection.start_is_active,
+  };
+  g_array_append_vals(selections, &atk_selection, 1);
+  return selections;
+}
+
+bool AXPlatformNodeAuraLinux::SetDocumentTextSelections(GArray* selections) {
+  // Chromium only supports one physical selection, and the ATK API requires
+  // one or more selections.
+  if (!selections || selections->len != 1) {
+    return false;
+  }
+  if (g_array_get_element_size(selections) != sizeof(AtkTextSelectionCompat)) {
+    return false;
+  }
+
+  const auto& atk_selection =
+      *reinterpret_cast<const AtkTextSelectionCompat*>(selections->data);
+  if (!atk_selection.start_object || !atk_selection.end_object ||
+      !ATK_IS_TEXT(atk_selection.start_object) ||
+      !ATK_IS_TEXT(atk_selection.end_object)) {
+    return false;
+  }
+
+  auto* start_node = FromAtkObject(atk_selection.start_object);
+  auto* end_node = FromAtkObject(atk_selection.end_object);
+  if (!start_node || !end_node || !start_node->IsDescendantOf(this) ||
+      !end_node->IsDescendantOf(this)) {
+    return false;
+  }
+
+  int start_character_count =
+      atk_text_get_character_count(ATK_TEXT(atk_selection.start_object));
+  int end_character_count =
+      atk_text_get_character_count(ATK_TEXT(atk_selection.end_object));
+  if (atk_selection.start_offset < 0 ||
+      atk_selection.start_offset > start_character_count ||
+      atk_selection.end_offset < 0 ||
+      atk_selection.end_offset > end_character_count) {
+    return false;
+  }
+
+  TextSelection selection = {
+      .start_object = start_node,
+      .start_offset = static_cast<int>(
+          start_node->UnicodeToUTF16OffsetInText(atk_selection.start_offset)),
+      .end_object = end_node,
+      .end_offset = static_cast<int>(
+          end_node->UnicodeToUTF16OffsetInText(atk_selection.end_offset)),
+      .start_is_active = static_cast<bool>(atk_selection.start_is_active),
+  };
+
+  AXPosition start_position =
+      start_node->HypertextOffsetToEndpoint(selection.start_offset)
+          ->AsDomSelectionPosition();
+  AXPosition end_position =
+      end_node->HypertextOffsetToEndpoint(selection.end_offset)
+          ->AsDomSelectionPosition();
+  if (start_position->IsNullPosition() || end_position->IsNullPosition()) {
+    return false;
+  }
+
+  // Endpoint objects may have an ancestor-descendant relationship, so compare
+  // their complete text positions instead. See
+  // https://gitlab.gnome.org/GNOME/at-spi2-core/-/work_items/242.
+  std::optional<int> position_order = start_position->CompareTo(*end_position);
+  if (!position_order || *position_order > 0) {
+    return false;
+  }
+
+  return SetTextSelection(selection) == TextSelectionResult::kSuccess;
 }
 
 //

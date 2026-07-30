@@ -556,8 +556,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   };
 
   // A single text selection whose endpoints are expressed as offsets in the
-  // hypertext of their respective objects. The start and end are in logical
-  // tree order; `start_is_active` preserves the direction of the selection.
+  // hypertext of their respective objects. The start and end identify the
+  // logical beginning and end of the range; `start_is_active` preserves the
+  // direction of the selection.
   struct TextSelection {
     raw_ptr<AXPlatformNodeBase> start_object = nullptr;
     int start_offset = 0;

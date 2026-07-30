@@ -37,6 +37,20 @@ namespace {
 const char16_t kBullet[2] = {u'\x2022', ' '};
 const std::u16string kString16Bullet = std::u16string(kBullet, 2);
 
+ui::AtkDocumentIfaceWithTextSelections* GetDocumentTextSelectionIface(
+    AtkObject* document) {
+  return reinterpret_cast<ui::AtkDocumentIfaceWithTextSelections*>(
+      ATK_DOCUMENT_GET_IFACE(document));
+}
+
+template <typename T>
+T& GArrayFirst(GArray* array) {
+  CHECK(array);
+  CHECK_GT(array->len, 0u);
+  CHECK_EQ(sizeof(T), g_array_get_element_size(array));
+  return *reinterpret_cast<T*>(array->data);
+}
+
 AtkObject* FindAtkObjectParentFrame(AtkObject* atk_object) {
   while (atk_object) {
     if (atk_object_get_role(atk_object) == ATK_ROLE_FRAME) {
@@ -1815,6 +1829,100 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxCaretBrowsingBrowserTest,
   EXPECT_EQ(character_count, atk_text_get_caret_offset(ATK_TEXT(paragraph_1)));
   EXPECT_EQ(-1, atk_text_get_caret_offset(ATK_TEXT(paragraph_2)));
 
+  g_object_unref(paragraph_1);
+  g_object_unref(paragraph_2);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestAtkDocumentTextSelections) {
+  if (base::Version(atk_get_version()).CompareTo(base::Version("2.52.0")) < 0) {
+    GTEST_SKIP() << "ATK Document text selections require ATK 2.52 or newer";
+  }
+
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<p>abc<a href="#">def</a>ghi</p><p>j&#x1F600;kl</p>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  ASSERT_TRUE(ATK_IS_DOCUMENT(document));
+  auto* document_iface = GetDocumentTextSelectionIface(document);
+  ASSERT_TRUE(document_iface->get_text_selections);
+  ASSERT_TRUE(document_iface->set_text_selections);
+
+  AtkObject* paragraph_1 = atk_object_ref_accessible_child(document, 0);
+  AtkObject* paragraph_2 = atk_object_ref_accessible_child(document, 1);
+  ASSERT_TRUE(ATK_IS_TEXT(paragraph_1));
+  ASSERT_TRUE(ATK_IS_TEXT(paragraph_2));
+  ASSERT_EQ(3, atk_object_get_n_accessible_children(paragraph_1));
+  AtkObject* link = atk_object_ref_accessible_child(paragraph_1, 1);
+  ASSERT_EQ(ATK_ROLE_LINK, atk_object_get_role(link));
+  ASSERT_TRUE(ATK_IS_TEXT(link));
+
+  GArray* selections =
+      document_iface->get_text_selections(ATK_DOCUMENT(document));
+  ASSERT_TRUE(selections);
+  EXPECT_EQ(0u, selections->len);
+  g_array_free(selections, true);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
+    ExecuteScript(
+        u"const paragraph = document.querySelector('p');"
+        u"const link = paragraph.querySelector('a');"
+        u"const range = document.createRange();"
+        u"range.setStart(link.firstChild, 1);"
+        u"range.setEnd(paragraph.lastChild, 0);"
+        u"getSelection().removeAllRanges();"
+        u"getSelection().addRange(range);");
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  GArray* received_selections =
+      document_iface->get_text_selections(ATK_DOCUMENT(document));
+  ASSERT_TRUE(received_selections);
+  ASSERT_EQ(1u, received_selections->len);
+  const auto& received_selection =
+      GArrayFirst<ui::AtkTextSelectionCompat>(received_selections);
+  EXPECT_EQ(link, received_selection.start_object);
+  EXPECT_EQ(1, received_selection.start_offset);
+  EXPECT_EQ(paragraph_1, received_selection.end_object);
+  EXPECT_EQ(4, received_selection.end_offset);
+  EXPECT_FALSE(received_selection.start_is_active);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
+    ASSERT_TRUE(document_iface->set_text_selections(ATK_DOCUMENT(document),
+                                                    received_selections));
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+  g_array_free(received_selections, true);
+
+  ui::AtkTextSelectionCompat requested_selection = {
+      .start_object = paragraph_2,
+      .start_offset = 2,
+      .end_object = paragraph_2,
+      .end_offset = 2,
+      .start_is_active = false,
+  };
+  selections = g_array_new(false, true, sizeof(ui::AtkTextSelectionCompat));
+  g_array_append_vals(selections, &requested_selection, 1);
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
+    ASSERT_TRUE(document_iface->set_text_selections(ATK_DOCUMENT(document),
+                                                    selections));
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  received_selections =
+      document_iface->get_text_selections(ATK_DOCUMENT(document));
+  ASSERT_TRUE(received_selections);
+  EXPECT_EQ(0u, received_selections->len);
+
+  g_array_free(received_selections, true);
+  g_array_free(selections, true);
+  g_object_unref(link);
   g_object_unref(paragraph_1);
   g_object_unref(paragraph_2);
 }

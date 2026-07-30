@@ -2064,10 +2064,9 @@ AXPlatformNodeBase::TextSelectionResult AXPlatformNodeBase::GetTextSelection(
 
 AXPlatformNodeBase::TextSelectionResult AXPlatformNodeBase::SetTextSelection(
     const TextSelection& selection) {
-  // TODO(crbug.com/324445642): Both IA2 and AT-SPI require the endpoint objects
-  // to be descendants of the object on which the operation is called. This
-  // helper preserves the existing Windows behavior, which does not validate
-  // that requirement. Resolve this before using the helper for ATK/AT-SPI.
+  // TODO(accessibility): IA2 requires the endpoint objects to be descendants
+  // of the object on which the operation is called. The existing Windows
+  // behavior does not validate that requirement.
   AXPosition start_position =
       selection.start_object->HypertextOffsetToEndpoint(selection.start_offset)
           ->AsDomSelectionPosition();
