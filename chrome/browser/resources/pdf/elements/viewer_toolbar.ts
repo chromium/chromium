@@ -250,8 +250,8 @@ export class ViewerToolbarElement extends CrLitElement {
 
   protected fitToButtonIcon_(): string {
     return 'pdf' +
-        (this.fittingType_ === FittingType.FIT_TO_PAGE ? ':fit-to-height' :
-                                                         ':fit-to-width');
+        (this.fittingType_ === FittingType.FIT_TO_PAGE ? ':fit-page-height' :
+                                                         ':fit-page-width');
   }
 
   /** @return The appropriate tooltip for the current state. */

@@ -27,14 +27,14 @@ export function getHtml(this: ViewerSaveToDriveBubbleElement) {
           ?hidden="${this.isSaveToDriveState_(SaveToDriveState.UPLOADING)}">
       </div>
       <div id="file-content">
-        <cr-icon icon="pdf-save-to-drive:pdf-icon" id="pdf-icon"></cr-icon>
+        <cr-icon icon="pdf-save-to-drive:drive-pdf-filled" id="pdf-icon"></cr-icon>
         <div id="filename-content">
           <div id="filename">${this.getFileName_()}</div>
           <div id="file-metadata">${this.getMetadata_()}</div>
         </div>
         ${this.isSaveToDriveState_(SaveToDriveState.UPLOADING) ? html`
           <cr-icon-button id="cancel-upload-button"
-              iron-icon="pdf-save-to-drive:cancel-unfill"
+              iron-icon="pdf-save-to-drive:cancel"
               aria-label="$i18n{saveToDriveDialogCancelUploadButtonLabel}"
               title="$i18n{saveToDriveDialogCancelUploadButtonLabel}"
               @click="${this.onRequestButtonClick_}">

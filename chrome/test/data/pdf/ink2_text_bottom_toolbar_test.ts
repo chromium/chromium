@@ -58,7 +58,7 @@ chrome.test.runTests([
     chrome.test.assertEq(2, toolbarDropdowns.length);
     const alignmentIcon = toolbarDropdowns[0]!.querySelector('cr-icon');
     chrome.test.assertTrue(!!alignmentIcon);
-    chrome.test.assertEq('pdf-ink:text-align-left', alignmentIcon.icon);
+    chrome.test.assertEq('pdf-ink:format-align-left', alignmentIcon.icon);
     assertColorChipFillColor(toolbar, hexToColor(TEXT_COLORS[0]!.color));
 
     chrome.test.succeed();
@@ -144,7 +144,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(buttons[1]!.checked);
     const alignmentIcon = toolbar.$.alignment.querySelector('cr-icon');
     chrome.test.assertTrue(!!alignmentIcon);
-    chrome.test.assertEq('pdf-ink:text-align-center', alignmentIcon.icon);
+    chrome.test.assertEq('pdf-ink:format-align-center', alignmentIcon.icon);
 
     chrome.test.succeed();
   },

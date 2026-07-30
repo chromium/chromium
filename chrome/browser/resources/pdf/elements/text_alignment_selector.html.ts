@@ -19,13 +19,13 @@ export function getHtml(this: TextAlignmentSelectorElement) {
         selectable-elements="selectable-icon-button"
         .selected="${this.currentAlignment_}"
         @selected-changed="${this.onAlignmentSelectedChanged_}">
-      <selectable-icon-button icon="pdf-ink:text-align-left"
+      <selectable-icon-button icon="pdf-ink:format-align-left"
           name="${TextAlignment.LEFT}" label="$i18n{ink2TextAlignLeft}">
       </selectable-icon-button>
-      <selectable-icon-button icon="pdf-ink:text-align-center"
+      <selectable-icon-button icon="pdf-ink:format-align-center"
           name="${TextAlignment.CENTER}" label="$i18n{ink2TextAlignCenter}">
       </selectable-icon-button>
-      <selectable-icon-button icon="pdf-ink:text-align-right"
+      <selectable-icon-button icon="pdf-ink:format-align-right"
           name="${TextAlignment.RIGHT}" label="$i18n{ink2TextAlignRight}">
       </selectable-icon-button>
     </cr-radio-group>

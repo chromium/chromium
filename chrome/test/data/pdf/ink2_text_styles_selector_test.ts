@@ -43,9 +43,8 @@ chrome.test.runTests([
     // displaying the expected icon.
     const buttons = styleSelector.shadowRoot.querySelectorAll('cr-icon-button');
     chrome.test.assertEq(2, buttons.length);
-    await testButton(buttons[0]!, TextStyle.BOLD, 'pdf-ink:text-format-bold');
-    await testButton(
-        buttons[1]!, TextStyle.ITALIC, 'pdf-ink:text-format-italic');
+    await testButton(buttons[0]!, TextStyle.BOLD, 'pdf-ink:format-bold');
+    await testButton(buttons[1]!, TextStyle.ITALIC, 'pdf-ink:format-italic');
 
     chrome.test.succeed();
   },

@@ -32,8 +32,8 @@ const tests = [
   async function testFitButton() {
     const toolbar = createToolbar();
     const fitButton = getCrIconButtons(toolbar, 'center')[2]!;
-    const fitWidthIcon = 'pdf:fit-to-width';
-    const fitHeightIcon = 'pdf:fit-to-height';
+    const fitWidthIcon = 'pdf:fit-page-width';
+    const fitHeightIcon = 'pdf:fit-page-height';
 
     let lastFitType = '';
     let numEvents = 0;
@@ -147,7 +147,7 @@ const tests = [
   async function testRotateButton() {
     const toolbar = createToolbar();
     const rotateButton = getCrIconButtons(toolbar, 'center')[3]!;
-    chrome.test.assertEq('pdf:rotate-left', rotateButton.ironIcon);
+    chrome.test.assertEq('pdf:rotate-90-degrees-ccw', rotateButton.ironIcon);
 
     const whenRotateLeft = eventToPromise('rotate-left', toolbar);
     rotateButton.click();

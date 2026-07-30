@@ -44,7 +44,7 @@ import {AnnotationMode} from '../constants.js';
         aria-label="${this.getFitToButtonTooltip_()}"
         @click="${this.onFitToButtonClick_}">
     </cr-icon-button>
-    <cr-icon-button id="rotate" iron-icon="pdf:rotate-left"
+    <cr-icon-button id="rotate" iron-icon="pdf:rotate-90-degrees-ccw"
         suppress-rtl-flip
         aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
         @click="${this.onRotateClick_}">
@@ -54,7 +54,7 @@ import {AnnotationMode} from '../constants.js';
       <span id="annotate-controls">
         <span class="vertical-separator"></span>
         ${this.pdfTextAnnotationsEnabled_ ? html`
-          <cr-icon-button id="text-annotate" iron-icon="pdf-ink:text-annotate"
+          <cr-icon-button id="text-annotate" iron-icon="pdf-ink:text-fields"
               class="annotate-button ${this.getActive_(AnnotationMode.TEXT)}"
               @click="${this.onTextAnnotationClick_}"
               ?disabled="${!this.annotationAvailable}"
@@ -63,7 +63,7 @@ import {AnnotationMode} from '../constants.js';
               title="$i18n{ink2TextAnnotation}">
           </cr-icon-button>
         ` : ''}
-        <cr-icon-button id="annotate" iron-icon="pdf-ink:annotate"
+        <cr-icon-button id="annotate" iron-icon="pdf-ink:gesture"
             class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
             @click="${this.onAnnotationClick_}"
             ?disabled="${!this.annotationAvailable}"
@@ -90,7 +90,7 @@ import {AnnotationMode} from '../constants.js';
           aria-label="$i18n{glicSummarize}"
           title="$i18n{glicSummarizeTooltip}"
           @click="${this.onGlicSummarizeClick_}">
-        <cr-icon slot="prefix-icon" icon="pdf-glic:summarize"></cr-icon>
+        <cr-icon slot="prefix-icon" icon="pdf-glic:summarize-auto-2"></cr-icon>
         $i18n{glicSummarize}
       </cr-button>
     </span>` : ''}
@@ -121,7 +121,7 @@ import {AnnotationMode} from '../constants.js';
         ?hidden="${!this.printingEnabled_}" title="$i18n{tooltipPrint}"
         aria-label="$i18n{tooltipPrint}" @click="${this.onPrintClick_}">
     </cr-icon-button>
-    <cr-icon-button id="more" iron-icon="pdf:more"
+    <cr-icon-button id="more" iron-icon="pdf:more-vert"
         title="$i18n{moreActions}" aria-label="$i18n{moreActions}"
         @click="${this.onMoreClick_}"></cr-icon-button>
   </div>
@@ -135,7 +135,7 @@ import {AnnotationMode} from '../constants.js';
       @click="${this.onTwoPageViewClick_}" role="checkbox"
       aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
     <span class="check-container">
-      <cr-icon icon="pdf:check"
+      <cr-icon icon="pdf:check-small"
           ?hidden="${!this.twoUpViewEnabled}"></cr-icon>
     </span>
     $i18n{twoUpViewEnable}
@@ -146,7 +146,7 @@ import {AnnotationMode} from '../constants.js';
       role="checkbox"
       aria-checked="${this.getAriaChecked_(this.displayAnnotations_)}">
     <span class="check-container">
-      <cr-icon icon="pdf:check"
+      <cr-icon icon="pdf:check-small"
           ?hidden="${!this.displayAnnotations_}">
       </cr-icon>
     </span>
