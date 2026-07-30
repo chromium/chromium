@@ -1149,8 +1149,16 @@ void ReadAnythingUntrustedPageHandler::CloseUI() {
     return;
   }
   CHECK(read_anything_controller_);
-  DCHECK(read_anything_controller_->GetPresentationState() ==
-         ReadAnythingController::PresentationState::kInImmersiveOverlay);
+  // Because Mojo messages from the untrusted WebUI arrive asynchronously, the
+  // presentation state may have already changed away from kInImmersiveOverlay
+  // (e.g., due to tab switching or closing the overlay). Ignore stale close
+  // requests rather than DCHECK / CHECK-ing.
+  if (read_anything_controller_->GetPresentationState() !=
+      ReadAnythingController::PresentationState::kInImmersiveOverlay) {
+    VLOG(1) << "Received CloseUI request when presentation state is not "
+               "kInImmersiveOverlay";
+    return;
+  }
   read_anything_controller_->CloseImmersiveUI(
       ReadAnythingCloseReason::kClosedByUser);
 }
