@@ -12,9 +12,9 @@
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
-#include "components/viz/common/quads/offset_tag.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/android/resources/resource_manager_impl.h"
+#include "chrome/browser/android/tab_android.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/android/view_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/StaticTabSceneLayer_jni.h"
@@ -87,6 +87,10 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
     }
     if (update_visible_ids) {
       tab_content_manager_->UpdateVisibleIds({id}, id);
+    }
+    TabAndroid* tab = tab_content_manager_->GetTab(id);
+    if (tab && tab->web_contents() && tab->web_contents()->GetNativeView()) {
+      tab->web_contents()->GetNativeView()->set_content_offset_x(x);
     }
   }
 

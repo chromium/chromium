@@ -114,6 +114,10 @@ class UI_ANDROID_EXPORT ViewAndroid {
   void UpdateFrameInfo(const FrameInfo& frame_info);
   // content_offset is in dip.
   float content_offset() const { return frame_info_.content_offset; }
+  float content_offset_x() const { return content_offset_x_; }
+  void set_content_offset_x(float content_offset_x) {
+    content_offset_x_ = content_offset_x;
+  }
   gfx::SizeF viewport_size() const { return frame_info_.viewport_size; }
 
   // Returns the window at the root of this hierarchy, or |null|
@@ -354,6 +358,9 @@ class UI_ANDROID_EXPORT ViewAndroid {
   gfx::Size physical_size_;
 
   FrameInfo frame_info_;
+
+  // Left content offset in device pixels.
+  float content_offset_x_ = 0.f;
 
   std::unique_ptr<EventForwarder> event_forwarder_;
 

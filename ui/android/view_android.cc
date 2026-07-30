@@ -253,7 +253,7 @@ void ViewAndroid::SetAnchorRect(const JavaRef<jobject>& anchor,
     return;
 
   float dip_scale = GetDipScale();
-  int left_margin = std::round(bounds_dip.x() * dip_scale);
+  int left_margin = std::round(content_offset_x() + bounds_dip.x() * dip_scale);
   // Note that content_offset() is in CSS scale and bounds_dip is in DIP scale
   // (i.e., CSS pixels * page scale factor), but the height of browser control
   // is not affected by page scale factor. Thus, content_offset() in CSS scale

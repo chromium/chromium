@@ -298,17 +298,21 @@ void TabContentManager::SetUIResourceProvider(
 }
 
 scoped_refptr<cc::slim::Layer> TabContentManager::GetLiveLayer(int tab_id) {
+  TabAndroid* tab = GetTab(tab_id);
+  if (!tab) {
+    return nullptr;
+  }
+  return tab->GetContentLayer();
+}
+
+TabAndroid* TabContentManager::GetTab(int tab_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jtab = Java_TabContentManager_getTabById(
       env, weak_java_tab_content_manager_.get(env), tab_id);
   if (!jtab) {
     return nullptr;
   }
-  TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-  if (!tab) {
-    return nullptr;
-  }
-  return tab->GetContentLayer();
+  return TabAndroid::GetNativeTab(env, jtab);
 }
 
 ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
