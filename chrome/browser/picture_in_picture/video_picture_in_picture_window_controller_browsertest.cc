@@ -2265,6 +2265,19 @@ class PictureInPictureMuteControlBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Test fixture with kPictureInPictureMuteControl disabled.
+class PictureInPictureMuteControlDisabledBrowserTest
+    : public VideoPictureInPictureWindowControllerBrowserTest {
+ public:
+  PictureInPictureMuteControlDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {media::kPictureInPictureMuteControl});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(PictureInPictureMuteControlBrowserTest,
                        MuteButton_VisibleAndTogglesState) {
   LoadTabAndEnterPictureInPicture(
@@ -2292,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureMuteControlBrowserTest,
 }
 
 // When the feature is disabled, the mute button should not exist.
-IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PictureInPictureMuteControlDisabledBrowserTest,
                        MuteButton_NotVisibleWhenFeatureDisabled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));

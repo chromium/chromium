@@ -369,7 +369,7 @@ BASE_FEATURE(kOverlayFullscreenVideo,
 BASE_FEATURE(kPauseBackgroundTimer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Adds a mute/unmute button to the Video Picture-in-Picture overlay window.
-BASE_FEATURE(kPictureInPictureMuteControl, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPictureInPictureMuteControl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables tracking the position of picture-in-picture windows to know when they

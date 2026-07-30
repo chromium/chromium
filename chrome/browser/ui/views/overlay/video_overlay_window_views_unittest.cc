@@ -178,7 +178,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   // ChromeViewsTestBase:
   void SetUp() override {
     enabled_features_.push_back(media::kPictureInPictureOcclusionTracking);
-    feature_list_.InitWithFeatures(enabled_features_, {});
+    feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
     display::Screen::SetScreenInstance(&test_screen_);
 
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
@@ -262,6 +262,10 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     enabled_features_.push_back(feature);
   }
 
+  void AddDisabledFeature(base::test::FeatureRef feature) {
+    disabled_features_.push_back(feature);
+  }
+
   void GestureTapOnView(views::View* view) {
     event_generator_->GestureTapAt(view->GetBoundsInScreen().CenterPoint());
   }
@@ -289,6 +293,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<VideoOverlayWindowViews> overlay_window_;
 
   std::vector<base::test::FeatureRef> enabled_features_;
+
+  std::vector<base::test::FeatureRef> disabled_features_;
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1760,9 +1766,20 @@ class VideoOverlayWindowWithMuteControlTest
   }
 };
 
-// When the feature is disabled (default), the mute button should not be
+// Test fixture with kPictureInPictureMuteControl disabled.
+class VideoOverlayWindowWithMuteControlDisabledTest
+    : public VideoOverlayWindowViewsTest {
+ public:
+  void SetUp() override {
+    AddDisabledFeature(media::kPictureInPictureMuteControl);
+    VideoOverlayWindowViewsTest::SetUp();
+  }
+};
+
+// When the feature is disabled, the mute button should not be
 // created and SetMediaMuted should be a no-op.
-TEST_F(VideoOverlayWindowViewsTest, ToggleMuteButton_FeatureFlagDisabled) {
+TEST_F(VideoOverlayWindowWithMuteControlDisabledTest,
+       ToggleMuteButton_FeatureFlagDisabled) {
   EXPECT_EQ(nullptr, overlay_window().toggle_mute_button_for_testing());
 
   // Calling SetMediaMuted with no button should not crash.
