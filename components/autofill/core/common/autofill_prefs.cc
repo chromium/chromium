@@ -104,6 +104,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp, base::Time());
   registry->RegisterTimePref(
       kAutofillAiPrivateInferenceNoticeFirstShownTimestamp, base::Time());
+  registry->RegisterTimePref(kAmbientAutofillNoticeAcknowledgedTimestamp,
+                             base::Time());
   registry->RegisterBooleanPref(kAutofillEmailVerificationEnabled, true);
   registry->RegisterDictionaryPref(kAutofillEmailVerificationState);
   registry->RegisterBooleanPref(kAutofillCreditCardFidoAuthEnabled, false);

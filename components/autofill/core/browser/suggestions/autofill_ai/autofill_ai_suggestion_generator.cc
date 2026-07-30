@@ -55,11 +55,13 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/personal_context/core/personal_context_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -81,6 +83,11 @@ int GetRecordTypePriority(EntityInstance::RecordType record_type) {
   }
   NOTREACHED();
 }
+
+// In order to avoid showing too many notices to users, we add a cool off
+// period for the private inference notice to be shown after Ambient Autofill
+// notice is shown.
+constexpr base::TimeDelta kPrivateInferenceNoticeCoolOff = base::Days(7);
 
 // Represents all the different UI sections for autofill ai data in Chrome
 // Settings.
@@ -593,7 +600,6 @@ bool CompareSameTypeEntities(const EntityInstance& lhs,
     return frecency_order(lhs, rhs);
   };
 
-
   auto compare_greater = [&compare_by_attribute](AttributeTypeName attr_name) {
     return compare_by_attribute(attr_name, std::greater<std::u16string>());
   };
@@ -1010,6 +1016,37 @@ void AppendDomainFallbackSuggestions(
   }
 }
 
+bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
+                                      const PrefService* prefs) {
+  const base::Time private_inference_notice_first_shown =
+      prefs ? prefs->GetTime(
+                  prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+            : base::Time();
+  const base::Time ambient_autofill_notice_acked =
+      prefs ? prefs->GetTime(prefs::kAmbientAutofillNoticeAcknowledgedTimestamp)
+            : base::Time();
+
+  const bool private_inference_notice_never_shown =
+      private_inference_notice_first_shown.is_null();
+  const bool ambient_autofill_notice_acked_enough_time_ago =
+      !ambient_autofill_notice_acked.is_null() &&
+      (base::Time::Now() - ambient_autofill_notice_acked) >=
+          kPrivateInferenceNoticeCoolOff;
+
+  const bool private_inference_notice_never_acked =
+      !prefs ||
+      prefs
+          ->GetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
+          .is_null();
+
+  return !trigger_field.Type().GetAutofillAiTypes().empty() &&
+         private_inference_notice_never_acked &&
+         (private_inference_notice_never_shown ||
+          ambient_autofill_notice_acked_enough_time_ago) &&
+         base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi);
+}
+
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const AutofillField& trigger_field,
@@ -1021,6 +1058,9 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
       GetEntityTypesBeingFetched(trigger_field, client);
   const bool should_show_fetching_suggestions =
       !entity_types_being_fetched.empty();
+
+  const bool should_show_private_inference_notice =
+      ShouldShowPrivateInferenceNotice(trigger_field, client.GetPrefs());
 
   std::vector<Suggestion> suggestions;
   DenseSet<AutofillAiUiSection> ui_sections;
@@ -1039,7 +1079,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
                                   entities_to_suggest, all_entities, assignment,
                                   client, ui_sections);
 
-  if (suggestions.empty() && !should_show_fetching_suggestions) {
+  if (suggestions.empty() && !should_show_fetching_suggestions &&
+      !should_show_private_inference_notice) {
     return {};
   }
 
@@ -1058,7 +1099,13 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     }
   }
 
-  base::Extend(suggestions, GetFooterSuggestions(trigger_field, ui_sections));
+  if (should_show_private_inference_notice) {
+    suggestions.emplace_back(SuggestionType::kAutofillAiPrivateInferenceNotice);
+  }
+
+  if (!ui_sections.empty()) {
+    base::Extend(suggestions, GetFooterSuggestions(trigger_field, ui_sections));
+  }
   return suggestions;
 }
 
@@ -1099,8 +1146,12 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
           .contains(trigger_field.global_id());
   const bool is_fetching_data_for_field =
       !GetEntityTypesBeingFetched(*trigger_autofill_field, client).empty();
+  const bool should_show_private_inference_notice =
+      ShouldShowPrivateInferenceNotice(*trigger_autofill_field,
+                                       client.GetPrefs());
 
-  if ((!is_fillable && !is_fetching_data_for_field) ||
+  if ((!is_fillable && !is_fetching_data_for_field &&
+       !should_show_private_inference_notice) ||
       SuppressSuggestionsForAutocompleteUnrecognizedField(
           *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     callback({SuggestionDataSource::kAutofillAi, {}});

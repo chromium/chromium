@@ -49,9 +49,9 @@ inline constexpr char kAutofillAiOptInStatus[] =
 // clicking Ok/Got it.
 inline constexpr char kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp[] =
     "autofill.autofill_ai.private_inference_notice_acknowledged_timestamp";
-// Timestamp when the user first saw the private inference notice UI.
+// Timestamp when the user last saw the private inference notice UI.
 inline constexpr char kAutofillAiPrivateInferenceNoticeFirstShownTimestamp[] =
-    "autofill.autofill_ai.private_inference_notice_first_shown_timestamp";
+    "autofill.autofill_ai.private_inference_notice_shown_timestamp";
 // Boolean that is true if the user is opted-in to private inference in Autofill
 // AI.
 inline constexpr char kAutofillAiPrivateInferenceOptInStatus[] =
@@ -124,6 +124,11 @@ inline constexpr char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
 // was run. This routine will be run once per version.
 inline constexpr char kAutofillLastVersionDeduped[] =
     "autofill.last_version_deduped";
+
+// Timestamp when the user Ambient Autofill intelligence notice
+// UI.
+inline constexpr char kAmbientAutofillNoticeAcknowledgedTimestamp[] =
+    "autofill.ambiente_autofill_notice_acknowledged_timestamp";
 
 // Boolean that is true if the user enabled fetching OTPs from the signed in
 // Gmail account.
