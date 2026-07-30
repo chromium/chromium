@@ -50,6 +50,7 @@
 #include "ui/views/examples/tree_view_example.h"
 #include "ui/views/examples/typography_example.h"
 #include "ui/views/examples/vector_example.h"
+#include "ui/views/examples/views_canvas_example.h"
 #include "ui/views/examples/widget_example.h"
 
 namespace views::examples {
@@ -99,6 +100,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<TreeViewExample>());
   examples.push_back(std::make_unique<TypographyExample>());
   examples.push_back(std::make_unique<VectorExample>());
+  examples.push_back(std::make_unique<ViewsCanvasExample>());
   examples.push_back(std::make_unique<WidgetExample>());
   return examples;
 }
