@@ -230,6 +230,7 @@ public class FuseboxAttachmentModelList
                 mComposeboxQueryControllerBridge, /* bypassTabCacheThisTime= */ false)) {
             // Upload failed, abandon session if we just started it
             if (isEmpty()) mComposeboxQueryControllerBridge.notifySessionAbandoned();
+            notifyAttachmentUploadFailed();
             return false;
         }
 

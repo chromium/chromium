@@ -53,6 +53,7 @@ public class FuseboxAttachmentModelListUnitTest {
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private FuseboxAttachmentModelList.FuseboxAttachmentChangeListener mListener;
     @Mock private Tab mTab;
+    @Mock private Runnable mAttachmentUploadFailedListener;
 
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -77,6 +78,8 @@ public class FuseboxAttachmentModelListUnitTest {
                 .setContextUploadObserver(mFuseboxAttachmentModelList);
         mResources = ContextUtils.getApplicationContext().getResources();
         mFuseboxAttachmentModelList.addAttachmentChangeListener(mListener);
+        mFuseboxAttachmentModelList.setAttachmentUploadFailedListener(
+                mAttachmentUploadFailedListener);
     }
 
     private FuseboxAttachment createTabAttachment(Tab tab) {
@@ -132,6 +135,17 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals(0, mFuseboxAttachmentModelList.size());
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
         verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
+    }
+
+    @Test
+    public void testAdd_withInvalidToken_notifiesUploadFailed() {
+        when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn(null);
+
+        FuseboxAttachment attachment = createTestAttachment("test");
+        mFuseboxAttachmentModelList.add(attachment);
+
+        verify(mAttachmentUploadFailedListener).run();
     }
 
     @Test
