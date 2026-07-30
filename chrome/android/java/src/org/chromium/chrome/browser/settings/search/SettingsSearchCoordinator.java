@@ -403,6 +403,15 @@ public class SettingsSearchCoordinator
     }
 
     @Override
+    public void onHeaderLayoutUpdated() {
+        if (findViewById(R.id.search_box) == null) return;
+
+        // When SlidingPaneLayout finishes its initial layout or switches between single and
+        // two-column mode, re-evaluate whether search should be in single or multi-column layout.
+        onConfigurationChangedInternal();
+    }
+
+    @Override
     public void onAccessibilityStateChanged(
             AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
