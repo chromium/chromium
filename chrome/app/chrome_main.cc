@@ -59,39 +59,6 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/534570563): Implement separate renderer binary entry point.
-// Currently this is a fake implementation to set up the build workflow.
-#if defined(BUILDING_CHROME_RENDERER)
-
-extern "C" {
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#define DLLEXPORT __declspec(dllexport)
-DLLEXPORT int __cdecl ChromeRendererMain(HINSTANCE instance,
-                                         void* sandbox_info,
-                                         int64_t exe_entry_point_ticks,
-                                         int64_t preread_begin_ticks,
-                                         int64_t preread_end_ticks) {
-  return 0;
-}
-#elif BUILDFLAG(IS_POSIX)
-[[gnu::visibility("default")]] int ChromeRendererMain(int argc,
-                                                      const char** argv) {
-  return 0;
-}
-#endif
-
-}  // extern "C"
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-int main(int argc, const char** argv) {
-  return ChromeRendererMain(argc, argv);
-}
-#endif
-
-#else  // defined(BUILDING_CHROME_RENDERER)
-
 namespace {
 
 // Returns storage to hold the browser process's initial command line.
@@ -187,12 +154,12 @@ int ChromeMain(int argc, const char** argv) {
   if (install_static::InstallDetails::Get().VersionMismatch()) {
     base::debug::DumpWithoutCrashing();
   }
+  base::CommandLine::Init(0, nullptr);
 #else
   params.argc = argc;
   params.argv = argv;
   base::CommandLine::Init(params.argc, params.argv);
 #endif  // BUILDFLAG(IS_WIN)
-  base::CommandLine::Init(0, nullptr);
 
   base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
 
@@ -260,5 +227,3 @@ int ChromeMain(int argc, const char** argv) {
   }
   return rv;
 }
-
-#endif  // defined(BUILDING_CHROME_RENDERER)
