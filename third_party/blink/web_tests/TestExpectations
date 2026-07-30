@@ -5822,8 +5822,7 @@ crbug.com/1339051 [ Linux ] fast/forms/color/color-picker-appearance-zoom125.htm
 crbug.com/1339051 [ Linux ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces.html [ Failure ]
 
 
-# Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
-crbug.com/40795056 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Failure Pass Timeout ]
+
 
 # crbug.com/338456744: Minor pixel differences from the expected image.
 crbug.com/338456744 [ Win ] virtual/text-antialias/large-text-composed-char.html [ Failure Pass ]

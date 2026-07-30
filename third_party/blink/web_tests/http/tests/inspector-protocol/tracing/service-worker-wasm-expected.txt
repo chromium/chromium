@@ -1,0 +1,47 @@
+Tests V8 code cache for WebAssembly resources using Service Workers
+Recording started
+Tracing complete
+Event name: CacheHit
+Event shape:
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
+Event name: CacheHit
+Event shape:
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
+Event name: wasm.GetNativeModuleFromCache
+Event shape:
+Object: {
+	args: {
+		wire_bytes: number
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
+
