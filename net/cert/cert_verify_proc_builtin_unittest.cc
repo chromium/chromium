@@ -1287,6 +1287,119 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
   }
 }
 
+TEST_F(CertVerifyProcBuiltinTest, MtcMaxCertLifetime) {
+  struct TestCase {
+    std::optional<base::TimeDelta> max_cert_lifetime;
+    base::TimeDelta cert_lifetime;
+    int expected_result;
+  } testcases[] = {
+      {.max_cert_lifetime = std::nullopt,
+       .cert_lifetime = base::Days(10),
+       .expected_result = OK},
+      {.max_cert_lifetime = std::nullopt,
+       .cert_lifetime = base::Days(100),
+       .expected_result = OK},
+
+      {.max_cert_lifetime = base::Days(10),
+       .cert_lifetime = base::Days(10) - base::Seconds(1),
+       .expected_result = OK},
+      {.max_cert_lifetime = base::Days(10),
+       .cert_lifetime = base::Days(10),
+       .expected_result = OK},
+      {.max_cert_lifetime = base::Days(10),
+       .cert_lifetime = base::Days(10) + base::Seconds(1),
+       .expected_result = ERR_CERT_VALIDITY_TOO_LONG},
+      {.max_cert_lifetime = base::Days(10),
+       .cert_lifetime = base::Days(100),
+       .expected_result = ERR_CERT_VALIDITY_TOO_LONG},
+
+      {.max_cert_lifetime = base::Days(47),
+       .cert_lifetime = base::Days(47) - base::Seconds(1),
+       .expected_result = OK},
+      {.max_cert_lifetime = base::Days(47),
+       .cert_lifetime = base::Days(47),
+       .expected_result = OK},
+      {.max_cert_lifetime = base::Days(47),
+       .cert_lifetime = base::Days(47) + base::Seconds(1),
+       .expected_result = ERR_CERT_VALIDITY_TOO_LONG},
+      {.max_cert_lifetime = base::Days(47),
+       .cert_lifetime = base::Days(100),
+       .expected_result = ERR_CERT_VALIDITY_TOO_LONG},
+  };
+
+  base::Time start = base::Time::Now();
+  constexpr int16_t kLogNumber = 1;
+
+  for (const auto& test : testcases) {
+    SCOPED_TRACE(base::ToString(test.max_cert_lifetime));
+    SCOPED_TRACE(test.cert_lifetime);
+    constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+    net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+    std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+        std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+    mtc_leaf1->SetValidity(start, start + test.cert_lifetime);
+    uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+    mtc_log.AdvanceLandmark();
+
+    InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+    MtcLogBuilder::Cosigner ca_cosigner = {
+        base::ToVector(kMtcCaId),
+        crypto::keypair::PrivateKey::GenerateMldsa44(),
+        bssl::SignatureAlgorithm::kMldsa44};
+
+    bssl::TrustStoreInMemory trust_store;
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        ca_cosigner.id, ca_cosigner.signature_algorithm,
+        x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
+        mtc_log.GetPerLogLandmarkSubtreeHashes());
+    ASSERT_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+    AddTrustStore(&trust_store);
+
+    TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data;
+    mtc_anchor_extra_data.signer_config.max_cert_lifetime =
+        test.max_cert_lifetime;
+    SetMockMTCAnchorData(mtc_anchor_extra_data);
+    SetMockIsMtcCosignerPolicySatisfied(true);
+
+    // Results should be the same for both landmark relative and standalone
+    // certs.
+    //
+    // Landmark relative MTCs:
+    scoped_refptr<X509Certificate> landmark_relative_cert =
+        X509Certificate::CreateFromBytes(
+            *mtc_log.CreateSignaturelessCertificate(leaf_index));
+    ASSERT_TRUE(landmark_relative_cert);
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(landmark_relative_cert.get(), "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(test.expected_result));
+    }
+
+    // Standalone MTCs:
+    scoped_refptr<X509Certificate> standalone_cert =
+        X509Certificate::CreateFromBytes(
+            *mtc_log.CreateStandaloneCertificate(leaf_index, {&ca_cosigner}));
+    ASSERT_TRUE(standalone_cert);
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(standalone_cert.get(), "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(test.expected_result));
+    }
+  }
+}
+
 TEST_F(CertVerifyProcBuiltinTest, CrsAnchorUsageHistogram) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   InitializeVerifyProc(CreateParams(
