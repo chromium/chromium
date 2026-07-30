@@ -234,6 +234,46 @@ TEST_F(BrowserAccessibilityMacTest, RetainedDetachedObjectsReturnNil) {
   EXPECT_NSEQ(nil, retainedFirstChild.accessibilityLabel);
 }
 
+// AppKit may retain a wrapper and key it in a hash-based collection, so
+// -hash must remain stable for the lifetime of the wrapper, and distinct
+// wrappers must never compare equal even if their backing nodes happen to
+// share the same per-tree id.
+TEST_F(BrowserAccessibilityMacTest, IdentityIsPerWrapperAndStable) {
+  // Build a second, independent tree whose root re-uses the same per-tree id
+  // as a node in the fixture's tree.
+  AXNodeData other_root;
+  other_root.id = 1000;
+  other_root.role = ax::mojom::Role::kRootWebArea;
+  TestAXNodeIdDelegate other_node_id_delegate;
+  std::unique_ptr<BrowserAccessibilityManager> other_manager =
+      std::make_unique<BrowserAccessibilityManagerMac>(
+          MakeAXTreeUpdateForTesting(other_root), other_node_id_delegate,
+          nullptr);
+  BrowserAccessibilityCocoa* other_wrapper =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          other_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+
+  ASSERT_NE(accessibility_, other_wrapper);
+  EXPECT_FALSE([accessibility_ isEqual:other_wrapper]);
+  EXPECT_FALSE([other_wrapper isEqual:accessibility_]);
+
+  // Hold the wrapper past detach, as the system might.
+  NS_VALID_UNTIL_END_OF_SCOPE BrowserAccessibilityCocoa* retained =
+      accessibility_;
+  const NSUInteger hash_before = retained.hash;
+  EXPECT_TRUE([retained isEqual:retained]);
+
+  // Tearing down the manager detaches the wrapper.
+  manager_.reset();
+  ASSERT_FALSE([retained instanceActive]);
+
+  EXPECT_EQ(hash_before, retained.hash);
+  EXPECT_TRUE([retained isEqual:retained]);
+  EXPECT_FALSE([retained isEqual:other_wrapper]);
+}
+
 TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_ = AXNodeData();
   root_.id = 1;

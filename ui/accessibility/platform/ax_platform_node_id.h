@@ -12,8 +12,6 @@
 
 namespace ui {
 
-class AXNodeIdDelegate;
-
 // The underlying type of a uniquely-generated accessibility node identifier for
 // use with the platform. The actual id store can only a accommodate 32 bit
 // integers on Windows, because IAccessible2 uses LONG for get_uniqueID() and
@@ -36,12 +34,6 @@ class AXPlatformNodeId
   // An invalid id -- the value of which matches that of kInvalidAXNodeID (0).
   constexpr AXPlatformNodeId()
       : base::StrongAlias<class AXPlatformNodeIdTag, int32_t>::StrongAlias(0) {}
-
-  // Allow implementations of AXNodeIdDelegate to create instances, as they are
-  // responsible for per-window allocation of unique identifiers.
-  constexpr explicit AXPlatformNodeId(base::PassKey<AXNodeIdDelegate>,
-                                      int32_t v)
-      : base::StrongAlias<class AXPlatformNodeIdTag, int32_t>::StrongAlias(v) {}
 
   // Allow implicit conversion to the platform's node id type.
   constexpr operator const int32_t&() const { return value_; }

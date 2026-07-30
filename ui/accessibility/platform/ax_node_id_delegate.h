@@ -28,13 +28,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXNodeIdDelegate {
   virtual void OnAXNodeDeleted(AXNodeID ax_node_id) = 0;
 
  protected:
-  using PassKey = base::PassKey<AXNodeIdDelegate>;
-
   AXNodeIdDelegate() = default;
-
-  // Returns a PassKey to be used by implementations so that they may create
-  // AXPlatformNodeId instances with values of their own choosing.
-  static constexpr PassKey MakePassKey() { return PassKey(); }
 };
 
 }  // namespace ui

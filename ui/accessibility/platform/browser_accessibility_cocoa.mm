@@ -495,12 +495,19 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 @end
 
 @implementation BrowserAccessibilityCocoa {
-  // Dangling pointer https://crbug.com/1475830.
+  // Dangling pointer https://crbug.com/40928052.
   raw_ptr<ui::BrowserAccessibility, DanglingUntriaged> _owner;
+
+  // The global unique ID of the `_owner`. Cached because this value might be
+  // needed for comparisons/hashing after the owner value is reset.
+  ui::AXPlatformNodeId _uniqueId;
+
   // An array of children of this object. Cached to avoid re-computing.
   NSMutableArray* __strong _children;
+
   // 1-byte bitfield bundle. Main thread only (AppKit / NSAccessibility).
   BrowserAccessibilityCocoaBitfields _bitfields;
+
   // Stores the previous value of an edit field.
   std::u16string _oldValue;
 }
@@ -560,6 +567,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
               withPlatformNode:(ui::AXPlatformNodeMac*)platform_node {
   if ((self = [super initWithNode:platform_node])) {
     _owner = accessibility;
+    _uniqueId = static_cast<ui::AXPlatformNodeDelegate*>(_owner)->GetUniqueId();
     _bitfields.gettingChildren = 0;
     _bitfields.emptyGroupCache = kEmptyGroupCacheUnknown;
   }
@@ -3556,16 +3564,16 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 }
 
 - (BOOL)isEqual:(id)object {
-  if (![object isKindOfClass:[BrowserAccessibilityCocoa class]])
-    return NO;
-  return ([self hash] == [object hash]);
+  if (BrowserAccessibilityCocoa* objectAccessibility =
+          base::apple::ObjCCast<BrowserAccessibilityCocoa>(object)) {
+    return _uniqueId == objectAccessibility->_uniqueId;
+  }
+
+  return NO;
 }
 
 - (NSUInteger)hash {
-  // Potentially called during dealloc.
-  if (![self instanceActive])
-    return [super hash];
-  return _owner->GetId();
+  return _uniqueId;
 }
 
 - (BOOL)accessibilityNotifiesWhenDestroyed {

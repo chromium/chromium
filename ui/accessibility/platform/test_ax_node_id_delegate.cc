@@ -6,10 +6,21 @@
 
 namespace ui {
 
-AXPlatformNodeId TestAXNodeIdDelegate::GetOrCreateAXNodeUniqueId(
-    AXNodeID ax_node_id) {
-  // Per-tab uniqueness is not necessary in tests, so return the blink node id.
-  return AXPlatformNodeId(MakePassKey(), ax_node_id);
+TestAXNodeIdDelegate::TestAXNodeIdDelegate() = default;
+TestAXNodeIdDelegate::~TestAXNodeIdDelegate() = default;
+
+ui::AXPlatformNodeId TestAXNodeIdDelegate::GetOrCreateAXNodeUniqueId(
+    ui::AXNodeID ax_node_id) {
+  auto [iter, inserted] =
+      ax_unique_ids_.try_emplace(ax_node_id, ui::AXUniqueId::CreateInvalid());
+  if (inserted) {
+    iter->second = ui::AXUniqueId::Create();
+  }
+  return iter->second;
+}
+
+void TestAXNodeIdDelegate::OnAXNodeDeleted(ui::AXNodeID ax_node_id) {
+  ax_unique_ids_.erase(ax_node_id);
 }
 
 }  // namespace ui
