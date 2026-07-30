@@ -544,6 +544,15 @@ interface WidgetInputHandler {
   // info) will lead to updates being sent to the browser.
   RequestCompositionUpdates(bool immediate_request, bool monitor_request);
 
+  // Pastes text into the target node.
+  // `target_dom_node_id`, if not a null value, will target the paste to
+  // the specified node, without changing focus. If null, the focused node will
+  // be targeted.
+  // TODO(crbug.com/535826288): Make `DOMNodeId` optional once the typemap
+  // is nullable_is_same_type.
+  PasteIntoNode(mojo_base.mojom.String16 text,
+                blink.mojom.DOMNodeId target_dom_node_id);
+
   // Sends an input event to the render widget. If |event| is a
   // GestureScrollUpdate, |original_event_for_gesture| might have the event that
   // generated it (currently only TouchMove events are passed).

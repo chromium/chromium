@@ -320,6 +320,8 @@ class CORE_EXPORT WebFrameWidgetImpl
                   const gfx::Range& replacement_range,
                   int relative_cursor_pos,
                   DOMNodeIdType target_dom_node_id) override;
+  void PasteIntoNode(const String& text,
+                     DOMNodeIdType target_dom_node_id) override;
   void FinishComposingText(bool keep_selection) override;
   bool IsProvisional() override;
   cc::ElementId GetScrollableContainerIdAt(const gfx::PointF& point) override;

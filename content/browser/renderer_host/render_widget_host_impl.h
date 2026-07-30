@@ -254,6 +254,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void CommitExternallySourcedComposition(
       const std::u16string& text,
       const GlobalDOMNodeId& target_dom_node_id) override;
+  void PasteIntoNode(const std::u16string& text,
+                     const GlobalDOMNodeId& target_dom_node_id) override;
   void Focus() override;
   void Blur() override;
   void FlushForTesting() override;

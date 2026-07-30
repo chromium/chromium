@@ -372,6 +372,12 @@ class CONTENT_EXPORT RenderWidgetHost {
       const std::u16string& text,
       const GlobalDOMNodeId& target_dom_node_id) = 0;
 
+  // Pastes text into the target node.
+  // Unlike the `*ExternallySourcedComposition` methods above, this does not
+  // temporarily change focus and does not use IME code paths.
+  virtual void PasteIntoNode(const std::u16string& text,
+                             const GlobalDOMNodeId& target_dom_node_id) = 0;
+
   // Roundtrips through the renderer and compositor pipeline to ensure that any
   // changes to the contents resulting from operations executed prior to this
   // call are included in a frame submitted to the display compositor. The call

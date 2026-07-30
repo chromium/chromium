@@ -2489,6 +2489,13 @@ void RenderWidgetHostImpl::CommitExternallySourcedComposition(
       target_dom_node_id.target_element_dom_id, base::OnceClosure());
 }
 
+void RenderWidgetHostImpl::PasteIntoNode(
+    const std::u16string& text,
+    const GlobalDOMNodeId& target_dom_node_id) {
+  GetWidgetInputHandler()->PasteIntoNode(
+      text, target_dom_node_id.target_element_dom_id);
+}
+
 void RenderWidgetHostImpl::RejectPointerLockOrUnlockIfNecessary(
     blink::mojom::PointerLockResult reason) {
   CHECK(!request_pointer_lock_callback_ || !IsPointerLocked());

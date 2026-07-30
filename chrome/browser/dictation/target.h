@@ -69,6 +69,7 @@ class Target {
       const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& spans);
   virtual void CommitExternallySourcedComposition(const std::u16string& text);
+  virtual void PasteIntoNode(const std::u16string& text);
 
  private:
   content::RenderWidgetHost* GetRenderWidgetHost() const;
@@ -76,6 +77,7 @@ class Target {
   TargetDetails target_details_;
   std::u16string last_sent_composition_;
   bool has_lost_focus_during_composition_ = false;
+  bool paste_fallback_required_ = false;
 };
 
 }  // namespace dictation

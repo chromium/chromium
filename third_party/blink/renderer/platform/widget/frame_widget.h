@@ -223,6 +223,10 @@ class PLATFORM_EXPORT FrameWidget {
                           int relative_cursor_pos,
                           DOMNodeIdType target_dom_node_id) = 0;
 
+  // This message pastes the text into the target node.
+  virtual void PasteIntoNode(const String& text,
+                             DOMNodeIdType target_dom_node_id) = 0;
+
   // This message inserts the ongoing composition.
   virtual void FinishComposingText(bool keep_selection) = 0;
 

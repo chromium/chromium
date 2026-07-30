@@ -1695,6 +1695,15 @@ void WidgetBase::ImeCommitText(const String& text,
   UpdateCompositionInfo(false /* not an immediate request */);
 }
 
+void WidgetBase::PasteIntoNode(const String& text,
+                               DOMNodeIdType target_dom_node_id) {
+  FrameWidget* frame_widget = client_->FrameWidget();
+  if (!frame_widget) {
+    return;
+  }
+  frame_widget->PasteIntoNode(text, target_dom_node_id);
+}
+
 void WidgetBase::ImeFinishComposingText(bool keep_selection) {
   if (!ShouldHandleImeEvents())
     return;

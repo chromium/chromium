@@ -266,6 +266,8 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                      int32_t relative_cursor_position,
                      const blink::DOMNodeIdType& target_dom_node_id,
                      ImeCommitTextCallback callback) override;
+  void PasteIntoNode(const std::u16string& text,
+                     const blink::DOMNodeIdType& target_dom_node_id) override;
   void ImeFinishComposingText(bool keep_selection) override;
   void RequestTextInputStateUpdate() override;
   void RequestCompositionUpdates(bool immediate_request,
