@@ -90,7 +90,7 @@ browser_exposed_mojom_targets = [
   "//components/record_replay/core/common:mojom",
   "//chrome/common/search:mojo_bindings",
   "//chrome/services/file_util/public/mojom:mojom",
-  "//chrome/services/media_gallery_util/public/mojom:mojom",
+  "//components/media_gallery_util/public/mojom:mojom",
   "//chrome/services/printing/public/mojom:mojom",
   "//chrome/services/removable_storage_writer/public/mojom:mojom",
   "//components/accessibility_annotator/core/logging:mojo_bindings",

@@ -360,7 +360,6 @@ static_library("common_lib") {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
     sources += [
-      "media_galleries/metadata_types.h",
       "password_manager/remote_actor_credential_sharing_policy.cc",
       "password_manager/remote_actor_credential_sharing_policy.h",
       "read_anything/read_anything_util.cc",

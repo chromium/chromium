@@ -5125,11 +5125,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
         </if>
       </if>
-      <if expr="enable_extensions or is_android">
-        <message name="IDS_UTILITY_PROCESS_MEDIA_GALLERY_UTILITY_NAME" desc="The name of the utility process used for checking media files.">
-          Media File Checker
-        </message>
-      </if>
       <message name="IDS_UTILITY_PROCESS_NOOP_SERVICE_NAME" desc="The name of the utility process which does nothing, used for experimentation.">
         No-op Service
       </message>

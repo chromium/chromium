@@ -60,8 +60,6 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/grit",
-  "+chrome/services/media_gallery_util/public/cpp",
-  "+chrome/services/media_gallery_util/public/mojom",
   "+chrome/services/pdf/public/mojom",
   "+chrome/test/base",
 ]

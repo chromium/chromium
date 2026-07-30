@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_MEDIA_GALLERIES_METADATA_TYPES_H_
-#define CHROME_COMMON_MEDIA_GALLERIES_METADATA_TYPES_H_
+#ifndef COMPONENTS_MEDIA_GALLERY_UTIL_METADATA_TYPES_H_
+#define COMPONENTS_MEDIA_GALLERY_UTIL_METADATA_TYPES_H_
 
 #include <string>
 
@@ -16,4 +16,4 @@ struct AttachedImage {
 
 }  // namespace metadata
 
-#endif  // CHROME_COMMON_MEDIA_GALLERIES_METADATA_TYPES_H_
+#endif  // COMPONENTS_MEDIA_GALLERY_UTIL_METADATA_TYPES_H_

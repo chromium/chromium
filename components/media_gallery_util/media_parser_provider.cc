@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
+#include "components/media_gallery_util/media_parser_provider.h"
 
 #include "base/functional/bind.h"
-#include "chrome/grit/generated_resources.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"

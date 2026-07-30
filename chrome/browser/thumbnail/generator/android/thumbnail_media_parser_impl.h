@@ -17,7 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/thumbnail/generator/android/stats.h"
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
-#include "chrome/common/media_galleries/metadata_types.h"
+#include "components/media_gallery_util/metadata_types.h"
 #include "media/base/media_log.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

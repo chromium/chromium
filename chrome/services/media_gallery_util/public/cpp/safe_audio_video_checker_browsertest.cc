@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/media_gallery_util/public/cpp/safe_audio_video_checker.h"
+#include "components/media_gallery_util/safe_audio_video_checker.h"
 
 #include <utility>
 

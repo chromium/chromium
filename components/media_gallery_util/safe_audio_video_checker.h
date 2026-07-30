@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_AUDIO_VIDEO_CHECKER_H_
-#define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_AUDIO_VIDEO_CHECKER_H_
+#ifndef COMPONENTS_MEDIA_GALLERY_UTIL_SAFE_AUDIO_VIDEO_CHECKER_H_
+#define COMPONENTS_MEDIA_GALLERY_UTIL_SAFE_AUDIO_VIDEO_CHECKER_H_
 
 #include <utility>
 
 #include "base/files/file.h"
-#include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
+#include "components/media_gallery_util/media_parser_provider.h"
 
 // Uses a utility process to validate a media file.  If the callback returns
 // File::FILE_OK, then file appears to be valid.  File validation does not
@@ -54,4 +54,4 @@ class SafeAudioVideoChecker : public MediaParserProvider {
   ResultCallback callback_;
 };
 
-#endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_AUDIO_VIDEO_CHECKER_H_
+#endif  // COMPONENTS_MEDIA_GALLERY_UTIL_SAFE_AUDIO_VIDEO_CHECKER_H_

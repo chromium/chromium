@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
-
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/media_gallery_util/media_parser_provider.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"

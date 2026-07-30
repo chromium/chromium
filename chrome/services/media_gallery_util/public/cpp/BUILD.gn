@@ -4,41 +4,6 @@
 
 import("//media/media_options.gni")
 
-source_set("cpp") {
-  sources = [
-    "local_media_data_source_factory.cc",
-    "local_media_data_source_factory.h",
-    "media_parser_provider.cc",
-    "media_parser_provider.h",
-    "safe_audio_video_checker.cc",
-    "safe_audio_video_checker.h",
-    "safe_media_metadata_parser.cc",
-    "safe_media_metadata_parser.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    "//base",
-    "//chrome/app:generated_resources",
-    "//chrome/common",
-    "//content/public/browser",
-    "//media:media_buildflags",
-    "//net:buildflags",
-    "//third_party/boringssl",
-    "//third_party/libyuv",
-  ]
-
-  public_deps = [ "//chrome/services/media_gallery_util/public/mojom" ]
-
-  if (media_use_ffmpeg) {
-    deps += [
-      "//third_party/ffmpeg",
-      "//third_party/ffmpeg:ffmpeg_features",
-    ]
-  }
-}
-
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -46,9 +11,9 @@ source_set("browser_tests") {
   sources = [ "safe_audio_video_checker_browsertest.cc" ]
 
   deps = [
-    ":cpp",
     "//base",
     "//chrome/test:test_support",
+    "//components/media_gallery_util",
     "//content/public/browser",
     "//testing/gtest",
   ]
@@ -57,8 +22,8 @@ source_set("browser_tests") {
     sources += [ "media_gallery_util_browsertest.cc" ]
 
     deps += [
-      "//chrome/services/media_gallery_util/public/mojom",
       "//chrome/test:test_support_ui",
+      "//components/media_gallery_util/public/mojom",
       "//third_party/libyuv",
     ]
 

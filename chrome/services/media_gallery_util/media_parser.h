@@ -10,7 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/time/time.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 
 class MediaParser : public chrome::mojom::MediaParser {
  public:

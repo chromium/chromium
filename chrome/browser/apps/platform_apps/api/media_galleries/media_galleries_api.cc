@@ -39,7 +39,7 @@
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
+#include "components/media_gallery_util/safe_media_metadata_parser.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/blob_handle.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_MEDIA_METADATA_PARSER_H_
-#define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_MEDIA_METADATA_PARSER_H_
+#ifndef COMPONENTS_MEDIA_GALLERY_UTIL_SAFE_MEDIA_METADATA_PARSER_H_
+#define COMPONENTS_MEDIA_GALLERY_UTIL_SAFE_MEDIA_METADATA_PARSER_H_
 
 #include <stdint.h>
 
@@ -13,9 +13,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/media_galleries/metadata_types.h"
-#include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/media_parser_provider.h"
+#include "components/media_gallery_util/metadata_types.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // Parses the media metadata safely in a utility process. This class expects the
@@ -88,4 +88,4 @@ class SafeMediaMetadataParser : public MediaParserProvider {
   base::WeakPtrFactory<SafeMediaMetadataParser> weak_factory_{this};
 };
 
-#endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_MEDIA_METADATA_PARSER_H_
+#endif  // COMPONENTS_MEDIA_GALLERY_UTIL_SAFE_MEDIA_METADATA_PARSER_H_

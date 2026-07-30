@@ -30,6 +30,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "media_parser_mojom_traits.h" ]
       traits_sources = [ "media_parser_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/media_gallery_util:metadata_types" ]
     },
   ]
 }

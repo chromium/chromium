@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/strings/grit/components_strings.h",
+  "+content/public/browser/browser_thread.h",
+  "+content/public/browser/service_process_host.h",
+  "+media/media_buildflags.h",
+  "+mojo/public",
+
+  "+third_party/libyuv",
+  "+third_party/ffmpeg",
+]

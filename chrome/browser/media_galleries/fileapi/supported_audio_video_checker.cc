@@ -5,6 +5,7 @@
 #include "chrome/browser/media_galleries/fileapi/supported_audio_video_checker.h"
 
 #include <stddef.h>
+
 #include <set>
 #include <utility>
 #include <vector>
@@ -17,7 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/services/media_gallery_util/public/cpp/safe_audio_video_checker.h"
+#include "components/media_gallery_util/safe_audio_video_checker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"

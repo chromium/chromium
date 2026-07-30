@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
-#define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
+#ifndef COMPONENTS_MEDIA_GALLERY_UTIL_MEDIA_PARSER_PROVIDER_H_
+#define COMPONENTS_MEDIA_GALLERY_UTIL_MEDIA_PARSER_PROVIDER_H_
 
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -50,4 +50,4 @@ class MediaParserProvider {
   mojo::Remote<chrome::mojom::MediaParser> remote_media_parser_;
 };
 
-#endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
+#endif  // COMPONENTS_MEDIA_GALLERY_UTIL_MEDIA_PARSER_PROVIDER_H_

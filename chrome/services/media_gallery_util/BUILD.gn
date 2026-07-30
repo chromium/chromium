@@ -21,13 +21,12 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//chrome/common",
     "//media",
     "//mojo/public/cpp/bindings",
     "//third_party/libyuv",
   ]
 
-  public_deps = [ "//chrome/services/media_gallery_util/public/mojom" ]
+  public_deps = [ "//components/media_gallery_util/public/mojom" ]
 
   # FFmpeg is required to demux and extract metadata.
   if (media_use_ffmpeg) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
+#include "components/media_gallery_util/safe_media_metadata_parser.h"
 
 #include <utility>
 
@@ -70,6 +70,7 @@ void SafeMediaMetadataParser::ParseMediaMetadataDone(
 void SafeMediaMetadataParser::OnMediaDataReady(
     chrome::mojom::MediaDataSource::ReadCallback callback,
     std::string data) {
-  if (media_parser())
+  if (media_parser()) {
     std::move(callback).Run(std::vector<uint8_t>(data.begin(), data.end()));
+  }
 }

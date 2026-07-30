@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/common/media_galleries/metadata_types.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/metadata_types.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 
 namespace base {
 class Thread;

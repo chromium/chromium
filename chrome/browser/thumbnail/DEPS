@@ -6,7 +6,6 @@ include_rules = [
   "+chrome/browser/image_decoder",
   "+chrome/browser/util/android",
   "+chrome/common",
-  "+chrome/services/media_gallery_util/public",
   "+components/browser_ui/util/android",
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/browser",

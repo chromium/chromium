@@ -10,8 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
+#include "components/media_gallery_util/media_parser_provider.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 
 class SkBitmap;
 

@@ -25,9 +25,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
-#include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
-#include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/local_media_data_source_factory.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/safe_media_metadata_parser.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

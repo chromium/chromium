@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "components/media_gallery_util/safe_media_metadata_parser.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_
-#define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_
+#ifndef COMPONENTS_MEDIA_GALLERY_UTIL_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_
+#define COMPONENTS_MEDIA_GALLERY_UTIL_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_
 
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
+#include "components/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
+#include "components/media_gallery_util/safe_media_metadata_parser.h"
 
 namespace base {
 class FilePath;
@@ -42,4 +42,4 @@ class LocalMediaDataSourceFactory
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 };
 
-#endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_
+#endif  // COMPONENTS_MEDIA_GALLERY_UTIL_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_

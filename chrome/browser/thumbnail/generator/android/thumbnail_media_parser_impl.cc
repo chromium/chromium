@@ -15,7 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
+#include "components/media_gallery_util/local_media_data_source_factory.h"
 #include "content/public/browser/android/gpu_video_accelerator_factories_provider.h"
 #include "content/public/browser/media_service.h"
 #include "media/base/overlay_info.h"

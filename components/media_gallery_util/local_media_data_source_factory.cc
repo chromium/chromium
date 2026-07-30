@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
+#include "components/media_gallery_util/local_media_data_source_factory.h"
 
 #include <optional>
 #include <vector>

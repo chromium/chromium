@@ -542,6 +542,10 @@
         JSON Parser
       </message>
 
+      <message name="IDS_UTILITY_PROCESS_MEDIA_GALLERY_UTILITY_NAME" desc="The name of the utility process used for checking media files.">
+        Media File Checker
+      </message>
+
       <message name="IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON" desc="Title of the restore button in the session crashed view.">
         Restore
       </message>
