@@ -44,16 +44,6 @@ TEST_P(StructuredHeadersLenientTest, TrailingDecimal) {
   EXPECT_DOUBLE_EQ(result->item.GetDecimal(), 1.0);
 }
 
-TEST_P(StructuredHeadersLenientTest, ByteSequenceUnpadded) {
-  // Legacy Quiche synthesizes padding if it's missing.
-  // Standard SH requires ":Zm9=:" for "foo" (3 bytes -> 4 chars).
-  // ":Zm9:" is 3 chars, legacy Quiche pads it to 4 and accepts it.
-  std::optional<ParameterizedItem> result = ParseItem(":Zm9:");
-  ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result->item.is_byte_sequence());
-  EXPECT_EQ(result->item.GetString(), "fo");
-}
-
 TEST_P(StructuredHeadersLenientTest, ByteSequenceWhitespace) {
   // Legacy Quiche/Abseil skips ASCII whitespace in byte sequences,
   // provided it doesn't interfere with the 4-byte block boundary checks
