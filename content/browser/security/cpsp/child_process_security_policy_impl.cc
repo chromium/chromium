@@ -2082,14 +2082,12 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFileSystemFile(
         child_id, filesystem_url.mount_filesystem_id(), permissions);
   }
 
-  // If |filesystem_url.origin()| is not committable in this process, then this
-  // page should not be able to place content in that origin via the filesystem
-  // API either.
-  // TODO(lukasza): Audit whether CanAccessDataForOrigin can be used directly
-  // here.
+  // If |filesystem_url.origin()| is not accessible in this process, then this
+  // page should not be able to access or place content in that origin via the
+  // filesystem API either.
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (!CanCommitURL(child_id.GetUnsafeValue(),
-                    filesystem_url.origin().GetURL())) {
+  if (!CanAccessDataForOrigin(child_id.GetUnsafeValue(),
+                              filesystem_url.origin())) {
     return false;
   }
 
