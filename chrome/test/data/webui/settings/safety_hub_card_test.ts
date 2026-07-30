@@ -54,7 +54,7 @@ suite('SafetyHubCard', function() {
     // Check icon for INFO state.
     testElement.data = getMockDataForState(CardState.INFO);
     flushTasks();
-    assertEquals('cr:info', testElement.$.icon.icon);
+    assertEquals('cr:info-filled', testElement.$.icon.icon);
     assertTrue(testElement.$.icon.classList.contains('grey'));
 
     // Check icon for WEAK state.

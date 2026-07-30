@@ -12,7 +12,7 @@ export function getHtml(this: ExtensionsRestrictedSitesDialogElement) {
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title">${this.getDialogTitle_()}</div>
   <div class="matching-restricted-sites-warning" slot="body">
-    <cr-icon icon="cr:info-outline"></cr-icon>
+    <cr-icon icon="cr:info"></cr-icon>
     <span>${this.getDialogWarning_()}</span>
   </div>
   <div slot="button-container">

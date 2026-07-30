@@ -47,7 +47,7 @@ namespace {
 BASE_FEATURE(kSigninInterceptSimpleButtons, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
-constexpr char kSupervisedBadgeSource[] = "cr:kite";
+constexpr char kSupervisedBadgeSource[] = "cr:family-link";
 
 // Returns true if the account capabilities are marked as supervised.
 bool IsSupervisedUser(const AccountCapabilities& capabilities) {

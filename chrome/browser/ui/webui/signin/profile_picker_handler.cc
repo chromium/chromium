@@ -223,7 +223,7 @@ base::DictValue CreateProfileState(const ProfileAttributesEntry* entry,
   } else if (entry->IsSupervised()) {
     profileCardButtonLabel = l10n_util::GetStringFUTF16(
         IDS_PROFILE_PICKER_PROFILE_CARD_LABEL_SUPERVISED, local_profile_name);
-    profile_entry.Set("avatarBadge", "cr:kite");
+    profile_entry.Set("avatarBadge", "cr:family-link");
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else {
     profile_entry.Set("avatarBadge", "");

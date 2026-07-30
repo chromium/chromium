@@ -28,7 +28,7 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
       ` :
                                                 html`
         <div class="card-body tab-type">
-          <cr-icon icon="cr:insert-drive-file"></cr-icon>
+          <cr-icon icon="cr:draft-filled"></cr-icon>
         </div>
       `}
       <div class="card-footer">

@@ -21,7 +21,7 @@ export function getHtml(this: ExtensionsRuntimeHostsDialogElement) {
     </cr-input>
     <div class="matching-restricted-sites-warning"
         ?hidden="${!this.matchingRestrictedSites_.length}">
-      <cr-icon icon="cr:info-outline"></cr-icon>
+      <cr-icon icon="cr:info"></cr-icon>
       <span>${this.computeMatchingRestrictedSitesWarning_()}</span>
     </div>
   </div>

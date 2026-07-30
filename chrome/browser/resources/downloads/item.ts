@@ -703,7 +703,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
       switch (dangerType) {
         case DangerType.kDeepScannedFailed:
-          return 'cr:info';
+          return 'cr:info-filled';
         case DangerType.kSensitiveContentBlock:
         case DangerType.kBlockedTooLarge:
         case DangerType.kBlockedPasswordProtected:
@@ -752,7 +752,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
           'downloads:dangerous-old';
     }
     if (!this.useFileIcon_) {
-      return 'cr:insert-drive-file';
+      return 'cr:draft-filled';
     }
     return '';
   }

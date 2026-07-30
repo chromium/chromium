@@ -66,7 +66,7 @@ export function getHtml(this: OverflowMenuElement) {
       </button>
       ${this.contextualTasksEnableSpatialModelToolbarLayout ? html`
         <button class="dropdown-item" id="helpButton" @click="${this.onHelpClick_}">
-          <cr-icon icon="cr:help-outline"></cr-icon>
+          <cr-icon icon="cr:help"></cr-icon>
           $i18n{help}
         </button>
       ` : ''}

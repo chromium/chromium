@@ -312,7 +312,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                     aria-label="$i18n{itemShowAccessRequestsLearnMore}"
                     href="$i18n{showAccessRequestsInToolbarLearnMoreLink}"
                     target="_blank">
-                  <cr-icon icon="cr:help-outline"></cr-icon>
+                  <cr-icon icon="cr:help"></cr-icon>
                 </a>
               </div>
             </extensions-toggle-row>` : ''}

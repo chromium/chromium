@@ -86,7 +86,7 @@ export class PrintPreviewDestinationSelectElement extends
 
     // Check for the Save as PDF id first.
     if (this.selectedValue === PDF_DESTINATION_KEY) {
-      return 'cr:insert-drive-file';
+      return 'cr:draft-filled';
     }
 
     // Otherwise, must be in the recent list.

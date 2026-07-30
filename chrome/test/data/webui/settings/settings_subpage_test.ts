@@ -74,11 +74,11 @@ suite('SettingsSubpage', function() {
     // Check that the help icon only shows up when a |learnMoreUrl| is
     // specified.
     assertFalse(!!subpage.shadowRoot.querySelector(
-        'cr-icon-button[iron-icon="cr:help-outline"]'));
+        'cr-icon-button[iron-icon="cr:help"]'));
     subpage.learnMoreUrl = 'https://www.chromium.org';
     await microtasksFinished();
     const iconButton = subpage.shadowRoot.querySelector<HTMLElement>(
-        'cr-icon-button[iron-icon="cr:help-outline"]');
+        'cr-icon-button[iron-icon="cr:help"]');
     assertTrue(!!iconButton);
     // Check that the icon is forced to always use 'ltr' mode.
     assertTrue(iconButton.hasAttribute('suppress-rtl-flip'));

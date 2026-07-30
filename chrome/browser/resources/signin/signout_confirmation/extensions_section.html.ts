@@ -18,7 +18,7 @@ export function getHtml(this: ExtensionsSectionElement) {
       <!-- Make the icon focusable since it has a tooltip. cr-icon is used here
       to support custom tooltip widths. -->
       <cr-icon id="tooltip-icon"
-          icon="cr:info-outline"
+          icon="cr:info"
           tabindex="0"
           role="img"
           aria-label="${this.tooltip_}">

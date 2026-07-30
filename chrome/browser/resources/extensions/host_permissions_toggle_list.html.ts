@@ -14,7 +14,7 @@ export function getHtml(this: ExtensionsHostPermissionsToggleListElement) {
   <a id="linkIconButton" aria-label="$i18n{permissionsLearnMoreLabel}"
       href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
       @click="${this.onLearnMoreClick_}">
-    <cr-icon icon="cr:help-outline"></cr-icon>
+    <cr-icon icon="cr:help"></cr-icon>
   </a>
 </div>
 <div class="toggle-section">
@@ -27,7 +27,7 @@ export function getHtml(this: ExtensionsHostPermissionsToggleListElement) {
         href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
         @click="${this.onLearnMoreClick_}"
         ?hidden="${!this.enableEnhancedSiteControls}">
-      <cr-icon icon="cr:help-outline"></cr-icon>
+      <cr-icon icon="cr:help"></cr-icon>
     </a>
   </extensions-toggle-row>
 </div>

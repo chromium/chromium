@@ -59,7 +59,7 @@ export function getHtml(this: SpComponentsDemoElement) {
           .size="${this.itemSize_}">
         ${this.showBadges_ ? html`
           <sp-list-item-badge slot="badges">
-            <cr-icon icon="cr:info-outline"></cr-icon>
+            <cr-icon icon="cr:info"></cr-icon>
             <span>2 Notes</span>
           </sp-list-item-badge>
         ` : ''}
@@ -95,12 +95,12 @@ export function getHtml(this: SpComponentsDemoElement) {
 <h2>List item badges</h2>
 <div class="demos">
   <sp-list-item-badge>
-    <cr-icon icon="cr:info-outline"></cr-icon>
+    <cr-icon icon="cr:info"></cr-icon>
     <span>3 Notes</span>
   </sp-list-item-badge>
 
   <sp-list-item-badge was-updated>
-    <cr-icon icon="cr:info-outline"></cr-icon>
+    <cr-icon icon="cr:info"></cr-icon>
     <span>$100</span>
     <span slot="previous-badge">$200</span>
   </sp-list-item-badge>

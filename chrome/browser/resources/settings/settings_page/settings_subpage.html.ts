@@ -25,7 +25,7 @@ export function getHtml(this: SettingsSubpageElement) {
   <h1 class="cr-title-text">${this.pageTitle}</h1>
   <slot name="subpage-title-extra"></slot>
   ${this.learnMoreUrl ? html`
-    <cr-icon-button iron-icon="cr:help-outline" suppress-rtl-flip
+    <cr-icon-button iron-icon="cr:help" suppress-rtl-flip
         aria-label="${this.getLearnMoreAriaLabel_()}"
         aria-description="$i18n{opensInNewTab}"
         @click="${this.onHelpClick_}">

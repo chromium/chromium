@@ -248,7 +248,7 @@ export class Destination {
   /** @return Path to the SVG for the destination's icon. */
   get icon(): string {
     if (this.id_ === GooglePromotedDestinationId.SAVE_AS_PDF) {
-      return 'cr:insert-drive-file';
+      return 'cr:draft-filled';
     }
     if (this.isEnterprisePrinter) {
       return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?

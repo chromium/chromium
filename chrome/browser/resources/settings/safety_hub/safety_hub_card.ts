@@ -50,7 +50,7 @@ export class SettingsSafetyHubCardElement extends PolymerElement {
       case CardState.WEAK:
         return 'cr:error';
       case CardState.INFO:
-        return 'cr:info';
+        return 'cr:info-filled';
       case CardState.SAFE:
         return 'cr:check-circle';
       default:

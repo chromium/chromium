@@ -61,7 +61,7 @@ export class NavMenuElement extends CrLitElement {
           path: '/path-2',
         },
         {
-          icon: 'cr:star',
+          icon: 'cr:star-filled',
           name: 'Menu item 3',
           path: '/path-3',
         },

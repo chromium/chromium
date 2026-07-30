@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
           "settings-privacy-page-index",
           "settings-cookies-page",
           "settings-subpage",
-          "div#headerLine cr-icon-button[iron-icon='cr:help-outline']"};
+          "div#headerLine cr-icon-button[iron-icon='cr:help']"};
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsInteractionTestUtilTestId);
