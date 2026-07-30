@@ -514,6 +514,48 @@ IN_PROC_BROWSER_TEST_F(SandboxedPagesTest,
       web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
+// Verifies that requesting a sandboxed page using percent-encoding in the path
+// (e.g. "sandboxed%2Ehtml") is still recognized as a sandboxed page.
+// Regression test for https://crbug.com/538969297.
+IN_PROC_BROWSER_TEST_F(SandboxedPagesTest, PercentEncodedSandboxedPagePath) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Percent-encoded sandboxed page test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "sandbox": { "pages": ["sandboxed.html"] }
+         })";
+  static constexpr char kSandboxedHtml[] =
+      R"(<html><body>Sandboxed Page</body></html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sandboxed.html"), kSandboxedHtml);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL percent_encoded_url(extension->url().spec() + "sandboxed%2Ehtml");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, percent_encoded_url));
+
+  content::RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame_host);
+
+  // The frame should be sandboxed, so the origin should be "null".
+  EXPECT_EQ("null", frame_host->GetLastCommittedOrigin().Serialize());
+
+  // Extension APIs like `chrome.runtime` should be withheld.
+  EXPECT_EQ("undefined",
+            content::EvalJs(web_contents, "typeof chrome.runtime"));
+
+  // Sandboxed pages are hosted in a process that isn't tracked in the
+  // process map.
+  EXPECT_FALSE(ProcessMap::Get(profile())->Contains(
+      extension->id(), frame_host->GetProcess()->GetID()));
+}
+
 // Pages that are sandboxed with the HTML5 `sandbox` attribute are treated
 // differently from pages specified in the "sandbox" attribute in the manifest.
 // These pages *do* get extension APIs.

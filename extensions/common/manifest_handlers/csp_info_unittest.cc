@@ -74,6 +74,9 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
 
   EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
                                           extension1.get(), "/test"));
+  EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
+                                          extension1.get(), "/t%65st"));
+  EXPECT_TRUE(SandboxedPageInfo::IsSandboxedPage(extension1.get(), "/t%65st"));
   EXPECT_EQ(
       kDefaultExtensionPagesCSP,
       CSPInfo::GetResourceContentSecurityPolicy(extension1.get(), "/none"));
@@ -89,6 +92,11 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                                           extension4.get(), "/test"));
   EXPECT_EQ(kDefaultSandboxedPageCSP, CSPInfo::GetResourceContentSecurityPolicy(
                                           extension5.get(), "/path/test.ext"));
+  EXPECT_EQ(kDefaultSandboxedPageCSP,
+            CSPInfo::GetResourceContentSecurityPolicy(extension5.get(),
+                                                      "/path/test%2Eext"));
+  EXPECT_TRUE(
+      SandboxedPageInfo::IsSandboxedPage(extension5.get(), "/path/test%2Eext"));
   EXPECT_EQ(
       kDefaultExtensionPagesCSP,
       CSPInfo::GetResourceContentSecurityPolicy(extension5.get(), "/test"));

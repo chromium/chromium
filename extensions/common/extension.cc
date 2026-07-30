@@ -312,7 +312,26 @@ GURL Extension::GetResourceURL(const GURL& extension_url,
 
 bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
                                 std::string_view resource) const {
-  return pattern_set.MatchesURL(extension_url_.Resolve(resource));
+  // First, resolve `resource` relative to the extension's base URL.
+  GURL resolved = extension_url_.Resolve(resource);
+
+  // Convert the URL to a relative file path inside the extension package, which
+  // unescapes percent-encoded path components (e.g. "%2E" -> "."). This aligns
+  // pattern matching with the URL loader's file resolution logic.
+  base::FilePath relative_path =
+      file_util::ExtensionURLToRelativeFilePath(resolved);
+
+  // If the path cannot be resolved to a valid relative path within the
+  // extension (e.g. due to encoded path separators or malformed URLs), it is
+  // not a valid extension resource and cannot match any resource pattern.
+  if (relative_path.empty()) {
+    return false;
+  }
+
+  // Re-resolve the URL using the unescaped relative path so URLPattern matches
+  // against the canonical resource path served from disk.
+  return pattern_set.MatchesURL(
+      extension_url_.Resolve(relative_path.AsUTF8Unsafe()));
 }
 
 ExtensionResource Extension::GetResource(std::string_view relative_path) const {
