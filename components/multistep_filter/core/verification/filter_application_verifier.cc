@@ -15,14 +15,15 @@ namespace multistep_filter {
 // static
 FilterApplicationVerifier::Result FilterApplicationVerifier::Verify(
     const UrlFilterSuggestion& suggested_filters,
-    const FilterAnnotation& extracted_annotation) {
-  if (extracted_annotation.attributes.empty()) {
-    return {.outcome = Result::Outcome::kNoExtractedAnnotations};
+    const std::optional<FilterAnnotation>& extracted_annotation) {
+  if (!extracted_annotation || extracted_annotation->attributes.empty()) {
+    return {.outcome =
+                SuggestionApplicationResult::kFailedNoExtractedAnnotations};
   }
 
   if (suggested_filters.attribute_ui_labels.size() !=
-      extracted_annotation.attributes.size()) {
-    return {.outcome = Result::Outcome::kCountMismatch};
+      extracted_annotation->attributes.size()) {
+    return {.outcome = SuggestionApplicationResult::kFailedCountMismatch};
   }
 
   std::vector<std::string> missing_keys;
@@ -31,7 +32,7 @@ FilterApplicationVerifier::Result FilterApplicationVerifier::Verify(
     const std::string expected_value =
         base::UTF16ToUTF8(suggested_label.attribute_value);
     const bool found_match = std::ranges::any_of(
-        extracted_annotation.attributes, [&](const FilterAttribute& attr) {
+        extracted_annotation->attributes, [&](const FilterAttribute& attr) {
           return attr.key == suggested_label.key &&
                  attr.value == expected_value;
         });
@@ -41,10 +42,10 @@ FilterApplicationVerifier::Result FilterApplicationVerifier::Verify(
   }
 
   if (missing_keys.empty()) {
-    return {.outcome = Result::Outcome::kSuccess};
+    return {.outcome = SuggestionApplicationResult::kAllFiltersApplied};
   }
 
-  return {.outcome = Result::Outcome::kAttributeMismatch,
+  return {.outcome = SuggestionApplicationResult::kFailedAttributeMismatch,
           .missing_keys = std::move(missing_keys)};
 }
 }  // namespace multistep_filter

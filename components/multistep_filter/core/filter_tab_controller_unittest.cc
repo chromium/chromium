@@ -24,6 +24,7 @@
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
+#include "components/multistep_filter/core/verification/suggestion_application_result.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -251,7 +252,7 @@ class FilterTabControllerTest : public testing::Test {
   void VerifyApplicationOutcomeRetentionHistograms(
       const base::HistogramTester& histogram_tester,
       base::span<const std::string_view> expected_slices,
-      MultistepFilterApplicationOutcome expected_outcome,
+      SuggestionApplicationResult expected_outcome,
       int expected_count = 1) {
     for (const auto& slice : kAllRetentionSlices) {
       std::string name = base::StrCat(
@@ -1293,13 +1294,13 @@ TEST_F(FilterTabControllerTest, NavigationErrorLogsApplicationFailure) {
 
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterApplicationOutcomeHistogram,
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+      SuggestionApplicationResult::kFailedErrorPage, 1);
   histogram_tester.ExpectUniqueSample(
       "MultistepFilter.ApplicationOutcome.ByTask.Task1",
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+      SuggestionApplicationResult::kFailedErrorPage, 1);
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
+      SuggestionApplicationResult::kFailedErrorPage);
 }
 
 // Tests that when navigation finishes with an insecure scheme (HTTP), and
@@ -1319,13 +1320,13 @@ TEST_F(FilterTabControllerTest, HttpNavigationLogsApplicationFailure) {
 
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterApplicationOutcomeHistogram,
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+      SuggestionApplicationResult::kFailedErrorPage, 1);
   histogram_tester.ExpectUniqueSample(
       "MultistepFilter.ApplicationOutcome.ByTask.Task1",
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+      SuggestionApplicationResult::kFailedErrorPage, 1);
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
+      SuggestionApplicationResult::kFailedErrorPage);
 }
 
 // Tests that successful extraction and application verification logs success.
@@ -1348,14 +1349,14 @@ TEST_F(FilterTabControllerTest, SuccessfulApplicationLogsSuccess) {
   RunSuggestionApplicationFlow(metadata, annotation);
   DestroyController();
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  kMultistepFilterApplicationOutcomeHistogram),
-              BucketsAre(Bucket(
-                  MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "MultistepFilter.ApplicationOutcome.ByTask.Task1"),
-              BucketsAre(Bucket(
-                  MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterApplicationOutcomeHistogram),
+      BucketsAre(Bucket(SuggestionApplicationResult::kAllFiltersApplied, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "MultistepFilter.ApplicationOutcome.ByTask.Task1"),
+      BucketsAre(Bucket(SuggestionApplicationResult::kAllFiltersApplied, 1)));
 
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, 1, 1);
@@ -1365,7 +1366,7 @@ TEST_F(FilterTabControllerTest, SuccessfulApplicationLogsSuccess) {
       "MultistepFilter.ApplicationOutcome.ByTask.Task1.ByFacet.key1", true, 1);
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
-      MultistepFilterApplicationOutcome::kAllFiltersApplied);
+      SuggestionApplicationResult::kAllFiltersApplied);
 }
 
 // Tests that failed extraction and application verification logs failure and
@@ -1390,16 +1391,14 @@ TEST_F(FilterTabControllerTest,
 
   RunSuggestionApplicationFlow(metadata, annotation);
 
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          kMultistepFilterApplicationOutcomeHistogram),
-      BucketsAre(
-          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "MultistepFilter.ApplicationOutcome.ByTask.Task1"),
-      BucketsAre(
-          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kMultistepFilterApplicationOutcomeHistogram),
+              BucketsAre(Bucket(
+                  SuggestionApplicationResult::kFailedAttributeMismatch, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "MultistepFilter.ApplicationOutcome.ByTask.Task1"),
+              BucketsAre(Bucket(
+                  SuggestionApplicationResult::kFailedAttributeMismatch, 1)));
 
   histogram_tester.ExpectTotalCount(
       kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, 0);
@@ -1408,7 +1407,7 @@ TEST_F(FilterTabControllerTest,
 
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
+      SuggestionApplicationResult::kFailedAttributeMismatch);
 }
 
 // Tests that the acceptance retention histograms are logged correctly when the
@@ -1619,15 +1618,15 @@ TEST_F(FilterTabControllerTest,
   DestroyController();
 
   // Verify application outcome histograms:
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  kMultistepFilterApplicationOutcomeHistogram),
-              BucketsAre(Bucket(
-                  MultistepFilterApplicationOutcome::kAllFiltersApplied, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterApplicationOutcomeHistogram),
+      BucketsAre(Bucket(SuggestionApplicationResult::kAllFiltersApplied, 1)));
 
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester,
       {kRetentionSliceAcceptedLastTime, kRetentionSliceAcceptedAtLeastOnce},
-      MultistepFilterApplicationOutcome::kAllFiltersApplied);
+      SuggestionApplicationResult::kAllFiltersApplied);
 }
 
 // Tests that if a new navigation finishes while the controller is waiting for
@@ -1709,7 +1708,7 @@ TEST_F(FilterTabControllerTest, ApplicationInterruptedByNewNavigation) {
   // Verify that the application outcome was logged as abandoned.
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterApplicationOutcomeHistogram,
-      MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1);
+      SuggestionApplicationResult::kAbandonedBeforeVerification, 1);
 }
 
 }  // namespace
