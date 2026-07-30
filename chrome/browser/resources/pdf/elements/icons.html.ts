@@ -1,4 +1,13 @@
-<cr-iconset size="20" name="pdf">
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
+
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`<cr-iconset size="20" name="pdf">
   <svg>
     <defs>
       <g id="add" viewBox="0 -960 960 960"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"></path></g>
@@ -72,3 +81,9 @@
     </svg>
   </cr-iconset>
 </if>
+`;
+
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}

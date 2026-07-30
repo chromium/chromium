@@ -31,6 +31,7 @@ build_webui("build") {
     "browser_api.ts",
     "constants.ts",
     "controller.ts",
+    "elements/icons.html.ts",
     "elements/viewer_attachment.html.ts",
     "elements/viewer_attachment.ts",
     "elements/viewer_attachment_bar.html.ts",
@@ -189,8 +190,6 @@ build_webui("build") {
       "elements/viewer_save_to_drive_controls.css",
     ]
   }
-
-  icons_html_files = [ "elements/icons.html" ]
 
   html_to_wrapper_scheme = "chrome"
 
