@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Az érinthető terület a jobb felső sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">Próbálja meg kisebb részletekben megosztani a szöveget.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">Balról jobbra</translation>
 <translation id="1383876407941801731">Keresés</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Beépített kijelző</translation>
 <translation id="335581015389089642">Beszéd</translation>
 <translation id="3372635229069101468">Kattintson a <ph name="BEGIN_BOLD" />Részletek<ph name="END_BOLD" /> lehetőségre.</translation>
-<translation id="3389286852084373014">A szöveg túl nagy</translation>
 <translation id="3406306243914553062">HTML-tartalom</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 nap van hátra}other{# nap van hátra}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" />-fájl</translation>

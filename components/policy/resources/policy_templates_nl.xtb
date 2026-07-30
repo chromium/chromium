@@ -275,6 +275,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="117059611145966538">Externe afdrukservers</translation>
 <translation id="117080706484659953">Detectie van beleidsbereik toestaan op <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Rapportage voor versie-informatie van apparaat aanzetten</translation>
+<translation id="1171286631068003605">De URL die naar de vaardigheidsdefinitie verwijst. Moet uniek zijn.</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aanzetten op alle webpagina's</translation>
 <translation id="1176740714945046981">Zet de functie voor downgraden voor GWA's aan. Standaard worden alleen nieuwere versies van GWA's geïnstalleerd. Als je dit instelt op <ph name="TRUE" />, kun je ook oudere versies installeren. Als je downgraden wilt aanzetten, moet je de gewenste versiewaarde aangeven met het veld 'pinned_version'. Als 'allow_downgrades' niet is aangegeven of is ingesteld op <ph name="FALSE" />, is downgraden uitgezet voor die GWA.</translation>
 <translation id="1177624681620856105"> Met dit beleid wordt bepaald of het selectievakje 'Altijd openen' moet worden getoond in bevestigingsprompts voor externe protocolactivering.
@@ -436,6 +437,15 @@ Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser
 Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
 <translation id="1327466551276625742">Prompt voor netwerkconfiguratie tonen als je offline bent</translation>
 <translation id="13356285923490863">Naam van beleid</translation>
+<translation id="1336231837510847759">Lijst met instellingen voor <ph name="PRODUCT_NAME" /> Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een netwerkverzoek wordt gedaan vanuit <ph name="PRODUCT_NAME" />. Alleen HTTP-POST-verzoeken worden geëvalueerd door dit beleid.
+
+Het veld <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> wordt gebruikt om te bepalen welke verzoeken moeten worden gecontroleerd. Het verzoek en de bijbehorende content maken een analyseverzoek, maar worden niet geblokkeerd. Er hoeft maar één lijstitem in het beleid overeen te komen met een netwerkverzoek om een verzoek voor een auditanalyse te maken.
+
+De lijstvelden <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> worden vergeleken met de URL van een verzoek en de URL van het hoofdtabblad waarin het verzoek is gedaan. Als een van de velden ontbreekt, wordt dit impliciet als overeenkomend beschouwd.
+
+Het veld <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> wordt gebruikt om te bepalen welke tag(s) moeten worden opgenomen in het analyseverzoek als het veld <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> overeenkomt.
+
+Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="1338603603553894503">Geeft aan of de profielkiezer aanstaat, uitstaat of wordt verplicht bij het opstarten van de browser.
 
       Standaard zie je de profielkiezer niet als de browser in de gast- of incognitomodus start, er een profieldirectory en/of URL's zijn opgegeven via een opdrachtregel, het openen van een app expliciet is aangevraagd, de browser is gestart via een systeemeigen melding, er maar één profiel beschikbaar is of het beleid ForceBrowserSignin is ingesteld op True.
@@ -2340,6 +2350,7 @@ De toepassing van dit beleid op beheerde apparaten wordt beïnvloed door het bel
 
           Als dit beleid niet is ingesteld, staat de functie voor markering van het caret-teken in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="2506865562891982662">Toestaan dat gebruikers vanuit het <ph name="PRODUCT_NAME" />-menu cast-apparaten selecteren met een toegangscode of QR-code.</translation>
+<translation id="2508800409212941632">Configuratiebeleid voor de <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Connector</translation>
 <translation id="2509748672176727116">De gebruiker kan opnamen van netwerkpakketten uitvoeren</translation>
 <translation id="2509919237512982967">Verouderde formulierbesturingselementen gebruiken tot M84.</translation>
 <translation id="2512531606818417084">Dit beleid is tijdelijk en werkt niet meer vanaf M137.
@@ -6824,17 +6835,6 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="537786648513450280">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor het apparaat</translation>
 <translation id="5378885577701865339">De functie voor gedeeld klembord uitzetten</translation>
 <translation id="5385337904220716757">Alleen toegang tot geolocatie van systeem toestaan voor systeemservices</translation>
-<translation id="538768040137709073">Zet de functie Gedeeld klembord aan, waarmee gebruikers tekst kunnen sturen tussen Chrome-desktops en een Android-apparaat als de synchronisatie is aangezet en de gebruiker is ingelogd.
-
-          Als dit beleid is ingesteld op True, kunnen Chrome-gebruikers tekst tussen apparaten sturen.
-
-          Als dit beleid is ingesteld op False, kunnen Chrome-gebruikers geen tekst tussen apparaten sturen.
-
-          Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
-
-          Als dit beleid niet is ingesteld, staat de functie Gedeeld klembord standaard uit.
-
-          Beheerders kunnen zelf beleidsregels voor alle gewenste platforms instellen. We raden je aan dit beleid op één waarde in te stellen voor alle platforms.</translation>
 <translation id="5389708774452952523">Toestaan dat het audioproces wordt uitgevoerd met hogere prioriteit dan normaal in Windows</translation>
 <translation id="5390083518957894426">Zet online opnieuw verifiëren op vergrendelscherm aan voor SAML-gebruikers</translation>
 <translation id="5391388690191341203">Lokaal account op apparaat voor automatisch inloggen</translation>
@@ -7444,6 +7444,7 @@ Als je dit beleid instelt op 3 (<ph name="ASK_IDLE_DETECTION_VALUE_NAME" />) of 
 Als je het beleid toepast, wordt aanpasbare buffering altijd gebruikt.
 
 Als je het beleid niet toepast of niet instelt, kan het startproces van de browserfunctie beslissen of aanpasbare buffering wordt gebruikt.</translation>
+<translation id="579556027056000499">De SHA-256-hash van de content op de URL.</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5800627752428920394">Met dit beleid bepaal je of actieve WebSocket-verbindingen worden verbroken als een pagina gebruikmaakt van Back-Forward Cache. Actieve WebSocket-verbindingen voorkwamen eerder dat een pagina werd opgeslagen in Back-Forward Cache, maar <ph name="PRODUCT_NAME" /> heeft dit gedrag gewijzigd om de WebSockets te ontkoppelen. Hierdoor kan de pagina worden opgeslagen in het cachegeheugen en worden hersteld in een ontkoppelde status.
 
@@ -9503,6 +9504,7 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
 
       Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="7032323070729112362">Het gebruik van de Translator API wordt niet toegestaan</translation>
+<translation id="7032734784894075746">Vaardigheden instellen in Chrome</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS uitzetten</translation>
 <translation id="703672323011778742">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid instelt op 1, kun je instellen of alle websites automatisch de <ph name="FLASH_PLUGIN_NAME" />-plug-in mogen uitvoeren. Als je het beleid instelt op 2, wordt deze plug-in geblokkeerd voor alle websites. Via click-to-play kan de <ph name="FLASH_PLUGIN_NAME" />-plug-in worden uitgevoerd maar moeten gebruikers op de tijdelijke aanduiding klikken om deze te starten.
 
@@ -11733,6 +11735,15 @@ De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoevee
 <translation id="8471860377920321311">Generatieve AI-functies toestaan en AI-modellen verbeteren</translation>
 <translation id="8473107305327396242">Importeer door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
 <translation id="8473841363404590708">Lokale bestanden migreren naar Microsoft OneDrive en lokale mappen verbergen</translation>
+<translation id="8476434719168701332">Als je het beleid instelt, worden vaardigheden voor generatieve AI gepubliceerd voor de gebruiker in <ph name="PRODUCT_NAME" />.
+
+Als je dit beleid instelt, zien gebruikers deze ingestelde vaardigheden standaard op de pagina chrome://skills, naast hun persoonlijke vaardigheden. Gebruikers kunnen deze vaardigheden bekijken, aanpassen en opslaan voor persoonlijk gebruik.
+
+Elke vaardigheid in de lijst moet een object zijn dat een <ph name="URL_NAME" /> bevat waar de content van de vaardigheid kan worden gedownload en een <ph name="HASH_NAME" /> (SHA-256) van die content om de integriteit ervan te verifiëren voordat deze wordt toegepast. Elke vaardigheid-URL moet onveranderlijk zijn. Als je een vaardigheidsbestand wilt updaten, heb je een nieuwe URL en hash nodig.
+
+Als je meer dan 10 vaardigheden verstrekt, wordt er een waarschuwing getoond en worden alleen de eerste 10 vaardigheden gepubliceerd.
+
+Als je het beleid niet instelt of instelt op een lege lijst, worden er geen zakelijke vaardigheden gepubliceerd voor de gebruiker.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC gebruikt alle beschikbare interfaces als naar het beste pad wordt gezocht.</translation>
 <translation id="8479496880635054740">Virtueel toetsenbord voor toegankelijkheid op het inlogscherm uitzetten</translation>

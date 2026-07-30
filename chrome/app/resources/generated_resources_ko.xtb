@@ -388,7 +388,6 @@
 <translation id="1275963833368139883">방문 기록을 검색하면 페이지 콘텐츠를 기반으로 답변과 검색 결과가 제시되어 더 개선된 결과를 얻을 수 있습니다.</translation>
 <translation id="1277020343994096713">현재 PIN과 다른 PIN을 새로 만들어 주세요.</translation>
 <translation id="1277597051786235230">새 탭에서 <ph name="SEARCH_ENGINE" />에 “<ph name="SEARCH_TERMS" />” 검색(&amp;S)</translation>
-<translation id="127849925363482083">탭 고정을 닫으려면 <ph name="SHORTCUT_TEXT" /> 키를 다시 누르세요.</translation>
 <translation id="1279024913354609713">허용 안함</translation>
 <translation id="127946606521051357">근처 기기가 공유 시도 중</translation>
 <translation id="1280332775949918163">창 맞추기</translation>
@@ -617,7 +616,6 @@
 <translation id="1472675084647422956">자세히 보기</translation>
 <translation id="1473223074251193484">테더링 구성 설정</translation>
 <translation id="1473616112002966036">동영상 프레임(&amp;V)</translation>
-<translation id="1476088332184200792">기기로 복사</translation>
 <translation id="1476607407192946488">언어 설정(&amp;L)</translation>
 <translation id="1477654881618305065">조직에서 이 콘텐츠를 공유하도록 허용하지 않습니다. 도움이 필요하면 관리자에게 문의하세요.</translation>
 <translation id="1478340334823509079">세부정보: <ph name="FILE_NAME" /></translation>
@@ -906,7 +904,6 @@
 <translation id="1695510246756136088">인터넷에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
 <translation id="1696685050160038195">기기를 안전하게 보호하려면 신뢰할 수 있는 출처 및 개발자의 소프트웨어만 실행하고 설치해야 합니다</translation>
-<translation id="1696832149095851409">선택한 텍스트에 대한 플로팅 메뉴</translation>
 <translation id="1697122132646041614">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="1697532407822776718">설정 완료</translation>
 <translation id="1698796500103229697">결제 수단</translation>
@@ -1528,7 +1525,6 @@
 <translation id="2180082148774168439">컴퓨터의 전용 창에서 이 사이트에 액세스합니다</translation>
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
 <translation id="2181821976797666341">정책</translation>
-<translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2182419606502127232">내 서버 로그를 포함합니다.</translation>
 <translation id="2184272387334793084">모든 기기에서 비밀번호 등을 가져오려면 Chrome에 로그인하세요.</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
@@ -2585,7 +2581,6 @@
 <translation id="2984727013951557074">아직 Drive에 파일을 동기화하는 중입니다.</translation>
 <translation id="2984923316661218534">Google 비밀번호 관리자를 사용하여 이 기기에 패스키를 가져오세요</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" />에서 앱을 제거했습니다.}other{<ph name="APP_NAME" />에서 앱 # 개를 제거했습니다.}}</translation>
-<translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2988018669686457659">예비 렌더러</translation>
 <translation id="2988328607561082373">재사용된 비밀번호가 없습니다.</translation>
 <translation id="2989123969927553766">마우스 스크롤 가속</translation>
@@ -5039,6 +5034,7 @@
 <translation id="485480310608090163">추가 설정 및 권한</translation>
 <translation id="4857304314344645169">문제에 대한 단계별 설명을 확인하세요.</translation>
 <translation id="4857506880242459832">Google에 이전 페이지 알아보기 요청: <ph name="PAGE_TITLE" /></translation>
+<translation id="4857677595331912231">더 관련성 높은 대답을 제공하기 위해 현재 탭의 콘텐츠와 URL이 Google에 공유됩니다. 탐색하면서 탭을 추가하거나 삭제할 수 있습니다.</translation>
 <translation id="485806788160414322">미디어 재생 또는 일시중지</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="4860012864737017059">최근 탭</translation>
@@ -5486,7 +5482,6 @@
 <translation id="5192062846343383368">Family Link 앱을 열어 감독 설정을 확인합니다.</translation>
 <translation id="5193602404493965468">* <ph name="FIELD_LIST" /> 입력란은 필수 항목입니다.</translation>
 <translation id="5193978546360574373">오프라인으로 사용 가능했던 모든 파일에 대한 액세스 권한을 비롯해 이 Chromebook에서의 Google Drive 액세스 권한이 삭제됩니다.</translation>
-<translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5194256020863090856">이 작업은 시크릿 창에만 영향을 줍니다.</translation>
 <translation id="5195074424945754995">이 규칙과 일치하는 URL은 브라우저 전환을 트리거하지 않으며 <ph name="BROWSER_NAME" /> 또는 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 열 수 있습니다.</translation>
 <translation id="5196790039230503600">동작을 사용한 다음 고개를 움직여 항목을 놓으려는 위치를 표시합니다. 동작을 다시 사용하여 항목을 놓습니다.</translation>
@@ -6764,7 +6759,6 @@
 <translation id="6237474966939441970">스타일러스 메모 앱</translation>
 <translation id="6237481151388361546">인터넷 연결을 변경하고 '다시 시도'를 선택하거나 '기본 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="623755660902014047">읽기 모드</translation>
-<translation id="6238767809035845642">다른 기기에서 공유된 텍스트</translation>
 <translation id="6238982280403036866">JavaScript 사용이 허용됨</translation>
 <translation id="6239558157302047471">프레임 새로고침(&amp;F)</translation>
 <translation id="6240637845286751292">허용됨. <ph name="LINK_BEGIN" />시스템 위치 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
@@ -8418,7 +8412,6 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{탭을 닫고 그룹을 삭제하시겠습니까?}=1{탭을 닫고 그룹을 삭제하시겠습니까?}other{탭을 닫고 그룹을 삭제하시겠습니까?}}</translation>
 <translation id="7509539379068593709">앱 제거</translation>
 <translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 활동<ph name="END_LINK_GOOGLE_ACTIVITY" />을 기반으로 한 추천</translation>
-<translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7514417110442087199">할당 추가</translation>
 <translation id="7515139121338932179">창을 공유하려면 시스템의 창 선택 도구를 사용하세요</translation>
@@ -8717,7 +8710,6 @@
 <translation id="7754704193130578113">다운로드 전에 각 파일의 저장 위치 확인</translation>
 <translation id="7757592200364144203">기기 이름 변경</translation>
 <translation id="7757739382819740102">주변에 있는 연락처가 나와 공유할 수 있습니다. 수락해야 합니다.</translation>
-<translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">사이트 검색 추가</translation>
 <translation id="7759443981285558794">ChromeOS에서 가져온 인증서 보기</translation>
@@ -9748,7 +9740,6 @@
 <translation id="8552102814346875916">'다음 사이트를 항상 활성 상태로 유지' 목록에 저장</translation>
 <translation id="8552947739661397736">작업 인계 받기(현재 Gemini가 제어 중)</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
-<translation id="8554642222921881444">선택한 텍스트에 대한 플로팅 메뉴</translation>
 <translation id="8554899698005018844">언어가 없음</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 확장된 콘텐츠가 표시됩니다.</translation>
 <translation id="8555444629041783356">자동 지원 종료 일정</translation>
@@ -10032,7 +10023,6 @@
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> 삭제됨</translation>
 <translation id="876161309768861172">로그인할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
-<translation id="876287961468788565">사이트에서 텍스트를 선택하면 Chrome에서 작업이 포함된 플로팅 메뉴를 표시할 수 있습니다.</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8765940060470412555">읽기 모드 고정 해제</translation>
 <translation id="8766156860774051068">내가 선별함</translation>

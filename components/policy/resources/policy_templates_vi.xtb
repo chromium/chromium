@@ -275,6 +275,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 <translation id="117059611145966538">Máy chủ máy in bên ngoài</translation>
 <translation id="117080706484659953">Cho phép phát hiện phạm vi chính sách trên <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Bật tính năng báo cáo thông tin phiên bản thiết bị</translation>
+<translation id="1171286631068003605">URL trỏ đến định nghĩa kỹ năng. Phải là duy nhất.</translation>
 <translation id="1173493742686115032">Bật <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> trên mọi trang web</translation>
 <translation id="1176740714945046981">Bật tính năng hạ cấp cho IWA (Ứng dụng web tách biệt). Theo mặc định, chỉ các phiên bản mới hơn của IWA mới được cài đặt. Khi bạn đặt giá trị này thành <ph name="TRUE" />, thì bạn cũng có thể cài đặt các phiên bản cũ hơn. Để cho phép hạ cấp, bạn phải chỉ định giá trị phiên bản mong muốn bằng cách sử dụng trường "pinned_version". Nếu bạn không cung cấp giá trị cho trường "allow_downgrades" hoặc đặt giá trị này thành <ph name="FALSE" />, thì tính năng hạ cấp sẽ bị vô hiệu hoá đối với IWA đó.</translation>
 <translation id="1177624681620856105"> Chính sách này kiểm soát việc hộp đánh dấu "Luôn mở" có hiển thị trên lời nhắc xác nhận chạy giao thức bên ngoài hay không.
@@ -437,6 +438,15 @@ Nếu bạn đặt chính sách này thành Bật thì sau khi người dùng h
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, chế độ cài đặt khôi phục hoàn toàn sẽ xác định những nội dung mở ra khi người dùng đăng nhập.</translation>
 <translation id="1327466551276625742">Bật lời nhắc về cấu hình mạng khi ngoại tuyến</translation>
 <translation id="13356285923490863">Tên chính sách</translation>
+<translation id="1336231837510847759">Danh sách các chế độ cài đặt dịch vụ Trình kết nối doanh nghiệp <ph name="PRODUCT_NAME" /> sẽ được áp dụng cho Trình kết nối doanh nghiệp <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" />. Trình kết nối này sẽ kích hoạt khi có yêu cầu mạng được thực hiện từ <ph name="PRODUCT_NAME" />. Chính sách này chỉ đánh giá các yêu cầu HTTP POST.
+
+Trường <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> được dùng để xác định những yêu cầu cần được kiểm tra. Yêu cầu và nội dung trong đó sẽ tạo ra một yêu cầu phân tích, nhưng sẽ không bị chặn. Chỉ cần một mục trong danh sách của chính sách khớp với yêu cầu mạng là có thể tạo yêu cầu phân tích kiểm tra.
+
+Các trường danh sách <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> được so khớp với URL của yêu cầu và URL của thẻ chính khởi tạo yêu cầu tương ứng. Nếu thiếu một trong các trường, thì trường đó sẽ được mặc định là khớp.
+
+Trường <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> được dùng để xác định (những) thẻ cần đưa vào yêu cầu phân tích nếu trường <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> khớp.
+
+Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="1338603603553894503">Chỉ định việc bật, tắt hay buộc hiển thị bộ chọn hồ sơ khi khởi động trình duyệt.
 
       Theo mặc định, bộ chọn hồ sơ sẽ không hiển thị nếu người dùng khởi động trình duyệt ở chế độ khách hoặc ẩn danh, chỉ định một thư mục hồ sơ và/hoặc URL bằng dòng lệnh, yêu cầu rõ là mở một ứng dụng, khởi động trình duyệt bằng một thông báo gốc, chỉ có một hồ sơ hoặc chính sách ForceBrowserSignin được đặt thành bật.
@@ -2354,6 +2364,7 @@ Việc áp dụng chính sách này trên các thiết bị được quản lý 
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật dấu chèn sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="2506865562891982662">Cho phép người dùng chọn thiết bị truyền có mã truy cập hoặc mã QR từ trong trình đơn của <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2508800409212941632">Chính sách cấu hình cho Trình kết nối doanh nghiệp <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">Người dùng sẽ có thể chặn bắt gói tin qua mạng</translation>
 <translation id="2509919237512982967">Dùng các thành phần điều khiển biểu mẫu cũ cho đến M84.</translation>
 <translation id="2512531606818417084">Đây là chính sách tạm thời và sẽ không còn hoạt động kể từ phiên bản M137.
@@ -6954,17 +6965,6 @@ Nếu bạn đặt chính sách này thành false (sai), thì người dùng s�
 <translation id="537786648513450280">Kiểm soát việc thiết bị dùng ứng dụng Android từ các nguồn không tin cậy</translation>
 <translation id="5378885577701865339">Tắt tính năng bảng nhớ tạm dùng chung</translation>
 <translation id="5385337904220716757">Chỉ cho phép truy cập vào dữ liệu định vị vị trí của hệ thống đối với các dịch vụ hệ thống</translation>
-<translation id="538768040137709073">Bật tính năng Bảng nhớ tạm dùng chung. Tính năng này cho phép người dùng gửi văn bản giữa Máy tính Chrome và thiết bị Android khi tính năng Đồng bộ hóa được bật và người dùng đã đăng nhập.
-
-          Nếu bạn đặt chính sách này thành true, thì người dùng Chrome có thể gửi văn bản trên các thiết bị.
-
-          Nếu bạn đặt chính sách này thành false, thì người dùng Chrome không thể gửi văn bản trên các thiết bị.
-
-          Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
-
-          Nếu bạn không đặt chính sách này, thì tính năng bảng nhớ tạm dùng chung sẽ được bật theo mặc định.
-
-          Quản trị viên có thể tùy ý đặt chính sách trên tất cả các nền tảng mà họ quan tâm. Bạn nên đặt một giá trị giống nhau cho chính sách này trên tất cả các nền tảng.</translation>
 <translation id="5389708774452952523">Cho phép tiến trình âm thanh chạy ở cấp độ ưu tiên cao hơn mức bình thường trên Windows</translation>
 <translation id="5390083518957894426">Bật tùy chọn xác thực lại trực tuyến trên màn hình khóa cho người dùng SAML</translation>
 <translation id="5391388690191341203">Tự động đăng nhập vào tài khoản trên thiết bị</translation>
@@ -7592,6 +7592,7 @@ Nếu bạn đặt chính sách này thành Bật, thì trình duyệt sẽ luô
 
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này,
 thì quy trình khởi chạy tính năng của trình duyệt sẽ được phép lựa chọn có sử dụng vùng đệm thích ứng hay không.</translation>
+<translation id="579556027056000499">Hàm băm SHA-256 của nội dung tại URL.</translation>
 <translation id="5800329278018669527">Tắt lời nhắc định cấu hình mạng khi không có kết nối mạng</translation>
 <translation id="5800627752428920394">Chính sách này kiểm soát việc có ngắt các kết nối WebSocket đang hoạt động khi trang được lưu vào bộ nhớ đệm cho thao tác tiến/lùi hay không. Trước đây, các kết nối WebSocket đang hoạt động ngăn việc lưu trữ trang vào bộ nhớ đệm cho thao tác tiến/lùi. Tuy nhiên, <ph name="PRODUCT_NAME" /> đã thay đổi hành vi này thành ngắt kết nối WebSocket, cho phép trang được lưu vào bộ nhớ đệm và khôi phục trang ở trạng thái đã ngắt kết nối.
 
@@ -9722,6 +9723,7 @@ Nếu bạn không đặt chính sách này cho một trang web thì hệ thốn
 
       Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="7032323070729112362">Không cho phép sử dụng Translator API</translation>
+<translation id="7032734784894075746">Định cấu hình Kỹ năng trong Chrome</translation>
 <translation id="7032813174556919004">Tắt chế độ DNS qua HTTPS</translation>
 <translation id="703672323011778742">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này thành 1, bạn có thể thiết lập để tất cả trang web có thể tự động chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" /> hay không. Nếu bạn đặt chính sách thành 2, trình bổ trợ này sẽ không được tự động chạy trên tất cả trang web. Tùy chọn Nhấp để phát cho phép chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />. Tuy nhiên, người dùng phải nhấp vào trình giữ chỗ để bắt đầu phát.
 
@@ -11980,6 +11982,15 @@ Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượ
 <translation id="8471860377920321311">Cho phép các tính năng AI tạo sinh và tham gia cải tiến mô hình AI</translation>
 <translation id="8473107305327396242">Nhập chứng chỉ máy chủ TLS do người dùng thêm từ các kho lưu trữ uy tín trên nền tảng.</translation>
 <translation id="8473841363404590708">Di chuyển tệp trên máy sang Microsoft OneDrive và ẩn thư mục trên máy</translation>
+<translation id="8476434719168701332">Nếu bạn đặt chính sách này, các kỹ năng AI tạo sinh sẽ được xuất bản cho người dùng trong <ph name="PRODUCT_NAME" />.
+
+Nếu bạn đặt chính sách này, người dùng sẽ thấy các kỹ năng đã định cấu hình này theo mặc định trên trang chrome://skills, ngoài các kỹ năng cá nhân của họ. Người dùng có thể xem, sửa đổi và lưu các kỹ năng này để sử dụng cho mục đích cá nhân.
+
+Mỗi kỹ năng trong danh sách phải là một đối tượng chứa <ph name="URL_NAME" /> để có thể tải nội dung kỹ năng xuống và <ph name="HASH_NAME" /> (SHA-256) của nội dung đó nhằm xác minh tính toàn vẹn trước khi áp dụng. Mỗi URL kỹ năng phải là URL không thể thay đổi. Để cập nhật tệp kỹ năng, bạn cần có URL và hàm băm mới.
+
+Nếu bạn cung cấp hơn 10 kỹ năng, hệ thống sẽ hiển thị cảnh báo và chỉ xuất bản 10 kỹ năng đầu tiên.
+
+Nếu bạn không đặt chính sách này hoặc đặt thành danh sách trống, thì không có kỹ năng doanh nghiệp nào được xuất bản cho người dùng.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC sẽ dùng mọi giao diện hiện có khi tìm kiếm đường dẫn phù hợp nhất.</translation>
 <translation id="8479496880635054740">Tắt bàn phím ảo hỗ trợ tiếp cận trên màn hình đăng nhập</translation>

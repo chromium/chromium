@@ -388,7 +388,6 @@
 <translation id="1275963833368139883">搜尋瀏覽記錄時，系統會根據網頁內容提供回覆和搜尋結果，提高搜尋結果準確度</translation>
 <translation id="1277020343994096713">新設定的 PIN 碼不能與目前的 PIN 碼相同</translation>
 <translation id="1277597051786235230">開啟新分頁並使用「<ph name="SEARCH_ENGINE" />」搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
-<translation id="127849925363482083">再次按下 <ph name="SHORTCUT_TEXT" /> 即可關閉固定分頁</translation>
 <translation id="1279024913354609713">不允許</translation>
 <translation id="127946606521051357">附近的裝置正在分享資料</translation>
 <translation id="1280332775949918163">將視窗移到一側</translation>
@@ -616,7 +615,6 @@
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473223074251193484">設定網路共用設定</translation>
 <translation id="1473616112002966036">影片影格 (&amp;V)</translation>
-<translation id="1476088332184200792">複製到你的裝置</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477654881618305065">貴機構不允許你分享這項內容。如需協助，請與系統管理員聯絡。</translation>
 <translation id="1478340334823509079">詳細資料：<ph name="FILE_NAME" /></translation>
@@ -905,7 +903,6 @@
 <translation id="1695510246756136088">無法連上網際網路，請再試一次。</translation>
 <translation id="1696555181932908973">你可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
 <translation id="1696685050160038195">為了維護裝置安全，建議你只執行及安裝來自可信任來源和開發人員的軟體。</translation>
-<translation id="1696832149095851409">針對所選文字顯示的浮動式選單</translation>
 <translation id="1697122132646041614">如果按倒讚，系統會顯示意見回饋表單。你可以在表單中詳細說明不喜歡這些結果的原因。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
 <translation id="1698796500103229697">付款方式(&amp;P)</translation>
@@ -1517,7 +1514,6 @@
 <translation id="2180082148774168439">在電腦的專用視窗中存取這個網站</translation>
 <translation id="2180620921879609685">封鎖任何網頁所含內容</translation>
 <translation id="2181821976797666341">政策</translation>
-<translation id="2182058453334755893">已複製到剪貼簿</translation>
 <translation id="2182419606502127232">包含我的伺服器記錄。</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
@@ -2571,7 +2567,6 @@
 <translation id="2984727013951557074">系統仍在將檔案同步到 Google 雲端硬碟。</translation>
 <translation id="2984923316661218534">在這部裝置上用 Google 密碼管理工具取得密碼金鑰</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」已解除安裝 1 個應用程式}other{「<ph name="APP_NAME" />」已解除安裝 # 個應用程式}}</translation>
-<translation id="2987620471460279764">從其他裝置分享的文字</translation>
 <translation id="2988018669686457659">備用轉譯器</translation>
 <translation id="2988328607561082373">目前未重複使用任何密碼</translation>
 <translation id="2989123969927553766">滑鼠捲動加速</translation>
@@ -5019,6 +5014,7 @@
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4857304314344645169">查看任何問題的逐步說明</translation>
 <translation id="4857506880242459832">向 Google 詢問與上一個網頁相關的資訊：<ph name="PAGE_TITLE" /></translation>
+<translation id="4857677595331912231">系統會將目前分頁的內容和網址分享給 Google，以便提供更貼近需求的答案。瀏覽時可以新增或移除分頁。</translation>
 <translation id="485806788160414322">播放或暫停播放媒體</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4860012864737017059">最近開啟的分頁</translation>
@@ -5466,7 +5462,6 @@
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監護功能設定</translation>
 <translation id="5193602404493965468">*「<ph name="FIELD_LIST" />」是必填欄位</translation>
 <translation id="5193978546360574373">這麼做會移除這部 Chromebook 的 Google 雲端硬碟存取權，包括已設為可離線存取的所有檔案存取權</translation>
-<translation id="5193988420012215838">已複製到剪貼簿</translation>
 <translation id="5194256020863090856">這項操作只會影響無痕視窗</translation>
 <translation id="5195074424945754995">符合這些規則的網址不會觸發瀏覽器切換功能，且可在 <ph name="BROWSER_NAME" /> 或 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟。</translation>
 <translation id="5196790039230503600">做出表情再移動頭部，指定要放下項目的位置。再次做出表情即可放下該項目。</translation>
@@ -6740,7 +6735,6 @@
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
 <translation id="6237481151388361546">請變更網際網路連線並選擇「再試一次」。你也可以選擇「在基本編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="623755660902014047">閱讀模式</translation>
-<translation id="6238767809035845642">從其他裝置分享的文字</translation>
 <translation id="6238982280403036866">允許使用 JavaScript</translation>
 <translation id="6239558157302047471">重新載入頁框(&amp;F)</translation>
 <translation id="6240637845286751292">已允許。開啟<ph name="LINK_BEGIN" />系統位置資訊存取權<ph name="LINK_END" />。</translation>
@@ -8394,7 +8388,6 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要關閉分頁並刪除群組嗎？}=1{要關閉分頁並刪除群組嗎？}other{要關閉分頁並刪除群組嗎？}}</translation>
 <translation id="7509539379068593709">解除安裝應用程式</translation>
 <translation id="7513438205469584978">根據你個人 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活動<ph name="END_LINK_GOOGLE_ACTIVITY" />提供的建議</translation>
-<translation id="7514239104543605883">複製到你的裝置</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514417110442087199">新增指派設定</translation>
 <translation id="7515139121338932179">如要分享視窗，請使用系統的視窗選擇器</translation>
@@ -8693,7 +8686,6 @@
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7757592200364144203">變更裝置名稱</translation>
 <translation id="7757739382819740102">附近的聯絡人都能與你分享內容。必須經過核准。</translation>
-<translation id="7757787379047923882">透過「<ph name="DEVICE_NAME" />」分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">新增網站搜尋引擎</translation>
 <translation id="7759443981285558794">查看從 ChromeOS 匯入的憑證</translation>
@@ -9724,7 +9716,6 @@
 <translation id="8552102814346875916">儲存到「一律啟用這些網站」清單</translation>
 <translation id="8552947739661397736">接手工作，目前由 Gemini 控管</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
-<translation id="8554642222921881444">針對所選文字顯示的浮動式選單</translation>
 <translation id="8554899698005018844">未指定語言</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 已顯示展開的內容</translation>
 <translation id="8555444629041783356">自動更新日落時刻表</translation>
@@ -10008,7 +9999,6 @@
 <translation id="8757368836647541092">已移除「<ph name="USER_NAME_OR_EMAIL" />」</translation>
 <translation id="876161309768861172">無法登入，請再試一次</translation>
 <translation id="8761945298804995673">這名使用者已經存在。</translation>
-<translation id="876287961468788565">Chrome 可針對你在網站上選取的文字，顯示含有相關動作的浮動式選單。</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8765940060470412555">取消固定閱讀模式</translation>
 <translation id="8766156860774051068">你的收藏</translation>

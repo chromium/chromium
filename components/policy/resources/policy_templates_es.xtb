@@ -6882,17 +6882,6 @@ Si se le asigna el valor false, no podrán acceder a la función.</translation>
 <translation id="537786648513450280">Controlar el uso de aplicaciones Android de fuentes que no son de confianza para el dispositivo</translation>
 <translation id="5378885577701865339">Inhabilitar la función de portapapeles compartido</translation>
 <translation id="5385337904220716757">Permitir el acceso a la geolocalización del sistema a los servicios del sistema</translation>
-<translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite a los usuarios enviar texto entre versiones de Chrome para ordenador y dispositivos Android cuando la sincronización está habilitada y el usuario ha iniciado sesión.
-
-          Si se asigna el valor "True" a esta política, se habilita la capacidad de enviar texto entre dispositivos para los usuarios de Chrome.
-
-          Si se le asigna el valor "False", se inhabilita la capacidad de enviar texto entre dispositivos para los usuarios de Chrome.
-
-          Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
-
-          Si no se le asigna ningún valor, la función de portapapeles compartido se habilita de forma predeterminada.
-
-          Los administradores se encargan de establecer políticas para todas las plataformas que consideren relevantes. Se recomienda definir un valor para esta política en todas las plataformas.</translation>
 <translation id="5389708774452952523">Permite ejecutar el proceso de audio con una prioridad superior a la normal en Windows</translation>
 <translation id="5390083518957894426">Habilita la reautenticación online en la pantalla de bloqueo para usuarios de SAML</translation>
 <translation id="5391388690191341203">Cuenta local del dispositivo para el inicio de sesión automático</translation>

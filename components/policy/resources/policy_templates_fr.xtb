@@ -275,6 +275,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="117059611145966538">Serveurs d'impression externes</translation>
 <translation id="117080706484659953">Autorisez la détection du champ d'application des règles sur <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Activer les rapports sur les informations sur la version de l'appareil</translation>
+<translation id="1171286631068003605">URL redirigeant vers la définition de la compétence. Ce nom doit être unique.</translation>
 <translation id="1173493742686115032">Activer <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
 <translation id="1176740714945046981">Active la fonctionnalité de retour à une version antérieure pour les AWI. Par défaut, seules les versions les plus récentes des AWI sont installées. Si vous définissez cette option sur <ph name="TRUE" />, vous pouvez également installer des versions antérieures. Pour activer le retour à une version antérieure, vous devez spécifier la valeur de la version souhaitée à l'aide du champ "pinned_version". Si aucune valeur n'est fournie pour "allow_downgrades" ou qu'il est défini sur <ph name="FALSE" />, le retour à une version antérieure est désactivé pour cette AWI.</translation>
 <translation id="1177624681620856105"> Cette règle permet de spécifier si la case "Toujours ouvrir" doit être affichée ou non dans une invite de confirmation du lancement d'un protocole externe.
@@ -437,6 +438,15 @@ Si cette règle est activée, les fenêtres de navigateurs et d'applications qui
 Si cette règle est désactivée ou n'est pas configurée, les paramètres de restauration complète déterminent ce qui doit être lancé à la connexion.</translation>
 <translation id="1327466551276625742">Activer l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="13356285923490863">Nom de stratégie</translation>
+<translation id="1336231837510847759">Liste des paramètres des services des connecteurs <ph name="PRODUCT_NAME" /> Enterprise à appliquer au connecteur Enterprise <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'une requête réseau est effectuée depuis <ph name="PRODUCT_NAME" />. Seules les requêtes HTTP POST sont évaluées par cette règle.
+
+Le champ <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> permet de déterminer les requêtes qui doivent être auditées. La requête et son contenu créeront une requête d'analyse, mais ne seront pas bloqués. Il suffit qu'une seule entrée de liste de la règle corresponde à une requête réseau pour qu'une requête d'analyse d'audit soit créée.
+
+Les champs de liste <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> sont mis en correspondance avec l'URL d'une requête et l'URL de l'onglet principal d'où provient la requête, respectivement. Si l'un de ces champs est manquant, il sera implicitement considéré comme correspondant.
+
+Le champ <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> permet d'indiquer les tags à inclure dans la requête d'analyse si le champ <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> correspond.
+
+Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="1338603603553894503">Indique si le sélecteur de profil est activé, désactivé ou forcé au démarrage du navigateur.
 
       Par défaut, le sélecteur de profil n'est pas affiché si le navigateur démarre en mode Invité ou navigation privée, si un répertoire et/ou des URL de profils sont indiqués par ligne de commande, si l'ouverture d'une application a été demandée de manière explicite, si le navigateur a été lancé par une notification native, s'il n'y a qu'un seul profil disponible ou si la règle ForceBrowserSignin est définie sur "True".
@@ -2342,6 +2352,7 @@ L'application de cette règle sur les appareils gérés est influencée par la r
 
           Si cette règle n'est pas définie, la mise en surbrillance du curseur de saisie est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="2506865562891982662">Autoriser les utilisateurs à sélectionner des appareils Cast avec un code d'accès ou un QR code dans la liste dédiée du menu <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2508800409212941632">Règle de configuration du connecteur <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> de <ph name="PRODUCT_NAME" /> Enterprise.</translation>
 <translation id="2509748672176727116">L'utilisateur pourra capturer des paquets du réseau</translation>
 <translation id="2509919237512982967">Utiliser les anciens éléments de contrôle de formulaire jusqu'à la version M84.</translation>
 <translation id="2512531606818417084">Cette règle est temporaire et ne fonctionnera plus à partir de M137.
@@ -6855,17 +6866,6 @@ Si la règle est définie sur "False", les enseignants ne peuvent pas accéder �
 <translation id="537786648513450280">Contrôler l'accès de l'appareil aux applications Android provenant de sources non approuvées</translation>
 <translation id="5378885577701865339">Désactiver la fonctionnalité de presse-papiers partagé</translation>
 <translation id="5385337904220716757">Autoriser uniquement l'accès à la géolocalisation du système pour les services système</translation>
-<translation id="538768040137709073">Permet d'activer la fonctionnalité de presse-papiers partagé, qui donne la possibilité aux utilisateurs d'envoyer du texte entre un ordinateur de bureau Chrome et un appareil Android lorsque la synchronisation est activée et que l'utilisateur est connecté.
-
-          Si cette règle est définie sur "True", la possibilité d'envoyer du texte entre deux appareils est activée pour les utilisateurs de Chrome.
-
-          Si cette règle est définie sur "False", la possibilité d'envoyer du texte entre deux appareils est désactivée pour les utilisateurs de Chrome.
-
-          Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
-
-          Si cette règle n'est pas configurée, la fonctionnalité de presse-papiers partagé est activée par défaut.
-
-          C'est aux administrateurs de configurer les règles sur toutes les plates-formes qui les intéressent. Il est recommandé de définir cette règle sur une même valeur pour toutes les plates-formes.</translation>
 <translation id="5389708774452952523">Autoriser l'exécution du processus audio avec une priorité supérieure à la normale sous Windows</translation>
 <translation id="5390083518957894426">Permettre la réauthentification en ligne sur l'écran de verrouillage des utilisateurs via SAML</translation>
 <translation id="5391388690191341203">Compte local de l'appareil avec connexion automatique</translation>
@@ -7484,6 +7484,7 @@ Si cette règle est définie sur "3 - <ph name="ASK_IDLE_DETECTION_VALUE_NAME" 
 Si cette règle est activée, la mise en mémoire tampon adaptative est toujours utilisée.
 
 Si cette règle est désactivée ou qu'elle n'est pas configurée, le processus de lancement de fonctionnalités du navigateur détermine si la mise en mémoire tampon adaptative est utilisée.</translation>
+<translation id="579556027056000499">Hachage SHA-256 du contenu affiché à l'URL.</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5800627752428920394">Cette règle détermine si les connexions WebSocket actives sont déconnectées lorsqu'une page est stockée dans le cache back/forward. Auparavant, les connexions WebSocket actives empêchaient une page d'être stockée dans le cache back/forward. Toutefois, <ph name="PRODUCT_NAME" /> se comporte différemment et déconnecte les connexions WebSocket à la place, ce qui permet de mettre la page en cache et de la restaurer dans un état déconnecté.
 
@@ -9548,6 +9549,7 @@ Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DE
 
       Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7032323070729112362">Interdit l'utilisation de l'API Translator</translation>
+<translation id="7032734784894075746">Configurer les compétences dans Chrome</translation>
 <translation id="7032813174556919004">Désactiver DNS-over-HTTPS</translation>
 <translation id="703672323011778742">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Si cette règle est définie sur "1", vous pouvez déterminer si tous les sites Web peuvent ou non exécuter automatiquement le plug-in <ph name="FLASH_PLUGIN_NAME" />. Si cette règle est définie sur "2", ce plug-in est refusé pour tous les sites Web. Vous pouvez autoriser l'exécution du plug-in <ph name="FLASH_PLUGIN_NAME" />, mais pour le lancer, l'utilisateur doit cliquer sur l'espace réservé.
 
@@ -11780,6 +11782,15 @@ Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantit
 <translation id="8471860377920321311">Autoriser les fonctionnalités d'IA générative et améliorer les modèles d'IA</translation>
 <translation id="8473107305327396242">Importer les certificats de serveur TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme.</translation>
 <translation id="8473841363404590708">Migrer les fichiers locaux vers Microsoft OneDrive et masquer les dossiers locaux</translation>
+<translation id="8476434719168701332">Cette règle permet de publier les compétences d'IA générative pour l'utilisateur dans <ph name="PRODUCT_NAME" />.
+
+Si elle est activée, les utilisateurs verront ces compétences configurées par défaut sur la page chrome://skills, en plus de leurs compétences personnelles. Les utilisateurs peuvent consulter, modifier et enregistrer ces compétences pour leur usage personnel.
+
+Chaque compétence de la liste doit être un objet contenant une <ph name="URL_NAME" /> permettant de télécharger le contenu de la compétence, et un <ph name="HASH_NAME" /> (SHA-256) de ce contenu pour vérifier son intégrité avant qu'il ne soit appliqué. Chaque URL de compétence doit être immuable. Pour modifier un fichier de compétence, une nouvelle URL et un nouveau hachage sont nécessaires.
+
+Si vous fournissez plus de 10 compétences, un avertissement s'affiche et seules les 10 premières sont publiées.
+
+Si cette règle n'est pas activée ou que la liste est vide, aucune compétence d'entreprise n'est publiée pour l'utilisateur.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilisera toutes les interfaces disponibles pour rechercher le meilleur chemin.</translation>
 <translation id="8479496880635054740">Désactiver le clavier virtuel d'accessibilité sur l'écran de connexion</translation>

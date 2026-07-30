@@ -275,6 +275,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="117059611145966538">Externe Druckserver</translation>
 <translation id="117080706484659953">Lässt die Erkennung des Anwendungsbereichs von Richtlinien unter <ph name="MAC_OS_NAME" /> zu</translation>
 <translation id="1171106901454883937">Melden der Versionsinformationen auf Geräten aktivieren</translation>
+<translation id="1171286631068003605">Die URL, die auf die Skill-Definition verweist. Muss eindeutig sein.</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> auf allen Webseiten aktivieren</translation>
 <translation id="1176740714945046981">Aktiviert die Downgrade-Funktion für IWAs. Standardmäßig werden nur neuere Versionen von IWAs installiert. Wenn „<ph name="TRUE" />“ festgelegt ist, kannst du auch ältere Versionen installieren. Wenn du ein Downgrade zulassen möchtest, musst du den gewünschten Versionswert über das Feld „pinned_version“ angeben. Wenn „allow_downgrades“ nicht angegeben oder auf „<ph name="FALSE" />“ festgelegt ist, ist ein Downgrade für diese IWA deaktiviert.</translation>
 <translation id="1177624681620856105"> Mit dieser Richtlinie kann festgelegt werden, ob das Kästchen für "Immer öffnen" auf Bestätigungsaufforderungen beim Start externer Protokolle angezeigt werden soll. Hiermit kann der Nutzer angeben, ob ein Link immer mit dem gewählten externen Protokoll geöffnet werden soll.
@@ -437,6 +438,15 @@ Wenn die Richtlinie aktiviert ist, werden Browser- und App-Fenster vom zuletzt v
 Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstellungen zur vollständigen Wiederherstellung festgelegt, was bei der Anmeldung geöffnet wird.</translation>
 <translation id="1327466551276625742">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus aktivieren</translation>
 <translation id="13356285923490863">Richtlinienname</translation>
+<translation id="1336231837510847759">Liste der Einstellungen für <ph name="PRODUCT_NAME" /> Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn eine Netzwerkanfrage über <ph name="PRODUCT_NAME" /> gestellt wird. Nur HTTP-POST-Anfragen werden von dieser Richtlinie ausgewertet.
+
+Das Feld „<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" />“ wird verwendet, um zu bestimmen, welche Anfragen geprüft werden sollen. Die Anfrage und ihr Inhalt erstellen eine Analyseanfrage, die jedoch nicht blockiert wird. Eine Netzwerkanfrage muss nur mit einem Listeneintrag in der Richtlinie übereinstimmen, damit eine Anfrage zur Audit-Analyse erstellt wird.
+
+Die Listenfelder „<ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" />“ werden mit der URL einer Anfrage bzw. der URL des Haupttabs abgeglichen, in dem die Anfrage gestellt wurde. Wenn eines der Felder fehlt, wird es implizit als übereinstimmend betrachtet.
+
+Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />“ wird festgelegt, welche(s) Tag(s) in die Analyseanfrage aufgenommen werden soll(en), wenn das Feld „<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" />“ übereinstimmt.
+
+Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="1338603603553894503">Gibt an, ob der Profil-Picker beim Browser-Start aktiviert, deaktiviert oder erzwungen wird.
 
       Standardmäßig wird der Profil-Picker nicht angezeigt, wenn der Browser im Gast- oder Inkognitomodus gestartet wird, ein Profilverzeichnis und/oder URLs durch die Befehlszeile vorgegeben werden, das Öffnen einer App ausdrücklich angefordert wird, der Browser durch eine native Benachrichtigung gestartet wird, nur ein Profil verfügbar ist oder die Richtlinie „ForceBrowserSignin“ auf „True“ gesetzt ist.
@@ -2340,6 +2350,7 @@ Die Anwendung dieser Richtlinie auf verwalteten Geräten wird durch die Richtlin
 
           Ist die Richtlinie nicht konfiguriert, ist "Textcursor hervorheben" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="2506865562891982662">Zulassen, dass Nutzer im <ph name="PRODUCT_NAME" />-Menü Übertragungsgeräte mit einem Zugriffscode oder einem QR-Code auswählen.</translation>
+<translation id="2508800409212941632">Konfigurationsrichtlinie für den <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Connector</translation>
 <translation id="2509748672176727116">Der Nutzer ist zu Netzwerkpaketaufnahmen berechtigt</translation>
 <translation id="2509919237512982967">Verwende alte Formularsteuerelemente bis M84.</translation>
 <translation id="2512531606818417084">Diese Richtlinie ist nur vorübergehend verfügbar und funktioniert ab M137 nicht mehr.
@@ -6853,17 +6864,6 @@ Ist er auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</t
 <translation id="537786648513450280">Nutzung von Android-Apps aus nicht vertrauenswürdigen Quellen für das Gerät konfigurieren</translation>
 <translation id="5378885577701865339">Die Funktion „Geteilte Zwischenablage“ deaktivieren</translation>
 <translation id="5385337904220716757">Zugriff auf Standortbestimmung des Systems nur für Systemdienste zulassen</translation>
-<translation id="538768040137709073">Hiermit wird die Funktion "Geteilte Zwischenablage" aktiviert. Mit ihr kann Text zwischen Chrome-Computern und einem Android-Gerät geteilt werden, solange die Synchronisierung aktiviert und der Nutzer angemeldet ist.
-
-          Wird diese Richtlinie auf "true" gesetzt, können Chrome-Nutzer Text zwischen Geräten teilen.
-
-          Wird sie auf "false" gesetzt, können Chrome-Nutzer keinen Text zwischen Geräten teilen.
-
-          Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
-
-          Wird sie nicht konfiguriert, ist die Funktion "Geteilte Zwischenablage" standardmäßig aktiviert.
-
-          Es bleibt den Administratoren überlassen, die Richtlinien für alle relevanten Plattformen zu konfigurieren. Es wird empfohlen, für alle Plattformen dieselbe Einstellung zu verwenden.</translation>
 <translation id="5389708774452952523">Ausführen des Audioprozesses unter Windows mit einer Priorität ermöglichen, die über der normalen liegt</translation>
 <translation id="5390083518957894426">Aktiviert für SAML-Nutzer die erneute Online-Authentifizierung auf dem Sperrbildschirm.</translation>
 <translation id="5391388690191341203">Lokales Gerätekonto für die Anmeldung</translation>
@@ -7471,6 +7471,7 @@ Wenn diese Richtlinie auf „3“ (<ph name="ASK_IDLE_DETECTION_VALUE_NAME" />) 
 Wenn die Richtlinie aktiviert ist, wird immer adaptives Zwischenspeichern verwendet.
 
 Ist sie deaktiviert oder nicht konfiguriert, wird über den Funktionseinführungsprozess des Browsers entschieden, ob adaptives Zwischenspeichern verwendet wird.</translation>
+<translation id="579556027056000499">Der SHA-256-Hash des Inhalts unter der URL.</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
 <translation id="5800627752428920394">Mit dieser Richtlinie wird festgelegt, ob aktive WebSocket-Verbindungen getrennt werden, wenn eine Seite im Back-Forward-Cache gespeichert wird. Aktive WebSocket-Verbindungen haben bisher verhindert, dass eine Seite im Back-Forward-Cache gespeichert wird. <ph name="PRODUCT_NAME" /> hat dieses Verhalten jedoch geändert und trennt stattdessen die WebSockets, sodass die Seite im Cache gespeichert und in einem getrennten Zustand wiederhergestellt werden kann.
 
@@ -9533,6 +9534,7 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
 
       Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7032323070729112362">Translator API darf nicht verwendet werden</translation>
+<translation id="7032734784894075746">Skills in Chrome konfigurieren</translation>
 <translation id="7032813174556919004">DoH deaktivieren</translation>
 <translation id="703672323011778742">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn die Richtlinie auf „1“ gesetzt ist, kannst du festlegen, ob das Plug-in <ph name="FLASH_PLUGIN_NAME" /> auf allen Websites automatisch ausgeführt werden soll. Wenn die Richtlinie auf „2“ gesetzt ist, wird dieses Plug-in auf allen Websites blockiert. Mit „Click-to-Play“ wird erlaubt, dass das Plug-in <ph name="FLASH_PLUGIN_NAME" /> ausgeführt wird, der Nutzer muss jedoch den Platzhalter anklicken, um die Ausführung zu starten.
 
@@ -11760,6 +11762,15 @@ Für die Ursprungsabgleichsmuster wird ein ähnliches Format wie für diejenigen
 <translation id="8471860377920321311">Auf generativer KI basierende Funktionen und Verbesserung von KI-Modellen zulassen</translation>
 <translation id="8473107305327396242">Vom Nutzer hinzugefügte TLS-Serverzertifikate aus Plattform-Trust Stores importieren.</translation>
 <translation id="8473841363404590708">Lokale Dateien zu Microsoft OneDrive migrieren und lokale Ordner ausblenden</translation>
+<translation id="8476434719168701332">Wenn die Richtlinie konfiguriert ist, werden die Funktionen der generativen KI für den Nutzer in <ph name="PRODUCT_NAME" /> veröffentlicht.
+
+Wenn diese Richtlinie konfiguriert ist, sehen Nutzer diese konfigurierten Skills standardmäßig zusätzlich zu ihren persönlichen Skills auf der Seite „chrome://skills“. Nutzer können diese Skills für den persönlichen Gebrauch ansehen, ändern und speichern.
+
+Jeder Skill in der Liste muss ein Objekt sein, das eine <ph name="URL_NAME" /> enthält, über die der Inhalt des Skills heruntergeladen werden kann, und einen <ph name="HASH_NAME" /> (SHA-256) dieses Inhalts, um seine Integrität zu überprüfen, bevor er angewendet wird. Jede Skill-URL muss unveränderlich sein. Zum Aktualisieren einer Skill-Datei sind eine neue URL und ein neuer Hash erforderlich.
+
+Wenn mehr als 10 Skills angegeben werden, wird eine Warnung angezeigt und nur die ersten 10 Skills werden veröffentlicht.
+
+Wenn die Richtlinie nicht konfiguriert oder auf eine leere Liste festgelegt ist, werden keine Unternehmens-Skills für den Nutzer veröffentlicht.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC verwendet bei der Suche nach dem besten Pfad alle verfügbaren Schnittstellen.</translation>
 <translation id="8479496880635054740">Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm deaktivieren</translation>

@@ -388,7 +388,6 @@
 <translation id="1275963833368139883">আপনার ব্রাউজিং ইতিহাস সার্চ করার সময়, উত্তর ও সার্চ ফলাফল কোনও পৃষ্ঠার কন্টেন্টের উপর নির্ভর করে। এটি আপনাকে উন্নত ফলাফল দেয়</translation>
 <translation id="1277020343994096713">আপনার বর্তমান পিন থেকে আলাদা একটি নতুন পিন তৈরি করুন</translation>
 <translation id="1277597051786235230">&amp; <ph name="SEARCH_ENGINE" />-এ নতুন ট্যাবে “<ph name="SEARCH_TERMS" />” সার্চ করুন</translation>
-<translation id="127849925363482083">পিন করা ট্যাব বন্ধ করতে <ph name="SHORTCUT_TEXT" /> আবার প্রেস করুন</translation>
 <translation id="1279024913354609713">অনুমতি দেবেন না</translation>
 <translation id="127946606521051357">আশেপাশে থাকা ডিভাইস ডেটা শেয়ার করছে</translation>
 <translation id="1280332775949918163">উইন্ডো স্ন্যাপ করুন</translation>
@@ -617,7 +616,6 @@
 <translation id="1472675084647422956">আরও দেখান</translation>
 <translation id="1473223074251193484">টেথারিং কনফিগারেশন সেট করুন</translation>
 <translation id="1473616112002966036">&amp;Video ফ্রেম</translation>
-<translation id="1476088332184200792">আপনার ডিভাইসে কপি করুন</translation>
 <translation id="1476607407192946488">&amp;ভাষা সেটিংস</translation>
 <translation id="1477654881618305065">আপনার প্রতিষ্ঠান আপনাকে এই কন্টেন্ট শেয়ার করার অনুমতি দেয় না। আপনার সহায়তা প্রয়োজন হলে, অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1478340334823509079">বিবরণ: <ph name="FILE_NAME" /></translation>
@@ -906,7 +904,6 @@
 <translation id="1695510246756136088">ইন্টারনেটে কানেক্ট করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="1696685050160038195">আপনার ডিভাইস সুরক্ষিত রাখতে, শুধুমাত্র বিশ্বস্ত সোর্স ও ডেভেলপারদের থেকে পাওয়া সফ্টওয়্যারই রান ও ইনস্টল করা উচিত।</translation>
-<translation id="1696832149095851409">বেছে নেওয়া টেক্সটের ওপর ফ্লোটিং মেনু</translation>
 <translation id="1697122132646041614">'থাম্বস-ডাউন' আইকন এমন একটি ফর্ম খোলে, যেখানে এইসব ফলাফল কেন আপনার পছন্দ হয়নি সেই সম্পর্কিত বিশদ মতামত জমা দেওয়া যায়।</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
 <translation id="1698796500103229697">&amp;পেমেন্ট পদ্ধতি</translation>
@@ -1527,7 +1524,6 @@
 <translation id="2180082148774168439">আপনার কম্পিউটারের ডেডিকেটেড উইন্ডোতে এই সাইট অ্যাক্সেস করুন</translation>
 <translation id="2180620921879609685">যেকোনও পৃষ্ঠার কন্টেন্ট ব্লক করতে পারে</translation>
 <translation id="2181821976797666341">নীতিসমূহ</translation>
-<translation id="2182058453334755893">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="2182419606502127232">আমার সার্ভার লগ অন্তর্ভুক্ত করুন।</translation>
 <translation id="2184272387334793084">আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="2184515124301515068">সাইটটি কখন সাউন্ড চালাতে পারবে তা Chrome-কে বেছে নিতে দিন (প্রস্তাবিত)</translation>
@@ -2584,7 +2580,6 @@
 <translation id="2984727013951557074">ফাইল এখনও Drive-এ সিঙ্ক করা হচ্ছে।</translation>
 <translation id="2984923316661218534">Google Password Manager-এর মাধ্যমে এই ডিভাইসে আপনার পাসকী পান</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> একটি অ্যাপ আনইনস্টল করেছে}one{<ph name="APP_NAME" /> #টি অ্যাপ আনইনস্টল করেছে}other{<ph name="APP_NAME" /> #টি অ্যাপ আনইনস্টল করেছে}}</translation>
-<translation id="2987620471460279764">অন্য ডিভাইস থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="2988018669686457659">অতিরিক্ত রেন্ডারার</translation>
 <translation id="2988328607561082373">আপনি কোনও পাসওয়ার্ড আবার ব্যবহার করছেন না</translation>
 <translation id="2989123969927553766">মাউস স্ক্রল করার অ্যাক্সিলারেশন</translation>
@@ -5040,6 +5035,7 @@
 <translation id="485480310608090163">আরও সেটিংস এবং অনুমতি</translation>
 <translation id="4857304314344645169">কোনও সমস্যা সম্পর্কে ধাপে ধাপে করা ব্যাখ্যা দেখুন</translation>
 <translation id="4857506880242459832">আগের পৃষ্ঠা সম্পর্কে Google-কে জিজ্ঞাসা করুন: <ph name="PAGE_TITLE" /></translation>
+<translation id="4857677595331912231">আপনাকে আরও প্রাসঙ্গিক উত্তর দিতে, Google-এর সাথে আপনার বর্তমান ট্যাবের কন্টেন্ট ও URL শেয়ার করা হয়। আপনি ব্রাউজ করার সময় ট্যাব যোগ করতে বা সরাতে পারবেন।</translation>
 <translation id="485806788160414322">মিডিয়া চালান অথবা পজ করুন</translation>
 <translation id="4858913220355269194">ফ্রিটজ</translation>
 <translation id="4860012864737017059">সাম্প্রতিক ট্যাব</translation>
@@ -5487,7 +5483,6 @@
 <translation id="5192062846343383368">আপনার তত্ত্বাবধান সেটিংস দেখতে Family Link অ্যাপ খুলুন</translation>
 <translation id="5193602404493965468">* <ph name="FIELD_LIST" /> প্রয়োজন</translation>
 <translation id="5193978546360574373">এটি এই Chromebook-এ Google Drive-এর অ্যাক্সেস সরিয়ে দেবে, যেসব ফাইল অফলাইনে উপলভ্য আছে তার অ্যাক্সেসও এর মধ্যে অন্তর্ভুক্ত আছে</translation>
-<translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="5194256020863090856">এটি শুধুমাত্র ছদ্মবেশী উইন্ডোকেই প্রভাবিত করবে</translation>
 <translation id="5195074424945754995">এই নিয়মগুলি পূরণ করে এমন URLগুলি ব্রাউজার সুইচ ট্রিগার করবে না এবং <ph name="BROWSER_NAME" /> বা <ph name="ALTERNATIVE_BROWSER_NAME" />-এ খোলা হতে পারে।</translation>
 <translation id="5196790039230503600">জেসচার ব্যবহার করুন, তারপর কোন জায়গায় আইটেমটি রাখতে চান, তা দেখাতে নিজের মাথা নাড়ান। এটি রাখতে আবার জেসচারটি ব্যবহার করুন।</translation>
@@ -6766,7 +6761,6 @@
 <translation id="6237474966939441970">স্টাইলাস ব্যবহার করে নোট নেওয়া যাবে এমন অ্যাপ</translation>
 <translation id="6237481151388361546">আপনার ডিভাইসে ইন্টারনেট কানেকশন পরিবর্তন করুন এবং "আবার চেষ্টা করুন" বিকল্পটি বেছে নিন অথবা সীমিত ভিউ এবং এডিটিং বিকল্প ব্যবহার করার জন্য "প্রাথমিক এডিটরে খুলুন" বিকল্পটি বেছে নিন।</translation>
 <translation id="623755660902014047">Reading mode</translation>
-<translation id="6238767809035845642">অন্য ডিভাইস থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="6238982280403036866">জাভাস্ক্রিপ্ট ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6239558157302047471">রিলোড এবং ফ্রেম</translation>
 <translation id="6240637845286751292">ব্যবহারের অনুমতি দেওয়া হয়েছে। <ph name="LINK_BEGIN" />সিস্টেম লোকেশনের অ্যাক্সেস<ph name="LINK_END" /> চালু করুন।</translation>
@@ -8423,7 +8417,6 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}=1{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}one{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}other{ট্যাব বন্ধ করে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="7509539379068593709">অ্যাপ আনইনস্টল করুন</translation>
 <translation id="7513438205469584978">আপনার <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google অ্যাক্টিভিটি<ph name="END_LINK_GOOGLE_ACTIVITY" />র ভিত্তিতে সাজেশন দেখানো হচ্ছে</translation>
-<translation id="7514239104543605883">আপনার ডিভাইসে কপি করুন</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7514417110442087199">অ্যাকশনের জন্য কোনও সুইচ অ্যাসাইন করুন</translation>
 <translation id="7515139121338932179">আপনার উইন্ডো শেয়ার করতে সিস্টেমের উইন্ডো পিকার ব্যবহার করুন</translation>
@@ -8722,7 +8715,6 @@
 <translation id="7754704193130578113">প্রতিটি ফাইল ডাউনলোড করার আগে তা কোথায় সংরক্ষণ করতে হবে জিজ্ঞাসা করুন</translation>
 <translation id="7757592200364144203">ডিভাইসের নাম পরিবর্তন করুন</translation>
 <translation id="7757739382819740102">আশেপাশের পরিচিতি আপনার সাথে শেয়ার করা যেতে পারে। অনুমোদনের প্রয়োজন।</translation>
-<translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">সাইট সার্চ যোগ করুন</translation>
 <translation id="7759443981285558794">ChromeOS থেকে ইমপোর্ট করা সার্টিফিকেট দেখুন</translation>
@@ -9753,7 +9745,6 @@
 <translation id="8552102814346875916">"সব সময় এইসব সাইট অ্যাক্টিভ রাখুন" তালিকায় সেভ করুন</translation>
 <translation id="8552947739661397736">টাস্কের দায়িত্ব নিয়ে নিন, Gemini বর্তমানে কন্ট্রোল করছে</translation>
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>
-<translation id="8554642222921881444">বেছে নেওয়া টেক্সটের ওপর ফ্লোটিং মেনু</translation>
 <translation id="8554899698005018844">কোনও ভাষা নেই</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - বড় করা কন্টেন্ট দেখানো হয়েছে</translation>
 <translation id="8555444629041783356">অটোমেটিক সানসেট শিডিউল</translation>
@@ -10037,7 +10028,6 @@
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> সরানো হয়েছে</translation>
 <translation id="876161309768861172">সাইন-ইন করানো যায়নি, আবার চেষ্টা করুন</translation>
 <translation id="8761945298804995673">এই ব্যবহারকারী আগে থেকেই আছেন</translation>
-<translation id="876287961468788565">কোনও সাইটে টেক্সট বেছে নিলে, Chrome বিভিন্ন অ্যাকশন সহ একটি ফ্লোটিং মেনু দেখাতে পারে।</translation>
 <translation id="8763927697961133303">USB ডিভাইস</translation>
 <translation id="8765940060470412555">রিডিং মোড আনপিন করুন</translation>
 <translation id="8766156860774051068">আপনার কিউরেট করা</translation>

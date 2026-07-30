@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">टच टारगेट (स्क्रीन के वे हिस्से जहां छूने पर कोई कार्रवाई होती है) को सबसे ऊपर दाईं ओर ले जाया गया. यहां टैप करें.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">टेक्स्ट को छोटे-छोटे हिस्सों में शेयर करने की कोशिश करें.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">बाएं से दाएं</translation>
 <translation id="1383876407941801731">खोजें</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">पहले से मौजूद डिसप्ले</translation>
 <translation id="335581015389089642">बोली</translation>
 <translation id="3372635229069101468"><ph name="BEGIN_BOLD" />जानकारी<ph name="END_BOLD" /> पर क्लिक करें</translation>
-<translation id="3389286852084373014">टेक्स्ट बहुत बड़ा है</translation>
 <translation id="3406306243914553062">एचटीएमएल कॉन्टेंट</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 दिन शेष}one{# दिन शेष}other{# दिन शेष}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> फ़ाइल</translation>

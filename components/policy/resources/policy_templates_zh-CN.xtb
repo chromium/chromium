@@ -275,6 +275,7 @@
 <translation id="117059611145966538">外部打印服务器</translation>
 <translation id="117080706484659953">允许在 <ph name="MAC_OS_NAME" /> 上检测政策范围</translation>
 <translation id="1171106901454883937">启用设备版本信息报告功能</translation>
+<translation id="1171286631068003605">指向技能定义的网址。此值必须是唯一的。</translation>
 <translation id="1173493742686115032">允许在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="1176740714945046981">为 IWA 启用降级功能。默认情况下，系统仅会安装较新版本的 IWA。如果设置为 <ph name="TRUE" />，您还可以安装旧版本。如需启用降级功能，必须使用“pinned_version”字段指定所需的版本值。如果“allow_downgrades”未经设置或设为 <ph name="FALSE" />，系统会停用该 IWA 的降级功能。</translation>
 <translation id="1177624681620856105"> 此政策用于控制在出现外部协议启动确认提示时是否显示“始终打开”复选框。
@@ -436,6 +437,15 @@
 如果此政策已停用或未设置，登录时要启动什么将取决于完全恢复设置。</translation>
 <translation id="1327466551276625742">离线时，弹出网络配置提示</translation>
 <translation id="13356285923490863">政策名称</translation>
+<translation id="1336231837510847759">本列表用以指定要应用于 <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> 企业版连接器的 <ph name="PRODUCT_NAME" /> 企业版连接器服务设置，将在 <ph name="PRODUCT_NAME" /> 发出网络请求时触发。此政策仅会评估 HTTP POST 请求。
+
+<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> 字段用于确定哪些请求需要审核。系统会为相应请求及其内容创建分析请求，但不会将其屏蔽。只要网络请求与此政策中的列表条目之一相匹配，系统即会创建审核分析请求。
+
+系统会将 <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> 列表字段分别与请求的网址和发起该请求的主标签页网址进行匹配。如果缺少其中某一字段，系统会默认该字段匹配成功。
+
+若 <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> 字段匹配成功，系统将使用 <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> 字段确定要在分析请求中包含哪些标记。
+
+此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="1338603603553894503">此政策用于指定在浏览器启动时是启用、停用还是强制显示个人资料选择器。
 
       在以下情况下，系统会默认不显示个人资料选择器：浏览器在访客模式或无痕模式下启动；个人资料目录和/或网址由命令行指定；用户已明确请求打开某个应用；用户从本地通知中启动了浏览器；只有 1 份可用的个人资料；ForceBrowserSignin 政策设为 true。
@@ -2329,6 +2339,7 @@ PAC 样式的字符串：
 
           如果未设置此政策，则“插入符号突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="2506865562891982662">允许用户从 <ph name="PRODUCT_NAME" /> 菜单中使用访问代码或二维码选择投放设备。</translation>
+<translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> 企业版连接器的配置政策</translation>
 <translation id="2509748672176727116">用户将能够执行网络数据包捕获流程</translation>
 <translation id="2509919237512982967">在 M84 之前的版本中使用旧版表单控件。</translation>
 <translation id="2512531606818417084">此政策只是临时应对方案，从 M137 开始将不再有效。
@@ -6798,17 +6809,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="537786648513450280">控制设备对来源不受信任的 Android 应用的使用</translation>
 <translation id="5378885577701865339">停用“共享剪贴板”功能</translation>
 <translation id="5385337904220716757">仅允许系统服务访问系统地理定位</translation>
-<translation id="538768040137709073">启用“共享剪贴板”功能，以允许已启用同步的已登录用户在 Chrome 桌面版和 Android 设备之间发送文字。
-
-          如果此政策设为 true，面向 Chrome 用户提供的跨设备发送文字的功能将处于启用状态。
-
-          如果此政策设为 false，面向 Chrome 用户提供的跨设备发送文字的功能将处于停用状态。
-
-          如果您设置了此政策，用户将无法更改或覆盖它。
-
-          如果此政策未设置，系统会默认启用“共享剪贴板”功能。
-
-          管理员需负责在他们关注的所有平台中设置相应政策。建议在所有平台中将此政策设为同一个值。</translation>
 <translation id="5389708774452952523">允许音频进程在 Windows 上以高于普通优先级的优先级运行</translation>
 <translation id="5390083518957894426">启用在锁定屏幕上在线重新验证 SAML 用户的身份</translation>
 <translation id="5391388690191341203">用于自动登录的设备本地账号</translation>
@@ -7412,6 +7412,7 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 如果此政策已启用，系统将始终使用自适应缓冲。
 
 如果此政策已停用或未设置，浏览器功能启动流程将决定是否使用自适应缓冲。</translation>
+<translation id="579556027056000499">网址中的内容的 SHA-256 哈希值。</translation>
 <translation id="5800329278018669527">处于离线状态时不弹出网络配置提示</translation>
 <translation id="5800627752428920394">此政策用于控制当网页进入往返缓存时，是否断开活跃的 WebSocket 连接。以前，活跃的 WebSocket 连接会阻止网页存储在往返缓存中，但 <ph name="PRODUCT_NAME" /> 已更改此行为，改为断开 WebSocket 连接，从而允许缓存网页并在断开连接的状态下恢复网页。
 
@@ -9473,6 +9474,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 
       此政策需要依靠额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
 <translation id="7032323070729112362">禁止使用 Translator API</translation>
+<translation id="7032734784894075746">配置 Chrome 中的技能</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
 <translation id="703672323011778742">此政策已在 M88 中弃用，并且 Chrome 已不再支持 Flash。如果此政策设为 1，系统会允许您设置是否所有网站都能自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件。如果此政策设为 2，系统会禁止所有网站使用此插件。选中“Click to play”选项会允许 <ph name="FLASH_PLUGIN_NAME" /> 插件运行，但用户必须点击该插件才能启动它。
 
@@ -11672,6 +11674,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8471860377920321311">允许使用生成式 AI 功能并改进 AI 模型</translation>
 <translation id="8473107305327396242">从平台受信任证书存储区导入用户添加的 TLS 服务器证书。</translation>
 <translation id="8473841363404590708">将本地文件迁移到 Microsoft OneDrive 并隐藏本地文件夹</translation>
+<translation id="8476434719168701332">设置此政策后，系统会在 <ph name="PRODUCT_NAME" /> 中向用户发布生成式 AI 技能。
+
+若设置此政策，用户在 chrome://skills 页面上不仅会看到其个人技能，在默认情况下还会看到这些已配置的技能。用户可以查看、修改和保存这些技能，以供个人使用。
+
+列表中的每项技能都必须是一个包含“<ph name="URL_NAME" />”和“<ph name="HASH_NAME" />”(SHA-256) 的对象，前者是可下载技能内容的网址，后者用于在应用该技能内容之前验证其完整性。每个技能网址都必须固定不变。更新技能文件需要提供新的网址和哈希值。
+
+如果提供的技能超过 10 项，系统会显示警告，并仅发布前 10 项技能。
+
+若未设置此政策或所设列表为空，系统将不会向用户发布任何企业技能。</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC 会在搜索最佳路径时使用所有可用接口。</translation>
 <translation id="8479496880635054740">为登录界面停用无障碍虚拟键盘</translation>

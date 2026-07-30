@@ -388,7 +388,6 @@
 <translation id="1275963833368139883">عند البحث في سجلّ التصفّح، تستنِد الإجابات ونتائج البحث إلى محتوى الصفحة، ما يساهم في تحسين النتائج</translation>
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن رقم التعريف الشخصي الحالي.</translation>
 <translation id="1277597051786235230">&amp;البحث في <ph name="SEARCH_ENGINE" /> عن "<ph name="SEARCH_TERMS" />" في علامة تبويب جديدة</translation>
-<translation id="127849925363482083">يُرجى الضغط على <ph name="SHORTCUT_TEXT" /> مرة أخرى لإغلاق علامة التبويب المثبَّتة</translation>
 <translation id="1279024913354609713">عدم السماح</translation>
 <translation id="127946606521051357">هناك جهاز قريب يشارك محتوى</translation>
 <translation id="1280332775949918163">محاذاة النافذة</translation>
@@ -617,7 +616,6 @@
 <translation id="1472675084647422956">عرض المزيد</translation>
 <translation id="1473223074251193484">ضبط إعدادات التوصيل</translation>
 <translation id="1473616112002966036">‫&amp;إطار الفيديو</translation>
-<translation id="1476088332184200792">‏نسخ إلى Your Device (جهازك)</translation>
 <translation id="1476607407192946488">إ&amp;عدادات اللغة</translation>
 <translation id="1477654881618305065">لا تسمح مؤسستك بمشاركة هذا المحتوى. إذا كنت بحاجة للمساعدة، يُرجى التواصل مع المشرف.</translation>
 <translation id="1478340334823509079">التفاصيل: <ph name="FILE_NAME" /></translation>
@@ -906,7 +904,6 @@
 <translation id="1695510246756136088">يتعذَّر الاتصال بالإنترنت. يُرجى إعادة المحاولة.</translation>
 <translation id="1696555181932908973">يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="1696685050160038195">يجب عدم تشغيل البرامج أو تثبيتها إلا من مصادر ومطوّرين موثوق بهم للحفاظ على أمان الجهاز.</translation>
-<translation id="1696832149095851409">إظهار قائمة عائمة عند تحديد النص</translation>
 <translation id="1697122132646041614">عند النقر على زر عدم الإعجاب، يتم فتح نموذج لإرسال ملاحظات تفصيلية حول سبب عدم إعجابك بهذه النتائج.</translation>
 <translation id="1697532407822776718">أنت الآن على أتم استعداد.</translation>
 <translation id="1698796500103229697">طرق الدفع</translation>
@@ -1520,7 +1517,6 @@
 <translation id="2180082148774168439">بإمكانك فتح هذا الموقع الإلكتروني في نافذة مخصّصة على جهاز الكمبيوتر</translation>
 <translation id="2180620921879609685">حظر المحتوى على أي صفحة</translation>
 <translation id="2181821976797666341">السياسات</translation>
-<translation id="2182058453334755893">تم النسخ إلى الحافظة.</translation>
 <translation id="2182419606502127232">تضمين سجلات الخادم الخاص بي</translation>
 <translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="2184515124301515068">‏السماح لمتصفِّح Chrome باختيار الوقت الذي يمكن للمواقع الإلكترونية تشغيل الصوت فيه (مُوصى به)</translation>
@@ -2574,7 +2570,6 @@
 <translation id="2984727013951557074">‏لا تزال عملية مزامنة الملف مع Drive جارية.</translation>
 <translation id="2984923316661218534">‏يمكنك الوصول إلى مفاتيح المرور على هذا الجهاز باستخدام "مدير كلمات المرور في Google"</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{ألغَى "<ph name="APP_NAME" />" تثبيت تطبيق واحد}zero{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيق}two{ألغَى "<ph name="APP_NAME" />" تثبيت تطبيقَين}few{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيقات}many{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيقًا}other{ألغَى "<ph name="APP_NAME" />" تثبيت # تطبيق}}</translation>
-<translation id="2987620471460279764">النصوص التي تمت مشاركتها من جهاز آخر</translation>
 <translation id="2988018669686457659">عارِض احتياطي</translation>
 <translation id="2988328607561082373">لم يتم العثور على أي كلمات مرور مستخدَمة لحساب آخر</translation>
 <translation id="2989123969927553766">تسريع التمرير عبر الماوس</translation>
@@ -5028,6 +5023,7 @@
 <translation id="485480310608090163">المزيد من الإعدادات والأذونات</translation>
 <translation id="4857304314344645169">يمكنك الاطّلاع على شرح مفصَّل لأي مشكلة</translation>
 <translation id="4857506880242459832">‏طرح سؤال على Google حول الصفحة السابقة: <ph name="PAGE_TITLE" /></translation>
+<translation id="4857677595331912231">‏تتم مشاركة محتوى علامة التبويب الحالية وعنوان URL الخاص بها مع Google لتقديم ردود أكثر ملاءمة. ويمكنك إضافة علامات تبويب أو إزالتها أثناء التصفّح.</translation>
 <translation id="485806788160414322">تشغيل الوسائط أو إيقافها مؤقتًا</translation>
 <translation id="4858913220355269194">فريتز</translation>
 <translation id="4860012864737017059">علامة تبويب حديثة</translation>
@@ -5475,7 +5471,6 @@
 <translation id="5192062846343383368">‏فتح تطبيق Family Link للاطّلاع على إعدادات الإشراف</translation>
 <translation id="5193602404493965468">* يجب ملء الحقل "<ph name="FIELD_LIST" />"</translation>
 <translation id="5193978546360574373">‏سيؤدي هذا الإجراء إلى إزالة إمكانية الوصول إلى Google Drive على جهاز Chromebook هذا، بما في ذلك إمكانية الوصول إلى أي ملفات تمت إتاحتها بلا اتصال بالإنترنت.</translation>
-<translation id="5193988420012215838">تم النسخ إلى الحافظة</translation>
 <translation id="5194256020863090856">لا يؤثّر هذا الإجراء سوى في نوافذ التصفُّح المتخفي.</translation>
 <translation id="5195074424945754995">‏لن يؤدي فرض فتح عناوين URL المتوافقة مع هذه القواعد إلى تبديل المتصفِّح، ويمكن فتح هذه العناوين في متصفِّح <ph name="BROWSER_NAME" /> أو متصفِّح <ph name="ALTERNATIVE_BROWSER_NAME" /> البديل.</translation>
 <translation id="5196790039230503600">استخدِم الإيماءة، ثم حرِّك رأسك لإظهار المكان الذي تريد إفلات العنصر فيه ثمّ استخدِمها مرة أخرى لإفلاته.</translation>
@@ -6753,7 +6748,6 @@
 <translation id="6237474966939441970">تطبيق تدوين الملاحظات باستخدام قلم الشاشة</translation>
 <translation id="6237481151388361546">اتصِل بشبكة إنترنت أخرى واختَر "إعادة المحاولة" أو "الفتح في المحرِّر الأساسي" لاستخدام خيارات العرض والتعديل المحدودة.</translation>
 <translation id="623755660902014047">وضع القراءة</translation>
-<translation id="6238767809035845642">‏النص الذي تمت مشاركته من Other Device (جهاز آخر)</translation>
 <translation id="6238982280403036866">‏المواقع الإلكترونية التي يُسمح لها باستخدام JavaScript</translation>
 <translation id="6239558157302047471">تحديث الإطار</translation>
 <translation id="6240637845286751292">تم منح إذن الوصول إلى الموقع الجغرافي. فعِّل إذن <ph name="LINK_BEGIN" />الوصول إلى الموقع الجغرافي للنظام<ph name="LINK_END" />.</translation>
@@ -8416,7 +8410,6 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{هل تريد إغلاق علامة التبويب وحذف المجموعة؟}=1{هل تريد إغلاق علامة التبويب وحذف المجموعة؟}two{هل تريد إغلاق علامتَي التبويب وحذف المجموعتين؟}few{هل تريد إغلاق علامات التبويب وحذف المجموعات؟}many{هل تريد إغلاق علامات التبويب وحذف المجموعات؟}other{هل تريد إغلاق علامات التبويب وحذف المجموعات؟}}</translation>
 <translation id="7509539379068593709">إلغاء تثبيت التطبيق</translation>
 <translation id="7513438205469584978">‏تستنِد الاقتراحات إلى <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />نشاطك على Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
-<translation id="7514239104543605883">نسخ إلى جهازك</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7514417110442087199">تخصيص المفتاح</translation>
 <translation id="7515139121338932179">لمشاركة النافذة، استخدِم أداة اختيار النافذة في النظام</translation>
@@ -8715,7 +8708,6 @@
 <translation id="7754704193130578113">السؤال عن مكان حفظ الملفّات قبل تنزيلها</translation>
 <translation id="7757592200364144203">تغيير اسم الجهاز</translation>
 <translation id="7757739382819740102">يمكن لجهات الاتصال القريبة المشاركة معك. وسيكون عليك الموافقة على المشاركة.</translation>
-<translation id="7757787379047923882">تمت مشاركة النص من <ph name="DEVICE_NAME" />.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">إضافة محرّك بحث في المواقع الإلكترونية</translation>
 <translation id="7759443981285558794">‏عرض الشهادات المستورَدة من ChromeOS</translation>
@@ -9747,7 +9739,6 @@
 <translation id="8552102814346875916">الحفظ ضمن قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="8552947739661397736">‏تولّي المهمة، ينفِّذ Gemini المهمة حاليًا</translation>
 <translation id="8553342806078037065">إدارة الأشخاص الآخرين</translation>
-<translation id="8554642222921881444">إظهار قائمة عائمة عند تحديد النص</translation>
 <translation id="8554899698005018844">بدون لغة</translation>
 <translation id="8555069853078399592">‫<ph name="ACTION_TOOLTIP" /> - تم عرض المحتوى الموسّع</translation>
 <translation id="8555444629041783356">الجدول الزمني التلقائي للإيقاف النهائي</translation>
@@ -10031,7 +10022,6 @@
 <translation id="8757368836647541092">تمت إزالة <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="876161309768861172">تعذّر تسجيل دخولك إلى الملف الشخصي. يُرجى إعادة المحاولة.</translation>
 <translation id="8761945298804995673">هذا المستخدم موجود من قبل.</translation>
-<translation id="876287961468788565">‏يمكن أن يعرض Chrome قائمة عائمة تتضمّن إجراءات عند تحديد نص على موقع إلكتروني.</translation>
 <translation id="8763927697961133303">‏جهاز USB</translation>
 <translation id="8765940060470412555">إزالة تثبيت "وضع القراءة"</translation>
 <translation id="8766156860774051068">اختصارات من إعدادك</translation>

@@ -286,6 +286,7 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
 <translation id="117059611145966538">Servidores de impresión externos</translation>
 <translation id="117080706484659953">Permitir la detección del alcance de la política en <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Habilitar los informes de la versión del dispositivo</translation>
+<translation id="1171286631068003605">La URL que dirige a la definición de la habilidad. Debe ser única.</translation>
 <translation id="1173493742686115032">Habilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
 <translation id="1176740714945046981">Habilita la función de cambio a una versión anterior para las IWA. De forma predeterminada, solo se instalan las versiones más recientes de las IWA. Si lo estableces como <ph name="TRUE" />, también puedes instalar versiones anteriores. Para habilitar el cambio a una versión anterior, debes especificar el valor de la versión deseada con el campo “pinned_version”. Si no proporcionas el parámetro “allow_downgrades” o lo estableces como <ph name="FALSE" />, se inhabilita el cambio a una versión anterior para esa IWA.</translation>
 <translation id="1177624681620856105"> Esta política determina si se muestra la casilla de verificación "Abrir siempre" en mensajes de confirmación de lanzamiento en protocolos externos.
@@ -449,6 +450,15 @@ Si habilitas la política, se abrirán automáticamente las ventanas del navegad
 Si la inhabilitas o no la estableces, el restablecimiento completo de la configuración determinará qué se abrirá al acceder.</translation>
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
+<translation id="1336231837510847759">Lista de parámetros de configuración para los servicios de <ph name="PRODUCT_NAME" /> Enterprise Connectors que se aplicarán al Enterprise Connector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se realiza una solicitud de red desde <ph name="PRODUCT_NAME" />. Esta política solo evalúa las solicitudes HTTP POST.
+
+El campo <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> se usa para determinar qué solicitudes se deben auditar. La solicitud, junto con su contenido, creará una solicitud de análisis, pero no se bloqueará. Para que se cree una solicitud de análisis de auditoría, basta que una entrada de la lista de la política coincida con una solicitud de red.
+
+Los campos <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> de la lista se comparan con la URL de una solicitud y la URL de la pestaña principal en la que se originó la solicitud, respectivamente. Si falta uno de los campos, se considerará implícitamente que coincide.
+
+El campo <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> se utiliza para determinar qué etiquetas incluir en la solicitud de análisis si el campo <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> coincide.
+
+Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="1338603603553894503">Especifica si el selector de perfiles está habilitado, inhabilitado o forzado al iniciar el navegador.
 
       De forma predeterminada, no se mostrará el selector de perfiles si se inicia el navegador en modo Incógnito o de invitado, se especifica un directorio de perfiles o URL por línea de comandos, se solicita de forma explícita que se abra una app, se inició el navegador mediante una notificación nativa, hay un solo perfil disponible o se establece la política ForceBrowserSignin como verdadera.
@@ -2435,6 +2445,7 @@ La aplicación de esta política en los dispositivos administrados está influen
 
           Si no la estableces, la función de resaltar el signo de intercalación estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="2506865562891982662">Permitir que los usuarios seleccionen dispositivos de transmisión con un código QR o de acceso desde el menú de <ph name="PRODUCT_NAME" /></translation>
+<translation id="2508800409212941632">Política de configuración para el Enterprise Connector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> de <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">El usuario podrá realizar capturas de paquetes de red</translation>
 <translation id="2509919237512982967">Utilizar los controles de formulario heredados hasta M84.</translation>
 <translation id="2512531606818417084">Esta política es temporal y ya no funcionará a partir de la versión M137.
@@ -7103,17 +7114,6 @@ Si se establece como falsa, no podrán acceder a la función.</translation>
 <translation id="537786648513450280">Controla la forma en que se usan las apps para Android de fuentes no confiables</translation>
 <translation id="5378885577701865339">Inhabilitar la función de portapapeles compartido</translation>
 <translation id="5385337904220716757">Permitir solo el acceso a la ubicación geográfica del sistema a los servicios del sistema</translation>
-<translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite que los usuarios compartan texto entre computadoras de escritorios con Chrome y dispositivos Android cuando está habilitada la sincronización y el usuario accedió a su cuenta.
-
-          Si se establece la política como verdadera, el usuario de Chrome podrá compartir texto entre dispositivos.
-
-          Si se establece como falsa, el usuario de Chrome no podrá utilizar esta función.
-
-          Si la estableces, los usuarios no podrán cambiarla ni anularla.
-
-          Si no la estableces, la función de portapapeles compartido estará habilitada de forma predeterminada.
-
-          Los administradores son los que deben establecer las políticas en todas las plataformas que quieran. Te recomendamos que establezcas un valor para esta política en todas las plataformas.</translation>
 <translation id="5389708774452952523">Permite que se ejecute el proceso de audio con prioridad por encima de la normal en Windows</translation>
 <translation id="5390083518957894426">Permite la reautenticación en línea en la pantalla de bloqueo para los usuarios de SAML</translation>
 <translation id="5391388690191341203">Cuenta local del dispositivo con acceso automático</translation>
@@ -7746,6 +7746,7 @@ Si habilitas la política, siempre se usará la función de almacenamiento en b�
 
 Si inhabilitas la política o no la estableces, el proceso de lanzamiento
 de funciones del navegador decidirá si se usa el almacenamiento en búfer adaptable.</translation>
+<translation id="579556027056000499">El hash SHA-256 del contenido en la URL.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
 <translation id="5800627752428920394">Esta política controla si las conexiones de WebSocket activas se desconectan cuando una página ingresa a la memoria caché atrás/adelante. Las conexiones de WebSocket activas impedían que una página se almacenara en la memoria caché atrás/adelante, pero <ph name="PRODUCT_NAME" /> cambió este comportamiento para desconectar los WebSockets en su lugar, lo que permite que la página se almacene en la memoria caché y se restablezca en un estado desconectado.
 
@@ -8291,7 +8292,7 @@ Si habilitas o no estableces esta política, los usuarios podrán personalizar l
 Si la inhabilitas, la app de Combinaciones de teclas estará en modo de solo lectura, lo que no permitirá la personalización.</translation>
 <translation id="6150320133676152520">Inhabilitar el envío automático de PIN en la pantalla de bloqueo y de acceso</translation>
 <translation id="6152224988699207920">Les permite a los administradores personalizar el aspecto de las marcas de agua aplicadas por las reglas de Prevención de pérdida de datos (DLP). Esto incluye establecer la opacidad de su relleno o contorno, definir el tamaño de la fuente y establecer la zona horaria de la marca de tiempo.
-Si no estableces esta política o algunos valores, Chrome usará el comportamiento predeterminado de la marca de agua.
+Si no estableces esta política o algunos valores, Chrome usará el comportamiento predeterminado para las marcas de agua.
 Los valores predeterminados son los siguientes: opacidad de relleno en 4, opacidad del contorno en 6, tamaño de fuente en 24 y zona horaria de la marca de tiempo establecida en "user_device" (zona horaria local del dispositivo del usuario).
 
 La "Opacidad del relleno" es un porcentaje que va de 0 (completamente transparente) a 100 (completamente opaco).
@@ -9944,6 +9945,7 @@ la optimización de JavaScript para el sitio.</translation>
 
       Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="7032323070729112362">No permitir el uso de la API de Translator</translation>
+<translation id="7032734784894075746">Configurar habilidades en Chrome</translation>
 <translation id="7032813174556919004">Inhabilitar DNS sobre HTTPS</translation>
 <translation id="703672323011778742">Esta política dejó de estar disponible en M88; Chrome ya no admite Flash. Si estableces la política en 1, podrás establecer si todos los sitios web pueden ejecutar automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" />. Si la estableces en 2, se rechazará este complemento para todos los sitios web. La reproducción por clic permite la ejecución del complemento <ph name="FLASH_PLUGIN_NAME" />, pero los usuarios deberán hacer clic en el marcador de posición para iniciar la ejecución.
 
@@ -12276,6 +12278,15 @@ El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="8471860377920321311">Permitir las funciones de IA generativa y mejorar los modelos de IA</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS agregados por el usuario desde almacenes de confianza de la plataforma.</translation>
 <translation id="8473841363404590708">Migrar archivos locales a Microsoft OneDrive y ocultar carpetas locales</translation>
+<translation id="8476434719168701332">Si estableces la política, se publicarán las habilidades de IA generativa para el usuario en <ph name="PRODUCT_NAME" />.
+
+En ese caso, los usuarios las verán configuradas de forma predeterminada en la página chrome://skills, además de sus habilidades personales. Los usuarios pueden ver, modificar y guardar estas habilidades para su uso personal.
+
+Cada habilidad de la lista debe ser un objeto que contenga una <ph name="URL_NAME" /> desde la que se pueda descargar el contenido de la habilidad y un <ph name="HASH_NAME" /> (SHA-256) de ese contenido para verificar su integridad antes de que se aplique. Cada URL de habilidad debe ser inmutable. Para actualizar un archivo de habilidad, se requiere una URL y un hash nuevos.
+
+Si se proporcionan más de 10 habilidades, se mostrará una advertencia y solo se publicarán las primeras 10.
+
+Si no estableces la política o la configuras como una lista vacía, no se publicarán habilidades empresariales para el usuario.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC utilizará todas las interfaces disponibles al momento de buscar la mejor ruta.</translation>
 <translation id="8479496880635054740">Inhabilitar el teclado virtual de accesibilidad en la pantalla de acceso</translation>

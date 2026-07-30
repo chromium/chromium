@@ -388,7 +388,6 @@
 <translation id="1275963833368139883">閲覧履歴を検索すると、ページのコンテンツに基づく回答と検索結果が表示され、探している情報を簡単に見つけられます</translation>
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
 <translation id="1277597051786235230">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
-<translation id="127849925363482083">固定タブを閉じるには、もう一度 <ph name="SHORTCUT_TEXT" /> キーを押してください</translation>
 <translation id="1279024913354609713">許可しない</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
 <translation id="1280332775949918163">ウィンドウをスナップする</translation>
@@ -616,7 +615,6 @@
 <translation id="1472675084647422956">表示項目を増やす</translation>
 <translation id="1473223074251193484">テザリング設定を行う</translation>
 <translation id="1473616112002966036">動画フレーム(&amp;V)</translation>
-<translation id="1476088332184200792">デバイスにコピー</translation>
 <translation id="1476607407192946488">言語設定(&amp;L)</translation>
 <translation id="1477654881618305065">お客様の組織では、このコンテンツの共有は許可されていません。サポートが必要な場合は、管理者にお問い合わせください。</translation>
 <translation id="1478340334823509079">詳細: <ph name="FILE_NAME" /></translation>
@@ -905,7 +903,6 @@
 <translation id="1695510246756136088">インターネットに接続できません。もう一度お試しください。</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
 <translation id="1696685050160038195">デバイスを安全に保つには、信頼できる提供元とデベロッパーのソフトウェアのみを実行し、インストールするようにしてください。</translation>
-<translation id="1696832149095851409">選択したテキストのフローティング メニュー</translation>
 <translation id="1697122132646041614">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
 <translation id="1698796500103229697">お支払い方法(&amp;P)</translation>
@@ -1516,7 +1513,6 @@
 <translation id="2180082148774168439">パソコンの専用ウィンドウでこのサイトにアクセス</translation>
 <translation id="2180620921879609685">任意のページのコンテンツをブロック</translation>
 <translation id="2181821976797666341">ポリシー</translation>
-<translation id="2182058453334755893">クリップボードにコピーされました</translation>
 <translation id="2182419606502127232">サーバーログを含める。</translation>
 <translation id="2184272387334793084">ログインすると、保存済みのパスワードなどをすべてのデバイスで使用できるようになります</translation>
 <translation id="2184515124301515068">サイトで音声が再生される可能性がある場合、Chrome で自動的に許可またはブロックする（推奨）</translation>
@@ -2570,7 +2566,6 @@
 <translation id="2984727013951557074">ファイルはまだドライブに同期中です。</translation>
 <translation id="2984923316661218534">Google パスワード マネージャーを使用して、このデバイスでパスキーを設定できます</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> は 1 個のアプリをアンインストールしました}other{<ph name="APP_NAME" /> は # 個のアプリをアンインストールしました}}</translation>
-<translation id="2987620471460279764">他のデバイスからテキストが共有されました</translation>
 <translation id="2988018669686457659">スペアレンダラ</translation>
 <translation id="2988328607561082373">使い回されているパスワードはありません</translation>
 <translation id="2989123969927553766">マウスのスクロール アクセラレーション</translation>
@@ -5470,7 +5465,6 @@
 <translation id="5192062846343383368">管理設定を確認するにはファミリー リンク アプリを開いてください</translation>
 <translation id="5193602404493965468">* <ph name="FIELD_LIST" /> は必須です</translation>
 <translation id="5193978546360574373">この操作を行うと、この Chromebook で Google ドライブ（オフラインで使用可能になったファイルを含む）にアクセスできなくなります</translation>
-<translation id="5193988420012215838">クリップボードにコピーされました</translation>
 <translation id="5194256020863090856">この操作はシークレット ウィンドウのみに影響します</translation>
 <translation id="5195074424945754995">これらのルールに一致する URL は、ブラウザの切り替えをトリガーせず、<ph name="BROWSER_NAME" /> または <ph name="ALTERNATIVE_BROWSER_NAME" /> のどちらでも開くことができます。</translation>
 <translation id="5196790039230503600">ジェスチャーを行ってから、頭を動かしてアイテムをドロップする場所を示します。ジェスチャーをもう一度行って、アイテムをドロップします。</translation>
@@ -6746,7 +6740,6 @@
 <translation id="6237474966939441970">タッチペンのメモアプリ</translation>
 <translation id="6237481151388361546">インターネット接続を変更して、[再試行] または [基本エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="623755660902014047">リーディング モード</translation>
-<translation id="6238767809035845642">他のデバイスから共有されたテキスト</translation>
 <translation id="6238982280403036866">JavaScript の使用を許可するサイト</translation>
 <translation id="6239558157302047471">フレームを再読み込み(&amp;F)</translation>
 <translation id="6240637845286751292">許可。<ph name="LINK_BEGIN" />システムの位置情報へのアクセス<ph name="LINK_END" />をオンにする。</translation>
@@ -8401,7 +8394,6 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{タブを閉じてグループを削除しますか？}=1{タブを閉じてグループを削除しますか？}other{タブを閉じてグループを削除しますか？}}</translation>
 <translation id="7509539379068593709">アプリをアンインストール</translation>
 <translation id="7513438205469584978"><ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google アクティビティ<ph name="END_LINK_GOOGLE_ACTIVITY" />に基づく提案</translation>
-<translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514417110442087199">割り当てを追加</translation>
 <translation id="7515139121338932179">ウィンドウを共有するには、システムのウィンドウ選択ツールを使用してください</translation>
@@ -8699,7 +8691,6 @@
 <translation id="7754704193130578113">ダウンロード前に各ファイルの保存場所を確認する</translation>
 <translation id="7757592200364144203">デバイス名の変更</translation>
 <translation id="7757739382819740102">近くにいる連絡先のユーザーが共有できます。承認が必要です。</translation>
-<translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7758143121000533418">ファミリー リンク</translation>
 <translation id="7758884017823246335">サイト内検索を追加</translation>
 <translation id="7759443981285558794">ChromeOS からインポートした証明書を表示する</translation>
@@ -9730,7 +9721,6 @@
 <translation id="8552102814346875916">常にアクティブにするサイトのリストに保存</translation>
 <translation id="8552947739661397736">現在 Gemini が行っているタスクを引き継ぎます</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>
-<translation id="8554642222921881444">選択したテキストのフローティング メニュー</translation>
 <translation id="8554899698005018844">言語設定なし</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 開かれたコンテンツが表示されています</translation>
 <translation id="8555444629041783356">日の入り時刻の自動設定</translation>
@@ -10014,7 +10004,6 @@
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> を削除しました</translation>
 <translation id="876161309768861172">ログインできませんでした。もう一度お試しください</translation>
 <translation id="8761945298804995673">このユーザーはすでに存在しています</translation>
-<translation id="876287961468788565">サイトでテキストを選択すると、各種操作を行えるフローティング メニューが表示されます。</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8765940060470412555">リーディング モードの固定を解除</translation>
 <translation id="8766156860774051068">自分で選択</translation>

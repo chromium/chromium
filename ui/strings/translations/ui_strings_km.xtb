@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">បាន​ផ្លាស់ទី​គោលដៅ​ចុចទៅ​ខាងលើ​ផ្នែក​ខាងស្ដាំ។ សូមចុច​ត្រង់នេះ។</translation>
 <translation id="1266864766717917324">មិនអាចចែករំលែក <ph name="CONTENT_TYPE" /> បានទេ</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">សាកល្បង​ចែករំលែកអត្ថបទជាផ្នែកតូចជាងនេះ។</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">ពីឆ្វេងទៅស្តាំ</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">ផ្ទាំងអេក្រង់ដែលភ្ជាប់​មក​ស្រាប់</translation>
 <translation id="335581015389089642">ការនិយាយ</translation>
 <translation id="3372635229069101468">ចុច<ph name="BEGIN_BOLD" />ព័ត៌មានលម្អិត<ph name="END_BOLD" /></translation>
-<translation id="3389286852084373014">អត្ថបទធំពេក</translation>
 <translation id="3406306243914553062">ខ្លឹមសារ HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{នៅសល់ 1 ថ្ងៃទៀត}other{នៅសល់ # ថ្ងៃទៀត}}</translation>
 <translation id="3600969208114796418">ឯកសារ <ph name="SAVEAS_EXTENSION_TYPE" /></translation>

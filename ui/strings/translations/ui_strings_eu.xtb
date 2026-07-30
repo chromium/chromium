@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Ukipen-eremua gora eta eskuinera eraman da. Sakatu hau.</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">Saiatu testua zati txikiagotan partekatzen.</translation>
 <translation id="1293699935367580298">Ihes</translation>
 <translation id="1368832886055348810">Ezkerretik eskuinera</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Pantaila integratua</translation>
 <translation id="335581015389089642">Hizketa</translation>
 <translation id="3372635229069101468">Sakatu <ph name="BEGIN_BOLD" />Xehetasunak<ph name="END_BOLD" />.</translation>
-<translation id="3389286852084373014">Testua luzeegia da</translation>
 <translation id="3406306243914553062">HTML edukia</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 egun gelditzen da}other{# egun gelditzen dira}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> fitxategia</translation>

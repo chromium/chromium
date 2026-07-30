@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Область дотику переміщено у верхній правий кут. Натисніть тут.</translation>
 <translation id="1266864766717917324">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">Спробуйте надіслати його меншими частинами.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">Зліва направо</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Вбудований екран</translation>
 <translation id="335581015389089642">Speech</translation>
 <translation id="3372635229069101468">Натисніть <ph name="BEGIN_BOLD" />Деталі<ph name="END_BOLD" />.</translation>
-<translation id="3389286852084373014">SMS-повідомлення завелике</translation>
 <translation id="3406306243914553062">Контент HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Залишився 1 день}one{Залишився # день}few{Залишилося # дні}many{Залишилося # днів}other{Залишилося # дня}}</translation>
 <translation id="3600969208114796418">Файл <ph name="SAVEAS_EXTENSION_TYPE" /></translation>

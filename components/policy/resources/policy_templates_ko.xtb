@@ -276,6 +276,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 <translation id="117059611145966538">외부 인쇄 서버</translation>
 <translation id="117080706484659953"><ph name="MAC_OS_NAME" />에서 정책 범위 감지 허용</translation>
 <translation id="1171106901454883937">기기 버전 정보 보고 사용 설정</translation>
+<translation id="1171286631068003605">스킬 정의를 가리키는 URL입니다. 고유한 이름이어야 합니다.</translation>
 <translation id="1173493742686115032">모든 웹페이지에서 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> 사용 설정</translation>
 <translation id="1176740714945046981">IWA의 다운그레이드 기능을 사용 설정합니다. 기본적으로 최신 버전의 IWA만 설치됩니다. <ph name="TRUE" />로 설정하면 이전 버전도 설치할 수 있습니다. 다운그레이드를 사용 설정하려면 `pinned_version` 필드를 사용하여 원하는 버전 값을 지정해야 합니다. `allow_downgrades`가 제공되지 않거나 <ph name="FALSE" />로 설정된 경우 해당 IWA에 대해 다운그레이드가 사용 중지됩니다.</translation>
 <translation id="1177624681620856105"> 이 정책은 '항상 열기' 체크박스를 외부 프로토콜 시작 확인 메시지에 표시할지 제어합니다.
@@ -437,6 +438,15 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 정책을 사용 안함으로 설정하거나 설정하지 않은 채로 두면 전체 복원 설정에 따라 로그인 시 실행할 항목이 결정됩니다.</translation>
 <translation id="1327466551276625742">오프라인일 때 네트워크 설정 프롬프트를 사용하도록 설정</translation>
 <translation id="13356285923490863">정책 이름</translation>
+<translation id="1336231837510847759"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise 커넥터에 적용할 <ph name="PRODUCT_NAME" /> Enterprise 커넥터 서비스 설정의 목록으로, <ph name="PRODUCT_NAME" />에서 네트워크 요청이 이루어질 때 실행됩니다. 이 정책은 HTTP POST 요청만 평가합니다.
+
+<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> 필드는 어떤 요청을 감사해야 하는지 결정하는 데 사용됩니다. 요청 및 해당 요청의 콘텐츠가 분석 요청을 생성하지만 차단되지는 않습니다. 감사 분석 요청을 생성하려면 네트워크 요청이 정책의 한 가지 목록 항목에 대해서만 일치해야 합니다.
+
+<ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> 및 <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> 목록 필드는 각각 요청의 URL 및 요청이 시작된 기본 탭 URL과 일치합니다. 필드 중 하나가 누락된 경우 해당 필드는 암시적으로 일치하는 것으로 간주됩니다.
+
+<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> 필드는 <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> 필드가 일치할 경우 분석 요청에 어떤 태그를 포함할지 결정하는 데 사용됩니다.
+
+이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="1338603603553894503">브라우저 시작 시 프로필 선택도구를 사용 설정할지, 사용 중지할지, 강제 실행할지 지정합니다.
 
       게스트 또는 시크릿 모드에서 브라우저를 시작하거나, 프로필 디렉터리 또는 URL이 명령줄에 의해 지정되거나, 앱이 열리도록 명시적으로 요청되었거나, 기본 알림에 의해 브라우저가 실행되었거나, 하나의 프로필만 이용 가능하거나, 정책 ForceBrowserSignin이 True로 설정된 경우 기본적으로 프로필 선택도구가 표시되지 않습니다.
@@ -2369,6 +2379,7 @@ URL과 유사한 지정자:
 
           정책이 설정되지 않은 경우 처음에는 캐럿 강조표시가 사용 중지되어 있으나 사용자가 언제든지 사용하도록 설정할 수 있습니다.</translation>
 <translation id="2506865562891982662">사용자가 <ph name="PRODUCT_NAME" /> 메뉴에서 액세스 코드 또는 QR 코드를 사용하여 Cast 기기를 선택하도록 허용</translation>
+<translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise 커넥터의 구성 정책</translation>
 <translation id="2509748672176727116">사용자가 네트워크 패킷 캡처를 실행할 수 있음</translation>
 <translation id="2509919237512982967">M84까지 기존 양식 컨트롤을 사용합니다.</translation>
 <translation id="2512531606818417084">이 정책은 일시적이며 M137부터는 더 이상 작동하지 않습니다.
@@ -6955,17 +6966,6 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <translation id="537786648513450280">기기에서 신뢰할 수 없는 출처의 Android 앱 사용 제어</translation>
 <translation id="5378885577701865339">공유 클립보드 기능 사용 중지</translation>
 <translation id="5385337904220716757">시스템 서비스에 대한 시스템 위치정보 액세스만 허용</translation>
-<translation id="538768040137709073">동기화가 사용 설정되고 사용자가 로그인되어 있으면 사용자가 Chrome 데스크톱과 Android 기기 간에 텍스트를 전송할 수 있도록 허용하는 공유 클립보드 기능을 사용 설정합니다.
-
-          이 정책이 True로 설정되면 Chrome 사용자의 기기 간 텍스트 전송 기능이 사용됩니다.
-
-          이 정책이 False로 설정되면 Chrome 사용자의 기기 간 텍스트 전송 기능이 사용되지 않습니다.
-
-          이 정책이 설정되면 사용자가 변경하거나 재정의할 수 없습니다.
-
-          이 정책이 설정되지 않으면 공유 클립보드 기능이 기본값으로 사용 설정됩니다.
-
-          관리하는 모든 플랫폼에서 정책을 설정하는 일은 관리자의 재량입니다. 이 정책은 모든 플랫폼에서 하나의 값으로 설정하는 것이 좋습니다.</translation>
 <translation id="5389708774452952523">Windows에서 오디오 프로세스가 일반적인 우선순위 이상으로 실행되도록 허용</translation>
 <translation id="5390083518957894426">SAML 사용자를 위해 잠금 화면에서 온라인 재인증 사용 설정</translation>
 <translation id="5391388690191341203">자동 로그인 기기 로컬 계정</translation>
@@ -7597,6 +7597,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 
 정책을 사용 중지하거나 설정하지 않으면 브라우저 기능 실행 프로세스에서
 적응형 버퍼링 사용 여부를 결정합니다.</translation>
+<translation id="579556027056000499">URL의 콘텐츠에 대한 SHA-256 해시입니다.</translation>
 <translation id="5800329278018669527">오프라인일 때 네트워크 구성 프롬프트 사용 중지</translation>
 <translation id="5800627752428920394">이 정책은 페이지가 뒤로-앞으로 캐시에 저장될 때 활성 WebSocket 연결을 해제할지 제어합니다. 이전에는 활성 WebSocket 연결로 인해 페이지가 뒤로-앞으로 캐시에 저장되지 않았지만 <ph name="PRODUCT_NAME" />에서 이 동작을 변경하여 대신 WebSocket 연결을 해제하므로, 페이지를 캐시하고 연결이 해제된 상태로 복원할 수 있습니다.
 
@@ -9697,6 +9698,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 
       이 정책을 적용하려면 추가 설정이 필요합니다. 다음 페이지에서 자세히 알아보세요. https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting</translation>
 <translation id="7032323070729112362">Translator API 사용 허용하지 않음</translation>
+<translation id="7032734784894075746">Chrome에서 스킬 구성</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS 사용 안함</translation>
 <translation id="703672323011778742">M88에서 이 정책이 지원 중단되며 Chrome에서 플래시는 더 이상 지원되지 않습니다. 정책을 1로 설정하면 모든 웹사이트에서 <ph name="FLASH_PLUGIN_NAME" /> 플러그인의 자동 실행을 허용할지 결정할 수 있습니다. 정책을 2로 설정하면 모든 웹사이트에서 이 플러그인을 거부합니다. 클릭 재생방식을 사용하면 <ph name="FLASH_PLUGIN_NAME" /> 플러그인을 실행할 수 있지만 사용자가 자리표시자를 클릭해야 시작됩니다.
 
@@ -11977,6 +11979,15 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 <translation id="8471860377920321311">생성형 AI 기능 허용 및 AI 모델 개선</translation>
 <translation id="8473107305327396242">플랫폼 트러스트 저장소에서 사용자가 추가한 TLS 서버 인증서를 가져옵니다.</translation>
 <translation id="8473841363404590708">Microsoft OneDrive로 로컬 파일 이전 및 로컬 폴더 숨기기</translation>
+<translation id="8476434719168701332">정책을 설정하면 <ph name="PRODUCT_NAME" />에서 사용자에게 생성형 AI 스킬이 게시됩니다.
+
+설정되어 있는 경우 개인 스킬 외에도 이러한 구성된 스킬이 기본적으로 chrome://skills 페이지에서 사용자에게 표시됩니다. 사용자는 개인적인 용도로 이러한 스킬을 보고, 수정하고, 저장할 수 있습니다.
+
+목록의 각 스킬은 스킬 콘텐츠를 다운로드할 수 있는 곳인 <ph name="URL_NAME" />을(를) 포함하고, 적용 전에 무결성을 확인하기 위한 해당 콘텐츠의 <ph name="HASH_NAME" />(SHA-256)을(를) 포함한 객체여야 합니다. 각 스킬 URL은 변경 불가능해야 합니다. 스킬 파일을 업데이트하려면 새 URL과 해시가 필요합니다.
+
+10개를 초과하는 스킬이 제공되면 경고가 표시되고 처음 10개 스킬만 게시됩니다.
+
+정책을 설정하지 않거나 빈 목록으로 설정하면 사용자에게 엔터프라이즈 스킬이 게시되지 않습니다.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC가 최상의 경로를 검색할 때 가능한 모든 인터페이스를 사용합니다.</translation>
 <translation id="8479496880635054740">로그인 화면에서 접근성 가상 키보드 사용 중지</translation>

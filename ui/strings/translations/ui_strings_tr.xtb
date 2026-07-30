@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Dokunma hedefi sağ üst köşeye taşındı. Buraya dokunun.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşılamadı</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">Metni daha küçük parçalar halinde paylaşmayı deneyin.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">Soldan Sağa</translation>
 <translation id="1383876407941801731">Ara</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Yerleşik ekran</translation>
 <translation id="335581015389089642">Konuşma</translation>
 <translation id="3372635229069101468"><ph name="BEGIN_BOLD" />Ayrıntılar<ph name="END_BOLD" />'ı tıklayın</translation>
-<translation id="3389286852084373014">Metin çok büyük</translation>
 <translation id="3406306243914553062">HTML İçeriği</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 gün kaldı}other{# gün kaldı}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> Dosya</translation>

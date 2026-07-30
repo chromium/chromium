@@ -284,6 +284,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="117059611145966538">Server cetak eksternal</translation>
 <translation id="117080706484659953">Mengizinkan deteksi cakupan kebijakan di <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Aktifkan pelaporan info versi perangkat</translation>
+<translation id="1171286631068003605">URL yang mengarah ke definisi keahlian. Harus unik.</translation>
 <translation id="1173493742686115032">Aktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> di semua halaman web</translation>
 <translation id="1176740714945046981">Mengaktifkan fitur downgrade untuk IWA. Secara default, hanya IWA versi terbaru yang diinstal. Jika disetel ke <ph name="TRUE" />, Anda juga dapat menginstal versi yang lebih lama. Untuk mengaktifkan downgrade, nilai versi yang diinginkan harus ditentukan dengan menggunakan kolom `pinned_version`. Jika `allow_downgrades` tidak disediakan atau disetel ke <ph name="FALSE" />, downgrade akan dinonaktifkan untuk IWA tersebut.</translation>
 <translation id="1177624681620856105"> Kebijakan ini mengontrol apakah kotak centang "Selalu buka" ditampilkan atau tidak pada perintah konfirmasi peluncuran protokol eksternal.
@@ -447,6 +448,15 @@ Jika kebijakan disetel ke Aktif, jendela aplikasi dan browser dari perangkat <ph
 Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh akan menentukan jendela aplikasi dan browser mana yang diluncurkan saat login.</translation>
 <translation id="1327466551276625742">Aktifkan permintaan konfigurasi jaringan saat offline</translation>
 <translation id="13356285923490863">Nama Kebijakan</translation>
+<translation id="1336231837510847759">Daftar setelan layanan <ph name="PRODUCT_NAME" /> Enterprise Connectors yang akan diterapkan ke <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat permintaan jaringan dibuat dari <ph name="PRODUCT_NAME" />. Hanya permintaan HTTP POST yang dievaluasi oleh kebijakan ini.
+
+Kolom <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> digunakan untuk menentukan permintaan yang harus diaudit. Permintaan dan kontennya akan membuat permintaan analisis, tetapi tidak akan diblokir. Hanya satu entri daftar dalam kebijakan yang perlu dicocokkan oleh permintaan jaringan agar permintaan analisis audit dapat dibuat.
+
+Kolom daftar <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> dicocokkan dengan URL permintaan dan URL tab utama tempat permintaan berasal. Jika salah satu kolom tidak ada, kolom tersebut akan secara implisit dianggap cocok.
+
+Kolom <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> digunakan untuk menentukan tag yang akan disertakan dalam permintaan analisis jika kolom <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> cocok.
+
+Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="1338603603553894503">Menentukan apakah pemilih profil akan diaktifkan, dinonaktifkan, atau dipaksa saat browser dimulai.
 
       Secara default, pemilih profil tidak akan ditampilkan jika browser dimulai dalam mode tamu atau Samaran, direktori dan/atau URL profil ditentukan oleh command line, aplikasi secara eksplisit diminta terbuka, browser diluncurkan oleh notifikasi native, hanya tersedia satu profil, atau kebijakan ForceBrowserSignin disetel ke benar (true).
@@ -2439,6 +2449,7 @@ Penerapan kebijakan ini pada perangkat terkelola dipengaruhi oleh kebijakan ting
 
           Jika kebijakan ini tidak ditetapkan, sorotan tanda sisipan mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="2506865562891982662">Mengizinkan pengguna memilih perangkat transmisi dengan akses kode atau kode QR dari dalam menu <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2508800409212941632">Kebijakan konfigurasi untuk Enterprise Connector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">Pengguna akan dapat melakukan rekaman paket jaringan</translation>
 <translation id="2509919237512982967">Menggunakan Kontrol Formulir Lama hingga M84.</translation>
 <translation id="2512531606818417084">Kebijakan ini bersifat sementara dan tidak akan berfungsi lagi mulai M137.
@@ -7114,17 +7125,6 @@ Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</transl
 <translation id="537786648513450280">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk perangkat</translation>
 <translation id="5378885577701865339">Nonaktifkan fitur papan klip bersama</translation>
 <translation id="5385337904220716757">Hanya izinkan akses geolokasi sistem ke layanan sistem</translation>
-<translation id="538768040137709073">Mengaktifkan fitur Papan Klip Bersama yang memungkinkan pengguna mengirim pesan teks antara Desktop Chrome dan perangkat Android saat Sinkronisasi diaktifkan dan pengguna Login.
-
-          Jika kebijakan ini ditetapkan ke true, kemampuan mengirim pesan teks antarperangkat bagi pengguna Chrome akan diaktifkan.
-
-          Jika kebijakan ini ditetapkan ke false, kemampuan mengirim pesan teks antarperangkat bagi pengguna Chrome akan dinonaktifkan.
-
-          Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
-
-          Jika kebijakan ini tidak ditetapkan, fitur papan klip bersama akan diaktifkan secara default.
-
-          Penetapan kebijakan di semua platform yang diinginkan bergantung pada admin. Sebaiknya tetapkan kebijakan ini ke satu nilai di semua platform.</translation>
 <translation id="5389708774452952523">Mengizinkan proses audio berjalan dengan prioritas di atas normal di Windows</translation>
 <translation id="5390083518957894426">Mengaktifkan autentikasi ulang online di layar kunci untuk pengguna SAML</translation>
 <translation id="5391388690191341203">Akun lokal perangkat untuk login otomatis</translation>
@@ -7757,6 +7757,7 @@ Jika kebijakan ini disetel ke Aktif, buffering adaptif akan selalu digunakan.
 
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, browser
 akan menggunakan proses peluncuran fitur untuk menentukan apakah buffering adaptif akan digunakan.</translation>
+<translation id="579556027056000499">Hash SHA-256 konten di URL.</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5800627752428920394">Kebijakan ini mengatur apakah koneksi WebSocket yang aktif akan diputus saat halaman masuk ke back-forward cache. Sebelumnya, koneksi WebSocket yang aktif mencegah halaman disimpan dalam back-forward cache, tetapi <ph name="PRODUCT_NAME" /> kini mengubah perilaku ini dengan memutuskan koneksi WebSocket, sehingga memungkinkan halaman untuk tetap di-cache dan dipulihkan dalam kondisi terputus.
 
@@ -9954,6 +9955,7 @@ pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 
       Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="7032323070729112362">Jangan izinkan penggunaan Translator API</translation>
+<translation id="7032734784894075746">Konfigurasi Keahlian di Chrome</translation>
 <translation id="7032813174556919004">Nonaktifkan DNS-over-HTTPS</translation>
 <translation id="703672323011778742">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel ke 1, Anda dapat menyetel apakah semua situs dapat otomatis menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />. Jika kebijakan disetel ke 2, plugin ini akan ditolak untuk semua situs. Fungsi klik untuk putar akan membuat plugin <ph name="FLASH_PLUGIN_NAME" /> berjalan, tetapi pengguna harus mengklik placeholder untuk memulainya.
 
@@ -12272,6 +12274,15 @@ Pola yang cocok dengan origin akan menggunakan format serupa dengan kebijakan '<
 <translation id="8471860377920321311">Izinkan fitur GenAI dan tingkatkan kualitas model AI</translation>
 <translation id="8473107305327396242">Impor sertifikat server TLS yang ditambahkan pengguna dari trust store platform.</translation>
 <translation id="8473841363404590708">Migrasikan file lokal ke Microsoft OneDrive dan sembunyikan folder lokal</translation>
+<translation id="8476434719168701332">Jika kebijakan ini disetel ke Aktif, keahlian AI Generatif akan dipublikasikan kepada pengguna di <ph name="PRODUCT_NAME" />.
+
+Jika kebijakan ini disetel, pengguna akan melihat keahlian yang dikonfigurasi ini secara default di halaman chrome://skills, selain keahlian pribadi mereka. Pengguna dapat melihat, mengubah, dan menyimpan keahlian ini untuk penggunaan pribadi.
+
+Setiap keahlian dalam daftar harus berupa objek yang berisi <ph name="URL_NAME" /> tempat konten keahlian dapat didownload, dan <ph name="HASH_NAME" /> (SHA-256) konten tersebut untuk memverifikasi integritasnya sebelum diterapkan. Setiap URL skill harus tidak dapat diubah. Untuk memperbarui file skill, Anda memerlukan URL dan hash baru.
+
+Jika lebih dari 10 keahlian disediakan, peringatan akan ditampilkan dan hanya 10 keahlian pertama yang akan dipublikasikan.
+
+Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, tidak ada keahlian perusahaan yang akan dipublikasikan kepada pengguna.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC akan menggunakan antarmuka yang tersedia saat menelusuri jalur terbaik.</translation>
 <translation id="8479496880635054740">Nonaktifkan keyboard virtual aksesibilitas di layar login</translation>

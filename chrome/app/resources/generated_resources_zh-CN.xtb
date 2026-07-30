@@ -388,7 +388,6 @@
 <translation id="1275963833368139883">当您搜索浏览记录时，系统会根据网页内容提供回答和搜索结果。这有助于您获得更相关的搜索结果</translation>
 <translation id="1277020343994096713">请创建一个与您的当前 PIN 码不同的新 PIN 码</translation>
 <translation id="1277597051786235230">在新标签页中从 <ph name="SEARCH_ENGINE" /> 上搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
-<translation id="127849925363482083">再次按 <ph name="SHORTCUT_TEXT" /> 即可关闭固定标签页</translation>
 <translation id="1279024913354609713">不允许</translation>
 <translation id="127946606521051357">附近的设备正在分享内容</translation>
 <translation id="1280332775949918163">移动窗口</translation>
@@ -616,7 +615,6 @@
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473223074251193484">设置网络共享配置</translation>
 <translation id="1473616112002966036">视频帧(&amp;V)</translation>
-<translation id="1476088332184200792">复制到您的设备</translation>
 <translation id="1476607407192946488">语言设置(&amp;L)</translation>
 <translation id="1477654881618305065">贵组织不允许您分享此内容。如果需要帮助，请与您的管理员联系。</translation>
 <translation id="1478340334823509079">详细信息：<ph name="FILE_NAME" /></translation>
@@ -905,7 +903,6 @@
 <translation id="1695510246756136088">无法连接到互联网。请重试。</translation>
 <translation id="1696555181932908973">您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="1696685050160038195">为了确保设备的安全，您应仅运行和安装来自可信来源和开发者的软件。</translation>
-<translation id="1696832149095851409">选中文本时的悬浮菜单</translation>
 <translation id="1697122132646041614">选择“不喜欢”会打开一个表单，您可以通过该表单提供详细的反馈，说明您不喜欢这些搜索结果的原因。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
 <translation id="1698796500103229697">付款方式(&amp;P)</translation>
@@ -1517,7 +1514,6 @@
 <translation id="2180082148774168439">在计算机上的专用窗口中访问此网站</translation>
 <translation id="2180620921879609685">屏蔽所有页面上的内容</translation>
 <translation id="2181821976797666341">政策</translation>
-<translation id="2182058453334755893">已复制到您的剪贴板</translation>
 <translation id="2182419606502127232">包含我的服务器日志。</translation>
 <translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
@@ -2571,7 +2567,6 @@
 <translation id="2984727013951557074">文件仍在同步到云端硬盘中。</translation>
 <translation id="2984923316661218534">在此设备上开始使用您存储在 Google 密码管理工具中的通行密钥</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{“<ph name="APP_NAME" />”卸载了 1 个应用}other{“<ph name="APP_NAME" />”卸载了 # 个应用}}</translation>
-<translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2988018669686457659">备用渲染程序</translation>
 <translation id="2988328607561082373">您未重复使用任何密码</translation>
 <translation id="2989123969927553766">鼠标滚屏加速</translation>
@@ -5023,6 +5018,7 @@
 <translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4857304314344645169">查看任何题目的分步说明</translation>
 <translation id="4857506880242459832">向 Google 询问与上一个页面有关的问题：<ph name="PAGE_TITLE" /></translation>
+<translation id="4857677595331912231">系统会与 Google 分享当前标签页的内容和网址，以便为您提供更贴合情景的回答。您可以在浏览过程中随时添加或移除标签页。</translation>
 <translation id="485806788160414322">播放或暂停媒体</translation>
 <translation id="4858913220355269194">足球</translation>
 <translation id="4860012864737017059">“近期”标签页</translation>
@@ -5470,7 +5466,6 @@
 <translation id="5192062846343383368">打开 Family Link 应用，查看您的监管设置</translation>
 <translation id="5193602404493965468">*“<ph name="FIELD_LIST" />”是必填项</translation>
 <translation id="5193978546360574373">此操作会撤消对这部 Chromebook 上的 Google 云端硬盘（包括所有已可供离线访问的文件）的访问权限</translation>
-<translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5194256020863090856">此操作只会影响无痕式窗口</translation>
 <translation id="5195074424945754995">与这些规则匹配的网址不会触发浏览器切换，而是在<ph name="BROWSER_NAME" />或<ph name="ALTERNATIVE_BROWSER_NAME" />中都能打开。</translation>
 <translation id="5196790039230503600">使用手势，然后移动头部，以显示您想要在何处放置该项目。再次使用手势即可放下。</translation>
@@ -6744,7 +6739,6 @@
 <translation id="6237474966939441970">触控笔记事应用</translation>
 <translation id="6237481151388361546">请更改互联网连接并选择“重试”，或者选择“在基本编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="623755660902014047">朗读模式</translation>
-<translation id="6238767809035845642">从其他设备分享的文字</translation>
 <translation id="6238982280403036866">允许使用 JavaScript</translation>
 <translation id="6239558157302047471">重新加载框架(&amp;F)</translation>
 <translation id="6240637845286751292">已允许。请开启<ph name="LINK_BEGIN" />系统位置信息使用权<ph name="LINK_END" />。</translation>
@@ -8399,7 +8393,6 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{要关闭该标签页并删除该分组吗？}=1{要关闭这些标签页并删除该分组吗？}other{要关闭这些标签页并删除这些分组吗？}}</translation>
 <translation id="7509539379068593709">卸载应用</translation>
 <translation id="7513438205469584978">根据您的 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活动记录<ph name="END_LINK_GOOGLE_ACTIVITY" />为您推荐</translation>
-<translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>
 <translation id="7515139121338932179">若要共享窗口，请使用系统的窗口选择器</translation>
@@ -8698,7 +8691,6 @@
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
 <translation id="7757592200364144203">更改设备名称</translation>
 <translation id="7757739382819740102">附近的联系人可与您分享内容。必须经过批准。</translation>
-<translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">添加网站搜索引擎</translation>
 <translation id="7759443981285558794">查看从 ChromeOS 导入的证书</translation>
@@ -9729,7 +9721,6 @@
 <translation id="8552102814346875916">保存到“始终让这些网站保持活动状态”列表</translation>
 <translation id="8552947739661397736">接管任务，目前该任务由 Gemini 掌管</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
-<translation id="8554642222921881444">选中文本时的悬浮菜单</translation>
 <translation id="8554899698005018844">无语言</translation>
 <translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 已显示展开的内容</translation>
 <translation id="8555444629041783356">自动更新日落时间表</translation>
@@ -10013,7 +10004,6 @@
 <translation id="8757368836647541092">已移除<ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="876161309768861172">无法登录，请重试</translation>
 <translation id="8761945298804995673">该用户已存在</translation>
-<translation id="876287961468788565">当您在网站上选中文本时，Chrome 可显示一个包含操作选项的悬浮菜单。</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8765940060470412555">取消固定阅读模式</translation>
 <translation id="8766156860774051068">由您挑选</translation>

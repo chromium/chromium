@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Raakteiken is regs bo geskuif. Tik hier.</translation>
 <translation id="1266864766717917324">Kon nie <ph name="CONTENT_TYPE" /> deel nie.</translation>
 <translation id="1269641567813814718">Windows</translation>
-<translation id="1291104554099683393">Probeer die teks in kleiner stukkies deel.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">Links na regs</translation>
 <translation id="1383876407941801731">Soek</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Ingeboude skerm</translation>
 <translation id="335581015389089642">Spraak</translation>
 <translation id="3372635229069101468">Klik <ph name="BEGIN_BOLD" />Besonderhede<ph name="END_BOLD" /></translation>
-<translation id="3389286852084373014">Teks is te groot</translation>
 <translation id="3406306243914553062">HTML-inhoud</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 dag oor}other{# dae oor}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" />-lêer</translation>

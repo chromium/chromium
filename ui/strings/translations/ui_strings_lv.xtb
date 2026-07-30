@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Skāriena mērķis ir pārvietots uz augšējo labo stūri. Pieskarieties šeit.</translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Windows</translation>
-<translation id="1291104554099683393">Kopīgojiet mazākus teksta fragmentus.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">No kreisās uz labo pusi</translation>
 <translation id="1383876407941801731">Meklēt</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Iebūvēts displejs</translation>
 <translation id="335581015389089642">Runa</translation>
 <translation id="3372635229069101468">Noklikšķiniet uz pogas <ph name="BEGIN_BOLD" />Dati<ph name="END_BOLD" />.</translation>
-<translation id="3389286852084373014">Teksts ir pārāk liels</translation>
 <translation id="3406306243914553062">HTML saturs</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Atlikusi 1 diena}zero{Atlikušas # dienas}one{Atlikusi # diena}other{Atlikušas # dienas}}</translation>
 <translation id="3600969208114796418">Fails “<ph name="SAVEAS_EXTENSION_TYPE" />”</translation>

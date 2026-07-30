@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Miesto dotyku bolo presunuté vpravo hore. Klepnite tu.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> sa nepodarilo zdieľať</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">Skúste text zdieľať po menších častiach.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">Zľava doprava</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Vstavaná obra\u00Azovka</translation>
 <translation id="335581015389089642">Reč</translation>
 <translation id="3372635229069101468">Kliknite na <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" />.</translation>
-<translation id="3389286852084373014">Text je príliš veľký</translation>
 <translation id="3406306243914553062">Obsah HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Zostáva 1 deň}few{Zostávajú # dni}many{Zostáva # dňa}other{Zostáva # dní}}</translation>
 <translation id="3600969208114796418">Súbor <ph name="SAVEAS_EXTENSION_TYPE" /></translation>

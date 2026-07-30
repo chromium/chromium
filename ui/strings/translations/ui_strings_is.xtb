@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Snertimið fært efst til hægri. Ýttu hér.</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">Prófaðu að deila textanum í smærri hluta.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">Frá vinstri til hægri</translation>
 <translation id="1383876407941801731">Leita</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Innbyggður skjár</translation>
 <translation id="335581015389089642">Tal</translation>
 <translation id="3372635229069101468">Smelltu á <ph name="BEGIN_BOLD" />Upplýsingar<ph name="END_BOLD" /></translation>
-<translation id="3389286852084373014">Textinn er of stór</translation>
 <translation id="3406306243914553062">HTML-efni</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 dagur eftir}one{# dagur eftir}other{# dagar eftir}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" />-skrá</translation>

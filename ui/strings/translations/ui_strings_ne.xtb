@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">टच गरिने स्थान सारेर सिरानको दायाँतिर लगिएको छ। यहाँ ट्याप गर्नुहोस्।</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1291104554099683393">पाठलाई विभाजन गरी साना खण्ड बनाएर आदान प्रदान गरी हेर्नुहोस्।</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">बायाँ देखि दायाँ सम्म</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">अन्तर्निर्मित डिस्प्ले</translation>
 <translation id="335581015389089642">बोली</translation>
 <translation id="3372635229069101468"><ph name="BEGIN_BOLD" />विवरणहरू<ph name="END_BOLD" />मा क्लिक गर्नुहोस्</translation>
-<translation id="3389286852084373014">पाठ ज्यादै ठुलो छ</translation>
 <translation id="3406306243914553062">HTML सामग्री</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{ १ दिन बाँकी}other{ # दिन बाँकी}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> फाइल</translation>

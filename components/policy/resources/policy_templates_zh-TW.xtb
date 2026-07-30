@@ -278,6 +278,7 @@
 <translation id="117059611145966538">外部印表機伺服器</translation>
 <translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
 <translation id="1171106901454883937">啟用裝置版本資訊回報功能</translation>
+<translation id="1171286631068003605">指向技能定義的網址。項目名稱不得重複。</translation>
 <translation id="1173493742686115032">在所有網頁上啟用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="1176740714945046981">啟用隔離網頁應用程式 (IWA) 降級功能。根據預設，系統只會安裝較新版本的 IWA。如果設為 <ph name="TRUE" />，則使用者也能安裝較舊版本的 IWA。如要啟用降級功能，必須使用「pinned_version」欄位指定所需的版本值。如果未提供「allow_downgrades」或已設為 <ph name="FALSE" />，則系統會停用該 IWA 的降級功能。</translation>
 <translation id="1177624681620856105"> 這項政策可控管系統是否要在外部通訊協定的啟動確認提示中顯示「一律開啟」核取方塊。
@@ -430,6 +431,15 @@
 如果將這項政策設為停用或不設定，登入時啟動的項目便取決於完整還原設定。</translation>
 <translation id="1327466551276625742">離線時啟用網路設定提示</translation>
 <translation id="13356285923490863">政策名稱</translation>
+<translation id="1336231837510847759">這是 <ph name="PRODUCT_NAME" /> Enterprise 連接器服務設定清單，會套用到 <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise 連接器；透過 <ph name="PRODUCT_NAME" /> 發出網路要求時，就會觸發此連接器。這項政策只會評估 HTTP POST 要求。
+
+「<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" />」欄位用於判斷要稽核哪些要求。系統會根據要求及其內容建立分析要求，但不會封鎖要求。只要網路要求符合政策中的任一清單項目，系統就會建立稽核分析要求。
+
+系統會將 <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> 清單欄位，分別與要求網址和發出要求的主要分頁網址進行比對。如果缺少其中一個欄位，系統會預設視為相符。
+
+如果「<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" />」欄位符合條件，系統會使用「<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />」欄位判斷要在分析要求中加入哪些標記。
+
+這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="1338603603553894503">指定在瀏覽器啟動時要啟用、停用或強制顯示設定檔選擇畫面。
 
       根據預設，瀏覽器在以下情況不會顯示設定檔選擇畫面：瀏覽器於啟動時採用訪客或無痕模式、已透過指令列指定設定檔目錄和/或網址、使用者明確要求開啟某個應用程式、瀏覽器由原生通知啟動、目前只有一個設定檔，或是 ForceBrowserSignin 的設定為 True。
@@ -2280,6 +2290,7 @@ PAC 樣式的字串：
 
           如果未設定這項政策，系統預設會停用插入點醒目顯示功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="2506865562891982662">允許使用者透過 <ph name="PRODUCT_NAME" /> 選單中的存取碼或 QR 圖碼選取投放裝置。</translation>
+<translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise 連接器的設定政策</translation>
 <translation id="2509748672176727116">使用者將可以執行網路封包擷取作業</translation>
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
 <translation id="2512531606818417084">這項政策只是臨時解決方案，並將於 M137 起將停用。
@@ -6699,17 +6710,6 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 <translation id="537786648513450280">控管裝置是否可使用來源不受信任的 Android 應用程式</translation>
 <translation id="5378885577701865339">停用剪貼簿共用功能</translation>
 <translation id="5385337904220716757">僅允許系統服務存取系統地理位置</translation>
-<translation id="538768040137709073">啟用剪貼簿共用功能，讓使用者處於登入狀態且啟用同步功能時，在 Chrome 桌面和 Android 裝置之間傳送文字。
-
-          如果將這項政策設為 True，系統會啟用 Chrome 使用者跨裝置傳送文字的功能。
-
-          如果將這項政策設為 False，系統會停用 Chrome 使用者跨裝置傳送文字的功能。
-
-          設好這項政策後，使用者即無法變更或覆寫設定。
-
-          如果不設定這項政策，系統在預設狀態下會啟用剪貼簿共用功能。
-
-          管理員可以自行選擇在任何平台上設定政策。建議作法是在所有平台上將這項政策設為相同的值。</translation>
 <translation id="5389708774452952523">允許音訊程序在 Windows 系統上以高於一般優先順序的次序執行</translation>
 <translation id="5390083518957894426">在螢幕鎖定畫面上啟用 SAML 使用者的線上重新驗證功能</translation>
 <translation id="5391388690191341203">用於自動登入的裝置本機帳戶</translation>
@@ -7300,6 +7300,7 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 如果將這項政策設為啟用，系統一律會使用自動調節緩衝功能。
 
 如果設為停用或不設定，系統將根據瀏覽器功能推出程序，決定是否要使用自動調節緩衝功能。</translation>
+<translation id="579556027056000499">網址內容的 SHA-256 雜湊。</translation>
 <translation id="5800329278018669527">停用離線時的網路設定提示</translation>
 <translation id="5800627752428920394">這項政策控管網頁進入往返快取時，是否要中斷運作中的 WebSocket 連線。在以往，運作中的 WebSocket 連線會導致網頁無法存入往返快取。不過，<ph name="PRODUCT_NAME" /> 調整了這項機制，改為直接中斷 WebSocket 連線，讓網頁能順利快取，並在使用者回到該頁時維持斷線狀態。
 
@@ -9316,6 +9317,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
       這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="7032323070729112362">禁止使用 Translator API</translation>
+<translation id="7032734784894075746">設定 Chrome 中的「技能」</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
 <translation id="703672323011778742">這項政策已在 M88 版遭到淘汰，Chrome 已不再支援 Flash。如果將這項政策設為 1，你將可設定是否允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式。如果將這項政策設為 2，所有網站都無法自動執行這個外掛程式。啟用「隨點即播」功能時，使用者必須手動點選預留位置，<ph name="FLASH_PLUGIN_NAME" /> 外掛程式才會開始執行。
 
@@ -11481,6 +11483,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8471860377920321311">允許使用生成式 AI 功能並改善 AI 模型</translation>
 <translation id="8473107305327396242">從平台信任存放區匯入使用者新增的 TLS 伺服器憑證。</translation>
 <translation id="8473841363404590708">將本機檔案遷移至 Microsoft OneDrive 並隱藏本機資料夾</translation>
+<translation id="8476434719168701332">設定這項政策後，系統會將生成式 AI 技能發布給 <ph name="PRODUCT_NAME" /> 中的使用者。
+
+根據預設，設定後使用者會在 chrome://skills 頁面看到這些已設定的技能和個人技能。使用者可以查看、修改及儲存這些技能，供個人使用。
+
+清單中的每項技能都必須是物件，其中包含可下載技能內容的 <ph name="URL_NAME" />，以及該內容的 <ph name="HASH_NAME" /> (SHA-256)，以便在套用前驗證完整性。每個技能網址都不得變更。如要更新技能檔案，必須提供新的網址和雜湊。
+
+如果提供的技能超過 10 項，系統會顯示警告，且只會發布前 10 項技能。
+
+如果不設定這項政策或設為空白清單，系統就不會向使用者發布任何企業技能。</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC 會使用所有可用介面來搜尋最佳路徑。</translation>
 <translation id="8479496880635054740">停用登入畫面上的無障礙虛擬鍵盤</translation>

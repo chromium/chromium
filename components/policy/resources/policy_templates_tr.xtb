@@ -284,6 +284,7 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="117059611145966538">Harici yazdırma sunucuları</translation>
 <translation id="117080706484659953"><ph name="MAC_OS_NAME" /> işletim sisteminde politika kapsamını algılamaya izin ver</translation>
 <translation id="1171106901454883937">Cihaz sürüm bilgisi raporlamasını etkinleştir</translation>
+<translation id="1171286631068003605">Beceri tanımını gösteren URL. Benzersiz olmalıdır.</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> öğesini tüm web sayfalarında etkinleştir</translation>
 <translation id="1176740714945046981">Yalıtılmış web uygulamaları (IWA'lar) için eski sürüme geçirme özelliğini etkinleştirir. Varsayılan olarak yalnızca IWA'ların yeni sürümleri yüklenir. <ph name="TRUE" /> değerine ayarlandığında eski sürümleri de yükleyebilirsiniz. Eski sürüme geçirmeyi etkinleştirmek için "pinned_version" alanı kullanılarak istenen sürüm değeri belirtilmelidir. "allow_downgrades" belirtilmezse veya <ph name="FALSE" /> değerine ayarlanırsa ilgili IWA için eski sürüme geçirme devre dışı bırakılır.</translation>
 <translation id="1177624681620856105"> Bu politika, harici protokol başlatma onayı istemlerinde "Her zaman aç" onay kutusunun gösterilip gösterilmeyeceğini kontrol eder.
@@ -447,6 +448,15 @@ Politika, Etkin değerine ayarlanırsa mevcut kullanıcının son kullandığı 
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa giriş yapıldıktan sonra nelerin açılacağı, tam geri yükleme ayarları tarafından belirlenir.</translation>
 <translation id="1327466551276625742">Çevrimdışı iken ağ yapılandırma istemini etkinleştir</translation>
 <translation id="13356285923490863">Politika Adı</translation>
+<translation id="1336231837510847759"><ph name="PRODUCT_NAME" /> ürününden bir ağ isteği yapıldığında tetiklenen <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise Connector'e uygulanacak <ph name="PRODUCT_NAME" /> Enterprise Connectors hizmetleri ayarlarının listesidir. Bu politika yalnızca HTTP POST isteklerini değerlendirir.
+
+<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> alanı, hangi isteklerin denetleneceğini belirlemek için kullanılır. İstek ve içeriği, analiz isteği oluşturur ancak engellenmez. Denetim analizi isteğinin oluşturulması için bir ağ isteğinin politikadaki yalnızca bir liste girişiyle eşleşmesi gerekir.
+
+<ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> liste alanları, sırasıyla bir isteğin URL'si ve isteğin yapıldığı ana sekme URL'si ile eşleştirilir. Alanlardan biri eksikse dolaylı olarak eşleştiği kabul edilir.
+
+<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> alanı, <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> alanı eşleşiyorsa analiz isteğine hangi etiketlerin dahil edileceğini belirlemek için kullanılır.
+
+Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="1338603603553894503">Profil seçicinin etkin olup olmadığını, devre dışı bırakılıp bırakılmadığını veya tarayıcı başlatılırken zorunlu tutulup tutulmadığını belirtir.
 
       Varsayılan olarak profil seçici şu durumlarda gösterilmez: Tarayıcı misafir modunda veya gizli modda başlatıldığında, profil dizini ve/veya URL'ler komut satırı tarafından belirtildiğinde, uygulamanın açılması açıkça istendiğinde, tarayıcı yerel bildirim tarafından başlatıldığında, kullanılabilir yalnızca tek bir profil olduğunda veya ForceBrowserSignin politikası doğru değerine ayarlandığında.
@@ -2396,6 +2406,7 @@ Bu politikanın yönetilen cihazlarda uygulanması, desteklendiği platformlarda
 
           Bu politika ayarlanmadan bırakılırsa metin imlecini vurgulama başlangıçta devre dışıdır ancak istenildiğinde kullanıcı tarafından etkinleştirilebilir.</translation>
 <translation id="2506865562891982662">Kullanıcıların, <ph name="PRODUCT_NAME" /> menüsünde erişim kodu veya QR kodu kullanarak yayın cihazı seçmesine izin ver.</translation>
+<translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Bağlayıcı için yapılandırma politikası</translation>
 <translation id="2509748672176727116">Kullanıcı, ağ paketi yakalama işlemleri gerçekleştirebilir</translation>
 <translation id="2509919237512982967">M84'e kadar Eski Form Kontrollerini kullanın.</translation>
 <translation id="2512531606818417084">Bu politika geçicidir ve M137 sürümünden itibaren çalışmayacaktır.
@@ -6979,17 +6990,6 @@ Politika, Yanlış değerine ayarlanırsa öğretmenler bu özelliğe erişemez.
 <translation id="537786648513450280">Cihaz için güvenilmeyen kaynaklardan Android uygulaması kullanımının kontrolü</translation>
 <translation id="5378885577701865339">Paylaşılan pano özelliğini devre dışı bırak</translation>
 <translation id="5385337904220716757">Yalnızca sisteme ait hizmetlerin sistem coğrafi konum erişimine izin ver</translation>
-<translation id="538768040137709073">Senkronize etme etkin durumda ve kullanıcı Oturum açmışken, kullanıcıların Chrome Masaüstü cihazlar ve bir Android cihaz arasında kısa mesaj göndermesine olanak tanıyan Paylaşılan Pano özelliğini etkinleştirin.
-
-          Bu politika true (doğru) değerine ayarlanırsa Chrome kullanıcısı için cihazlar arasında kısa mesaj gönderme özelliği etkinleştirilir.
-
-          Bu politika false (yanlış) değerine ayarlanırsa Chrome kullanıcısı için cihazlar arasında kısa mesaj gönderme özelliği devre dışı bırakılır.
-
-          Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
-
-          Bu politika ayarlanmadan bırakılırsa paylaşılan pano özelliği varsayılan olarak etkinleştirilir.
-
-          Yöneticilerin önem verdikleri tüm platformlarda politikaları ayarlamaları kendi isteklerine bağlıdır. Bu politikanın tüm platformlarda bir değere ayarlanması önerilir.</translation>
 <translation id="5389708774452952523">Ses işleminin, Windows üzerinde normal üstü öncelikli çalışmasına izin ver</translation>
 <translation id="5390083518957894426">SAML kullanıcıları için kilit ekranında yeniden online kimlik doğrulamayı etkinleştirir</translation>
 <translation id="5391388690191341203">Cihaz yerel hesabına otomatik giriş</translation>
@@ -7606,6 +7606,7 @@ Politika, Etkin değerine ayarlanırsa uyarlanabilir arabelleğe alma her zaman 
 
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa uyarlanabilir
 arabelleğe alma özelliğinin kullanılıp kullanılmayacağına, özelliğin tarayıcıda kullanıma sunulma süreci karar verir.</translation>
+<translation id="579556027056000499">URL'deki içeriğin SHA-256 karması.</translation>
 <translation id="5800329278018669527">Çevrimdışıyken ağ yapılandırması istemini devre dışı bırak</translation>
 <translation id="5800627752428920394">Bu politika, bir sayfa geri-ileri önbelleğe girdiğinde etkin WebSocket bağlantılarının kesilip kesilmeyeceğini kontrol eder. Etkin WebSocket bağlantıları eskiden bir sayfanın geri-ileri önbellekte saklanmasını engelliyordu. Ancak <ph name="PRODUCT_NAME" />, bu davranışı değiştirerek bunun yerine WebSocket bağlantılarını kesmeye başladı. Böylece sayfa önbelleğe alınabiliyor ve bağlantısı kesilmiş durumda geri yüklenebiliyor.
 
@@ -9722,6 +9723,7 @@ Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_
 
       Bu politikanın yürürlüğe girmesi için ek kurulum gerekir. Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting adresini ziyaret edin.</translation>
 <translation id="7032323070729112362">Translator API'nin kullanılmasına izin vermez</translation>
+<translation id="7032734784894075746">Chrome'da becerileri yapılandırma</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS modunu devre dışı bırak</translation>
 <translation id="703672323011778742">Bu politika, M88 sürümünde kullanımdan kaldırılmıştır. Flash artık Chrome tarafından desteklenmemektedir. Politikayı 1 değerine ayarlamak tüm sitelerin <ph name="FLASH_PLUGIN_NAME" /> eklentisini otomatik olarak çalıştırıp çalıştırmayacağını ayarlamanıza izin verir. Politikayı 2 değerine ayarlamak bu eklentiyi tüm siteler için devre dışı bırakır. Tıkla oynat özelliği <ph name="FLASH_PLUGIN_NAME" /> eklentisinin çalıştırılmasına olanak tanır. Bunu yapmak için kullanıcıların yer tutucuya tıklaması gerekir.
 
@@ -12013,6 +12015,15 @@ Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_block
 <translation id="8471860377920321311">Üretken yapay zeka özelliklerine izin ver ve yapay zeka modellerini iyileştir</translation>
 <translation id="8473107305327396242">Kullanıcılar tarafından eklenen TLS sunucusu sertifikalarını platformun güvenilir sertifika depolarından içe aktar</translation>
 <translation id="8473841363404590708">Yerel dosyaları Microsoft OneDrive'a taşı ve yerel klasörleri gizle</translation>
+<translation id="8476434719168701332">Politika ayarlanırsa üretken yapay zeka becerileri, <ph name="PRODUCT_NAME" /> ürününde kullanıcıya yayınlanır.
+
+Bu politika ayarlanırsa kullanıcılar kişisel becerilerinin yanı sıra varsayılan olarak chrome://skills sayfasında bu yapılandırılmış becerileri de görür. Kullanıcılar bu becerileri kişisel kullanım amaçlı görüntüleyebilir, değiştirebilir ve kaydedebilir.
+
+Listedeki her beceri, içeriğinin indirilebileceği bir <ph name="URL_NAME" /> ve uygulanmadan önce bütünlüğünü doğrulamak için bu içeriğe ait <ph name="HASH_NAME" /> (SHA-256) değerini içeren bir nesne olmalıdır. Her beceri URL'si sabit olmalıdır. Beceri dosyası güncellenirken yeni bir URL ve karma gerekir.
+
+10'dan fazla beceri sağlanırsa bir uyarı gösterilir ve yalnızca ilk 10 beceri yayınlanır.
+
+Politika ayarlanmadan bırakılırsa veya boş bir listeye ayarlanırsa kullanıcıya hiçbir kurumsal beceri yayınlanmaz.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC, en iyi yolu ararken mevcut tüm arayüzleri kullanır.</translation>
 <translation id="8479496880635054740">Erişilebilirlik sanal klavyesini, giriş ekranında devre dışı bırak</translation>

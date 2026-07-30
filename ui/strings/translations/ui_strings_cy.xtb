@@ -11,7 +11,6 @@
 <translation id="1253734725326687145">Symudwyd y targed cyffwrdd i'r dde uchaf. Tapiwch yma.</translation>
 <translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Ennill</translation>
-<translation id="1291104554099683393">Rhowch gynnig ar rannu'r testun mewn darnau llai.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">O'r Chwith i'r Dde</translation>
 <translation id="1383876407941801731">Chwilio</translation>
@@ -85,7 +84,6 @@
 <translation id="3306688585798492231">Sgrîn integredig</translation>
 <translation id="335581015389089642">Llefarydd</translation>
 <translation id="3372635229069101468">Cliciwch <ph name="BEGIN_BOLD" />Manylion<ph name="END_BOLD" /></translation>
-<translation id="3389286852084373014">Mae'r testun yn rhy fawr</translation>
 <translation id="3406306243914553062">Cynnwys HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 diwrnod ar ôl}zero{# diwrnod ar ôl}two{# ddiwrnod ar ôl}few{# diwrnod ar ôl}many{# diwrnod ar ôl}other{# diwrnod ar ôl}}</translation>
 <translation id="3600969208114796418">Ffeil <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
