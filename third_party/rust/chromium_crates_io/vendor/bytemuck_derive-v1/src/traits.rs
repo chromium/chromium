@@ -66,20 +66,20 @@ impl Derivable for Pod {
   ) -> Result<TokenStream> {
     let repr = get_repr(&input.attrs)?;
 
-    let completly_packed =
+    let packed_or_transparent =
       repr.packed == Some(1) || repr.repr == Repr::Transparent;
 
-    if !completly_packed && !input.generics.params.is_empty() {
+    if !packed_or_transparent && !input.generics.params.is_empty() {
       bail!("\
-        Pod requires cannot be derived for non-packed types containing \
+        Pod cannot be derived for non-transparent/non-packed types containing \
         generic parameters because the padding requirements can't be verified \
-        for generic non-packed structs\
+        for generic structs\
       " => input.generics.params.first().unwrap());
     }
 
     match &input.data {
       Data::Struct(_) => {
-        let assert_no_padding = if !completly_packed {
+        let assert_no_padding = if !packed_or_transparent {
           Some(generate_assert_no_padding(input, None, "Pod")?)
         } else {
           None
@@ -235,6 +235,7 @@ impl Derivable for NoUninit {
     match ty {
       Data::Struct(_) => match repr.repr {
         Repr::C | Repr::Transparent => Ok(()),
+        _ if repr.packed.is_some() => Ok(()),
         _ => bail!("NoUninit requires the struct to be #[repr(C)] or #[repr(transparent)]"),
       },
       Data::Enum(DataEnum { variants,.. }) => {
@@ -257,14 +258,26 @@ impl Derivable for NoUninit {
   fn asserts(
     input: &DeriveInput, crate_name: &TokenStream,
   ) -> Result<TokenStream> {
-    if !input.generics.params.is_empty() {
-      bail!("NoUninit cannot be derived for structs containing generic parameters because the padding requirements can't be verified for generic structs");
+    let repr = get_repr(&input.attrs)?;
+
+    let packed_or_transparent =
+      repr.packed == Some(1) || repr.repr == Repr::Transparent;
+
+    if !packed_or_transparent && !input.generics.params.is_empty() {
+      bail!("\
+        NoUninit cannot be derived for non-transparent/non-packed types containing \
+        generic parameters because the padding requirements can't be verified \
+        for generic structs\
+      " => input.generics.params.first().unwrap());
     }
 
     match &input.data {
       Data::Struct(DataStruct { .. }) => {
-        let assert_no_padding =
-          generate_assert_no_padding(&input, None, "NoUninit")?;
+        let assert_no_padding = if !packed_or_transparent {
+          Some(generate_assert_no_padding(&input, None, "NoUninit")?)
+        } else {
+          None
+        };
         let assert_fields_are_no_padding = generate_fields_are_trait(
           &input,
           None,

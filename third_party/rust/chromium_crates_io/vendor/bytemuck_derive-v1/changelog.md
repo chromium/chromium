@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.11
+
+* [Make derive(NoUninit) have the same constraints as Pod](https://github.com/Lokathor/bytemuck/pull/341)
+
 ## 1.10.2
 
 * [Extend #[derive(TransparentWrapper)](https://github.com/Lokathor/bytemuck/pull/147)

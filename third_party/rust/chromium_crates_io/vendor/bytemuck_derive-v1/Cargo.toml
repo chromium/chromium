@@ -11,9 +11,9 @@
 
 [package]
 edition = "2018"
-rust-version = "1.61"
+rust-version = "1.68"
 name = "bytemuck_derive"
-version = "1.10.2"
+version = "1.11.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 autolib = false
@@ -43,6 +43,10 @@ proc-macro = true
 [[test]]
 name = "basic"
 path = "tests/basic.rs"
+
+[[test]]
+name = "transparent_wrapper_generic"
+path = "tests/transparent_wrapper_generic.rs"
 
 [dependencies.proc-macro2]
 version = "1.0.60"

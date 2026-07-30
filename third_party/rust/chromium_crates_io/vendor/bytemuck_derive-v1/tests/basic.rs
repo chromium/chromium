@@ -229,6 +229,16 @@ enum NoUninitEnumWithFieldsAndDiscriminant {
   B(u8, u8, u8, u8),
 }
 
+#[derive(Copy, Clone, NoUninit)]
+#[repr(transparent)]
+struct NoUninitTransparentWrapper<T: NoUninit>(T);
+
+impl<T: NoUninit> NoUninitTransparentWrapper<T> {
+  fn new(value: T) -> Self {
+    Self(value)
+  }
+}
+
 #[derive(Debug, Copy, Clone, AnyBitPattern, PartialEq, Eq)]
 #[repr(C)]
 struct AnyBitPatternTest<A: AnyBitPattern, B: AnyBitPattern> {
@@ -431,10 +441,16 @@ fn checkedbitpattern_aligned_struct() {
 
 #[test]
 fn checkedbitpattern_c_default_discriminant_enum_with_fields() {
+  // these cfg's *actually* care about align_of::<u64>(), but that is highly
+  // correlated with target pointer width.
+  #[cfg(target_pointer_width = "64")]
   let pod = [
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55, 0x55,
     0x55, 0x55, 0x55, 0xcc,
   ];
+  #[cfg(target_pointer_width = "32")]
+  let pod =
+    [0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xcc];
   let value = bytemuck::checked::pod_read_unaligned::<
     CheckedBitPatternCDefaultDiscriminantEnumWithFields,
   >(&pod);
@@ -443,10 +459,19 @@ fn checkedbitpattern_c_default_discriminant_enum_with_fields() {
     CheckedBitPatternCDefaultDiscriminantEnumWithFields::A(0xcc555555555555cc)
   );
 
+  #[cfg(all(target_pointer_width = "64", target_endian = "little"))]
   let pod = [
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55, 0x55,
     0x55, 0x55, 0x55, 0xcc,
   ];
+  #[cfg(all(target_pointer_width = "64", target_endian = "big"))]
+  let pod = [
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55, 0x55,
+    0x55, 0x55, 0x55, 0xcc,
+  ];
+  #[cfg(target_pointer_width = "32")]
+  let pod =
+    [0x01, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xcc];
   let value = bytemuck::checked::pod_read_unaligned::<
     CheckedBitPatternCDefaultDiscriminantEnumWithFields,
   >(&pod);
@@ -490,18 +515,35 @@ fn checkedbitpattern_int_enum_with_fields() {
 
 #[test]
 fn checkedbitpattern_nested_enum_with_fields() {
-  // total size 24 bytes. first byte always the u8 discriminant.
+  // these cfg's *actually* care about align_of::<u64>(), but that is highly
+  // correlated with target pointer width.
 
+  // total size 24 bytes on 64-bit. first byte always the u8 discriminant.
+  #[cfg(target_pointer_width = "64")]
   #[repr(C, align(8))]
   struct Align8Bytes([u8; 24]);
 
+  // total size 16 bytes on 64-bit. first byte always the u8 discriminant.
+  #[cfg(target_pointer_width = "32")]
+  #[repr(C, align(8))]
+  struct Align8Bytes([u8; 16]);
+
   // first we'll check variantA, nested variant A
-  let pod = Align8Bytes([
+  #[cfg(target_pointer_width = "64")]
+  let mut pod = Align8Bytes([
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, // byte 0 discriminant = 0 = variant A, bytes 1-7 irrelevant padding.
     0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55,
     0xcc, // bytes 8-15 are the nested CheckedBitPatternCEnumWithFields,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // bytes 16-23 padding
+  ]);
+  #[cfg(target_pointer_width = "32")]
+  let mut pod = Align8Bytes([
+    0x00, 0x00, 0x00,
+    0x00, // byte 0 discriminant = 0 = variant A, bytes 1-3 irrelevant padding.
+    0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55,
+    0xcc, // bytes 4-11 are the nested CheckedBitPatternCEnumWithFields,
+    0x00, 0x00, 0x00, 0x00, // bytes 12-15 padding
   ]);
   let value =
     bytemuck::checked::from_bytes::<CheckedBitPatternEnumNested>(&pod.0);
@@ -513,18 +555,13 @@ fn checkedbitpattern_nested_enum_with_fields() {
   );
 
   // next we'll check invalid first discriminant fails
-  let pod = Align8Bytes([
-    0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, // byte 0 discriminant = 2 = invalid, bytes 1-7 padding
-    0x00, 0x00, 0x00, 0x00, 0xcc, 0x55, 0x55,
-    0xcc, // bytes 8-15 are the nested CheckedBitPatternCEnumWithFields = A,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // bytes 16-23 padding
-  ]);
+  pod.0[0] = 0x02; // set the discriminant
   let result =
     bytemuck::checked::try_from_bytes::<CheckedBitPatternEnumNested>(&pod.0);
   assert_eq!(result, Err(CheckedCastError::InvalidBitPattern));
 
   // next we'll check variant B, nested variant B
+  #[cfg(all(target_pointer_width = "64", target_endian = "little"))]
   let pod = Align8Bytes([
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, // byte 0 discriminant = 1 = variant B, bytes 1-7 padding
@@ -533,7 +570,29 @@ fn checkedbitpattern_nested_enum_with_fields() {
            * CheckedBitPatternCDefaultDiscrimimantEnumWithFields, 1 (LE byte
            * order) = variant B */
     0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-    0xcc, // bytes 16-13 is the data contained in nested variant B
+    0xcc, // bytes 16-23 is the data contained in nested variant B
+  ]);
+  #[cfg(all(target_pointer_width = "64", target_endian = "big"))]
+  let pod = Align8Bytes([
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, // byte 0 discriminant = 1 = variant B, bytes 1-7 padding
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+    0x00, /* bytes 8-15 is C int size discriminant of
+           * CheckedBitPatternCDefaultDiscrimimantEnumWithFields, 1 (LE byte
+           * order) = variant B */
+    0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+    0xcc, // bytes 16-23 is the data contained in nested variant B
+  ]);
+  #[cfg(target_pointer_width = "32")]
+  let pod = Align8Bytes([
+    0x01, 0x00, 0x00,
+    0x00, // byte 0 discriminant = 1 = variant B, bytes 1-3 padding
+    0x01, 0x00, 0x00,
+    0x00, /* bytes 4-11 is C int size discriminant of
+           * CheckedBitPatternCDefaultDiscrimimantEnumWithFields, 1 (LE byte
+           * order) = variant B */
+    0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+    0xcc, // bytes 12-15 is the data contained in nested variant B
   ]);
   let value =
     bytemuck::checked::from_bytes::<CheckedBitPatternEnumNested>(&pod.0);
@@ -547,6 +606,7 @@ fn checkedbitpattern_nested_enum_with_fields() {
   );
 
   // finally we'll check variant B, nested invalid discriminant
+  #[cfg(target_pointer_width = "64")]
   let pod = Align8Bytes([
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, // 1 discriminant = variant B, bytes 1-7 padding
@@ -555,7 +615,18 @@ fn checkedbitpattern_nested_enum_with_fields() {
            * CheckedBitPatternCDefaultDiscrimimantEnumWithFields, 0x08 is
            * invalid */
     0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-    0xcc, // bytes 16-13 is the data contained in nested variant B
+    0xcc, // bytes 16-23 is the data contained in nested variant B
+  ]);
+  #[cfg(target_pointer_width = "32")]
+  let pod = Align8Bytes([
+    0x01, 0x00, 0x00,
+    0x00, // 1 discriminant = variant B, bytes 1-7 padding
+    0x08, 0x00, 0x00,
+    0x00, /* bytes 4-11 is C int size discriminant of
+           * CheckedBitPatternCDefaultDiscrimimantEnumWithFields, 0x08 is
+           * invalid */
+    0xcc, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+    0xcc, // bytes 12-15 is the data contained in nested variant B
   ]);
   let result =
     bytemuck::checked::try_from_bytes::<CheckedBitPatternEnumNested>(&pod.0);
