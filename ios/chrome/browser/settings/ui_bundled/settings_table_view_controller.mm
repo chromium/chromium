@@ -1807,7 +1807,8 @@ struct EnhancedSafeBrowsingActivePromoData
   return YES;
 #else
   return experimental_flags::IsMemoryDebuggingEnabled() ||
-         experimental_flags::ShouldShowCatalogItems();
+         experimental_flags::ShouldShowCatalogItems() ||
+         experimental_flags::ShouldShowBackendPromoDebugTools();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 }
 

@@ -389,6 +389,23 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
        sectionIdentifier:SettingsSectionIdentifierInfo]);
 }
 
+// Verifies that Backend Promo Debug Tools item is in the Debug section when
+// enabled.
+TEST_F(SettingsTableViewControllerTest, HasBackendPromoDebugToolsItem) {
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:@"ShowBackendPromoDebugTools"];
+
+  CreateController();
+  CheckController();
+
+  EXPECT_TRUE([controller().tableViewModel
+      hasItemForItemType:SettingsItemTypeBackendPromoDebugTools
+       sectionIdentifier:SettingsSectionIdentifierDebug]);
+
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"ShowBackendPromoDebugTools"];
+}
+
 // Verifies that the Level Up walkthrough target item (Autofill and Passwords)
 // exists in SettingsTableViewController.
 TEST_F(SettingsTableViewControllerTest, HasAutofillAndPasswordsLevelUpItem) {
