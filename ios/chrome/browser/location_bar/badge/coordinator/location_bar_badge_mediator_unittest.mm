@@ -165,7 +165,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestTracker));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegate(
+        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
                               GeminiServiceFactory::GetDefaultFactory());

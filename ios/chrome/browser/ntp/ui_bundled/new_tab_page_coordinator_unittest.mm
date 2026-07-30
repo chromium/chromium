@@ -116,7 +116,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegate(
+        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),

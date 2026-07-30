@@ -81,7 +81,7 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
 
     test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegate(
+        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),

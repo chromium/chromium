@@ -77,7 +77,7 @@ class AccountMenuMediatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegate(
+        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     avatar_provider_ = std::make_unique<signin::AvatarProvider>();
