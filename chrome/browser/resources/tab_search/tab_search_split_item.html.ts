@@ -31,7 +31,7 @@ export function getHtml(this: TabSearchSplitItemElement) {
   </div>
   <div id="secondaryTextContainer">
     <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
-        display="${this.groupSvgDisplay_()}"
+        display="${this.data.tabGroup ? 'block' : 'none'}"
         style="--group-dot-color: ${this.getGroupColor_()}">
       <circle id="groupDot" cx="0" cy="0" r="4" />
     </svg>
@@ -46,9 +46,9 @@ export function getHtml(this: TabSearchSplitItemElement) {
   </div>
 </div>
 ${this.isCloseable_() ? html`
-  <div class="${this.getButtonContainerStyles_()}">
-    <cr-icon-button id="closeButton" role="${this.getCloseButtonRole_()}"
-        aria-label="${this.ariaLabelForButton_()}"
+  <div class="button-container">
+    <cr-icon-button id="closeButton" role="button"
+        aria-label="${this.tooltipForButton_()}"
         iron-icon="${this.closeButtonIcon}" ?noink="${!this.buttonRipples_}"
         no-ripple-on-focus @click="${this.onCloseButtonClick_}"
         title="${this.tooltipForButton_()}"

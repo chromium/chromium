@@ -25,3 +25,9 @@ export function colorName(color: Color): string {
 
   return colorMap.get(color)!;
 }
+
+export function getTabGroupColorVar(color: Color, isRefresh: boolean): string {
+  const name = colorName(color);
+  return isRefresh ? `var(--tab-group-refresh-color-${name})` :
+                     `var(--tab-group-color-${name})`;
+}

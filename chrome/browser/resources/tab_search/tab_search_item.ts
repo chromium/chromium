@@ -9,18 +9,16 @@ import '/strings.m.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from './tab_data.js';
-import {colorName} from './tab_group_color_helper.js';
+import {getTabGroupColorVar} from './tab_group_color_helper.js';
 import type {Tab} from './tab_search.mojom-webui.js';
 import {getCss} from './tab_search_item.css.js';
 import {getHtml} from './tab_search_item.html.js';
-import {highlightText, tabHasMediaAlerts} from './tab_search_utils.js';
-import {TabAlertState} from './tabs.mojom-webui.js';
+import {getFaviconUrlForTab, getMediaAlertImageClass, highlightText, tabHasMediaAlerts} from './tab_search_utils.js';
 
 
 function deepGet(obj: Record<string, any>, path: string): any {
@@ -124,9 +122,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
       if (this.data.tabGroup) {
         this.style.setProperty(
             '--group-dot-color',
-            this.tabGroupColorRefresh_ ?
-                `var(--tab-group-refresh-color-${colorName(this.data.tabGroup.color)})` :
-                `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
+            getTabGroupColorVar(
+                this.data.tabGroup.color, this.tabGroupColorRefresh_));
       }
 
       if (changedProperties.has('size')) {
@@ -189,18 +186,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
   }
 
   protected faviconUrl_(): string {
-    const tab = this.data.tab;
-    return (tab as Tab).faviconUrl ?
-        `url("${(tab as Tab).faviconUrl!}")` :
-        getFaviconForPageURL(
-            (tab as Tab).isDefaultFavicon ? 'chrome://newtab' : tab.url, false);
-  }
-
-  /**
-   * Determines the display attribute value for the group SVG element.
-   */
-  protected groupSvgDisplay_(): string {
-    return this.data.tabGroup ? 'block' : 'none';
+    return getFaviconUrlForTab(this.data.tab.url, this.data.tab as Tab);
   }
 
   private isOpenTabAndHasMediaAlert_(): boolean {
@@ -220,34 +206,9 @@ export class TabSearchItemElement extends TabSearchItemBase {
    * Returns the correct media alert indicator class name.
    */
   protected getMediaAlertImageClass_(): string {
-    if (!this.isOpenTabAndHasMediaAlert_()) {
-      return '';
-    }
-    // GetTabAlertStatesForContents adds alert indicators in the order of their
-    // priority. Only relevant media alerts are sent over mojo so the first
-    // element in alertStates will be the highest priority media alert to
-    // display.
-    const alert = (this.data.tab as Tab).alertStates[0];
-    switch (alert) {
-      case TabAlertState.kMediaRecording:
-        return 'media-recording';
-      case TabAlertState.kAudioRecording:
-        return 'audio-recording';
-      case TabAlertState.kVideoRecording:
-        return 'video-recording';
-      case TabAlertState.kAudioPlaying:
-        return 'audio-playing';
-      case TabAlertState.kAudioMuting:
-        return 'audio-muting';
-      case TabAlertState.kGlicAccessing:
-        return 'glic-accessing';
-      default:
-        return '';
-    }
-  }
-
-  protected hasTabGroupWithTitle_(): boolean {
-    return !!(this.data.tabGroup && this.data.tabGroup.title);
+    return this.isOpenTabAndHasMediaAlert_() ?
+        getMediaAlertImageClass(this.data.tab as Tab) :
+        '';
   }
 
   private dataChanged_() {
