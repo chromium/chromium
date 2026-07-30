@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_IMPORT_CONTROLLER_H_
 
 #include <memory>
-#include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/settings/password_import_controller_interface.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
 // Handles the importing of a password file to the Password Manager.
 class PasswordImportController : public PasswordImportControllerInterface,
                                  public ui::SelectFileDialog::Listener {
@@ -47,8 +48,6 @@ class PasswordImportController : public PasswordImportControllerInterface,
   void PresentImportFileSelector(content::WebContents* web_contents);
 
   void ImportPasswordsFromPath(const base::FilePath& path);
-
-  void ImportDone();
 
   std::unique_ptr<password_manager::PasswordImporter> importer_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
