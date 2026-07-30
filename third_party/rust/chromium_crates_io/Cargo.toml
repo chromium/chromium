@@ -73,6 +73,14 @@ artifact = "bin"
 version = "0.12.0"
 features = ["experimental_font_api"]
 
+[dependencies.icu_capi]
+version = "2.2"
+default-features = false
+features = [
+    "locale",
+    "compiled_data",
+]
+
 [dependencies.icu_casemap]
 version = "2.2.0"
 default-features = false

@@ -294,14 +294,20 @@ allow_unsafe = false
 [crate.derivre.extra_kv]
 allow_unsafe = false
 
-[crate.diplomat.extra_kv]
-allow_unsafe = false
+[crate.diplomat]
+group = 'safe'
+allow_first_party_usage = true
+extra_kv = { allow_unsafe = false }
 
-[crate.diplomat-runtime.extra_kv]
-allow_unsafe = true
+[crate.diplomat-runtime]
+group = 'safe'
+allow_first_party_usage = true
+extra_kv = { allow_unsafe = true }
 
-[crate.diplomat_core.extra_kv]
-allow_unsafe = false
+[crate.diplomat_core]
+group = 'safe'
+allow_first_party_usage = true
+extra_kv = { allow_unsafe = false }
 
 [crate.displaydoc.extra_kv]
 allow_unsafe = false
@@ -432,6 +438,11 @@ allow_unsafe = true
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
+[crate.icu_capi]
+group = 'safe'
+allow_first_party_usage = true
+extra_kv = { allow_unsafe = true }
+
 [crate.icu_casemap.extra_kv]
 allow_unsafe = true
 
@@ -467,8 +478,14 @@ extra_input_roots = ['../data']
 [crate.icu_list_data.extra_kv]
 allow_unsafe = false
 
+[crate.icu_locale]
+group = 'safe'
+
 [crate.icu_locale.extra_kv]
 allow_unsafe = true
+
+[crate.icu_locale_core]
+group = 'safe'
 
 [crate.icu_locale_core.extra_kv]
 allow_unsafe = true
@@ -501,8 +518,16 @@ allow_unsafe = false
 extra_input_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
+[crate.icu_provider]
+group = 'safe'
+
 [crate.icu_provider.extra_kv]
 allow_unsafe = true
+
+[crate.icu_provider_adapters]
+group = 'safe'
+allow_first_party_usage = true
+extra_kv = { allow_unsafe = false }
 
 [crate.image]
 extra_input_roots = ['../README.md']

@@ -1,0 +1,61 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `icu_time-2.2.0` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "icu_time"
+version = "2.2.0"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"alloc" = []
+"compiled_data" = []
+"datagen" = []
+"default" = []
+"ixdtf" = []
+"serde" = []
+"unstable" = []
+"unstable_chrono_0_4" = []
+"unstable_jiff_0_2" = []
+"unstable_time_0_3" = []
+
+[dependencies.calendrical_calculations]
+version = "^0.2.4"
+default_features = false
+[dependencies.displaydoc]
+version = "^0.2.3"
+default_features = false
+[dependencies.icu_calendar]
+version = "~2.2.0"
+default_features = false
+[dependencies.icu_locale_core]
+version = "^2.2.0"
+default_features = false
+[dependencies.icu_provider]
+version = "^2.2.0"
+default_features = false
+[dependencies.icu_time_data]
+version = "~2.2.0"
+default_features = false
+[dependencies.ixdtf]
+version = "^0.6.5"
+default_features = false
+[dependencies.serde]
+version = "^1.0.220"
+default_features = false
+[dependencies.zerotrie]
+version = "^0.2.4"
+default_features = false
+[dependencies.zerovec]
+version = "^0.11.6"
+default_features = false

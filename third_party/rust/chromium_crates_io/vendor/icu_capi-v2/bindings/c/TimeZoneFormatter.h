@@ -1,0 +1,80 @@
+#ifndef TimeZoneFormatter_H
+#define TimeZoneFormatter_H
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include "diplomat_runtime.h"
+
+#include "DataProvider.d.h"
+#include "DateTimeFormatterLoadError.d.h"
+#include "DateTimeWriteError.d.h"
+#include "Locale.d.h"
+#include "TimeZoneInfo.d.h"
+
+#include "TimeZoneFormatter.d.h"
+
+
+
+
+
+
+typedef struct icu4x_TimeZoneFormatter_create_specific_long_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_specific_long_mv1_result;
+icu4x_TimeZoneFormatter_create_specific_long_mv1_result icu4x_TimeZoneFormatter_create_specific_long_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_specific_long_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_specific_long_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_specific_long_with_provider_mv1_result icu4x_TimeZoneFormatter_create_specific_long_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_specific_short_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_specific_short_mv1_result;
+icu4x_TimeZoneFormatter_create_specific_short_mv1_result icu4x_TimeZoneFormatter_create_specific_short_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_specific_short_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_specific_short_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_specific_short_with_provider_mv1_result icu4x_TimeZoneFormatter_create_specific_short_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_localized_offset_long_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_localized_offset_long_mv1_result;
+icu4x_TimeZoneFormatter_create_localized_offset_long_mv1_result icu4x_TimeZoneFormatter_create_localized_offset_long_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_localized_offset_long_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_localized_offset_long_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_localized_offset_long_with_provider_mv1_result icu4x_TimeZoneFormatter_create_localized_offset_long_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_localized_offset_short_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_localized_offset_short_mv1_result;
+icu4x_TimeZoneFormatter_create_localized_offset_short_mv1_result icu4x_TimeZoneFormatter_create_localized_offset_short_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_localized_offset_short_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_localized_offset_short_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_localized_offset_short_with_provider_mv1_result icu4x_TimeZoneFormatter_create_localized_offset_short_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_generic_long_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_generic_long_mv1_result;
+icu4x_TimeZoneFormatter_create_generic_long_mv1_result icu4x_TimeZoneFormatter_create_generic_long_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_generic_long_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_generic_long_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_generic_long_with_provider_mv1_result icu4x_TimeZoneFormatter_create_generic_long_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_generic_short_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_generic_short_mv1_result;
+icu4x_TimeZoneFormatter_create_generic_short_mv1_result icu4x_TimeZoneFormatter_create_generic_short_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_generic_short_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_generic_short_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_generic_short_with_provider_mv1_result icu4x_TimeZoneFormatter_create_generic_short_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_location_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_location_mv1_result;
+icu4x_TimeZoneFormatter_create_location_mv1_result icu4x_TimeZoneFormatter_create_location_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_location_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_location_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_location_with_provider_mv1_result icu4x_TimeZoneFormatter_create_location_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_exemplar_city_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_exemplar_city_mv1_result;
+icu4x_TimeZoneFormatter_create_exemplar_city_mv1_result icu4x_TimeZoneFormatter_create_exemplar_city_mv1(const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_create_exemplar_city_with_provider_mv1_result {union {TimeZoneFormatter* ok; DateTimeFormatterLoadError err;}; bool is_ok;} icu4x_TimeZoneFormatter_create_exemplar_city_with_provider_mv1_result;
+icu4x_TimeZoneFormatter_create_exemplar_city_with_provider_mv1_result icu4x_TimeZoneFormatter_create_exemplar_city_with_provider_mv1(const DataProvider* provider, const Locale* locale);
+
+typedef struct icu4x_TimeZoneFormatter_format_mv1_result {union { DateTimeWriteError err;}; bool is_ok;} icu4x_TimeZoneFormatter_format_mv1_result;
+icu4x_TimeZoneFormatter_format_mv1_result icu4x_TimeZoneFormatter_format_mv1(const TimeZoneFormatter* self, const TimeZoneInfo* zone, DiplomatWrite* write);
+
+void icu4x_TimeZoneFormatter_destroy_mv1(TimeZoneFormatter* self);
+
+
+
+
+
+#endif // TimeZoneFormatter_H
