@@ -3265,11 +3265,10 @@ def CheckNoBannedPatterns(input_api, output_api):
     """Make sure that banned patterns are not used."""
     results = []
 
-    def IsExcludedFile(affected_file, excluded_paths):
+    def IsExcludedFile(local_path, excluded_paths):
         if not excluded_paths:
             return False
 
-        local_path = affected_file.UnixLocalPath()
         for item in excluded_paths:
             if input_api.re.match(item, local_path):
                 return True
@@ -3290,11 +3289,8 @@ def CheckNoBannedPatterns(input_api, output_api):
 
     def CheckForMatch(affected_file, line_num: int, line: str,
                       ban_rule: BanRule):
-        if IsExcludedFile(affected_file, ban_rule.excluded_paths):
-            return
-
-        message = _GetMessageForMatchingType(input_api, f, line_num, line,
-                                             ban_rule)
+        message = _GetMessageForMatchingType(input_api, affected_file, line_num,
+                                             line, ban_rule)
         if message:
             result_loc = []
             if ban_rule.surface_as_gerrit_lint:
@@ -3316,58 +3312,58 @@ def CheckNoBannedPatterns(input_api, output_api):
                         'A banned pattern was used.\n' + '\n'.join(message),
                         locations=result_loc))
 
-    file_filter = lambda f: f.LocalPath().endswith(('.java'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_JAVA_FUNCTIONS + _BANNED_JAVA_IMPORTS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    def MatchingBanRules(affected_file, ban_rules):
+        matching_ban_rules = []
+        local_path = affected_file.UnixLocalPath()
+        for ban_rule in ban_rules:
+            if IsExcludedFile(local_path, ban_rule.excluded_paths):
+                continue
+            matching_ban_rules.append(ban_rule)
+        return matching_ban_rules
 
-    file_filter = lambda f: f.LocalPath().endswith(('.js', '.ts'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_JAVASCRIPT_FUNCTIONS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    def CheckFilesForFormat(file_filter, ban_rules):
+        for f in input_api.AffectedFiles(file_filter):
+            matching_ban_rules = MatchingBanRules(f, ban_rules)
+            if matching_ban_rules:
+                for line_num, line in f.ChangedContents():
+                    for ban_rule in matching_ban_rules:
+                        CheckForMatch(f, line_num, line, ban_rule)
 
-    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.m', '.h'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_OBJC_FUNCTIONS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.java')),
+        ban_rules=_BANNED_JAVA_FUNCTIONS + _BANNED_JAVA_IMPORTS)
 
-    for f in input_api.AffectedFiles(file_filter=IsIosObjcFile):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_IOS_OBJC_FUNCTIONS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.js', '.ts')),
+        ban_rules=_BANNED_JAVASCRIPT_FUNCTIONS)
 
-    egtest_filter = lambda f: f.LocalPath().endswith(('_egtest.mm'))
-    for f in input_api.AffectedFiles(file_filter=egtest_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_IOS_EGTEST_FUNCTIONS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.mm', '.m', '.h')),
+        ban_rules=_BANNED_OBJC_FUNCTIONS)
 
-    file_filter = lambda f: f.LocalPath().endswith(('.cc', '.mm', '.h'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_CPP_FUNCTIONS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=IsIosObjcFile,
+        ban_rules=_BANNED_IOS_OBJC_FUNCTIONS)
 
-    file_filter = lambda f: (f.LocalPath().endswith(('.cc', '.mm', '.h')))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('_egtest.mm')),
+        ban_rules=_BANNED_IOS_EGTEST_FUNCTIONS)
 
-    file_filter = lambda f: f.LocalPath().endswith(('.mojom'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_MOJOM_PATTERNS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.cc', '.mm', '.h')),
+        ban_rules=_BANNED_CPP_FUNCTIONS)
 
-    file_filter = lambda f: f.LocalPath().endswith(('.gn', '.gni'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _BANNED_GN_PATTERNS:
-                CheckForMatch(f, line_num, line, ban_rule)
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.cc', '.mm', '.h')),
+        ban_rules=_DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS)
+
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.mojom')),
+        ban_rules=_BANNED_MOJOM_PATTERNS)
+
+    CheckFilesForFormat(
+        file_filter=lambda f: f.LocalPath().endswith(('.gn', '.gni')),
+        ban_rules=_BANNED_GN_PATTERNS)
 
     return results
 
