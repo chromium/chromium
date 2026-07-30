@@ -129,6 +129,14 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // Returns true if the setting was modified.
   bool SanitizeKeyThemeName();
 
+  // Sanitizes the "gtk-cursor-theme-name" setting in GtkSettings if it is
+  // unsafe. Returns true if the setting was modified.
+  bool SanitizeCursorThemeName();
+
+  // Sanitizes the "gtk-cursor-theme-size" setting in GtkSettings if it is
+  // unsafe. Returns true if the setting was modified.
+  bool SanitizeCursorThemeSize();
+
   void OnKeyThemeNameChanged(GtkSettings* settings, GtkParamSpec* param);
 
   void OnCursorThemeNameChanged(GtkSettings* settings, GtkParamSpec* param);
