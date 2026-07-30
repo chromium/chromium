@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +19,7 @@
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,6 +85,9 @@ ScreenLockerTester::ScreenLockerTester() = default;
 ScreenLockerTester::~ScreenLockerTester() = default;
 
 void ScreenLockerTester::Lock() {
+  CHECK_EQ(CHECK_DEREF(session_manager::SessionManager::Get()).session_state(),
+           session_manager::SessionState::ACTIVE);
+
   ScreenLocker::Show();
   WaitForLock();
   base::RunLoop().RunUntilIdle();

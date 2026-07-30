@@ -26,6 +26,7 @@ class ScreenLockerTester {
   ~ScreenLockerTester();
 
   // Synchronously lock the device.
+  // Session state must be ACTIVE before calling this.
   void Lock();
 
   // Not necessary when using Lock() because it does this internally, this is
