@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -1273,8 +1273,10 @@ suite('NewTabPageComposeboxTest', () => {
 });
 
 // ==========================================================
-// 3. RESIZE OBSERVER SUITE
+// RESIZE OBSERVER SUITE
 // ==========================================================
+// TODO(crbug.com/535685540): Remove this suite and its tests from here once
+// `cr-composebox` element is no longer used.
 suite('NewTabPageComposeboxResizeObserverTest', () => {
   const testProxy = setupComposeboxTest();
   // Keep this aligned with DEBOUNCE_TIMEOUT_MS in composebox.ts.
@@ -1327,9 +1329,6 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
   }
 
   setup(() => {
-    loadTimeData.overrideValues({
-      useNtpComposeboxFork: false,
-    });
     originalResizeObserver = window.ResizeObserver;
     window.ResizeObserver =
         MockResizeObserver as unknown as typeof ResizeObserver;
@@ -1345,7 +1344,9 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
   test(
       'observeResize emits composebox resize events for host and dropdown',
       async () => {
-        createComposeboxElement(testProxy, {observeResize: true});
+        testProxy.element = new ComposeboxElement();
+        Object.assign(testProxy.element, {observeResize: true});
+        document.body.appendChild(testProxy.element);
         await flushComposebox();
 
         const hostObserver = getActiveObserversForTarget(testProxy.element);
@@ -1374,7 +1375,9 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
       });
 
   test('observeResize false skips public resize observers', async () => {
-    createComposeboxElement(testProxy, {observeResize: false});
+    testProxy.element = new ComposeboxElement();
+    Object.assign(testProxy.element, {observeResize: false});
+    document.body.appendChild(testProxy.element);
     await flushComposebox();
 
     const inputWrapper =
@@ -1389,7 +1392,9 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
   });
 
   test('observeResize changes resync public resize observers', async () => {
-    createComposeboxElement(testProxy, {observeResize: false});
+    testProxy.element = new ComposeboxElement();
+    Object.assign(testProxy.element, {observeResize: false});
+    document.body.appendChild(testProxy.element);
     await flushComposebox();
 
     assertEquals(0, getActiveObserversForTarget(testProxy.element).length);
