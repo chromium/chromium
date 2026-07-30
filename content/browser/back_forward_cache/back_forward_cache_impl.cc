@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -81,6 +82,10 @@ const base::FeatureParam<int> kBackForwardCacheSizeCacheSize{
 // the BFCachePolicy manager takes care of pruning for foreground tabs as well.
 const base::FeatureParam<int> kBackForwardCacheSizeForegroundCacheSize{
     &kBackForwardCacheSize, "foreground_cache_size", 0};
+
+// Feature that controls if the BFCache reacts to memory pressure.
+BASE_FEATURE(kBFCachePerformanceManagerPolicy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -538,9 +543,6 @@ void MarkNoWithMultipleFeatures(BackForwardCacheCanStoreDocumentResult* result,
   DCHECK(features == features_added);
 }
 
-// Feature that controls if the BFCache reacts to memory pressure.
-BASE_FEATURE(kBFCachePerformanceManagerPolicy,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The foregrounded tab's cache limit on moderate memory pressure. The negative
 // value means no limit.
@@ -699,11 +701,13 @@ BackForwardCacheTestDelegate::~BackForwardCacheTestDelegate() {
 }
 
 BackForwardCacheImpl::BackForwardCacheImpl(WebContentsImpl& web_contents)
-    : web_contents_(web_contents),
+    : WebContentsObserver(&web_contents),
+      web_contents_(web_contents),
       allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
       blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
       blocked_cgi_params_(ParseBlockedCgiParams(GetBlockedCgiParams())),
       max_cache_size_(GetDefaultMaxCacheSize()),
+      baseline_max_cache_size_(GetDefaultMaxCacheSize()),
       max_foreground_cache_size_(GetDefaultMaxForegroundCacheSize()),
       weak_factory_(this) {
   BrowserContext* browser_context = web_contents.GetBrowserContext();
@@ -719,6 +723,9 @@ BackForwardCacheImpl::BackForwardCacheImpl(WebContentsImpl& web_contents)
   if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy)) {
     memory_pressure_listener_registration_.emplace(
         base::MemoryPressureListenerTag::kBackForwardCacheImpl, this);
+    if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+      max_cache_size_ = GetTargetCacheSize();
+    }
   }
 }
 
@@ -1408,19 +1415,35 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
     // those to be kept in the cache.
     EnforceCacheSizeLimitInternal(
         max_foreground_cache_size_.value(),
-        BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit);
+        BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit,
+        /*bypass_ack_check=*/false);
   }
-  EnforceCacheSizeLimitInternal(
-      GetCacheSize(), BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
+  BackForwardCacheMetrics::NotRestoredReason limit_reason =
+      BackForwardCacheMetrics::NotRestoredReason::kCacheLimit;
+  size_t effective_limit = GetCacheSize();
+  bool bypass_ack_check = false;
+  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
+      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (effective_limit < baseline_max_cache_size_ &&
+        memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE) {
+      limit_reason = GetPressureReason(memory_pressure_level());
+      bypass_ack_check = true;
+    }
+  }
+  EnforceCacheSizeLimitInternal(effective_limit, limit_reason,
+                                bypass_ack_check);
 }
 
-size_t BackForwardCacheImpl::Prune(size_t limit, NotRestoredReason reason) {
-  return EnforceCacheSizeLimitInternal(limit, reason);
+size_t BackForwardCacheImpl::PruneForTesting(size_t limit,
+                                             NotRestoredReason reason) {
+  return EnforceCacheSizeLimitInternal(limit, reason,
+                                       /*bypass_ack_check=*/true);
 }
 
 size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
-    BackForwardCacheMetrics::NotRestoredReason reason) {
+    BackForwardCacheMetrics::NotRestoredReason reason,
+    bool bypass_ack_check) {
   using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
   using Level = BackForwardCachePrioritizedEntryExperimentLevel;
 
@@ -1454,13 +1477,7 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     // Skip the entry if any of the RenderViewHosts in this Entry haven't
     // received the BFCache acknowledgement yet. The current method will be
     // called again once the acknowledgements are all received later.
-    // Note: this only applies to the case where the latest entry triggers the
-    // cache limit, for the pruning case, the entry will be counted and might be
-    // evicted.
-    if (reason !=
-            NotRestoredReason::kCacheLimitPrunedOnModerateMemoryPressure &&
-        reason !=
-            NotRestoredReason::kCacheLimitPrunedOnCriticalMemoryPressure &&
+    if (!bypass_ack_check &&
         !AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
       continue;
     }
@@ -1509,8 +1526,15 @@ void BackForwardCacheImpl::SetEmbedderSuppliedCacheSize(
   if (!IsBackForwardCacheEnabled()) {
     return;
   }
-  max_cache_size_ = embedder_supplied_cache_size;
+  baseline_max_cache_size_ = embedder_supplied_cache_size;
   max_foreground_cache_size_ = std::nullopt;
+
+  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
+      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    max_cache_size_ = GetTargetCacheSize();
+  } else {
+    max_cache_size_ = embedder_supplied_cache_size;
+  }
   EnforceCacheSizeLimit();
 }
 
@@ -1873,6 +1897,16 @@ void BackForwardCacheImpl::RecordEntryMatch(const GURL& new_url,
 
 void BackForwardCacheImpl::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  if (!IsBackForwardCacheEnabled()) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) &&
+      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    max_cache_size_ = GetTargetCacheSize();
+    EnforceMemoryPressureLimit();
+    return;
+  }
+
   if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
@@ -1907,15 +1941,16 @@ void BackForwardCacheImpl::OnMemoryPressure(
     return;
   }
 
-  // Do not flush the BFCache if there's a pending navigation as this could stop
-  // it.
+  // Do not flush the BFCache if there's a pending navigation as this could
+  // stop it.
   // TODO(431957711): Check if this is really needed.
-  // TODO(431957711): `number_of_tabs` can only ever be 0 or 1. Consider fixing
-  // it or removing it the metric.
+  // TODO(431957711): `number_of_tabs` can only ever be 0 or 1. Consider
+  // fixing it or removing it the metric.
   size_t number_of_tabs = 0;
   size_t number_of_cached_entries = 0;
   if (!GetNavigationController().GetPendingEntry()) {
-    size_t count = Prune(cache_size, reason);
+    size_t count = EnforceCacheSizeLimitInternal(cache_size, reason,
+                                                 /*bypass_ack_check=*/true);
     if (count > 0) {
       number_of_tabs++;
       number_of_cached_entries += count;
@@ -1928,6 +1963,97 @@ void BackForwardCacheImpl::OnMemoryPressure(
   base::UmaHistogramCounts1000(
       "BackForwardCache.Pruning.NumberOfBackForwardCacheEntries",
       number_of_cached_entries);
+}
+
+int BackForwardCacheImpl::GetConfiguredPressureLimit(
+    base::MemoryPressureLevel level) {
+  bool is_visible = IsVisible();
+  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return is_visible ? ForegroundCacheSizeOnCriticalPressure()
+                      : BackgroundCacheSizeOnCriticalPressure();
+  }
+  if (level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    return is_visible ? ForegroundCacheSizeOnModeratePressure()
+                      : BackgroundCacheSizeOnModeratePressure();
+  }
+  return -1;
+}
+
+BackForwardCacheMetrics::NotRestoredReason
+BackForwardCacheImpl::GetPressureReason(base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return BackForwardCacheMetrics::NotRestoredReason::
+        kCacheLimitPrunedOnCriticalMemoryPressure;
+  }
+  return BackForwardCacheMetrics::NotRestoredReason::
+      kCacheLimitPrunedOnModerateMemoryPressure;
+}
+
+size_t BackForwardCacheImpl::GetTargetCacheSize() {
+  if (memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return baseline_max_cache_size_;
+  }
+
+  int cache_size = GetConfiguredPressureLimit(memory_pressure_level());
+  if (cache_size < 0) {
+    return baseline_max_cache_size_;
+  }
+
+  return std::min(static_cast<size_t>(cache_size), baseline_max_cache_size_);
+}
+
+void BackForwardCacheImpl::EnforceMemoryPressureLimit() {
+  if (memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
+  int cache_size = GetConfiguredPressureLimit(memory_pressure_level());
+  if (cache_size < 0) {
+    return;
+  }
+
+  bool bypass_ack_check = (max_cache_size_ < baseline_max_cache_size_);
+  auto reason = bypass_ack_check
+                    ? GetPressureReason(memory_pressure_level())
+                    : BackForwardCacheMetrics::NotRestoredReason::kCacheLimit;
+
+  size_t number_of_tabs = 0;
+  size_t number_of_cached_entries = 0;
+  // Do not flush the BFCache if there's a pending navigation as this could
+  // stop it.
+  // TODO(431957711): Check if this is really needed.
+  // TODO(431957711): `number_of_tabs` can only ever be 0 or 1. Consider
+  // fixing it or removing it the metric.
+  if (!GetNavigationController().GetPendingEntry()) {
+    size_t count = EnforceCacheSizeLimitInternal(max_cache_size_, reason,
+                                                 bypass_ack_check);
+    if (count > 0) {
+      number_of_tabs++;
+      number_of_cached_entries += count;
+    }
+  }
+
+  base::UmaHistogramCounts1000(
+      "BackForwardCache.Pruning.NumberOfTabsWithBackForwardCache",
+      number_of_tabs);
+  base::UmaHistogramCounts1000(
+      "BackForwardCache.Pruning.NumberOfBackForwardCacheEntries",
+      number_of_cached_entries);
+}
+
+void BackForwardCacheImpl::OnVisibilityChanged(content::Visibility visibility) {
+  if (!IsBackForwardCacheEnabled()) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(kBFCachePerformanceManagerPolicy) ||
+      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    return;
+  }
+  max_cache_size_ = GetTargetCacheSize();
+  // Defer pruning if there is a pending navigation to avoid interrupting it.
+  if (!GetNavigationController().GetPendingEntry()) {
+    EnforceCacheSizeLimit();
+  }
 }
 
 void BackForwardCacheImpl::RenderViewHostNoLongerStoredInternal(

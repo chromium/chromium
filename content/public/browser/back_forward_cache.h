@@ -271,11 +271,6 @@ class CONTENT_EXPORT BackForwardCache {
   // Evict all entries from the BackForwardCache with specific reason.
   virtual void Flush(NotRestoredReason reason) = 0;
 
-  // Evict back/forward cache entries from the least recently used ones until
-  // the cache is within the given size limit.
-  // Returns the total number of BFCache entries before the pruning,
-  virtual size_t Prune(size_t limit, NotRestoredReason reason) = 0;
-
   // Sets limits on cache size and time to live, which will take precedent over
   // the default limits.
   virtual void SetEmbedderSuppliedCacheSize(size_t cache_size) = 0;

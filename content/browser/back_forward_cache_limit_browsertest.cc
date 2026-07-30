@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -29,6 +30,14 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
     EXPECT_EQ(backgrounded, rfh->GetProcess()->GetPriority() ==
                                 base::Process::Priority::kBestEffort);
   }
+
+  size_t PruneForTesting(size_t limit,
+                         BackForwardCacheMetrics::NotRestoredReason reason) {
+    auto* bfc = static_cast<BackForwardCacheImpl*>(
+        &web_contents()->GetController().GetBackForwardCache());
+    return bfc->PruneForTesting(limit, reason);
+  }
+
   // The number of pages the BackForwardCache can hold per tab.
   const size_t kBackForwardCacheSize = 4;
   const size_t kForegroundBackForwardCacheSize = 2;
@@ -162,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(
   CHECK_LE(kPruneSize, kBackForwardCacheSize);
 
   // Prune the BFCache entries.
-  web_contents()->GetController().GetBackForwardCache().Prune(kPruneSize,
-                                                              kPruneReason);
+  PruneForTesting(kPruneSize, kPruneReason);
 
   for (int i = kBackForwardCacheSize - 1 - 1 - kPruneSize; i >= 0; --i) {
     SCOPED_TRACE(i);
@@ -251,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
 
   // Now the BFCache entry list is: [pp, b].
   // Prune the BFCache entries to 0.
-  web_contents()->GetController().GetBackForwardCache().Prune(0, kPruneReason);
+  PruneForTesting(0, kPruneReason);
   // All the entries should be evicted
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({kPruneReason}, {}, {}, {}, {}, FROM_HERE);
@@ -278,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
 
   // Now the BFCache entry list is: [a, pp, b].
   // Prune the BFCache entries to 0.
-  web_contents()->GetController().GetBackForwardCache().Prune(0, kPruneReason);
+  PruneForTesting(0, kPruneReason);
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   if (ShouldPrioritizeWhenClearAllUnlessNoEviction()) {
     // If the level is prioritize-unless-should-clear-all-and-no-eviction, the
@@ -317,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [pe1, a, pe2, b].
   // Prune the BFCache entries to 1, the result should be:
   // [pe1(evicted), a(evicted), pe2(prioritized entry special rule), b].
-  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
+  PruneForTesting(1, kPruneReason);
 
   // The last non-prioritized entry should be restored because it's within the
   // cache limit.
@@ -353,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [a, pe].
   // Prune the BFCache entries to 1, the result should be:
   // [a(evicted), pe].
-  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
+  PruneForTesting(1, kPruneReason);
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -380,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [pe1, a].
   // Prune the BFCache entries to 1, the result should still be
   // [pe1(prioritized entry special rule), a].
-  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
+  PruneForTesting(1, kPruneReason);
 
   // The last non-prioritized entry should be restored because it's within the
   // cache limit.
@@ -403,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
   // Now the BFCache entry list is: [pe1, c, pe2, d].
   // Prune the BFCache entries to 1, the result should still be
   // [pe1(evicted), a(evicted), pe2(prioritized entry special rule), d].
-  web_contents()->GetController().GetBackForwardCache().Prune(1, kPruneReason);
+  PruneForTesting(1, kPruneReason);
 
   // The last non-prioritized entry should be restored because it's within the
   // cache limit.

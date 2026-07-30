@@ -32,6 +32,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -65,6 +66,7 @@ BASE_FEATURE(kAllowCrossOriginNotRestoredReasons,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheSize);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kBackForwardCacheSizeCacheSize;
 CONTENT_EXPORT extern const base::FeatureParam<int>
@@ -142,6 +144,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     : public BackForwardCache,
       public RenderProcessHostInternalObserver,
       public StoredPage::Delegate,
+      public WebContentsObserver,
       public base::MemoryPressureListener {
   friend class BackForwardCacheCanStoreTreeResult;
   friend class BackForwardCacheMetrics;
@@ -426,7 +429,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // BackForwardCache overrides:
   void Flush() override;
   void Flush(NotRestoredReason reason) override;
-  size_t Prune(size_t limit, NotRestoredReason reason) override;
   void SetEmbedderSuppliedCacheSize(
       size_t embedder_supplied_cache_size) override;
   void SetEmbedderSuppliedTimeToLive(
@@ -434,6 +436,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void SetEmbedderSuppliedCacheForwardEntriesAllowed(
       bool embedder_supplied_cache_forward_entries_allowed) override;
   void DisableForTesting(DisableForTestingReason reason) override;
+
+  size_t PruneForTesting(size_t limit, NotRestoredReason reason);
 
   // Evict all entries from the BackForwardCache that match the removal filter.
   void Flush(
@@ -504,6 +508,16 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void PruneForwardEntries(int target_entry_index);
 
  private:
+  // WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // Stateful memory pressure helpers:
+  int GetConfiguredPressureLimit(base::MemoryPressureLevel level);
+  BackForwardCacheMetrics::NotRestoredReason GetPressureReason(
+      base::MemoryPressureLevel level);
+  size_t GetTargetCacheSize();
+  void EnforceMemoryPressureLimit();
+
   // Returns the primary NavigationControllerImpl associated with this cache.
   NavigationControllerImpl& GetNavigationController() const;
 
@@ -570,14 +584,13 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // If it's `kForegroundCacheLimit`, it only considers entries that are
   // associated with a foregrounded process. Otherwise all entries are
   // considered.
-  // If it's
-  // `kCacheLimitPrunedOnModerateMemoryPressure` or
-  // `kCacheLimitPrunedOnCriticalMemoryPressure`, it means the enforcement is
-  // triggered by the `Prune()` method.
+  // If `bypass_ack_check` is true, entries that haven't received their
+  // acknowledgement yet will still be considered for eviction.
   // This method returns the number of entries in the BFCache.
   size_t EnforceCacheSizeLimitInternal(
       size_t limit,
-      BackForwardCacheMetrics::NotRestoredReason reason);
+      BackForwardCacheMetrics::NotRestoredReason reason,
+      bool bypass_ack_check);
 
   // Updates |process_to_entry_map_| with processes from |entry|. These must
   // be called after adding or removing an entry in |entries_|.
@@ -735,6 +748,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // The maximum number of entries the BackForwardCache can hold per tab.
   size_t max_cache_size_;
+  size_t baseline_max_cache_size_;
 
   // If this contains a value, it represents the maximum number of entries
   // involving foregrounded processes that the BackForwardCache can hold. The

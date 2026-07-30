@@ -5,10 +5,13 @@
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 
 #include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
@@ -35,6 +38,27 @@ void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
       memory_pressure_level, run_loop.QuitClosure());
   run_loop.Run();
 }
+
+class FrameDeletionObserver : public WebContentsObserver {
+ public:
+  FrameDeletionObserver(WebContents* web_contents,
+                        RenderFrameHost* rfh,
+                        base::OnceClosure quit_closure)
+      : WebContentsObserver(web_contents),
+        observed_rfh_(rfh),
+        quit_closure_(std::move(quit_closure)) {}
+
+  void RenderFrameDeleted(RenderFrameHost* rfh) override {
+    if (rfh == observed_rfh_) {
+      observed_rfh_ = nullptr;
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  raw_ptr<RenderFrameHost> observed_rfh_;
+  base::OnceClosure quit_closure_;
+};
 
 }  // namespace
 
@@ -367,5 +391,361 @@ INSTANTIATE_TEST_SUITE_P(
                         base::MEMORY_PRESSURE_LEVEL_MODERATE),
         // Is foregrounded.
         testing::Bool()));
+
+class BackForwardCacheMemoryPressureStatefulTest
+    : public RenderViewHostImplTestHarness,
+      public WebContentsDelegate,
+      public testing::WithParamInterface<
+          std::tuple<base::MemoryPressureLevel, bool>> {
+ public:
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{base::kStatefulMemoryPressure, {}}}),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    contents()->SetDelegate(this);
+  }
+
+  void TearDown() override {
+    SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
+  void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+    base::RunLoop run_loop;
+    base::MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+        memory_pressure_level, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(BackForwardCacheMemoryPressureStatefulTest, MemoryPressure) {
+  const base::MemoryPressureLevel memory_pressure_level =
+      std::get<0>(GetParam());
+  const bool is_foreground = std::get<1>(GetParam());
+
+  // Get an active URL.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+
+  // Set up the cache with 4 entries by doing 4 more navigations.
+  std::vector<base::WeakPtr<RenderFrameHostImpl>> cached_rfhs;
+  for (int i = 0; i < 4; ++i) {
+    cached_rfhs.push_back(contents()->GetPrimaryMainFrame()->GetWeakPtr());
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  }
+
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 4u);
+
+  // Test foreground/background behavior.
+  if (is_foreground) {
+    contents()->WasShown();
+  } else {
+    contents()->WasHidden();
+  }
+
+  // After memory pressure, verify eviction logic.
+  SimulateMemoryPressure(memory_pressure_level);
+
+  size_t expected_limit = 0;
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    expected_limit = 0;
+  } else {
+    expected_limit = is_foreground ? 3 : 1;
+  }
+
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), expected_limit);
+  // Entries are evicted in a FIFO order.
+  for (size_t i = 0; i < cached_rfhs.size(); ++i) {
+    if (i < cached_rfhs.size() - expected_limit) {
+      EXPECT_FALSE(cached_rfhs[i]);
+    } else {
+      EXPECT_TRUE(cached_rfhs[i]->IsInBackForwardCache());
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheMemoryPressureStatefulTest,
+    testing::Combine(
+        // Memory pressure level.
+        testing::Values(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+                        base::MEMORY_PRESSURE_LEVEL_MODERATE),
+        // Is foregrounded.
+        testing::Bool()));
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       PressureDoesNotGrowCacheBeyondBaseline) {
+  // Set a strict embedder limit of 1.
+  contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedCacheSize(1);
+
+  // Navigate twice to fill the cache to the limit.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+
+  // Start FOREGROUND and trigger Moderate Pressure.
+  // The foreground pressure limit is usually 3, which is larger than the
+  // baseline limit of 1.
+  contents()->WasShown();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // The limit should remain capped at the baseline of 1.
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+
+  // The active limit should remain strictly capped at the baseline of 1, not
+  // grow to 3!
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 1u);
+}
+
+class BackForwardCacheVisibilityPressureTest
+    : public RenderViewHostImplTestHarness,
+      public WebContentsDelegate {
+ public:
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{base::kStatefulMemoryPressure, {}}}),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+    contents()->SetDelegate(this);
+  }
+
+  void TearDown() override {
+    SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
+  void SimulateMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
+    base::RunLoop run_loop;
+    base::MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+        memory_pressure_level, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BackForwardCacheVisibilityPressureTest, VisibilityChangeUnderPressure) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  bfcache_impl.SetEmbedderSuppliedCacheSize(5);
+
+  // Set up the cache with 5 entries by doing 5 more navigations.
+  std::vector<base::WeakPtr<RenderFrameHostImpl>> cached_rfhs;
+  for (int i = 0; i < 5; ++i) {
+    cached_rfhs.push_back(contents()->GetPrimaryMainFrame()->GetWeakPtr());
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  }
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 5u);
+
+  // Start FOREGROUND and trigger Moderate Pressure.
+  contents()->WasShown();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Expect limit to be 3 (Foreground Moderate limit).
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 3u);
+
+  // Hide the WebContents.
+  // Expect limit to update to 1 (Background Moderate limit) and immediately
+  // prune.
+  base::RunLoop run_loop;
+  FrameDeletionObserver observer(contents(), cached_rfhs[3].get(),
+                                 run_loop.QuitClosure());
+  contents()->WasHidden();
+  run_loop.Run();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+}
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       SubsequentNavigationEnforcesPressureLimit) {
+  // Navigate to fill cache with 3 entries. (Requires 4 navigations).
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  EXPECT_EQ(
+      contents()->GetController().GetBackForwardCache().GetEntries().size(),
+      3u);
+
+  // Trigger Moderate Pressure in Background (Limit 1).
+  contents()->WasHidden();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Limit of 1 should be enforced immediately. (SimulateMemoryPressure runs a
+  // loop, flushing eviction tasks).
+  EXPECT_EQ(
+      contents()->GetController().GetBackForwardCache().GetEntries().size(),
+      1u);
+
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  RenderFrameHost* page2 =
+      bfcache_impl.GetEntries().front()->render_frame_host();
+  base::RunLoop run_loop;
+  FrameDeletionObserver observer(contents(), page2, run_loop.QuitClosure());
+
+  // Now navigate AGAIN to add a new entry.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  run_loop.Run();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+}
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       InitialStateEnforcesPressureLimit) {
+  // Simulate globally that we are under Critical Memory Pressure BEFORE the tab
+  // is created.
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Create a brand new WebContents while pressure is active.
+  std::unique_ptr<TestWebContents> new_contents =
+      TestWebContents::Create(browser_context(), nullptr);
+  new_contents->SetDelegate(this);
+
+  // Navigate to add entries.
+  NavigationSimulator::NavigateAndCommitFromBrowser(new_contents.get(),
+                                                    GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(new_contents.get(),
+                                                    GetNextUrl());
+
+  RenderFrameHost* page1 = new_contents->GetPrimaryMainFrame();
+  base::RunLoop run_loop;
+  FrameDeletionObserver observer(new_contents.get(), page1,
+                                 run_loop.QuitClosure());
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(new_contents.get(),
+                                                    GetNextUrl());
+  run_loop.Run();
+  EXPECT_EQ(
+      new_contents->GetController().GetBackForwardCache().GetEntries().size(),
+      0u);
+}
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       DeferredPruningEnforcesStatefulLimit) {
+  // Navigate to fill cache with 2 entries. (Requires 3 navigations).
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  EXPECT_EQ(
+      contents()->GetController().GetBackForwardCache().GetEntries().size(),
+      2u);
+
+  // Start a pending navigation.
+  auto simulator =
+      NavigationSimulator::CreateBrowserInitiated(GetNextUrl(), contents());
+  simulator->Start();
+  EXPECT_TRUE(contents()->GetController().GetPendingEntry());
+
+  // Trigger Moderate Pressure in Background (Limit 1).
+  contents()->WasHidden();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Pruning should be deferred because of the pending navigation!
+  EXPECT_EQ(
+      contents()->GetController().GetBackForwardCache().GetEntries().size(),
+      2u);
+
+  // Commit the navigation. This should trigger the deferred pruning!
+  // Note: Since entries don't have ACK in unit tests, pruning would be blocked
+  // if not for the stateful pressure reason bypass. The success of this
+  // eviction proves the pressure reason is correctly propagated!
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  RenderFrameHost* page0 =
+      bfcache_impl.GetEntries().back()->render_frame_host();
+  base::RunLoop run_loop;
+  FrameDeletionObserver observer(contents(), page0, run_loop.QuitClosure());
+
+  simulator->Commit();
+  run_loop.Run();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+}
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       DeferredPruningEnforcesStatefulLimitOnVisibilityChange) {
+  // Navigate to fill cache with 2 entries. (Requires 3 navigations).
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  EXPECT_EQ(
+      contents()->GetController().GetBackForwardCache().GetEntries().size(),
+      2u);
+
+  // Start FOREGROUND and trigger Moderate Pressure (Foreground Limit is 3).
+  contents()->WasShown();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Start a pending navigation.
+  auto simulator =
+      NavigationSimulator::CreateBrowserInitiated(GetNextUrl(), contents());
+  simulator->Start();
+  EXPECT_TRUE(contents()->GetController().GetPendingEntry());
+
+  // Hide the WebContents (Background Limit is 1).
+  // Pruning should be deferred because of the pending navigation!
+  contents()->WasHidden();
+  EXPECT_EQ(
+      contents()->GetController().GetBackForwardCache().GetEntries().size(),
+      2u);
+
+  // Commit the navigation. This should trigger the deferred pruning!
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  RenderFrameHost* page0 =
+      bfcache_impl.GetEntries().back()->render_frame_host();
+  base::RunLoop run_loop;
+  FrameDeletionObserver observer(contents(), page0, run_loop.QuitClosure());
+
+  simulator->Commit();
+  run_loop.Run();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 1u);
+}
+
+TEST_F(BackForwardCacheMemoryPressureStatefulTest,
+       ModeratePressureDoesNotBypassAckWhenAboveBaseline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kBFCachePerformanceManagerPolicy,
+        {{"foreground_cache_size_on_moderate_pressure", "3"}}}},
+      {});
+
+  // Set baseline limit to 1.
+  contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedCacheSize(1);
+
+  // Navigate to add 3 entries. Since baseline is 1, and entries don me have
+  // ACK, all 3 entries should remain in the cache despite standard limit
+  // enforcement.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), GetNextUrl());
+
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 3u);
+
+  // Start FOREGROUND and trigger Moderate Pressure.
+  // The foreground pressure limit is 3, which is larger than baseline 1.
+  contents()->WasShown();
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Because memory pressure did not tighten the limit below baseline, it must
+  // NOT bypass the ACK check. Therefore, no entries should be pruned!
+  EXPECT_EQ(bfcache_impl.GetEntries().size(), 3u);
+}
 
 }  // namespace content
