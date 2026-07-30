@@ -237,7 +237,7 @@ class EntityEditorMediator {
             if (!isEditable(editorItem)) {
                 continue;
             }
-            editorItem.model.set(ERROR_MESSAGE, "");
+            editorItem.model.set(ERROR_MESSAGE, null);
         }
     }
 
@@ -360,7 +360,7 @@ class EntityEditorMediator {
         if (itemModel.get(IS_REQUIRED)) {
             for (EditorItem item : mEditorModel.get(EDITOR_FIELDS)) {
                 if (isEditable(item) && item.model.get(IS_REQUIRED)) {
-                    item.model.set(ERROR_MESSAGE, "");
+                    item.model.set(ERROR_MESSAGE, null);
                 }
             }
             // Hide the notice as well.
