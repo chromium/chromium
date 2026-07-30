@@ -79,14 +79,15 @@ TEST_F(TypeConversionTest, TestConversion_ShadowValuesToString) {
 
   EXPECT_EQ(
       ui::metadata::TypeConverter<gfx::ShadowValues>::ToString(shadow_values),
-      u"[(1,2),0.30,rgba(255,0,0,128)]");
+      u"[(1,2),0.30,rgba(255,0,0,128),is_pill_shaped=0]");
 
   shadow_values.emplace_back(gfx::Vector2d(9, 8), .76,
                              SkColorSetARGB(20, 0, 64, 255));
 
   EXPECT_EQ(
       ui::metadata::TypeConverter<gfx::ShadowValues>::ToString(shadow_values),
-      u"[(1,2),0.30,rgba(255,0,0,128); (9,8),0.76,rgba(0,64,255,20)]");
+      u"[(1,2),0.30,rgba(255,0,0,128),is_pill_shaped=0; "
+      u"(9,8),0.76,rgba(0,64,255,20),is_pill_shaped=0]");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {

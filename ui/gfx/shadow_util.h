@@ -35,6 +35,7 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
   static const ShadowDetails& Get(
       int elevation,
       int radius,
+      bool is_pill_shaped = false,
       ShadowStyle style = ShadowStyle::kMaterialDesign);
   // Returns a cached ShadowDetails for the given elevation, corner radius,
   // key shadow color, ambient shadow color, and shadow style.
@@ -42,11 +43,18 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
                                   int radius,
                                   SkColor key_color,
                                   SkColor ambient_color,
+                                  bool is_pill_shaped,
                                   ShadowStyle style);
   // Returns a cached ShadowDetails for given corner radius and shadow values.
   static const ShadowDetails& Get(int radius, const gfx::ShadowValues& values);
 
   static size_t GetDetailsCacheSizeForTest();
+
+  // Returns the insets for the ninebox aperture given the shadows and corner
+  // radius. Represents the total space need to draw  the full range of blur and
+  // the corner rounding around the aperture.
+  static gfx::Insets GetNineboxApertureInsets(const gfx::ShadowValues& shadows,
+                                              int corner_radius);
 
   // Description of the shadows.
   const gfx::ShadowValues values;

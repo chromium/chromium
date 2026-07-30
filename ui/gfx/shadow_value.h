@@ -27,23 +27,31 @@ typedef std::vector<ShadowValue> ShadowValues;
 class COMPONENT_EXPORT(GFX) ShadowValue {
  public:
   constexpr ShadowValue() = default;
-  constexpr ShadowValue(const gfx::Vector2d& offset, double blur, SkColor color)
-      : offset_(offset), blur_(blur), color_(color) {}
+  constexpr ShadowValue(const gfx::Vector2d& offset,
+                        double blur,
+                        SkColor color,
+                        bool is_pill_shaped = false)
+      : offset_(offset),
+        blur_(blur),
+        color_(color),
+        is_pill_shaped_(is_pill_shaped) {}
 
   constexpr int x() const { return offset_.x(); }
   constexpr int y() const { return offset_.y(); }
   constexpr const gfx::Vector2d& offset() const { return offset_; }
   constexpr double blur() const { return blur_; }
   constexpr SkColor color() const { return color_; }
+  constexpr bool is_pill_shaped() const { return is_pill_shaped_; }
 
   constexpr bool operator==(const ShadowValue& other) const {
     return offset_ == other.offset_ && blur_ == other.blur_ &&
-           color_ == other.color_;
+           color_ == other.color_ && is_pill_shaped_ == other.is_pill_shaped_;
   }
 
   constexpr bool operator<(const ShadowValue& other) const {
-    return std::make_tuple(x(), y(), blur_, color_) <
-           std::make_tuple(other.x(), other.y(), other.blur_, other.color_);
+    return std::make_tuple(x(), y(), blur_, color_, is_pill_shaped_) <
+           std::make_tuple(other.x(), other.y(), other.blur_, other.color_,
+                           other.is_pill_shaped_);
   }
 
   ShadowValue Scale(float scale) const;
@@ -69,26 +77,31 @@ class COMPONENT_EXPORT(GFX) ShadowValue {
   // TODO(elainechien): crbug.com/1056950.
   static ShadowValues MakeShadowValues(int elevation,
                                        SkColor key_shadow_color,
-                                       SkColor ambient_shadow_color);
+                                       SkColor ambient_shadow_color,
+                                       bool is_pill_shaped = false);
   // Makes ShadowValues for MD shadows. This style is deprecated.
   static ShadowValues MakeMdShadowValues(int elevation,
-                                         SkColor color = SK_ColorBLACK);
+                                         SkColor color = SK_ColorBLACK,
+                                         bool is_pill_shaped = false);
   // Makes ShadowValues for MD shadows with customized key and ambient colors.
   static ShadowValues MakeMdShadowValues(int elevation,
                                          SkColor key_shadow_color,
-                                         SkColor ambient_shadow_color);
+                                         SkColor ambient_shadow_color,
+                                         bool is_pill_shaped = false);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Makes ShadowValues for Chrome OS UI components with default colors.
   static ShadowValues MakeChromeOSSystemUIShadowValues(
       int elevation,
-      SkColor color = SK_ColorBLACK);
+      SkColor color = SK_ColorBLACK,
+      bool is_pill_shaped = false);
   // Makes ShadowValues for chrome OS UI components with customized key and
   // ambient colors.
   static ShadowValues MakeChromeOSSystemUIShadowValues(
       int elevation,
       SkColor key_shadow_color,
-      SkColor ambient_shadow_color);
+      SkColor ambient_shadow_color,
+      bool is_pill_shaped = false);
 #endif
 
  private:
@@ -105,6 +118,8 @@ class COMPONENT_EXPORT(GFX) ShadowValue {
   double blur_ = 0.;
 
   SkColor color_ = SK_ColorTRANSPARENT;
+
+  bool is_pill_shaped_ = false;
 };
 
 }  // namespace gfx

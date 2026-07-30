@@ -149,22 +149,28 @@ void Shadow::UpdateShadowAppearance() {
   // (see ShadowDetails::Get), so cap elevation at the most we can handle.
   const int smaller_dimension =
       std::min(content_bounds_.width(), content_bounds_.height());
+  const bool is_pill_shaped = (smaller_dimension / 2 == rounded_corner_radius_);
+  const int max_safe_elevation =
+      is_pill_shaped ? smaller_dimension / 4
+                     : (smaller_dimension - 2 * rounded_corner_radius_) / 4;
   const int size_adjusted_elevation =
-      std::min((smaller_dimension - 2 * rounded_corner_radius_) / 4,
-               static_cast<int>(desired_elevation_));
+      std::min(max_safe_elevation, static_cast<int>(desired_elevation_));
 
   auto iter = color_map_.find(desired_elevation_);
   const auto& details =
       (iter == color_map_.end())
           ? gfx::ShadowDetails::Get(size_adjusted_elevation,
-                                    rounded_corner_radius_, style_)
+                                    rounded_corner_radius_, is_pill_shaped,
+                                    style_)
           : gfx::ShadowDetails::Get(
                 size_adjusted_elevation, rounded_corner_radius_,
                 /*key_color=*/iter->second.first,
-                /*ambient_color=*/iter->second.second, style_);
+                /*ambient_color=*/iter->second.second, is_pill_shaped, style_);
 
-  gfx::Insets blur_region = gfx::ShadowValue::GetBlurRegion(details.values) +
-                            gfx::Insets(rounded_corner_radius_);
+  const gfx::Insets aperture_insets =
+      gfx::ShadowDetails::GetNineboxApertureInsets(details.values,
+                                                   rounded_corner_radius_);
+
   // Update |shadow_layer()| if details changed and it has been updated in
   // the past (|details_| is set), or elevation is non-zero.
   if ((&details != details_) && (details_ || size_adjusted_elevation)) {
@@ -174,7 +180,7 @@ void Shadow::UpdateShadowAppearance() {
     // the aperture goes further inside the image than the shadow margins (which
     // represent exterior blur).
     gfx::Rect aperture(details.nine_patch_image.size());
-    aperture.Inset(blur_region);
+    aperture.Inset(aperture_insets);
     shadow_layer()->UpdateNinePatchLayerAperture(aperture);
     details_ = &details;
   }
@@ -220,8 +226,8 @@ void Shadow::UpdateShadowAppearance() {
 
   // The border is the same inset as the aperture.
   shadow_layer()->UpdateNinePatchLayerBorder(
-      gfx::Rect(blur_region.left(), blur_region.top(), blur_region.width(),
-                blur_region.height()));
+      gfx::Rect(aperture_insets.left(), aperture_insets.top(),
+                aperture_insets.width(), aperture_insets.height()));
 }
 
 }  // namespace ui

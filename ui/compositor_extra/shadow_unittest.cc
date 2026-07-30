@@ -29,21 +29,29 @@ gfx::Insets InsetsForElevation(int elevation) {
          gfx::Insets::TLBR(elevation, 0, -elevation, 0);
 }
 
-gfx::Size NineboxImageSizeForElevationAndCornerRadius(int elevation,
-                                                      int corner_radius) {
-  auto values = gfx::ShadowValue::MakeMdShadowValues(elevation);
+gfx::Size NineboxImageSizeForElevationAndCornerRadius(
+    int elevation,
+    int corner_radius,
+    bool is_pill_shaped = false) {
+  auto values = gfx::ShadowValue::MakeMdShadowValues(elevation, SK_ColorBLACK,
+                                                     is_pill_shaped);
   gfx::Rect bounds(0, 0, 1, 1);
-  bounds.Inset(-gfx::ShadowValue::GetBlurRegion(values));
-  bounds.Inset(-gfx::Insets(corner_radius));
+  bounds.Inset(
+      -gfx::ShadowDetails::GetNineboxApertureInsets(values, corner_radius));
   return bounds.size();
 }
 
 // Calculates the minimum shadow content size for given elevation and corner
 // radius.
-gfx::Size MinContentSizeForElevationAndCornerRadius(int elevation,
-                                                    int corner_radius) {
-  const int dimension = 4 * elevation + 2 * corner_radius;
-  return gfx::Size(dimension, dimension);
+gfx::Size MinContentSizeForElevationAndCornerRadius(
+    int elevation,
+    int corner_radius,
+    bool is_pill_shaped = false) {
+  auto values = gfx::ShadowValue::MakeMdShadowValues(elevation, SK_ColorBLACK,
+                                                     is_pill_shaped);
+  gfx::Insets insets =
+      gfx::ShadowDetails::GetNineboxApertureInsets(values, corner_radius);
+  return gfx::Size(insets.width(), insets.height());
 }
 
 class ShadowTest : public testing::Test {
@@ -121,6 +129,9 @@ TEST_F(ShadowTest, ResetLayerBoundsBySettingSameContentBounds) {
 TEST_F(ShadowTest, AdjustElevationForSmallContents) {
   Shadow shadow;
   shadow.Init(kElevationLarge);
+
+  // Test with corner radius 0.
+  shadow.SetRoundedCornerRadius(0);
   {
     gfx::Rect content_bounds(100, 100, 300, 300);
     shadow.SetContentBounds(content_bounds);
@@ -129,6 +140,26 @@ TEST_F(ShadowTest, AdjustElevationForSmallContents) {
     EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
   }
 
+  {
+    constexpr int kWidth = 80;
+    gfx::Rect content_bounds(100, 100, kWidth, 300);
+    shadow.SetContentBounds(content_bounds);
+    gfx::Rect shadow_bounds(content_bounds);
+    shadow_bounds.Inset(InsetsForElevation(kWidth / 4));
+    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  }
+
+  {
+    constexpr int kHeight = 80;
+    gfx::Rect content_bounds(100, 100, 300, kHeight);
+    shadow.SetContentBounds(content_bounds);
+    gfx::Rect shadow_bounds(content_bounds);
+    shadow_bounds.Inset(InsetsForElevation(kHeight / 4));
+    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  }
+
+  // Test with default corner radius 2.
+  shadow.SetRoundedCornerRadius(2);
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
@@ -146,6 +177,17 @@ TEST_F(ShadowTest, AdjustElevationForSmallContents) {
     shadow_bounds.Inset(InsetsForElevation((kHeight - 4) / 4));
     EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
   }
+
+  // Test with pill shaped contents.
+  shadow.SetRoundedCornerRadius(40);
+  {
+    constexpr int kWidth = 80;
+    gfx::Rect content_bounds(100, 100, kWidth, 300);
+    shadow.SetContentBounds(content_bounds);
+    gfx::Rect shadow_bounds(content_bounds);
+    shadow_bounds.Inset(InsetsForElevation(kWidth / 4));
+    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  }
 }
 
 // Test that rounded corner radius is handled correctly.
@@ -160,6 +202,11 @@ TEST_F(ShadowTest, AdjustRoundedCornerRadius) {
   shadow_bounds.Inset(InsetsForElevation(kElevationSmall));
   EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
   EXPECT_EQ(NineboxImageSizeForElevationAndCornerRadius(6, 0),
+            shadow.details_for_testing()->nine_patch_image.size());
+
+  shadow.SetRoundedCornerRadius(150);
+  EXPECT_EQ(NineboxImageSizeForElevationAndCornerRadius(
+                6, 150, /*is_pill_shaped=*/true),
             shadow.details_for_testing()->nine_patch_image.size());
 }
 
@@ -209,6 +256,14 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
     // Changing the shadow with another appearance will replace the uniquely
     // owned detail.
     shadow_small.SetRoundedCornerRadius(4);
+    EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
+
+    // Changing the shadow to be pill shaped will replace the uniquely owned
+    // detail.
+    shadow_small.SetContentBounds(
+        gfx::Rect(MinContentSizeForElevationAndCornerRadius(
+            kElevationSmall, /*corner_radius=*/14, /*is_pill_shaped=*/true)));
+    shadow_small.SetRoundedCornerRadius(14);
     EXPECT_EQ(3u, gfx::ShadowDetails::GetDetailsCacheSizeForTest());
   }
 

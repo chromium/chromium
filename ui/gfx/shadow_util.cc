@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/check.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -62,10 +63,11 @@ class ShadowNineboxSource : public CanvasImageSource {
                             float corner_radius) {
     // The "content" area (the middle tile in the 3x3 grid) is a single pixel.
     gfx::Rect bounds(0, 0, 1, 1);
-    // We need enough space to render the full range of blur.
-    bounds.Inset(-ShadowValue::GetBlurRegion(shadows));
-    // We also need space for the full roundrect corner rounding.
-    bounds.Inset(-gfx::Insets(corner_radius));
+
+    // Add enough space to render the full range of blur and the corner
+    // rounding.
+    bounds.Inset(-ShadowDetails::GetNineboxApertureInsets(
+        shadows, std::round(corner_radius)));
     return bounds.size();
   }
 
@@ -82,8 +84,10 @@ struct ShadowDetailsKey {
   }
 
   bool operator<(const ShadowDetailsKey& other) const {
-    return (corner_radius < other.corner_radius) ||
-           ((corner_radius == other.corner_radius) && (values < other.values));
+    if (corner_radius != other.corner_radius) {
+      return corner_radius < other.corner_radius;
+    }
+    return values < other.values;
   }
   int corner_radius;
   ShadowValues values;
@@ -104,14 +108,16 @@ ShadowDetails::~ShadowDetails() {}
 
 const ShadowDetails& ShadowDetails::Get(int elevation,
                                         int corner_radius,
+                                        bool is_pill_shaped,
                                         ShadowStyle style) {
   switch (style) {
     case ShadowStyle::kMaterialDesign:
-      return Get(corner_radius, ShadowValue::MakeMdShadowValues(elevation));
+      return Get(corner_radius, ShadowValue::MakeMdShadowValues(
+                                    elevation, SK_ColorBLACK, is_pill_shaped));
 #if BUILDFLAG(IS_CHROMEOS)
     case ShadowStyle::kChromeOSSystemUI:
-      return Get(corner_radius,
-                 ShadowValue::MakeChromeOSSystemUIShadowValues(elevation));
+      return Get(corner_radius, ShadowValue::MakeChromeOSSystemUIShadowValues(
+                                    elevation, SK_ColorBLACK, is_pill_shaped));
 #endif
   }
 }
@@ -120,15 +126,18 @@ const ShadowDetails& ShadowDetails::Get(int elevation,
                                         int radius,
                                         SkColor key_color,
                                         SkColor ambient_color,
+                                        bool is_pill_shaped,
                                         ShadowStyle style) {
   switch (style) {
     case ShadowStyle::kMaterialDesign:
-      return Get(radius, ShadowValue::MakeMdShadowValues(elevation, key_color,
-                                                         ambient_color));
+      return Get(radius,
+                 ShadowValue::MakeMdShadowValues(
+                     elevation, key_color, ambient_color, is_pill_shaped));
 #if BUILDFLAG(IS_CHROMEOS)
     case ShadowStyle::kChromeOSSystemUI:
-      return Get(radius, ShadowValue::MakeChromeOSSystemUIShadowValues(
-                             elevation, key_color, ambient_color));
+      return Get(radius,
+                 ShadowValue::MakeChromeOSSystemUIShadowValues(
+                     elevation, key_color, ambient_color, is_pill_shaped));
 #endif
   }
 }
@@ -156,6 +165,49 @@ const ShadowDetails& ShadowDetails::Get(int radius,
   const std::pair<const ShadowDetailsKey, ShadowDetails>& inserted_item =
       *(insertion.first);
   return inserted_item.second;
+}
+
+// static
+gfx::Insets ShadowDetails::GetNineboxApertureInsets(
+    const gfx::ShadowValues& shadows,
+    int corner_radius) {
+  DCHECK(!shadows.empty());
+
+  // We need enough space to render the full range of blur and the corner
+  // rounding.
+  const gfx::Insets blur_region = ShadowValue::GetBlurRegion(shadows);
+  const bool is_pill_shaped = shadows.front().is_pill_shaped();
+#if DCHECK_IS_ON()
+  // `is_pill_shaped` describes the shape of the content around which the
+  // shadows are drawn, so their values must match.
+  for (const auto& shadow : shadows) {
+    DCHECK_EQ(is_pill_shaped, shadow.is_pill_shaped());
+  }
+#endif  // DCHECK_IS_ON()
+  if (!is_pill_shaped) {
+    return blur_region + gfx::Insets(corner_radius);
+  }
+
+  // For pill shaped content, instead of allocating space separately for blur
+  // and rounded corners, we take advantage of the fact that blur propagates
+  // perpendicular to the edge. The inner blur can thus be drawn within the
+  // space already occupied by the corner's curvature.
+  //
+  // This produces a slightly lighter shadow, but is necessary to produce an
+  // image for PillShaped shadow that can be represented as non-overlapping
+  // patches in NinePatchLayer.
+  //
+  // TODO(crbug.com/516866009) Ideally, we should use the same image for
+  // pilled vs non-pilled content. Investigate why different shadows are
+  // generated.
+  const gfx::Insets margins = ShadowValue::GetMargin(shadows);
+  const gfx::Insets outer_blur = -margins;
+  const gfx::Insets inner_blur = blur_region - outer_blur;
+  return gfx::Insets::TLBR(
+      outer_blur.top() + std::max(inner_blur.top(), corner_radius),
+      outer_blur.left() + std::max(inner_blur.left(), corner_radius),
+      outer_blur.bottom() + std::max(inner_blur.bottom(), corner_radius),
+      outer_blur.right() + std::max(inner_blur.right(), corner_radius));
 }
 
 size_t ShadowDetails::GetDetailsCacheSizeForTest() {

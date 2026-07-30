@@ -47,6 +47,12 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
       values_2[1]};
   details.emplace_back(ShadowDetails::Get(/*radius=*/2, new_color_values));
   EXPECT_EQ(5u, ShadowDetails::GetDetailsCacheSizeForTest());
+
+  // Add sixth shadow details with a different is_pill_shaped value than the
+  // first details.
+  details.emplace_back(ShadowDetails::Get(
+      /*elevation=*/4, /*radius=*/2, /*is_pill_shaped=*/true));
+  EXPECT_EQ(6u, ShadowDetails::GetDetailsCacheSizeForTest());
 }
 
 }  // namespace gfx

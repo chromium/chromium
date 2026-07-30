@@ -51,18 +51,14 @@ Insets GetInsets(const ShadowValues& shadows, bool include_inner_blur) {
 
 ShadowValue ShadowValue::Scale(float scale) const {
   Vector2d scaled_offset = ToFlooredVector2d(ScaleVector2d(offset_, scale));
-  return ShadowValue(scaled_offset, blur_ * scale, color_);
+  return ShadowValue(scaled_offset, blur_ * scale, color_, is_pill_shaped_);
 }
 
 std::string ShadowValue::ToString() const {
   return base::StringPrintf(
-      "(%d,%d),%.2f,rgba(%d,%d,%d,%d)",
-      offset_.x(), offset_.y(),
-      blur_,
-      SkColorGetR(color_),
-      SkColorGetG(color_),
-      SkColorGetB(color_),
-      SkColorGetA(color_));
+      "(%d,%d),%.2f,rgba(%d,%d,%d,%d),is_pill_shaped=%d", offset_.x(),
+      offset_.y(), blur_, SkColorGetR(color_), SkColorGetG(color_),
+      SkColorGetB(color_), SkColorGetA(color_), is_pill_shaped_);
 }
 
 // static
@@ -79,78 +75,89 @@ Insets ShadowValue::GetBlurRegion(const ShadowValues& shadows) {
 // static
 ShadowValues ShadowValue::MakeShadowValues(int elevation,
                                            SkColor key_shadow_color,
-                                           SkColor ambient_shadow_color) {
+                                           SkColor ambient_shadow_color,
+                                           bool is_pill_shaped) {
   // Refresh uses hand-tweaked shadows corresponding to a small set of
   // elevations. Use the Refresh spec and designer input to add missing shadow
   // values.
 
   switch (elevation) {
     case 3: {
-      ShadowValue key = {Vector2d(0, 1), 12, key_shadow_color};
-      ShadowValue ambient = {Vector2d(0, 4), 64, ambient_shadow_color};
+      ShadowValue key = {Vector2d(0, 1), 12, key_shadow_color, is_pill_shaped};
+      ShadowValue ambient = {Vector2d(0, 4), 64, ambient_shadow_color,
+                             is_pill_shaped};
       return {key, ambient};
     }
     case 16: {
-      ShadowValue key = {Vector2d(0, 0), kBlurCorrection * 16,
-                         key_shadow_color};
+      ShadowValue key = {Vector2d(0, 0), kBlurCorrection * 16, key_shadow_color,
+                         is_pill_shaped};
       ShadowValue ambient = {Vector2d(0, 12), kBlurCorrection * 16,
-                             ambient_shadow_color};
+                             ambient_shadow_color, is_pill_shaped};
       return {key, ambient};
     }
     default:
       // This surface has not been updated for Refresh. Fall back to the
       // deprecated style.
       DCHECK_EQ(key_shadow_color, ambient_shadow_color);
-      return MakeMdShadowValues(elevation, key_shadow_color);
+      return MakeMdShadowValues(elevation, key_shadow_color, is_pill_shaped);
   }
 }
 
 // static
-ShadowValues ShadowValue::MakeMdShadowValues(int elevation, SkColor color) {
+ShadowValues ShadowValue::MakeMdShadowValues(int elevation,
+                                             SkColor color,
+                                             bool is_pill_shaped) {
   // To see what this looks like for elevation 24, try this CSS:
   //   box-shadow: 0 24px 48px rgba(0, 0, 0, .24),
   //               0 0 24px rgba(0, 0, 0, .12);
   return MakeMdShadowValues(elevation, SkColorSetA(color, 0x3d),
-                            SkColorSetA(color, 0x1f));
+                            SkColorSetA(color, 0x1f), is_pill_shaped);
 }
 
 // static
 ShadowValues ShadowValue::MakeMdShadowValues(int elevation,
                                              SkColor key_shadow_color,
-                                             SkColor ambient_shadow_color) {
+                                             SkColor ambient_shadow_color,
+                                             bool is_pill_shaped) {
   ShadowValues shadow_values;
   // "Key shadow": y offset is elevation and blur is twice the elevation.
   shadow_values.emplace_back(Vector2d(0, elevation),
-                             kBlurCorrection * elevation * 2, key_shadow_color);
+                             kBlurCorrection * elevation * 2, key_shadow_color,
+                             is_pill_shaped);
   // "Ambient shadow": no offset and blur matches the elevation.
   shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
-                             ambient_shadow_color);
+                             ambient_shadow_color, is_pill_shaped);
   return shadow_values;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
-ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(int elevation,
-                                                           SkColor color) {
+ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(
+    int elevation,
+    SkColor color,
+    bool is_pill_shaped) {
   // To see what this looks like for elevation 24, try this CSS:
   //   box-shadow: 0 24px 24px rgba(0, 0, 0, .24),
   //               0 0 24px rgba(0, 0, 0, .10);
   return MakeChromeOSSystemUIShadowValues(elevation, SkColorSetA(color, 0x3d),
-                                          SkColorSetA(color, 0x1a));
+                                          SkColorSetA(color, 0x1a),
+                                          is_pill_shaped);
 }
 
 // static
 ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(
     int elevation,
     SkColor key_shadow_color,
-    SkColor ambient_shadow_color) {
+    SkColor ambient_shadow_color,
+    bool is_pill_shaped) {
   ShadowValues shadow_values;
   // "Key shadow": y offset is elevation and blur equals to the elevation.
   shadow_values.emplace_back(Vector2d(0, elevation),
-                             kBlurCorrection * elevation, key_shadow_color);
+                             kBlurCorrection * elevation, key_shadow_color,
+                             is_pill_shaped);
   // "Ambient shadow": no offset and blur matches the elevation.
   shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
-                             ambient_shadow_color);
+                             ambient_shadow_color, is_pill_shaped);
   return shadow_values;
 }
 #endif
