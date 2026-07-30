@@ -51,11 +51,35 @@ PwcComponentPolicy::PwcComponentPolicy(
     std::unique_ptr<PwcPolicyDelegate> delegate)
     : component_(component),
       delegate_(std::move(delegate)),
-      new_window_policy_(NewWindowPolicyForComponent(component)) {
+      new_window_policy_(NewWindowPolicyForComponent(component)),
+      content_(ContentEnforcementForComponent(component)) {
   CHECK(delegate_);
 }
 
 PwcComponentPolicy::~PwcComponentPolicy() = default;
+
+// static
+PwcComponentPolicy::ContentEnforcement
+PwcComponentPolicy::ContentEnforcementForComponent(
+    PrivilegedComponent component) {
+  ContentEnforcement enforcement;
+  // Derive the process-grouping id from the enum value itself, so it is
+  // distinct per component by construction and there are no hand-written ids
+  // to mistype or duplicate.
+  enforcement.feature_id = static_cast<int32_t>(component);
+  switch (component) {
+    case PrivilegedComponent::kTestComponent:
+      // Asymmetric bits so tests catch a swapped-field mapping bug.
+      enforcement.disallow_service_worker_control = true;
+      enforcement.disallow_shared_workers = false;
+      return enforcement;
+    case PrivilegedComponent::kGlic:
+      enforcement.disallow_service_worker_control = true;
+      enforcement.disallow_shared_workers = true;
+      return enforcement;
+  }
+  NOTREACHED();
+}
 
 bool PwcComponentPolicy::IsNavigationAllowed(const url::Origin& origin) const {
   // Structural guardrail: only secure HTTPS origins may ever be blessed,

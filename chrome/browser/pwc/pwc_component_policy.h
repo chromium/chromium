@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PWC_PWC_COMPONENT_POLICY_H_
 #define CHROME_BROWSER_PWC_PWC_COMPONENT_POLICY_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -91,6 +92,27 @@ class PwcComponentPolicy {
   PrivilegedComponent component() const { return component_; }
   NewWindowPolicy new_window_policy() const { return new_window_policy_; }
 
+  // Fixed per-component content-layer enforcement bits, mirrored into
+  // content::WebContents::PrivilegedParams when the WebContents is created.
+  // These are security-sensitive (see the file's OWNERS): a component that
+  // permits service worker control or shares a feature id is a security
+  // downgrade, so they live in this security-reviewed file rather than at the
+  // creation site.
+  //
+  // Opaque per-component process-grouping id, derived from the
+  // PrivilegedComponent value so it is distinct per component by
+  // construction. WebContents with the same id may share a renderer process
+  // with each other -- still subject to site isolation, so only different
+  // instances of the same site actually coalesce -- but never share a process
+  // with ordinary WebContents.
+  int32_t content_feature_id() const { return content_.feature_id; }
+  bool disallow_service_worker_control() const {
+    return content_.disallow_service_worker_control;
+  }
+  bool disallow_shared_workers() const {
+    return content_.disallow_shared_workers;
+  }
+
   // True iff the primary main frame may commit `origin`: `origin` is HTTPS
   // and the delegate allows it.
   bool IsNavigationAllowed(const url::Origin& origin) const;
@@ -101,9 +123,19 @@ class PwcComponentPolicy {
   bool IsCapabilityOrigin(const url::Origin& origin) const;
 
  private:
+  struct ContentEnforcement {
+    int32_t feature_id = 0;
+    bool disallow_service_worker_control = false;
+    bool disallow_shared_workers = false;
+  };
+
+  static ContentEnforcement ContentEnforcementForComponent(
+      PrivilegedComponent component);
+
   const PrivilegedComponent component_;
   const std::unique_ptr<PwcPolicyDelegate> delegate_;
   const NewWindowPolicy new_window_policy_;
+  const ContentEnforcement content_;
 };
 
 }  // namespace pwc

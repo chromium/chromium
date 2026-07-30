@@ -77,8 +77,15 @@ PrivilegedWebContents::PrivilegedWebContents(
     : policy_(component, std::move(policy_delegate)) {
   // No StoragePartitionConfig override: the WebContents lives in the
   // profile's default partition so the component shares the live cookie jar.
-  web_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(browser_context));
+  content::WebContents::CreateParams params(browser_context);
+  content::WebContents::PrivilegedParams privileged_params;
+  privileged_params.feature_id = policy_.content_feature_id();
+  privileged_params.disallow_service_worker_control =
+      policy_.disallow_service_worker_control();
+  privileged_params.disallow_shared_workers = policy_.disallow_shared_workers();
+  params.privileged_params = privileged_params;
+
+  web_contents_ = content::WebContents::Create(params);
   PrivilegedWebContentsHolder::CreateForWebContents(web_contents_.get(), this);
   web_contents_->SetDelegate(this);
 }
