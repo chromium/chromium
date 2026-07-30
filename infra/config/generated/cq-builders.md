@@ -746,6 +746,11 @@ builder.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
+* [linux-rel-cft](https://ci.chromium.org/p/chromium/builders/try/linux-rel-cft) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-cft""))
+
+  Location filters:
+  * [`//.*chrome_for_testing.*`](https://cs.chromium.org/search?q=+file:.*chrome_for_testing.*)
+
 * [linux-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-updater-try-builder-dbg""))
 
   Location filters:
@@ -905,6 +910,11 @@ builder.
   Location filters:
   * [`//chrome/build/mac-arm.pgo.txt`](https://cs.chromium.org/search?q=+file:chrome/build/mac-arm.pgo.txt)
 
+* [mac-rel-cft](https://ci.chromium.org/p/chromium/builders/try/mac-rel-cft) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-rel-cft""))
+
+  Location filters:
+  * [`//.*chrome_for_testing.*`](https://cs.chromium.org/search?q=+file:.*chrome_for_testing.*)
+
 * [mac-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-dbg""))
 
   Location filters:
@@ -982,6 +992,11 @@ builder.
 
   Location filters:
   * [`//chrome/enterprise_companion/.+`](https://cs.chromium.org/chromium/src/chrome/enterprise_companion/)
+
+* [win-rel-cft](https://ci.chromium.org/p/chromium/builders/try/win-rel-cft) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-rel-cft""))
+
+  Location filters:
+  * [`//.*chrome_for_testing.*`](https://cs.chromium.org/search?q=+file:.*chrome_for_testing.*)
 
 * [win-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-updater-try-builder-dbg""))
 
