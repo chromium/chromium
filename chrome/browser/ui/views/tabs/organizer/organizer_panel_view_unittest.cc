@@ -27,6 +27,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
 class OrganizerPanelViewTest : public ChromeViewsTestBase {
@@ -232,4 +233,22 @@ TEST_F(OrganizerPanelViewTest, CloseButtonFadeWhenExpandingOnMac) {
   organizer_panel_view()->AnimationProgressed(&animation);
   EXPECT_FLOAT_EQ(1.0f, organizer_button->layer()->opacity());
 #endif
+}
+
+TEST_F(OrganizerPanelViewTest, WebViewExtendsToEdges) {
+  CreateView();
+  organizer_panel_view()->SetBounds(0, 0, 300, 600);
+  organizer_panel_view()->SetTargetWidth(300);
+  views::test::RunScheduledLayout(organizer_panel_view());
+
+  auto* web_view = organizer_panel_view()->web_view_for_testing();
+  ASSERT_TRUE(web_view);
+  auto* container = organizer_panel_view()->content_container_for_testing();
+  ASSERT_TRUE(container);
+
+  // WebView should extend to the left (x = 0), right (width = container width),
+  // and bottom (y + height = container height).
+  EXPECT_EQ(web_view->bounds().x(), 0);
+  EXPECT_EQ(web_view->bounds().width(), container->bounds().width());
+  EXPECT_EQ(web_view->bounds().bottom(), container->bounds().height());
 }

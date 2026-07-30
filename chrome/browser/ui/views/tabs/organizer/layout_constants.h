@@ -17,9 +17,9 @@ inline constexpr int kOrganizerPanelMinWidth = 240;
 inline constexpr ui::ColorId kOrganizerPanelBackgroundColor =
     ui::kColorSysSurface2;
 
-// Interior margins for the panel.
-inline constexpr gfx::Insets kOrganizerPanelRegionInteriorMargins =
-    gfx::Insets::VH(12, 12);
+// Margins for the panel controls view.
+inline constexpr gfx::Insets kOrganizerPanelControlsMargins =
+    gfx::Insets::VH(8, 8);
 
 }  // namespace organizer_panel
 
