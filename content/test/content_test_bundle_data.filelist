@@ -7587,7 +7587,6 @@ data/generic_sensor/ambient_light_sensor_cross_origin_iframe_test.html
 data/generic_sensor/ambient_light_sensor_test.html
 data/generic_sensor/ambient_light_sensor_unavailable_test.html
 data/generic_sensor/cross_origin_iframe.html
-data/global_privacy_control/gpc_iframe.html
 data/global_privacy_control/gpc_from_nested_worker.js
 data/global_privacy_control/gpc_from_service_worker.html
 data/global_privacy_control/gpc_from_service_worker.js
@@ -7595,6 +7594,7 @@ data/global_privacy_control/gpc_from_shared_worker.html
 data/global_privacy_control/gpc_from_shared_worker.js
 data/global_privacy_control/gpc_from_worker.html
 data/global_privacy_control/gpc_from_worker.js
+data/global_privacy_control/gpc_iframe.html
 data/google.mht
 data/gpu/canvas_2d_gpu_crash.html
 data/gpu/canvas_uses_overlay.html
@@ -9026,8 +9026,7 @@ data/workers/fetch_from_shared_worker.html
 data/workers/fetch_from_shared_worker.js
 data/workers/fetch_from_worker.html
 data/workers/fetch_from_worker.js
-data/workers/fetcher_treat_as_public.js
-data/workers/fetcher_treat_as_public.js.mock-http-headers
+data/workers/fetcher.js
 data/workers/frame_factory.html
 data/workers/iframe_basic_auth.html
 data/workers/incognito_worker.html
@@ -9047,8 +9046,7 @@ data/workers/queued_shared_worker_shutdown.html
 data/workers/send-beacon.html
 data/workers/service_worker.js
 data/workers/service_worker_setup.html
-data/workers/shared_fetcher_treat_as_public.js
-data/workers/shared_fetcher_treat_as_public.js.mock-http-headers
+data/workers/shared_fetcher.js
 data/workers/shared_post_ready.js
 data/workers/shared_worker_auth.html
 data/workers/shutdown_shared_worker.html

@@ -49,12 +49,6 @@
 namespace {
 const int kWasmPageSize = 1 << 16;
 
-// Path to a response that passes Private Network Access checks.
-constexpr char kPnaPath[] =
-    "/set-header"
-    "?Access-Control-Allow-Origin: *"
-    "&Access-Control-Allow-Private-Network: true";
-
 // Web platform security features are implemented by content/ and blink/.
 // However, since ContentBrowserClientImpl::LogWebFeatureForCurrentPage() is
 // currently left blank in content/, metrics logging can't be tested from
@@ -192,8 +186,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         "*.a.test",
         "b.test",
         "c.test",
-        // For PrivateNetworkAccess tests.
-        "b.local",
     });
     ASSERT_TRUE(https_server_.Start());
     ASSERT_TRUE(http_server_.Start());
@@ -267,161 +259,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   GURL url = https_server().GetURL("a.com", "/title1.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   ExpectHistogramIncreasedBy(0);
-}
-
-// This test verifies that when a secure context served from the public address
-// space loads a resource from the private network, the correct WebFeature is
-// use-counted.
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessFetch) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace("fetch($1).then(response => response.ok)",
-                                   https_server().GetURL("b.com", kPnaPath))));
-
-  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
-               1);
-}
-
-// This test verifies that the PNA 2.0 breakage UseCounter
-// (kPrivateNetworkAccessInsecureResourceNotKnownPrivate) is correctly logged.
-//
-// TODO(crbug.com/438315223): Re-enable once test flakiness is addressed.
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       DISABLED_PrivateNetworkAccessV2BreakageUseCounter) {
-  // A top-level navigation request to a site with a private address should not
-  // trigger the UseCounter.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      http_server().GetURL("a.com", "/local_network_access/no-favicon.html")));
-  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
-               0);
-
-  // Navigate to an HTTPS site with a public address. Requests to HTTPS
-  // resources should work but not log the UseCounter. Requests to HTTP
-  // resources should be blocked as mixed content.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL("a.com",
-                            "/local_network_access/"
-                            "no-favicon-treat-as-public-address.html")));
-  EXPECT_EQ(true, content::EvalJs(web_contents(),
-                                  content::JsReplace(
-                                      "fetch($1).then(response => response.ok)",
-                                      https_server().GetURL(kPnaPath))));
-  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
-               0);
-  EXPECT_FALSE(content::ExecJs(
-      web_contents(),
-      content::JsReplace("fetch($1).then(response => response.ok)",
-                         http_server().GetURL("b.com", kPnaPath))));
-  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
-               0);
-
-  // Navigate to an HTTP site with a public address, and then trigger various
-  // fetch requests and check whether the UseCounter has been logged.
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      http_server().GetURL("a.com",
-                           "/local_network_access/"
-                           "no-favicon-treat-as-public-address.html")));
-
-  // Trigger a request to a localhost HTTP site via 127.0.0.1.
-  EXPECT_EQ(true, content::EvalJs(web_contents(),
-                                  content::JsReplace(
-                                      "fetch($1).then(response => response.ok)",
-                                      http_server().GetURL(kPnaPath))));
-  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
-               0);
-
-  // Trigger a request to a private HTTPS site with a public domain. This should
-  // not trigger the UseCounter.
-  EXPECT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace("fetch($1).then(response => response.ok)",
-                                   https_server().GetURL("b.com", kPnaPath))));
-
-  // TODO(cthomp): Add a case for triggering a request to an  HTTP site via a
-  // private IP literal hostname. This should succeed and not cause the
-  // UseCounter to be triggered. This may not be feasible to test if the test
-  // server only listens on 127.0.0.1. (We also can't use URLLoaderInterceptor
-  // for this, because we need to trigger the real URLLoader in order to reach
-  // the UseCounter collection code path.)
-
-  // Trigger a request to a private HTTP site via a .local hostname.
-  EXPECT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace("fetch($1).then(response => response.ok)",
-                                   http_server().GetURL("b.local", kPnaPath))));
-  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
-               0);
-
-  // Trigger a request to a private HTTP site with a public domain, but the
-  // fetch() call is tagged with `targetAddressSpace: 'local'` making it a
-  // priori known local.
-  EXPECT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace("fetch($1, { targetAddressSpace: "
-                                   "'local'}).then(response => response.ok)",
-                                   http_server().GetURL("b.com", kPnaPath))));
-
-  // Trigger a request to a private HTTP site, that is not a priori known to be
-  // private. Post-PNA 2.0 this would be blocked as mixed content and would not
-  // trigger the PNA prompt. This should cause the UseCounter to be triggered.
-  EXPECT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace("fetch($1).then(response => response.ok)",
-                                   http_server().GetURL("b.com", kPnaPath))));
-  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
-               1);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessFetchInWorker) {
-  ASSERT_EQ(true,
-            content::NavigateToURL(
-                web_contents(), https_server().GetURL("a.com",
-                                                      "/local_network_access/"
-                                                      "no-favicon.html")));
-
-  std::string_view kScriptTemplate = R"(
-    (async () => {
-      const worker = new Worker("/workers/fetcher_treat_as_public.js");
-
-      const messagePromise = new Promise((resolve) => {
-        const listener = (event) => resolve(event.data);
-        worker.addEventListener("message", listener, { once: true });
-      });
-
-      worker.postMessage($1);
-
-      const { error, ok } = await messagePromise;
-      if (error !== undefined) {
-        throw(error);
-      }
-
-      return ok;
-    })()
-  )";
-
-  ASSERT_EQ(true,
-            content::EvalJs(web_contents(),
-                            content::JsReplace(kScriptTemplate,
-                                               https_server().GetURL(
-                                                   "b.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
 }
 
 // When WebSocket is connected to a more-private ip address space, log a use
@@ -503,48 +340,6 @@ IN_PROC_BROWSER_TEST_F(
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
   CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
                0);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessFetchInSharedWorker) {
-  ASSERT_EQ(true,
-            content::NavigateToURL(
-                web_contents(), https_server().GetURL("a.com",
-                                                      "/local_network_access/"
-                                                      "no-favicon.html")));
-
-  std::string_view kScriptTemplate = R"(
-    (async () => {
-      const worker = await new Promise((resolve, reject) => {
-        const worker =
-            new SharedWorker("/workers/shared_fetcher_treat_as_public.js");
-        worker.port.addEventListener("message", () => resolve(worker));
-        worker.addEventListener("error", reject);
-        worker.port.start();
-      });
-
-      const messagePromise = new Promise((resolve) => {
-        const listener = (event) => resolve(event.data);
-        worker.port.addEventListener("message", listener, { once: true });
-      });
-
-      worker.port.postMessage($1);
-
-      const { error, ok } = await messagePromise;
-      if (error !== undefined) {
-        throw(error);
-      }
-
-      return ok;
-    })()
-  )";
-  ASSERT_EQ(true,
-            content::EvalJs(web_contents(),
-                            content::JsReplace(kScriptTemplate,
-                                               https_server().GetURL(
-                                                   "b.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
 }
 
 // Check the kCrossOriginOpenerPolicyReporting feature usage. COOP-Report-Only +

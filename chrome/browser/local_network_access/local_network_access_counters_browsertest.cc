@@ -171,6 +171,38 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
       }));
 }
 
+// This test verifies that when a secure context served from the public address
+// space loads a resource from the private network, the correct WebFeature is
+// use-counted.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
+                       LocalNetworkAccessFetch) {
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
+  EXPECT_THAT(
+      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
+      IsEmpty());
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace(
+                    "fetch($1).then(response => response.ok)",
+                    SecureURL(https_server(),
+                              "/set-header?Access-Control-Allow-Origin: *"))));
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2, 1},
+      }));
+}
+
 // This test verifies that when a page embeds an empty iframe pointing to
 // about:blank, no address space feature is recorded. It serves as a basis for
 // comparison with the following tests, which test behavior with iframes.
