@@ -395,7 +395,7 @@
     // Element::SetTrackedElementSubRect() method.
     {
       name: "AIPageContentTrackedElementsIframe",
-      status: "test"
+      status: "stable"
     },
     // When enabled, native or heuristics password element coordinates will be
     // tracked using the Element::SetTrackedElementSubRect() method.
