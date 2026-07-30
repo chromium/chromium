@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
+#include "components/omnibox/browser/fusebox_action_mojo_test_utils.h"
 
 namespace action_chips::mojom {
 namespace {
@@ -64,11 +65,7 @@ void PrintImpl(const SuggestTemplateInfo& info, int indent, std::ostream* os) {
   *os << ",\n" << ind << "  secondary_text: ";
   PrintImpl(info.secondary_text, indent + kIndentUnit, os);
   *os << ",\n" << ind << "  fusebox_action: ";
-  if (info.fusebox_action) {
-    *os << "FuseboxAction";
-  } else {
-    *os << "null";
-  }
+  fusebox_action::mojom::PrintTo(info.fusebox_action, os);
   *os << "\n" << ind << "}";
 }
 
