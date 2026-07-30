@@ -47,7 +47,7 @@ generate_jni("cronet_jni_headers") {
   ]
 }
 
-generate_jni_registration("cronet_jni_registration") {
+generate_final_jni("cronet_jni_registration") {
   java_targets = [ ":cronet_impl_native_java" ]
   manual_jni_registration = true
 
@@ -2099,7 +2099,7 @@ android_java_prebuilt("repackage_test_jars_without_jni_java") {
 }
 
 # ...then, generate the final, merged GEN_JNI class...
-generate_jni_registration("cronet_tests_jni_registration") {
+generate_final_jni("cronet_tests_jni_registration") {
   java_targets = _test_deps
   manual_jni_registration = true
   testonly = true

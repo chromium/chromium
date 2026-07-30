@@ -659,7 +659,7 @@ if (is_android) {
     product_config_java_packages = [ "org.chromium.chromecast.shell" ]
   }
 
-  generate_jni_registration("cast_browser_jni_registration") {
+  generate_final_jni("cast_browser_jni_registration") {
     java_targets = [ "//chromecast:cast_browser_apk" ]
 
     # This flags allows '*ForTest* JNI APIs to be included in the GEN_JNI

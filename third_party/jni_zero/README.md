@@ -452,12 +452,12 @@ public class AnimationFrameTimeHistogramTest {
 
 ### Namespacing GEN_JNI (for APK Splits, or apk_under_test)
 
-Each `generate_jni_registration` target results in a single `GEN_JNI` class. If
-you use JNI Zero in both and `Test.apk` and an `ApkUnderTest.apk`, or with
-isolated splits, then each APK should have its own `GEN_JNI`.
+Each `generate_final_jni` target results in a single `GEN_JNI` class. If you use
+JNI Zero in both and `Test.apk` and an `ApkUnderTest.apk`, or with isolated
+splits, then each APK should have its own `GEN_JNI`.
 
 To accomplish this, set `module_name = "name"` in all `generate_jni` targets, as
-well as the final `generate_jni_registration` target. This will result in
+well as the final `generate_final_jni` target. This will result in
 `<module_name>_GEN_JNI`.
 
 ### How to Know if Native is Loaded?

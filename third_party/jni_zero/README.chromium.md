@@ -43,14 +43,14 @@ Given a `.jar` file (defaults to `android.jar`), generates a header file similar
 to `generate_jni`, if every method and public field were annotated by
 `@CalledByNative`.
 
-### generate_jni_registration
+### generate_final_jni
 
 Generates a whole-program Java and native link - required for all Java that
 calls into native via `@NativeMethods`.
 
 ### shared_library_with_jni
 
-A wrapper around a `shared_library` that bundles a `generate_jni_registration`.
+A wrapper around a `shared_library` that bundles a `generate_final_jni`.
 
 ### component_with_jni
 

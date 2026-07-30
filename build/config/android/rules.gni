@@ -1254,12 +1254,12 @@ if (!is_robolectric && enable_java_templates) {
           rebase = root_build_dir
         }
       } else {
-        # Needed for generate_jni_registration. Keeping this import guarded so
+        # Needed for generate_final_jni. Keeping this import guarded so
         # that projects who import //build but not //third_party/jni_zero don't
         # have issues.
         import("//third_party/jni_zero/jni_zero.gni")
         _jni_srcjar_target_name = "${target_name}__final_jni"
-        generate_jni_registration(_jni_srcjar_target_name) {
+        generate_final_jni(_jni_srcjar_target_name) {
           java_targets = [ ":$_java_binary_target_name" ]
           add_stubs_for_missing_jni = true
         }

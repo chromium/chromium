@@ -590,7 +590,7 @@ class GnParser:
                 arch].response_file_contents = self._get_response_file_contents(
                     desc)
             # _get_jni_registration_deps will return the dependencies of a target if
-            # the target is of type `generate_jni_registration` otherwise it will
+            # the target is of type `generate_final_jni` otherwise it will
             # return an empty set.
             target.jni_registration_java_deps.update(
                 _get_jni_registration_deps(gn_target_name, gn_desc))

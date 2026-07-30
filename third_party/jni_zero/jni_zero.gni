@@ -126,11 +126,11 @@ template("_invoke_jni_zero") {
 #     will always be placed first in the sequential switch numbers. (optional)
 #
 # Example
-#   generate_jni_registration("chrome_jni_registration") {
+#   generate_final_jni("chrome_jni_registration") {
 #     java_targets = [ ":chrome_public_apk" ]
 #     manual_jni_registration = false
 #   }
-template("generate_jni_registration") {
+template("generate_final_jni") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   if (defined(invoker.native_deps)) {
     _native_sources_list = "$target_gen_dir/$target_name.nativesources.txt"
@@ -707,7 +707,7 @@ template("native_with_jni") {
     if (defined(invoker.visibility)) {
       _target_name_for_visibility = target_name
     }
-    generate_jni_registration(_jni_registration_target_name) {
+    generate_final_jni(_jni_registration_target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (defined(visibility)) {
         visibility += [ ":$_target_name_for_visibility" ]
