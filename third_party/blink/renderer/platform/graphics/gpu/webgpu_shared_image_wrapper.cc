@@ -258,44 +258,6 @@ void WebGpuSharedImageWrapper::DrawToBackingSharedImage(
   }
 }
 
-bool WebGpuSharedImageWrapper::UploadToBackingSharedImage(
-    const SkPixmap& pixmap,
-    uint32_t src_x,
-    uint32_t src_y) {
-  const int dest_width = Size().width();
-  const int dest_height = Size().height();
-
-  SkPixmap subset;
-  if (!pixmap.extractSubset(
-          &subset,
-          SkIRect::MakeXYWH(static_cast<int>(src_x), static_cast<int>(src_y),
-                            dest_width, dest_height))) {
-    return false;
-  }
-
-  TRACE_EVENT0("blink",
-               "WebGpuSharedImageWrapper::"
-               "UploadToBackingSharedImage");
-  if (IsGpuContextLost()) {
-    return false;
-  }
-
-  auto access =
-      shared_image_->BeginRasterAccess(RasterInterface(), acquire_sync_token_,
-                                       /*readonly=*/false);
-
-  RasterInterface()->WritePixels(shared_image_->mailbox(), /*dst_x_offset=*/0,
-                                 /*dst_y_offset=*/0,
-                                 shared_image_->GetTextureTarget(), subset);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  release_sync_token_ = sync_token;
-  shared_image_->UpdateDestructionSyncToken(sync_token);
-
-  is_cleared_ = true;
-
-  return true;
-}
-
 bool WebGpuSharedImageWrapper::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     uint32_t src_x,

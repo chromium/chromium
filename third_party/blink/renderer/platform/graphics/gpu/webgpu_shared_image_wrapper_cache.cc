@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
@@ -41,8 +42,40 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
     uint32_t src_y) {
-  return shared_image_wrapper_->UploadToBackingSharedImage(pixmap, src_x,
-                                                           src_y);
+  const int dest_width = shared_image_wrapper_->Size().width();
+  const int dest_height = shared_image_wrapper_->Size().height();
+
+  SkPixmap subset;
+  if (!pixmap.extractSubset(
+          &subset,
+          SkIRect::MakeXYWH(static_cast<int>(src_x), static_cast<int>(src_y),
+                            dest_width, dest_height))) {
+    return false;
+  }
+
+  TRACE_EVENT0("blink",
+               "WebGpuSharedImageWrapperLease::"
+               "UploadToBackingSharedImage");
+  if (shared_image_wrapper_->IsGpuContextLost()) {
+    return false;
+  }
+
+  auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
+      shared_image_wrapper_->RasterInterface(),
+      shared_image_wrapper_->acquire_sync_token_,
+      /*readonly=*/false);
+
+  shared_image_wrapper_->RasterInterface()->WritePixels(
+      shared_image_wrapper_->shared_image_->mailbox(), /*dst_x_offset=*/0,
+      /*dst_y_offset=*/0,
+      shared_image_wrapper_->shared_image_->GetTextureTarget(), subset);
+  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+  shared_image_wrapper_->release_sync_token_ = sync_token;
+  shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
+
+  shared_image_wrapper_->is_cleared_ = true;
+
+  return true;
 }
 
 void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
