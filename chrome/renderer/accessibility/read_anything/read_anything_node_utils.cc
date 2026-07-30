@@ -148,8 +148,12 @@ std::string GetHtmlTagForPDF(const ui::AXNode* ax_node,
 std::string GetHeadingHtmlTagForPDF(const ui::AXNode* ax_node,
                                     const std::string& html_tag) {
   // Sometimes whole paragraphs can be formatted as a heading. If the text is
-  // longer than 2 lines, assume it was meant to be a paragragh.
-  if (ax_node->GetTextContentLengthUTF8() > (2 * kMaxLineWidth)) {
+  // longer than 2 lines, assume it was meant to be a paragragh. Since the "ch"
+  // unit in CSS doesn't actually correspond exactly to the number of
+  // characters, use a larger multiplier to approximate 2 actual lines of RM.
+  int multiplier =
+      features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ? 3 : 2;
+  if (ax_node->GetTextContentLengthUTF8() > (multiplier * kMaxLineWidth)) {
     return "p";
   }
 
