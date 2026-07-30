@@ -55,7 +55,8 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   std::wstring app_id =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
               browser->is_type_app_popup() || browser->is_type_devtools() ||
-              (browser->is_type_picture_in_picture() &&
+              (browser->GetType() ==
+                   BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE &&
                !browser->app_name().empty())
           ? shell_integration::win::GetAppUserModelIdForApp(
                 base::UTF8ToWide(browser->app_name()), profile->GetPath())

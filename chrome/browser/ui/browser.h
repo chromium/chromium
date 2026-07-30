@@ -399,9 +399,6 @@ class Browser : public TabStripModelObserver,
   bool is_type_popup() const { return type_ == TYPE_POPUP; }
   bool is_type_app_popup() const { return type_ == TYPE_APP_POPUP; }
   bool is_type_devtools() const { return type_ == TYPE_DEVTOOLS; }
-  bool is_type_picture_in_picture() const {
-    return type_ == TYPE_PICTURE_IN_PICTURE;
-  }
 
   // Called each time the browser window is shown.
   void OnWindowDidShow();

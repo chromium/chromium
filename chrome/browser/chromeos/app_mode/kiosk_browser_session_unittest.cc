@@ -98,7 +98,8 @@ class FakeBrowser {
 
   explicit FakeBrowser(std::unique_ptr<Browser> browser)
       : browser_(std::move(browser)) {
-    if (!browser_->is_type_picture_in_picture()) {
+    if (browser_->GetType() !=
+        BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
       // Add a tab to the browser to ensure that `CloseAllTabs()` works.
       // Note that tabs are not supported with PICTURE_IN_PICTURE windows.
       TabActivitySimulator().AddWebContentsAndNavigate(

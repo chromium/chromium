@@ -1498,7 +1498,8 @@ bool BrowserView::GetIsWebAppType() const {
 }
 
 bool BrowserView::GetIsPictureInPictureType() const {
-  return browser_->is_type_picture_in_picture();
+  return browser_->GetType() ==
+         BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE;
 }
 
 std::optional<blink::mojom::PictureInPictureWindowOptions>

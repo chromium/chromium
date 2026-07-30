@@ -882,7 +882,8 @@ void AppBrowserController::OnReceivedInitialURL() {
 
   // Browsers of picture in picture type already take care of setting the proper
   // window bounds.
-  if (browser()->is_type_picture_in_picture()) {
+  if (browser()->GetType() ==
+      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
     return;
   }
 

@@ -540,7 +540,7 @@ void Browser::NotifyWindowCloseCancelled(
 }
 
 BrowserWindowInterface* Browser::GetBrowserForOpeningWebUi() {
-  if (!is_type_picture_in_picture()) {
+  if (GetType() != BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
     return this;
   }
 

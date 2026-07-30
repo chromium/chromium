@@ -2108,8 +2108,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorPictureInPictureTest,
 
   // Should not reuse the browser.
   EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
-                  ->is_type_picture_in_picture());
+  EXPECT_EQ(params.browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   EXPECT_EQ(params.browser->GetBrowserForMigrationOnly()->app_name(),
             std::string());
 
@@ -2242,8 +2242,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   Navigate(&params);
 
   // Should be PiP, with an app name.
-  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
-                  ->is_type_picture_in_picture());
+  EXPECT_EQ(params.browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   EXPECT_NE(params.browser->GetBrowserForMigrationOnly()->app_name(),
             std::string());
 }

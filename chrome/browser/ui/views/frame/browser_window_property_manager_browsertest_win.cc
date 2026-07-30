@@ -238,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
       Browser::CreateParams::CreateForPictureInPicture(
           app_name, true, browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
-  ASSERT_TRUE(pip_browser->is_type_picture_in_picture());
+  ASSERT_EQ(pip_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   ASSERT_EQ(app_name, pip_browser->app_name());
 
   content::RunAllTasksUntilIdle();
@@ -267,7 +268,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
       Browser::CreateParams::CreateForPictureInPicture(
           "", true, browser()->GetProfile(), true);
   Browser* pip_browser = Browser::Create(params);
-  ASSERT_TRUE(pip_browser->is_type_picture_in_picture());
+  ASSERT_EQ(pip_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   ASSERT_TRUE(pip_browser->app_name().empty());
 
   content::RunAllTasksUntilIdle();

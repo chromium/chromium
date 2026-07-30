@@ -3275,7 +3275,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {
   Browser* popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_PICTURE_IN_PICTURE, browser()->GetProfile(), true));
-  ASSERT_TRUE(popup_browser->is_type_picture_in_picture());
+  ASSERT_EQ(popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

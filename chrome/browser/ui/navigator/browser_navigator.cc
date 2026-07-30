@@ -709,8 +709,9 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
     // Picture in picture windows may not be opened by other picture in
     // picture windows, or without an opener.
-    if (!params->browser || params->browser->GetBrowserForMigrationOnly()
-                                ->is_type_picture_in_picture()) {
+    if (!params->browser ||
+        params->browser->GetType() ==
+            BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
       params->browser = nullptr;
       return nullptr;
     }

@@ -138,7 +138,8 @@ void BrowserWidget::InitBrowserWidget() {
   params.delegate = browser_view_;
 
   Browser* browser = browser_view_->browser();
-  if (browser->is_type_picture_in_picture()) {
+  if (browser->GetType() ==
+      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
     params.visible_on_all_workspaces = true;
 #if !BUILDFLAG(IS_WIN)
@@ -378,7 +379,8 @@ void BrowserWidget::ShowContextMenuForViewImpl(
 
   // Do not show context menu for Document picture-in-picture browser. Context:
   // http://b/274862709.
-  if (browser_view_->browser()->is_type_picture_in_picture()) {
+  if (browser_view_->browser()->GetType() ==
+      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
     return;
   }
 

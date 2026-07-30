@@ -1751,7 +1751,9 @@ void BrowserCommandController::InitCommandState() {
       !app_controller || !app_controller->ShouldHideNewTabButton());
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_->UpdateCommandEnabled(
-      IDC_DUPLICATE_TAB, !browser_->is_type_picture_in_picture());
+      IDC_DUPLICATE_TAB,
+      browser_->GetType() !=
+          BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
   UpdateTabRestoreCommandState();
   command_updater_->UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_->UpdateCommandEnabled(IDC_NAME_WINDOW, true);
@@ -2371,9 +2373,11 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 
   // Window management commands
   command_updater_->UpdateCommandEnabled(
-      IDC_SHOW_AS_TAB, !browser_->is_type_normal() && !is_fullscreen &&
-                           !browser_->is_type_devtools() &&
-                           !browser_->is_type_picture_in_picture());
+      IDC_SHOW_AS_TAB,
+      !browser_->is_type_normal() && !is_fullscreen &&
+          !browser_->is_type_devtools() &&
+          browser_->GetType() !=
+              BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
 
   // Focus various bits of UI
   command_updater_->UpdateCommandEnabled(IDC_FOCUS_TOOLBAR, show_main_ui);
