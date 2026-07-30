@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,7 +67,6 @@ public class TrustedWebActivityPreferencesUiTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "https://crbug.com/40763065")
     public void testSingleCategoryManagedBy() throws Exception {
         final String site = "http://example.com";
         final Origin origin = Origin.create(site);
@@ -86,33 +84,21 @@ public class TrustedWebActivityPreferencesUiTest {
                         SiteSettingsCategory.Type.NOTIFICATIONS);
         final String groupName = "managed_group";
 
-        final SingleCategorySettings websitePreferences =
-                runOnUiThreadBlocking(
-                        () -> {
-                            final SingleCategorySettings preferences =
-                                    (SingleCategorySettings) settingsActivity.getMainFragment();
-                            final ExpandablePreferenceGroup group =
-                                    (ExpandablePreferenceGroup)
-                                            preferences.findPreference(groupName);
-                            preferences.onPreferenceClick(group);
-                            return preferences;
-                        });
-
         CriteriaHelper.pollUiThread(
                 () -> {
-                    // The preference group gets recreated in onPreferenceClick, so we need to find
-                    // it again.
+                    final SingleCategorySettings preferences =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
                     final ExpandablePreferenceGroup group =
-                            (ExpandablePreferenceGroup)
-                                    websitePreferences.findPreference(groupName);
+                            (ExpandablePreferenceGroup) preferences.findPreference(groupName);
                     return group.isExpanded();
                 });
 
         runOnUiThreadBlocking(
                 () -> {
+                    final SingleCategorySettings preferences =
+                            (SingleCategorySettings) settingsActivity.getMainFragment();
                     final ExpandablePreferenceGroup group =
-                            (ExpandablePreferenceGroup)
-                                    websitePreferences.findPreference(groupName);
+                            (ExpandablePreferenceGroup) preferences.findPreference(groupName);
                     Assert.assertEquals(1, group.getPreferenceCount());
                     Preference preference = group.getPreference(0);
                     CharSequence title = preference.getTitle();
