@@ -479,6 +479,7 @@ fuzzer_test("sqlite3_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    ":sqlite3_lpm_fuzzer_input_fuzzable",
     "//base",
     "//third_party/libprotobuf-mutator",
   ]
@@ -502,6 +503,7 @@ fuzzer_test("sqlite3_fts3_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    ":sqlite3_lpm_fuzzer_input_fuzzable",
     "//base",
     "//third_party/libprotobuf-mutator",
   ]
@@ -532,6 +534,7 @@ fuzzer_test("sqlite3_select_printf_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    ":sqlite3_lpm_fuzzer_input_fuzzable",
     "//base",
     "//third_party/libprotobuf-mutator",
   ]
@@ -549,6 +552,7 @@ fuzzer_test("sqlite3_select_strftime_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    ":sqlite3_lpm_fuzzer_input_fuzzable",
     "//base",
     "//third_party/libprotobuf-mutator",
   ]
@@ -566,6 +570,7 @@ fuzzer_test("sqlite3_select_expr_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    ":sqlite3_lpm_fuzzer_input_fuzzable",
     "//base",
     "//third_party/libprotobuf-mutator",
   ]
@@ -595,6 +600,7 @@ fuzzable_proto_library("sqlite3_lpm_fuzzer_input") {
     "fuzz/sql_queries.proto",
     "fuzz/sql_query_grammar.proto",
   ]
+  use_experimental_fuzzable_proto = true
 }
 
 # Generates a good corpus for the sqlite_lpm_fuzzer

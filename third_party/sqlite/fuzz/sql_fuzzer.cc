@@ -7,8 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/sqlite/fuzz/disabled_queries_parser.h"
+#include "third_party/sqlite/fuzz/sql_queries_fuzzable.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_proto_to_string.h"
 #include "third_party/sqlite/fuzz/sql_run_queries.h"
@@ -36,7 +38,12 @@ using namespace sql_query_grammar;
 // 7. Fuzz the recover extension from the third patch
 // 8. Temp-file database, for better fuzzing of VACUUM and journalling.
 
-DEFINE_BINARY_PROTO_FUZZER(const SQLQueries& sql_queries) {
+DEFINE_PROTO_FUZZER(
+    const fuzzable::sql_query_grammar::SQLQueries& fuzzable_sql_queries) {
+  std::string serialized;
+  CHECK(fuzzable_sql_queries.SerializeToString(&serialized));
+  sql_query_grammar::SQLQueries sql_queries;
+  CHECK(sql_queries.ParseFromString(serialized));
   char* skip_queries = ::getenv("SQL_SKIP_QUERIES");
   if (skip_queries) {
     sql_fuzzer::SetDisabledQueries(

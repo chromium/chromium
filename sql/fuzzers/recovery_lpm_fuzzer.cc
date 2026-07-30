@@ -41,6 +41,7 @@
 #include "build/buildflag.h"
 #include "sql/database.h"
 #include "sql/fuzzers/sql_disk_corruption.pb.h"
+#include "sql/fuzzers/sql_disk_corruption_fuzzable.pb.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -242,7 +243,13 @@ std::ostream& operator<<(std::ostream& os, const TestCase& test_case) {
 
 }  // namespace
 
-DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
+DEFINE_PROTO_FUZZER(const fuzzable::sql_fuzzers::RecoveryFuzzerTestCase&
+                        fuzzable_fuzzer_input) {
+  std::string serialized;
+  CHECK(fuzzable_fuzzer_input.SerializeToString(&serialized));
+  sql_fuzzers::RecoveryFuzzerTestCase fuzzer_input;
+  CHECK(fuzzer_input.ParseFromString(serialized));
+
   static Environment env;
 
   // Ignore this input if it includes any "ATTACH DATABASE" queries. These
