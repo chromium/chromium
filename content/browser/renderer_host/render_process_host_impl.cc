@@ -3299,6 +3299,8 @@ void RenderProcessHostImpl::ShutdownForBadMessage(
 void RenderProcessHostImpl::UpdateClientPriority(
     RenderProcessHostPriorityClient* client) {
   CHECK(client, base::NotFatalUntil::M152);
+  // CHECK-exclusion: This DCHECK has non-negligible performance impact in
+  // production and better to not convert to a CHECK.
   DCHECK_EQ(1u, priority_clients_.count(client));
   UpdateProcessPriorityInputs();
 }
@@ -4668,15 +4670,15 @@ void RenderProcessHostImpl::RemovePendingView() {
 
 void RenderProcessHostImpl::AddPriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
-  DCHECK(!priority_clients_.contains(priority_client));
-  priority_clients_.insert(priority_client);
+  const auto [_, inserted] = priority_clients_.insert(priority_client);
+  CHECK(inserted, base::NotFatalUntil::M155);
   UpdateProcessPriorityInputs();
 }
 
 void RenderProcessHostImpl::RemovePriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
-  CHECK(priority_clients_.contains(priority_client), base::NotFatalUntil::M152);
-  priority_clients_.erase(priority_client);
+  const size_t count = priority_clients_.erase(priority_client);
+  CHECK_NE(count, 0u, base::NotFatalUntil::M152);
   UpdateProcessPriorityInputs();
 }
 
