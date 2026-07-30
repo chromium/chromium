@@ -5,7 +5,6 @@
 #include "cc/metrics/scroll_jank_v4_frame_stage_calculator.h"
 
 #include <cstdint>
-#include <memory>
 #include <optional>
 
 #include "base/rand_util.h"
@@ -51,14 +50,13 @@ class ScrollJankV4FrameStageCalculatorTest : public testing::Test {
   }
 
   EventMetricsTestCreator metrics_creator_;
-  std::unique_ptr<ScrollJankV4FrameStageCalculator> calculator_ =
-      ScrollJankV4FrameStageCalculator::Create();
+  ScrollJankV4FrameStageCalculator calculator_;
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
 TEST_F(ScrollJankV4FrameStageCalculatorTest, EmptyEventMetricsList) {
   EventMetrics::List events_metrics;
-  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(stages, IsEmpty());
 }
 
@@ -76,7 +74,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetTraceId(TraceId(1))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1001);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -109,7 +107,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetTraceId(TraceId(2))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(stages,
                 ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                     Real{.first_input_generation_ts = MillisecondsTicks(120),
@@ -144,7 +142,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetTraceId(TraceId(3))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(
         stages,
         ElementsAre(ScrollJankV4Frame::Stage{ScrollEnd{}},
@@ -176,7 +174,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
             .SetTimestamp(MillisecondsTicks(190))
             .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1004);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1004);
     EXPECT_THAT(stages, IsEmpty());
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
@@ -201,7 +199,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetTraceId(TraceId(5))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1005);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1005);
     EXPECT_THAT(stages,
                 ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                     Real{.first_input_generation_ts = MillisecondsTicks(155),
@@ -235,7 +233,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetScrollBeginArrivalTimestamp(scroll2_id)
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1006);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1006);
     EXPECT_THAT(
         stages,
         ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
@@ -266,7 +264,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
             .SetTimestamp(MillisecondsTicks(190))
             .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1007);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1007);
     EXPECT_THAT(stages, IsEmpty());
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
@@ -285,7 +283,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetTraceId(TraceId(7))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1008);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1008);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -318,7 +316,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetTraceId(TraceId(8))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1009);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1009);
     EXPECT_THAT(stages,
                 ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                     Real{.first_input_generation_ts = MillisecondsTicks(220),
@@ -345,7 +343,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RegularScrolls) {
                                  .SetScrollBeginArrivalTimestamp(scroll3_id)
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1010);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1010);
     EXPECT_THAT(stages, ElementsAre(ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1010));
     histogram_tester.ExpectTotalCount(
@@ -367,7 +365,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, OverlappingScrolls) {
                                  .SetTraceId(TraceId(1))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1001);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -409,7 +407,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, OverlappingScrolls) {
                                  .SetTraceId(TraceId(3))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(
         stages,
         ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
@@ -444,7 +442,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, OverlappingScrolls) {
                                  .SetTraceId(TraceId(4))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -485,7 +483,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                  .SetScrollBeginArrivalTimestamp(scroll1_id)
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1001);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -520,7 +518,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest,
                                  .SetTraceId(TraceId(2))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(stages, IsEmpty());
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
     histogram_tester.ExpectBucketCount(
@@ -545,7 +543,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreUpdatesFromPreviousScrolls) {
                                  .SetTraceId(TraceId(1))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1001);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -579,7 +577,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreUpdatesFromPreviousScrolls) {
                                  .SetTraceId(TraceId(2))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -614,7 +612,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreUpdatesFromPreviousScrolls) {
                                  .SetTraceId(TraceId(3))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(stages, IsEmpty());
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
     histogram_tester.ExpectUniqueSample(
@@ -637,7 +635,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreUpdatesFromPreviousScrolls) {
                                  .SetTraceId(TraceId(4))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1004);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1004);
     EXPECT_THAT(stages,
                 ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                     Real{.first_input_generation_ts = MillisecondsTicks(125),
@@ -670,7 +668,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreEndsFromPreviousScrolls) {
                                  .SetTraceId(TraceId(1))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1001);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -704,7 +702,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreEndsFromPreviousScrolls) {
                                  .SetTraceId(TraceId(2))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -736,7 +734,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreEndsFromPreviousScrolls) {
                                  .SetScrollBeginArrivalTimestamp(scroll1_id)
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(stages, IsEmpty());
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
     histogram_tester.ExpectTotalCount(
@@ -756,7 +754,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, IgnoreEndsFromPreviousScrolls) {
                                  .SetTraceId(TraceId(4))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1004);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1004);
     EXPECT_THAT(stages,
                 ElementsAre(ScrollJankV4Frame::Stage{ScrollUpdates(
                     Real{.first_input_generation_ts = MillisecondsTicks(125),
@@ -789,7 +787,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, OverlappingScrollsAndLateUpdates) {
                                  .SetTraceId(TraceId(1))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1001);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -823,7 +821,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, OverlappingScrollsAndLateUpdates) {
                                  .SetTraceId(TraceId(2))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -872,7 +870,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, OverlappingScrollsAndLateUpdates) {
                                  .SetTraceId(TraceId(5))
                                  .Build());
     auto stages =
-        calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
+        calculator_.CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(
         stages,
         ElementsAre(
@@ -913,7 +911,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RealUpdatesOnly) {
                                .SetTraceId(TraceId(3))
                                .Build());
 
-  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -948,7 +946,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, RealUpdatesOnlyInertial) {
                                .SetTraceId(TraceId(3))
                                .Build());
 
-  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -985,7 +983,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, SyntheticUpdatesOnly) {
                                .SetTraceId(TraceId(3))
                                .Build());
 
-  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -1020,7 +1018,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, SyntheticUpdatesOnlyInertial) {
                                .SetTraceId(TraceId(3))
                                .Build());
 
-  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},
@@ -1057,7 +1055,7 @@ TEST_F(ScrollJankV4FrameStageCalculatorTest, StatsRealAndSyntheticUpdates) {
                                .SetTraceId(TraceId(3))
                                .Build());
 
-  auto stages = calculator_->CalculateStages(events_metrics, kResultId);
+  auto stages = calculator_.CalculateStages(events_metrics, kResultId);
   EXPECT_THAT(
       stages,
       ElementsAre(ScrollJankV4Frame::Stage{ScrollStart{}},

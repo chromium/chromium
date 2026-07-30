@@ -5,8 +5,6 @@
 #ifndef CC_METRICS_SCROLL_JANK_V4_FRAME_TIMELINE_CALCULATOR_H_
 #define CC_METRICS_SCROLL_JANK_V4_FRAME_TIMELINE_CALCULATOR_H_
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -75,8 +73,7 @@ class CC_EXPORT ScrollJankV4FrameTimelineCalculator {
       base::TimeTicks presentation_ts);
 
  private:
-  std::unique_ptr<ScrollJankV4FrameStageCalculator> stage_calculator_ =
-      ScrollJankV4FrameStageCalculator::Create();
+  ScrollJankV4FrameStageCalculator stage_calculator_;
 };
 
 }  // namespace cc

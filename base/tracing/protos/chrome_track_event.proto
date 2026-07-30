@@ -1174,7 +1174,7 @@ message EventLatency {
         // The calculator has seen a GSE for the most recent scroll.
         END = 3;
       }
-      // LINT.ThenChange(//cc/metrics/scroll_jank_v4_frame_stage_calculator.cc:HasSeen)
+      // LINT.ThenChange(//cc/metrics/scroll_jank_v4_frame_stage_calculator.h:HasSeen)
       optional HasSeen has_seen_in_current_scroll = 2;
     }
     optional FrameStageCalculation frame_stage_calculation = 14;
