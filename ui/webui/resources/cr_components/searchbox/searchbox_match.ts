@@ -100,7 +100,7 @@ export class SearchboxMatchElement extends CrLitElement {
         reflect: true,
       },
 
-      hasKeyword: {
+      hasKeywordChip: {
         type: Boolean,
         reflect: true,
       },
@@ -190,7 +190,7 @@ export class SearchboxMatchElement extends CrLitElement {
   override accessor ariaLabel: string = '';
   accessor hasAction: boolean = false;
   accessor hasImage: boolean = false;
-  accessor hasKeyword: boolean = false;
+  accessor hasKeywordChip: boolean = false;
   accessor isEntitySuggestion: boolean = false;
   accessor isRichSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
@@ -234,7 +234,7 @@ export class SearchboxMatchElement extends CrLitElement {
       this.contentsHtml_ = this.computeContentsHtml_();
       this.descriptionHtml_ = this.computeDescriptionHtml_();
       this.hasAction = this.computeHasAction_();
-      this.hasKeyword = this.computeHasKeyword_();
+      this.hasKeywordChip = this.computeHasKeywordChip_();
       this.hasImage = this.computeHasImage_();
       this.isContextualSuggestion_ = this.computeIsContextualSuggestion_();
       this.isEntitySuggestion = this.computeIsEntitySuggestion_();
@@ -438,7 +438,7 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.match?.actions?.length > 0;
   }
 
-  private computeHasKeyword_(): boolean {
+  private computeHasKeywordChip_(): boolean {
     return this.match?.keywordModel?.type === KeywordType.kChip;
   }
 
