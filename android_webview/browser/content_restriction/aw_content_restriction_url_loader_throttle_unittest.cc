@@ -24,9 +24,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_data_pipe_getter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -240,6 +242,19 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
                     callback) { std::move(callback).Run(is_allowed); }));
   }
 
+  void MockRedirectRequestContentClassification(bool is_allowed) {
+    EXPECT_CALL(mock_client_, RequestContentClassification(_, _, _))
+        .WillOnce(WithArgs<1, 2>(
+            [is_allowed](
+                const network::ResourceRequest& request,
+                AwContentRestrictionManagerClient::ContentClassificationCallback
+                    callback) {
+              EXPECT_EQ(request.method, "GET");
+              EXPECT_EQ(request.url, GURL(kTestUrl));
+              std::move(callback).Run(is_allowed);
+            }));
+  }
+
   std::string ReadPipeContent(int fd) {
     char buffer[1024];
     ssize_t bytes_read = HANDLE_EINTR(read(fd, buffer, sizeof(buffer)));
@@ -254,6 +269,13 @@ class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
     request.url = GURL(kTestUrl);
     request.method = std::string(method);
     return request;
+  }
+
+  net::RedirectInfo CreateTestRedirectRequest() {
+    net::RedirectInfo redirect_info;
+    redirect_info.new_url = GURL(kTestUrl);
+    redirect_info.new_method = "GET";
+    return redirect_info;
   }
 
   template <typename... Elements>
@@ -740,6 +762,56 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
 
   // A subsequent read should return 0 (EOF) now that the pipe has been closed.
   EXPECT_EQ(ReadPipeContent(read_fd.get()), "");
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       AllowRedirectsWhenContentRestrictionDisabled) {
+  EXPECT_CALL(mock_client_, IsContentRestrictionEnabled())
+      .WillOnce(Return(false));
+
+  net::RedirectInfo redirect_info = CreateTestRedirectRequest();
+  bool defer = false;
+  network::mojom::URLResponseHead url_response_head;
+  throttle_.WillRedirectRequest(&redirect_info, url_response_head, &defer,
+                                /*headers_update_params=*/nullptr);
+
+  EXPECT_FALSE(defer);
+  EXPECT_FALSE(delegate_.resume_called());
+  EXPECT_FALSE(delegate_.cancel_called());
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRedirectRequest) {
+  EXPECT_CALL(mock_client_, IsContentRestrictionEnabled())
+      .WillOnce(Return(true));
+
+  net::RedirectInfo redirect_info = CreateTestRedirectRequest();
+  MockRedirectRequestContentClassification(/*is_allowed=*/true);
+  bool defer = false;
+  network::mojom::URLResponseHead url_response_head;
+  throttle_.WillRedirectRequest(&redirect_info, url_response_head, &defer,
+                                /*headers_update_params=*/nullptr);
+
+  EXPECT_TRUE(defer);
+  EXPECT_TRUE(delegate_.resume_called());
+  EXPECT_FALSE(delegate_.cancel_called());
+}
+
+TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRedirectRequest) {
+  EXPECT_CALL(mock_client_, IsContentRestrictionEnabled())
+      .WillOnce(Return(true));
+
+  net::RedirectInfo redirect_info = CreateTestRedirectRequest();
+  MockRedirectRequestContentClassification(/*is_allowed=*/false);
+  bool defer = false;
+  network::mojom::URLResponseHead url_response_head;
+  throttle_.WillRedirectRequest(&redirect_info, url_response_head, &defer,
+                                /*headers_update_params=*/nullptr);
+
+  EXPECT_TRUE(defer);
+  EXPECT_FALSE(delegate_.resume_called());
+  EXPECT_TRUE(delegate_.cancel_called());
+  EXPECT_EQ(delegate_.error_code(), net::ERR_BLOCKED_BY_CLIENT);
+  EXPECT_TRUE(tracker_.IsNavigationBlocked(kTestNavigationId));
 }
 
 }  // namespace

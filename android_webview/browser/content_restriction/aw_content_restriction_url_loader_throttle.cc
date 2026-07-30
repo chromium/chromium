@@ -33,9 +33,11 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace android_webview {
 namespace {
@@ -595,6 +597,29 @@ void AwContentRestrictionURLLoaderThrottle::WillStartRequest(
     // data that has been already written into the pipe.
     content_restriction_manager_client_->RequestContentClassification(
         navigation_id, *request,
+        base::BindOnce(
+            &AwContentRestrictionURLLoaderThrottle::OnClassificationResult,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void AwContentRestrictionURLLoaderThrottle::WillRedirectRequest(
+    net::RedirectInfo* redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    bool* defer,
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+  DCHECK(content_restriction_manager_client_);
+  if (navigation_id_.has_value() &&
+      content_restriction_manager_client_->IsContentRestrictionEnabled()) {
+    *defer = true;
+
+    // There is no need to share the request body or the content type header
+    // value as they will be identical to the original request.
+    network::ResourceRequest request;
+    request.url = redirect_info->new_url;
+    request.method = redirect_info->new_method;
+    content_restriction_manager_client_->RequestContentClassification(
+        navigation_id_.value(), request,
         base::BindOnce(
             &AwContentRestrictionURLLoaderThrottle::OnClassificationResult,
             weak_ptr_factory_.GetWeakPtr()));

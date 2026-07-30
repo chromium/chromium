@@ -60,6 +60,7 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
     private static final String LEARN_MORE_LINK_ID = "learn-more-link";
     private static final String ALLOWED_PAYLOAD = "allowed";
     private static final String BLOCKED_PAYLOAD = "blocked";
+    private static final String REDIRECT_SITE_PATH = "/redirect.html";
 
     private AwContents mAwContents;
     private TestWebServer mWebServer;
@@ -317,5 +318,34 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlAsync(mAwContents, mWebServer.getResponseUrl(BLOCKED_SITE_PATH));
         waitForInterstitialPageLoad();
         Assert.assertFalse("Go back link should be hidden", isElementVisible(GO_BACK_LINK_ID));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRedirectToBlockedSite() throws Throwable {
+        String redirectUrl =
+                mWebServer.setRedirect(
+                        REDIRECT_SITE_PATH, mWebServer.getResponseUrl(BLOCKED_SITE_PATH));
+        mActivityTestRule.loadUrlAsync(mAwContents, redirectUrl);
+        waitForInterstitialPageLoad();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRedirectToAllowedSite() throws Throwable {
+        String redirectUrl =
+                mWebServer.setRedirect(
+                        REDIRECT_SITE_PATH, mWebServer.getResponseUrl(ALLOWED_SITE_2_PATH));
+        int initialHistoryCount = getNavigationHistoryEntryCount();
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
+
+        Assert.assertEquals(initialHistoryCount, getNavigationHistoryEntryCount());
+        Assert.assertEquals(
+                ALLOWED_SITE_2_TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
     }
 }
