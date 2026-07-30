@@ -225,6 +225,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/safe_browsing/model/client_side_detection",
     "//ios/chrome/browser/safe_browsing/model/tailored_security",
     "//ios/chrome/browser/safety_check/model:factory",
     "//ios/chrome/browser/saved_tab_groups/model",

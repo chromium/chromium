@@ -185,6 +185,20 @@ void ClientSideDetectionServiceBase::OnPrefsUpdated() {
   OnModelAndServiceStateChanged();
 }
 
+void ClientSideDetectionServiceBase::OnModelAndServiceStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsEnabled()) {
+    if (!update_model_subscription_) {
+      update_model_subscription_ = RegisterCallbackForModelUpdates(
+          base::BindRepeating(&ClientSideDetectionServiceBase::OnModelUpdated,
+                              weak_factory_.GetWeakPtr()));
+    }
+  } else {
+    update_model_subscription_ = base::CallbackListSubscription();
+  }
+  OnModelUpdated();
+}
+
 void ClientSideDetectionServiceBase::UnsubscribeToModelSubscription() {
   // We will check for the model object below because we also call this function
   // when the model object is not available.

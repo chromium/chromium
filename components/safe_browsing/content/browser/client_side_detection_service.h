@@ -102,7 +102,7 @@ class ClientSideDetectionService
 
  private:
   // ClientSideDetectionServiceBase implementation:
-  void OnModelAndServiceStateChanged() override;
+  void OnModelUpdated() override;
   void DidSendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> request,
       const std::string& access_token) override;
@@ -131,8 +131,6 @@ class ClientSideDetectionService
 
   // The version of the trigger model that was last sent to the renderers.
   int trigger_model_version_ = 0;
-
-  base::CallbackListSubscription update_model_subscription_;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

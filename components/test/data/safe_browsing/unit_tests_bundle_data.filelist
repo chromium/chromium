@@ -10,3 +10,4 @@
 //components/test/data/safe_browsing/image_embeddings.textproto
 //components/test/data/safe_browsing/visual_model_android.tflite
 //components/test/data/safe_browsing/visual_model_desktop.tflite
+//components/test/data/safe_browsing/visual_model_ios.tflite

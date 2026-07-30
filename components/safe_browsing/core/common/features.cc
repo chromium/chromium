@@ -143,6 +143,8 @@ const base::FeatureParam<bool> kCsdCreditCardFormEnableDetectionTrigger{
     &kClientSideDetectionCreditCardForm, "EnableDetectionTrigger",
     /*default_value=*/false};
 
+BASE_FEATURE(kClientSideDetectionEnabledIos, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

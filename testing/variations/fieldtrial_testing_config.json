@@ -6338,6 +6338,21 @@
             ]
         }
     ],
+    "ClientSideDetectionEnabledIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionEnabledIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionLocalResourceCheckFix": [
         {
             "platforms": [
