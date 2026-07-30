@@ -64,7 +64,6 @@ using ::action_chips::mojom::IconType;
 using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
-using ::action_chips::mojom::ToolMode;
 using ::searchbox::mojom::SuggestInventory;
 using ::sync_preferences::TestingPrefServiceSyncable;
 using ::tabs::TabInterface;
@@ -200,8 +199,7 @@ ActionChipPtr CreateStaticRecentTabChip(TabInfoPtr tab) {
   return CreateActionChip(
       "",
       SuggestTemplateInfo::New(IconType::kFavicon, CreateFormattedString(title),
-                               CreateFormattedString(subtitle),
-                               ToolMode::kUnspecified, std::nullopt, nullptr),
+                               CreateFormattedString(subtitle), nullptr),
       std::move(tab));
 }
 
@@ -215,7 +213,7 @@ const ActionChipPtr& GetStaticDeepSearchChip() {
             IconType::kGlobeWithSearchLoop,
             CreateFormattedString("Deep Search"),
             CreateFormattedString("Dive deep into something new"),
-            ToolMode::kDeepSearch, std::nullopt, std::move(action)),
+            std::move(action)),
         /*tab=*/nullptr);
   }());
   return *kInstance;
@@ -230,7 +228,7 @@ const ActionChipPtr& GetStaticImageGenerationChip() {
         SuggestTemplateInfo::New(
             IconType::kBanana, CreateFormattedString("Create images"),
             CreateFormattedString("Add an image and reimagine it"),
-            ToolMode::kImageGen, std::nullopt, std::move(action)),
+            std::move(action)),
         /*tab=*/nullptr);
   }());
   return *kInstance;
@@ -242,13 +240,12 @@ const ActionChipPtr& GetStaticCanvasChip() {
     action->preselected_tool = omnibox::TOOL_MODE_CANVAS;
     return CreateActionChip(
         /*suggestion=*/"",
-        SuggestTemplateInfo::New(
-            IconType::kDraftSpark,
-            CreateFormattedString(
-                l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CANVAS_HEADING)),
-            CreateFormattedString(
-                l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CANVAS_BODY)),
-            ToolMode::kCanvas, std::nullopt, std::move(action)),
+        SuggestTemplateInfo::New(IconType::kDraftSpark,
+                                 CreateFormattedString(l10n_util::GetStringUTF8(
+                                     IDS_NTP_ACTION_CHIP_CANVAS_HEADING)),
+                                 CreateFormattedString(l10n_util::GetStringUTF8(
+                                     IDS_NTP_ACTION_CHIP_CANVAS_BODY)),
+                                 std::move(action)),
         /*tab=*/nullptr);
   }());
   return *kInstance;
@@ -267,9 +264,6 @@ const ActionChipPtr& GetStaticStarterChip() {
                 l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_STARTER_HEADING)),
             CreateFormattedString(
                 l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_STARTER_BODY)),
-            std::nullopt,
-            omnibox::SuggestInventory::
-                SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS,
             std::move(action)),
         /*tab=*/nullptr);
   }());
@@ -680,7 +674,7 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
       SuggestTemplateInfo::New(IconType::kFavicon,
                                CreateFormattedString(recent_tab_title),
                                CreateFormattedString(recent_tab_subtitle),
-                               std::nullopt, std::nullopt, nullptr),
+                               nullptr),
       tab_info->Clone());
 
   auto ds_fusebox_action = fusebox_action::mojom::FuseboxAction::New();
@@ -690,7 +684,6 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
                                CreateFormattedString(deep_search_subtitle),
-                               ToolMode::kDeepSearch, std::nullopt,
                                std::move(ds_fusebox_action)),
       nullptr);
 
@@ -698,10 +691,10 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
   img_fusebox_action->preselected_tool = omnibox::TOOL_MODE_IMAGE_GEN;
   ActionChipPtr chip2 = CreateActionChip(
       base::UTF16ToUTF8(image_gen_suggestion),
-      SuggestTemplateInfo::New(
-          IconType::kBanana, CreateFormattedString(image_gen_title),
-          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen,
-          std::nullopt, std::move(img_fusebox_action)),
+      SuggestTemplateInfo::New(IconType::kBanana,
+                               CreateFormattedString(image_gen_title),
+                               CreateFormattedString(image_gen_subtitle),
+                               std::move(img_fusebox_action)),
       nullptr);
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
@@ -771,7 +764,6 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
                                CreateFormattedString(deep_search_subtitle),
-                               ToolMode::kDeepSearch, std::nullopt,
                                std::move(ds_fusebox_action)),
       nullptr);
 
@@ -779,10 +771,10 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
   img_fusebox_action->preselected_tool = omnibox::TOOL_MODE_IMAGE_GEN;
   ActionChipPtr chip1 = CreateActionChip(
       base::UTF16ToUTF8(image_gen_suggestion),
-      SuggestTemplateInfo::New(
-          IconType::kBanana, CreateFormattedString(image_gen_title),
-          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen,
-          std::nullopt, std::move(img_fusebox_action)),
+      SuggestTemplateInfo::New(IconType::kBanana,
+                               CreateFormattedString(image_gen_title),
+                               CreateFormattedString(image_gen_subtitle),
+                               std::move(img_fusebox_action)),
       nullptr);
 
   std::vector<Matcher<const ActionChipPtr&>> expected;
@@ -1009,16 +1001,14 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
   auto starter_fusebox_action = fusebox_action::mojom::FuseboxAction::New();
   starter_fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
-  ActionChipPtr chip0 = CreateActionChip(
-      conversation_starter_suggestion,
-      SuggestTemplateInfo::New(
-          IconType::kSearchLoopWithSparkle,
-          CreateFormattedString(conversation_starter_title),
-          CreateFormattedString(conversation_starter_subtitle), std::nullopt,
-          omnibox::SuggestInventory::
-              SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS,
-          std::move(starter_fusebox_action)),
-      nullptr);
+  ActionChipPtr chip0 =
+      CreateActionChip(conversation_starter_suggestion,
+                       SuggestTemplateInfo::New(
+                           IconType::kSearchLoopWithSparkle,
+                           CreateFormattedString(conversation_starter_title),
+                           CreateFormattedString(conversation_starter_subtitle),
+                           std::move(starter_fusebox_action)),
+                       nullptr);
 
   auto ds_fusebox_action = fusebox_action::mojom::FuseboxAction::New();
   ds_fusebox_action->preselected_tool = omnibox::TOOL_MODE_DEEP_SEARCH;
@@ -1027,7 +1017,6 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
                                CreateFormattedString(deep_search_subtitle),
-                               ToolMode::kDeepSearch, std::nullopt,
                                std::move(ds_fusebox_action)),
       nullptr);
 
@@ -1035,10 +1024,10 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
   img_fusebox_action->preselected_tool = omnibox::TOOL_MODE_IMAGE_GEN;
   ActionChipPtr chip2 = CreateActionChip(
       image_gen_suggestion,
-      SuggestTemplateInfo::New(
-          IconType::kBanana, CreateFormattedString(image_gen_title),
-          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen,
-          std::nullopt, std::move(img_fusebox_action)),
+      SuggestTemplateInfo::New(IconType::kBanana,
+                               CreateFormattedString(image_gen_title),
+                               CreateFormattedString(image_gen_subtitle),
+                               std::move(img_fusebox_action)),
       nullptr);
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
                                   Eq(std::cref(chip2))));
@@ -1280,8 +1269,7 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
       CreateFormattedString("Valid Title", "Primary A11y Text");
   valid_chip->suggest_template_info->secondary_text =
       CreateFormattedString("Valid Annotation", "Secondary A11y Text");
-  valid_chip->suggest_template_info->preselected_tool = std::nullopt;
-  valid_chip->suggest_template_info->preferred_inventory = std::nullopt;
+  valid_chip->suggest_template_info->fusebox_action = nullptr;
 
   // Expect only the valid chip.
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(valid_chip))));

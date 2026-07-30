@@ -64,7 +64,6 @@ using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::SuggestTemplateInfoPtr;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
-using ::action_chips::mojom::ToolMode;
 using ::tabs::TabInterface;
 
 const size_t kMaxActionChips = 3;
@@ -140,8 +139,6 @@ void SyncProtoToMojo<omnibox::FormattedString,
   }
 }
 
-// TODO(crbug.com/540070720): Remove legacy FuseboxAction field conversions in
-// SyncProtoToMojo once FuseboxAction migration is complete.
 template <>
 void SyncProtoToMojo<omnibox::SuggestTemplateInfo,
                      action_chips::mojom::SuggestTemplateInfoPtr>(
@@ -156,13 +153,6 @@ void SyncProtoToMojo<omnibox::SuggestTemplateInfo,
   }
   if (a.has_secondary_text()) {
     AssignMojoField(a.secondary_text(), b->secondary_text);
-  }
-  if (a.has_fusebox_action() && a.fusebox_action().has_preselected_tool()) {
-    AssignMojoField(a.fusebox_action().preselected_tool(), b->preselected_tool);
-  }
-  if (a.has_fusebox_action() && a.fusebox_action().has_preferred_inventory()) {
-    AssignMojoField(a.fusebox_action().preferred_inventory(),
-                    b->preferred_inventory);
   }
   if (a.has_fusebox_action()) {
     b->fusebox_action =
@@ -220,7 +210,6 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   chip->suggest_template_info->secondary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->secondary_text->text = chip->tab->title;
-  chip->suggest_template_info->preselected_tool = ToolMode::kUnspecified;
   return chip;
 }
 
@@ -239,7 +228,6 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
       !suggestion.empty()
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY);
-  chip->suggest_template_info->preselected_tool = ToolMode::kDeepSearch;
   chip->suggest_template_info->fusebox_action =
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preselected_tool =
@@ -272,7 +260,6 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
       !suggestion.empty()
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1);
-  chip->suggest_template_info->preselected_tool = ToolMode::kImageGen;
   chip->suggest_template_info->fusebox_action =
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preselected_tool =
@@ -303,8 +290,6 @@ ActionChipPtr CreateStarterChip() {
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->secondary_text->text =
       l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_STARTER_BODY);
-  chip->suggest_template_info->preferred_inventory =
-      omnibox::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
   chip->suggest_template_info->fusebox_action =
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preferred_inventory =
@@ -338,7 +323,6 @@ ActionChipPtr CreateCanvasChip(std::string_view suggestion) {
       !suggestion.empty()
           ? std::string(suggestion)
           : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CANVAS_BODY);
-  chip->suggest_template_info->preselected_tool = ToolMode::kCanvas;
   chip->suggest_template_info->fusebox_action =
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preselected_tool =
