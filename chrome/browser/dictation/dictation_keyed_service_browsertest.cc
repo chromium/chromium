@@ -129,13 +129,15 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceDisabledBrowserTest,
   EXPECT_EQ(DictationKeyedService::Get(profile()), nullptr);
 }
 
+// Ensure the context menu entrypoint is shown both before, during, and after a
+// session is active.
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
                        ShouldShowContextMenuItem) {
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
   StartSession();
 
-  EXPECT_FALSE(dictation_service().ShouldShowContextMenuItem());
+  EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 
   dictation_service().EndSession();
 
@@ -165,6 +167,94 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
             blink::DOMNodeIdType(123));
   EXPECT_FALSE(provider->GetTarget()->richly_editable());
+}
+
+// Ensure the context menu item can be used to start a new stream in the same
+// tab as an existing session.
+IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+                       ExecuteContextMenuCommandExistingSessionSameTab) {
+  // Start a first stream
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+
+  ASSERT_NE(session_controller(), nullptr);
+  ListenerStreamProvider* stream1_provider = attached_stream();
+  auto stream1_id = stream1_provider->stream_id_for_testing();
+  ExtensionWaitForStreamStart(profile(), stream1_id);
+  ExtensionSendStreamStateUpdate(
+      profile(), stream1_id,
+      extensions::api::dictation_private::StreamState::kTranscribing);
+
+  // Now that a session and stream are active, verify that we can still trigger
+  // dictation from the context menu. This should gracefully end and finalize
+  // the first stream and start a new stream.
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(456));
+
+  ExtensionWaitForStreamEnd(profile(), stream1_id);
+  ASSERT_NE(attached_stream(), nullptr);
+  auto stream2_id = attached_stream()->stream_id_for_testing();
+  EXPECT_NE(stream1_id, stream2_id);
+  EXPECT_EQ(attached_stream()
+                ->GetTarget()
+                ->global_dom_node_id()
+                .target_element_dom_id,
+            blink::DOMNodeIdType(456));
+
+  // Ensure the finalized transcript can be sent for stream 1 after stream 2
+  // started.
+  ExtensionSendTranscriptUpdate(
+      profile(), stream1_id,
+      extensions::api::dictation_private::TranscriptionType::kFinal, "Final");
+  EXPECT_EQ(stream1_provider->GetLatestTranscriptionForTesting(), "Final");
+}
+
+// Ensure the context menu item can be used to start a new stream in a second
+// window, while a session is already active in another window.
+IN_PROC_BROWSER_TEST_F(
+    DictationKeyedServiceBrowserTest,
+    ExecuteContextMenuCommandExistingSessionDifferentWindow) {
+  // Start dictation in the first window.
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  ListenerStreamProvider* stream1_provider = attached_stream();
+  auto stream1_id = stream1_provider->stream_id_for_testing();
+  ExtensionWaitForStreamStart(profile(), stream1_id);
+  ExtensionSendStreamStateUpdate(
+      profile(), stream1_id,
+      extensions::api::dictation_private::StreamState::kTranscribing);
+
+  // Create a second window and trigger the context menu entry point from it.
+  Browser* second_browser = CreateBrowser(profile());
+  content::WebContents* window2_contents =
+      second_browser->tab_strip_model()->GetActiveWebContents();
+  SimulateInvokeViaContextMenu(window2_contents->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(456));
+
+  // Ensure stream 1 had EndStream called on it.
+  ExtensionWaitForStreamEnd(profile(), stream1_id);
+
+  // The session should should now be targeting the new element in the second
+  // window.
+  ASSERT_NE(attached_stream(), nullptr);
+  auto stream2_id = attached_stream()->stream_id_for_testing();
+  EXPECT_NE(stream1_id, stream2_id);
+  EXPECT_EQ(attached_stream()
+                ->GetTarget()
+                ->global_dom_node_id()
+                .target_element_dom_id,
+            blink::DOMNodeIdType(456));
+  EXPECT_EQ(attached_stream()
+                ->GetTarget()
+                ->global_dom_node_id()
+                .document.AsRenderFrameHostIfValid(),
+            window2_contents->GetPrimaryMainFrame());
+
+  // Ensure final transcript can be sent for stream 1 after stream 2 started.
+  ExtensionSendTranscriptUpdate(
+      profile(), stream1_id,
+      extensions::api::dictation_private::TranscriptionType::kFinal, "Final");
+  EXPECT_EQ(stream1_provider->GetLatestTranscriptionForTesting(), "Final");
 }
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,

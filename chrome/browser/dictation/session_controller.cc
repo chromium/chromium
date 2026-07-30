@@ -59,7 +59,7 @@ SessionController::~SessionController() {
   VT_LOG() << "=== Session Ended";
 }
 
-void SessionController::Initialize() {
+void SessionController::ResetUi() {
   ui_ = delegate_->CreateUi(*this);
 }
 
@@ -72,8 +72,12 @@ void SessionController::StartDictationStream(
   // finalization state which could flash states the UI.
   CHECK(state_ == SessionState::kInactive ||
         state_ == SessionState::kFinalizing);
-  CHECK(!is_shutting_down_);
   CHECK(!attached_stream_provider_);
+
+  if (is_shutting_down_) {
+    VT_LOG() << "\tAborting session shutdown";
+    is_shutting_down_ = false;
+  }
 
   Observe(content::WebContents::FromRenderFrameHost(
       target_details.target_id.document.AsRenderFrameHostIfValid()));

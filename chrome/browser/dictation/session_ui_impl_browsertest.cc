@@ -483,4 +483,34 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       SecondWindowInvokesDictationMovesUI) {
+  // Create a second browser window.
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  content::WebContents* window2_contents =
+      second_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(window2_contents, nullptr);
+
+  // clang-format off
+  RunTestSequence(
+    // Start dictation session in Window 1.
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Invoke dictation from the context menu in Window 2.
+    Do([this, window2_contents] {
+      dictation_service().ContextMenuHandler(
+          DefaultInPageTarget(window2_contents));
+    }),
+
+    // Verify UI is showing in Window 2 and not showing in Window 1.
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              WaitForShow(DictationBubbleUi::kViewElementIdForTesting)),
+    InContext(BrowserElements::From(browser())->GetContext(),
+              EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting)),
+    CheckHasSession(true)
+  );
+  // clang-format on
+}
+
 }  // namespace dictation

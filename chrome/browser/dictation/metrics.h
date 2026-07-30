@@ -31,10 +31,19 @@ enum class DictationSessionEntryPoint {
 // numeric values should never be reused.
 // LINT.IfChange(DictationStreamStartTrigger)
 enum class DictationStreamStartTrigger {
+  // The initial stream created when a session is first started.
   kSessionStart = 0,
+
+  // The stream was started by clicking the "Start" button in the bubble UI.
   kStartButton = 1,
+
+  // The stream was started by the user moving focus into a new input box.
   kFocusChange = 2,
-  kMaxValue = kFocusChange,
+
+  // The stream was started from the context menu while a session was already
+  // open.
+  kContextMenuExistingSession = 3,
+  kMaxValue = kContextMenuExistingSession,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationStreamStartTrigger)
 

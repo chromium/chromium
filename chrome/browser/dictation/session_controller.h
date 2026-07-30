@@ -40,8 +40,8 @@ class SessionController : public SessionUiDelegate,
   SessionController(const SessionController&) = delete;
   SessionController& operator=(const SessionController&) = delete;
 
-  // Called by the service when it's ready for the session to start.
-  void Initialize();
+  // Called by the service to prime the session for a new UI.
+  void ResetUi();
 
   // SessionUiDelegate:
   void UiRequestEndSession() override;
