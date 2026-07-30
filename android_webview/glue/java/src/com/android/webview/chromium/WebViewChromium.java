@@ -1325,6 +1325,9 @@ class WebViewChromium
             // Check that the current thread is the UI thread, which will throw if it was
             // already started using a different thread as the UI thread.
             checkThread();
+            // Mark synchronously here (rather than where it is consumed) since initForReal can be
+            // deferred.
+            WebContentContextWrapper.markUsed(mContext);
 
             // This will run initForReal synchronously except when the experiment to defer running
             // Chromium startup is enabled.
@@ -1392,8 +1395,14 @@ class WebViewChromium
                                 AwBrowserContext.getDefaultContextName(), true);
             }
 
+            WebContent webContent = WebContentContextWrapper.getWebContent(mContext);
+            if (webContent == null) {
+                webContent = new WebContent();
+            }
+
             mAwContents =
-                    new AwContents(
+                    webContent.adopt(
+                            this,
                             browserContext,
                             mWebView,
                             mContext,
@@ -1640,6 +1649,20 @@ class WebViewChromium
             return ((WebViewDatabaseAdapter) mFactory.getWebViewDatabase(mContext))
                     .getHttpAuthUsernamePassword(host, realm);
         }
+    }
+
+    /**
+     * Mark this WebViewChromium instance as detached when its AwContents is transferred to a new
+     * WebView instance.
+     */
+    public void detachForTransfer() {
+        ThreadUtils.assertOnUiThread();
+        onWindowVisibilityChanged(android.view.View.GONE);
+        onDetachedFromWindow();
+
+        // TODO(bewise): Replace this stubbed AwContents approach with better state management
+        // so that long term we can clean up the default profile when it isn't in use.
+        mAwContents = mFactory.getSharedDestroyedAwContents();
     }
 
     @Override
