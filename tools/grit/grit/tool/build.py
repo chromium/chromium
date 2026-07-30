@@ -83,13 +83,13 @@ Options:
 
   -a FILE           Assert that the given file is an output. There can be
                     multiple "-a" flags listed for multiple outputs. If a "-a"
-                    or "--assert-file-list" argument is present, then the list
-                    of asserted files must match the output files or the tool
-                    will fail. The use-case is for the build system to maintain
-                    separate lists of output files and to catch errors if the
-                    build system's list and the grit list are out-of-sync.
+                    or "--assert-output-file-list" argument is present, then
+                    the list of asserted files must match the output files or the
+                    tool will fail. The use-case is for the build system to
+                    maintain separate lists of output files and to catch errors
+                    if the build system's list and the grit list are out-of-sync.
 
-  --assert-file-list
+  --assert-output-file-list
                     Provide a file listing multiple asserted output files.
                     There is one file name per line. This acts like specifying
                     each file with "-a" on the command line, but without the
@@ -203,8 +203,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
     translate_genders = False
     (own_opts, args) = getopt.getopt(
         args, 'a:p:o:D:E:f:w:t:',
-        ('depdir=', 'depfile=', 'assert-file-list=', 'assert-input-file-list=',
-         'help', 'output-all-resource-defines',
+        ('depdir=', 'depfile=', 'assert-output-file-list=',
+         'assert-input-file-list=', 'help', 'output-all-resource-defines',
          'no-output-all-resource-defines', 'no-replace-ellipsis',
          'depend-on-stamp', 'css-minifier=', 'write-only-new=',
          'allowlist-support', 'brotli=', 'translate-genders',
@@ -212,7 +212,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     for (key, val) in own_opts:
       if key == '-a':
         assert_output_files.append(val)
-      elif key == '--assert-file-list':
+      elif key == '--assert-output-file-list':
         with open(val) as f:
           assert_output_files += f.read().splitlines()
       elif key == '--assert-input-file-list':

@@ -296,14 +296,14 @@ template("grit") {
     # writing. We write the list to a file (some of the output lists are long
     # enough to not fit on a Windows command line) and ask Grit to verify those
     # are the actual outputs at runtime.
-    _asserted_list_file =
+    _asserted_output_list_file =
         "$target_out_dir/${_grit_output_name}_expected_outputs.txt"
-    write_file(_asserted_list_file,
+    write_file(_asserted_output_list_file,
                rebase_path(_grit_outputs, root_build_dir, _output_dir))
-    inputs += [ _asserted_list_file ]
+    inputs += [ _asserted_output_list_file ]
     args += [
-      "--assert-file-list",
-      rebase_path(_asserted_list_file, root_build_dir),
+      "--assert-output-file-list",
+      rebase_path(_asserted_output_list_file, root_build_dir),
     ]
 
     if (enable_resource_allowlist_generation) {
