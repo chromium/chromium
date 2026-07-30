@@ -99,9 +99,10 @@ class LocalRepo(object):
             command, cwd=self.path, **kwargs)
 
     def clean(self):
-        """Resets git to a clean state with no changed files."""
+        """Resets git to a clean state, on origin/master with no changed files."""
         self.run(['git', 'reset', '--hard', 'HEAD'])
         self.run(['git', 'clean', '-fdx'])
+        self.run(['git', 'checkout', f'origin/{self.main_branch}'])
 
     def create_branch_with_patch(self,
                                  branch_name,
@@ -175,7 +176,7 @@ class LocalRepo(object):
         """
         self.clean()
         error = self.apply_patch(patch)
-        diff = self.run(['git', 'diff', 'HEAD'])
+        diff = self.run(['git', 'diff', f'origin/{self.main_branch}'])
         self.clean()
         if error != '':
             return False, error
