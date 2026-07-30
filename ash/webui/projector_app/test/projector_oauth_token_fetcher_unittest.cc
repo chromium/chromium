@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -52,7 +53,8 @@ class ProjectorOAuthTokenFetcherTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockAppClient mock_app_client_;
-  ProjectorOAuthTokenFetcher access_token_fetcher_;
+  ProjectorOAuthTokenFetcher access_token_fetcher_{
+      mock_app_client_.GetIdentityManager()};
 };
 
 TEST_F(ProjectorOAuthTokenFetcherTest, GetAccessTokenFirstRequest) {
@@ -159,6 +161,31 @@ TEST_F(ProjectorOAuthTokenFetcherTest, ValidCachedToken) {
   VerifyOAuthTokenFetchResult(future2);
 
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
+}
+
+// Verifies that the fetcher uses the identity manager supplied at construction
+// rather than the one returned by `ProjectorAppClient::Get()`. The app client
+// (`mock_app_client()`) has `kTestUserEmail` as primary; the fetcher under test
+// is bound to a separate identity manager whose primary is `kTestUser2Email`.
+TEST_F(ProjectorOAuthTokenFetcherTest, UsesBoundIdentityManager) {
+  signin::IdentityTestEnvironment other_identity_env;
+  other_identity_env.MakePrimaryAccountAvailable(kTestUser2Email,
+                                                 signin::ConsentLevel::kSignin);
+  other_identity_env.SetRefreshTokenForPrimaryAccount();
+
+  ProjectorOAuthTokenFetcher other_fetcher(
+      other_identity_env.identity_manager());
+
+  EXPECT_EQ(other_fetcher.GetPrimaryAccountInfo().email, kTestUser2Email);
+
+  // The access token request must be issued to the bound identity manager;
+  // responding via `other_identity_env` must resolve the fetch.
+  OnOAuthTokenFetchFuture future;
+  other_fetcher.GetAccessTokenFor(kTestUser2Email, future.GetCallback());
+  other_identity_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "validToken", base::Time::Now() + kExpiryTimeFromNow);
+  EXPECT_EQ(future.Get<0>(), kTestUser2Email);
+  EXPECT_EQ(future.Get<1>().state(), GoogleServiceAuthError::State::NONE);
 }
 
 TEST_F(ProjectorOAuthTokenFetcherTest, InvalidateToken) {

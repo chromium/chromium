@@ -14,6 +14,10 @@ namespace network::mojom {
 class URLLoaderFactory;
 }  // namespace network::mojom
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class GURL;
 
 namespace ash {
@@ -28,6 +32,7 @@ class MockXhrSender : public ProjectorXhrSender {
                               const std::optional<std::string>&)>;
 
   MockXhrSender(OnSendCallback quit_closure,
+                signin::IdentityManager* identity_manager,
                 network::mojom::URLLoaderFactory* url_loader_factory);
   MockXhrSender(const MockXhrSender&) = delete;
   MockXhrSender& operator=(const MockXhrSender&) = delete;

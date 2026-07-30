@@ -10,8 +10,9 @@
 namespace ash {
 MockXhrSender::MockXhrSender(
     OnSendCallback quit_closure,
+    signin::IdentityManager* identity_manager,
     network::mojom::URLLoaderFactory* url_loader_factory)
-    : ProjectorXhrSender(url_loader_factory),
+    : ProjectorXhrSender(identity_manager, url_loader_factory),
       quit_closure_(std::move(quit_closure)) {}
 
 MockXhrSender::~MockXhrSender() = default;
