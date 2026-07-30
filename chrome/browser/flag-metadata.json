@@ -8927,6 +8927,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "settings-in-tab-url-nav",
+    "owners": [ "mwoj@google.com", "jamescook@google.com", "clank-desktopify@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "shared-data-types-kill-switch",
     "owners": [ "ritikagup@google.com", "chrome-tab-group-eng@google.com"],
     "expiry_milestone": 170
