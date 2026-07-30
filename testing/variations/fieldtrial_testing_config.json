@@ -5047,8 +5047,11 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "MigratedChromeForTesting": "true",
                         "MigratedCollectedCookies": "true",
+                        "MigratedGoogleApiKeys": "true",
                         "MigratedInstallerDownloader": "true",
+                        "MigratedObsoleteSystem": "true",
                         "MigratedPageInfo": "true",
                         "MigratedPdf": "true"
                     },
