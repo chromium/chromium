@@ -140,6 +140,9 @@ public class TabStoreMetricsService {
 
     /** Tracks metrics for a single window instance. */
     public static class WindowMetricsTracker {
+        /** Sentinel value when count metric preference is not set. */
+        public static final int NO_COUNT_PREF = -1;
+
         private final Profile mProfile;
         private final String mWindowTag;
         private final String mOrchestratorTagSuffix;
@@ -170,10 +173,21 @@ public class TabStoreMetricsService {
          * Helper method to read an integer count metric from SharedPreferences.
          *
          * @param metricName The metric name (e.g. TabCount) to read from the key.
-         * @return The persisted count value, or 0 if not present.
+         * @return The persisted count value, or NO_COUNT_PREF if not present.
          */
         private int getCountPref(String metricName) {
-            return ChromeSharedPreferences.getInstance().readInt(getMetricKey(metricName), 0);
+            return ChromeSharedPreferences.getInstance()
+                    .readInt(getMetricKey(metricName), NO_COUNT_PREF);
+        }
+
+        /**
+         * Checks whether an integer count metric preference exists for this metric name.
+         *
+         * @param metricName The metric name (e.g. TabCount) to check.
+         * @return True if a valid count pref exists, false otherwise.
+         */
+        public boolean hasCountPref(String metricName) {
+            return getCountPref(metricName) != NO_COUNT_PREF;
         }
 
         /**
@@ -290,6 +304,10 @@ public class TabStoreMetricsService {
             authPinnedCount += countPinnedTabsAndCollectGroupIds(authNewTabData, groupIds);
             int authGroupCount = groupIds.size();
 
+            boolean hasTabCount = hasCountPref(TAB_COUNT_KEY_SUFFIX);
+            boolean hasGroupCount = hasCountPref(GROUP_COUNT_KEY_SUFFIX);
+            boolean hasPinnedTabCount = hasCountPref(PINNED_TAB_COUNT_KEY_SUFFIX);
+
             int oldTabCount = getTabCount();
             int oldGroupCount = getGroupCount();
             int oldPinnedTabCount = getPinnedTabCount();
@@ -298,9 +316,15 @@ public class TabStoreMetricsService {
             recordGroupCount(authGroupCount);
             recordPinnedTabCount(authPinnedCount);
 
-            recordCountDelta(HISTOGRAM_TAB_COUNT, oldTabCount, authTabCount);
-            recordCountDelta(HISTOGRAM_GROUP_COUNT, oldGroupCount, authGroupCount);
-            recordCountDelta(HISTOGRAM_PINNED_TAB_COUNT, oldPinnedTabCount, authPinnedCount);
+            if (hasTabCount) {
+                recordCountDelta(HISTOGRAM_TAB_COUNT, oldTabCount, authTabCount);
+            }
+            if (hasGroupCount) {
+                recordCountDelta(HISTOGRAM_GROUP_COUNT, oldGroupCount, authGroupCount);
+            }
+            if (hasPinnedTabCount) {
+                recordCountDelta(HISTOGRAM_PINNED_TAB_COUNT, oldPinnedTabCount, authPinnedCount);
+            }
 
             int tabCountDelta =
                     (authNewTabData.size() + authFrozenData.size())

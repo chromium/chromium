@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -173,6 +175,30 @@ public class TabStoreMetricsServiceUnitTest {
     }
 
     @Test
+    public void testHasCountPref() {
+        WindowMetricsTracker tracker =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
+
+        assertFalse(tracker.hasCountPref(TabStoreMetricsService.TAB_COUNT_KEY_SUFFIX));
+        assertFalse(tracker.hasCountPref(TabStoreMetricsService.GROUP_COUNT_KEY_SUFFIX));
+        assertFalse(tracker.hasCountPref(TabStoreMetricsService.PINNED_TAB_COUNT_KEY_SUFFIX));
+
+        tracker.recordTabCount(5);
+        tracker.recordGroupCount(2);
+        tracker.recordPinnedTabCount(1);
+
+        assertTrue(tracker.hasCountPref(TabStoreMetricsService.TAB_COUNT_KEY_SUFFIX));
+        assertTrue(tracker.hasCountPref(TabStoreMetricsService.GROUP_COUNT_KEY_SUFFIX));
+        assertTrue(tracker.hasCountPref(TabStoreMetricsService.PINNED_TAB_COUNT_KEY_SUFFIX));
+
+        tracker.clearTabStoreCounts();
+
+        assertFalse(tracker.hasCountPref(TabStoreMetricsService.TAB_COUNT_KEY_SUFFIX));
+        assertFalse(tracker.hasCountPref(TabStoreMetricsService.GROUP_COUNT_KEY_SUFFIX));
+        assertFalse(tracker.hasCountPref(TabStoreMetricsService.PINNED_TAB_COUNT_KEY_SUFFIX));
+    }
+
+    @Test
     public void testRecordDiffMetrics_GatedDirectCountRecording() {
         WindowMetricsTracker tracker =
                 TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
@@ -192,33 +218,81 @@ public class TabStoreMetricsServiceUnitTest {
         List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
         List<CreateNewTabArguments> shadowNew = new ArrayList<>();
 
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Tabs.TabStateStore.TabCountDelta.Positive", 3)
-                        .expectIntRecord("Tabs.TabStateStore.GroupCountDelta.Positive", 2)
-                        .expectIntRecord("Tabs.TabStateStore.PinnedTabCountDelta.Positive", 2)
-                        .build();
-
         // When shadowStoreCaughtUp is false, no counts should be recorded.
         tracker.recordDiffMetrics(
                 authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ false, 0);
-        assertEquals(0, tracker.getTabCount());
-        assertEquals(0, tracker.getGroupCount());
-        assertEquals(0, tracker.getPinnedTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getGroupCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getPinnedTabCount());
 
-        // When shadowStoreCaughtUp is true, direct counts should be recorded.
+        // Initial invocation with uninitialized preferences records counts without emitting delta
+        // histograms.
+        var initialWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tabs.TabStateStore.TabCountDelta.Positive")
+                        .expectNoRecords("Tabs.TabStateStore.GroupCountDelta.Positive")
+                        .expectNoRecords("Tabs.TabStateStore.PinnedTabCountDelta.Positive")
+                        .build();
         tracker.recordDiffMetrics(
                 authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
         assertEquals(3, tracker.getTabCount());
         assertEquals(2, tracker.getGroupCount());
         assertEquals(2, tracker.getPinnedTabCount());
+        initialWatcher.assertExpected();
+
+        // Subsequent invocation with count changes DOES emit expected delta histograms.
+        Token groupId3 = new Token(50L, 60L);
+        authNew.add(new TabCreationData(4, "http://url4.com", 0L, /* isPinned= */ true, groupId3));
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Tabs.TabStateStore.TabCountDelta.Positive", 1)
+                        .expectIntRecord("Tabs.TabStateStore.GroupCountDelta.Positive", 1)
+                        .expectIntRecord("Tabs.TabStateStore.PinnedTabCountDelta.Positive", 1)
+                        .build();
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
+        assertEquals(4, tracker.getTabCount());
+        assertEquals(3, tracker.getGroupCount());
+        assertEquals(3, tracker.getPinnedTabCount());
         histogramWatcher.assertExpected();
 
         // Verify clearing tab store counts resets stored metrics.
         tracker.clearTabStoreCounts();
-        assertEquals(0, tracker.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getGroupCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, tracker.getPinnedTabCount());
+    }
+
+    @Test
+    public void testRecordDiffMetrics_NewlyMigratedUser_NoDeltaSpike() {
+        WindowMetricsTracker tracker =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
+
+        List<TabCreationData> authFrozen = new ArrayList<>();
+        authFrozen.add(new TabCreationData(1, "http://url1.com", 1000L, false, null));
+        authFrozen.add(new TabCreationData(2, "http://url2.com", 2000L, false, null));
+        List<TabCreationData> authNew = new ArrayList<>();
+        List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
+        List<CreateNewTabArguments> shadowNew = new ArrayList<>();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tabs.TabStateStore.TabCountDelta.Positive")
+                        .expectNoRecords("Tabs.TabStateStore.GroupCountDelta.Positive")
+                        .expectNoRecords("Tabs.TabStateStore.PinnedTabCountDelta.Positive")
+                        .expectNoRecords("Tabs.TabStateStore.TabCountDelta.Negative")
+                        .expectNoRecords("Tabs.TabStateStore.GroupCountDelta.Negative")
+                        .expectNoRecords("Tabs.TabStateStore.PinnedTabCountDelta.Negative")
+                        .build();
+
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
+
+        assertEquals(2, tracker.getTabCount());
         assertEquals(0, tracker.getGroupCount());
         assertEquals(0, tracker.getPinnedTabCount());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -247,9 +321,9 @@ public class TabStoreMetricsServiceUnitTest {
 
         // 1. Clear window 0 for regular profile (mProfile1).
         TabStoreMetricsService.clearTabStoreCountsForProfileAndWindow(mProfile1, "0");
-        assertEquals(0, trackerReg0.getTabCount());
-        assertEquals(0, trackerReg0.getGroupCount());
-        assertEquals(0, trackerReg0.getPinnedTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg0.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg0.getGroupCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg0.getPinnedTabCount());
 
         // Ensure regular window 1 and incognito window 0 remain untouched.
         assertEquals(10, trackerReg1.getTabCount());
@@ -261,9 +335,9 @@ public class TabStoreMetricsServiceUnitTest {
 
         // 2. Clear via WindowMetricsTracker instance.
         trackerReg1.clearTabStoreCounts();
-        assertEquals(0, trackerReg1.getTabCount());
-        assertEquals(0, trackerReg1.getGroupCount());
-        assertEquals(0, trackerReg1.getPinnedTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg1.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg1.getGroupCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg1.getPinnedTabCount());
 
         // Ensure incognito window 0 remains untouched.
         assertEquals(10, trackerInc0.getTabCount());
@@ -273,7 +347,7 @@ public class TabStoreMetricsServiceUnitTest {
         // 3. Clear all tab store counts across all profiles and windows.
         trackerReg1.recordTabCount(10);
         TabStoreMetricsService.clearAllTabStoreCounts();
-        assertEquals(0, trackerReg1.getTabCount());
-        assertEquals(0, trackerInc0.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerReg1.getTabCount());
+        assertEquals(WindowMetricsTracker.NO_COUNT_PREF, trackerInc0.getTabCount());
     }
 }
