@@ -1751,6 +1751,14 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
   }
   // Keep injected touches in root coordinates for the touch emulator. The
   // input event router converts them to target coordinates for the renderer.
+  // In WebUI Browser, `target` is a RenderWidgetHostViewChildFrame, so
+  // transform the touch points to root view coordinates. This code is no-op for
+  // regular browser (i.e., delta_to_root is zero).
+  CHECK(events.size() > 0);
+  gfx::PointF original(events[0].touches[0].PositionInWidget());
+  gfx::PointF transformed_in_root =
+      target->TransformPointToRootCoordSpaceF(*transformed);
+  gfx::Vector2dF delta_to_root = transformed_in_root - original;
   for (auto& event : events) {
     event.dispatch_type =
         event.GetType() == blink::WebInputEvent::Type::kTouchCancel
@@ -1759,6 +1767,8 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
     event.moved_beyond_slop_region = true;
     event.unique_touch_event_id = ui::GetNextTouchEventId();
     for (unsigned j = 0; j < event.touches_length; j++) {
+      event.touches[j].SetPositionInWidget(
+          event.touches[j].PositionInWidget() + delta_to_root);
       event.touches[j].SetPositionInScreen(ConvertWidgetPointToScreenPoint(
           CHECK_DEREF(root_view), event.touches[j].PositionInWidget()));
     }
