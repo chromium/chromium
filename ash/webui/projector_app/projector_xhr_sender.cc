@@ -281,6 +281,9 @@ void ProjectorXhrSender::SendRequest(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->method = RequestTypeToString(method);
+  // Projector will not navigate to any additional URLs outside of Drive so
+  // we disable redirects of any kind.
+  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   // The OAuth token will be empty if the request is using end user credentials
   // for authorization.
   if (!token.empty()) {
