@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_GL_STRING_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_GL_STRING_QUERY_H_
 
-#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -72,15 +71,18 @@ class GLStringQuery {
   String Run(GLuint id) {
     GLint length = 0;
     Traits::LengthFunction(gl_, id, &length);
-    if (!length)
+    if (length <= 0) {
       return g_empty_string;
+    }
     GLsizei returned_length = 0;
     StringBuffer<LChar> log_buffer(length);
     Traits::LogFunction(gl_, id, length, &returned_length,
                         log_buffer.Span().data());
-    // The returnedLength excludes the null terminator. If this check wasn't
-    // true, then we'd need to tell the returned String the real length.
-    DCHECK_EQ(returned_length + 1, length);
+    // The returnedLength excludes the null terminator.
+    if (returned_length <= 0 || returned_length > length) {
+      return g_empty_string;
+    }
+    log_buffer.Shrink(returned_length);
     return String::Adopt(log_buffer);
   }
 
