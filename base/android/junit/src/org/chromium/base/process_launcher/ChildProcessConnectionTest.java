@@ -169,8 +169,7 @@ public class ChildProcessConnectionTest {
 
         mIChildProcessService = mock(IChildProcessService.class);
         ApplicationInfo appInfo = ApkInfo.getInstance().getBrowserApplicationInfo();
-        String[] appInfoStrings = ChildProcessService.convertToStrings(appInfo);
-        when(mIChildProcessService.getAppInfoStrings()).thenReturn(appInfoStrings);
+        when(mIChildProcessService.getSourceDir()).thenReturn(appInfo.sourceDir);
         // Capture the parameters passed to the IChildProcessService.setupConnection() call.
         doAnswer(
                         new Answer<Void>() {

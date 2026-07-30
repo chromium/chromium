@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Debug;
@@ -119,17 +118,6 @@ public class ChildProcessService {
         mApplicationContext = applicationContext;
     }
 
-    // These are the strings we will use to compare a child to parent process to ensure they are
-    // running the same code.
-    public static String[] convertToStrings(ApplicationInfo appInfo) {
-        String sourceDir = appInfo.sourceDir;
-        String sharedLibraryFiles = null;
-        if (appInfo.sharedLibraryFiles != null) {
-            sharedLibraryFiles = TextUtils.join(":", appInfo.sharedLibraryFiles);
-        }
-        return new String[] {sourceDir, sharedLibraryFiles};
-    }
-
     // Binder object used by clients for this service.
     private final IChildProcessService.Stub mBinder =
             new IChildProcessService.Stub() {
@@ -162,9 +150,8 @@ public class ChildProcessService {
                 }
 
                 @Override
-                public String[] getAppInfoStrings() {
-                    ApplicationInfo appInfo = mApplicationContext.getApplicationInfo();
-                    return convertToStrings(appInfo);
+                public String getSourceDir() {
+                    return mApplicationContext.getApplicationInfo().sourceDir;
                 }
 
                 @Override

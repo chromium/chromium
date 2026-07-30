@@ -9,13 +9,13 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -41,7 +41,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -656,16 +655,13 @@ public class ChildProcessConnection {
             // Validate that the child process is running the same code as the parent process.
             boolean childMatches = true;
             try {
-                String[] childAppInfoStrings = mService.getAppInfoStrings();
+                String childSourceDir = mService.getSourceDir();
+                String parentSourceDir =
+                        ApkInfo.getInstance().getBrowserApplicationInfo().sourceDir;
 
-                ApplicationInfo parentAppInfo = ApkInfo.getInstance().getBrowserApplicationInfo();
-                String[] parentAppInfoStrings = ChildProcessService.convertToStrings(parentAppInfo);
-
-                // Don't compare splitSourceDirs as isolatedSplits/dynamic feature modules/etc
-                // make this potentially complicated.
-                childMatches = Arrays.equals(parentAppInfoStrings, childAppInfoStrings);
+                childMatches = TextUtils.equals(parentSourceDir, childSourceDir);
             } catch (RemoteException ex) {
-                // If the child can't handle getAppInfo then it is old and doesn't match.
+                // If the child can't handle getSourceDir then it is old and doesn't match.
                 childMatches = false;
             }
             if (!childMatches) {

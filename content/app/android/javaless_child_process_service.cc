@@ -4,6 +4,7 @@
 
 #include <android/api-level.h>
 #include <android/binder_ibinder.h>
+#include <dlfcn.h>
 #include <pthread.h>
 #include <signal.h>
 
@@ -18,6 +19,7 @@
 #include "base/android/device_info.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -27,6 +29,7 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -67,8 +70,7 @@ class ChildProcessService : public BnChildProcessService,
   ScopedAStatus onMemoryPressure(int32_t pressure) override;
   ScopedAStatus onSelfFreeze() override;
   ScopedAStatus dumpProcessStack() override;
-  ScopedAStatus getAppInfoStrings(
-      std::vector<std::string>* _aidl_return) override;
+  ScopedAStatus getSourceDir(std::string* _aidl_return) override;
   ScopedAStatus consumeRelroLibInfo(
       const std::optional<IRelroLibInfo>& in_libInfo) override;
 
@@ -272,11 +274,28 @@ ScopedAStatus ChildProcessService::dumpProcessStack() {
   return ScopedAStatus::ok();
 }
 
-ScopedAStatus ChildProcessService::getAppInfoStrings(
-    std::vector<std::string>* _aidl_return) {
-  // Not implemented yet - unsure if this check can work with Javaless
-  // renderers, as getting the sourceDir or sharedLibraryFiles are things that
-  // aren't exposed to the NDK.
+ScopedAStatus ChildProcessService::getSourceDir(std::string* _aidl_return) {
+  Dl_info dl_info;
+  // Nothing special about SetBuildInfo, just a function already available in
+  // this file that is is not a member function (which would make dladdr a bit
+  // more annoying to use).
+  if (dladdr(reinterpret_cast<const void*>(&SetBuildInfo), &dl_info) == 0 ||
+      !dl_info.dli_fname) {
+    LOG(ERROR) << "Failed to obtain sourceDir via dladdr";
+    return ScopedAStatus::ok();
+  }
+
+  std::string_view fname(dl_info.dli_fname);
+  // Android's dynamic linker may return paths like
+  // "/data/app/.../base.apk!/lib/arm64-v8a/libchrome.so" or
+  // "/data/app/.../base.apk". Truncate after ".apk" to match Java's
+  // ApplicationInfo.sourceDir.
+  size_t ext_pos = fname.find(".apk");
+  if (ext_pos != std::string_view::npos) {
+    *_aidl_return = std::string(fname.substr(0, ext_pos + 4));
+  } else {
+    *_aidl_return = std::string(fname);
+  }
   return ScopedAStatus::ok();
 }
 
