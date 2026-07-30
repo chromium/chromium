@@ -23,6 +23,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibSpeculativeLoadingParametersAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibStartUpResult.java",
     "java/src/org/chromium/support_lib_glue/SupportLibTracingControllerAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebContentAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageCallbackAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageListenerAdapter.java",
@@ -44,6 +45,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebkitToCompatConverterAdapter.java",
+    "java/src/org/chromium/support_lib_glue/WebContentBuilder.java",
   ]
 
   deps = [

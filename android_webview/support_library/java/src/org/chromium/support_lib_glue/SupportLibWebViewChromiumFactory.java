@@ -18,6 +18,7 @@ import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.ProfileStore;
 import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
+import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 import com.android.webview.chromium.WebViewChromiumAwInit.WebViewStartUpDiagnostics;
@@ -31,6 +32,7 @@ import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
+import org.chromium.support_lib_boundary.WebContentConfig;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpConfigBoundaryInterface;
@@ -149,6 +151,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HTTP_CACHE_MANAGER,
                 Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
+                Features.WEB_CONTENT + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -376,6 +379,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.HTTP_CACHE_GET_QUOTA_BYTES,
         ApiCall.HTTP_CACHE_SET_QUOTA_BYTES,
         ApiCall.ENQUEUE_PRECONNECT,
+        ApiCall.BUILD_WEB_CONTENT,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -589,8 +593,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int ENQUEUE_PRECONNECT = 203;
         int SET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 204;
         int GET_CROSS_ORIGIN_ISOLATED_ALLOW_LIST = 205;
+        int BUILD_WEB_CONTENT = 206;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 206;
+        int COUNT = 207;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
@@ -633,6 +638,19 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             recordApiCall(ApiCall.GET_WEBVIEW_BUILDER);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebViewBuilderAdapter());
+        }
+    }
+
+    @Override
+    public /* WebContentBoundaryInterface */ InvocationHandler buildWebContent(
+            Consumer<BiConsumer<@WebContentConfig Integer, Object>> buildConfig) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.BUILD_WEB_CONTENT")) {
+            recordApiCall(ApiCall.BUILD_WEB_CONTENT);
+            WebContentBuilder builder = new WebContentBuilder();
+            buildConfig.accept(builder);
+            WebContent webContent = builder.build();
+            SupportLibWebContentAdapter adapter = new SupportLibWebContentAdapter(webContent);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(adapter);
         }
     }
 
