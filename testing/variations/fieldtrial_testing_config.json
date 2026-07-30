@@ -6391,8 +6391,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ClientSideDetectionScamScore",
-                        "ClientSideDetectionServerModelForScamDetectionAndroid"
+                        "ClientSideDetectionScamScore"
                     ]
                 }
             ]
