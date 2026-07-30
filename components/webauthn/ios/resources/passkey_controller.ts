@@ -900,8 +900,6 @@ class DeferredPublicKeyCredentialPromise {
 // Handles PublicKeyCredential.signalUnknownCredential calls from the webpage
 // by invoking WebKit's native implementation first, and notifying the browser
 // C++ layer only upon successful resolution.
-// TODO(crbug.com/460487030): Confirm that this is the intended behavior (WK
-// first, then browser on success), same for other signal functions.
 function signalUnknownCredential(options: UnknownCredentialOptions):
     Promise<void> {
   return publicKeyCredentialOverrider
