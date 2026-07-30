@@ -516,7 +516,7 @@
   },
   {
     "name": "animated-default-browser-promo-in-fre",
-    "owners": [ "bmcclure@google.com", "bling-pandamonium@google.com"],
+    "owners": [ "lilybalas@google.com", "bling-mony-pod@google.com"],
     "expiry_milestone": 148
   },
   {
@@ -6385,7 +6385,7 @@
   },
   {
     "name": "ios-welcome-back-screen",
-    "owners": ["bmcclure@google.com", "hiramahmood@google.com", "bling-pandamonium@google.com"],
+    "owners": ["cheickcisse@google.com", "bling-mony-pod@google.com"],
     "expiry_milestone": 150
   },
   {
