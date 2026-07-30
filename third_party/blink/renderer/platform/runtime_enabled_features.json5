@@ -2743,9 +2743,11 @@
       name: "EventTimingInteractionCount",
       status: "stable",
     },
+    // Interoperable dispatch timing for transitionrun and media query events.
+    // https://chromestatus.com/feature/6312504658624512
     {
       name: "EventTimingMatchingHTML",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EventTimingTargetSelector",
