@@ -8,6 +8,7 @@
 
 
 import codecs
+import io
 import os
 import re
 import sys
@@ -599,6 +600,83 @@ class BuildUnittest(unittest.TestCase):
                           output_dir.GetPath()),
       ])
     output_dir.CleanUp()
+
+  def testAssertInputFileList(self):
+    output_dir = util.TempDir({})
+    builder = build.RcBuilder()
+
+    class DummyOpts:
+
+      def __init__(self):
+        self.input = util.PathFromRoot('grit/testdata/depfile.grd')
+        self.verbose = False
+        self.extra_verbose = False
+
+    expected_inputs = [
+        util.PathFromRoot('grit/testdata/depfile.grd'),
+        util.PathFromRoot('grit/testdata/default_100_percent/a.png'),
+        util.PathFromRoot('grit/testdata/grit_part.grdp'),
+        util.PathFromRoot('grit/testdata/special_100_percent/a.png'),
+    ]
+    inputs_file = output_dir.GetPath('expected_inputs.txt')
+    with open(inputs_file, 'w') as f:
+      f.write('\n'.join(expected_inputs) + '\n')
+
+    res = builder.Run(
+        DummyOpts(),
+        ['-o',
+         output_dir.GetPath(), '--assert-input-file-list', inputs_file])
+    self.assertEqual(0, res)
+
+    output_dir.CleanUp()
+
+  def testCheckAssertedInputFilesFormatting(self):
+    builder = build.RcBuilder()
+
+    class DummyRes:
+
+      def GetInputFiles(self):
+        return ['file_a.png', 'file_b.png']
+
+    builder.res = DummyRes()
+
+    # Case 1: missing only
+    out = io.StringIO()
+    old_stdout = sys.stdout
+    try:
+      sys.stdout = out
+      res = builder.CheckAssertedInputFiles(['file_a.png'])
+    finally:
+      sys.stdout = old_stdout
+    self.assertFalse(res)
+    output_str = out.getvalue()
+    self.assertIn('Missing input files', output_str)
+    self.assertNotIn('Extra input files', output_str)
+
+    # Case 2: extra only
+    out = io.StringIO()
+    try:
+      sys.stdout = out
+      res = builder.CheckAssertedInputFiles(
+          ['file_a.png', 'file_b.png', 'file_c.png'])
+    finally:
+      sys.stdout = old_stdout
+    self.assertFalse(res)
+    output_str = out.getvalue()
+    self.assertNotIn('Missing input files', output_str)
+    self.assertIn('Extra input files', output_str)
+
+    # Case 3: both missing and extra
+    out = io.StringIO()
+    try:
+      sys.stdout = out
+      res = builder.CheckAssertedInputFiles(['file_a.png', 'file_c.png'])
+    finally:
+      sys.stdout = old_stdout
+    self.assertFalse(res)
+    output_str = out.getvalue()
+    self.assertIn('Missing input files', output_str)
+    self.assertIn('Extra input files', output_str)
 
 
 if __name__ == '__main__':

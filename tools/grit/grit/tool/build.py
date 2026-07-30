@@ -96,6 +96,12 @@ Options:
                     possibility of running into OS line-length limits for very
                     long lists.
 
+  --assert-input-file-list
+                    Provide a file listing multiple asserted input files.
+                    There is one file name per line. If present, the list of
+                    asserted input files must match the actual input files or
+                    the tool will fail.
+
   -o OUTPUTDIR      Specify what directory output paths are relative to.
                     Defaults to the current directory.
 
@@ -185,6 +191,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     predetermined_ids_file = None
     allowlist_filenames = []
     assert_output_files = []
+    assert_input_files = []
     target_platform = None
     depfile = None
     depdir = None
@@ -196,10 +203,11 @@ are exported to translation interchange files (e.g. XMB files), etc.
     translate_genders = False
     (own_opts, args) = getopt.getopt(
         args, 'a:p:o:D:E:f:w:t:',
-        ('depdir=', 'depfile=', 'assert-file-list=', 'help',
-         'output-all-resource-defines', 'no-output-all-resource-defines',
-         'no-replace-ellipsis', 'depend-on-stamp', 'css-minifier=',
-         'write-only-new=', 'allowlist-support', 'brotli=', 'translate-genders',
+        ('depdir=', 'depfile=', 'assert-file-list=', 'assert-input-file-list=',
+         'help', 'output-all-resource-defines',
+         'no-output-all-resource-defines', 'no-replace-ellipsis',
+         'depend-on-stamp', 'css-minifier=', 'write-only-new=',
+         'allowlist-support', 'brotli=', 'translate-genders',
          'android-output-zip='))
     for (key, val) in own_opts:
       if key == '-a':
@@ -207,6 +215,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
       elif key == '--assert-file-list':
         with open(val) as f:
           assert_output_files += f.read().splitlines()
+      elif key == '--assert-input-file-list':
+        with open(val) as f:
+          assert_input_files += f.read().splitlines()
       elif key == '-o':
         self.output_directory = val
       elif key == '-D':
@@ -297,12 +308,17 @@ are exported to translation interchange files (e.g. XMB files), etc.
       if not self.CheckAssertedOutputFiles(assert_output_files):
         return 2
 
+    if assert_input_files:
+      if not self.CheckAssertedInputFiles(assert_input_files):
+        return 2
+
     if depfile and depdir:
       self.GenerateDepfile(depfile, depdir, first_ids_file, depend_on_stamp)
 
     return 0
 
   def __init__(self, defines=None):
+    super().__init__()
     # Default file-creation function is codecs.open().  Only done to allow
     # overriding by unit test.
     self.fo_create = codecs.open
@@ -684,6 +700,39 @@ Duplicate actual output files:
 '''
       print(error %
             ('\n'.join(missing), '\n'.join(extra), '\n'.join(duplicates)))
+      return False
+    return True
+
+
+  def CheckAssertedInputFiles(self, assert_input_files):
+    '''Checks that the asserted input files match the actual input files.
+
+    Returns true if the asserted files match. If they do not, returns
+    False and prints the failure.
+    '''
+    cwd = os.getcwd()
+    asserted = sorted(
+        set(
+            os.path.relpath(os.path.abspath(i), cwd)
+            for i in assert_input_files))
+    actual_files = list(self.res.GetInputFiles())
+    if self.o is not None and self.o.input:
+      actual_files.append(self.o.input)
+    actual = sorted(
+        set(os.path.relpath(os.path.abspath(i), cwd) for i in actual_files))
+
+    missing = sorted(set(actual) - set(asserted))
+    extra = sorted(set(asserted) - set(actual))
+    if missing or extra:
+      error = ['Asserted input file list does not match.']
+      if missing:
+        error.append('\nMissing input files (needed in BUILD.gn inputs):')
+        error.extend(missing)
+      if extra:
+        error.append(
+            '\nExtra input files (listed in BUILD.gn inputs but not used):')
+        error.extend(extra)
+      print('\n'.join(error))
       return False
     return True
 
