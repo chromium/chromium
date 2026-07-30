@@ -3989,14 +3989,30 @@ void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
   // Ensure the active tab is not in a collapsed group so the while loop can
   // fallback on activating the active tab.
   DCHECK(!start_group.has_value() || !IsGroupCollapsed(start_group.value()));
+
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   const int delta = direction == TabRelativeDirection::kNext ? 1 : -1;
   int index = (start_index + count() + delta) % count();
-  std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index);
-  while (group.has_value() && IsGroupCollapsed(group.value())) {
+
+  auto is_tab_invalid = [this, &focused_group](int i) {
+    // Do not select the tab if it is in a collapsed group.
+    if (IsTabCollapsed(i)) {
+      return true;
+    }
+
+    // Do not select the tab if it is not part of the focused state.
+    return focused_group.has_value() &&
+           !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+               GetTabAtIndex(i), focused_group);
+  };
+
+  while (index != start_index && is_tab_invalid(index)) {
     index = (index + count() + delta) % count();
-    group = GetTabGroupForTab(index);
   }
-  ActivateTabAt(index, detail);
+
+  if (!is_tab_invalid(index)) {
+    ActivateTabAt(index, detail);
+  }
 }
 
 void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
@@ -4041,6 +4057,14 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
       (target_index == static_cast<int>(moving_index_range.start()))
           ? std::nullopt
           : GetTabGroupForTab(neighbor_index);
+
+  // Do not allow tabs to enter or exit the focused tab group.
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  if (focused_group.has_value() && current_group != target_group) {
+    if (current_group == focused_group || target_group == focused_group) {
+      return;
+    }
+  }
 
   // If the tab is at a group boundary and the group is expanded, instead of
   // actually moving the tab just change its group membership.
