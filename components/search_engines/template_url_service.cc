@@ -227,7 +227,10 @@ TemplateURLData MergeEnterpriseSearchEngines(TemplateURLData existing_data,
   merged_data.suggestions_url = new_values.suggestions_url();
   merged_data.featured_by_policy = new_values.featured_by_policy();
   if (existing_data.policy_origin ==
-      TemplateURLData::PolicyOrigin::kSearchAggregator) {
+          TemplateURLData::PolicyOrigin::kSearchAggregator ||
+      (existing_data.policy_origin ==
+           TemplateURLData::PolicyOrigin::kSiteSearch &&
+       existing_data.url() != new_values.url())) {
     merged_data.favicon_url = new_values.favicon_url();
   }
   merged_data.enforced_by_policy = new_values.enforced_by_policy();

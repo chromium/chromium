@@ -3016,6 +3016,7 @@ TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
   std::unique_ptr<TemplateURLData> updated_engine_3 =
       CreateEnterpriseSearchEntry(kKeyword3);
   updated_engine_3->SetURL("https://name.com/q={searchTerms}");
+  updated_engine_3->favicon_url = GURL("https://name.com/favicon.ico");
   updated_enterprise_search_engines.push_back(std::move(updated_engine_3));
   updated_enterprise_search_engines.push_back(
       CreateEnterpriseSearchEntry(kKeyword5));
