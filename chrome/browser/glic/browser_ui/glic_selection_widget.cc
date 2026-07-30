@@ -487,11 +487,14 @@ class GlicSelectionContentsView : public views::View {
     }
     if (widget_delegate_) {
       widget_delegate_->action_delegate().OnAskGemini();
+
+      if (widget_delegate_->action_delegate().IsInlineFulfillmentSupported()) {
+        expansion_timer_.Start(
+            FROM_HERE, base::Milliseconds(150),
+            base::BindOnce(&GlicSelectionContentsView::OnExpansionTimerFired,
+                          base::Unretained(this)));
+      }
     }
-    expansion_timer_.Start(
-        FROM_HERE, base::Milliseconds(150),
-        base::BindOnce(&GlicSelectionContentsView::OnExpansionTimerFired,
-                       base::Unretained(this)));
   }
 
   void OnExpansionTimerFired() {

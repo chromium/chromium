@@ -178,6 +178,9 @@ class GlicSelectionObserver::WidgetActionDelegate
   void OnSettings() override { observer_->OnSettings(); }
   void OnOpenInSidePanel() override { observer_->OnOpenInSidePanel(); }
   void OnWidgetClose() override { observer_->OnWidgetClose(); }
+  bool IsInlineFulfillmentSupported() override {
+    return ExplainSelectionTrigger::IsInlineFulfillmentSupported();
+  }
 
  private:
   raw_ptr<GlicSelectionObserver> observer_;
@@ -967,8 +970,8 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
 }
 
 void GlicSelectionObserver::OnAskGemini() {
-  is_explaining_ = true;
   if (ExplainSelectionTrigger::IsInlineFulfillmentSupported()) {
+    is_explaining_ = true;
     if (explain_selection_trigger_) {
       explain_selection_trigger_->RequestExplanation(
           web_contents(), base::UTF16ToUTF8(last_selected_text_),
@@ -986,8 +989,8 @@ void GlicSelectionObserver::OnAskGemini() {
 
 void GlicSelectionObserver::OnAskGeminiForQuery(const std::u16string& query) {
   last_selected_text_ = query;
-  is_explaining_ = true;
   if (ExplainSelectionTrigger::IsInlineFulfillmentSupported()) {
+    is_explaining_ = true;
     if (explain_selection_trigger_) {
       explain_selection_trigger_->RequestExplanation(
           web_contents(), base::UTF16ToUTF8(query),

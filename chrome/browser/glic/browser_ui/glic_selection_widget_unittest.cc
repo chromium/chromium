@@ -80,7 +80,11 @@ class TestWidgetActionDelegate
   void OnSettings() override { settings_called = true; }
   void OnOpenInSidePanel() override {}
   void OnWidgetClose() override { widget_close_called = true; }
+  bool IsInlineFulfillmentSupported() override {
+    return inline_fulfillment_supported;
+  }
 
+  bool inline_fulfillment_supported = false;
   bool widget_close_called = false;
 
   bool ask_gemini_called = false;
@@ -221,4 +225,73 @@ TEST_F(GlicSelectionWidgetTest, ShowAndCloseWidget) {
   EXPECT_TRUE(test_delegate->widget_close_called);
 }
 
+TEST_F(GlicSelectionWidgetTest,
+       AskGeminiButtonDoesNotStartExpansionTimerWhenInlineFulfillmentDisabled) {
+  gfx::Rect anchor_rect(10, 10, 100, 100);
+  std::u16string selected_text = u"selected text";
+
+  auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
+  test_delegate->inline_fulfillment_supported = false;
+  auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+
+  views::View* contents_view = widget_delegate->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  auto children = contents_view->children();
+  ASSERT_EQ(children.size(), 1u);
+
+  auto pill_children = children[0]->children();
+  auto* ask_gemini_btn =
+      views::AsViewClass<views::MdTextButton>(pill_children[0]);
+  ASSERT_TRUE(ask_gemini_btn);
+
+  views::test::ButtonTestApi(ask_gemini_btn)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_TRUE(test_delegate->ask_gemini_called);
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  EXPECT_EQ(contents_view->children().size(), 1u);
+  EXPECT_TRUE(children[0]->GetVisible());
+}
+
+TEST_F(GlicSelectionWidgetTest,
+       AskGeminiButtonStartsExpansionTimerWhenInlineFulfillmentEnabled) {
+  gfx::Rect anchor_rect(10, 10, 100, 100);
+  std::u16string selected_text = u"selected text";
+
+  auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
+  test_delegate->inline_fulfillment_supported = true;
+  auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+
+  views::View* contents_view = widget_delegate->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  auto children = contents_view->children();
+  ASSERT_EQ(children.size(), 1u);
+
+  auto pill_children = children[0]->children();
+  auto* ask_gemini_btn =
+      views::AsViewClass<views::MdTextButton>(pill_children[0]);
+  ASSERT_TRUE(ask_gemini_btn);
+
+  views::test::ButtonTestApi(ask_gemini_btn)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_TRUE(test_delegate->ask_gemini_called);
+  EXPECT_EQ(contents_view->children().size(), 1u);
+  EXPECT_TRUE(children[0]->GetVisible());
+
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  EXPECT_EQ(contents_view->children().size(), 2u);
+  EXPECT_FALSE(children[0]->GetVisible());
+}
 }  // namespace glic

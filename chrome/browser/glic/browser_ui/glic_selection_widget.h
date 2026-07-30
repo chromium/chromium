@@ -35,6 +35,7 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual void OnSettings() = 0;
     virtual void OnOpenInSidePanel() = 0;
     virtual void OnWidgetClose() = 0;
+    virtual bool IsInlineFulfillmentSupported() = 0;
 
    protected:
     virtual ~ActionDelegate() = default;
