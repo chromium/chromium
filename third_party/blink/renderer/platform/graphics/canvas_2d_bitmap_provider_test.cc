@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 namespace {
@@ -45,6 +46,21 @@ TEST_F(Canvas2DBitmapProviderTest, Create) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
+}
+
+TEST_F(Canvas2DBitmapProviderTest, HdrMetadata) {
+  const gfx::Size kSize(10, 10);
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.extended_range = gfx::HdrMetadataExtendedRange(4.0f, 4.0f);
+
+  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB, hdr_metadata,
+                                   CanvasPixelFormat::kUint8,
+                                   /*has_alpha=*/true);
+  auto provider = Canvas2DBitmapProvider::CreateForTesting(kSize, color_params);
+  EXPECT_TRUE(provider && provider->IsValid());
+  scoped_refptr<StaticBitmapImage> snapshot = provider->Snapshot();
+  EXPECT_TRUE(snapshot);
+  EXPECT_EQ(snapshot->GetHdrMetadata(), hdr_metadata);
 }
 
 TEST_F(Canvas2DBitmapProviderTest, DimensionsExceedMaxTextureSize) {
