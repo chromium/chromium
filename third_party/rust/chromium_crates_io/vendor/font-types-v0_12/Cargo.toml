@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.89"
 name = "font-types"
-version = "0.12.1"
+version = "0.12.2"
 build = false
 autolib = false
 autobins = false

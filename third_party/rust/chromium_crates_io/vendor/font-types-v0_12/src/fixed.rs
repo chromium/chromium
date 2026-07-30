@@ -55,7 +55,7 @@ macro_rules! fixed_impl {
             /// Returns the absolute value of the number.
             #[inline(always)]
             pub const fn abs(self) -> Self {
-                Self(self.0.abs())
+                Self(self.0.wrapping_abs())
             }
 
             /// Returns the largest integer less than or equal to the number.
@@ -141,7 +141,7 @@ macro_rules! fixed_impl {
             type Output = Self;
             #[inline(always)]
             fn neg(self) -> Self {
-                Self(-self.0)
+                Self(self.0.wrapping_neg())
             }
         }
     };
@@ -577,6 +577,20 @@ mod tests {
         // Dividing by -1 is also an edge case
         let neg_one = Fixed(-Fixed::ONE.0);
         let _ = min / neg_one;
+    }
+
+    #[test]
+    fn fixed_abs_min_value() {
+        // Just don't panic with overflow; we use wrapping arithmetic to
+        // match FT.
+        assert_eq!(Fixed(i32::MIN).abs(), Fixed(i32::MIN));
+    }
+
+    #[test]
+    fn fixed_neg_min_value() {
+        // Just don't panic with overflow; we use wrapping arithmetic to
+        // match FT.
+        assert_eq!(-Fixed(i32::MIN), Fixed(i32::MIN));
     }
 
     #[test]
