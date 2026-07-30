@@ -4,6 +4,55 @@ use regex_automata::{meta, util::captures, Input, PatternID};
 
 use crate::{error::Error, RegexBuilder};
 
+/// A convenient way to construct regex patterns from string literals.
+///
+/// This macro can be used to construct reusable instances of [`Regex`] with
+/// reduced boilerplate. The constructed `Regex` is stored in a static so the
+/// pattern is compiled approximately once, even when called multiple times.
+///
+/// There is *no compile-time checking of patterns* with `regex!`. Instead,
+/// invalid patterns will panic the first time the regex is used. Invalid
+/// patterns should still not be used with `regex!`; if compile-time checking
+/// becomes feasible in the future, it may be added within a non-semver-breaking
+/// release. In the meantime, consider enabling [`clippy::invalid_regex`].
+///
+/// # Examples
+///
+/// ```
+/// use regex::{Regex, regex};
+///
+/// assert!(regex!("[a-z]").is_match("a"));
+/// assert!(regex!("(inconceivable!|classic blunder)").is_match("inconceivable!"));
+///
+/// let re: &Regex = regex!(r"(\d{3})-(\d{4})");
+/// assert_eq!(&re.captures("867-5309").unwrap()[1], "867");
+/// ```
+///
+/// An invalid pattern will panic when it is first used:
+///
+/// ```should_panic
+/// use regex::regex;
+///
+/// let re = regex!("invalid -> ("); // no panic here
+/// re.is_match("invalid -> (");     // panic!
+/// ```
+///
+/// [`clippy::invalid_regex`]: https://rust-lang.github.io/rust-clippy/master/#invalid_regex
+#[macro_export]
+macro_rules! regex {
+    ($re:literal) => {{
+        static REGEX: $crate::__private::Lazy<$crate::Regex> =
+            $crate::__private::Lazy::new(|| {
+                $crate::Regex::new($re).expect("invalid regex pattern")
+            });
+
+        // Coerce returned type from `&Lazy<Regex>` to `&Regex` to avoid making the
+        // inner type public.
+        let re: &$crate::Regex = &REGEX;
+        re
+    }};
+}
+
 /// A compiled regular expression for searching Unicode haystacks.
 ///
 /// A `Regex` can be used to search haystacks, split haystacks into substrings

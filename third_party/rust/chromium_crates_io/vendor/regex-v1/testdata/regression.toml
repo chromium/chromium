@@ -409,6 +409,95 @@ matches = []
 unicode = false
 utf8 = false
 
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-010'
+regex = '.abb|b'
+haystack = 'zabb'
+matches = [[0, 4]]
+
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-011'
+regex = '.bb|b'
+haystack = 'zabb'
+matches = [[1, 4]]
+
+# See: https://github.com/rust-lang/regex/issues/1354
+# See: https://github.com/rust-lang/regex/pull/1355
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-012'
+regex = '.abb|b'
+haystack = 'zzzabbz'
+matches = [[2, 6]]
+
+# Like above, but use something other than a fixed `.`. Just as something more
+# robust to potential future optimizations that could hide this bug.
+#
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-020'
+regex = '\s+\w+bb|b'
+haystack = " zabb"
+matches = [[0, 5]]
+
+# A trailing class can consume the entire suffix literal, but the variable
+# length prefix before it can still make the first candidate non-leftmost.
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-030'
+regex = '(?:[a-wyz]{3}|[a-wyz]).b'
+haystack = 'xaaabb'
+matches = [[1, 6]]
+
+# A component immediately before the suffix can be disjoint from the suffix
+# while an earlier candidate still occurs in the prefix before it.
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-040'
+regex = '(?:[ac-z]{2}b[ac-z])?[ac-z]b'
+haystack = '!aabaab'
+matches = [[1, 7]]
+
+# An unbounded trailing class can absorb the suffix without making the first
+# literal candidate correspond to the leftmost match.
+[[test]]
+name = 'reverse-suffix-start-of-match-failure-050'
+regex = '(?:[a-z]cb|c)[a-z]*b'
+haystack = '!acbzb'
+matches = [[1, 6]]
+
+# Rejecting the reverse suffix strategy falls back to Core. Its automatic
+# prefix prefilter must not skip the leftmost match.
+[[test]]
+name = 'reverse-suffix-rejected-fallback-prefilter-010'
+regex = '(?:ab|c)*c'
+haystack = 'cabac'
+matches = [[0, 1]]
+match-limit = 1
+
+# A required character-class separator lets the reverse suffix scan reject an
+# earlier literal occurrence inside the prefix without rescanning the haystack.
+[[test]]
+name = 'reverse-suffix-required-class-separator-010'
+regex = '\w+\s+Holmes'
+haystack = 'abcHolmes xyz Holmes'
+matches = [[10, 20]]
+
+# Checking only the component immediately before the separator is not enough.
+# The earlier prefix can contain another complete separator alignment.
+[[test]]
+name = 'reverse-suffix-required-class-separator-020'
+regex = '(?:.abc)?a+b+c'
+haystack = 'xabcabc'
+matches = [[0, 7]]
+
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-suffix-all-no-early-matches-010'
+regex = '.abb|b'
+haystack = 'xxfoobarbar'
+match-kind = 'all'
+matches = [[8, 9]]
+
 # See: https://github.com/BurntSushi/ripgrep/issues/1247
 [[test]]
 name = "stops"
@@ -756,6 +845,72 @@ name = "reverse-inner-short"
 regex = '(?:([0-9][0-9][0-9]):)?([0-9][0-9]):([0-9][0-9])'
 haystack = '102:12:39'
 matches = [[[0, 9], [0, 3], [4, 6], [7, 9]]]
+
+
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-inner-start-of-match-failure-010'
+regex = '(?:..acbb|b)a(?:c|d)'
+haystack = 'xzbacbbac'
+matches = [[1, 9]]
+
+# Like above, but use something other than a fixed `.`. Just as something more
+# robust to potential future optimizations that could hide this bug.
+#
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-inner-start-of-match-failure-011'
+regex = '(?:\s+.\w+acbb|b)a(?:c|d)'
+haystack = ' xzbacbbac'
+matches = [[0, 10]]
+
+# See: https://github.com/rust-lang/regex/issues/1354
+[[test]]
+name = 'reverse-inner-later-literal-010'
+regex = '(?:..acbb|b)a(?:c|d)'
+haystack = 'xzbacbbac'
+matches = [[1, 9]]
+
+# A literal candidate can cross from the prefix into a different extracted
+# literal even when the prefix cannot contain either complete literal.
+[[test]]
+name = 'reverse-inner-start-of-match-failure-020'
+regex = '(?:[ac-z]{3}|[ac-z])(?:aba|baa)'
+haystack = '!aaabaa'
+matches = [[1, 7]]
+
+# Rejecting the reverse inner strategy falls back to Core. Its automatic
+# prefix prefilter must not skip the leftmost match.
+[[test]]
+name = 'reverse-inner-rejected-fallback-prefilter-010'
+regex = '(?:ab|c)*c[de]*'
+haystack = 'cabac'
+matches = [[0, 1]]
+match-limit = 1
+
+# A required class separator prevents the first inner literal occurrence from
+# confirming inside the prefix.
+[[test]]
+name = 'reverse-inner-required-class-separator-010'
+regex = '\w+\s+Holmes\s+\w+'
+haystack = 'abcHolmes xyz Holmes tail'
+matches = [[10, 25]]
+
+# The entire prefix before the separator must be disjoint from it. Checking
+# only the immediately preceding component would incorrectly return 1..7.
+[[test]]
+name = 'reverse-inner-required-class-separator-020'
+regex = '(?:.abc)?a+b+c.*'
+haystack = 'xabcabc'
+matches = [[0, 7]]
+
+# A required class separator at the beginning of the prefix makes an inner
+# literal occurrence inside the bounded repetition safe to reject.
+[[test]]
+name = 'reverse-inner-leading-class-separator-010'
+regex = '\s[A-Za-z]{0,12}ing\s'
+haystack = ' xingabcing '
+matches = [[0, 12]]
 
 # This regression test was found via the RegexSet APIs. It triggered a
 # particular code path where a regex was compiled with 'All' match semantics

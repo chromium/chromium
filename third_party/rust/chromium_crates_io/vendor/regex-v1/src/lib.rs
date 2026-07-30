@@ -35,6 +35,31 @@ assert_eq!(results, vec![
 # Ok::<(), Box<dyn std::error::Error>>(())
 ```
 
+Or, make use of the [`regex!`](crate::regex) macro to compile the regex once
+and re-use that same regex automatically. This is useful inside functions.
+For example:
+
+```rust
+use regex::regex;
+
+fn is_match(line: &str) -> bool {
+    // The regex will be compiled approximately once and reused automatically.
+    // This avoids the footgun of using `Regex::new` here, which would
+    // guarantee that it would be compiled every time this routine is called.
+    // This would likely make this routine much slower than it needs to be.
+    regex!(r"bar|baz").is_match(line)
+}
+
+let hay = "\
+path/to/foo:54:Blue Harvest
+path/to/bar:90:Something, Something, Something, Dark Side
+path/to/baz:3:It's a Trap!
+";
+
+let matches = hay.lines().filter(|line| is_match(line)).count();
+assert_eq!(matches, 2);
+```
+
 # Overview
 
 The primary type in this crate is a [`Regex`]. Its most important methods are
@@ -497,6 +522,8 @@ fn main() {
 Specifically, in this example, the regex will be compiled when it is used for
 the first time. On subsequent uses, it will reuse the previously built `Regex`.
 Notice how one can define the `Regex` locally to a specific function.
+
+The [`regex!`] macro can also be used, which handles lazy compilation.
 
 [`std::sync::LazyLock`]: https://doc.rust-lang.org/std/sync/struct.LazyLock.html
 [`once_cell`]: https://crates.io/crates/once_cell
@@ -1350,4 +1377,10 @@ mod regexset;
 /// expression.
 pub fn escape(pattern: &str) -> alloc::string::String {
     regex_syntax::escape(pattern)
+}
+
+/// Public-but-unstable API for macro support.
+#[doc(hidden)]
+pub mod __private {
+    pub use regex_automata::util::lazy::Lazy;
 }

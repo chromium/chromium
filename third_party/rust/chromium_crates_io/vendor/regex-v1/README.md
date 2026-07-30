@@ -105,8 +105,11 @@ fn main() {
 Specifically, in this example, the regex will be compiled when it is used for
 the first time. On subsequent uses, it will reuse the previous compilation.
 
+The [`regex!`] macro can also be used, which handles lazy compilation.
+
 [`std::sync::LazyLock`]: https://doc.rust-lang.org/std/sync/struct.LazyLock.html
 [`once_cell`]: https://crates.io/crates/once_cell
+[`regex!`]: https://docs.rs/regex/*/regex/macro.regex.html
 
 ### Usage: match regular expressions on `&[u8]`
 

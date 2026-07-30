@@ -89,3 +89,7 @@ In general, one should expect performance on `&[u8]` to be roughly similar to
 performance on `&str`.
 */
 pub use crate::{builders::bytes::*, regex::bytes::*, regexset::bytes::*};
+
+// Re-export the public but hidden macro to make it usable as `bytes::regex`.
+#[doc(inline)]
+pub use crate::__bytes_regex as regex;
