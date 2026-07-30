@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/update_client/update_client.h"
 
 class PrefService;
 
@@ -26,16 +28,22 @@ GetAIEmbeddingsComponentInstallerPolicyForTesting();
 std::string GetAIEmbeddingsComponentId();
 
 // Registers the AI Embeddings component with the component update service.
-void RegisterAIEmbeddingsComponent(ComponentUpdateService* cus,
-                                   PrefService* local_state);
+// The `callback` receives `true` if registration succeeded and `false` if
+// blocked by policies or flags.
+void RegisterAIEmbeddingsComponent(
+    ComponentUpdateService* cus,
+    PrefService* local_state,
+    base::OnceCallback<void(bool /*registered*/)> callback = base::DoNothing());
 
-// Delete the AI Embeddings component.
-void DeleteAIEmbeddingsComponent(const base::FilePath& user_data_dir);
+// Manages registration/deletion of the AI Embeddings component based on policy
+// and eligibility.
+void ManageAIEmbeddingsComponentRegistration(ComponentUpdateService* cus,
+                                             PrefService* local_state);
 
 // Triggers an on-demand update of the AI Embeddings component.
 void UpdateAIEmbeddingsComponentOnDemand(
     component_updater::OnDemandUpdater::Priority priority,
-    base::OnceClosure callback);
+    update_client::Callback callback);
 
 }  // namespace component_updater
 

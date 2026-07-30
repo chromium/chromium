@@ -42,6 +42,7 @@ source_set("ai") {
     "//components/on_device_ai",
     "//components/optimization_guide/core",
     "//components/passage_embeddings/core",
+    "//components/update_client",
     "//content/public/browser",
     "//services/passage_embeddings/public/mojom",
   ]
@@ -147,6 +148,7 @@ source_set("unit_tests") {
   deps = [
     ":ai",
     ":test_support",
+    "//chrome/browser/component_updater",
     "//chrome/browser/optimization_guide:test_support",
     "//components/component_updater:test_support",
     "//components/on_device_ai",

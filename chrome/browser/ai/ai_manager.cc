@@ -1832,10 +1832,8 @@ void AIManager::CanCreateSemanticEmbedder(
 
 void AIManager::CreateSemanticEmbedder(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
-        client) {
-  mojo::Remote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
-      client_remote(std::move(client));
-
+        client,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   if (!base::FeatureList::IsEnabled(blink::features::kAIEmbeddingsAPI)) {
     receivers_.ReportBadMessage("Feature not enabled");
     return;
@@ -1846,7 +1844,31 @@ void AIManager::CreateSemanticEmbedder(
     return;
   }
 
+  if (!AISemanticEmbedderServiceLauncher::Get()->AllowedToLaunch()) {
+    mojo::Remote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
+        client_remote(std::move(client));
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  if (monitor) {
+    AISemanticEmbedderServiceLauncher::Get()->AddDownloadObserver(
+        std::move(monitor));
+  }
+
+  AISemanticEmbedderServiceLauncher::Get()->WaitForModelAvailable(
+      base::BindOnce(&AIManager::OnSemanticEmbedderModelReady,
+                     weak_factory_.GetWeakPtr(), std::move(client)));
+}
+
+void AIManager::OnSemanticEmbedderModelReady(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
+        client) {
+  mojo::Remote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
+      client_remote(std::move(client));
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+
   if (!service_launcher->controller()->IsModelAvailable()) {
     client_remote->OnError(
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
