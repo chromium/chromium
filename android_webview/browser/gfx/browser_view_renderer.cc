@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "android_webview/common/aw_features.h"
+#include "cc/base/features.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -45,7 +47,7 @@ namespace {
 constexpr double kEpsilon = 1e-8;
 
 // Used to calculate memory allocation. Determined experimentally.
-constexpr size_t kMemoryMultiplier = 20;
+constexpr size_t kMinMemoryMultiplier = 20;
 constexpr size_t kBytesPerPixel = 4;
 constexpr size_t kMemoryAllocationStep = 5 * 1024 * 1024;
 
@@ -222,7 +224,10 @@ gfx::Rect BrowserViewRenderer::ComputeTileRectAndUpdateMemoryPolicy() {
 
   size_t width = interest_rect.width();
   size_t height = interest_rect.height();
-  size_t bytes_limit = kMemoryMultiplier * kBytesPerPixel * width * height;
+  size_t memory_multiplier = static_cast<size_t>(
+      std::max(kMinMemoryMultiplier,
+               static_cast<size_t>(::features::kWebViewMemoryMultiplierParam.Get())));
+  size_t bytes_limit = memory_multiplier * kBytesPerPixel * width * height;
   // Round up to a multiple of kMemoryAllocationStep.
   bytes_limit =
       (bytes_limit / kMemoryAllocationStep + 1) * kMemoryAllocationStep;

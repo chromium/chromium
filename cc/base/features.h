@@ -73,6 +73,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreserveDiscardableImageMapQuality);
 // Kill switch for a bunch of optimizations for cc-slimming project.
 // Please see crbug.com/335450599 for more details.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kCCSlimming);
+
+// Android Webview Memory Multiplier configurations.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWebViewMemoryMultiplier);
+CC_BASE_EXPORT extern const base::FeatureParam<int> kWebViewMemoryMultiplierParam;
+CC_BASE_EXPORT extern const base::FeatureParam<int> kWebViewMemoryMultiplierSoftPercentageParam;
+
 // Check if the above feature is enabled. For performance purpose.
 CC_BASE_EXPORT bool IsCCSlimmingEnabled();
 

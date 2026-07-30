@@ -458,6 +458,13 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       ui::IsFluentOverlayScrollbarEnabled();
 
   if (use_synchronous_compositor) {
+    if (base::FeatureList::IsEnabled(::features::kWebViewMemoryMultiplier)) {
+      int soft = ::features::kWebViewMemoryMultiplierSoftPercentageParam.Get();
+      if (soft >= 0) {
+        settings.max_memory_for_prepaint_percentage =
+            std::clamp(soft, 10, 100);
+      }
+    }
     // Root frame in Android WebView uses system scrollbars, so make ours
     // invisible. http://crbug.com/677348: This can't be done using
     // hide_scrollbars setting because supporting -webkit custom scrollbars is
