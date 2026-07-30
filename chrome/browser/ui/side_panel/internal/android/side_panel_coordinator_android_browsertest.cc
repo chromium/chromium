@@ -184,15 +184,25 @@ class AutoOpenSidePanelTabModelObserver : public TabModelObserver {
     if (!registry->GetEntryForKey(key)) {
       registry->Register(
           CreateSidePanelEntry(key, browser_, /*use_thin_web_view=*/true));
+      side_panel_entry_observers_.push_back(
+          std::make_unique<TestSidePanelEntryObserver>(
+              registry->GetEntryForKey(key)));
     }
     coordinator_->SidePanelUIBase::Show(key,
                                         SidePanelOpenTrigger::kToolbarButton,
                                         /*suppress_animations=*/true);
   }
 
+  const std::vector<std::unique_ptr<TestSidePanelEntryObserver>>&
+  side_panel_entry_observers() const {
+    return side_panel_entry_observers_;
+  }
+
  private:
   raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<SidePanelCoordinatorAndroid> coordinator_;
+  std::vector<std::unique_ptr<TestSidePanelEntryObserver>>
+      side_panel_entry_observers_;
 };
 
 BrowserWindowInterface* CreateBrowserWindowAsync(Profile* profile) {
@@ -3068,29 +3078,47 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        RapidTabSwitch_AutoOpenSidePanel) {
+  coordinator_->ConfigDeferredViewReplacementForTesting(true);
+
   // Simulate GLiC's "automatically open side panel for a new tab" behavior.
   AutoOpenSidePanelTabModelObserver observer(browser_, coordinator_);
   auto* tab_model = static_cast<TabModel*>(tab_list_);
   tab_model->AddObserver(&observer);
 
-  // Switch tabs rapidly to trigger side panel creation and show.
-  // We open three new tabs here:
-  // - Tab 2: Opens the side panel initially.
-  // - Tab 3: Replaces Tab 2's panel (1st replacement).
-  // - Tab 4: Replaces Tab 3's panel (2nd replacement, forces the 1st
-  // replacement to complete synchronously).
+  const auto& side_panel_entry_observers =
+      observer.side_panel_entry_observers();
+
+  // Tab 2: Opens the side panel initially.
   tab_list_->OpenTab(GURL("about:blank"), tab_list_->GetTabCount());
+  ASSERT_EQ(1u, side_panel_entry_observers.size());
+  EXPECT_EQ(1, side_panel_entry_observers[0]->num_on_entry_shown_received_);
+
+  // Tab 3: Replaces Tab 2's panel (1st replacement).
+  // In a real device, this uses delayed detachment. In the headless test
+  // environment, it may complete synchronously.
   tab_list_->OpenTab(GURL("about:blank"), tab_list_->GetTabCount());
+  ASSERT_EQ(2u, side_panel_entry_observers.size());
+  EXPECT_EQ(1, side_panel_entry_observers[1]->num_on_entry_shown_received_);
+
+  // Tab 4: Replaces Tab 3's panel (2nd replacement).
   tab_list_->OpenTab(GURL("about:blank"), tab_list_->GetTabCount());
+  ASSERT_EQ(3u, side_panel_entry_observers.size());
+  EXPECT_EQ(1, side_panel_entry_observers[2]->num_on_entry_shown_received_);
 
   // Wait for the final tab's panel to open.
   WaitUntilOpened(coordinator_);
   EXPECT_EQ(SidePanelEntryId::kGlic, coordinator_->GetCurrentEntryId());
 
-  // Wait for the background delayed detachment of the intermediate tab's side
-  // panel to finish successfully.
+  // Wait for any background delayed detachments (if any) to finish
+  // successfully.
   ASSERT_TRUE(base::test::RunUntil(
       [this]() { return !coordinator_->HasPendingReplacedEntryForTesting(); }));
 
+  // At this point, the older tabs should be hidden and the active tab shown.
+  EXPECT_EQ(1, side_panel_entry_observers[0]->num_on_entry_hidden_received_);
+  EXPECT_EQ(1, side_panel_entry_observers[1]->num_on_entry_hidden_received_);
+  EXPECT_EQ(0, side_panel_entry_observers[2]->num_on_entry_hidden_received_);
+
   tab_model->RemoveObserver(&observer);
+  coordinator_->ConfigDeferredViewReplacementForTesting(false);
 }
