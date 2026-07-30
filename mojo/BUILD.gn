@@ -63,9 +63,6 @@ test("mojo_unittests") {
 
 test("mojo_perftests") {
   sources = []
-  if (mojo_support_legacy_core) {
-    sources += [ "//mojo/core/handle_table_perftest.cc" ]
-  }
   deps = [
     "//mojo/core/test:run_all_perftests",
     "//mojo/core/test:test_support",

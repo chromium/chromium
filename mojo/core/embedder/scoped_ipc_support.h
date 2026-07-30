@@ -23,8 +23,8 @@ class COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) ScopedIPCSupport {
   // ShutdownPolicy is a type for specifying the desired Mojo IPC support
   // shutdown behavior used during ScopedIPCSupport destruction.
   //
-  // It only has an effect if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE),
-  // which currently is on ChromeOS and in fuzzer builds.
+  // It has no effect: it only influenced shutdown of the legacy (non-ipcz)
+  // Mojo Core, which is no longer supported.
   //
   // What follows is a quick overview of why shutdown behavior is interesting
   // and how you might decide which behavior is right for your use case.

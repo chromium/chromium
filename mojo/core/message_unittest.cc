@@ -26,20 +26,12 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-#include "mojo/core/user_message_impl.h"
-#endif
-
 namespace mojo::core {
 namespace {
 
 using MessageTest = test::MojoTestBase;
 
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-constexpr uint32_t kLegacyMinimumPayloadBufferSize = kMinimumPayloadBufferSize;
-#else
 constexpr uint32_t kLegacyMinimumPayloadBufferSize = 0;
-#endif
 
 // Helper class which provides a base implementation for an unserialized user
 // message context and helpers to go between these objects and opaque message
@@ -1004,31 +996,6 @@ TEST_F(MessageTest, CorrectPayloadBufferBoundaries) {
 
   EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
 }
-
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-TEST_F(MessageTest, CommitInvalidMessageContents) {
-  // Regression test for https://crbug.com/755127. Ensures that we don't crash
-  // if we attempt to commit the contents of an unserialized message.
-  MojoMessageHandle message;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, nullptr, 0,
-                                                  nullptr, nullptr, nullptr));
-  MojoHandle a, b;
-  CreateMessagePipe(&a, &b);
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, &a, 1, nullptr,
-                                                  nullptr, nullptr));
-
-  UserMessageImpl::FailHandleSerializationForTesting(true);
-  MojoAppendMessageDataOptions options;
-  options.struct_size = sizeof(options);
-  options.flags = MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoAppendMessageData(message, 0, nullptr, 0,
-                                                  nullptr, nullptr, nullptr));
-  UserMessageImpl::FailHandleSerializationForTesting(false);
-  EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
-}
-#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 
 #if BUILDFLAG(USE_BLINK)
 

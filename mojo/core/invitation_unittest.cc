@@ -46,11 +46,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-#include "mojo/core/core.h"
-#include "mojo/core/node_controller.h"
-#endif
-
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/apple/mach_port_rendezvous.h"
 #endif
@@ -659,84 +654,6 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
   WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_READABLE);
   EXPECT_EQ(kDisconnectMessage, ReadMessage(pipe));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe));
-}
-
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-// Temporary removed support for reinvitation for non-isolated connections.
-TEST_F(MAYBE_InvitationTest, DISABLED_Reinvitation) {
-  // The gist of this test is that a process should be able to accept an
-  // invitation, lose its connection to the process network, and then accept a
-  // new invitation to re-establish communication.
-
-  // We pass an extra PlatformChannel endpoint to the child process which it
-  // will use to accept a secondary invitation after we sever its first
-  // connection.
-  PlatformChannel secondary_channel;
-  auto command_line = base::GetMultiProcessTestChildBaseCommandLine();
-  base::LaunchOptions launch_options;
-  PrepareToPassRemoteEndpoint(&secondary_channel, &launch_options,
-                              &command_line, kSecondaryChannelHandleSwitch);
-
-  MojoHandle pipe;
-  base::Process child_process =
-      LaunchChildTestClient("ReinvitationClient", base::span_from_ref(pipe),
-                            MOJO_SEND_INVITATION_FLAG_NONE, nullptr, 0,
-                            &command_line, &launch_options);
-  secondary_channel.RemoteProcessLaunchAttempted();
-
-  // Synchronize end-to-end communication first to ensure the process connection
-  // is fully established.
-  WriteMessage(pipe, kTestMessage1);
-  EXPECT_EQ(kTestMessage2, ReadMessage(pipe));
-
-  // Force-disconnect the child process.
-  Core::Get()->GetNodeController()->ForceDisconnectProcessForTesting(
-      child_process.Pid());
-
-  // The above disconnection should force pipe closure eventually.
-  WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
-  MojoClose(pipe);
-
-  // Now use our secondary channel to send a new invitation to the same process.
-  // It should be able to accept the new invitation and re-establish
-  // communication.
-  mojo::OutgoingInvitation new_invitation;
-  auto new_pipe = new_invitation.AttachMessagePipe(0);
-  mojo::OutgoingInvitation::Send(std::move(new_invitation),
-                                 child_process.Handle(),
-                                 secondary_channel.TakeLocalEndpoint());
-
-  WriteMessage(new_pipe.get().value(), kTestMessage3);
-  EXPECT_EQ(kTestMessage4, ReadMessage(new_pipe.get().value()));
-  WriteMessage(new_pipe.get().value(), kDisconnectMessage);
-
-  WaitForProcessToTerminate(child_process);
-}
-#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-
-DEFINE_TEST_CLIENT(ReinvitationClient) {
-  MojoHandle invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_NONE);
-  MojoHandle pipe = ExtractPipeFromInvitation(invitation);
-  EXPECT_EQ(kTestMessage1, ReadMessage(pipe));
-  WriteMessage(pipe, kTestMessage2);
-
-  // Wait for the pipe to break due to forced process disconnection.
-  WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
-  MojoClose(pipe);
-
-  // Now grab the secondary channel and accept a new invitation from it.
-  PlatformChannelEndpoint new_endpoint =
-      PlatformChannel::RecoverPassedEndpointFromString(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              kSecondaryChannelHandleSwitch));
-  auto secondary_invitation =
-      mojo::IncomingInvitation::Accept(std::move(new_endpoint));
-  auto new_pipe = secondary_invitation.ExtractMessagePipe(0);
-
-  // Ensure that the new connection is working end-to-end.
-  EXPECT_EQ(kTestMessage3, ReadMessage(new_pipe.get().value()));
-  WriteMessage(new_pipe.get().value(), kTestMessage4);
-  EXPECT_EQ(kDisconnectMessage, ReadMessage(new_pipe.get().value()));
 }
 
 TEST_F(MAYBE_InvitationTest, SendIsolatedInvitation) {

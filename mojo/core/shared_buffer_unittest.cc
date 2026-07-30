@@ -19,11 +19,6 @@
 #include "mojo/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-#include "mojo/core/core.h"
-#include "mojo/core/shared_buffer_dispatcher.h"
-#endif
-
 namespace mojo::core {
 namespace {
 
@@ -295,17 +290,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
     EXPECT_EQ(buffer->region().GetMode(),
               base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
   } else {
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-    auto* dispatcher = static_cast<SharedBufferDispatcher*>(
-        Core::Get()->GetDispatcher(b).get());
-    base::subtle::PlatformSharedMemoryRegion& region =
-        dispatcher->GetRegionForTesting();
-    EXPECT_EQ(region.GetMode(),
-              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
-    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
-#else
     NOTREACHED();
-#endif
   }
 
   WriteMessage(h, "ok");
@@ -372,17 +357,7 @@ TEST_F(SharedBufferTest, MAYBE_CreateAndPassFromChildReadOnlyBuffer) {
       EXPECT_EQ(buffer->region().GetMode(),
                 base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
     } else {
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-      auto* dispatcher = static_cast<SharedBufferDispatcher*>(
-          Core::Get()->GetDispatcher(b).get());
-      base::subtle::PlatformSharedMemoryRegion& region =
-          dispatcher->GetRegionForTesting();
-      EXPECT_EQ(region.GetMode(),
-                base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
-      EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
-#else
       NOTREACHED();
-#endif
     }
 
     EXPECT_EQ("ok", ReadMessage(h));
