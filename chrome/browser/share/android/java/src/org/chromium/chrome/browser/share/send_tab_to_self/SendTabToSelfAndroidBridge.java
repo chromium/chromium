@@ -442,6 +442,8 @@ public class SendTabToSelfAndroidBridge {
 
     /** Interface to be notified when the list of target devices changes. */
     public interface DeviceInfoObserver {
+        // Called when the list of target DeviceInfos is updated. This also happens when a foreign
+        // session is updated, because that affects the corresponding DeviceInfo's timestamp.
         @CalledByNative
         void onDeviceInfoChanged();
     }

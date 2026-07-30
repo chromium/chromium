@@ -11,21 +11,18 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
-#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -34,6 +31,7 @@
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -53,16 +51,26 @@ using base::android::ScopedJavaLocalRef;
 // counterpart.
 namespace send_tab_to_self {
 
+namespace {
+
 class DeviceInfoObserverBridge : public syncer::DeviceInfoTracker::Observer,
                                  public ProfileObserver {
  public:
-  DeviceInfoObserverBridge(JNIEnv* env,
-                           const JavaRef<jobject>& j_observer,
-                           Profile* profile,
-                           syncer::DeviceInfoTracker* tracker)
+  DeviceInfoObserverBridge(
+      JNIEnv* env,
+      const JavaRef<jobject>& j_observer,
+      Profile* profile,
+      syncer::DeviceInfoTracker* tracker,
+      sync_sessions::SessionSyncService* session_sync_service)
       : j_observer_(env, j_observer) {
     observation_.Observe(tracker);
     profile_observation_.Observe(profile);
+    if (session_sync_service) {
+      foreign_session_subscription_ =
+          session_sync_service->SubscribeToForeignSessionsChanged(
+              base::BindRepeating(&DeviceInfoObserverBridge::OnDeviceInfoChange,
+                                  base::Unretained(this)));
+    }
   }
   ~DeviceInfoObserverBridge() override = default;
 
@@ -79,6 +87,7 @@ class DeviceInfoObserverBridge : public syncer::DeviceInfoTracker::Observer,
     // So to prevent any dangling pointers, handle Profile shutdown here.
     observation_.Reset();
     profile_observation_.Reset();
+    foreign_session_subscription_ = {};
   }
 
  private:
@@ -87,6 +96,7 @@ class DeviceInfoObserverBridge : public syncer::DeviceInfoTracker::Observer,
                           syncer::DeviceInfoTracker::Observer>
       observation_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::CallbackListSubscription foreign_session_subscription_;
 };
 
 class SendTabToSelfModelObserverBridge : public SendTabToSelfModelObserver,
@@ -123,6 +133,8 @@ class SendTabToSelfModelObserverBridge : public SendTabToSelfModelObserver,
       observation_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
+
+}  // namespace
 
 static std::vector<ScopedJavaLocalRef<jobject>>
 JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
@@ -321,8 +333,10 @@ static int64_t JNI_SendTabToSelfAndroidBridge_AddDeviceInfoObserver(
   syncer::DeviceInfoTracker* tracker =
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
-  return reinterpret_cast<int64_t>(
-      new DeviceInfoObserverBridge(env, j_observer, profile, tracker));
+  sync_sessions::SessionSyncService* session_sync_service =
+      SessionSyncServiceFactory::GetForProfile(profile);
+  return reinterpret_cast<int64_t>(new DeviceInfoObserverBridge(
+      env, j_observer, profile, tracker, session_sync_service));
 }
 
 static void JNI_SendTabToSelfAndroidBridge_RemoveDeviceInfoObserver(
