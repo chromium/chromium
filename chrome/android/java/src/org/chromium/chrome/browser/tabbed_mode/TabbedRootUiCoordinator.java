@@ -330,6 +330,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsGlicPinnedSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Integer> mVerticalTabsWidthSupplier =
+            ObservableSuppliers.createNonNull(0);
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable OnSharedPreferenceChangeListener mVerticalTabsPreferenceListener;
     private @Nullable TabbedSystemUiCoordinator mSystemUiCoordinator;
@@ -358,6 +360,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mPrivacySandbox3pcdRollbackMessageController;
     private @Nullable GestureUserEducationIphController mGestureUserEducationIphController;
     private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
+    private @Nullable ToolbarControlContainer mControlContainer;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private final Callback<@Nullable Tab> mSendToBackground;
@@ -985,6 +988,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mForcedSigninController = null;
         }
 
+        if (mControlContainer != null) {
+            mControlContainer.setVerticalTabsContainerWidthSupplier(null);
+            mControlContainer = null;
+        }
+
         destroySideUi();
 
         super.onDestroy();
@@ -1020,20 +1028,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     @EnsuresNonNull("mToolbarManager")
     protected void initializeToolbar() {
-        ToolbarControlContainer controlContainer = mActivity.findViewById(R.id.control_container);
+        mControlContainer = mActivity.findViewById(R.id.control_container);
         if (OpenInAppUtils.isOpenInAppAvailable()) {
-            assert controlContainer != null;
+            assert mControlContainer != null;
 
             ViewGroup omniboxChipContainer =
-                    controlContainer.findViewById(R.id.omnibox_chip_container);
+                    mControlContainer.findViewById(R.id.omnibox_chip_container);
             LocationBarEmbedder locationBarEmbedder = mActivity.findViewById(R.id.toolbar);
             mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer, locationBarEmbedder);
         }
 
         assert mFindToolbarManager != null;
         super.initializeToolbar();
-        if (controlContainer != null) {
-            controlContainer.setIsVerticalTabsActiveSupplier(mIsVerticalTabsActiveSupplier);
+        if (mControlContainer != null) {
+            mControlContainer.setIsVerticalTabsActiveSupplier(mIsVerticalTabsActiveSupplier);
+            mControlContainer.setVerticalTabsContainerWidthSupplier(mVerticalTabsWidthSupplier);
         }
 
         if (AndroidSidePanelEnabledFn.isEnabled()
@@ -2350,6 +2359,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mShareDelegateSupplier,
                                     mDataSharingTabManager,
                                     mIsVerticalTabsActiveSupplier,
+                                    mVerticalTabsWidthSupplier,
                                     canActivateTabLayoutToggleMenu(),
                                     mActivity.findViewById(
                                             R.id.vertical_tab_hover_card_holder_stub),

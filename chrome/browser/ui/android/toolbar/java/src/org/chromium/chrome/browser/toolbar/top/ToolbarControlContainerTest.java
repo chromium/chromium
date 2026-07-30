@@ -763,6 +763,46 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    public void testSystemGestureExclusions_WithVerticalTabsWidth() {
+        initControlContainer(R.layout.toolbar_tablet);
+
+        // Layout the control container to have width = 500px, height = 100px.
+        mControlContainer.layout(0, 0, 500, 100);
+
+        // AppHeaderState: appHeader width = 500, unoccluded region right edge = 480 (right padding
+        // = 20px).
+        var appHeaderState =
+                new AppHeaderState(
+                        /* appWindowRect= */ new Rect(0, 0, 500, 100),
+                        /* widestUnoccludedRect= */ new Rect(10, 0, 480, 100),
+                        /* isInDesktopWindow= */ true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+
+        // Suppress tab strip height to 0, which is the case when Vertical Tabs are enabled. This
+        // also calls #updateSystemGestureExclusions.
+        mControlContainer.onHeightChanged(0, 20, false);
+
+        // Default vertical tabs width supplier (width = 0).
+        List<Rect> expectedDefault = List.of(new Rect(0, 0, 480, 100));
+        assertEquals(
+                "Exclusion left edge should be 0 when vertical tabs width supplier is default.",
+                expectedDefault,
+                mControlContainer.getSystemGestureExclusionRects());
+
+        // Supply an arbitrary vertical tabs width 150px.
+        SettableNonNullObservableSupplier<Integer> widthSupplier =
+                ObservableSuppliers.createNonNull(150);
+        mControlContainer.setVerticalTabsContainerWidthSupplier(widthSupplier);
+
+        // Left edge should now match the vertical tabs width 150px.
+        List<Rect> expectedWithRail = List.of(new Rect(150, 0, 480, 100));
+        assertEquals(
+                "Exclusion left edge should match vertical tabs container width.",
+                expectedWithRail,
+                mControlContainer.getSystemGestureExclusionRects());
+    }
+
+    @Test
     public void testTempDrawableAfterCompositorInitialized() {
         initControlContainer(R.layout.toolbar_tablet);
         mControlContainer.setCompositorBackgroundInitialized();

@@ -135,6 +135,7 @@ public class VerticalTabListCoordinator {
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
     private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
+    private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
@@ -213,6 +214,7 @@ public class VerticalTabListCoordinator {
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             DataSharingTabManager dataSharingTabManager,
             NonNullObservableSupplier<Boolean> verticalTabsActiveSupplier,
+            SettableNonNullObservableSupplier<Integer> verticalTabsWidthSupplier,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
             @Nullable ViewStub tabHoverCardViewStub,
             Supplier<TabContentManager> tabContentManagerSupplier) {
@@ -373,6 +375,14 @@ public class VerticalTabListCoordinator {
         // Handle right-clicks on the root background space and fully consume the window event.
         mContainerView.setOnContextClickListener(
                 createEmptySpaceContextClickListener(activity, mContainerView));
+
+        mContainerLayoutChangeListener =
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    int width = right - left;
+                    boolean isVisible = mContainerView.getVisibility() == View.VISIBLE;
+                    verticalTabsWidthSupplier.set(isVisible ? width : 0);
+                };
+        mContainerView.addOnLayoutChangeListener(mContainerLayoutChangeListener);
 
         mTabListFaviconProvider =
                 new TabListFaviconProvider(
@@ -631,6 +641,10 @@ public class VerticalTabListCoordinator {
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
+        }
+
+        if (mContainerView != null) {
+            mContainerView.removeOnLayoutChangeListener(mContainerLayoutChangeListener);
         }
 
         mRailCollapseListener = null;

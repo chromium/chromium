@@ -180,6 +180,8 @@ public class VerticalTabListCoordinatorUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Integer> mVerticalTabsWidthSupplier =
+            ObservableSuppliers.createNonNull(0);
     private final List<TabGroupObserver> mTabGroupObservers = new ArrayList<>();
     private VerticalTabListCoordinator mCoordinator;
 
@@ -251,6 +253,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mDataSharingTabManager,
                         mIsVerticalTabsActiveSupplier,
+                        mVerticalTabsWidthSupplier,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mTabHoverCardViewStub,
                         mTabContentManagerSupplier);
@@ -1384,4 +1387,56 @@ public class VerticalTabListCoordinatorUnitTest {
     // This requires exposing or refactoring VerticalTabListItemTouchHelperCallback access in
     // VerticalTabListCoordinator, as touchHelperCallback is currently a local variable in
     // setupItemTouchHelper().
+
+    @Test
+    @SmallTest
+    public void testLayoutChange_UpdatesVerticalTabsWidthSupplier() {
+        SettableNonNullObservableSupplier<Integer> widthSupplier =
+                ObservableSuppliers.createNonNull(0);
+
+        // Pass our custom widthSupplier to the constructor.
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity,
+                        mTabModelSelector,
+                        mProfile,
+                        mVerticalTabsActionDelegate,
+                        mWindowAndroid,
+                        mMultiInstanceManager,
+                        mSnackbarManager,
+                        mDesktopWindowStateManager,
+                        mShareDelegateSupplier,
+                        mDataSharingTabManager,
+                        mIsVerticalTabsActiveSupplier,
+                        widthSupplier,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null,
+                        mTabHoverCardViewStub,
+                        mTabContentManagerSupplier);
+
+        View containerView = mCoordinator.getView();
+        containerView.setVisibility(View.VISIBLE);
+
+        // Simulate a layout pass where the width is 200px.
+        containerView.layout(0, 0, 200, 500);
+        assertEquals(
+                "Width supplier should update to 200 when container is visible.",
+                200,
+                (int) widthSupplier.get());
+
+        // Simulate container resizing to 300px wide. This is needed to test visibility GONE because
+        // changing bounds triggers the layout change listener.
+        containerView.layout(0, 0, 300, 500);
+        assertEquals(
+                "Width supplier should update to 300 when container resizes.",
+                300,
+                (int) widthSupplier.get());
+
+        // Simulate layout change when container is hidden (visibility GONE).
+        containerView.setVisibility(View.GONE);
+        containerView.layout(0, 0, 0, 0);
+        assertEquals(
+                "Width supplier should update to 0 when container is hidden.",
+                0,
+                (int) widthSupplier.get());
+    }
 }
