@@ -13804,21 +13804,6 @@
             ]
         }
     ],
-    "HideDelegatedFrameHostMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HideDelegatedFrameHostMac"
-                    ]
-                }
-            ]
-        }
-    ],
     "HideToolbarsInOverflowMenu": [
         {
             "platforms": [
@@ -18066,6 +18051,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "StarterPackIPH"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxWebUIPopupMarkAsHiddenMacOS": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260730",
+                    "enable_features": [
+                        "HideDelegatedFrameHostMac"
                     ]
                 }
             ]
