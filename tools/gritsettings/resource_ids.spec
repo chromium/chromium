@@ -1276,9 +1276,11 @@
   # share the same id because they define the same strings, but only one of them
   # is built depending on whether src_internal is available.
   "components/plus_addresses/core/browser/resources/internal/strings/plus_addresses_internal_strings.grd": {
+    "META": {"sizes": {"messages": [130]}},
     "messages": [7160],
   },
   "components/plus_addresses/core/browser/resources/strings/plus_addresses_strings.grd": {
+    "META": {"sizes": {"messages": [130]}},
     "messages": [7160],
   },
   # components/policy/resources/policy_templates.grd and
