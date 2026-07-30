@@ -918,9 +918,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
   RunTestSequence(EnterSplitView(), ClearResizeCounts(), OpenSidePanel(),
-                  // There is a known issue where the elements can resize more
-                  // than once. See https://crbug.com/485909751.
-                  CheckResizeCounts(testing::_, testing::_));
+                  CheckResizeCounts(1U, 1U));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
@@ -932,10 +930,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
       ->SetVerticalTabsEnabled(true);
   RunScheduledLayouts();
   RunTestSequence(EnterSplitView(), OpenSidePanel(), ClearResizeCounts(),
-                  CloseSidePanel(),
-                  // There is a known issue where the elements can resize more
-                  // than once. See https://crbug.com/485909751.
-                  CheckResizeCounts(testing::_, testing::_));
+                  CloseSidePanel(), CheckResizeCounts(1U, 1U));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplContentLayoutUiTest,
