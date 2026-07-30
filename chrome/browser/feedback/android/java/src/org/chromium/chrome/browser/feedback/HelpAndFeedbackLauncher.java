@@ -28,6 +28,15 @@ public interface HelpAndFeedbackLauncher {
     void show(Activity activity, String helpContext, @Nullable String url);
 
     /**
+     * Starts an activity showing a help page for the specified URL and records a user action.
+     *
+     * @param activity The activity to use for starting the help activity.
+     * @param url The current URL.
+     * @param recordAction The user action to record.
+     */
+    void showHelpAndFeedbackForUrl(Activity activity, String url, String recordAction);
+
+    /**
      * Starts an activity prompting the user to enter feedback.
      *
      * <p>Note: Please check the isUserFeedbackAllowed policy (via {@link

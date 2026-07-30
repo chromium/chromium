@@ -216,6 +216,20 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         return context.getString(R.string.help_context_webpage);
     }
 
+    /**
+     * Helper to show help and feedback for a given URL and record a user action.
+     *
+     * @param activity The activity to use for starting the help activity.
+     * @param url The current URL.
+     * @param recordAction The user action to record.
+     */
+    @Override
+    public void showHelpAndFeedbackForUrl(Activity activity, String url, String recordAction) {
+        String helpContextId = getHelpContextIdFromUrl(activity, url, mProfile.isOffTheRecord());
+        show(activity, helpContextId, url);
+        RecordUserAction.record(recordAction);
+    }
+
     protected static void launchFallbackSupportUri(Context context) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(FALLBACK_SUPPORT_URL));
         // Let Chrome know that this intent is from Chrome, so that it does not close the app when
