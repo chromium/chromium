@@ -9,7 +9,6 @@
 #include "base/containers/map_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_util.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
@@ -31,10 +30,6 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
-#endif
-
 class Profile;
 
 namespace web_app {
@@ -42,13 +37,6 @@ namespace web_app {
 ManifestUpdateManager::ManifestUpdateManager() = default;
 
 ManifestUpdateManager::~ManifestUpdateManager() = default;
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ManifestUpdateManager::SetSystemWebAppDelegateMap(
-    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
-  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
-}
-#endif
 
 void ManifestUpdateManager::SetProvider(base::PassKey<WebAppProvider>,
                                         WebAppProvider& provider) {

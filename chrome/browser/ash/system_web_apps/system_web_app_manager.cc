@@ -72,7 +72,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -858,8 +857,6 @@ bool SystemWebAppManager::CheckAndIncrementRetryAttempts() {
 void SystemWebAppManager::ConnectProviderToSystemWebAppDelegateMap(
     const SystemWebAppDelegateMap* system_web_apps_delegate_map) const {
   // TODO(crbug.com/40243506): Consider DCHECKing that provider_ is ready.
-  provider_->manifest_update_manager().SetSystemWebAppDelegateMap(
-      system_web_apps_delegate_map);
   provider_->policy_manager().SetSystemWebAppDelegateMap(
       system_web_apps_delegate_map);
 }

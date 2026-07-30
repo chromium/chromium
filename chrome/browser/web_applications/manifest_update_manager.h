@@ -10,15 +10,10 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
-#endif
 
 namespace content {
 class WebContents;
@@ -39,11 +34,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void SetSystemWebAppDelegateMap(
-      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
-#endif
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
@@ -70,10 +60,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       const webapps::AppId& app_id,
       FetchManifestAndUpdateCompletionInfo completion_info);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
-      system_web_apps_delegate_map_ = nullptr;
-#endif
   raw_ptr<WebAppProvider> provider_ = nullptr;
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};

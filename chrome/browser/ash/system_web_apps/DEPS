@@ -44,7 +44,6 @@ include_rules = [
   "+chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
-  "+chrome/browser/web_applications/manifest_update_manager.h",
   "+chrome/browser/web_applications/mojom",
   "+chrome/browser/web_applications/os_integration",
   "+chrome/browser/web_applications/policy",
