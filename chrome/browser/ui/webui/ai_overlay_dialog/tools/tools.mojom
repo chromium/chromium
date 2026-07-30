@@ -118,6 +118,16 @@ interface AiOverlayTools {
   RemoveBookmark()
       => result<mojo_base.mojom.Empty, string>;
 
+  // Search for and open a page matching a query across open tabs, saved
+  // bookmarks, or browsing history.
+  //
+  // query: Search term, title keyword, or topic description of the page to find.
+  // Returns a JSON string with candidates categorized into open_tabs, bookmarks,
+  // and history lists. If a single unique match is found, automatically opens
+  // the page and returns an action dictionary (e.g. {"action": "switched_tab"}).
+  OpenPage(string query)
+      => result<string, string>;
+
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
   // video, or long text. Prefer direct voice replies for quick (<1s) tasks.

@@ -57,6 +57,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
                      TranslatePageCallback callback) override;
   void AddBookmark(AddBookmarkCallback callback) override;
   void RemoveBookmark(RemoveBookmarkCallback callback) override;
+  void OpenPage(const std::string& query,
+                OpenPageCallback callback) override;
   void InvokeGlic(const std::string& prompt,
                   InvokeGlicCallback callback) override;
 
@@ -93,6 +95,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
   content::WeakDocumentPtr annotation_document_;
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
   base::CancelableTaskTracker task_tracker_;
+  base::WeakPtrFactory<AiOverlayTools> weak_factory_{this};
 };
 
 }  // namespace ttc
