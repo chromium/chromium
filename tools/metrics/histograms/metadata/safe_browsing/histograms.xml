@@ -561,6 +561,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CheckUrl.Result.HashDatabase" enum="SBThreatType"
+    expires_after="2026-11-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The threat type result of the Safe Browsing local blocklist check. Logged
+    each time a local browse URL check in DatabaseManagerMechanism completes.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckUrl.Timeout" enum="BooleanTimedOut"
     expires_after="2027-01-17">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
