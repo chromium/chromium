@@ -2818,26 +2818,6 @@
     ]
   },
   {
-    "prefix": "scoped-custom-element-registry-disabled",
-    "owners": [
-      "masonf@chromium.org",
-      "tgivens@microsoft.com",
-      "jaysonchen@microsoft.com"
-    ],
-    "platforms": [
-      "Linux",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/custom-elements/",
-      "custom-elements/"
-    ],
-    "args": [
-      "--disable-blink-features=ScopedCustomElementRegistry"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
     "prefix": "select-audio-output",
     "platforms": [
       "Linux",

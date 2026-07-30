@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Direct construction of a global-only element after super() during a scoped upgrade
-  Failed to construct 'CustomElementRegistry': Illegal constructor
-[FAIL] Direct construction of a global-only element before super() during a scoped upgrade
-  Failed to construct 'CustomElementRegistry': Illegal constructor
-Harness: the test ran to completion.
-
