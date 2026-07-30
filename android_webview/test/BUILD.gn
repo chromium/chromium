@@ -273,11 +273,42 @@ copy("copy_webview_js_test_script_to_blink") {
       [ "$root_build_dir/third_party/blink/web_tests/resources/js-test.js" ]
 }
 
+android_library("webview_compose_javatests") {
+  testonly = true
+  enable_compose = true
+  sources = [
+    "../javatests/src/org/chromium/android_webview/test/AwComposeTest.kt",
+  ]
+  deps = [
+    ":base_webview_instrumentation_java",
+    ":base_webview_instrumentation_test_java",
+    "//android_webview:android_webview_java",
+    "//android_webview/test:webview_instrumentation_test_utils_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_activity_activity_compose_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_compose_foundation_foundation_java",
+    "//third_party/androidx:androidx_compose_foundation_foundation_layout_java",
+    "//third_party/androidx:androidx_compose_runtime_runtime_java",
+    "//third_party/androidx:androidx_compose_ui_ui_java",
+    "//third_party/androidx:androidx_compose_ui_ui_test_android_java",
+    "//third_party/androidx:androidx_compose_ui_ui_test_junit4_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+  ]
+}
+
 base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
   apk_name = "WebViewInstrumentationTest"
   apk_under_test = ":webview_instrumentation_apk"
 
   deps = [
+    ":webview_compose_javatests",
     "//android_webview:common_aidl_java",
     "//android_webview:common_origin_trials_java",
     "//android_webview:common_variations_java",
@@ -359,6 +390,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_android_features_java",
@@ -417,7 +449,6 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwNetworkConfigurationTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwPacProcessorTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwPageLoadMetricsTest.java",
-    "../javatests/src/org/chromium/android_webview/test/AwParameterizedTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwPerformanceManagerTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwPermissionManagerTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwPermissionQueryApiTest.java",
@@ -568,6 +599,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
 android_library("base_webview_instrumentation_test_java") {
   sources = [
     "//android_webview/javatests/src/org/chromium/android_webview/test/AwActivityTestRule.java",
+    "//android_webview/javatests/src/org/chromium/android_webview/test/AwParameterizedTest.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/DisableHardwareAcceleration.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/TestAwContentsClient.java",
     "//android_webview/javatests/src/org/chromium/android_webview/test/TestAwNavigationListener.java",
@@ -636,6 +668,7 @@ android_library("base_webview_instrumentation_java") {
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_monitor_java",

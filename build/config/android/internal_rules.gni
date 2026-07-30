@@ -4003,8 +4003,8 @@ if (enable_java_templates) {
         _kt_allowlist = [
           "*/AsyncTabParamsManagerImpl.kt",
           "//third_party/androidx/*",
-          "*/webengine_shell_apk/*",
           "//chrome/browser/ui/android/bricks/internal/*",
+          "//android_webview/javatests/*",
         ]
         _found_kt = filter_exclude(_abs_kt_files, _kt_allowlist)
         assert(

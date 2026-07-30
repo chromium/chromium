@@ -4,13 +4,13 @@
 
 package org.chromium.android_webview.test;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
+import androidx.activity.ComponentActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,7 +20,7 @@ import org.chromium.android_webview.shell.AwShellResourceProvider;
 import org.chromium.base.StrictModeContext;
 
 /** This is a lightweight activity for tests that only require WebView functionality. */
-public class AwTestRunnerActivity extends Activity {
+public class AwTestRunnerActivity extends ComponentActivity {
     public static final String FLAG_HIDE_ACTION_BAR = "hide_action_bar";
 
     private LinearLayout mLinearLayout;
