@@ -24,6 +24,12 @@
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <winioctl.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace enterprise_connectors {
 
 namespace {
@@ -597,6 +603,12 @@ TEST_F(FileAnalysisRequestBaseTest,
     base::File file(file_path,
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(file.IsValid());
+#if BUILDFLAG(IS_WIN)
+    DWORD bytes_returned = 0;
+    ASSERT_TRUE(::DeviceIoControl(file.GetPlatformFile(), FSCTL_SET_SPARSE,
+                                  nullptr, 0, nullptr, 0, &bytes_returned,
+                                  nullptr));
+#endif
     ASSERT_TRUE(file.SetLength(kHugeFileSize));
   }
 
