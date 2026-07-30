@@ -6,7 +6,10 @@ package org.chromium.components.page_info;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -30,12 +33,14 @@ public class PageInfoRowView extends FrameLayout {
         public boolean visible;
         public @DrawableRes int iconResId;
         public @ColorRes int iconTint;
+        public boolean tintIcon = true;
         public @Nullable CharSequence title;
         public @Nullable CharSequence subtitle;
         public @Nullable Runnable clickCallback;
         public boolean decreaseIconSize;
         public boolean singleLineSubTitle;
         public @ColorRes int rowTint;
+        public @ColorRes int titleTint;
     }
 
     private final ChromeImageView mIcon;
@@ -67,14 +72,23 @@ public class PageInfoRowView extends FrameLayout {
             mIcon.setPadding(p, p, p, p);
         }
 
-        ImageViewCompat.setImageTintList(
-                mIcon,
-                params.iconTint != 0
-                        ? ColorStateList.valueOf(context.getColor(params.iconTint))
-                        : context.getColorStateList(R.color.default_icon_color_tint_list));
+        if (!params.tintIcon) {
+            ImageViewCompat.setImageTintList(mIcon, null);
+        } else if (params.iconTint != 0) {
+            ImageViewCompat.setImageTintList(
+                    mIcon, ColorStateList.valueOf(context.getColor(params.iconTint)));
+        } else {
+            ImageViewCompat.setImageTintList(
+                    mIcon, context.getColorStateList(R.color.default_icon_color_tint_list));
+        }
 
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
+        if (params.titleTint != 0) {
+            mTitle.setTextColor(context.getColor(params.titleTint));
+        } else {
+            mTitle.setTextColor(context.getColorStateList(R.color.default_text_color_list));
+        }
         updateSubtitle(params.subtitle);
         mSubtitle.setSingleLine(params.singleLineSubTitle);
         mSubtitle.setEllipsize(params.singleLineSubTitle ? TextUtils.TruncateAt.END : null);
@@ -92,8 +106,19 @@ public class PageInfoRowView extends FrameLayout {
         }
     }
 
+    /**
+     * Updates the subtitle text. Sets LinkMovementMethod only if the subtitle contains
+     * ClickableSpans to avoid intercepting row click events when no links exist.
+     */
     public void updateSubtitle(@Nullable CharSequence subtitle) {
         mSubtitle.setText(subtitle);
         mSubtitle.setVisibility(subtitle != null ? VISIBLE : GONE);
+        boolean hasLink =
+                subtitle instanceof Spanned
+                        && ((Spanned) subtitle)
+                                        .getSpans(0, subtitle.length(), ClickableSpan.class)
+                                        .length
+                                > 0;
+        mSubtitle.setMovementMethod(hasLink ? LinkMovementMethod.getInstance() : null);
     }
 }

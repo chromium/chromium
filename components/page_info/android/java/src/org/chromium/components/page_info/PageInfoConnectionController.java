@@ -20,9 +20,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.SecurityStatusIcon;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Class for controlling the page info connection section. */
 @NullMarked
@@ -109,10 +113,14 @@ public class PageInfoConnectionController
     }
 
     /**
-     * Sets the connection security summary and detailed description strings. These strings may be
-     * overridden based on the state of the Android UI.
+     * Sets the connection security summary and detailed description strings.
+     *
+     * @param summary Security summary message.
+     * @param details Security details message.
+     * @param linkUrl Optional custom link URL destination for <link> tags in details. If null,
+     *     <link> tags are not replaced with a clickable link span.
      */
-    public void setSecurityDescription(String summary, String details) {
+    public void setSecurityDescription(String summary, String details, @Nullable String linkUrl) {
         // Display the appropriate connection message.
         SpannableStringBuilder messageBuilder = new SpannableStringBuilder();
         CharSequence title = null;
@@ -134,10 +142,35 @@ public class PageInfoConnectionController
             if (!summary.isEmpty()) {
                 title = summary;
             }
-            messageBuilder.append(details);
+            if (details.contains("<link>") && details.contains("</link>")) {
+                CharSequence textWithSpans = null;
+                if (linkUrl != null) {
+                    SpanInfo spanInfo =
+                            new SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new ChromeClickableSpan(
+                                            mRowView.getContext(),
+                                            (view) -> mMainController.openUrl(linkUrl)));
+                    try {
+                        textWithSpans = SpanApplier.applySpans(details, spanInfo);
+                    } catch (IllegalArgumentException e) {
+                        textWithSpans = null;
+                    }
+                }
+                if (textWithSpans != null) {
+                    messageBuilder.append(textWithSpans);
+                } else {
+                    messageBuilder.append(details.replace("<link>", "").replace("</link>", ""));
+                }
+            } else {
+                messageBuilder.append(details);
+            }
         }
 
-        if (isConnectionDetailsLinkVisible() && messageBuilder.length() > 0) {
+        boolean hasDetailsLink =
+                details.contains("<link>") && details.contains("</link>") && linkUrl != null;
+        if (!hasDetailsLink && isConnectionDetailsLinkVisible() && messageBuilder.length() > 0) {
             messageBuilder.append(" ");
             SpannableString detailsText =
                     new SpannableString(mRowView.getContext().getString(R.string.details_link));
@@ -173,20 +206,25 @@ public class PageInfoConnectionController
                 mDelegate.isHttpsFirstDialogUiEnabled()
                         && SecurityStateModel.isHttpsOnlyModeUpgradedForWebContents(mWebContents);
 
-        // Page info should always show lock icon as the connection security indicator.
+        int maliciousContentStatus =
+                SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents);
         rowParams.iconResId =
                 SecurityStatusIcon.getSecurityIconResource(
                         securityLevel,
-                        () ->
-                                SecurityStateModel.getMaliciousContentStatusForWebContents(
-                                        mWebContents),
+                        () -> maliciousContentStatus,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
                         /* useLockIconForSecureState= */ true,
                         isShowingHttpsFirstWarning);
-        rowParams.iconTint = getSecurityIconColor(securityLevel);
+        if (maliciousContentStatus == ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE) {
+            rowParams.tintIcon = false;
+            rowParams.titleTint = R.color.default_text_color_error;
+        } else {
+            rowParams.iconTint = getSecurityIconColor(securityLevel);
+        }
         if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
+        mMainController.updateConnectionWrapperVisibility();
     }
 
     @Override

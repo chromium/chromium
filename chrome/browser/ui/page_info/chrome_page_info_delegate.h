@@ -86,12 +86,13 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OpenCertificateDialog(net::X509Certificate* certificate) override;
   void OpenConnectionHelpCenterPage(const ui::Event& event) override;
   void OpenSafetyTipHelpCenterPage() override;
-  void OpenSafeBrowsingHelpCenterPage(const ui::Event& event) override;
   void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) override;
   void OnPageInfoActionOccurred(page_info::PageInfoAction action) override;
   void OnUIClosing() override;
 #endif
+
+  void OpenSafeBrowsingHelpCenterPage(const ui::Event* event) override;
 
   std::u16string GetSubjectName(const GURL& url) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()
@@ -118,6 +119,9 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldSyncCookiesForUrl(const GURL& url) override;
 #endif
+
+  void OnSuspiciousSiteBackToSafety() override;
+  void OnSuspiciousSiteMarkAsSafe() override;
 
  private:
   Profile* GetProfile() const;

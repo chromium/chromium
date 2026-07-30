@@ -114,6 +114,14 @@ public class SecurityStatusIconUnitTest {
                 ConnectionMaliciousContentStatus.BILLING);
     }
 
+    @Test
+    public void testGetSecurityIconResource_Dangerous_WarnableSuspiciousSite() {
+        assertIconResourceIs(
+                R.drawable.shield_question,
+                ConnectionSecurityLevel.DANGEROUS,
+                ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE);
+    }
+
     private static void assertIconResourceIs(
             int expectedIconResource,
             @ConnectionSecurityLevel int securityLevel,

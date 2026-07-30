@@ -55,4 +55,10 @@ public interface PageInfoMainController {
 
     /** Dismiss the page info dialog. */
     void dismiss();
+
+    /** Opens a URL in a new tab. */
+    void openUrl(String url);
+
+    /** Updates the connection section wrapper visibility. */
+    void updateConnectionWrapperVisibility();
 }

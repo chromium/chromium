@@ -86,6 +86,35 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         return mForgetSiteButton;
     }
 
+    public Button getBackToSafetyButton() {
+        return findViewById(R.id.page_info_back_to_safety_button);
+    }
+
+    public Button getMarkAsSafeButton() {
+        return findViewById(R.id.page_info_mark_as_safe_button);
+    }
+
+    public void setSuspiciousSiteButtonsVisible(boolean visible) {
+        View buttons = findViewById(R.id.page_info_suspicious_site_buttons_wrapper);
+        if (buttons != null) {
+            buttons.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        updateConnectionWrapperVisibility();
+    }
+
+    public void updateConnectionWrapperVisibility() {
+        // TODO(crbug.com/539538727): Clean up page_info_connection_wrapper to clarify
+        // that it is used for both connection security information and Safe Browsing status UI.
+        View wrapper = findViewById(R.id.page_info_connection_wrapper);
+        if (wrapper != null) {
+            View buttons = findViewById(R.id.page_info_suspicious_site_buttons_wrapper);
+            boolean buttonsVisible = buttons != null && buttons.getVisibility() == View.VISIBLE;
+            boolean connectionVisible =
+                    mConnectionRow != null && mConnectionRow.getVisibility() == View.VISIBLE;
+            wrapper.setVisibility((buttonsVisible || connectionVisible) ? View.VISIBLE : View.GONE);
+        }
+    }
+
     private void initializePageInfoViewChild(
             View child, boolean shown, @Nullable Runnable clickCallback) {
         child.setVisibility(shown ? View.VISIBLE : View.GONE);

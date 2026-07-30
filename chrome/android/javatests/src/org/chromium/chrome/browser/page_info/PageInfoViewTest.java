@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
@@ -23,6 +24,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -34,11 +36,14 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Root;
@@ -55,6 +60,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -64,11 +70,13 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
@@ -84,9 +92,11 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingSuspiciousSiteDialogBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -105,6 +115,7 @@ import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoCookiesController;
@@ -113,6 +124,7 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -133,6 +145,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /**
  * Tests for PageInfoView. Uses pixel tests to ensure the UI handles different configurations
@@ -266,6 +279,69 @@ public class PageInfoViewTest {
         onViewWaiting(
                 allOf(withId(R.id.page_info_url_wrapper), isDisplayed()),
                 ViewElement.newOptions().inDialog().allowDisabled().build());
+    }
+
+    private static class TestChromePageInfoControllerDelegate
+            extends ChromePageInfoControllerDelegate {
+        private Callback<Drawable> mFaviconCallback;
+
+        public TestChromePageInfoControllerDelegate(
+                Context context,
+                WebContents webContents,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
+                OfflinePageUtils.TabOfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate) {
+            super(
+                    context,
+                    webContents,
+                    modalDialogManagerSupplier,
+                    offlinePageLoadUrlDelegate,
+                    /* storeInfoActionHandlerSupplier= */ null,
+                    /* ephemeralTabCoordinatorSupplier= */ null,
+                    ChromePageInfoHighlight.noHighlight(),
+                    /* tabCreator= */ null,
+                    /* packageName= */ null);
+        }
+
+        @Override
+        public void getFavicon(GURL url, Callback<Drawable> callback) {
+            mFaviconCallback = callback;
+        }
+
+        public Callback<Drawable> getCapturedFaviconCallback() {
+            return mFaviconCallback;
+        }
+    }
+
+    private TestChromePageInfoControllerDelegate loadUrlAndOpenPageInfoWithCustomDelegate(
+            String url) {
+        mActivityTestRule.loadUrl(url);
+        ChromeActivity activity = mActivityTestRule.getActivity();
+        Tab tab = mActivityTestRule.getActivityTab();
+        WebContents webContents = tab.getWebContents();
+        TestChromePageInfoControllerDelegate[] delegateHolder =
+                new TestChromePageInfoControllerDelegate[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestChromePageInfoControllerDelegate delegate =
+                            new TestChromePageInfoControllerDelegate(
+                                    activity,
+                                    webContents,
+                                    activity.getModalDialogManagerSupplier(),
+                                    new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab));
+                    delegateHolder[0] = delegate;
+                    PageInfoController.show(
+                            activity,
+                            webContents,
+                            null,
+                            PageInfoController.OpenedFromSource.TOOLBAR,
+                            delegate,
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
+                });
+        onViewWaiting(
+                allOf(withId(R.id.page_info_url_wrapper), isDisplayed()),
+                ViewElement.newOptions().inDialog().allowDisabled().build());
+        return delegateHolder[0];
     }
 
     private View getPageInfoView() {
@@ -534,6 +610,181 @@ public class PageInfoViewTest {
                 allOf(withId(R.id.page_info_connection_row), isDisplayed()),
                 ViewElement.allowDisabledOption());
         onView(withText("Connection is secure")).check(matches(isDisplayed()));
+    }
+
+    /** Tests PageInfo on a suspicious website. */
+    @Test
+    @MediumTest
+    public void testShowOnSuspiciousWebsite() throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.setSecurityDescription(
+                            "Be careful on this site",
+                            "Chrome has detected details that are common on sites associated"
+                                    + " with phishing, malware, or scams. <link>Learn more</link>",
+                            true);
+                });
+        onViewWaiting(
+                allOf(withId(R.id.page_info_back_to_safety_button), isDisplayed()),
+                ViewElement.allowDisabledOption());
+        onView(withId(R.id.page_info_mark_as_safe_button)).check(matches(isDisplayed()));
+        onView(withText("Be careful on this site")).check(matches(isDisplayed()));
+        onView(withText("Back to safety")).check(matches(isDisplayed()));
+        onView(withText("Mark as safe")).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Tests that a delayed favicon callback does not overwrite the warning icon on suspicious
+     * sites.
+     */
+    @Test
+    @MediumTest
+    public void testShowOnSuspiciousWebsiteFaviconNotOverwritten() throws IOException {
+        TestChromePageInfoControllerDelegate delegate =
+                loadUrlAndOpenPageInfoWithCustomDelegate(
+                        mTestServerRule.getServer().getURL(sSimpleHtml));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.setSecurityDescription(
+                            "Be careful on this site",
+                            "Chrome has detected details that are common on sites associated"
+                                    + " with phishing, malware, or scams. <link>Learn more</link>",
+                            true);
+
+                    Callback<Drawable> faviconCallback = delegate.getCapturedFaviconCallback();
+                    assertNotNull(faviconCallback);
+
+                    TextView truncatedUrlView =
+                            controller.getPageInfoView().findViewById(R.id.page_info_truncated_url);
+                    Drawable warningIcon = truncatedUrlView.getCompoundDrawablesRelative()[0];
+                    assertNotNull(warningIcon);
+
+                    Drawable fakeFavicon = new ColorDrawable(Color.RED);
+
+                    // Simulate the internal favicon fetch callback resolving after
+                    // setSecurityDescription has put PageInfo in the suspicious site warning state.
+                    faviconCallback.onResult(fakeFavicon);
+
+                    // The internal callback should return early without replacing the warning icon.
+                    Drawable currentIcon = truncatedUrlView.getCompoundDrawablesRelative()[0];
+                    assertEquals(warningIcon, currentIcon);
+                    assertNotEquals(fakeFavicon, currentIcon);
+                });
+        onViewWaiting(
+                allOf(withId(R.id.page_info_back_to_safety_button), isDisplayed()),
+                ViewElement.allowDisabledOption());
+        onView(withId(R.id.page_info_mark_as_safe_button)).check(matches(isDisplayed()));
+        onView(withText("Be careful on this site")).check(matches(isDisplayed()));
+    }
+
+    /** Tests clicking "Back to safety" button on suspicious site warning. */
+    @Test
+    @MediumTest
+    public void testSuspiciousSiteBackToSafetyButtonClick() throws IOException {
+        String safeUrl = mTestServerRule.getServer().getURL(sSimpleHtml);
+        String suspiciousUrl =
+                mTestServerRule.getServer().getURL("/chrome/test/data/android/about.html");
+        mActivityTestRule.loadUrl(safeUrl);
+        loadUrlAndOpenPageInfo(suspiciousUrl);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.setSecurityDescription(
+                            "Be careful on this site",
+                            "Chrome has detected details that are common on sites associated"
+                                    + " with phishing, malware, or scams.",
+                            true);
+                    SafeBrowsingSuspiciousSiteDialogBridge.createControllerForTesting(
+                            mActivityTestRule.getActivityTab().getWebContents());
+                });
+        onViewWaiting(
+                allOf(withId(R.id.page_info_back_to_safety_button), isDisplayed()),
+                ViewElement.allowDisabledOption());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+                        /* sample=kAdhered */ 2);
+
+        onView(withId(R.id.page_info_back_to_safety_button)).perform(click());
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        safeUrl.equals(mActivityTestRule.getActivityTab().getUrl().getSpec())
+                                || UrlConstants.NTP_URL.equals(
+                                        mActivityTestRule.getActivityTab().getUrl().getSpec()));
+    }
+
+    /** Tests clicking "Mark as safe" button on suspicious site warning. */
+    @Test
+    @MediumTest
+    public void testSuspiciousSiteMarkAsSafeButtonClick() throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.setSecurityDescription(
+                            "Be careful on this site",
+                            "Chrome has detected details that are common on sites associated"
+                                    + " with phishing, malware, or scams.",
+                            true);
+                    SafeBrowsingSuspiciousSiteDialogBridge.createControllerForTesting(
+                            mActivityTestRule.getActivityTab().getWebContents());
+                });
+        onViewWaiting(
+                allOf(withId(R.id.page_info_mark_as_safe_button), isDisplayed()),
+                ViewElement.allowDisabledOption());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+                        /* sample=kBypassed */ 1);
+
+        onView(withId(R.id.page_info_mark_as_safe_button)).perform(click());
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+        onView(withId(R.id.page_info_mark_as_safe_button)).check(doesNotExist());
+    }
+
+    /** Tests dismissing suspicious site warning without explicit action. */
+    @Test
+    @MediumTest
+    public void testSuspiciousSiteDismissedBySystem() throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.setSecurityDescription(
+                            "Be careful on this site",
+                            "Chrome has detected details that are common on sites associated"
+                                    + " with phishing, malware, or scams.",
+                            true);
+                });
+        onViewWaiting(
+                allOf(withId(R.id.page_info_back_to_safety_button), isDisplayed()),
+                ViewElement.allowDisabledOption());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("SafeBrowsing.SuspiciousSiteWarning.WarningOutcome")
+                        .build();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.dismiss();
+                });
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     /** Tests PageInfo on a website with expired certificate. */

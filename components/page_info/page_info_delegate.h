@@ -93,12 +93,13 @@ class PageInfoDelegate {
   virtual void OpenCertificateDialog(net::X509Certificate* certificate) = 0;
   virtual void OpenConnectionHelpCenterPage(const ui::Event& event) = 0;
   virtual void OpenSafetyTipHelpCenterPage() = 0;
-  virtual void OpenSafeBrowsingHelpCenterPage(const ui::Event& event) = 0;
   virtual void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) = 0;
   virtual void OnPageInfoActionOccurred(page_info::PageInfoAction action) = 0;
   virtual void OnUIClosing() = 0;
 #endif
+
+  virtual void OpenSafeBrowsingHelpCenterPage(const ui::Event* event) = 0;
 
   virtual std::u16string GetSubjectName(const GURL& url) = 0;
 
@@ -141,6 +142,11 @@ class PageInfoDelegate {
 #if BUILDFLAG(IS_CHROMEOS)
   virtual bool ShouldSyncCookiesForUrl(const GURL& url) = 0;
 #endif
+
+  // Notifies the embedder that the user clicked "Back to safety" or "Mark as
+  // safe" on a Suspicious Site Warning.
+  virtual void OnSuspiciousSiteBackToSafety() {}
+  virtual void OnSuspiciousSiteMarkAsSafe() {}
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_

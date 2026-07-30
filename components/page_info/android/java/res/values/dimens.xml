@@ -12,5 +12,6 @@ found in the LICENSE file.
     <dimen name="page_info_popup_padding_vertical">12dp</dimen>
     <dimen name="page_info_popup_corners_radius">16dp</dimen>
     <dimen name="page_info_popup_button_padding_sides">8dp</dimen>
+    <dimen name="page_info_subcontent_margin_start">56dp</dimen>
 
 </resources>

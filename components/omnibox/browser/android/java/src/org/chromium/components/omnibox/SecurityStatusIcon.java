@@ -49,6 +49,8 @@ public class SecurityStatusIcon {
                             R.drawable.enterprise_management;
                     case ConnectionMaliciousContentStatus.BILLING ->
                             R.drawable.omnibox_not_secure_warning;
+                    case ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE ->
+                            R.drawable.shield_question;
                     default -> R.drawable.omnibox_dangerous;
                 };
             default:

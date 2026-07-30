@@ -56,6 +56,14 @@ void SuspiciousSiteDialogViewAndroid::Close(
   controller_->CloseDialog(dismissalCause);
 }
 
+static void
+JNI_SafeBrowsingSuspiciousSiteDialogBridge_CreateControllerForTesting(  // IN-TEST
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  safe_browsing::SuspiciousSiteControllerAndroid::CreateForWebContents(
+      web_contents);
+}
+
 }  // namespace safe_browsing
 
 DEFINE_JNI(SafeBrowsingSuspiciousSiteDialogBridge)

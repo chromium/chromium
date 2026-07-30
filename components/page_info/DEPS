@@ -41,6 +41,7 @@ include_rules = [
   "+third_party/boringssl/src/include",
   "+third_party/search_engines_data",
   "+ui/base",
+  "+ui/events",
   "+ui/gfx",
   "+ui/native_theme",
 ]

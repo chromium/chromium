@@ -137,6 +137,26 @@ public class PageInfoViewDarkModeTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteDark");
     }
 
+    /** Tests the PageInfo UI on a suspicious website in dark mode. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowOnSuspiciousWebsiteDark() throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull(controller);
+                    controller.setSecurityDescription(
+                            "Be careful on this site",
+                            "Chrome has detected details that are common on sites associated"
+                                    + " with phishing, malware, or scams. <link>Learn more</link>",
+                            true);
+                });
+        waitForView(withId(R.id.page_info_back_to_safety_button));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_SuspiciousWebsiteDark");
+    }
+
     /** Tests PageInfo on internal page. */
     @Test
     @MediumTest

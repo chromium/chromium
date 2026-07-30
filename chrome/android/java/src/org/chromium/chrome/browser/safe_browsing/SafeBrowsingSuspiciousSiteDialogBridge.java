@@ -27,6 +27,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.modaldialog.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -55,6 +56,11 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
             WindowAndroid windowAndroid, long nativeSuspiciousSiteDialogViewAndroid) {
         return new SafeBrowsingSuspiciousSiteDialogBridge(
                 windowAndroid, nativeSuspiciousSiteDialogViewAndroid);
+    }
+
+    public static void createControllerForTesting(WebContents webContents) {
+        SafeBrowsingSuspiciousSiteDialogBridgeJni.get()
+                .createControllerForTesting(webContents); // IN-TEST
     }
 
     @CalledByNative
@@ -254,5 +260,7 @@ public class SafeBrowsingSuspiciousSiteDialogBridge implements ModalDialogProper
         void close(
                 long nativeSuspiciousSiteDialogViewAndroid,
                 @JniType("ui::ModalDialogWrapper::DismissalCause") int dismissalCause);
+
+        void createControllerForTesting(@JniType("content::WebContents*") WebContents webContents);
     }
 }
