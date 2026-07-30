@@ -537,4 +537,5 @@ Refer to README.md for content description and update process.
  <item id="tab_context_ephemeral_key_fetch" added_in_milestone="152" content_hash_code="01f989a9" os_list="linux,windows,chromeos,android" file_path="components/sync_tab_context/http_rpc_based_ephemeral_key_fetcher.cc" />
  <item id="remote_actor_passbox_client" added_in_milestone="152" content_hash_code="017774a4" os_list="linux,windows,chromeos" file_path="chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.cc" />
  <item id="remote_actor_permission_service" added_in_milestone="152" content_hash_code="0360a4f9" os_list="linux,windows,chromeos" file_path="chrome/browser/password_manager/remote_actor/remote_actor_credential_permission_client.cc" />
+ <item id="enterprise_skills_fetcher" added_in_milestone="152" content_hash_code="059461db" os_list="linux,windows,android,chromeos" file_path="components/skills/internal/enterprise_skills_provider.cc" />
 </annotations>

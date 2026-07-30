@@ -75,7 +75,9 @@ SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   if (base::FeatureList::IsEnabled(
           features::kEnterprisePublishedSkillsPolicyEnabled)) {
-    service->AddProvider(std::make_unique<EnterpriseSkillsProvider>());
+    service->AddProvider(std::make_unique<EnterpriseSkillsProvider>(
+        profile->GetPrefs(), profile->GetDefaultStoragePartition()
+                                 ->GetURLLoaderFactoryForBrowserProcess()));
   }
 
   return service;

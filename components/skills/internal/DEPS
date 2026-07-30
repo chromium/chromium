@@ -5,8 +5,11 @@ include_rules = [
   "+net/http",
   "+net/base",
   "+net/traffic_annotation",
+  "+net/test",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+services/network/network_context.h",
+  "+services/network/network_service.h",
   "+mojo/public/cpp/bindings",
 ]

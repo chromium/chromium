@@ -412,6 +412,7 @@ after discussions on the right group.
       <annotation id="tab_context_ephemeral_key_fetch"/>
       <annotation id="remote_actor_passbox_client"/>
       <annotation id="remote_actor_permission_service"/>
+      <annotation id="enterprise_skills_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features">

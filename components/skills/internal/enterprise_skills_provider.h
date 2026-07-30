@@ -10,11 +10,22 @@
 #include <string_view>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_provider.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+class PrefService;
+
+namespace network {
+class SimpleURLLoader;
+}
 
 namespace skills {
 
@@ -34,7 +45,9 @@ enum class EnterpriseSkillValidationResult {
 
 class EnterpriseSkillsProvider : public SkillsProvider {
  public:
-  EnterpriseSkillsProvider();
+  EnterpriseSkillsProvider(
+      PrefService* pref_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~EnterpriseSkillsProvider() override;
 
   EnterpriseSkillsProvider(const EnterpriseSkillsProvider&) = delete;
@@ -53,10 +66,38 @@ class EnterpriseSkillsProvider : public SkillsProvider {
       std::string_view response_body) const;
 
  private:
+  // Callback when prefs::kEnterprisePublishedSkills changes.
+  void OnPolicyPrefChanged();
+
+  // Triggers the background network fetches using SimpleURLLoader.
+  void FetchSkillsFromUrls();
+
+  void OnURLLoadComplete(network::SimpleURLLoader* source,
+                         const std::string& expected_hash,
+                         base::RepeatingClosure barrier_closure,
+                         std::optional<std::string> response_body);
+
+  // Called when all background URL fetches have completed.
+  void OnAllFetchesComplete();
+
+  // Notifies all registered observers that skills_ has been updated.
+  void NotifyObservers();
+
+  raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_registrar_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Active loaders for background fetching.
+  std::vector<std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
+
+  // Accumulates skills during a fetch operation before replacing skills_.
+  std::vector<std::unique_ptr<Skill>> pending_skills_;
   // The cached list of successfully fetched and validated enterprise skills.
   std::vector<std::unique_ptr<Skill>> skills_;
 
   base::RepeatingCallbackList<void()> on_skills_changed_callbacks_;
+  base::CancelableRepeatingClosure barrier_closure_;
+  base::WeakPtrFactory<EnterpriseSkillsProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace skills

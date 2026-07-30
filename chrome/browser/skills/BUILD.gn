@@ -111,6 +111,7 @@ source_set("browser_tests") {
   sources = []
   if (!is_android) {
     sources += [
+      "enterprise_skills_provider_browsertest.cc",
       "skills_api_functional_browsertest.cc",
       "skills_dialog_launcher_browsertest.cc",
       "skills_functional_browsertest.cc",
