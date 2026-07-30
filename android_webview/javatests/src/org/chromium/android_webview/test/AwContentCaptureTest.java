@@ -324,10 +324,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     }
 
     private void scrollToBottom() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerView.scrollTo(0, mContainerView.getHeight());
-                });
+        runScript("window.scrollTo(0, document.body.scrollHeight);");
     }
 
     private void changeContent(String id, String content) {
@@ -342,10 +339,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
     }
 
     private void scrollToTop() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerView.scrollTo(0, 0);
-                });
+        runScript("window.scrollTo(0, 0);");
     }
 
     private static void verifyFrame(
