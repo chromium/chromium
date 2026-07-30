@@ -432,6 +432,7 @@ public abstract class ChromeFeatureList {
             "EdgeToEdgeUseBackupNavbarInsets";
     public static final String EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD =
             "EducationalTipDefaultBrowserPromoCard";
+    public static final String EMAIL_VERIFICATION_ANDROID = "EmailVerificationAndroid";
     public static final String EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH =
             "EmptyTabListAnimationKillSwitch";
     public static final String ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION =

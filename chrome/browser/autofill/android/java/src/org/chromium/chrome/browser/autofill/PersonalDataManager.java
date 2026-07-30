@@ -1025,6 +1025,54 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
+     * @return The list of email addresses that have verification state.
+     */
+    public List<String> getEmailVerificationAddresses() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .getEmailVerificationAddresses(mPersonalDataManagerAndroid);
+    }
+
+    /**
+     * @param email The email address to get the issuer for.
+     * @return The issuer site for the verified email address, or empty/null if not found.
+     */
+    public String getEmailVerificationIssuer(String email) {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .getEmailVerificationIssuer(mPersonalDataManagerAndroid, email);
+    }
+
+    /**
+     * Removes the email address from the email verification state.
+     *
+     * @param email The email address to remove.
+     */
+    public void removeEmailVerificationAddress(String email) {
+        ThreadUtils.assertOnUiThread();
+        PersonalDataManagerJni.get()
+                .removeEmailVerificationAddress(mPersonalDataManagerAndroid, email);
+    }
+
+    /**
+     * @return Whether email verification is enabled.
+     */
+    public boolean isEmailVerificationEnabled() {
+        return mPrefService.getBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED);
+    }
+
+    /**
+     * @param enabled Whether email verification should be enabled.
+     */
+    public void setEmailVerificationEnabled(boolean enabled) {
+        mPrefService.setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, enabled);
+    }
+
+    public boolean isEmailVerificationManaged() {
+        return mPrefService.isManagedPreference(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED);
+    }
+
+    /**
      * Enables or disables the Autofill feature for Credit Cards.
      *
      * @param enable True to disable credit card Autofill, false otherwise.
@@ -1299,5 +1347,15 @@ public class PersonalDataManager implements Destroyable {
                 long nativePersonalDataManagerAndroid);
 
         BnplIssuerForSettings[] getBnplIssuersForSettings(long nativePersonalDataManagerAndroid);
+
+        @JniType("std::vector<std::string>")
+        List<String> getEmailVerificationAddresses(long nativePersonalDataManagerAndroid);
+
+        @JniType("std::string")
+        String getEmailVerificationIssuer(
+                long nativePersonalDataManagerAndroid, @JniType("std::string") String email);
+
+        void removeEmailVerificationAddress(
+                long nativePersonalDataManagerAndroid, @JniType("std::string") String email);
     }
 }

@@ -255,6 +255,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns whether the user has seen the Amount Extraction AI terms.
   bool IsAutofillAmountExtractionAiTermsSeenPrefEnabled(JNIEnv* env);
 
+  // Returns all email addresses that have email verification enabled.
+  std::vector<std::string> GetEmailVerificationAddresses(JNIEnv* env);
+
+  // Returns the verification issuer for a given `email` address.
+  std::string GetEmailVerificationIssuer(JNIEnv* env, const std::string& email);
+
+  // Removes the given `email` address from the user's email verification state.
+  void RemoveEmailVerificationAddress(JNIEnv* env, const std::string& email);
+
  private:
   ~PersonalDataManagerAndroid() override;
 

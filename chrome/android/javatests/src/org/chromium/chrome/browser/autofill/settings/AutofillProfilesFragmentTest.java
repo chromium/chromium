@@ -29,8 +29,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,6 +94,8 @@ import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -99,6 +107,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -114,11 +123,13 @@ import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -287,9 +298,39 @@ public class AutofillProfilesFragmentTest {
 
     @After
     public void tearDown() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+                    if (fragment != null && fragment.getProfile() != null) {
+                        UserPrefs.get(fragment.getProfile())
+                                .clearPref(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED);
+                    }
+                });
         mUserActionTester.tearDown();
         Intents.release();
         mHelper.clearAllDataForTesting();
+        IdentityServicesProvider.setIdentityManagerForTesting(null);
+        PersonalDataManagerFactory.setInstanceForTesting(null);
+    }
+
+    private PersonalDataManager setUpSpiedPersonalDataManager() {
+        PersonalDataManager realPdm =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                PersonalDataManagerFactory.getForProfile(
+                                        mSettingsActivityTestRule.getFragment().getProfile()));
+        PersonalDataManager spyPdm = spy(realPdm);
+        PersonalDataManagerFactory.setInstanceForTesting(spyPdm);
+        return spyPdm;
+    }
+
+    private void clickPreference(String key) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Preference pref = mSettingsActivityTestRule.getFragment().findPreference(key);
+                    assertNotNull("Preference not found: " + key, pref);
+                    pref.performClick();
+                });
     }
 
     @Test
@@ -2432,5 +2473,478 @@ public class AutofillProfilesFragmentTest {
                         ContextUtils.getApplicationContext()
                                 .getString(R.string.help_context_autofill),
                         /* url= */ null);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerificationToggle_InitialStateTrue() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, true);
+                    fragment.onPersonalDataChanged();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    Criteria.checkThat(toggle, Matchers.notNullValue());
+                    Criteria.checkThat(toggle.isChecked(), Matchers.is(true));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerificationToggle_InitialStateFalse() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, false);
+                    fragment.onPersonalDataChanged();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    Criteria.checkThat(toggle, Matchers.notNullValue());
+                    Criteria.checkThat(toggle.isChecked(), Matchers.is(false));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerificationToggle_ClickToDisable() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, true);
+                    fragment.onPersonalDataChanged();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    Criteria.checkThat(toggle, Matchers.notNullValue());
+                    Criteria.checkThat(toggle.isChecked(), Matchers.is(true));
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    toggle.performClick();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean enabled =
+                            UserPrefs.get(fragment.getProfile())
+                                    .getBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED);
+                    Criteria.checkThat(enabled, Matchers.is(false));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerificationToggle_ClickToEnable() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, false);
+                    fragment.onPersonalDataChanged();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    Criteria.checkThat(toggle, Matchers.notNullValue());
+                    Criteria.checkThat(toggle.isChecked(), Matchers.is(false));
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    toggle.performClick();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean enabled =
+                            UserPrefs.get(fragment.getProfile())
+                                    .getBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED);
+                    Criteria.checkThat(enabled, Matchers.is(true));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerificationToggle_Visibility() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    Criteria.checkThat(toggle, Matchers.notNullValue());
+                    Criteria.checkThat(toggle.isVisible(), Matchers.is(true));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testVerifiedEmailList_EmptyState() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of()).when(pdm).getEmailVerificationAddresses();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+
+                    boolean isEmpty =
+                            category.getPreferenceCount() == 0
+                                    || (category.getPreferenceCount() == 1
+                                            && AutofillProfilesFragment
+                                                    .PREF_EMAIL_VERIFICATION_EMPTY
+                                                    .equals(category.getPreference(0).getKey()));
+                    Criteria.checkThat(isEmpty, Matchers.is(true));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testVerifiedEmailList_SingleEmail() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    Preference pref = category.findPreference("test@example.com");
+                    Criteria.checkThat(pref, Matchers.notNullValue());
+                    Criteria.checkThat(pref.getTitle().toString(), Matchers.is("test@example.com"));
+                    Criteria.checkThat(
+                            pref.getSummary().toString(), Matchers.containsString("example.com"));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testVerifiedEmailList_MultipleEmails() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com", "other@gmail.com"))
+                .when(pdm)
+                .getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("gmail.com").when(pdm).getEmailVerificationIssuer("other@gmail.com");
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    Preference pref1 = category.findPreference("test@example.com");
+                    Preference pref2 = category.findPreference("other@gmail.com");
+                    Criteria.checkThat(pref1, Matchers.notNullValue());
+                    Criteria.checkThat(pref2, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            fragment.findPreference("autofill_email_verification_enabled"),
+                            Matchers.notNullValue());
+                    Criteria.checkThat(category.getPreferenceCount(), Matchers.is(2));
+                    Criteria.checkThat(
+                            category.getPreference(0).getKey(), Matchers.is("test@example.com"));
+                    Criteria.checkThat(
+                            category.getPreference(1).getKey(), Matchers.is("other@gmail.com"));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testVerifiedEmailList_EmailTruncation() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        String longEmail = "a".repeat(90) + "@example.com";
+        doReturn(List.of(longEmail)).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer(longEmail);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    Preference pref = category.findPreference(longEmail);
+                    Criteria.checkThat(pref, Matchers.notNullValue());
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testVerifiedEmailList_IssuerVisibility() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    Preference pref = category.findPreference("test@example.com");
+                    Criteria.checkThat(pref, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            pref.getSummary().toString(), Matchers.containsString("example.com"));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testRemoveEmail_ClickShowsDialog() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference pref = fragment.findPreference("test@example.com");
+                    Criteria.checkThat(pref, Matchers.notNullValue());
+                });
+
+        clickPreference("test@example.com");
+
+        onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testRemoveEmail_DialogCancelDoesNotRemove() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        clickPreference("test@example.com");
+
+        onView(withId(android.R.id.button2)).inRoot(isDialog()).perform(click());
+
+        verify(pdm, never()).removeEmailVerificationAddress(any());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testRemoveEmail_DialogConfirmRemovesEmail() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doNothing().when(pdm).removeEmailVerificationAddress(any());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        clickPreference("test@example.com");
+
+        onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
+
+        verify(pdm).removeEmailVerificationAddress("test@example.com");
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testRemoveEmail_MultiEmailRemoval() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com", "other@gmail.com"))
+                .when(pdm)
+                .getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doReturn("gmail.com").when(pdm).getEmailVerificationIssuer("other@gmail.com");
+        doNothing().when(pdm).removeEmailVerificationAddress(any());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        clickPreference("test@example.com");
+
+        doReturn(List.of("other@gmail.com")).when(pdm).getEmailVerificationAddresses();
+        onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        verify(pdm).removeEmailVerificationAddress("test@example.com");
+        verify(pdm, never()).removeEmailVerificationAddress("other@gmail.com");
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(
+                            category.findPreference("test@example.com"), Matchers.nullValue());
+                    Criteria.checkThat(
+                            category.findPreference("other@gmail.com"), Matchers.notNullValue());
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testRemoveEmail_ListTransitionToEmpty() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+        doReturn("example.com").when(pdm).getEmailVerificationIssuer("test@example.com");
+        doNothing().when(pdm).removeEmailVerificationAddress(any());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        clickPreference("test@example.com");
+
+        doReturn(List.of()).when(pdm).getEmailVerificationAddresses();
+        onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPersonalDataChanged());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    boolean isEmpty =
+                            category.getPreferenceCount() == 0
+                                    || (category.getPreferenceCount() == 1
+                                            && AutofillProfilesFragment
+                                                    .PREF_EMAIL_VERIFICATION_EMPTY
+                                                    .equals(category.getPreference(0).getKey()));
+                    Criteria.checkThat(isEmpty, Matchers.is(true));
+                });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerification_InteractionToggleAndList() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        PersonalDataManager pdm = setUpSpiedPersonalDataManager();
+        doReturn(List.of("test@example.com")).when(pdm).getEmailVerificationAddresses();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, false);
+                    fragment.onPersonalDataChanged();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(category, Matchers.nullValue());
+                });
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_ANDROID})
+    @MediumTest
+    public void testEmailVerification_FeatureDisabled() {
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChromeSwitchPreference toggle =
+                            fragment.findPreference("autofill_email_verification_enabled");
+                    PreferenceCategory category =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                    Criteria.checkThat(toggle, Matchers.nullValue());
+                    Criteria.checkThat(category, Matchers.nullValue());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.EMAIL_VERIFICATION_ANDROID)
+    public void testSearchIndexWhenEmailVerificationEnabled() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsIndexData indexDataMock = mock(SettingsIndexData.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillProfilesFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            indexDataMock,
+                            mSettingsActivityTestRule.getFragment().getProfile());
+                });
+
+        verify(indexDataMock, atLeastOnce())
+                .addEntryForKey(
+                        eq(AutofillProfilesFragment.class.getName()),
+                        eq(AutofillProfilesFragment.PREF_EMAIL_VERIFICATION),
+                        anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.EMAIL_VERIFICATION_ANDROID)
+    public void testSearchIndexWhenEmailVerificationDisabled() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        SettingsIndexData indexDataMock = mock(SettingsIndexData.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AutofillProfilesFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            indexDataMock,
+                            mSettingsActivityTestRule.getFragment().getProfile());
+                });
+
+        verify(indexDataMock, never())
+                .addEntryForKey(
+                        eq(AutofillProfilesFragment.class.getName()),
+                        eq(AutofillProfilesFragment.PREF_EMAIL_VERIFICATION),
+                        anyInt());
     }
 }
