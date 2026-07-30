@@ -57,6 +57,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_url_parameters.h"
 #include "components/history/core/browser/download_row.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
@@ -88,6 +89,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -685,6 +687,37 @@ class DownloadExtensionTest : public ExtensionApiTest {
     return CreateSlowTestDownload(second_download_.get(), kSecondDownloadUrl);
   }
 
+  DownloadItem* CreateInternalApiSlowTestDownload() {
+    if (!embedded_test_server()->Started()) {
+      StartEmbeddedTestServer();
+    }
+    std::unique_ptr<content::DownloadTestObserver> observer(
+        CreateInProgressDownloadObserver(1));
+    DownloadManager* manager = GetCurrentManager();
+
+    auto params = std::make_unique<download::DownloadUrlParameters>(
+        embedded_test_server()->GetURL(kFirstDownloadUrl),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+    params->set_download_source(download::DownloadSource::INTERNAL_API);
+    manager->DownloadUrl(std::move(params));
+
+    first_download_->WaitForRequest();
+    first_download_->Send(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-type: application/octet-stream\r\n"
+        "Cache-Control: max-age=0\r\n"
+        "\r\n");
+    first_download_->Send(std::string(kDownloadSize, '*'));
+
+    observer->WaitForFinished();
+    EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::IN_PROGRESS));
+
+    DownloadManager::DownloadVector items;
+    manager->GetAllDownloads(&items);
+    EXPECT_TRUE(!items.empty());
+    return items.empty() ? nullptr : items.back();
+  }
+
   DownloadItem* CreateSlowTestDownload(
       net::test_server::ControllableHttpResponse* response,
       const std::string& path) {
@@ -1223,6 +1256,40 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result_list.size());
   ASSERT_TRUE(result_list[0].is_int());
   EXPECT_EQ(id, result_list[0].GetInt());
+}
+
+// Action functions that take a download id should treat downloads that are not
+// surfaced via search() or events as if the id were unknown.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_InternalApiDownloadActions) {
+  ScopedCancellingItem item(CreateInternalApiSlowTestDownload());
+  ASSERT_TRUE(item.get());
+  ASSERT_EQ(download::DownloadSource::INTERNAL_API,
+            item.get()->GetDownloadSource());
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item.get()->GetState());
+  const std::string args = DownloadItemIdAsArgList(item.get());
+
+  EXPECT_STREQ(errors::kInvalidId,
+               RunFunctionAndReturnError(
+                   base::MakeRefCounted<DownloadsPauseFunction>(), args)
+                   .c_str());
+  EXPECT_FALSE(item.get()->IsPaused());
+
+  EXPECT_STREQ(errors::kInvalidId,
+               RunFunctionAndReturnError(
+                   base::MakeRefCounted<DownloadsResumeFunction>(), args)
+                   .c_str());
+
+  EXPECT_STREQ(errors::kInvalidId,
+               RunFunctionAndReturnError(
+                   base::MakeRefCounted<DownloadsRemoveFileFunction>(), args)
+                   .c_str());
+
+  // cancel() never fails for unknown ids so just verify it does not affect the
+  // item.
+  EXPECT_TRUE(
+      RunFunction(base::MakeRefCounted<DownloadsCancelFunction>(), args));
+  EXPECT_EQ(DownloadItem::IN_PROGRESS, item.get()->GetState());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
