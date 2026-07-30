@@ -21,7 +21,7 @@
 #include <poll.h>
 #include <unistd.h>
 #include <ctime>
-#include <errno.h>
+#include <unistd.h>
 #include <android/native_activity.h>
 #include <android/surface_control.h>
 #include <android/api-level.h>
