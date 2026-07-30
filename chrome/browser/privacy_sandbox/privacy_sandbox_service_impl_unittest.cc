@@ -144,71 +144,6 @@ void ClearRwsUserPrefs(
       prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized);
 }
 
-std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
-                                                    bool has_current_topics,
-                                                    bool has_blocked_topics) {
-  if (did_consent && !has_blocked_topics) {
-    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
-            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-  } else if (did_consent && has_blocked_topics) {
-    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-  } else if (!did_consent && has_current_topics && has_blocked_topics) {
-    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-  } else if (!did_consent && has_current_topics && !has_blocked_topics) {
-    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
-            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-  } else if (!did_consent && !has_current_topics && has_blocked_topics) {
-    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-  } else if (!did_consent && !has_current_topics && !has_blocked_topics) {
-    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
-            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-  }
-
-  NOTREACHED() << "Invalid topics settings consent state";
-}
 }  // namespace
 
 // A mock implementation of the PrivacySandboxCountries interface for testing.
@@ -1186,50 +1121,6 @@ TEST_F(PrivacySandboxServiceTest, TopicsConsentDefault) {
                   privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue},
                  {kTopicsConsentLastUpdateTime, base::Time()},
                  {kTopicsConsentStringIdentifiers, std::vector<int>()}});
-}
-
-TEST_F(PrivacySandboxServiceTest, TopicsConsentSettings_EnableWithBlocked) {
-  // Note that when testing for enabling topics, there can never have been
-  // current topics in prod code.
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, false},
-                {kHasCurrentTopics, false},
-                {kHasBlockedTopics, true},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsToggleNewValue, true},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, true},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsSettingsStringIdentifiers(/*did_consent=*/true,
-                                              /*has_current_topics=*/false,
-                                              /*has_blocked_topics=*/true)},
-      });
-}
-
-TEST_F(PrivacySandboxServiceTest, TopicsConsentSettings_EnableNoBlocked) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, false},
-                {kHasCurrentTopics, false},
-                {kHasBlockedTopics, false},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsToggleNewValue, true},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, true},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsSettingsStringIdentifiers(/*did_consent=*/true,
-                                              /*has_current_topics=*/false,
-                                              /*has_blocked_topics=*/false)},
-      });
 }
 
 TEST_F(PrivacySandboxServiceTest, LogPrivacySandboxState_APIs) {

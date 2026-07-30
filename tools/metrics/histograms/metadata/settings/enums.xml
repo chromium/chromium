@@ -51,8 +51,8 @@ chromium-metrics-reviews@google.com.
   <int value="-1481342482" label="LocationPermissionSubpageSettings"/>
   <int value="-1467975767" label="StandardPreloadingSettingsFragment"/>
   <int value="-1422587744" label="DownloadLocationPreferenceDialog"/>
-  <int value="-1413642316" label="TopicsFragment"/>
-  <int value="-1285374344" label="TopicsBlockedFragment"/>
+  <int value="-1413642316" label="(Obsolete) TopicsFragment"/>
+  <int value="-1285374344" label="(Obsolete) TopicsBlockedFragment"/>
   <int value="-1200678803" label="SearchEngineSettings"/>
   <int value="-1122629733" label="HttpsFirstModeSettingsFragment"/>
   <int value="-1091584228" label="NonCardPaymentMethodsManagementFragment"/>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
   <int value="1068718433" label="RecentSearchesFragment"/>
   <int value="1118292269" label="(Obsolete) HomeModulesConfigSettings"/>
   <int value="1287752848" label="BookmarkBarSettingsFragment"/>
-  <int value="1322563897" label="TopicsManageFragment"/>
+  <int value="1322563897" label="(Obsolete) TopicsManageFragment"/>
   <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
   <int value="1370406966" label="AutofillLocalCardEditor"/>
   <int value="1409846592" label="TabArchiveSettingsFragment"/>

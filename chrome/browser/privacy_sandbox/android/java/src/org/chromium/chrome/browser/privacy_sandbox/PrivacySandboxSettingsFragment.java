@@ -25,12 +25,10 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 /** Settings fragment for privacy sandbox settings. */
 @NullMarked
 public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFragment {
-    public static final String TOPICS_PREF = "topics";
     public static final String FLEDGE_PREF = "fledge";
     public static final String AD_MEASUREMENT_PREF = "ad_measurement";
     public static final String HELP_CENTER_URL = "https://support.google.com/chrome/?p=ad_privacy";
 
-    private @Nullable ChromeBasePreference mTopicsPref;
     private @Nullable ChromeBasePreference mFledgePref;
 
     private ChromeBasePreference mAdMeasurementPref;
@@ -53,7 +51,6 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                     this, R.xml.privacy_sandbox_preferences_restricted);
         } else {
             SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences);
-            mTopicsPref = findPreference(TOPICS_PREF);
             mFledgePref = findPreference(FLEDGE_PREF);
         }
         mAdMeasurementPref = findPreference(AD_MEASUREMENT_PREF);
@@ -80,12 +77,6 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     private void updatePrefDescription() {
         // LINT.IfChange(RestrictedPrefsSummary)
         if (!showRestrictedView()) {
-            assumeNonNull(mTopicsPref);
-            mTopicsPref.setSummary(
-                    TopicsFragment.isTopicsPrefEnabled(getProfile())
-                            ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
-                            : R.string.ad_privacy_page_topics_link_row_sub_label_disabled);
-
             assumeNonNull(mFledgePref);
             mFledgePref.setSummary(
                     FledgeFragment.isFledgePrefEnabled(getProfile())
@@ -123,27 +114,17 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                     String prefFragment = PrivacySandboxSettingsFragment.class.getName();
                     if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
-                        indexData.removeEntry(getUniqueId(TOPICS_PREF));
                         indexData.removeEntry(getUniqueId(FLEDGE_PREF));
                         indexData.removeEntry(getUniqueId(AD_MEASUREMENT_PREF));
                         return;
                     }
                     if (bridge.isPrivacySandboxRestricted()) {
-                        indexData.removeEntry(getUniqueId(TOPICS_PREF));
                         indexData.removeEntry(getUniqueId(FLEDGE_PREF));
                     } else {
                         // LINT.IfChange(DynamicPrefsSummary)
                         // The summary for enabled/disable is the same except for the trailing info
                         // (on/off). To reflect that, an index refresh is required and for now that
                         // is not necessary.
-                        indexData.updateEntrySummaryForKey(
-                                prefFragment,
-                                TOPICS_PREF,
-                                TopicsFragment.isTopicsPrefEnabled(profile)
-                                        ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
-                                        : R.string
-                                                .ad_privacy_page_topics_link_row_sub_label_disabled);
-
                         indexData.updateEntrySummaryForKey(
                                 prefFragment,
                                 FLEDGE_PREF,

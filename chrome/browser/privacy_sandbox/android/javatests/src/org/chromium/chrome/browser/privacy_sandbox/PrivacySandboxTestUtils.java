@@ -17,8 +17,6 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.ThreadUtils;
@@ -65,26 +63,6 @@ public final class PrivacySandboxTestUtils {
     public static void clickRecyclerViewItemWithText(String text) {
         onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.actionOnItem(hasDescendant(withText(text)), click()));
-    }
-
-    /**
-     * Matcher for a {@link Topic} based only on the name.
-     *
-     * @param name The name of the {@link Topic}.
-     * @return The Matcher for the {@link Topic}.
-     */
-    public static Matcher<Topic> withTopic(String name) {
-        return new BaseMatcher<>() {
-            @Override
-            public boolean matches(Object o) {
-                return ((Topic) o).getName().equals(name);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Should contain " + name);
-            }
-        };
     }
 
     /**

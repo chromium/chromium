@@ -121,56 +121,6 @@ std::string GetTopicsConfirmationText() {
   );
 }
 
-// Returns the text contents of the Topics settings page.
-std::string GetTopicsSettingsText(bool did_consent,
-                                  bool has_current_topics,
-                                  bool has_blocked_topics) {
-  // `did_consent` refers to the _updated_ state, and so the previous state,
-  // e.g. when the user clicked the toggle, will be the opposite.
-  auto topics_prev_enabled = !did_consent;
-
-  // A user should only have current topics while topics is enabled. Old topics
-  // will not appear when the user enables, as they will have been cleared when
-  // topics was previously disabled, or never generated at all.
-  DCHECK(topics_prev_enabled || !has_current_topics);
-
-  int blocked_topics_description =
-      has_blocked_topics
-          ? IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW
-          : IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2;
-
-  std::vector<int> string_ids = {
-      IDS_SETTINGS_TOPICS_PAGE_TITLE,
-      IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-      IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
-      IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
-      IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-      IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
-      blocked_topics_description,
-      IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
-
-  // Additional strings are displayed if there were no current topics, either
-  // because they were empty, or because Topics was disabled. These will have
-  // appeared after the current topics description.
-  if (!topics_prev_enabled) {
-    string_ids.insert(
-        string_ids.begin() + 5,
-        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED);
-  } else if (!has_current_topics) {
-    string_ids.insert(
-        string_ids.begin() + 5,
-        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2);
-  }
-
-  return std::accumulate(string_ids.begin(), string_ids.end(), std::string(),
-                         [](const std::string& previous_result, int next_id) {
-                           auto next_string = l10n_util::GetStringUTF8(next_id);
-                           return previous_result +
-                                  (!previous_result.empty() ? " " : "") +
-                                  next_string;
-                         });
-}
-
 // Emits startup histograms relating to the user's topics enabled status on
 // both client and profile level.
 void RecordTopicsEnabledHistograms(Profile* profile, bool enabled) {
@@ -588,10 +538,7 @@ void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(
       break;
     }
     case privacy_sandbox::TopicsConsentUpdateSource::kSettings: {
-      int current_topics_count = GetCurrentTopTopics().size();
-      int blocked_topics_count = GetBlockedTopics().size();
-      consent_text = GetTopicsSettingsText(
-          did_consent, current_topics_count > 0, blocked_topics_count > 0);
+      consent_text = "";
       break;
     }
     default:

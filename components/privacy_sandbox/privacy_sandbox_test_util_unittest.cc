@@ -439,17 +439,6 @@ TEST_F(PrivacySandboxBaseTestUtilTest,
 }
 
 TEST_F(PrivacySandboxBaseTestUtilTest,
-       VerifyTopicsConsentStringIdentifiersOutputKey) {
-  auto identifier =
-      IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL;
-  EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsConsentLastUpdateText())
-      .WillOnce(testing::Return(l10n_util::GetStringUTF8(identifier)));
-
-  CheckOutput({}, {OutputKey::kTopicsConsentStringIdentifiers,
-                   std::vector<int>{identifier}});
-}
-
-TEST_F(PrivacySandboxBaseTestUtilTest,
        VerifyIsSharedStorageAllowedDebugMessageOutputKey) {
   std::string actual_out_debug_message;
   EXPECT_CALL(

@@ -544,20 +544,6 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/433576895")
-    public void testFooterTopicsLinkAdTopicsContentParity() throws IOException {
-        setFledgePrefEnabled(true);
-        startFledgeSettings();
-        // Open a Topics settings activity.
-        onView(withText(containsString("ad topics"))).perform(clickOnClickableSpan(0));
-        onViewWaiting(withText(R.string.settings_ad_topics_page_toggle_sub_label))
-                .check(matches(isDisplayed()));
-        // Close the additional activity by navigating back.
-        pressBack();
-    }
-
-    @Test
-    @SmallTest
-    @DisabledTest(message = "https://crbug.com/433576895")
     public void testFooterCookieSettingsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();

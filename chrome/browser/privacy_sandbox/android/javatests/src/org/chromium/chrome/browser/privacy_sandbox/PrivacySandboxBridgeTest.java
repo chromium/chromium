@@ -46,50 +46,6 @@ public class PrivacySandboxBridgeTest {
                         () -> new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile()));
     }
 
-    @Test
-    @SmallTest
-    public void testGetCurrentTopics() {
-        // Check that this function returns a valid list. We currently can't control from the Java
-        // side what they actually return, so just check that it is not null and there is no crash.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> assertNotNull(mPrivacySandboxBridge.getCurrentTopTopics()));
-    }
-
-    @Test
-    @SmallTest
-    public void testBlockedTopics() {
-        // Check that this function returns a valid list. We currently can't control from the Java
-        // side what they actually return, so just check that it is not null and there is no crash.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> assertNotNull(mPrivacySandboxBridge.getBlockedTopics()));
-    }
-
-    @Test
-    @SmallTest
-    public void testFakeTopics() {
-        Topic topic1 = new Topic(1, 1, "Arts & entertainment");
-        Topic topic2 = new Topic(2, 1, "Acting & theater");
-        Topic topic3 = new Topic(3, 1, "Comics");
-        Topic topic4 = new Topic(4, 1, "Concerts & music festivals");
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPrivacySandboxBridge.setAllPrivacySandboxAllowedForTesting();
-                    assertThat(
-                            mPrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic1));
-                    assertThat(mPrivacySandboxBridge.getBlockedTopics(), contains(topic3, topic4));
-                    mPrivacySandboxBridge.setTopicAllowed(topic1, false);
-                    assertThat(mPrivacySandboxBridge.getCurrentTopTopics(), contains(topic2));
-                    assertThat(
-                            mPrivacySandboxBridge.getBlockedTopics(),
-                            contains(topic1, topic3, topic4));
-                    mPrivacySandboxBridge.setTopicAllowed(topic4, true);
-                    assertThat(
-                            mPrivacySandboxBridge.getCurrentTopTopics(), contains(topic2, topic4));
-                    assertThat(mPrivacySandboxBridge.getBlockedTopics(), contains(topic1, topic3));
-                });
-    }
-
     @Nullable
     private List<String> getFledgeJoiningEtlds() {
         PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();

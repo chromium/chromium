@@ -156,7 +156,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onFledgeSettingsLinkClicked(View unused) {
-        startSettings(TopicsFragment.class);
+        // No-op after Topics fragment removal.
     }
 
     private void onCookieSettingsLink(View unused) {
