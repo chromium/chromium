@@ -172,13 +172,44 @@ TEST_F(AuthControllerTest, CookieSyncOnTokenChange_PrimaryAccountChanged) {
 
   // Trigger primary account change.
   signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
-  identity_test_env_->MakePrimaryAccountAvailable(
-      "user2@gmail.com", signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_test_env_->MakeAccountAvailable("user2@gmail.com");
+  identity_test_env_->SetPrimaryAccount(account_info.email,
+                                        signin::ConsentLevel::kSignin);
 
+  task_environment_.FastForwardBy(base::Seconds(10));
   synchronizer_->WaitForSyncToComplete();
 
   EXPECT_GT(synchronizer_->copy_cookies_called_count(), 0);
   histogram_tester.ExpectBucketCount(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kOnPrimaryAccountChanged, 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncOnTokenChange_PrimaryAccountChanged_WithDelay) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Trigger primary account change.
+  signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
+  AccountInfo account_info =
+      identity_test_env_->MakeAccountAvailable("user2@gmail.com");
+  identity_test_env_->SetPrimaryAccount(account_info.email,
+                                        signin::ConsentLevel::kSignin);
+
+  // Sync shouldn't run immediately because of the delay.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // Advance time past the delay.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  synchronizer_->WaitForSyncToComplete();
+
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  histogram_tester.ExpectUniqueSample(
       "Glic.CookieSynchronization.SuccessByTrigger",
       GlicCookieSyncTrigger::kOnPrimaryAccountChanged, 1);
 }

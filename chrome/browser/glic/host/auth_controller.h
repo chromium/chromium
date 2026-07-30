@@ -111,6 +111,7 @@ class AuthController : public signin::IdentityManager::Observer {
   base::WeakPtr<AuthController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+  void DelayedForceSyncCookies(GlicCookieSyncTrigger trigger);
   void CookieSyncDone(GlicCookieSyncTrigger trigger,
                       base::OnceCallback<void(bool)> callback,
                       bool sync_success);

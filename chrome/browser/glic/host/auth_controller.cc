@@ -155,8 +155,8 @@ void AuthController::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (base::FeatureList::IsEnabled(
               features::kGlicCookieSyncOnTokenChange)) {
-        ForceSyncCookies(GlicCookieSyncTrigger::kOnPrimaryAccountChanged,
-                         base::DoNothing());
+        DelayedForceSyncCookies(
+            GlicCookieSyncTrigger::kOnPrimaryAccountChanged);
       }
       break;
     // Ignore until primary account is set.
@@ -194,17 +194,7 @@ void AuthController::OnRefreshTokenUpdatedForAccount(
   }
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
   if (GetTokenState() == TokenState::kOk) {
-    base::TimeDelta delay = features::kGlicCookieSyncOnTokenChangeDelay.Get();
-    if (delay.is_positive()) {
-      token_change_sync_timer_.Start(
-          FROM_HERE, delay,
-          base::BindOnce(&AuthController::ForceSyncCookies, GetWeakPtr(),
-                         GlicCookieSyncTrigger::kOnRefreshTokenUpdated,
-                         base::DoNothing()));
-    } else {
-      ForceSyncCookies(GlicCookieSyncTrigger::kOnRefreshTokenUpdated,
-                       base::DoNothing());
-    }
+    DelayedForceSyncCookies(GlicCookieSyncTrigger::kOnRefreshTokenUpdated);
   }
 }
 
@@ -237,6 +227,19 @@ void AuthController::OnClientTransientError(
 
 bool AuthController::NeedsSyncForTesting() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync);
+}
+
+void AuthController::DelayedForceSyncCookies(GlicCookieSyncTrigger trigger) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange));
+  base::TimeDelta delay = features::kGlicCookieSyncOnTokenChangeDelay.Get();
+  if (delay.is_positive()) {
+    token_change_sync_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&AuthController::ForceSyncCookies, GetWeakPtr(), trigger,
+                       base::DoNothing()));
+  } else {
+    ForceSyncCookies(trigger, base::DoNothing());
+  }
 }
 
 void AuthController::CookieSyncDone(GlicCookieSyncTrigger trigger,
