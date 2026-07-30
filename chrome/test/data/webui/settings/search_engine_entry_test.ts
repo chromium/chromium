@@ -5,14 +5,12 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElement} from 'chrome://settings/lazy_load.js';
 import type {SearchEngine, CrActionMenuElement} from 'chrome://settings/settings.js';
 import {ExtensionControlBrowserProxyImpl, PrefsBrowserProxy, PrefService, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -39,11 +37,11 @@ type ViewOrEditSearchEngineEvent = CustomEvent<{
  */
 function openActionMenu(entry: SettingsSearchEngineEntryElement):
     CrActionMenuElement {
-  const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+  const menuButton = entry.shadowRoot.querySelector<HTMLElement>(
       'cr-icon-button.icon-more-vert');
   assertTrue(!!menuButton);
   menuButton.click();
-  const menu = entry.shadowRoot!.querySelector('cr-action-menu');
+  const menu = entry.shadowRoot.querySelector('cr-action-menu');
   assertTrue(!!menu);
   assertTrue(menu.open);
   return menu;
@@ -52,13 +50,14 @@ function openActionMenu(entry: SettingsSearchEngineEntryElement):
 /**
  * Checks that the given button is hidden.
  */
-function assertButtonHidden(
+async function assertButtonHidden(
     entry: SettingsSearchEngineEntryElement, buttonId: string,
     searchEngine?: SearchEngine) {
   if (searchEngine) {
     entry.engine = searchEngine;
+    await microtasksFinished();
   }
-  const button = entry.shadowRoot!.querySelector<HTMLButtonElement>(buttonId);
+  const button = entry.shadowRoot.querySelector<HTMLButtonElement>(buttonId);
   assertTrue(!!button);
   assertTrue(button.hidden);
 }
@@ -66,13 +65,14 @@ function assertButtonHidden(
 /**
  * Returns whether the given button is disabled.
  */
-function isButtonDisabled(
+async function isButtonDisabled(
     entry: SettingsSearchEngineEntryElement, buttonId: string,
-    searchEngine?: SearchEngine): boolean {
+    searchEngine?: SearchEngine): Promise<boolean> {
   if (searchEngine) {
     entry.engine = searchEngine;
+    await microtasksFinished();
   }
-  const button = entry.shadowRoot!.querySelector<HTMLButtonElement>(buttonId);
+  const button = entry.shadowRoot.querySelector<HTMLButtonElement>(buttonId);
   assertTrue(!!button);
   return button.disabled;
 }
@@ -84,8 +84,13 @@ suite('SearchEngineEntryTest', function() {
   const searchEngine = createSampleSearchEngine(
       {canBeDefault: true, canBeEdited: true, canBeRemoved: true});
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
 
@@ -94,8 +99,6 @@ suite('SearchEngineEntryTest', function() {
     entry = document.createElement('settings-search-engine-entry');
     entry.engine = searchEngine;
     document.body.appendChild(entry);
-
-    return flushTasks();
   });
 
   // Test that the <search-engine-entry> is populated according to its
@@ -103,40 +106,43 @@ suite('SearchEngineEntryTest', function() {
   test('Initialization', function() {
     assertEquals(
         searchEngine.displayName,
-        entry.shadowRoot!.querySelector('#name-column')!.textContent.trim());
+        entry.shadowRoot.querySelector('#name-column')!.textContent.trim());
     assertEquals(
         searchEngine.keyword,
-        entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
+        entry.shadowRoot.querySelector('#shortcut-column')!.textContent.trim());
     assertEquals(
         searchEngine.url,
-        entry.shadowRoot!.querySelector('#url-column')!.textContent);
+        entry.shadowRoot.querySelector('#url-column')!.textContent.trim());
   });
 
   // Tests that columns are hidden and shown appropriately.
-  test('ColumnVisibility', function() {
+  test('ColumnVisibility', async function() {
     // Test shortcut column visibility.
     entry.showShortcut = true;
-    assertFalse(
-        entry.shadowRoot!.querySelector<HTMLElement>(
-                             '#shortcut-column')!.hidden);
-    entry.showShortcut = false;
-    assertTrue(entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    assertFalse(entry.shadowRoot.querySelector<HTMLElement>(
                                     '#shortcut-column')!.hidden);
+    entry.showShortcut = false;
+    await microtasksFinished();
+    assertTrue(entry.shadowRoot.querySelector<HTMLElement>(
+                                   '#shortcut-column')!.hidden);
 
     // Test query URL column visibility.
     entry.showQueryUrl = true;
+    await microtasksFinished();
     assertFalse(
-        entry.shadowRoot!.querySelector<HTMLElement>('#url-column')!.hidden);
+        entry.shadowRoot.querySelector<HTMLElement>('#url-column')!.hidden);
     entry.showQueryUrl = false;
+    await microtasksFinished();
     assertTrue(
-        entry.shadowRoot!.querySelector<HTMLElement>('#url-column')!.hidden);
+        entry.shadowRoot.querySelector<HTMLElement>('#url-column')!.hidden);
   });
 
   test('Remove_Enabled', async function() {
     const menu = openActionMenu(entry);
 
     const deleteButton =
-        entry.shadowRoot!.querySelector<HTMLElement>('#delete')!;
+        entry.shadowRoot.querySelector<HTMLElement>('#delete')!;
     assertTrue(isVisible(deleteButton));
     deleteButton.click();
     const id = await browserProxy.whenCalled('removeSearchEngine');
@@ -148,7 +154,7 @@ suite('SearchEngineEntryTest', function() {
     const menu = openActionMenu(entry);
 
     const makeDefaultButton =
-        entry.shadowRoot!.querySelector<HTMLElement>('#makeDefault')!;
+        entry.shadowRoot.querySelector<HTMLElement>('#makeDefault')!;
     assertTrue(!!makeDefaultButton);
     makeDefaultButton.click();
     const [id, choiceMadeLocation] =
@@ -162,7 +168,7 @@ suite('SearchEngineEntryTest', function() {
   test('Edit_Enabled', async function() {
     const engine = entry.engine;
     const editButton =
-        entry.shadowRoot!.querySelector<HTMLButtonElement>(`#editIconButton`)!;
+        entry.shadowRoot.querySelector<HTMLButtonElement>(`#editIconButton`)!;
     assertTrue(isVisible(editButton));
 
     const promise = eventToPromise<ViewOrEditSearchEngineEvent>(
@@ -176,45 +182,45 @@ suite('SearchEngineEntryTest', function() {
 
     assertEquals(engine, e.detail.engine);
     assertEquals(
-        entry.shadowRoot!.querySelector('cr-icon-button'),
+        entry.shadowRoot.querySelector('cr-icon-button'),
         e.detail.anchorElement);
   });
 
   test('Remove_Hidden', function() {
-    assertButtonHidden(
+    return assertButtonHidden(
         entry, '#delete', createSampleSearchEngine({canBeRemoved: false}));
   });
 
   test('Activate_Hidden', function() {
-    assertButtonHidden(
+    return assertButtonHidden(
         entry, '#activateButton',
         createSampleSearchEngine({canBeActivated: false}));
   });
 
   test('Deactivate_Hidden', function() {
-    assertButtonHidden(
+    return assertButtonHidden(
         entry, '#deactivate',
         createSampleSearchEngine({canBeDeactivated: false}));
   });
 
-  test('Edit_Hidden', function() {
-    assertButtonHidden(
+  test('Edit_Hidden', async function() {
+    await assertButtonHidden(
         entry, '#editIconButton',
         createSampleSearchEngine({canBeActivated: true}));
 
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#editIconButton',
         createSampleSearchEngine({isStarterPack: true}));
   });
 
-  test('MakeDefault_Disabled', function() {
-    assertTrue(isButtonDisabled(
+  test('MakeDefault_Disabled', async function() {
+    assertTrue(await isButtonDisabled(
         entry, '#makeDefault',
         createSampleSearchEngine({canBeDefault: false})));
   });
 
-  test('Edit_Disabled', function() {
-    assertTrue(isButtonDisabled(
+  test('Edit_Disabled', async function() {
+    assertTrue(await isButtonDisabled(
         entry, '#editIconButton',
         createSampleSearchEngine({canBeEdited: false})));
   });
@@ -222,8 +228,9 @@ suite('SearchEngineEntryTest', function() {
   // Test that clicking the "activate" button fires an activate event.
   test('Activate', async function() {
     entry.engine = createSampleSearchEngine({canBeActivated: true});
+    await microtasksFinished();
 
-    const activateButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+    const activateButton = entry.shadowRoot.querySelector<HTMLButtonElement>(
         'cr-button.secondary-button')!;
     assertTrue(isVisible(activateButton));
     activateButton.click();
@@ -231,21 +238,22 @@ suite('SearchEngineEntryTest', function() {
     // Ensure that the activate event is fired.
     const [id, isActive] =
         await browserProxy.whenCalled('setIsActiveSearchEngine');
-    assertEquals(entry.engine.id, id);
+    assertEquals(entry.engine?.id, id);
     assertTrue(isActive);
   });
 
   // Test that clicking the "Deactivate" button fires a deactivate event.
   test('Deactivate', async function() {
     entry.engine = createSampleSearchEngine({canBeDeactivated: true});
+    await microtasksFinished();
 
     // Open action menu.
-    entry.shadowRoot!
+    entry.shadowRoot
         .querySelector<HTMLElement>('cr-icon-button.icon-more-vert')!.click();
-    const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
+    const menu = entry.shadowRoot.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
 
-    const deactivateButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+    const deactivateButton = entry.shadowRoot.querySelector<HTMLButtonElement>(
         'button#deactivate.dropdown-item')!;
     assertTrue(isVisible(deactivateButton));
     deactivateButton.click();
@@ -253,19 +261,20 @@ suite('SearchEngineEntryTest', function() {
     // Ensure that the deactivate event is fired.
     const [id, isActive] =
         await browserProxy.whenCalled('setIsActiveSearchEngine');
-    assertEquals(entry.engine.id, id);
+    assertEquals(entry.engine?.id, id);
     assertFalse(isActive);
   });
 
   // Test that the accessibility Aria labels are set correctly for the Edit,
   // Activate, and More Actions buttons.
-  test('AriaLabelSetCorrectly', function() {
+  test('AriaLabelSetCorrectly', async function() {
     entry.engine = createSampleSearchEngine(
         {default: false, canBeActivated: true, canBeEdited: true});
+    await microtasksFinished();
 
     // Edit button
     const editButton =
-        entry.shadowRoot!.querySelector<HTMLElement>('#editIconButton');
+        entry.shadowRoot.querySelector<HTMLElement>('#editIconButton');
     assertTrue(!!editButton);
     assertEquals(
         entry.i18n(
@@ -274,7 +283,7 @@ suite('SearchEngineEntryTest', function() {
 
     // Activate button
     const activateButton =
-        entry.shadowRoot!.querySelector<HTMLElement>('#activateButton');
+        entry.shadowRoot.querySelector<HTMLElement>('#activateButton');
     assertTrue(!!activateButton);
     assertEquals(
         entry.i18n(
@@ -282,7 +291,7 @@ suite('SearchEngineEntryTest', function() {
         activateButton.ariaLabel);
 
     // More actions button
-    const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    const menuButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(!!menuButton);
     assertEquals(
@@ -296,8 +305,12 @@ suite('OmniboxExtensionEntryTest', function() {
   let entry: SettingsOmniboxExtensionEntryElement;
   let browserProxy: TestExtensionControlBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     browserProxy = new TestExtensionControlBrowserProxy();
     ExtensionControlBrowserProxyImpl.setInstance(browserProxy);
     entry = document.createElement('settings-omnibox-extension-entry');
@@ -305,7 +318,7 @@ suite('OmniboxExtensionEntryTest', function() {
     document.body.appendChild(entry);
 
     // Open action menu.
-    entry.shadowRoot!.querySelector('cr-icon-button')!.click();
+    entry.shadowRoot.querySelector('cr-icon-button')!.click();
   });
 
   test('Manage', async function() {
@@ -313,7 +326,7 @@ suite('OmniboxExtensionEntryTest', function() {
     assertTrue(!!manageButton);
     manageButton.click();
     const extensionId = await browserProxy.whenCalled('manageExtension');
-    assertEquals(entry.engine.extension!.id, extensionId);
+    assertEquals(entry.engine?.extension?.id, extensionId);
   });
 
   test('Disable', async function() {
@@ -321,7 +334,7 @@ suite('OmniboxExtensionEntryTest', function() {
     assertTrue(!!disableButton);
     disableButton.click();
     const extensionId = await browserProxy.whenCalled('disableExtension');
-    assertEquals(entry.engine.extension!.id, extensionId);
+    assertEquals(entry.engine?.extension?.id, extensionId);
   });
 });
 
@@ -359,8 +372,13 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         });
       };
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
 
@@ -368,54 +386,59 @@ suite('EnterpriseSiteSearchEntryTests', function() {
 
     entry = document.createElement('settings-search-engine-entry');
     document.body.appendChild(entry);
-
-    return flushTasks();
   });
 
   // Test that the <search-engine-entry> is populated according to its
   // underlying SearchEngine model.
-  test('Initialization', function() {
+  test('Initialization', async function() {
     const assertSiteSearchInitialization =
         (entry: SettingsSearchEngineEntryElement,
          searchEngine: SearchEngine) => {
           assertEquals(
               searchEngine.displayName,
-              entry.shadowRoot!.querySelector(
-                                   '#name-column')!.textContent.trim());
+              entry.shadowRoot.querySelector(
+                                  '#name-column')!.textContent.trim());
           assertEquals(
               searchEngine.keyword,
-              entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
+              entry.shadowRoot.querySelector(
+                                  '#shortcut-column')!.textContent.trim());
           assertEquals(
               searchEngine.url,
-              entry.shadowRoot!.querySelector('#url-column')!.textContent);
+              entry.shadowRoot.querySelector(
+                                  '#url-column')!.textContent.trim());
         };
 
     // Test for managed engine.
     const managedEngine = createSampleManagedSearchEngine();
     entry.engine = managedEngine;
+    await microtasksFinished();
     assertSiteSearchInitialization(entry, managedEngine);
 
     // Test for overridable engine (featured).
     const featuredOverridableEngine =
         createSampleOverridableSearchEngine(/*isFeatured=*/ true);
     entry.engine = featuredOverridableEngine;
+    await microtasksFinished();
     assertSiteSearchInitialization(entry, featuredOverridableEngine);
 
     // Test for overridable engine (unfeatured).
     const unfeaturedOverridableEngine =
         createSampleOverridableSearchEngine(/*isFeatured=*/ false);
     entry.engine = unfeaturedOverridableEngine;
+    await microtasksFinished();
     assertSiteSearchInitialization(entry, unfeaturedOverridableEngine);
   });
 
   // Verifies that the "Activate" button is hidden for all managed engines.
-  test('ActivateButtonBehavior', function() {
-    entry.engine = createSampleManagedSearchEngine();
-    assertButtonHidden(entry, '#activateButton');
-    entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    assertButtonHidden(entry, '#activateButton');
-    entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    assertButtonHidden(entry, '#activateButton');
+  test('ActivateButtonBehavior', async function() {
+    await assertButtonHidden(
+        entry, '#activateButton', createSampleManagedSearchEngine());
+    await assertButtonHidden(
+        entry, '#activateButton',
+        createSampleOverridableSearchEngine(/*isFeatured=*/ true));
+    await assertButtonHidden(
+        entry, '#activateButton',
+        createSampleOverridableSearchEngine(/*isFeatured=*/ false));
   });
 
   // Verifies the visibility and functionality of the "edit" button for managed
@@ -423,19 +446,21 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   // event) engines.
   test('EditButtonBehavior', async function() {
     // Test for managed engine (Edit button should be hidden).
-    entry.engine = createSampleManagedSearchEngine();
-    assertButtonHidden(entry, '#editIconButton');
+    await assertButtonHidden(
+        entry, '#editIconButton', createSampleManagedSearchEngine());
 
     // Test for featured overridable engine (Edit button should be hidden).
-    entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    assertButtonHidden(entry, '#editIconButton');
+    await assertButtonHidden(
+        entry, '#editIconButton',
+        createSampleOverridableSearchEngine(/*isFeatured=*/ true));
 
     // Test for unfeatured overridable engine (Edit button should be visible and
     // functional).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
+    await microtasksFinished();
     const engineUnfeatured = entry.engine;
     const editButton =
-        entry.shadowRoot!.querySelector<HTMLButtonElement>(`#editIconButton`)!;
+        entry.shadowRoot.querySelector<HTMLButtonElement>(`#editIconButton`)!;
     assertTrue(isVisible(editButton));
 
     const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
@@ -448,38 +473,41 @@ suite('EnterpriseSiteSearchEntryTests', function() {
 
   // Verifies that the action menu (three-dot menu) is visible. Non-overridable
   // managed engines should have the menu disabled.
-  test('ActionMenuBehavior', function() {
+  test('ActionMenuBehavior', async function() {
     // Test for managed engine (Menu should be visible and disabled).
     entry.engine = createSampleManagedSearchEngine();
-    const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    const menuButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButton));
-    assertTrue(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertTrue(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
     // Test for featured overridable engine (Action menu should be visible and
     // not disabled).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    const menuButtonFeatured = entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    const menuButtonFeatured = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButtonFeatured));
-    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertFalse(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
     // Test for unfeatured overridable engine (Action menu should be visible and
     // not disabled).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    const menuButtonUnfeatured = entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    const menuButtonUnfeatured = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButtonUnfeatured));
-    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertFalse(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
   });
 
   // Verifies that the "Make Default" button is disabled for all overridable
   // engines.
-  test('MakeDefaultDisabled_Overridable', function() {
+  test('MakeDefaultDisabled_Overridable', async function() {
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    assertTrue(isButtonDisabled(entry, '#makeDefault'));
+    assertTrue(await isButtonDisabled(entry, '#makeDefault'));
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    assertTrue(isButtonDisabled(entry, '#makeDefault'));
+    assertTrue(await isButtonDisabled(entry, '#makeDefault'));
   });
 
   // Verifies that clicking the "Deactivate" button in the action menu fires a
@@ -487,10 +515,11 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   test('DeactivateAllowed_Overridable', async function() {
     const testDeactivation = async (isFeatured: boolean) => {
       entry.engine = createSampleOverridableSearchEngine(isFeatured);
+      await microtasksFinished();
       const menu = openActionMenu(entry);
 
       const deactivateButton =
-          entry.shadowRoot!.querySelector<HTMLButtonElement>(
+          entry.shadowRoot.querySelector<HTMLButtonElement>(
               'button#deactivate.dropdown-item')!;
       assertTrue(isVisible(deactivateButton));
       deactivateButton.click();
@@ -498,7 +527,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
       const [id, isActive] =
           await browserProxy.whenCalled('setIsActiveSearchEngine');
       assertFalse(menu.open);
-      assertEquals(entry.engine.id, id);
+      assertEquals(entry.engine?.id, id);
       assertFalse(isActive);
     };
 
@@ -512,15 +541,17 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   test('RemoveButtonBehavior_Overridable', async function() {
     // Test for featured engine (Remove button should be hidden).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
+    await microtasksFinished();
     openActionMenu(entry);
-    assertButtonHidden(entry, 'button#delete.dropdown-item');
+    await assertButtonHidden(entry, 'button#delete.dropdown-item');
 
     // Test for unfeatured engine (Remove button should be visible and
     // functional).
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
+    await microtasksFinished();
     openActionMenu(entry);
 
-    const deleteButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+    const deleteButton = entry.shadowRoot.querySelector<HTMLButtonElement>(
         'button#delete.dropdown-item')!;
     assertTrue(isVisible(deleteButton));
 
@@ -530,7 +561,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
     const e = await whenFired;
     assertEquals(entry.engine, e.detail.engine);
     assertEquals(
-        entry.shadowRoot!.querySelector('cr-icon-button.icon-more-vert'),
+        entry.shadowRoot.querySelector('cr-icon-button.icon-more-vert'),
         e.detail.anchorElement);
   });
 
@@ -541,10 +572,11 @@ suite('EnterpriseSiteSearchEntryTests', function() {
     const testViewDetails =
         async (engine: SearchEngine, shouldBeVisible: boolean) => {
       entry.engine = engine;
+      await microtasksFinished();
       if (shouldBeVisible) {
         const managedEngine = entry.engine;
         const viewDetailsButton =
-            entry.shadowRoot!.querySelector<HTMLButtonElement>(
+            entry.shadowRoot.querySelector<HTMLButtonElement>(
                 `#viewDetailsButton`)!;
         assertTrue(isVisible(viewDetailsButton));
 
@@ -554,10 +586,10 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         const e = await whenFired;
         assertEquals(managedEngine, e.detail.engine);
         assertEquals(
-            entry.shadowRoot!.querySelector('cr-icon-button'),
+            entry.shadowRoot.querySelector('cr-icon-button'),
             e.detail.anchorElement);
       } else {
-        assertButtonHidden(entry, '#viewDetailsButton');
+        await assertButtonHidden(entry, '#viewDetailsButton');
       }
     };
 
@@ -580,21 +612,21 @@ suite('EnterpriseSiteSearchEntryTests', function() {
   });
 
   // Verifies that the policy indicator is shown for all managed engines.
-  test('PolicyIndicatorShown', function() {
+  test('PolicyIndicatorShown', async function() {
     const assertSiteSearchPolicyIndicatorShown =
-        (entry: SettingsSearchEngineEntryElement) => {
-          flush();
-          const policyIndicator =
-              entry.shadowRoot!.querySelector('cr-policy-indicator');
-          assertTrue(isVisible(policyIndicator));
-        };
+        async (entry: SettingsSearchEngineEntryElement) => {
+      await microtasksFinished();
+      const policyIndicator =
+          entry.shadowRoot.querySelector('cr-policy-indicator');
+      assertTrue(isVisible(policyIndicator));
+    };
 
     entry.engine = createSampleManagedSearchEngine();
-    assertSiteSearchPolicyIndicatorShown(entry);
+    await assertSiteSearchPolicyIndicatorShown(entry);
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    assertSiteSearchPolicyIndicatorShown(entry);
+    await assertSiteSearchPolicyIndicatorShown(entry);
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    assertSiteSearchPolicyIndicatorShown(entry);
+    await assertSiteSearchPolicyIndicatorShown(entry);
   });
 });
 
@@ -624,8 +656,6 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     entry = document.createElement('settings-search-engine-entry');
     entry.engine = createSampleSearchEngine();
     document.body.appendChild(entry);
-
-    return flushTasks();
   });
 
   async function setControlledByExtension(extensionId: string) {
@@ -646,10 +676,10 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
   // by extensions should have the menu disabled.
   test('ActionMenuBehavior', async function() {
     // Test for regular engine (Action menu should be visible and not disabled).
-    let menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    let menuButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButton));
-    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertFalse(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
     // Simulate installing an extension that controls `engine`.
     const engine = createSampleOmniboxExtension({isOmniboxExtension: false});
@@ -659,30 +689,33 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     // Test for engine set by an omnibox extension (Action menu should be
     // visible and disabled).
     entry.engine = engine;
-    menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    menuButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButton));
-    assertTrue(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertTrue(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
     // Test for the omnibox extension which sets the default engine (Action menu
     // should be visible and not disabled).
     entry.engine = createSampleOmniboxExtension({isOmniboxExtension: true});
-    menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    menuButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButton));
-    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertFalse(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
 
     // Test for regular engine (Action menu should be still visible and not
     // disabled).
     entry.engine = createSampleSearchEngine();
-    menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    await microtasksFinished();
+    menuButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(isVisible(menuButton));
-    assertFalse(isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
+    assertFalse(await isButtonDisabled(entry, 'cr-icon-button.icon-more-vert'));
   });
 
   // Test the edit option availability for different states.
-  test('Edit option visibility', function() {
+  test('Edit option visibility', async function() {
     const extension = {
       id: '1',
       name: 'ext',
@@ -691,32 +724,32 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     };
 
     // Should be visible (not hidden)
-    assertFalse(isButtonDisabled(
+    assertFalse(await isButtonDisabled(
         entry, '#editOption',
         createSampleSearchEngine({canBeEdited: true, isStarterPack: false})));
 
     // Should be hidden for Starter Packs
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#editOption', createSampleSearchEngine({isStarterPack: true}));
 
     // Should be hidden for non-default extensions
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#editOption',
         createSampleSearchEngine({extension, default: false}));
 
     // Should be visible if the extension is the default (policy override)
-    assertFalse(isButtonDisabled(
+    assertFalse(await isButtonDisabled(
         entry, '#editOption',
         createSampleSearchEngine({extension, default: true})));
 
     // Should be hidden if managed and not editable
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#editOption',
         createSampleSearchEngine({isManaged: true, canBeEdited: false}));
   });
 
   // Test the make default option availability for different states.
-  test('Make default option visibility', function() {
+  test('Make default option visibility', async function() {
     const extension = {
       id: '1',
       name: 'ext',
@@ -725,67 +758,67 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     };
 
     // Should be visible and enabled for regular engines.
-    assertFalse(isButtonDisabled(
+    assertFalse(await isButtonDisabled(
         entry, '#makeDefaultOption',
         createSampleSearchEngine({canBeDefault: true, isStarterPack: false})));
 
     // Should be hidden for Starter Packs.
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#makeDefaultOption',
         createSampleSearchEngine({isStarterPack: true}));
 
     // Should be hidden for extensions that aren't the default.
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#makeDefaultOption',
         createSampleSearchEngine({extension, default: false}));
 
     // Should be visible (but disabled) if the extension is the default.
-    assertTrue(isButtonDisabled(
+    assertTrue(await isButtonDisabled(
         entry, '#makeDefaultOption',
         createSampleSearchEngine(
             {extension, default: true, canBeDefault: false})));
   });
 
   // Test the delete option availability for different states.
-  test('Delete option visibility', function() {
+  test('Delete option visibility', async function() {
     // Should be visible and enabled for custom engines.
-    assertFalse(isButtonDisabled(
+    assertFalse(await isButtonDisabled(
         entry, '#deleteOption',
         createSampleSearchEngine({canBeRemoved: true, isPrepopulated: false})));
 
     // Should be visible and enabled for prepopulated engines.
-    assertFalse(isButtonDisabled(
+    assertFalse(await isButtonDisabled(
         entry, '#deleteOption',
         createSampleSearchEngine({canBeRemoved: true, isPrepopulated: true})));
 
     // Should be visible but disabled if it's the default.
-    assertTrue(isButtonDisabled(
+    assertTrue(await isButtonDisabled(
         entry, '#deleteOption',
         createSampleSearchEngine(
             {default: true, canBeRemoved: false, isPrepopulated: false})));
 
     // Should be hidden if it cannot be removed and is not the default engine.
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#deleteOption',
         createSampleSearchEngine({default: false, canBeRemoved: false}));
   });
 
   // Test the deactivate option availability for different states.
-  test('Deactivate option visibility', function() {
+  test('Deactivate option visibility', async function() {
     // Should be visible and enabled if it can be deactivated.
-    assertFalse(isButtonDisabled(
+    assertFalse(await isButtonDisabled(
         entry, '#deactivateOption',
         createSampleSearchEngine(
             {canBeDeactivated: true, isPrepopulated: false})));
 
     // Should be hidden for prepopulated engines.
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#deactivateOption',
         createSampleSearchEngine({isPrepopulated: true}));
 
     // Should be visible but disabled if it's the default (and not
     // prepopulated).
-    assertTrue(isButtonDisabled(
+    assertTrue(await isButtonDisabled(
         entry, '#deactivateOption',
         createSampleSearchEngine(
             {default: true, canBeDeactivated: false, isPrepopulated: false})));
@@ -794,10 +827,11 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
   // Test that clicking the "Turn off" button fires a deactivate event.
   test('Deactivate', async function() {
     entry.engine = createSampleSearchEngine({canBeDeactivated: true});
+    await microtasksFinished();
     const menu = openActionMenu(entry);
 
     const deactivateOption =
-        entry.shadowRoot!.querySelector<HTMLButtonElement>('#deactivateOption');
+        entry.shadowRoot.querySelector<HTMLButtonElement>('#deactivateOption');
     assertTrue(!!deactivateOption);
     assertTrue(isVisible(deactivateOption));
     assertEquals('Turn off', deactivateOption.textContent.trim());
@@ -806,17 +840,18 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     const [id, isActive] =
         await browserProxy.whenCalled('setIsActiveSearchEngine');
     assertFalse(menu.open);
-    assertEquals(entry.engine.id, id);
+    assertEquals(entry.engine?.id, id);
     assertFalse(isActive);
   });
 
   // Test that clicking the "Turn on" button fires an activate event.
   test('Activate', async function() {
     entry.engine = createSampleSearchEngine({canBeActivated: true});
+    await microtasksFinished();
     const menu = openActionMenu(entry);
 
     const activateOption =
-        entry.shadowRoot!.querySelector<HTMLButtonElement>('#activateOption');
+        entry.shadowRoot.querySelector<HTMLButtonElement>('#activateOption');
     assertTrue(!!activateOption);
     assertTrue(isVisible(activateOption));
     assertEquals('Turn on', activateOption.textContent.trim());
@@ -825,7 +860,7 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     const [id, isActive] =
         await browserProxy.whenCalled('setIsActiveSearchEngine');
     assertFalse(menu.open);
-    assertEquals(entry.engine.id, id);
+    assertEquals(entry.engine?.id, id);
     assertTrue(isActive);
   });
 
@@ -837,10 +872,11 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
       isStarterPack: false,
       extension: undefined,
     });
+    await microtasksFinished();
     const menu = openActionMenu(entry);
 
     const editButton =
-        entry.shadowRoot!.querySelector<HTMLButtonElement>('#editOption');
+        entry.shadowRoot.querySelector<HTMLButtonElement>('#editOption');
     assertTrue(!!editButton);
     assertTrue(isVisible(editButton));
 
@@ -858,24 +894,26 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     assertFalse(menu.open);
     assertEquals(entry.engine, e.detail.engine);
     assertEquals(
-        entry.shadowRoot!.querySelector('cr-icon-button.icon-more-vert'),
+        entry.shadowRoot.querySelector('cr-icon-button.icon-more-vert'),
         e.detail.anchorElement);
   });
 
   // Tests that the "Edit" option is hidden for extensions.
-  test('Edit_HiddenForExtension', function() {
+  test('Edit_HiddenForExtension', async function() {
     entry.engine = createSampleOmniboxExtension();
+    await microtasksFinished();
     openActionMenu(entry);
-    assertButtonHidden(entry, '#editOption');
+    await assertButtonHidden(entry, '#editOption');
   });
 
   // Tests that the "Disable" option is visible and functional for extensions
   // that can be disabled.
   test('DisableExtension', async function() {
     entry.engine = createSampleOmniboxExtension();
+    await microtasksFinished();
     openActionMenu(entry);
 
-    const disableButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+    const disableButton = entry.shadowRoot.querySelector<HTMLButtonElement>(
         '#disableExtensionOption');
     assertTrue(!!disableButton);
     assertTrue(isVisible(disableButton));
@@ -884,7 +922,7 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     disableButton.click();
     const extensionId =
         await extensionBrowserProxy.whenCalled('disableExtension');
-    assertEquals(entry.engine.extension!.id, extensionId);
+    assertEquals(entry.engine?.extension?.id, extensionId);
 
     const interaction =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
@@ -893,8 +931,8 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
 
   // Tests that the "Disable" option is hidden for extensions that cannot be
   // disabled.
-  test('DisableExtension_Hidden', function() {
-    assertButtonHidden(
+  test('DisableExtension_Hidden', async function() {
+    await assertButtonHidden(
         entry, '#disableExtensionOption', createSampleOmniboxExtension({
           extension: {
             icon: 'chrome://extension-icon/some-extension-icon',
@@ -906,7 +944,7 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
 
     // The option is only available if the shortcuts is not an omnibox
     // extension.
-    assertButtonHidden(
+    await assertButtonHidden(
         entry, '#disableExtensionOption',
         createSampleOmniboxExtension({isOmniboxExtension: false}));
   });
@@ -914,9 +952,10 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
   // Tests that the "Manage" option is visible and functional for extensions.
   test('ManageExtension', async function() {
     entry.engine = createSampleOmniboxExtension();
+    await microtasksFinished();
     openActionMenu(entry);
 
-    const manageButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+    const manageButton = entry.shadowRoot.querySelector<HTMLButtonElement>(
         '#manageExtensionOption');
     assertTrue(!!manageButton);
     assertTrue(isVisible(manageButton));
@@ -925,36 +964,38 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     manageButton.click();
     const extensionId =
         await extensionBrowserProxy.whenCalled('manageExtension');
-    assertEquals(entry.engine.extension!.id, extensionId);
+    assertEquals(entry.engine?.extension?.id, extensionId);
 
     const interaction =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
     assertEquals(SearchEnginesInteractions.EXTENSION_MANAGE, interaction);
 
     // The context menu was closed.
-    const menu = entry.shadowRoot!.querySelector('cr-action-menu');
+    const menu = entry.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!menu);
     assertFalse(menu.open);
   });
 
   // Tests that the "Manage" option is hidden for engines that are managed by an
   // extension.
-  test('ManageExtension_Hidden', function() {
-    assertButtonHidden(
+  test('ManageExtension_Hidden', async function() {
+    await assertButtonHidden(
         entry, '#manageExtensionOption',
         createSampleOmniboxExtension({isOmniboxExtension: false}));
   });
 
   // Tests that the "Delete" option is hidden for extensions.
-  test('Delete_HiddenForExtension', function() {
+  test('Delete_HiddenForExtension', async function() {
     entry.engine = createSampleOmniboxExtension();
+    await microtasksFinished();
     openActionMenu(entry);
-    assertButtonHidden(entry, '#deleteOption');
+    await assertButtonHidden(entry, '#deleteOption');
   });
 
   // Tests that opening the action menu records a user interaction.
   test('OpenActionMenu_Histogram', async function() {
     entry.engine = createSampleSearchEngine();
+    await microtasksFinished();
     openActionMenu(entry);
 
     const interaction =

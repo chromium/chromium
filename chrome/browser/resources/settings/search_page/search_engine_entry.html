@@ -1,160 +1,110 @@
-    <style include="settings-shared search-engine-entry">
-      :host([is-default]) .list-item {
-        font-weight: 500;
-      }
-
-      .additional-info-column-group {
-        align-items: center;
-        display: flex;
-        flex: 6;
-      }
-
-      #controls-column-group {
-        flex: auto;
-        margin-left: auto;
-        display: flex;
-        justify-content: end;
-        align-items: center;
-      }
-
-      cr-policy-indicator {
-        display: inline-flex;
-        justify-content: center;
-        margin-inline-start: 16px;
-        vertical-align: middle;
-        width: 36px;
-      }
-
-      settings-search-engine-icon {
-        margin-inline-end: 8px;
-      }
-
-      #externalIcon {
-        --cr-icon-size: 16px;
-        margin: -8px;
-        margin-inline-start: auto;
-      }
-
-      #name-column {
-        align-items: center;
-        display: flex;
-        flex: 3;
-        word-break: break-word;
-      }
-
-      #shortcut-column {
-        word-break: break-word;
-      }
-
-      #shortcut-column,
-      #url-column {
-        flex: auto;
-        margin-inline-end: 10px;
-        max-width: 200px;
-      }
-    </style>
-
     <div class="list-item cr-row" role="row">
       <span role="cell" id="name-column">
-        <settings-search-engine-icon engine="[[engine]]">
+        <settings-search-engine-icon .engine="${this.engine}">
         </settings-search-engine-icon>
-        <div>[[engine.displayName]]</div>
+        <div>${this.engine.displayName}</div>
       </span>
       <span class="additional-info-column-group">
-        <span role="cell" id="shortcut-column" hidden="[[!showShortcut]]">
-          <div>[[engine.keyword]]</div>
+        <span role="cell" id="shortcut-column" ?hidden="${!this.showShortcut}">
+          <div>${this.engine.keyword}</div>
         </span>
-        <span role="cell" id="url-column" hidden="[[!showQueryUrl]]">
-          <div class="text-elide">[[engine.url]]</div>
+        <span role="cell" id="url-column" ?hidden="${!this.showQueryUrl}">
+          <div class="text-elide">${this.engine.url}</div>
         </span>
         <span role="cell" id="controls-column-group">
-          <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
-            <cr-button class="secondary-button" on-click="onActivateClick_"
-                aria-label="[[getActivateButtonAriaLabel_(engine)]]"
-                hidden="[[!engine.canBeActivated]]" id="activateButton">
+          ${!this.searchSettingsUpdateEnabled_ ? html`
+            <cr-button class="secondary-button"
+                @click="${this.onActivateClick_}"
+                aria-label="${this.getActivateButtonAriaLabel_()}"
+                ?hidden="${!this.engine.canBeActivated}" id="activateButton">
               $i18n{searchEnginesActivate}
             </cr-button>
-          </template>
-          <cr-button class="secondary-button" on-click="onViewOrEditClick_"
-              hidden="[[!showSecondaryButton_]]" id="viewDetailsButton">
+          ` : ''}
+          <cr-button class="secondary-button"
+              @click="${this.onViewOrEditClick_}"
+              ?hidden="${!this.shouldShowSecondaryButton_()}"
+              id="viewDetailsButton">
             $i18n{searchEnginesViewDetails}
           </cr-button>
-          <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
-            <cr-icon-button class="icon-edit" on-click="onViewOrEditClick_"
-                title="$i18n{edit}" hidden="[[!showEditIcon_]]"
-                aria-label="[[getEditButtonAriaLabel_(engine)]]"
-                disabled$="[[!engine.canBeEdited]]" id="editIconButton">
+          ${!this.searchSettingsUpdateEnabled_ ? html`
+            <cr-icon-button class="icon-edit"
+                @click="${this.onViewOrEditClick_}"
+                title="$i18n{edit}" ?hidden="${!this.shouldShowEditIcon_()}"
+                aria-label="${this.getEditButtonAriaLabel_()}"
+                .disabled="${!this.engine.canBeEdited}" id="editIconButton">
             </cr-icon-button>
-          </template>
-          <template is="dom-if" if="[[engine.isManaged]]">
+          ` : ''}
+          ${this.engine.isManaged ? html`
             <cr-policy-indicator indicator-type="userPolicy">
             </cr-policy-indicator>
-          </template>
-          <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
-              disabled$="[[disableDots_]]" title="$i18n{moreActions}"
-              aria-label="[[getMoreActionsAriaLabel_(engine)]]">
+          ` : ''}
+          <cr-icon-button class="icon-more-vert" @click="${this.onDotsClick_}"
+              ?disabled="${this.shouldDisableDots_()}"
+              title="$i18n{moreActions}"
+              aria-label="${this.getMoreActionsAriaLabel_()}">
           </cr-icon-button>
           <cr-action-menu role-description="$i18n{menu}">
-            <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]">
-              <button class="dropdown-item" on-click="onMakeDefaultClick_"
-                  disabled$="[[!engine.canBeDefault]]" id="makeDefault">
+            ${!this.searchSettingsUpdateEnabled_ ? html`
+              <button class="dropdown-item" @click="${this.onMakeDefaultClick_}"
+                  ?disabled="${!this.engine.canBeDefault}" id="makeDefault">
                 $i18n{searchEnginesMakeDefault}
               </button>
-              <button class="dropdown-item" on-click="onDeactivateClick_"
-                  hidden="[[!engine.canBeDeactivated]]" id="deactivate">
+              <button class="dropdown-item" @click="${this.onDeactivateClick_}"
+                  ?hidden="${!this.engine.canBeDeactivated}" id="deactivate">
                 $i18n{searchEnginesDeactivate}
               </button>
-              <button class="dropdown-item" on-click="onDeleteClick_"
-                  hidden="[[!engine.canBeRemoved]]" id="delete">
+              <button class="dropdown-item" @click="${this.onDeleteClick_}"
+                  ?hidden="${!this.engine.canBeRemoved}" id="delete">
                 $i18n{delete}
               </button>
-            </template>
-            <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]">
-              <button class="dropdown-item" on-click="onViewOrEditClick_"
-                  hidden$="[[!showEditOption_(engine)]]" id="editOption">
+            ` : ''}
+            ${this.searchSettingsUpdateEnabled_ ? html`
+              <button class="dropdown-item" @click="${this.onViewOrEditClick_}"
+                  ?hidden="${!this.showEditOption_()}" id="editOption">
                 $i18n{edit}
               </button>
-              <button class="dropdown-item" on-click="onActivateClick_"
-                  hidden$="[[!engine.canBeActivated]]" id="activateOption">
-                [[turnOnLabel]]
+              <button class="dropdown-item" @click="${this.onActivateClick_}"
+                  ?hidden="${!this.engine.canBeActivated}" id="activateOption">
+                ${this.turnOnLabel_()}
               </button>
-              <button class="dropdown-item" on-click="onDeactivateClick_"
-                  hidden$="[[!showDeactivateOption_(engine)]]"
-                  disabled$="[[!engine.canBeDeactivated]]"
+              <button class="dropdown-item" @click="${this.onDeactivateClick_}"
+                  ?hidden="${!this.showDeactivateOption_()}"
+                  ?disabled="${!this.engine.canBeDeactivated}"
                   id="deactivateOption">
-                [[turnOffLabel]]
+                ${this.turnOffLabel_()}
               </button>
-              <button class="dropdown-item" on-click="onDeleteClick_"
-                  hidden$="[[!showDeleteOption_(engine)]]"
-                  disabled$="[[!engine.canBeRemoved]]" id="deleteOption">
+              <button class="dropdown-item" @click="${this.onDeleteClick_}"
+                  ?hidden="${!this.showDeleteOption_()}"
+                  ?disabled="${!this.engine.canBeRemoved}" id="deleteOption">
                 $i18n{delete}
               </button>
-              <button class="dropdown-item" on-click="onMakeDefaultClick_"
-                  hidden$="[[!showMakeDefaultOption_(engine)]]"
-                  disabled$="[[!engine.canBeDefault]]" id="makeDefaultOption">
+              <button class="dropdown-item" @click="${this.onMakeDefaultClick_}"
+                  ?hidden="${!this.showMakeDefaultOption_()}"
+                  ?disabled="${!this.engine.canBeDefault}"
+                  id="makeDefaultOption">
                 $i18n{searchEnginesMakeDefault}
               </button>
               <!-- Options only available for extensions -->
-              <button class="dropdown-item" on-click="onDisableClick_"
-                  hidden$="[[!showDisableExtensionOption_(engine)]]"
+              <button class="dropdown-item" @click="${this.onDisableClick_}"
+                  ?hidden="${!this.showDisableExtensionOption_()}"
                   id="disableExtensionOption">
                 $i18n{searchDisableExtension}
               </button>
-              <button class="dropdown-item" on-click="onManageClick_"
-                  hidden$="[[!engine.isOmniboxExtension]]"
+              <button class="dropdown-item" @click="${this.onManageClick_}"
+                  ?hidden="${!this.engine.isOmniboxExtension}"
                   id="manageExtensionOption">
                 $i18n{searchManageExtension}
                 <div id="externalIcon" class="cr-icon icon-external"></div>
               </button>
-            </template>
+            ` : ''}
           </cr-action-menu>
         </span>
       </span>
     </div>
-    <template is="dom-if" if="[[showControlledIndicator_(engine)]]">
+    ${this.showControlledIndicator_() ? html`
       <extension-controlled-indicator
-          extension-id="[[engine.extension.id]]"
-          extension-name="[[engine.extension.name]]"
-          extension-can-be-disabled="[[engine.extension.canBeDisabled]]">
+          extension-id="${this.engine.extension!.id}"
+          extension-name="${this.engine.extension!.name}"
+          extension-can-be-disabled="${this.engine.extension!.canBeDisabled}">
       </extension-controlled-indicator>
-    </template>
+    ` : ''}

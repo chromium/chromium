@@ -1,12 +1,64 @@
-/* Copyright 2022 The Chromium Authors
+/* Copyright 2026 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #import=./search_engine_entry_shared.css.js
+ * #include=settings-shared-lit search-engine-entry-shared
  * #css_wrapper_metadata_end */
 
-site-favicon {
+:host([is-default]) .list-item {
+  font-weight: 500;
+}
+
+.additional-info-column-group {
+  align-items: center;
+  display: flex;
+  flex: 6;
+}
+
+#controls-column-group {
+  align-items: center;
+  display: flex;
+  flex: auto;
+  justify-content: end;
+  margin-left: auto;
+}
+
+cr-policy-indicator {
+  display: inline-flex;
+  justify-content: center;
+  margin-inline-start: 16px;
+  vertical-align: middle;
+  width: 36px;
+}
+
+settings-search-engine-icon {
   margin-inline-end: 8px;
-  min-width: 16px;
+}
+
+#externalIcon {
+  --cr-icon-size: 16px;
+  margin: -8px;
+  margin-inline-start: auto;
+}
+
+#name-column {
+  align-items: center;
+  display: flex;
+  flex: 3;
+  word-break: break-word;
+}
+
+#shortcut-column {
+  word-break: break-word;
+}
+
+#shortcut-column,
+#url-column {
+  flex: auto;
+  margin-inline-end: 10px;
+  max-width: 200px;
 }
