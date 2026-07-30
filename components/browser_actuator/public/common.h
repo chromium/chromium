@@ -13,12 +13,14 @@ namespace browser_actuator {
 // under components/optimization_guide/proto/.
 enum class PayloadType {
   kUnspecified = 0,
+  kControl = 1,
 };
 
 // Identifies the feature factory instance, to ensure we do not re-register
 // factories of the same type.
 enum class FactoryId {
   kUnset = 0,
+  kControl = 1,
 };
 
 }  // namespace browser_actuator

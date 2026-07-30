@@ -18,9 +18,15 @@ import "google/protobuf/any.proto";
 message ControlCommand {
   oneof command {
     CloseChannel close_channel = 1;
+    CloseSession close_session = 2;
   }
   // Closes the channel between the client and the server.
   message CloseChannel {}
+
+  // Closes an active agent session or task between the Chrome client and the
+  // server. The session is identified by the session_id in the envelope
+  // message.
+  message CloseSession {}
 }
 
 // Identifies the routing destination in the server of an
@@ -28,7 +34,7 @@ message ControlCommand {
 enum ActuatorUpstreamPayloadType {
   // Default value. Should not be used.
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED = 0;
-  // Channel control command, e.g. destroy channel or reconnect session.
+  // Channel control command, e.g. destroy channel or close session.
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND = 1;
 }
 
@@ -74,7 +80,7 @@ message ActuatorUpstreamMessage {
 enum ActuatorDownstreamPayloadType {
   // Default value.
   ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED = 0;
-  // Channel control command, e.g. destroy channel or reconnect session.
+  // Channel control command, e.g. destroy channel or close session.
   ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND = 1;
   // Legacy experimental triggering message.
   ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING = 2;
