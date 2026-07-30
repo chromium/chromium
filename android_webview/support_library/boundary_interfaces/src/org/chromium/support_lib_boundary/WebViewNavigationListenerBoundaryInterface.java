@@ -18,6 +18,8 @@ public interface WebViewNavigationListenerBoundaryInterface
 
     void onNavigationCompleted(/* WebViewNavigation */ InvocationHandler navigation);
 
+    default void onNavigationVisible(/* WebViewNavigation */ InvocationHandler navigation) {}
+
     void onPageDeleted(/* WebViewPage */ InvocationHandler page);
 
     void onPageLoadEventFired(/* WebViewPage */ InvocationHandler page);

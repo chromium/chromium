@@ -108,6 +108,13 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         }
     }
 
+    public void onNavigationVisible(NavigationHandle navigation) {
+        AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        for (AwNavigationListener listener : mNavigationListeners) {
+            listener.onNavigationVisible(awNavigation);
+        }
+    }
+
     // Page.PageDeletionListener implementation
     @Override
     public void onWillDeletePage(Page page) {

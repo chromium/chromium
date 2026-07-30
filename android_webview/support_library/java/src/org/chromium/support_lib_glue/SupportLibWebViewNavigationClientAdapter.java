@@ -73,6 +73,11 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationListener {
                         new SupportLibWebViewNavigationAdapter(navigation)));
     }
 
+    // Not implemented as this navigation client is set to be deprecated in favour of
+    // {@link #AwNavigationListener}
+    @Override
+    public void onNavigationVisible(AwNavigation navigation) {}
+
     @Override
     public void onPageDeleted(AwPage page) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(

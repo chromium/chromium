@@ -261,4 +261,94 @@ public class AwNavigationTest extends AwParameterizedTest {
         Assert.assertTrue(navigation.didCommitErrorPage());
         Assert.assertNotNull(navigation.getWebResourceError());
     }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNavigationVisibleCallback() throws Throwable {
+        final String url =
+                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+        // Wait for navigation to be visible
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> mNavigationListener.getLastVisibleNavigation() != null);
+
+        AwNavigation navigation = mNavigationListener.getLastVisibleNavigation();
+        Assert.assertNotNull(navigation);
+        Assert.assertEquals(url, navigation.getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNavigationVisibleCallback_followUpCrossDocumentNavigation() throws Throwable {
+        final String page1Url =
+                mWebServer.setResponse("/page1.html", "<html><body>Page 1</body></html>", null);
+        final String page2Url =
+                mWebServer.setResponse("/page2.html", "<html><body>Page 2</body></html>", null);
+        // Load initial page
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                page1Url);
+        // Wait for navigation to be visible
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> mNavigationListener.getLastVisibleNavigation() != null);
+        AwNavigation firstNavigation = mNavigationListener.getLastVisibleNavigation();
+        Assert.assertNotNull(firstNavigation);
+        Assert.assertEquals(page1Url, firstNavigation.getUrl());
+
+        // Navigate to page 2
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                page2Url);
+        // Wait for navigation to be visible
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    AwNavigation visibleNavigation = mNavigationListener.getLastVisibleNavigation();
+                    return visibleNavigation != null && !visibleNavigation.equals(firstNavigation);
+                });
+
+        AwNavigation navigation = mNavigationListener.getLastVisibleNavigation();
+        Assert.assertNotNull(navigation);
+        Assert.assertEquals(page2Url, navigation.getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNavigationVisibleCallback_followUpSameDocumentNavigation() throws Throwable {
+        final String url =
+                mWebServer.setResponse("/page.html", "<html><body>Hello</body></html>", null);
+        final String fragmentUrl = url + "#fragment";
+        // Load initial page
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+        // Wait for navigation to be visible
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> mNavigationListener.getLastVisibleNavigation() != null);
+        AwNavigation firstNavigation = mNavigationListener.getLastVisibleNavigation();
+        Assert.assertNotNull(firstNavigation);
+        Assert.assertEquals(url, firstNavigation.getUrl());
+
+        // Navigate to fragment
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                fragmentUrl);
+        // Wait for navigation to be visible
+        AwActivityTestRule.pollInstrumentationThread(
+                () -> {
+                    AwNavigation visibleNavigation = mNavigationListener.getLastVisibleNavigation();
+                    return visibleNavigation != null && !visibleNavigation.equals(firstNavigation);
+                });
+
+        AwNavigation navigation = mNavigationListener.getLastVisibleNavigation();
+        Assert.assertNotNull(navigation);
+        Assert.assertEquals(fragmentUrl, navigation.getUrl());
+        Assert.assertTrue(navigation.isSameDocument());
+    }
 }

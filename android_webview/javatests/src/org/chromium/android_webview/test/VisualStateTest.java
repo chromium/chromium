@@ -25,6 +25,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.AwContentsClient;
+import org.chromium.android_webview.AwNavigation;
+import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
@@ -260,13 +262,9 @@ public class VisualStateTest extends AwParameterizedTest {
                             public WebResourceResponseInfo shouldInterceptRequest(
                                     AwWebResourceRequest request) {
                                 if (request.getUrl().equals("intercepted://blue.png")) {
-                                    try {
-                                        return new SlowBlueImage();
-                                    } catch (Throwable t) {
-                                        return null;
-                                    }
+                                    return new SlowBlueImage();
                                 }
-                                return null;
+                                return super.shouldInterceptRequest(request);
                             }
 
                             @Override
@@ -300,6 +298,81 @@ public class VisualStateTest extends AwParameterizedTest {
 
         Assert.assertTrue(
                 pageCommitCallbackOccurred.await(
+                        AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                testFinishedSignal.await(
+                        AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
+    public void testOnNavigationVisible() throws Throwable {
+        // This test loads a page with a blue background color. It then waits for the DOM tree
+        // in blink to contain the contents of the blue page (which happens when the onPageFinished
+        // event is received). It then flushes the contents and verifies that the blue page
+        // background color is drawn when the flush callback is received.
+        final CountDownLatch testFinishedSignal = new CountDownLatch(1);
+        final CountDownLatch navigationVisibleCallbackOccurred = new CountDownLatch(1);
+        mTestView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        new TestAwContentsClient() {
+                            @Override
+                            public WebResourceResponseInfo shouldInterceptRequest(
+                                    AwWebResourceRequest request) {
+                                if (request.getUrl().equals("intercepted://blue.png")) {
+                                    return new SlowBlueImage();
+                                }
+                                return super.shouldInterceptRequest(request);
+                            }
+                        });
+        final AwContents awContents = mTestView.getAwContents();
+        final var visualStateCallback =
+                new VisualStateCallback() {
+                    @Override
+                    public void onComplete(long id) {
+                        Bitmap bitmap = GraphicsTestUtils.drawAwContents(awContents, 256, 256);
+                        Assert.assertEquals(Color.BLUE, bitmap.getPixel(128, 128));
+                        testFinishedSignal.countDown();
+                    }
+                };
+        final TestAwNavigationListener listener =
+                new TestAwNavigationListener(new CallbackHelper()) {
+                    @Override
+                    public void onNavigationVisible(AwNavigation navigation) {
+                        super.onNavigationVisible(navigation);
+                        Bitmap bitmap = GraphicsTestUtils.drawAwContents(awContents, 256, 256);
+                        Assert.assertEquals(Color.GREEN, bitmap.getPixel(128, 128));
+                        navigationVisibleCallbackOccurred.countDown();
+                    }
+
+                    @Override
+                    public void onPageLoadEventFired(AwPage page) {
+                        super.onPageLoadEventFired(page);
+                        awContents.insertVisualStateCallback(10, visualStateCallback);
+                    }
+                };
+        awContents.getNavigationClient().addListener(listener);
+
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            awContents.setBackgroundColor(Color.RED);
+
+                            awContents.loadUrl(new LoadUrlParams(ON_PAGE_COMMIT_VISIBLE_TEST_URL));
+
+                            // We have just loaded the blue page, but the graphics pipeline is
+                            // asynchronous so at this point the WebView still draws red, ie. the
+                            // View background color.
+                            // Only when the flush callback is received will we know for certain
+                            // that the blue page contents are on screen.
+                            Bitmap bitmap = GraphicsTestUtils.drawAwContents(awContents, 256, 256);
+                            Assert.assertEquals(Color.RED, bitmap.getPixel(128, 128));
+                        });
+
+        Assert.assertTrue(
+                navigationVisibleCallbackOccurred.await(
                         AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertTrue(
                 testFinishedSignal.await(

@@ -21,6 +21,7 @@ public class TestAwNavigationListener implements AwNavigationListener {
     private final List<AwNavigation> mStartedNavigations = new ArrayList<AwNavigation>();
     private final List<AwNavigation> mRedirectedNavigations = new ArrayList<AwNavigation>();
     private final List<AwNavigation> mCompletedNavigations = new ArrayList<AwNavigation>();
+    private final List<AwNavigation> mVisibleNavigations = new ArrayList<AwNavigation>();
     private final List<AwPage> mDeletedPages = new ArrayList<AwPage>();
     private final List<AwPage> mPagesWithLoadEventFired = new ArrayList<AwPage>();
     private final List<AwPage> mPagesWithDOMContentLoadEventFired = new ArrayList<AwPage>();
@@ -53,6 +54,13 @@ public class TestAwNavigationListener implements AwNavigationListener {
             return null;
         }
         return mCompletedNavigations.get(mCompletedNavigations.size() - 1);
+    }
+
+    @Nullable AwNavigation getLastVisibleNavigation() {
+        if (mVisibleNavigations.isEmpty()) {
+            return null;
+        }
+        return mVisibleNavigations.get(mVisibleNavigations.size() - 1);
     }
 
     @Nullable AwPage getLastDeletedPage() {
@@ -99,47 +107,40 @@ public class TestAwNavigationListener implements AwNavigationListener {
 
     @Override
     public void onNavigationStarted(AwNavigation navigation) {
-        for (AwNavigation startedNav : mStartedNavigations) {
-            Assert.assertNotEquals(
-                    "onNavigationStarted should not be called twice for the same navigation",
-                    startedNav,
-                    navigation);
-        }
+        Assert.assertFalse(
+                "onNavigationStarted should not be called twice for the same navigation",
+                mStartedNavigations.contains(navigation));
         mStartedNavigations.add(navigation);
     }
 
     @Override
     public void onNavigationRedirected(AwNavigation navigation) {
-        boolean foundMatchingStartedNav = false;
-        for (AwNavigation startedNav : mStartedNavigations) {
-            if (startedNav == navigation) {
-                foundMatchingStartedNav = true;
-            }
-        }
         Assert.assertTrue(
                 "onNavigationRedirected should only be called for a started navigation",
-                foundMatchingStartedNav);
+                mStartedNavigations.contains(navigation));
         mRedirectedNavigations.add(navigation);
     }
 
     @Override
     public void onNavigationCompleted(AwNavigation navigation) {
-        boolean foundMatchingStartedNav = false;
-        for (AwNavigation startedNav : mStartedNavigations) {
-            if (startedNav == navigation) {
-                foundMatchingStartedNav = true;
-            }
-        }
         Assert.assertTrue(
                 "onNavigationCompleted should only be called for a started navigation",
-                foundMatchingStartedNav);
-        for (AwNavigation completedNav : mCompletedNavigations) {
-            Assert.assertNotEquals(
-                    "onNavigationCompleted should not be called twice for the same navigation",
-                    completedNav,
-                    navigation);
-        }
+                mStartedNavigations.contains(navigation));
+        Assert.assertFalse(
+                "onNavigationCompleted should not be called twice for the same navigation",
+                mCompletedNavigations.contains(navigation));
         mCompletedNavigations.add(navigation);
+    }
+
+    @Override
+    public void onNavigationVisible(AwNavigation navigation) {
+        Assert.assertTrue(
+                "onNavigationVisible should only be called for a completed navigation",
+                mCompletedNavigations.contains(navigation));
+        Assert.assertFalse(
+                "onNavigationVisible should not be called twice for the same navigation",
+                mVisibleNavigations.contains(navigation));
+        mVisibleNavigations.add(navigation);
     }
 
     @Override

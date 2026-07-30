@@ -148,6 +148,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.DOWNLOAD_FAVICONS_ENABLED,
                 Features.HTTP_CACHE_MANAGER,
                 Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST + Features.DEV_SUFFIX,
+                Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from

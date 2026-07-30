@@ -265,27 +265,15 @@ public class AwWebContentsObserver extends WebContentsObserver {
             client.getCallbackHelper().postDoUpdateVisitedHistory(url, isReload);
         }
 
-        // Only invoke the onPageCommitVisible callback when navigating to a different document,
-        // but not when navigating to a different fragment within the same document.
-        if (!navigation.isSameDocument()) {
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        AwContents awContents2 = mAwContents.get();
-                        if (awContents2 != null) {
-                            awContents2.insertVisualStateCallbackIfNotDestroyed(
-                                    0,
-                                    new VisualStateCallback() {
-                                        @Override
-                                        public void onComplete(long requestId) {
-                                            AwContentsClient client1 = mAwContentsClient.get();
-                                            if (client1 == null) return;
-                                            client1.onPageCommitVisible(url);
-                                        }
-                                    });
-                        }
-                    });
-        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    AwContents awContents = mAwContents.get();
+                    if (awContents == null) return;
+
+                    awContents.insertVisualStateCallbackIfNotDestroyed(
+                            0, new PageCommitVisibleCallback(navigation));
+                });
 
         if (client != null && navigation.isPrimaryMainFrameFragmentNavigation()) {
             // Note fragment navigations do not have a matching onPageStarted.
@@ -307,5 +295,32 @@ public class AwWebContentsObserver extends WebContentsObserver {
 
     public boolean didEverCommitNavigation() {
         return mCommittedNavigation;
+    }
+
+    /** Callback that triggers {@code onPageCommitVisible} and {@code onNavigationVisible}. */
+    // Deliberately not static to capture the outer class members so we don't have to
+    // redeclare all the weakReferences.
+    private class PageCommitVisibleCallback extends VisualStateCallback {
+        private final NavigationHandle mNavigation;
+
+        PageCommitVisibleCallback(NavigationHandle navigation) {
+            mNavigation = navigation;
+        }
+
+        @Override
+        public void onComplete(long requestId) {
+            AwContents awContents = mAwContents.get();
+            if (awContents != null) {
+                awContents.getNavigationClient().onNavigationVisible(mNavigation);
+            }
+            // Only invoke the onPageCommitVisible callback when navigating to a different document,
+            // but not when navigating to a different fragment within the same document.
+            if (!mNavigation.isSameDocument()) {
+                AwContentsClient client = mAwContentsClient.get();
+                if (client != null) {
+                    client.onPageCommitVisible(mNavigation.getUrl().getPossiblyInvalidSpec());
+                }
+            }
+        }
     }
 }

@@ -397,6 +397,10 @@ public class Features {
     public static final String COMMITTED_NAVIGATION_GET_PAGE_NON_NULL =
             "COMMITTED_NAVIGATION_GET_PAGE_NON_NULL";
 
+    // WebViewNavigationListener.onNavigationVisible()
+    public static final String WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE =
+            "WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE";
+
     // SupportLibWebViewChromium weakly reference WebView
     public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
 

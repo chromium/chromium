@@ -21,6 +21,8 @@ public interface AwNavigationListener {
 
     void onNavigationCompleted(AwNavigation navigation);
 
+    void onNavigationVisible(AwNavigation navigation);
+
     void onPageDeleted(AwPage page);
 
     void onPageLoadEventFired(AwPage page);

@@ -95,6 +95,19 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
     }
 
     @Override
+    public void onNavigationVisible(AwNavigation navigation) {
+        if (!BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_NAVIGATION_VISIBLE)) {
+            return;
+        }
+        mExecutor.execute(
+                () ->
+                        mImpl.onNavigationVisible(
+                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                        new SupportLibWebViewNavigationAdapter(navigation))));
+    }
+
+    @Override
     public void onPageDeleted(AwPage page) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
