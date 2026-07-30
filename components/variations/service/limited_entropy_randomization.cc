@@ -195,16 +195,19 @@ bool AppliesToClientFormFactor(const Study& study,
 
 }  // namespace
 
-double GetGoogleWebEntropyLimitInBits() {
-#if BUILDFLAG(IS_ANDROID)
-  return 21.0;
-#elif BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN)
-  return 18.0;
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  return 16.0;
-#else
-  return 1.0;
-#endif
+double GetMaxLimitedEntropyInBits(Study::Platform platform) {
+  switch (platform) {
+    case Study::PLATFORM_ANDROID:
+      return 21.0;
+    case Study::PLATFORM_WINDOWS:
+    case Study::PLATFORM_IOS:
+      return 18.0;
+    case Study::PLATFORM_MAC:
+    case Study::PLATFORM_CHROMEOS:
+      return 16.0;
+    default:
+      return 1.0;
+  }
 }
 
 // TODO(crbug.com/428216544): Refactor, along with variations_layers.cc, to

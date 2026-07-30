@@ -773,9 +773,8 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   // is the case for clients on platforms, like Android WebView, that do not
   // support limited entropy randomization. For such clients,
   // `SeedHasMisconfiguredEntropy()`is always false.
-  const MisconfiguredEntropyResult result =
-      SeedHasMisconfiguredEntropy(*client_state, seed,
-                                  GetGoogleWebEntropyLimitInBits());
+  const MisconfiguredEntropyResult result = SeedHasMisconfiguredEntropy(
+      *client_state, seed, GetMaxLimitedEntropyInBits(client_state->platform));
   if (result.is_misconfigured) {
     RecordVariationsSeedUsage(
         run_in_safe_mode ? SeedUsage::kMisconfiguredSafeSeedNotUsed

@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
-
 namespace {
 
 constexpr int kTestLayerId = 101;
@@ -795,18 +794,14 @@ TEST_F(LimitedEntropyRandomizationTest,
   }
 }
 
-TEST(GetGoogleWebEntropyLimitInBits, IsPlatformSpecific) {
-  constexpr double kExpectedEntropyLimitInBits =
-#if BUILDFLAG(IS_ANDROID)
-      21.0;
-#elif BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN)
-      18.0;
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-      16.0;
-#else
-      1.0;
-#endif
-  EXPECT_EQ(GetGoogleWebEntropyLimitInBits(), kExpectedEntropyLimitInBits);
+TEST(GetMaxLimitedEntropyInBits, IsPlatformSpecific) {
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_ANDROID), 21.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_WINDOWS), 18.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_IOS), 18.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_MAC), 16.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_CHROMEOS), 16.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_ANDROID_WEBVIEW), 1.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_LINUX), 1.0);
 }
 
 }  // namespace variations
