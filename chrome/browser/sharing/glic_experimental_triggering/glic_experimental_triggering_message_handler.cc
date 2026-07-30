@@ -197,13 +197,14 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   glic::ScopedIncomingMessageResultLogger result_logger(
       glic::ScopedIncomingMessageResultLogger::Channel::kSharingMessage);
 
-  const auto& request = message.glic_experimental_triggering();
   // If no `context_id` is present in the request, we generate one that
   // may be used by the sender in follow up actuation requests.
-  const std::string context_id =
-      (request.has_context_id() && !request.context_id().empty())
-          ? request.context_id()
-          : base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::string context_id = message.glic_experimental_triggering().context_id();
+  if (context_id.empty()) {
+    context_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    message.mutable_glic_experimental_triggering()->set_context_id(context_id);
+  }
+  const auto& request = message.glic_experimental_triggering();
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicBackgroundTriggering)) {
