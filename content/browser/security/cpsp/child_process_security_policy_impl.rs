@@ -5,10 +5,11 @@
 use cxx::UniquePtr;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::sync::{LazyLock, Mutex, MutexGuard};
-use storage_common::FileSystemType;
-use url::Origin;
 
 use content_browser_id_types::BrowsingInstanceId;
+use storage_common::FileSystemType;
+use unguessable_token::UnguessableToken;
+use url::Origin;
 
 use crate::process_state::ProcessStateMaps;
 
@@ -19,10 +20,14 @@ use crate::process_state::ProcessStateMaps;
 mod ffi {
     #![allow(unsafe_code)]
     unsafe extern "C++" {
+        include!("base/unguessable_token.h");
         include!("url/origin.rs.h");
         include!("content/browser/isolated_origin_util.h");
         include!("storage/common/file_system/file_system_types.h");
         include!("content/public/browser/browsing_instance_id.h");
+
+        #[namespace = "base"]
+        type UnguessableToken = unguessable_token::UnguessableToken;
 
         // Gives us access to C++ url::Origin and all methods exposed in the origin
         // bridge file without having to redefine them here.
@@ -84,14 +89,16 @@ mod ffi {
         ) -> bool;
 
         fn record_origin_agent_cluster_request_if_new(
-            browser_context_id: &str,
+            browser_context_token: UnguessableToken,
             origin: UniquePtr<Origin>,
         ) -> bool;
         fn has_origin_ever_requested_origin_agent_cluster_value(
-            browser_context_id: &str,
+            browser_context_token: UnguessableToken,
             origin: UniquePtr<Origin>,
         ) -> bool;
-        fn remove_origin_agent_cluster_requests_for_browser_context(browser_context_id: &str);
+        fn remove_origin_agent_cluster_requests_for_browser_context(
+            browser_context_token: UnguessableToken,
+        );
 
         fn lookup_origin_agent_cluster_state(
             browsing_instance_id: BrowsingInstanceId,
@@ -106,7 +113,7 @@ mod ffi {
         );
         fn record_default_origin_agent_cluster_origin_if_new(
             browsing_instance_id: BrowsingInstanceId,
-            browser_context_id: &str,
+            browser_context_token: UnguessableToken,
             origin: UniquePtr<Origin>,
             oac_state: OriginAgentClusterIsolationState,
             is_global_walk_or_frame_removal: bool,
@@ -295,14 +302,14 @@ fn find_permissions_for_file_system_type(
 }
 
 fn record_origin_agent_cluster_request_if_new(
-    browser_context_id: &str,
+    browser_context_token: UnguessableToken,
     origin: UniquePtr<ffi::Origin>,
 ) -> bool {
     if !ffi::IsolatedOriginUtil::is_valid_origin_for_origin_agent_cluster_opt_in(&origin) {
         return false;
     }
 
-    let browser_context_id = BrowserContextId(browser_context_id.to_string());
+    let browser_context_id = BrowserContextId(browser_context_token);
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     let origins = cpsp.origin_agent_cluster_opt_ins_and_outs.entry(browser_context_id).or_default();
 
@@ -315,18 +322,20 @@ fn record_origin_agent_cluster_request_if_new(
 }
 
 fn has_origin_ever_requested_origin_agent_cluster_value(
-    browser_context_id: &str,
+    browser_context_token: UnguessableToken,
     origin: UniquePtr<ffi::Origin>,
 ) -> bool {
-    let browser_context_id = BrowserContextId(browser_context_id.to_string());
+    let browser_context_id = BrowserContextId(browser_context_token);
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.origin_agent_cluster_opt_ins_and_outs
         .get(&browser_context_id)
         .is_some_and(|origins| origins.contains(&origin))
 }
 
-fn remove_origin_agent_cluster_requests_for_browser_context(browser_context_id: &str) {
-    let browser_context_id = BrowserContextId(browser_context_id.to_string());
+fn remove_origin_agent_cluster_requests_for_browser_context(
+    browser_context_token: UnguessableToken,
+) {
+    let browser_context_id = BrowserContextId(browser_context_token);
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.origin_agent_cluster_opt_ins_and_outs.remove(&browser_context_id);
 }
@@ -394,7 +403,7 @@ fn add_origin_agent_cluster_state_for_browsing_instance(
 
 fn record_default_origin_agent_cluster_origin_if_new(
     browsing_instance_id: BrowsingInstanceId,
-    browser_context_id: &str,
+    browser_context_token: UnguessableToken,
     origin: UniquePtr<ffi::Origin>,
     oac_state: ffi::OriginAgentClusterIsolationState,
     is_global_walk_or_frame_removal: bool,
@@ -415,7 +424,7 @@ fn record_default_origin_agent_cluster_origin_if_new(
     // during global walks and frame removals, since we do want to track the
     // origin's non-isolated status in those cases.
     if !is_global_walk_or_frame_removal {
-        let browser_context_id = BrowserContextId(browser_context_id.to_string());
+        let browser_context_id = BrowserContextId(browser_context_token);
         let has_ever_requested_oac = cpsp
             .origin_agent_cluster_opt_ins_and_outs
             .get(&browser_context_id)
@@ -577,12 +586,10 @@ impl ChildProcessSecurityPolicyImpl {
     }
 }
 
-/// A unique identifier for a `BrowserContext`. Currently, this is based on the
-/// string representation of the C++ `BrowserContext::UniqueToken()`.
-// TODO(crbug.com/522298905): Add FFI for UnguessableToken so that
-// `UniqueToken()` can be used by both Rust and C++.
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone)]
-pub struct BrowserContextId(String);
+/// A unique identifier for a `BrowserContext`, wrapping C++
+/// `base::UnguessableToken` returned by `BrowserContext::UniqueToken()`.
+#[derive(PartialEq, Eq, PartialOrd, Ord, Copy, Clone, Debug, Hash)]
+pub struct BrowserContextId(pub UnguessableToken);
 
 /// An enum tracking whether v8 optimizations are enabled or disabled.
 #[derive(PartialEq, Eq)]

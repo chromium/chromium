@@ -3109,13 +3109,10 @@ void ChildProcessSecurityPolicyImpl::RemoveStateForBrowserContext(
 void ChildProcessSecurityPolicyImpl::
     RemoveOriginAgentClusterRequestsForBrowserContext(
         const BrowserContext& browser_context) {
-  // TODO(crbug.com/522298905): Add FFI for base::UnguessableToken so that
-  // `UniqueToken()` can be used to represent BrowserContext ID in Rust. For
-  // now, fall back to its string representation in `UniqueId()`.
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::
           remove_origin_agent_cluster_requests_for_browser_context(
-              browser_context.UniqueId()),
+              browser_context.UniqueToken()),
       RemoveOriginAgentClusterRequestsForBrowserContext_Cpp(browser_context));
 }
 
@@ -3392,13 +3389,10 @@ bool ChildProcessSecurityPolicyImpl::
     HasOriginEverRequestedOriginAgentClusterValue(
         BrowserContext* browser_context,
         const url::Origin& origin) {
-  // TODO(crbug.com/522298905): Add FFI for base::UnguessableToken so that
-  // `UniqueToken()` can be used to represent BrowserContext ID in Rust. For
-  // now, fall back to its string representation in `UniqueId()`.
   RUST_CPP_RETURN_FUNCTION(
       rust::child_process_security_policy::
           has_origin_ever_requested_origin_agent_cluster_value(
-              browser_context->UniqueId(),
+              browser_context->UniqueToken(),
               // Make a copy of the origin for Rust to own.
               std::make_unique<url::Origin>(origin)),
       HasOriginEverRequestedOriginAgentClusterValue_Cpp(
@@ -3486,7 +3480,7 @@ void ChildProcessSecurityPolicyImpl::RecordDefaultOriginAgentClusterOriginIfNew(
       rust::child_process_security_policy::
           record_default_origin_agent_cluster_origin_if_new(
               isolation_context.browsing_instance_id(),
-              browser_context->UniqueId(),
+              browser_context->UniqueToken(),
               // Make a copy of the origin for Rust to own.
               std::make_unique<url::Origin>(origin),
               ToRustOriginAgentClusterIsolationState(
@@ -3752,13 +3746,10 @@ void ChildProcessSecurityPolicyImpl::
 bool ChildProcessSecurityPolicyImpl::RecordOriginAgentClusterRequestIfNew(
     BrowserContext* browser_context,
     const url::Origin& origin) {
-  // TODO(crbug.com/522298905): Add FFI for base::UnguessableToken so that
-  // `UniqueToken()` can be used to represent BrowserContext ID in Rust. For
-  // now, fall back to its string representation in `UniqueId()`.
   RUST_CPP_RETURN_FUNCTION(
       rust::child_process_security_policy::
           record_origin_agent_cluster_request_if_new(
-              browser_context->UniqueId(),
+              browser_context->UniqueToken(),
               // Make a copy of the origin for Rust to own.
               std::make_unique<url::Origin>(origin)),
       RecordOriginAgentClusterRequestIfNew_Cpp(browser_context, origin));

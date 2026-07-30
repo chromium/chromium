@@ -81,6 +81,7 @@ rust_static_library("child_process_security_policy_impl") {
   deps = [
     ":browser_id_types",
     "//base:feature",
+    "//base:unguessable_token",
     "//content/common:common_id_types",
     "//storage/common:storage_common_rust",
     "//third_party/blink/public/common",

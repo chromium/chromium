@@ -2636,6 +2636,7 @@ group("base_rust") {
     ":file_path",
     ":run_loop",
     ":sequenced_task_runner",
+    ":unguessable_token",
   ]
 }
 
@@ -2751,6 +2752,17 @@ rust_static_library("feature") {
   cxx_bindings = [ "feature.rs" ]
   allow_unsafe = true
   deps = [ "//base" ]
+}
+
+rust_static_library("unguessable_token") {
+  sources = [ "unguessable_token.rs" ]
+  crate_root = "unguessable_token.rs"
+  cxx_bindings = [ "unguessable_token.rs" ]
+  allow_unsafe = true
+  deps = [
+    "//base",
+    "//third_party/rust/subtle/v2:lib",
+  ]
 }
 
 rust_static_library("sequenced_task_runner") {
