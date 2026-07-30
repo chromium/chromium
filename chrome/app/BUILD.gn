@@ -18,10 +18,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (is_posix && !is_mac) {
+if (is_posix) {
   # Header-only target so non-:browser targets can include this header
-  # without depending on //chrome/browser:browser. The .cc file remains
-  # in //chrome/browser:browser.
+  # without depending on the target that compiles it (//chrome/browser:browser
+  # on non-Mac, //chrome:chrome_dll on Mac).
   source_set("chrome_crash_reporter_client") {
     public = [ "chrome_crash_reporter_client.h" ]
     public_deps = [
@@ -195,13 +195,17 @@ static_library("test_support") {
   }
 
   if (is_mac) {
-    sources += [ "chrome_main_mac.mm" ]
+    sources += [
+      "chrome_main_mac.h",
+      "chrome_main_mac.mm",
+    ]
 
     deps += [
-      "//chrome:chrome_framework",
       "//chrome/browser:chrome_browser_application_mac",
       "//chrome/browser/mac",
     ]
+
+    data_deps = [ "//chrome:chrome_framework" ]
   }
 
   if (is_win) {
@@ -226,7 +230,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_posix && !is_mac) {
+  if (is_posix) {
     deps += [ ":chrome_crash_reporter_client" ]
   }
 
