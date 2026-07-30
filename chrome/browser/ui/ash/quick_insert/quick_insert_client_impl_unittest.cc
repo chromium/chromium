@@ -223,14 +223,6 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
                 &ash::input_method::EditorMediatorFactory::BuildInstanceFor)}};
   }
 
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    // DriveFS needs the account to have an ID.
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
-    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-    user_manager()->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-  }
-
   void SwitchActiveUser(const std::string& email) override {
     user_manager()->SwitchActiveUser(
         AccountId::FromUserEmailGaiaId(email, GaiaId(email)));

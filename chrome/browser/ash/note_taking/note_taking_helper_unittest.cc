@@ -351,14 +351,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     return kTestProfileName;
   }
 
-  // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
-    user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-    user_manager()->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-  }
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();

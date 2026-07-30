@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/global_features.h"
@@ -66,7 +65,6 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -296,8 +294,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   BirchKeyedServiceTest()
       : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
         {features::kReleaseNotesNotificationAllChannels,
          features::kBirchVideoConferenceSuggestions},
@@ -369,13 +366,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     release_notes_storage_ = nullptr;
     favicon_service_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
-  }
-
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(email, gaia_id));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -548,9 +538,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  user_manager::TypedScopedUserManager<FakeChromeUserManager>
-      fake_user_manager_;
-
   base::ScopedTempDir temp_dir_;
 
   std::unique_ptr<ScopedTestMountPoint> mount_point_;
