@@ -310,7 +310,10 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
 
-    manager_->BindReceiver(kBindingContext,
+    binding_context_ = {kTestStorageKey, kTestUrl,
+                        web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+
+    manager_->BindReceiver(binding_context_,
                            manager_remote_.BindNewPipeAndPassReceiver());
   }
 
@@ -456,14 +459,12 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   }
 
  protected:
-  const GURL kTestUrl = GURL("http://example.com/foo");
+  const GURL kTestUrl = GURL("https://example.com/foo");
   const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
-  const int kProcessId = 1;
-  const int kFrameRoutingId = 2;
-  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
-  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
-      kTestStorageKey, kTestUrl, kFrameId};
+      blink::StorageKey::CreateFromStringForTesting(kTestUrl.spec());
+  // An initial value is required but this is overwritten by `SetUp`.
+  FileSystemAccessManagerImpl::BindingContext binding_context_ = {
+      kTestStorageKey, kTestUrl, GlobalRenderFrameHostId()};
 
   BrowserTaskEnvironment task_environment_;
 
