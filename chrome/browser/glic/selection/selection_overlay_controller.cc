@@ -305,6 +305,9 @@ void SelectionOverlayController::OnFocusedTabChanged(
 
 void SelectionOverlayController::OnSplitTabChanged(
     const SplitTabChange& change) {
+  if (IsOverlayShowing()) {
+    SetOverlayRoundedCorner();
+  }
   if (!tab_->IsSplit()) {
     return;
   }

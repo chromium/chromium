@@ -51,10 +51,6 @@
 
 namespace {
 constexpr int kSnapDistance = 15;
-
-constexpr float kSplitViewContentCornerRadius = 6;
-constexpr gfx::RoundedCornersF kSplitViewContentRoundedCorners{
-    kSplitViewContentCornerRadius};
 }
 
 void MultiContentsView::ContentsSeparators::Reset() {

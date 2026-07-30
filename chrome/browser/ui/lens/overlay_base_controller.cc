@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -872,9 +873,12 @@ void OverlayBaseController::SetOverlayRoundedCorner() {
   }
   CHECK(overlay_web_view);
 
-  const bool should_round_corner = IsResultsSidePanelShowing();
+  // Only tab-scoped overlays (where `!IsOverlayViewShared()`) live inside a
+  // `ContentsContainerView` and respect split view rounded corners.
+  const bool is_split = !IsOverlayViewShared() && tab_ && tab_->IsSplit();
+  const bool should_round_corner = is_split || IsResultsSidePanelShowing();
   float radius = 0;
-  if (should_round_corner) {
+  if (!is_split && should_round_corner) {
     const views::LayoutProvider* layout_provider =
         overlay_web_view->GetLayoutProvider();
     if (!layout_provider) {
@@ -890,8 +894,10 @@ void OverlayBaseController::SetOverlayRoundedCorner() {
   }
   const bool right_aligned =
       pref_service_->GetBoolean(prefs::kSidePanelHorizontalAlignment);
-  const gfx::RoundedCornersF radii = gfx::RoundedCornersF{
-      right_aligned ? 0 : radius, right_aligned ? radius : 0, 0, 0};
+  const gfx::RoundedCornersF radii =
+      is_split ? MultiContentsView::kSplitViewContentRoundedCorners
+               : gfx::RoundedCornersF{right_aligned ? 0 : radius,
+                                      right_aligned ? radius : 0, 0, 0};
 
   overlay_web_view->holder()->SetNativeViewCornerRadii(radii);
 
