@@ -165,11 +165,6 @@ BASE_FEATURE(kDevToolsSharedProcessInfobar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether DevTools will attempt to load project settings from a well-known
-// URI. See https://goo.gle/devtools-json-design for additional details.
-// This is enabled by default starting with M-136.
-BASE_FEATURE(kDevToolsWellKnown, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether the DevTools AI generated annotation labels in timeline are enabled.
 BASE_FEATURE(kDevToolsAiGeneratedTimelineLabels,
              base::FEATURE_ENABLED_BY_DEFAULT);
