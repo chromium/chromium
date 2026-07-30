@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,7 +103,9 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
     page_ = std::make_unique<MockUntrustedProjectorPageJs>();
     handler_impl_ = std::make_unique<UntrustedProjectorPageHandlerImpl>(
         page().page_handler().BindNewPipeAndPassReceiver(),
-        page().receiver().BindNewPipeAndPassRemote(), &pref_service_);
+        page().receiver().BindNewPipeAndPassRemote(), &pref_service_,
+        mock_app_client_.GetIdentityManager(),
+        mock_app_client_.GetUrlLoaderFactory());
   }
 
   void TearDown() override {
@@ -114,6 +117,7 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
   MockUntrustedProjectorPageJs& page() { return *page_; }
   UntrustedProjectorPageHandlerImpl& handler() { return *handler_impl_; }
   MockAppClient& mock_app_client() { return mock_app_client_; }
+  TestingPrefServiceSimple& pref_service() { return pref_service_; }
 
  protected:
   void TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor pref,
@@ -433,6 +437,58 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetAccounts) {
   const auto& accounts = get_accounts_future.Get();
   EXPECT_EQ(accounts.size(), 1u);
   EXPECT_EQ(accounts[0]->email, kTestUserEmail);
+}
+
+// Verifies that the page handler resolves accounts and credentials against the
+// identity manager of the profile that owns the WebUI rather than the
+// process-wide app client. The app client (`mock_app_client()`) has
+// `kTestUserEmail` as primary; the handler under test is bound to a separate
+// identity manager whose primary is `kOtherUserEmail`.
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest,
+       UsesOwningProfileIdentityManager) {
+  constexpr char kOtherUserEmail[] = "owninguser@gmail.com";
+
+  signin::IdentityTestEnvironment owning_identity_env;
+  owning_identity_env.MakePrimaryAccountAvailable(
+      kOtherUserEmail, signin::ConsentLevel::kSignin);
+  owning_identity_env.SetRefreshTokenForPrimaryAccount();
+  network::TestURLLoaderFactory owning_url_loader_factory;
+
+  MockUntrustedProjectorPageJs other_page;
+  auto other_handler = std::make_unique<UntrustedProjectorPageHandlerImpl>(
+      other_page.page_handler().BindNewPipeAndPassReceiver(),
+      other_page.receiver().BindNewPipeAndPassRemote(), &pref_service(),
+      owning_identity_env.identity_manager(), &owning_url_loader_factory);
+
+  // GetAccounts() must resolve the primary account from the owning profile's
+  // identity manager.
+  base::test::TestFuture<std::vector<projector::mojom::AccountPtr>>
+      get_accounts_future;
+  other_page.page_handler()->GetAccounts(get_accounts_future.GetCallback());
+  std::string primary_email;
+  for (const auto& account : get_accounts_future.Get()) {
+    if (account->is_primary_user) {
+      primary_email = account->email;
+    }
+  }
+  EXPECT_EQ(primary_email, kOtherUserEmail);
+
+  // SendXhr() must mint the token from the owning profile's identity manager
+  // and dispatch via the owning profile's URLLoaderFactory.
+  owning_url_loader_factory.AddResponse(kTestXhrUrl, kTestResponseBody);
+  base::test::TestFuture<projector::mojom::XhrResponsePtr> send_future;
+  other_page.page_handler()->SendXhr(
+      GURL(kTestXhrUrl), kTestXhrMethod, kTestXhrRequestBody,
+      /*use_credentials=*/true,
+      /*use_api_key=*/false, /*headers=*/std::nullopt,
+      /*account_email=*/std::nullopt, send_future.GetCallback());
+  owning_identity_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "validToken", base::Time::Now() + base::Minutes(10));
+  EXPECT_EQ(send_future.Get()->response_code,
+            projector::mojom::XhrResponseCode::kSuccess);
+  EXPECT_EQ(mock_app_client().test_url_loader_factory().NumPending(), 0);
+
+  other_handler.reset();
 }
 
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest, GetVideo) {
