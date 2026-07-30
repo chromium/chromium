@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -32,6 +33,8 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.ui.util.TokenHolder;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabStripTopControlLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -233,9 +236,54 @@ public class TabStripTopControlLayerUnitTest {
         verify(mTabStripSceneLayerHolder, times(0)).onLayerYOffsetChanged(anyInt(), anyInt());
     }
 
+    @Test
+    public void testVerticalTabToggle_FallbackTimerFiresWhenOffsetUpdateFrozen() {
+        mTabStripTopControlLayer.set(100);
+        // Request a transition where isTabStripSuppressed changes from false to true (V <-> H
+        // toggle).
+        mTabStripTopControlLayer.onTransitionRequested(
+                0,
+                0,
+                true,
+                /* isTabStripSuppressed= */ true,
+                mOnTransitionStartedCallback::notifyCalled);
+        verifyLayerUpdateRequest(true);
+        verify(mTabStripSceneLayerHolder, times(0)).onHeightTransitionFinished(anyBoolean());
+
+        // Do NOT call onBrowserControlsOffsetUpdate (simulating frozen compositor during tab load).
+        // Advance looper by 500ms so the fallback task runs.
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+
+        // The fallback task should invoke handleTransitionStart and handleTransitionFinished.
+        verifyHeightTransitionStarted(/* newHeight= */ 0, /* applyScrimOverlay= */ true);
+        verify(mTabStripSceneLayerHolder, times(1)).onHeightTransitionFinished(true);
+    }
+
+    @Test
+    public void testNormalTransition_NoFallbackTimer() {
+        mTabStripTopControlLayer.set(100);
+        // Request a normal transition where isTabStripSuppressed does not change (false -> false).
+        mTabStripTopControlLayer.onTransitionRequested(
+                0,
+                0,
+                true,
+                /* isTabStripSuppressed= */ false,
+                mOnTransitionStartedCallback::notifyCalled);
+        verifyLayerUpdateRequest(true);
+
+        // Advance looper by 500ms. Since isVerticalTabToggle is false, no fallback task should run.
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
+
+        verify(mTabStripSceneLayerHolder, times(0)).onHeightTransitionFinished(anyBoolean());
+    }
+
     private void requestTransition(int newHeight, boolean applyScrimOverlay) {
         mTabStripTopControlLayer.onTransitionRequested(
-                newHeight, 0, applyScrimOverlay, mOnTransitionStartedCallback::notifyCalled);
+                newHeight,
+                0,
+                applyScrimOverlay,
+                /* isTabStripSuppressed= */ false,
+                mOnTransitionStartedCallback::notifyCalled);
     }
 
     private void verifyHeightTransitionStarted(int newHeight, boolean applyScrimOverlay) {
