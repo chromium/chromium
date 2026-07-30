@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/views/media_preview/media_coordinator.h"
 
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
 #include "components/media_effects/test/scoped_media_device_info.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,23 +46,23 @@ MATCHER(VideoCaptureDeviceInfoEq, "") {
 using testing::ElementsAre;
 using testing::Pointwise;
 
-class MediaCoordinatorTest : public TestWithBrowserView {
+class MediaCoordinatorTest : public ChromeViewsTestBase {
  protected:
   void SetUp() override {
-    TestWithBrowserView::SetUp();
+    ChromeViewsTestBase::SetUp();
     media_device_info_.emplace();
   }
 
   void InitializeCoordinator(MediaCoordinator::ViewType view_type) {
     coordinator_.emplace(
         view_type, parent_view_, /*is_subsection=*/false,
-        MediaCoordinator::EligibleDevices{}, profile()->GetWeakPtr(),
+        MediaCoordinator::EligibleDevices{}, profile_.GetWeakPtr(),
         /*allow_device_selection=*/true, GetMetricsContext(view_type));
   }
 
   void TearDown() override {
     coordinator_.reset();
-    TestWithBrowserView::TearDown();
+    ChromeViewsTestBase::TearDown();
   }
 
   void AddCameras() {
@@ -77,6 +79,8 @@ class MediaCoordinatorTest : public TestWithBrowserView {
         {kMicName2, kMicId2, kGroupId2}));
   }
 
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfile profile_;
   media_effects::ScopedFakeAudioService audio_service_;
   media_effects::ScopedFakeVideoCaptureService video_service_;
   std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;
@@ -94,14 +98,14 @@ TEST_F(MediaCoordinatorTest, CamerasRankingUpdate) {
 
   // Preference ranking defaults to noop.
   std::vector camera_infos{kCamera2, kCamera1};
-  media_prefs::PreferenceRankVideoDeviceInfos(*profile()->GetPrefs(),
+  media_prefs::PreferenceRankVideoDeviceInfos(*profile_.GetPrefs(),
                                               camera_infos);
   EXPECT_THAT(camera_infos,
               Pointwise(VideoCaptureDeviceInfoEq(), {kCamera2, kCamera1}));
 
   // Ranking is updated to make the currently selected device most preferred.
   coordinator_->UpdateDevicePreferenceRanking();
-  media_prefs::PreferenceRankVideoDeviceInfos(*profile()->GetPrefs(),
+  media_prefs::PreferenceRankVideoDeviceInfos(*profile_.GetPrefs(),
                                               camera_infos);
   EXPECT_THAT(camera_infos,
               Pointwise(VideoCaptureDeviceInfoEq(), {kCamera1, kCamera2}));
@@ -116,14 +120,12 @@ TEST_F(MediaCoordinatorTest, MicsRankingUpdate) {
 
   // Preference ranking defaults to noop.
   std::vector mic_infos{kMic2, kMic1};
-  media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
-                                              mic_infos);
+  media_prefs::PreferenceRankAudioDeviceInfos(*profile_.GetPrefs(), mic_infos);
   EXPECT_THAT(mic_infos, ElementsAre(kMic2, kMic1));
 
   // Ranking is updated to make the currently selected device most preferred.
   coordinator_->UpdateDevicePreferenceRanking();
-  media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
-                                              mic_infos);
+  media_prefs::PreferenceRankAudioDeviceInfos(*profile_.GetPrefs(), mic_infos);
   EXPECT_THAT(mic_infos, ElementsAre(kMic1, kMic2));
 }
 
@@ -140,21 +142,19 @@ TEST_F(MediaCoordinatorTest, CamerasAndMicsRankingUpdate) {
   // Preference ranking defaults to noop.
   std::vector camera_infos{kCamera2, kCamera1};
   std::vector mic_infos{kMic2, kMic1};
-  media_prefs::PreferenceRankVideoDeviceInfos(*profile()->GetPrefs(),
+  media_prefs::PreferenceRankVideoDeviceInfos(*profile_.GetPrefs(),
                                               camera_infos);
   EXPECT_THAT(camera_infos,
               Pointwise(VideoCaptureDeviceInfoEq(), {kCamera2, kCamera1}));
-  media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
-                                              mic_infos);
+  media_prefs::PreferenceRankAudioDeviceInfos(*profile_.GetPrefs(), mic_infos);
   EXPECT_THAT(mic_infos, ElementsAre(kMic2, kMic1));
 
   // Ranking is updated to make the currently selected device most preferred.
   coordinator_->UpdateDevicePreferenceRanking();
-  media_prefs::PreferenceRankVideoDeviceInfos(*profile()->GetPrefs(),
+  media_prefs::PreferenceRankVideoDeviceInfos(*profile_.GetPrefs(),
                                               camera_infos);
   EXPECT_THAT(camera_infos,
               Pointwise(VideoCaptureDeviceInfoEq(), {kCamera1, kCamera2}));
-  media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
-                                              mic_infos);
+  media_prefs::PreferenceRankAudioDeviceInfos(*profile_.GetPrefs(), mic_infos);
   EXPECT_THAT(mic_infos, ElementsAre(kMic1, kMic2));
 }
