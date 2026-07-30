@@ -181,7 +181,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_gnome_keyring": false,
       "use_reclient": false,
       "use_remoteexec": true
     }
@@ -191,7 +190,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_gnome_keyring": false,
       "use_reclient": false,
       "use_remoteexec": true
     }
@@ -202,7 +200,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_gnome_keyring": false,
       "use_reclient": false,
       "use_remoteexec": true
     }
@@ -210,7 +207,6 @@
   "mac-arm-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
-      "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -222,7 +218,6 @@
   },
   "mac-arm-builder-perf-pgo": {
     "gn_args": {
-      "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -235,7 +230,6 @@
   "mac-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
-      "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -246,7 +240,6 @@
   },
   "mac-builder-perf-pgo": {
     "gn_args": {
-      "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
