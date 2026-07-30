@@ -18,14 +18,12 @@ namespace ash {
 
 // ScreenLockerTester provides a high-level API to test the lock screen.
 // Must be created after the SessionManager is initialized.
-class ScreenLockerTester : public session_manager::SessionManagerObserver {
+class ScreenLockerTester {
  public:
   ScreenLockerTester();
-
   ScreenLockerTester(const ScreenLockerTester&) = delete;
   ScreenLockerTester& operator=(const ScreenLockerTester&) = delete;
-
-  ~ScreenLockerTester() override;
+  ~ScreenLockerTester();
 
   // Synchronously lock the device.
   void Lock();
@@ -57,17 +55,6 @@ class ScreenLockerTester : public session_manager::SessionManagerObserver {
   // Same as UnlockWithPassword but submits even if the password auth disabled.
   void ForceSubmitPassword(const AccountId& account_id,
                            const std::string& password);
-
- private:
-  // session_manager::SessionManagerObserver:
-  void OnSessionStateChanged() override;
-
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_manager_observation_{this};
-
-  base::OnceClosure on_lock_callback_;
-  base::OnceClosure on_unlock_callback_;
 };
 
 }  // namespace ash

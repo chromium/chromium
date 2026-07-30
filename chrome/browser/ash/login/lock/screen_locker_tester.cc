@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -76,21 +77,9 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 
 }  // namespace
 
-ScreenLockerTester::ScreenLockerTester() {
-  DCHECK(session_manager::SessionManager::Get());
-  session_manager_observation_.Observe(session_manager::SessionManager::Get());
-}
+ScreenLockerTester::ScreenLockerTester() = default;
 
 ScreenLockerTester::~ScreenLockerTester() = default;
-
-void ScreenLockerTester::OnSessionStateChanged() {
-  if (IsLocked() && !on_lock_callback_.is_null()) {
-    std::move(on_lock_callback_).Run();
-  }
-  if (!IsLocked() && !on_unlock_callback_.is_null()) {
-    std::move(on_unlock_callback_).Run();
-  }
-}
 
 void ScreenLockerTester::Lock() {
   ScreenLocker::Show();
@@ -99,25 +88,13 @@ void ScreenLockerTester::Lock() {
 }
 
 void ScreenLockerTester::WaitForLock() {
-  if (!IsLocked()) {
-    base::RunLoop run_loop;
-    on_lock_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
+  SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
   ASSERT_TRUE(IsLocked());
-  ASSERT_EQ(session_manager::SessionState::LOCKED,
-            session_manager::SessionManager::Get()->session_state());
 }
 
 void ScreenLockerTester::WaitForUnlock() {
-  if (IsLocked()) {
-    base::RunLoop run_loop;
-    on_unlock_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
+  SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
   ASSERT_TRUE(!IsLocked());
-  ASSERT_EQ(session_manager::SessionState::ACTIVE,
-            session_manager::SessionManager::Get()->session_state());
 }
 
 void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,

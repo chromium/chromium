@@ -98,6 +98,7 @@ static_library("test_support") {
   deps = [
     ":lock",
     "//ash/public/cpp",
+    "//chrome/browser/ash/login/test:test_support",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/session_manager:base",
