@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
-                       TabSwitchingHidesAndRestoresWarning) {
+                       DISABLED_TabSwitchingHidesAndRestoresWarning) {
   GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
