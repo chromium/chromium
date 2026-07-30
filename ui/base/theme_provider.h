@@ -6,6 +6,7 @@
 #define UI_BASE_THEME_PROVIDER_H_
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
@@ -57,8 +58,8 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
 
   // Reads the image data from the theme file into the specified vector. Only
   // valid for un-themed resources and the themed IDR_THEME_NTP_* in most
-  // implementations of ThemeProvider. Returns NULL on error.
-  virtual base::RefCountedMemory* GetRawData(
+  // implementations of ThemeProvider. Returns nullptr on error.
+  virtual scoped_refptr<base::RefCountedMemory> GetRawData(
       int id,
       ui::ResourceScaleFactor scale_factor) const = 0;
 };

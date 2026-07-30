@@ -116,7 +116,7 @@ class BrowserThemePack : public CustomThemeSupplier {
   bool GetColor(int id, SkColor* color) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   gfx::Image GetImageNamed(int id) const override;
-  base::RefCountedMemory* GetRawData(
+  scoped_refptr<base::RefCountedMemory> GetRawData(
       int id,
       ui::ResourceScaleFactor scale_factor) const override;
   bool HasCustomImage(int id) const override;

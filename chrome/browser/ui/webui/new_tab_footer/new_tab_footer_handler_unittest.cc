@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
@@ -64,8 +65,9 @@ class MockThemeProvider : public ui::ThemeProvider {
   MOCK_CONST_METHOD1(GetDisplayProperty, int(int));
   MOCK_CONST_METHOD0(ShouldUseNativeFrame, bool());
   MOCK_CONST_METHOD1(HasCustomImage, bool(int));
-  MOCK_CONST_METHOD2(GetRawData,
-                     base::RefCountedMemory*(int, ui::ResourceScaleFactor));
+  MOCK_CONST_METHOD2(
+      GetRawData,
+      scoped_refptr<base::RefCountedMemory>(int, ui::ResourceScaleFactor));
 };
 
 class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {

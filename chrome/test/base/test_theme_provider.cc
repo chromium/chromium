@@ -31,7 +31,7 @@ bool TestThemeProvider::HasCustomImage(int id) const {
   return false;
 }
 
-base::RefCountedMemory* TestThemeProvider::GetRawData(
+scoped_refptr<base::RefCountedMemory> TestThemeProvider::GetRawData(
     int id,
     ui::ResourceScaleFactor scale_factor) const {
   return nullptr;

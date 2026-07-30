@@ -254,8 +254,9 @@ class MockThemeProvider : public ui::ThemeProvider {
   MOCK_CONST_METHOD1(GetDisplayProperty, int(int));
   MOCK_CONST_METHOD0(ShouldUseNativeFrame, bool());
   MOCK_CONST_METHOD1(HasCustomImage, bool(int));
-  MOCK_CONST_METHOD2(GetRawData,
-                     base::RefCountedMemory*(int, ui::ResourceScaleFactor));
+  MOCK_CONST_METHOD2(
+      GetRawData,
+      scoped_refptr<base::RefCountedMemory>(int, ui::ResourceScaleFactor));
 };
 
 class MockThemeService : public ThemeService {

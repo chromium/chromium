@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -65,7 +66,7 @@ class CustomThemeSupplier
 
   // Returns the raw PNG encoded data for IDR_THEME_NTP_*. This method only
   // works for the NTP attribution and background resources.
-  virtual base::RefCountedMemory* GetRawData(
+  virtual scoped_refptr<base::RefCountedMemory> GetRawData(
       int id,
       ui::ResourceScaleFactor scale_factor) const;
 

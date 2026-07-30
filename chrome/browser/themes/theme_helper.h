@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -64,7 +65,7 @@ class ThemeHelper {
   int GetDisplayProperty(int id,
                          const CustomThemeSupplier* theme_supplier) const;
 
-  base::RefCountedMemory* GetRawData(
+  scoped_refptr<base::RefCountedMemory> GetRawData(
       int id,
       const CustomThemeSupplier* theme_supplier,
       ui::ResourceScaleFactor scale_factor) const;

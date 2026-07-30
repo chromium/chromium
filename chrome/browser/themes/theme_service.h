@@ -313,7 +313,7 @@ class ThemeService : public KeyedService,
     int GetDisplayProperty(int id) const override;
     bool ShouldUseNativeFrame() const override;
     bool HasCustomImage(int id) const override;
-    base::RefCountedMemory* GetRawData(
+    scoped_refptr<base::RefCountedMemory> GetRawData(
         int id,
         ui::ResourceScaleFactor scale_factor) const override;
 

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/themes/theme_helper.h"
+
 #include "base/feature_list.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -93,7 +96,7 @@ int ThemeHelper::GetDisplayProperty(
   return GetDefaultDisplayProperty(id);
 }
 
-base::RefCountedMemory* ThemeHelper::GetRawData(
+scoped_refptr<base::RefCountedMemory> ThemeHelper::GetRawData(
     int id,
     const CustomThemeSupplier* theme_supplier,
     ui::ResourceScaleFactor scale_factor) const {
@@ -104,7 +107,7 @@ base::RefCountedMemory* ThemeHelper::GetRawData(
     id = IDR_PRODUCT_LOGO_WHITE;
   }
 
-  base::RefCountedMemory* data = nullptr;
+  scoped_refptr<base::RefCountedMemory> data;
   if (theme_supplier) {
     data = theme_supplier->GetRawData(id, scale_factor);
   }

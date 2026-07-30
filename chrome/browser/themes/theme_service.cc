@@ -247,7 +247,8 @@ bool ThemeService::BrowserThemeProvider::HasCustomImage(int id) const {
   return theme_helper_->HasCustomImage(id, GetThemeSupplier());
 }
 
-base::RefCountedMemory* ThemeService::BrowserThemeProvider::GetRawData(
+scoped_refptr<base::RefCountedMemory>
+ThemeService::BrowserThemeProvider::GetRawData(
     int id,
     ui::ResourceScaleFactor scale_factor) const {
   return theme_helper_->GetRawData(id, GetThemeSupplier(), scale_factor);

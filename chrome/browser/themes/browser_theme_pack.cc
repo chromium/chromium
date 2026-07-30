@@ -1077,10 +1077,10 @@ gfx::Image BrowserThemePack::GetImageNamed(int idr_id) const {
   return gfx::Image();
 }
 
-base::RefCountedMemory* BrowserThemePack::GetRawData(
+scoped_refptr<base::RefCountedMemory> BrowserThemePack::GetRawData(
     int idr_id,
     ui::ResourceScaleFactor scale_factor) const {
-  base::RefCountedMemory* memory = nullptr;
+  scoped_refptr<base::RefCountedMemory> memory;
   PersistentID prs_id = GetPersistentIDByIDR(idr_id);
   int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
 
@@ -1090,7 +1090,7 @@ base::RefCountedMemory* BrowserThemePack::GetRawData(
     } else {
       auto it = image_memory_.find(raw_id);
       if (it != image_memory_.end()) {
-        memory = it->second.get();
+        memory = it->second;
       }
     }
   }
