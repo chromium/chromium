@@ -66,7 +66,10 @@ void WallClockForwarder::ForwardWhileSuspended(const base::TimeDelta& delta) {
   runner_->AdvanceWallClock(delta);
 
   fake_power_monitor_source_.Resume();
-  runner_->RunUntilIdle();
+  // Resume notifications are posted to the timer's task runner. Advancing mock
+  // time by zero runs that notification and any WallClockTimer task already due
+  // against the forwarded wall clock.
+  runner_->FastForwardBy(base::TimeDelta());
 }
 
 class SessionLengthLimiterTest
