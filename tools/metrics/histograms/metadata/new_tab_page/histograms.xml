@@ -1122,7 +1122,11 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="NewTabPageTimings">
     <variant name=""/>
-    <variant name=".FirstContentfulPaint" summary="First contentful paint."/>
+    <variant name=".FirstContentfulPaint"
+        summary="First contentful paint. Android desktop only. Its
+                 functionality is already covered by
+                 NewTabPage.LoadTime.FirstContentfulPaint2."/>
+    <variant name=".FirstContentfulPaint2" summary="First contentful paint."/>
     <variant name=".LargestContentfulPaint"
         summary="Largest contentful paint."/>
     <variant name=".MostVisited" summary="Loaded client-side suggestions."/>
