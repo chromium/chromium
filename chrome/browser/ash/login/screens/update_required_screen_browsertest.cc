@@ -33,6 +33,9 @@
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -133,6 +136,39 @@ void WaitForConfirmationDialogToClose() {
                     ".open === false")
       ->Wait();
 }
+
+class NoDefaultNetworkWaiter : public NetworkStateHandlerObserver {
+ public:
+  explicit NoDefaultNetworkWaiter(NetworkStateHandler* network_state_handler)
+      : network_state_handler_(network_state_handler) {
+    observation_.Observe(network_state_handler_);
+  }
+
+  NoDefaultNetworkWaiter(const NoDefaultNetworkWaiter&) = delete;
+  NoDefaultNetworkWaiter& operator=(const NoDefaultNetworkWaiter&) = delete;
+
+  ~NoDefaultNetworkWaiter() override = default;
+
+  void Wait() {
+    if (!network_state_handler_->DefaultNetwork()) {
+      return;
+    }
+
+    run_loop_.Run();
+  }
+
+ private:
+  // NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const NetworkState* network) override {
+    if (!network) {
+      run_loop_.Quit();
+    }
+  }
+
+  const raw_ptr<NetworkStateHandler> network_state_handler_;
+  base::RunLoop run_loop_;
+  NetworkStateHandlerScopedObservation observation_{this};
+};
 
 class UpdateRequiredScreenTest : public OobeBaseTest {
  public:
@@ -362,8 +398,10 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestUpdateOverMeteredNetwork) {
 // required screen.
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestUpdateRequiredNoNetwork) {
   // Disconnect from all networks and show update required screen.
+  NoDefaultNetworkWaiter no_default_network_waiter(
+      NetworkHandler::Get()->network_state_handler());
   network_state_test_helper_->service_test()->ClearServices();
-  base::RunLoop().RunUntilIdle();
+  no_default_network_waiter.Wait();
 
   ShowUpdateRequiredScreen();
 
