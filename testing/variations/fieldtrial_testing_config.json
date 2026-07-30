@@ -17209,9 +17209,8 @@
             ],
             "experiments": [
                 {
-                    "name": "WhileLoadingAndDuringStartup",
+                    "name": "WhileLoading",
                     "enable_features": [
-                        "NetworkServiceIncreasedPriorityDuringStartup",
                         "NetworkServiceIncreasedPriorityWhileLoading"
                     ]
                 }

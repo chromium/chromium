@@ -138,7 +138,12 @@ bool g_network_service_is_responding = false;
 // When enabled, sets the in-process network service thread to
 // base::ThreadType::kPresentation during startup.
 BASE_FEATURE(kNetworkServiceIncreasedPriorityDuringStartup,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else   // BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
 
 // When enabled, sets the in-process network service thread to
 // base::ThreadType::kPresentation when the scenario indicates that the user is
