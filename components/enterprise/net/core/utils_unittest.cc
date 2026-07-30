@@ -479,7 +479,7 @@ TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
   ASSERT_TRUE(config.has_value());
 
   base::DictValue dict = ProvisioningDomainProxyConfigToDict(*config);
-  EXPECT_EQ("api.example.com", *dict.FindString("pvd_id"));
+  EXPECT_EQ("api.example.com", *dict.FindString("identifier"));
   EXPECT_EQ("RefreshNeeded", *dict.FindString("state"));
 
   const base::ListValue* proxies = dict.FindList("proxies");
@@ -497,15 +497,19 @@ TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
   }
   ASSERT_NE(nullptr, proxy1_dict);
   EXPECT_EQ(kTestProxyIdentity1, *proxy1_dict->FindString("identifier"));
-  EXPECT_EQ("[https://proxy1.example.com:443]",
-            *proxy1_dict->FindString("proxy_chain"));
+  EXPECT_EQ("https-connect", *proxy1_dict->FindString("protocol"));
+  EXPECT_EQ("https://proxy1.example.com:443",
+            *proxy1_dict->FindString("proxy"));
 
-  const base::DictValue* auth_dict = proxy1_dict->FindDict("auth");
+  const base::DictValue* chrome_dict = proxy1_dict->FindDict("google_chrome");
+  ASSERT_NE(nullptr, chrome_dict);
+
+  const base::DictValue* auth_dict = chrome_dict->FindDict("auth");
   ASSERT_NE(nullptr, auth_dict);
   EXPECT_EQ("profile_bearer_token", *auth_dict->FindString("type"));
   EXPECT_EQ("cloud_secure_gateway", *auth_dict->FindString("scope"));
 
-  const base::ListValue* headers = proxy1_dict->FindList("extra_headers");
+  const base::ListValue* headers = chrome_dict->FindList("extra_headers");
   ASSERT_NE(nullptr, headers);
   EXPECT_EQ(2u, headers->size());
   EXPECT_EQ("x-chrome-custom", *(*headers)[0].GetDict().FindString("key"));
@@ -523,11 +527,21 @@ TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
   EXPECT_EQ(1u, rule0_proxies->size());
   EXPECT_EQ(kTestProxyIdentity1, (*rule0_proxies)[0].GetString());
 
-  const base::ListValue* rule0_matchers =
-      rule0.FindList("destination_matchers");
+  const base::ListValue* rule0_matchers = rule0.FindList("domains");
   ASSERT_NE(nullptr, rule0_matchers);
   EXPECT_EQ(1u, rule0_matchers->size());
   EXPECT_EQ("test.domain.com:443", (*rule0_matchers)[0].GetString());
+
+  // Verify 2-way roundtrip: parse serialized dict back into
+  // ProvisioningDomainProxyConfig.
+  std::optional<ProvisioningDomainProxyConfig> roundtrip_config =
+      ParseProvisioningDomainConfig(dict);
+  ASSERT_TRUE(roundtrip_config.has_value());
+  EXPECT_EQ(config->pvd_id, roundtrip_config->pvd_id);
+  EXPECT_EQ(config->proxy_endpoints.size(),
+            roundtrip_config->proxy_endpoints.size());
+  EXPECT_EQ(config->routing_rules.size(),
+            roundtrip_config->routing_rules.size());
 }
 
 TEST(ParseRoutingRuleTest, WildcardApexDomainExpansion) {

@@ -16,6 +16,9 @@ namespace enterprise_net {
 // Preference to store the value of the "ProxyProvisioningDomains" policy.
 extern const char kProxyProvisioningDomains[];
 
+// Preference to store cached Provisioning Domain configurations.
+extern const char kProvisioningDomainProxyConfigs[];
+
 // Registers profile preferences in the registry.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

@@ -37,7 +37,25 @@ constexpr char kTestPvdJson[] = R"({
     {
       "identifier": "proxy1",
       "protocol": "https-connect",
-      "proxy": "proxy1.example.com:443"
+      "proxy": "proxy1.example.com:443",
+      "google_chrome": {
+        "auth": {
+          "type": "profile_bearer_token",
+          "scope": "cloud_secure_gateway"
+        },
+        "extra_headers": [
+          {
+            "key": "X-Client-ID",
+            "value": "test_client",
+            "type": "constant"
+          },
+          {
+            "key": "X-Profile-ID",
+            "value": "${profile_id}",
+            "type": "variable"
+          }
+        ]
+      }
     },
     {
       "identifier": "proxy2",
@@ -48,7 +66,8 @@ constexpr char kTestPvdJson[] = R"({
   "proxy-match": [
     {
       "proxies": ["proxy1"],
-      "domains": ["*.secure.com"]
+      "domains": ["*.secure.com"],
+      "ports": [443]
     },
     {
       "proxies": ["DIRECT"],
@@ -93,7 +112,8 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
         },
         &test_url_loader_factory_);
     return std::make_unique<ProxyProvisioningDomainManager>(
-        base::Value(ProvisioningDomainConfigToDict(policy)), auth_service,
+        base::Value(ProvisioningDomainConfigToDict(policy)),
+        /*cached_config_dict=*/nullptr, auth_service,
         std::move(url_loader_factory_callback));
   }
 
@@ -247,14 +267,13 @@ TEST_F(ProxyProvisioningDomainManagerTest, CancelRefreshAbortsInFlightRequest) {
   manager->RemoveObserver(&observer);
 }
 
-TEST_F(ProxyProvisioningDomainManagerTest,
-       GetDebugInfoContainsDetailedContent) {
+TEST_F(ProxyProvisioningDomainManagerTest, ToDictContainsDetailedContent) {
   auto auth_service = CreateAuthService();
   auto manager = CreateManager(CreateTestPolicyConfigWithAuthAndHeaders(),
                                auth_service.get());
 
   // Verify debug info before fetch runs.
-  base::DictValue debug_info_initial = manager->GetDebugInfo();
+  base::DictValue debug_info_initial = manager->ToDict();
   const base::DictValue* policy_dict = debug_info_initial.FindDict("policy");
   ASSERT_NE(nullptr, policy_dict);
   EXPECT_EQ(kTestDomain, *policy_dict->FindString("pvd_id"));
@@ -302,11 +321,11 @@ TEST_F(ProxyProvisioningDomainManagerTest,
       kTestUrl, kTestPvdJson));
 
   // Verify detailed debug info after successful refresh.
-  base::DictValue debug_info = manager_http->GetDebugInfo();
+  base::DictValue debug_info = manager_http->ToDict();
   const base::DictValue* fetched_config_dict =
       debug_info.FindDict("fetched_config");
   ASSERT_NE(nullptr, fetched_config_dict);
-  EXPECT_EQ(kTestDomain, *fetched_config_dict->FindString("pvd_id"));
+  EXPECT_EQ(kTestDomain, *fetched_config_dict->FindString("identifier"));
   EXPECT_EQ("Valid", *fetched_config_dict->FindString("state"));
 
   const base::ListValue* proxies = fetched_config_dict->FindList("proxies");
@@ -399,7 +418,8 @@ TEST_F(ProxyProvisioningDomainManagerTest, NullURLLoaderFactoryRecovery) {
 
   auto manager = std::make_unique<ProxyProvisioningDomainManager>(
       base::Value(ProvisioningDomainConfigToDict(CreateTestPolicyConfig())),
-      auth_service.get(), std::move(url_loader_factory_callback));
+      /*cached_config_dict=*/nullptr, auth_service.get(),
+      std::move(url_loader_factory_callback));
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !manager->is_refresh_in_progress(); }));
@@ -420,8 +440,60 @@ TEST_F(ProxyProvisioningDomainManagerTest, NullURLLoaderFactoryRecovery) {
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kValid, manager->state());
 }
 
+TEST_F(ProxyProvisioningDomainManagerTest, RestoresFromCachedConfigDict) {
+  auto auth_service = CreateAuthService();
+
+  // Create a manager and populate its fetched config by simulating network
+  // response.
+  auto initial_manager =
+      CreateManager(CreateTestPolicyConfig(), auth_service.get());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUrl, kTestPvdJson));
+
+  base::DictValue cached_dict = initial_manager->ToDict();
+
+  auto url_loader_factory_callback = base::BindRepeating(
+      [](network::TestURLLoaderFactory* test_url_loader_factory)
+          -> scoped_refptr<network::SharedURLLoaderFactory> {
+        return test_url_loader_factory->GetSafeWeakWrapper();
+      },
+      &test_url_loader_factory_);
+
+  // Create a new manager initialized with cached_dict.
+  auto manager = std::make_unique<ProxyProvisioningDomainManager>(
+      base::Value(ProvisioningDomainConfigToDict(CreateTestPolicyConfig())),
+      &cached_dict, auth_service.get(), std::move(url_loader_factory_callback));
+
+  // Active routes should be restored immediately from cache.
+  const auto& restored_config = manager->fetched_config();
+  EXPECT_EQ(2u, restored_config.proxy_endpoints.size());
+  EXPECT_EQ(3u, restored_config.routing_rules.size());
+  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kRefreshNeeded,
+            manager->state());
+
+  EXPECT_TRUE(restored_config.proxy_endpoints.contains("proxy1"));
+  EXPECT_TRUE(restored_config.proxy_endpoints.contains("proxy2"));
+  const auto& p1 = restored_config.proxy_endpoints.at("proxy1");
+  ASSERT_TRUE(p1.auth.has_value());
+  EXPECT_EQ(AuthType::kProfileBearerToken, p1.auth->type);
+  EXPECT_EQ(2u, p1.extra_headers.size());
+  EXPECT_EQ(std::vector<std::string>{"DIRECT"},
+            restored_config.routing_rules[1].proxies);
+}
+
 TEST_F(ProxyProvisioningDomainManagerTest, HandlesMalformedPolicyDict) {
   auto auth_service = CreateAuthService();
+
+  // Create a dummy cached_dict.
+  auto dummy_manager =
+      CreateManager(CreateTestPolicyConfig(), auth_service.get());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kTestUrl, kTestPvdJson));
+  base::DictValue cached_dict = dummy_manager->ToDict();
+
+  // Pass malformed policy alongside a non-null cached_config_dict.
   base::DictValue malformed_policy;
   malformed_policy.Set("invalid_key", "invalid_value");
 
@@ -433,17 +505,21 @@ TEST_F(ProxyProvisioningDomainManagerTest, HandlesMalformedPolicyDict) {
       &test_url_loader_factory_);
 
   auto manager = std::make_unique<ProxyProvisioningDomainManager>(
-      base::Value(std::move(malformed_policy)), auth_service.get(),
-      std::move(url_loader_factory_callback));
+      base::Value(std::move(malformed_policy)), &cached_dict,
+      auth_service.get(), std::move(url_loader_factory_callback));
 
+  // Policy parsing failure should return early as FailedPermanent and NOT set
+  // fetched config from cached_dict.
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
             manager->state());
   EXPECT_FALSE(manager->is_refresh_in_progress());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(0u, manager->fetched_config().proxy_endpoints.size());
+  EXPECT_EQ(0u, manager->fetched_config().routing_rules.size());
 
-  base::DictValue debug_info = manager->GetDebugInfo();
+  base::DictValue dict_info = manager->ToDict();
   const std::string* state_str =
-      debug_info.FindStringByDottedPath("fetched_config.state");
+      dict_info.FindStringByDottedPath("fetched_config.state");
   ASSERT_NE(nullptr, state_str);
   EXPECT_EQ("FailedPermanent", *state_str);
 }
@@ -460,7 +536,7 @@ TEST_F(ProxyProvisioningDomainManagerTest, HandlesNonDictPolicyValue) {
       &test_url_loader_factory_);
 
   auto manager = std::make_unique<ProxyProvisioningDomainManager>(
-      non_dict_policy, auth_service.get(),
+      non_dict_policy, /*cached_config_dict=*/nullptr, auth_service.get(),
       std::move(url_loader_factory_callback));
 
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kFailedPermanent,
@@ -468,9 +544,9 @@ TEST_F(ProxyProvisioningDomainManagerTest, HandlesNonDictPolicyValue) {
   EXPECT_FALSE(manager->is_refresh_in_progress());
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
-  base::DictValue debug_info = manager->GetDebugInfo();
+  base::DictValue dict_info = manager->ToDict();
   const std::string* state_str =
-      debug_info.FindStringByDottedPath("fetched_config.state");
+      dict_info.FindStringByDottedPath("fetched_config.state");
   ASSERT_NE(nullptr, state_str);
   EXPECT_EQ("FailedPermanent", *state_str);
 }

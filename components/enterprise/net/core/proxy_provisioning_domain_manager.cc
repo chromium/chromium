@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/provisioning_domain_fetcher.h"
 #include "components/enterprise/net/core/utils.h"
@@ -97,6 +97,7 @@ ProvisioningDomainConfig ParsePolicyFromValue(const base::Value& policy_val) {
 
 ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
     const base::Value& policy_val,
+    const base::DictValue* cached_config_dict,
     EnterpriseNetworkAuthService* auth_service,
     GetURLLoaderFactoryCallback url_loader_factory_callback)
     : policy_(ParsePolicyFromValue(policy_val)),
@@ -115,6 +116,20 @@ ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
 
   fetched_config_.pvd_id = policy_.pvd_id;
   fetched_config_.state = ProvisioningDomainProxyConfig::State::kRefreshNeeded;
+  if (cached_config_dict) {
+    const base::DictValue* fetched_dict =
+        cached_config_dict->FindDict("fetched_config");
+    if (fetched_dict) {
+      std::optional<ProvisioningDomainProxyConfig> parsed =
+          ParseProvisioningDomainConfig(*fetched_dict);
+      if (parsed.has_value()) {
+        fetched_config_ = std::move(*parsed);
+        fetched_config_.state =
+            ProvisioningDomainProxyConfig::State::kRefreshNeeded;
+      }
+    }
+  }
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyProvisioningDomainManager::StartRefreshInternal,
@@ -143,8 +158,9 @@ void ProxyProvisioningDomainManager::CancelRefresh() {
   fetcher_.reset();
 }
 
-base::DictValue ProxyProvisioningDomainManager::GetDebugInfo() const {
+base::DictValue ProxyProvisioningDomainManager::ToDict() const {
   base::DictValue dict;
+  dict.Set("policy_hash", ComputePolicyHash(policy_));
   dict.Set("policy", ProvisioningDomainConfigToDict(policy_));
   dict.Set("fetched_config",
            ProvisioningDomainProxyConfigToDict(fetched_config_));

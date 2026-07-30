@@ -19,6 +19,7 @@
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
+#include "components/enterprise/net/core/utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -57,17 +58,38 @@ constexpr char kTestFailDomain[] = "fail.example.com";
 
 const char kValidPvdJson1[] = R"({
   "identifier": "domain1.example.com",
+  "expires": "Wed, 21 Oct 2026 07:28:00 GMT",
   "proxies": [
     {
       "protocol": "https-connect",
       "identity": "proxy1",
-      "proxy": "https://proxy1.example.com:443"
+      "proxy": "proxy1.example.com:443",
+      "google_chrome": {
+        "auth": {
+          "type": "profile_bearer_token",
+          "scope": "cloud_secure_gateway"
+        },
+        "extra_headers": [
+          {
+            "key": "X-Client-ID",
+            "value": "test_client",
+            "type": "constant"
+          },
+          {
+            "key": "X-Profile-ID",
+            "value": "${profile_id}",
+            "type": "variable"
+          }
+        ]
+      }
     }
   ],
   "proxy-match": [
     {
       "proxies": ["proxy1"],
-      "domains": ["*.example.com"]
+      "domains": ["*.example.com"],
+      "subnets": ["192.168.1.0/24"],
+      "ports": [443]
     }
   ]
 })";
@@ -96,7 +118,7 @@ const char kValidPvdJson2[] = R"({
     {
       "protocol": "https-connect",
       "identity": "proxy2",
-      "proxy": "https://proxy2.example.com:443"
+      "proxy": "proxy2.example.com:443"
     }
   ],
   "proxy-match": [
@@ -430,6 +452,104 @@ TEST_F(EnterpriseProxyServiceTest, SingleDomainLifecycleAndStateTransitions) {
   EXPECT_FALSE(old_endpoint.has_value());
 
   service_->RemoveObserver(&observer);
+}
+
+TEST_F(EnterpriseProxyServiceTest,
+       CachesResponsesIncrementallyAndPrunesOnPolicyChange) {
+  CreateService();
+
+  base::ListValue policy_domains;
+  policy_domains.Append(CreateDomainPolicyEntry(kTestDomain1));
+  policy_domains.Append(CreateDomainPolicyEntry(kTestDomain2));
+  pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  // Simulate response for domain1 ONLY.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  // Verify pref cache dict is updated incrementally after domain1 completes:
+  // domain1's cached state becomes "Valid" while domain2 remains
+  // "RefreshNeeded".
+  const base::DictValue& partial_cache =
+      pref_service_.GetDict(kProvisioningDomainProxyConfigs);
+  EXPECT_EQ(2u, partial_cache.size());
+
+  for (const auto [key, value] : partial_cache) {
+    ASSERT_TRUE(value.is_dict());
+    const std::string* pvd_id =
+        value.GetDict().FindStringByDottedPath("policy.pvd_id");
+    ASSERT_NE(nullptr, pvd_id);
+    const std::string* state =
+        value.GetDict().FindStringByDottedPath("fetched_config.state");
+    ASSERT_NE(nullptr, state);
+    if (*pvd_id == kTestDomain1) {
+      EXPECT_EQ("Valid", *state);
+    } else if (*pvd_id == kTestDomain2) {
+      EXPECT_EQ("RefreshNeeded", *state);
+    }
+  }
+
+  // Simulate response for domain2.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain2.example.com/.well-known/pvd", kValidPvdJson2);
+
+  // Verify pref cache dict contains entries for both domains.
+  const base::DictValue& full_cache =
+      pref_service_.GetDict(kProvisioningDomainProxyConfigs);
+  EXPECT_EQ(2u, full_cache.size());
+
+  // Remove domain2 from policy.
+  base::ListValue updated_domains;
+  updated_domains.Append(CreateDomainPolicyEntry(kTestDomain1));
+  pref_service_.SetList(kProxyProvisioningDomains, std::move(updated_domains));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  // Finish background refresh for domain1.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  // Verify updated cache contains only 1 entry for domain1.
+  const base::DictValue& updated_cache =
+      pref_service_.GetDict(kProvisioningDomainProxyConfigs);
+  EXPECT_EQ(1u, updated_cache.size());
+}
+
+TEST_F(EnterpriseProxyServiceTest,
+       RestoresActiveRoutesFromCachedConfigOnStartup) {
+  CreateService();
+
+  // Populate initial cache.
+  base::ListValue policy_domains;
+  policy_domains.Append(CreateDomainPolicyEntry(kTestDomain1));
+  pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsRefreshInProgress(); }));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
+
+  ASSERT_FALSE(service_->IsRefreshInProgress());
+
+  // Re-create service (simulating Chrome startup with populated cache).
+  service_.reset();
+  CreateService();
+
+  // Verify active routes are immediately available from cache BEFORE
+  // simulating network response.
+  const auto endpoint = service_->FindMatchingProxyEndpoint(
+      GURL("https://foo.example.com/test"),
+      MakeHttpsProxyChain("proxy1.example.com:443"));
+  ASSERT_TRUE(endpoint.has_value());
+  ASSERT_TRUE(endpoint->auth.has_value());
+  EXPECT_EQ(AuthType::kProfileBearerToken, endpoint->auth->type);
+  EXPECT_EQ(AuthScope::kCloudSecureGateway, endpoint->auth->scope);
+  EXPECT_EQ(2u, endpoint->extra_headers.size());
 }
 
 }  // namespace

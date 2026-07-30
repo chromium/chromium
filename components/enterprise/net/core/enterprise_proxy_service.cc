@@ -4,22 +4,48 @@
 
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
-#include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/enterprise/net/core/proxy_provisioning_domain_manager.h"
 #include "components/enterprise/net/core/utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_net {
+
+namespace {
+
+const base::DictValue* FindMatchingCachedConfig(
+    const base::Value& policy_val,
+    const base::DictValue* cached_configs_dict) {
+  if (!cached_configs_dict || !policy_val.is_dict()) {
+    return nullptr;
+  }
+  std::optional<ProvisioningDomainConfig> policy =
+      ParseProxyProvisioningDomainPolicy(policy_val.GetDict());
+  if (!policy.has_value()) {
+    return nullptr;
+  }
+
+  std::string policy_hash = ComputePolicyHash(*policy);
+  if (policy_hash.empty()) {
+    return nullptr;
+  }
+  return cached_configs_dict->FindDict(policy_hash);
+}
+
+}  // namespace
+
 EnterpriseProxyService::EnterpriseProxyService(
     PrefService* pref_service,
     EnterpriseNetworkAuthService* auth_service,
@@ -110,6 +136,17 @@ void EnterpriseProxyService::OnProvisioningDomainStateChanged(
     refreshing_managers_.insert(domain_manager);
   } else {
     refreshing_managers_.erase(domain_manager);
+    // Do not overwrite previously cached valid configurations with transient
+    // failure states.
+    if (domain_manager->fetched_config().state !=
+        ProvisioningDomainProxyConfig::State::kFailedTransient) {
+      std::string policy_hash = ComputePolicyHash(domain_manager->policy());
+      if (!policy_hash.empty()) {
+        ScopedDictPrefUpdate update(pref_service_,
+                                    kProvisioningDomainProxyConfigs);
+        update->Set(policy_hash, domain_manager->ToDict());
+      }
+    }
   }
 
   const size_t new_count = refreshing_managers_.size();
@@ -140,7 +177,7 @@ base::DictValue EnterpriseProxyService::GetDebugInfo() const {
 
   base::ListValue domains_list;
   for (const auto& manager : provisioning_domain_managers_) {
-    domains_list.Append(manager->GetDebugInfo());
+    domains_list.Append(manager->ToDict());
   }
   dict.Set("domains", std::move(domains_list));
   return dict;
@@ -158,12 +195,36 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
   provisioning_domain_managers_.clear();
   refreshing_managers_.clear();
 
+  const base::DictValue& cached_configs_dict =
+      pref_service_->GetDict(kProvisioningDomainProxyConfigs);
+
+  std::set<std::string> active_policy_hashes;
+
   for (const auto& domain_val : policy_domains) {
+    const base::DictValue* matching_cached_config =
+        FindMatchingCachedConfig(domain_val, &cached_configs_dict);
     auto manager = std::make_unique<ProxyProvisioningDomainManager>(
-        domain_val, auth_service_, url_loader_factory_callback_);
+        domain_val, matching_cached_config, auth_service_,
+        url_loader_factory_callback_);
+    std::string policy_hash = ComputePolicyHash(manager->policy());
+    if (!policy_hash.empty()) {
+      active_policy_hashes.insert(policy_hash);
+    }
     manager->AddObserver(this);
     OnProvisioningDomainStateChanged(manager.get());
     provisioning_domain_managers_.push_back(std::move(manager));
+  }
+
+  // Prune cache entries for policy hashes that are no longer configured.
+  ScopedDictPrefUpdate update(pref_service_, kProvisioningDomainProxyConfigs);
+  std::vector<std::string> keys_to_remove;
+  for (const auto [key, value] : *update) {
+    if (!active_policy_hashes.contains(key)) {
+      keys_to_remove.push_back(key);
+    }
+  }
+  for (const auto& key : keys_to_remove) {
+    update->Remove(key);
   }
 }
 

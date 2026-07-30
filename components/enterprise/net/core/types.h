@@ -88,6 +88,8 @@ struct ProvisioningDomainConfig {
 
 // Public structure representing a fetched Provisioning Domain configuration
 // alongside its current fetch state.
+// TODO(crbug.com/540422559): Change the transient error definition to
+// distinguish between blocked and currently retry-able transient errors.
 struct ProvisioningDomainProxyConfig {
   enum class State {
     kRefreshNeeded = 0,

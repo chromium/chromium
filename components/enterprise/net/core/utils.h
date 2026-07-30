@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "build/build_config.h"
-#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/net/core/types.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -48,6 +46,12 @@ net::HttpRequestHeaders ResolveExtraHeadersWithValues(
 std::optional<ProvisioningDomainConfig> ParseProxyProvisioningDomainPolicy(
     const base::DictValue& domain_dict);
 
+// Parses a PvD configuration dictionary into a
+// ProvisioningDomainProxyConfig struct. Returns std::nullopt if the dictionary
+// is invalid or missing required fields.
+std::optional<ProvisioningDomainProxyConfig> ParseProvisioningDomainConfig(
+    const base::DictValue& dict);
+
 // Parses a raw PvD JSON configuration string into a
 // ProvisioningDomainProxyConfig struct. Returns std::nullopt if the JSON is
 // invalid or missing required fields.
@@ -63,6 +67,10 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     const ProvisioningDomainProxyConfig& config,
     const GURL& destination_url,
     const net::ProxyChain& proxy_chain);
+
+// Computes a deterministic hash string for a ProvisioningDomainConfig policy
+// struct.
+std::string ComputePolicyHash(const ProvisioningDomainConfig& policy_config);
 
 // Serializes a ProvisioningDomainConfig struct into a base::DictValue
 // representation.
