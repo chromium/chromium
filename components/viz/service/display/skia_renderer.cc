@@ -135,7 +135,7 @@ BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
 // contiguous frames but maintains stable RenderPassRequirements.
 BASE_FEATURE(kReuseScanoutRenderPassBacking,
 #if BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
@@ -3760,14 +3760,12 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   if (requirements.is_scanout && scanout_backing_for_reuse_.has_value()) {
     const RenderPassBacking& reusable = *scanout_backing_for_reuse_;
     if (reusable.IsSufficientForRequirements(requirements)) {
-      const gpu::Mailbox& reused_mailbox = reusable.mailbox;
       render_pass_backings_.emplace(
           render_pass_id,
-          RenderPassBacking(requirements.size, requirements.generate_mipmap,
-                            requirements.color_space, requirements.alpha_type,
-                            requirements.format, reused_mailbox, is_root,
-                            requirements.is_scanout,
-                            requirements.scanout_dcomp_surface,
+          RenderPassBacking(reusable.size, reusable.generate_mipmap,
+                            reusable.color_space, reusable.alpha_type,
+                            reusable.format, reusable.mailbox, is_root,
+                            reusable.is_scanout, reusable.scanout_dcomp_surface,
                             /*buffer_queue=*/nullptr));
       scanout_backing_for_reuse_.reset();
       if (base::FeatureList::IsEnabled(
