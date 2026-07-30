@@ -12031,6 +12031,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
   }
 
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+
   // MHTML subframes can supply URLs at commit time that do not match the
   // process lock. For example, it can be either "cid:..." or arbitrary URL at
   // which the frame was at the time of generating the MHTML
@@ -12038,15 +12040,29 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // the URL to commit in the process of the main frame.
   if (IsMhtmlSubframe()) {
     // Documents derived from an MHTML archive are behind sandbox flags, so
-    // their origin is opaque. The early-return below validates neither URL
-    // nor origin, so a compromised renderer could otherwise launder an
-    // arbitrary non-opaque origin past this point via
-    // DidCommitSameDocumentNavigation.
+    // their origin must be opaque.
     if (!origin.opaque()) {
       LogCanCommitOriginAndUrlFailureReason("mhtml_subframe_non_opaque_origin");
       return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
     }
+
+    // Additionally, ensure the opaque origin's precursor is something this
+    // subframe could have legitimately produced: either derived from the URL
+    // being committed, or inherited from an existing frame's origin which had
+    // already been allowed into this process. This is important because this
+    // path skips the ChildProcessSecurityPolicy validation further down
+    // below.
     RenderFrameHostImpl* main_frame = GetMainFrame();
+    const url::SchemeHostPort precursor =
+        origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (precursor.IsValid() && precursor != url::SchemeHostPort(url) &&
+        !policy->HostsOrigin(GetProcess()->GetDeprecatedID(), origin)) {
+      LogCanCommitOriginAndUrlFailureReason(
+          "mhtml_subframe_invalid_precursor_origin");
+      return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
+    }
+
+    // Require the URL to commit in the process of the main frame.
     if (IsSameSiteInstance(main_frame)) {
       return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
     }
@@ -12085,7 +12101,6 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   }
 
   // Check with ChildProcessSecurityPolicy, which enforces Site Isolation, etc.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetDeprecatedID(), GetSiteInstance()->GetIsolationContext(),
       url_info);
