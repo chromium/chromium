@@ -872,25 +872,18 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   // Fetches user's identity from Authentication Service.
   if (_signedInIdentity) {
     // Only show an avatar if the user is signed in.
-    UIImage* image =
+    UIImage* avatarImage =
         GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             _signedInIdentity, IdentityAvatarSize::SmallSize);
 
-    UIImage* avatarWithRing = nil;
-    if (IsAiAvatarRingIosEnabled() &&
-        _subscriptionEligibilityService->GetAiSubscriptionTier() > 0) {
-      CGFloat smallerSize =
-          GetSizeForIdentityAvatarSize(IdentityAvatarSize::SmallSize,
-                                       AITierRingSize::kViewSize)
-              .width;
-      avatarWithRing = ResizeImage(image, CGSizeMake(smallerSize, smallerSize),
-                                   ProjectionMode::kAspectFill);
-    }
+    BOOL hasAITier =
+        IsAiAvatarRingIosEnabled() &&
+        _subscriptionEligibilityService->GetAiSubscriptionTier() > 0;
 
     [self.imageUpdater updateAccountWithName:_signedInIdentity.userFullName
                                        email:_signedInIdentity.userEmail
-                         avatarWithoutAITier:image
-                             avatarForAITier:avatarWithRing];
+                                 avatarImage:avatarImage
+                                   hasAITier:hasAITier];
   } else {
     [self.imageUpdater setSignedOutAccountImage];
     signin_metrics::LogSignInOffered(

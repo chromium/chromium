@@ -1949,17 +1949,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Updates current signed-in user account avatar with the supplied images.
 // `avatarWithoutAITier` is the normal-sized avatar image to be displayed when
 // the AI tier ring is not shown.
-// `avatarForAITier` is the smaller-sized avatar image to be displayed when
-// the AI tier ring is shown, so that the ring fits within the normal bounds.
 - (void)updateAccountWithName:(NSString*)name
                         email:(NSString*)email
-          avatarWithoutAITier:(UIImage*)avatarWithoutAITier
-              avatarForAITier:(UIImage*)avatarForAITier {
+                  avatarImage:(UIImage*)avatarImage
+                    hasAITier:(BOOL)hasAITier {
   _isSignedIn = YES;
   [self.identityDiscButton updateAccountWithName:name
                                            email:email
-                             avatarWithoutAITier:avatarWithoutAITier
-                                 avatarForAITier:avatarForAITier];
+                                     avatarImage:avatarImage
+                                       hasAITier:hasAITier];
 }
 
 #pragma mark - SearchEngineLogoConsumer

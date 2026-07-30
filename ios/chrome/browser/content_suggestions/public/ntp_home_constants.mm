@@ -23,7 +23,7 @@ const CGFloat kMostVisitedBottomMarginIPad = 80;
 const CGFloat kMostVisitedBottomMarginIPhone = 60;
 const CGFloat kSuggestionPeekingHeight = 60;
 
-const CGFloat kIdentityAvatarDimension = 32;
+const CGFloat kIdentityAvatarDiameter = 32;
 const CGFloat kHeaderIconMargin = 8;
 const CGFloat kIdentityAvatarPadding = 8;
 const CGFloat kSignedOutIdentityIconSize = 24;

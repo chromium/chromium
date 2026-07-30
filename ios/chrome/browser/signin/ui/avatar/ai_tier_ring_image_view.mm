@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation AITierRingImageView {
   CAShapeLayer* _maskLayer;
@@ -18,6 +19,7 @@
     _maskLayer = [CAShapeLayer layer];
     _maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.layer.mask = _maskLayer;
+    AddSizeConstraints(self, image.size);
   }
   return self;
 }
@@ -34,13 +36,6 @@
   [maskPath appendPath:[UIBezierPath bezierPathWithOvalInRect:innerRect]];
   _maskLayer.path = maskPath.CGPath;
   _maskLayer.frame = bounds;
-}
-
-- (void)setRingWidth:(CGFloat)ringWidth {
-  if (_ringWidth != ringWidth) {
-    _ringWidth = ringWidth;
-    [self setNeedsLayout];
-  }
 }
 
 @end

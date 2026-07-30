@@ -61,9 +61,8 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   BOOL _hasAccountError;
   // The avatar image to be displayed when the AI tier ring is not shown.
   UIImage* _identityDiscImage;
-  // The smaller avatar image to be displayed when the AI tier ring is shown,
-  // so that the ring fits within the button's bounds.
-  UIImage* _avatarWithRingImage;
+  // Whether the user has a AITier.
+  BOOL _hasAITier;
   AITierAvatarView* _avatarViewWithRing;
   NSString* _identityDiscAccessibilityLabel;
   NSLayoutConstraint* _widthConstraint;
@@ -83,7 +82,7 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
         UIButton* button, UIPointerEffect* proposedEffect,
         UIPointerShape* proposedShape) {
       CGFloat singleInset =
-          (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+          (button.frame.size.width - ntp_home::kIdentityAvatarDiameter) / 2;
       CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
       UIPointerShape* shape =
           [UIPointerShape shapeWithRoundedRect:rect
@@ -133,22 +132,14 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
 }
 
 // Updates current signed-in user account avatar with the supplied images.
-// `avatarWithoutAITier` is the normal-sized avatar image to be displayed when
-// the AI tier ring is not shown.
-// `avatarForAITier` is the smaller-sized avatar image to be displayed when
-// the AI tier ring is shown, so that the ring fits within the normal bounds.
 - (void)updateAccountWithName:(NSString*)name
                         email:(NSString*)email
-          avatarWithoutAITier:(UIImage*)avatarWithoutAITier
-              avatarForAITier:(UIImage*)avatarForAITier {
-  DCHECK(avatarWithoutAITier &&
-         avatarWithoutAITier.size.width == ntp_home::kIdentityAvatarDimension &&
-         avatarWithoutAITier.size.height == ntp_home::kIdentityAvatarDimension)
-      << base::SysNSStringToUTF8([avatarWithoutAITier description]);
+                  avatarImage:(UIImage*)avatarImage
+                    hasAITier:(BOOL)hasAITier {
   DCHECK(email);
 
-  _identityDiscImage = avatarWithoutAITier;
-  _avatarWithRingImage = avatarForAITier;
+  _identityDiscImage = avatarImage;
+  _hasAITier = hasAITier;
 
   _isSignedIn = YES;
 
@@ -181,7 +172,7 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
 - (void)updateIdentityDiscConstraints {
   BOOL showSignInButtonWithoutAvatar = !_isSignedIn;
 
-  CGFloat dimension = ntp_home::kIdentityAvatarDimension +
+  CGFloat dimension = ntp_home::kIdentityAvatarDiameter +
                       kMarginMultiplier * ntp_home::kHeaderIconMargin;
 
   CGFloat identityAvatarPadding = ntp_home::kIdentityAvatarPadding;
@@ -227,12 +218,10 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
       [_avatarViewWithRing removeFromSuperview];
     }
 
-    BOOL showRing = _avatarWithRingImage && !_hasAccountError;
-    UIImage* avatarToDisplay =
-        showRing ? _avatarWithRingImage : _identityDiscImage;
+    BOOL showRing = _hasAITier && !_hasAccountError;
     _avatarViewWithRing = [[AITierAvatarView alloc]
-        initWithAvatarImage:avatarToDisplay
-                  outerSize:ntp_home::kIdentityAvatarDimension
+        initWithAvatarImage:_identityDiscImage
+             avatarDiameter:ntp_home::kIdentityAvatarDiameter
             showsAITierRing:showRing];
     _avatarViewWithRing.userInteractionEnabled = NO;
 
@@ -242,10 +231,6 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
           constraintEqualToAnchor:self.centerXAnchor],
       [_avatarViewWithRing.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
-      [_avatarViewWithRing.widthAnchor
-          constraintEqualToConstant:ntp_home::kIdentityAvatarDimension],
-      [_avatarViewWithRing.heightAnchor
-          constraintEqualToConstant:ntp_home::kIdentityAvatarDimension],
     ]];
     [self updateBadgeBackgroundColor];
     return;

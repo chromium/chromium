@@ -9,11 +9,9 @@
 
 // A UIImageView subclass that uses a CAShapeLayer mask to display only the
 // outer ring of its image.
-// It must be initialized with a disk.
+// It must be initialized with a disk. The size of the ring is
+// `kAiTierRingWidth`.
 @interface AITierRingImageView : UIImageView
-
-// The width of the ring in points. Defaults to 3.0.
-@property(nonatomic, assign) CGFloat ringWidth;
 
 @end
 
