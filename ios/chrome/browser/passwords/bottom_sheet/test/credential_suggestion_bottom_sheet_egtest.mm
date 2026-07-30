@@ -277,6 +277,9 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   if ([self isRunningTest:@selector(DISABLED_testAutoSubmission)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAutoSubmission);
+  } else {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordAutoSubmission);
   }
 
   return config;

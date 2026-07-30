@@ -2718,7 +2718,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          password_manager::features::kIOSPasswordAutoSubmission,
          kAutoSubmissionVariations,
-         "PasswordAutofillAutoSubmission")},
+         "IOSPasswordAutofillAutoSubmission")},
     {"ios-mini-map-universal-links-counterfactual",
      flag_descriptions::kIOSMiniMapUniversalLinkCounterfactualName,
      flag_descriptions::kIOSMiniMapUniversalLinkCounterfactualDescription,

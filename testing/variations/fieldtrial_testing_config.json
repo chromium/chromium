@@ -14661,7 +14661,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PasswordAutofillAutoSubmission"
+                        "IOSPasswordAutoSubmission"
                     ]
                 }
             ]
