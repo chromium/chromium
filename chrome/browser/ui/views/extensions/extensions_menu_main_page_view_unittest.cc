@@ -575,6 +575,57 @@ TEST_F(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
 
+// Tests that opening the menu on a restricted URL correctly sets the site
+// access toggle state to off.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, SiteAccessToggle_RestrictedUrl) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL restricted_url("chrome://extensions");
+  web_contents_tester()->NavigateAndCommit(restricted_url);
+
+  ShowMenu();
+  ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
+
+  // On restricted URLs, site access toggle is hidden and off.
+  EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+}
+
+// Tests that an extension with broad site access (kOnAllSites) whose site
+// interaction evaluates to non-granted (e.g., on a policy-blocked host)
+// correctly maintains toggle state matching UserSiteAccess (toggle is on).
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       SiteAccessToggle_BroadAccessWithWithheldInteraction) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  // Set up policy-blocked host pattern.
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(browser()->GetProfile()),
+      default_blocked_hosts, default_allowed_hosts);
+
+  const GURL policy_blocked_url("https://www.policy-blocked.com");
+  web_contents_tester()->NavigateAndCommit(policy_blocked_url);
+
+  // Extension has kOnAllSites access in PermissionsManager.
+  ASSERT_EQ(GetUserSiteAccess(*extension, policy_blocked_url),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+
+  ShowMenu();
+  ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
+
+  // Verify that site_access_toggle is on (reflecting
+  // UserSiteAccess::kOnAllSites) even though site interaction on this
+  // policy-blocked URL evaluates to non-granted.
+  EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
+}
+
 // Verifies the site access toggle and site permissions button properties for an
 // extension that requests host permissions.
 TEST_F(ExtensionsMenuMainPageViewUnitTest,

@@ -318,11 +318,24 @@ ExtensionsMenuViewModel::ControlState GetSiteAccessToggleState(
           ? ExtensionsMenuViewModel::ControlState::Status::kEnabled
           : ExtensionsMenuViewModel::ControlState::Status::kHidden;
 
-  // Button is on iff the extension has access to the site.
-  auto site_interaction = SitePermissionsHelper(&profile).GetSiteInteraction(
-      extension, &web_contents);
-  toggle_state.is_on =
-      site_interaction == SitePermissionsHelper::SiteInteraction::kGranted;
+  const GURL& url = web_contents.GetLastCommittedURL();
+  bool is_restricted_url =
+      extension.permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr);
+
+  // Button is on if the user has granted site access to the extension
+  // (site access is not set to "on click") or if the extension currently
+  // has granted site interaction.
+  if (is_restricted_url) {
+    toggle_state.is_on = false;
+  } else {
+    auto site_access =
+        PermissionsManager::Get(&profile)->GetUserSiteAccess(extension, url);
+    auto site_interaction = SitePermissionsHelper(&profile).GetSiteInteraction(
+        extension, &web_contents);
+    toggle_state.is_on =
+        (site_access != PermissionsManager::UserSiteAccess::kOnClick) ||
+        (site_interaction == SitePermissionsHelper::SiteInteraction::kGranted);
+  }
 
   toggle_state.tooltip_text = GetSiteAccessToggleTooltip(toggle_state.is_on);
 
@@ -662,7 +675,7 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
                                                         web_contents);
   debug::ScopedGrantSiteAccessCrashKeys grant_site_access_crash_keys(
       current_site_access, current_site_interaction, web_contents);
-  DCHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
+  CHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
 
   // Update site access when extension requested host permissions for the
   // current site (that is, site access was withheld).
