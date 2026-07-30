@@ -13,6 +13,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -43,6 +46,8 @@ public class TopControlsLockCoordinator {
                     updateLock();
                 }
             };
+    private final SideUiObserver mSideUiObserver = sideUiSpecs -> updateLock();
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     /**
      * Create the coordinate to manage TopControlsStacker locking mechanism.
@@ -70,6 +75,13 @@ public class TopControlsLockCoordinator {
         updateLock();
     }
 
+    /** Set the {@link SideUiStateProvider} instance. */
+    public void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
+        mSideUiStateProvider = sideUiStateProvider;
+        mSideUiStateProvider.addObserver(mSideUiObserver);
+        updateLock();
+    }
+
     /** Get the token holder used to block scrolling updates. */
     public TokenHolder getDeferredLockingTokenJar() {
         return mDeferredTokens;
@@ -79,6 +91,9 @@ public class TopControlsLockCoordinator {
     public void destroy() {
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(mAppHeaderObserver);
+        }
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(mSideUiObserver);
         }
         mTabStripVisibilitySupplier.removeObserver(mStripVisibilityUpdateCallback);
     }
@@ -96,10 +111,10 @@ public class TopControlsLockCoordinator {
     // Core logic for this class.
     // The scrolling is disabled in the following scenario:
     // 1. When the device is in desktop windowing mode
-    // 2. When the device is a large-tablet, and it's not hidden by height transition.
+    // 2. When a toolbar-height Side UI (e.g. Vertical Tabs, Side Panel) is showing
+    // 3. When the device is a large-tablet, and it's not hidden by height transition.
     private boolean shouldLockTopControls() {
         // Desktop form factor always take priority.
-        // TODO(crbug.com/450970998): Explore if we can set this for all large tablets.
         if (DeviceInfo.isDesktop()) return true;
 
         // Enable lock in desktop window mode. Only relevant when the device supports it.
@@ -107,6 +122,15 @@ public class TopControlsLockCoordinator {
             var appHeaderState = mDesktopWindowStateManager.getAppHeaderState();
             if (appHeaderState != null && appHeaderState.isInDesktopWindow()) {
                 return true;
+            }
+        }
+
+        // Lock if SideUI shows adjacent to top controls.
+        if (mSideUiStateProvider != null) {
+            for (var entry : mSideUiStateProvider.getCurrentSideUiSpecs().entrySet()) {
+                if (entry.getValue().heightType == HeightType.TOOLBAR) {
+                    return true;
+                }
             }
         }
 
