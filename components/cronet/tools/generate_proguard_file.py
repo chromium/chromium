@@ -29,23 +29,17 @@ def _ReadFile(path):
     return pathlib.Path(path).read_text()
 
 
-def _post_process_concatenated_rules_for_aosp(rules: str) -> str:
-    """Post-process the concatenated rules to match the packages in AOSP. Cronet
-  in AOSP is repackaged where all packages are prefixed with
-  `android.net.connectivity`. So does method will append ** to every package
-  name found.
+def _post_process_concatenated_rules(rules: str, rename_map: dict) -> str:
+    """Post-process the concatenated rules to rename packages.
 
-  Args:
-    rules: Rules before processing
-  """
-    for package_name in ("org.chromium", "com.google.protobuf", "org.jni_zero",
-                         "androidx.annotation"):
-        # This regex will match anything substring that matches one of the package
-        # names but is not preceded by either '*' or '/'. The latter prevents
-        # comments containing these packages names from being modified. Example:
-        # -------- Config Path: androidx.annotation/proguard.txt --------
-        rules = re.sub(f"([^\*\/]){package_name}",
-                       f"\g<1>android.net.http.internal.{package_name}", rules)
+    Args:
+      rules: Rules before processing
+      rename_map: Dict mapping source package to destination package
+    """
+    for src, dest in rename_map.items():
+        # This regex will match anything substring that matches the source package
+        # name but is not preceded by either '*' or '/'.
+        rules = re.sub(rf"([^*/]){re.escape(src)}", rf"\g<1>{dest}", rules)
     return rules
 
 
@@ -54,10 +48,11 @@ def main():
     parser.add_argument('--output_file',
                         help='Output file for the generated proguard file')
     parser.add_argument(
-        '--aosp-mode',
-        help='This will apply additional processing for the combined rules to '
-        'ensure they match HttpEngine (Cronet In AOSP).',
-        action='store_true')
+        '--rename-rule',
+        action='append',
+        default=[],
+        help='Renaming rules in the format "source_package=dest_package". '
+        'Can be repeated.')
     parser.add_argument('--dep_file',
                         help='Depfile path to write the implicit inputs')
     parser.add_argument(
@@ -66,6 +61,15 @@ def main():
         'dependencies of the proguard rules')
 
     args = parser.parse_args()
+
+    rename_map = {}
+    for rule in args.rename_rule:
+        if '=' not in rule:
+            parser.error(
+                f'Invalid rename rule: {rule}. Must be in "source=dest" format.'
+            )
+        src, dest = rule.split('=', 1)
+        rename_map[src] = dest
 
     # Fetch all proguard configs
     with open(args.build_config, 'r') as f:
@@ -78,8 +82,8 @@ def main():
         noramlized_path = proguard_config_path.replace('../', '')
         str_output += f"# -------- Config Path: {noramlized_path} --------\n"
         str_output += _ReadFile(proguard_config_path)
-    if args.aosp_mode:
-        str_output = _post_process_concatenated_rules_for_aosp(str_output)
+    if rename_map:
+        str_output = _post_process_concatenated_rules(str_output, rename_map)
     with open(args.output_file, 'w') as target:
         target.write(str_output)
     action_helpers.write_depfile(args.dep_file, args.output_file,
