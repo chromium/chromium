@@ -1129,6 +1129,164 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
   }
 }
 
+TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
+  struct TestCase {
+    uint16_t log_number;
+    int min_log_number;
+    int expected_result_for_local_root;
+    int expected_result_for_known_root;
+  } testcases[] = {
+      // A log number of zero is not allowed. This should always fail (it's
+      // enforced by the boringssl side of MTC verification.)
+      {.log_number = 0,
+       .min_log_number = 0,
+       .expected_result_for_local_root = ERR_CERT_AUTHORITY_INVALID,
+       .expected_result_for_known_root = ERR_CERT_AUTHORITY_INVALID},
+      {.log_number = 0,
+       .min_log_number = 1,
+       .expected_result_for_local_root = ERR_CERT_AUTHORITY_INVALID,
+       .expected_result_for_known_root = ERR_CERT_AUTHORITY_INVALID},
+
+      // min_log_number doesn't explicitly require known root since it comes
+      // from the MtcAnchorExtraData (in practice that data will only be
+      // populated for known roots though.)
+      {.log_number = 1,
+       .min_log_number = 0,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = OK},
+      {.log_number = 1,
+       .min_log_number = 1,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = OK},
+      {.log_number = 1,
+       .min_log_number = 2,
+       .expected_result_for_local_root = ERR_CERT_REVOKED,
+       .expected_result_for_known_root = ERR_CERT_REVOKED},
+      {.log_number = 5,
+       .min_log_number = 2,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = OK},
+      {.log_number = 5,
+       .min_log_number = 5,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = OK},
+      {.log_number = 5,
+       .min_log_number = 6,
+       .expected_result_for_local_root = ERR_CERT_REVOKED,
+       .expected_result_for_known_root = ERR_CERT_REVOKED},
+
+      // The max log number of 5 is a hard-coded requirement from CQRP, so it
+      // is only enforced when known root is true.
+      {.log_number = 6,
+       .min_log_number = 0,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = ERR_CERT_REVOKED},
+      {.log_number = 6,
+       .min_log_number = 5,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = ERR_CERT_REVOKED},
+      {.log_number = 6,
+       .min_log_number = 6,
+       .expected_result_for_local_root = OK,
+       .expected_result_for_known_root = ERR_CERT_REVOKED},
+      {.log_number = 6,
+       .min_log_number = 7,
+       .expected_result_for_local_root = ERR_CERT_REVOKED,
+       .expected_result_for_known_root = ERR_CERT_REVOKED},
+  };
+
+  for (const auto& test : testcases) {
+    SCOPED_TRACE(test.log_number);
+    SCOPED_TRACE(test.min_log_number);
+    constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+    net::MtcLogBuilder mtc_log(kMtcCaId, test.log_number);
+    std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+        std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+    uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+    mtc_log.AdvanceLandmark();
+
+    InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+    MtcLogBuilder::Cosigner ca_cosigner = {
+        base::ToVector(kMtcCaId),
+        crypto::keypair::PrivateKey::GenerateMldsa44(),
+        bssl::SignatureAlgorithm::kMldsa44};
+
+    bssl::TrustStoreInMemory trust_store;
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        ca_cosigner.id, ca_cosigner.signature_algorithm,
+        x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
+        mtc_log.GetPerLogLandmarkSubtreeHashes());
+    ASSERT_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+    AddTrustStore(&trust_store);
+
+    TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data;
+    mtc_anchor_extra_data.signer_config.min_log_number = test.min_log_number;
+    SetMockMTCAnchorData(mtc_anchor_extra_data);
+    SetMockIsMtcCosignerPolicySatisfied(true);
+
+    // Results should be the same for both landmark relative and standalone
+    // certs.
+    //
+    // Landmark relative MTCs:
+    scoped_refptr<X509Certificate> landmark_relative_cert =
+        X509Certificate::CreateFromBytes(
+            *mtc_log.CreateSignaturelessCertificate(leaf_index));
+    ASSERT_TRUE(landmark_relative_cert);
+    {
+      SetMockIsKnownMtcAnchor(false);
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(landmark_relative_cert.get(), "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(test.expected_result_for_local_root));
+    }
+    {
+      SetMockIsKnownMtcAnchor(true);
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(landmark_relative_cert.get(), "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(test.expected_result_for_known_root));
+    }
+
+    // Standalone MTCs:
+    scoped_refptr<X509Certificate> standalone_cert =
+        X509Certificate::CreateFromBytes(
+            *mtc_log.CreateStandaloneCertificate(leaf_index, {&ca_cosigner}));
+    ASSERT_TRUE(standalone_cert);
+    {
+      SetMockIsKnownMtcAnchor(false);
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(standalone_cert.get(), "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(test.expected_result_for_local_root));
+    }
+    {
+      SetMockIsKnownMtcAnchor(true);
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(standalone_cert.get(), "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(test.expected_result_for_known_root));
+    }
+  }
+}
+
 TEST_F(CertVerifyProcBuiltinTest, CrsAnchorUsageHistogram) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   InitializeVerifyProc(CreateParams(

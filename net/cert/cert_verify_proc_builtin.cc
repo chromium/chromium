@@ -89,6 +89,11 @@ constexpr base::TimeDelta kPerAttemptMinVerificationTimeLimit =
 // The minimum RSA key size for SimplePathBuilderDelegate.
 constexpr size_t kMinRsaModulusLengthBits = 1024;
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// CQRP policy allows a maximum of 5 logs.
+constexpr uint16_t kCqrpMaxMtcLogNumber = 5;
+#endif
+
 DEFINE_CERT_ERROR_ID(kCtRequirementsNotMet,
                      "Path does not meet CT requirements");
 DEFINE_CERT_ERROR_ID(kPathLacksEVPolicy, "Path does not have an EV policy");
@@ -652,6 +657,25 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // so the serial number is already known to be valid and we don't need to
     // gracefully handle a failure here.
     CHECK(bssl::der::ParseUint64(leaf->tbs().serial_number, &serial));
+
+    if (mtc_anchor->spec_version() == bssl::MTCAnchor::kPlants04) {
+      uint16_t log_number = serial >> 48;
+      if (log_number < mtc_anchor_data->signer_config.min_log_number) {
+        path->errors.GetErrorsForCert(0)->AddError(
+            bssl::cert_errors::kCertificateRevoked);
+        return;
+      }
+      // CQRP policy specifies a maximum allowable log number. The
+      // IsKnownMtcAnchor check is probably redundant here since only a known
+      // anchor would have a result in GetMTCAnchorData, but it is more
+      // future-proof to check.
+      if (trust_store_->IsKnownMtcAnchor(mtc_anchor) &&
+          log_number > kCqrpMaxMtcLogNumber) {
+        path->errors.GetErrorsForCert(0)->AddError(
+            bssl::cert_errors::kCertificateRevoked);
+        return;
+      }
+    }
 
     auto it = mtc_anchor_data->revoked_indices.upper_bound(serial);
     if (it != mtc_anchor_data->revoked_indices.end() && serial >= it->second) {
