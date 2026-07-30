@@ -4418,7 +4418,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4158364720893025815">Prešlo kontrolou</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nepatrí platnej organizácii. Kontaktujte svojho správcu. Ak ste správca, môžete nastaviť organizáciu na g.co/ChromeEnterpriseAccount</translation>
-<translation id="4165986682804962316">Nastavenia webov</translation>
+<translation id="4165986682804962316">Nastavenia webu</translation>
 <translation id="4167393659000039775">Google nezodpovedá za stratu údajov. <ph name="DEVICE_OS" /> nemusí fungovať v necertifikovaných modeloch. Viac sa dozviete na g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Ďalšie akcie pre odkaz <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Používateľ <ph name="PRIMARY_EMAIL" /> s vami zdieľa niektoré svoje nastavenia. Tieto nastavenia váš účet ovplyvnia iba počas používania viacnásobného prihlásenia.</translation>
@@ -10580,7 +10580,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="870536819717176711">Keď sa rozhodnete zdieľať aktuálnu kartu s Gemini, celý jej obsah, médiá a webová adresa sa odošlú Googlu.</translation>
 <translation id="8705629851992224300">Váš bezpečnostný kľúč sa nepodarilo prečítať</translation>
 <translation id="8706111173576263877">QR kód bol naskenovaný.</translation>
-<translation id="8707318721234217615">Medzery medzi písmom</translation>
+<translation id="8707318721234217615">Rozostupy medzi písmenami</translation>
 <translation id="8707562594602678416">Miesta</translation>
 <translation id="8708000541097332489">Vymazať po ukončení</translation>
 <translation id="870805141700401153">Komerčné podpisovanie kódu Microsoft</translation>

@@ -9,7 +9,7 @@
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">เลื่อน 2 นิ้วไปทางขวา</translation>
 <translation id="1022586497894531524">หากคุณใช้การอธิบายและอ่านออกเสียงของ ChromeVox เป็นครั้งแรก บทแนะนำฉบับย่อนี้ที่จะอธิบายสิ่งที่ควรทราบในการเริ่มต้นใช้งาน ChromeVox</translation>
-<translation id="1025074108959230262">ปิดโหมดติดหนึบแล้ว</translation>
+<translation id="1025074108959230262">ปิดโหมด Sticky แล้ว</translation>
 <translation id="1031961866430398710">จากนั้น</translation>
 <translation id="1038643060055067718">จำนวนบรรทัด:</translation>
 <translation id="1038795173450935438">หากต้องการเลื่อนไปดูรายการถัดไปภายในหน้าเดียวกัน ให้กด Search + ลูกศรขวา หรือ Search + ลูกศรซ้ายเพื่อข้ามกลับ หากต้องการเลื่อนไปยังบรรทัดถัดไป ให้กด Search + ลูกศรลง หากต้องการกลับไปยังบรรทัดก่อนหน้า ให้ใช้ Search + ลูกศรขึ้น หากคุณมาถึงรายการที่ต้องการคลิก ให้กด Search + Space</translation>
@@ -95,7 +95,7 @@
 <translation id="1465097259579587977">เริ่มเรียนการแนะนำเบื้องต้นแบบด่วนใหม่</translation>
 <translation id="1480046233931937785">เครดิต</translation>
 <translation id="1487494366197411587">บน Chromebook ปุ่มค้นหาจะอยู่เหนือปุ่ม Shift ด้านซ้าย</translation>
-<translation id="1498498210836053409">ปิดโหมดกดค้างเมื่อแก้ไขข้อความ (โหมดกดค้างอัจฉริยะ)</translation>
+<translation id="1498498210836053409">ปิดโหมด Sticky เมื่อแก้ไขข้อความ (โหมด Sticky อัจฉริยะ)</translation>
 <translation id="1499041187027566160">เพิ่มระดับเสียง</translation>
 <translation id="1502086903961450562">กราฟิกก่อนหน้า</translation>
 <translation id="1506187449813838456">เพิ่มระดับเสียง</translation>
@@ -109,7 +109,7 @@
 <translation id="1559739829547075274">นำทางกลับหลัง</translation>
 <translation id="1565432156062359693">ไม่มีรายการถัดไป</translation>
 <translation id="1571643229714746283">ChromeVox พร้อมใช้งาน</translation>
-<translation id="1588252353131492116">ไม่สามารถใช้การส่งผ่านได้เมื่อเปิดโหมดกดค้าง</translation>
+<translation id="1588252353131492116">ไม่สามารถใช้การส่งผ่านได้เมื่อเปิดโหมด Sticky</translation>
 <translation id="1594072653727561613">เมนู</translation>
 <translation id="1610130962244179598">เปลี่ยนเป็นเบรลล์แบบ 6 จุด</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
@@ -308,7 +308,7 @@
 <translation id="2909584066358367921">ไม่มีปุ่มถัดไป</translation>
 <translation id="2911433807131383493">เปิดบทแนะนำ ChromeVox</translation>
 <translation id="2912405967290226587">เลื่อน 3 นิ้วไปทางขวา</translation>
-<translation id="2919107550468490321">โหมดกดค้างอัจฉริยะเปิดอยู่</translation>
+<translation id="2919107550468490321">โหมด Sticky อัจฉริยะเปิดอยู่</translation>
 <translation id="2937799153569150791">ไม่มีส่วนหัวระดับ 3 ถัดไป</translation>
 <translation id="2942710183375260152">สีน้ำเงินอมเทาเข้ม</translation>
 <translation id="2943596527105977722">สีเหลืองโกลเด้นร็อดเข้ม</translation>
@@ -574,7 +574,7 @@
 <translation id="4601367666219428522">ตร.<ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4606933160360542263">ชุดแป้นที่กำหนดเอง: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">เพิกเฉยการกดแป้นครั้งถัดไป</translation>
-<translation id="4617384941327705512">โหมดกดค้างอัจฉริยะปิดอยู่</translation>
+<translation id="4617384941327705512">โหมด Sticky อัจฉริยะปิดอยู่</translation>
 <translation id="4623097797855662355">ข้อมูลทางบรรณานุกรม</translation>
 <translation id="4624970070706497034">TalkBack ไม่มีการปรับแต่งสำหรับ Chromebook แล้ว แต่คุณจะยังใช้งานแป้นพิมพ์ลัดเริ่มต้นของ TalkBack ได้อยู่ กด Search+A จากนั้น K เพื่อดูแป้นพิมพ์ลัดที่มี หากยังต้องการใช้ TalkBack ให้กดคำสั่งอีกครั้ง</translation>
 <translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>
@@ -677,7 +677,7 @@
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5310788376443009632">ลบออกแล้ว:</translation>
 <translation id="5316825363044614340">ย้ายไปที่บรรทัดถัดไป</translation>
-<translation id="5320727453979144100">เปิดใช้งานโหมดติดหนึบแล้ว</translation>
+<translation id="5320727453979144100">เปิดใช้งานโหมด Sticky แล้ว</translation>
 <translation id="532485153932049746">การจัดรูปแบบข้อความ
     <ph name="FONT_SIZE_STRING" />
     <ph name="COLOR_STRING" />
@@ -1236,7 +1236,7 @@
 <translation id="958854023026327378">เลื่อน 1 นิ้วลง</translation>
 <translation id="962913030769097253">ส่วนหัวระดับ 1 ถัดไป</translation>
 <translation id="966588271015727539">เลือกอุปกรณ์แสดงผลอักษรเบรลล์ผ่านบลูทูธ</translation>
-<translation id="973955474346881951">เปิด/ปิดโหมดติดหนึบ</translation>
+<translation id="973955474346881951">เปิด/ปิดโหมด Sticky</translation>
 <translation id="985654871861528815">เลื่อนลง 1 บรรทัด</translation>
 <translation id="992256792861109788">สีชมพู</translation>
 </translationbundle>
