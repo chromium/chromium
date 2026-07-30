@@ -1081,3 +1081,66 @@ if (!is_android) {
     }
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "fileicon_source_unittest.cc",
+    "log_web_ui_url_unittest.cc",
+  ]
+  deps = [
+    ":fileicon_source",
+    ":log_web_ui_url",
+    "//base",
+    "//chrome/browser:icon_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "constrained_web_dialog_ui_unittest.cc",
+      "managed_ui_handler_unittest.cc",
+      "theme_colors_source_manager_unittest.cc",
+      "webui_allowlist_provider_unittest.cc",
+      "webui_embedding_context_unittest.cc",
+    ]
+    deps += [
+      ":managed_ui_handler",
+      ":theme_colors_source_manager",
+      ":webui",
+      ":webui_util",
+      "//chrome/browser/content_settings",
+      "//chrome/browser/content_settings:unit_tests",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:test_support",
+      "//chrome/test:test_support",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/policy/core/common:test_support",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/color",
+      "//ui/web_dialogs:test_support",
+      "//ui/webui",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "certificate_provisioning_ui_handler_unittest.cc" ]
+    deps += [
+      ":certificate_provisioning_ui_handler",
+      "//chrome/browser/ash/cert_provisioning",
+      "//chromeos/ash/components/browser_context_helper",
+      "//components/policy/core/browser",
+      "//components/user_manager",
+      "//components/user_manager:test_support",
+    ]
+  }
+}
