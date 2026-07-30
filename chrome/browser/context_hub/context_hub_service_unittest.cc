@@ -435,5 +435,42 @@ TEST_F(ContextHubServiceTest, DeleteAllTabGroups) {
   EXPECT_TRUE(stored_groups_future2.Get().empty());
 }
 
+TEST_F(ContextHubServiceTest, ClearTodoFeedbacks) {
+  auto feedback = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+  feedback->todo_id = "todo_1";
+  feedback->liked = true;
+
+  // Add a feedback item.
+  service_.SetTodoFeedback(std::move(feedback));
+  EXPECT_EQ(1u, service_.GetTodoFeedbacks().size());
+
+  // Clear all feedback items and verify that they are cleared.
+  service_.ClearTodoFeedbacks();
+  EXPECT_TRUE(service_.GetTodoFeedbacks().empty());
+}
+
+TEST_F(ContextHubServiceTest, DeleteTodoFeedback) {
+  auto feedback1 = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+  feedback1->todo_id = "todo_1";
+  feedback1->liked = true;
+
+  auto feedback2 = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+  feedback2->todo_id = "todo_2";
+  feedback2->liked = false;
+
+  // Add two feedback items.
+  service_.SetTodoFeedback(std::move(feedback1));
+  service_.SetTodoFeedback(std::move(feedback2));
+  EXPECT_EQ(2u, service_.GetTodoFeedbacks().size());
+
+  // Clear one feedback item and verify that it is cleared.
+  service_.DeleteTodoFeedback("todo_1");
+
+  auto feedbacks = service_.GetTodoFeedbacks();
+  ASSERT_EQ(1u, feedbacks.size());
+  EXPECT_EQ("todo_2", feedbacks[0]->todo_id);
+  EXPECT_FALSE(feedbacks[0]->liked);
+}
+
 }  // namespace
 }  // namespace context_hub

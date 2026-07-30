@@ -43,6 +43,13 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
 
   // browser::context_hub::mojom::PageHandler:
   void GenerateAutoTodos(GenerateAutoTodosCallback callback) override;
+  void SetTodoFeedback(
+      browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback,
+      SetTodoFeedbackCallback callback) override;
+  void DeleteTodoFeedback(const std::string& id,
+                          DeleteTodoFeedbackCallback callback) override;
+  void ClearTodoFeedbacks(ClearTodoFeedbacksCallback callback) override;
+  void GetTodoFeedbacks(GetTodoFeedbacksCallback callback) override;
   void GetAllMemoryBankEntries(
       GetAllMemoryBankEntriesCallback callback) override;
   void DeleteMemoryBankEntries(

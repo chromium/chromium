@@ -34,16 +34,14 @@ source_set("context_hub") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/personal_context",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/context_hub:mojo_bindings",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/personal_context/core",
     "//components/personal_context/proto:personal_context_proto",
   ]
 
-  deps = [
-    "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
-    "//sql",
-  ]
+  deps = [ "//sql" ]
 }
 
 source_set("unit_tests") {

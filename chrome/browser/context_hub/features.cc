@@ -16,6 +16,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "auto_todos_timeout_seconds",
                    base::Seconds(30));
 
+BASE_FEATURE_PARAM(size_t,
+                   kMaxTodoFeedbackCacheSize,
+                   &browser::context_hub::mojom::kAutoTodos,
+                   "max_todo_feedback_cache_size",
+                   50);
+
 BASE_FEATURE(kMemoryBanks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,

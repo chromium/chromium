@@ -46,6 +46,7 @@ ContextHubService::ContextHubService(
           CHECK_DEREF(optimization_guide_remote_model_executor)),
       tab_group_chat_history_cache_(
           features::kMaxTabGroupChatHistoryTurns.Get()),
+      todo_feedback_cache_(features::kMaxTodoFeedbackCacheSize.Get()),
       context_hub_backend_(std::move(context_hub_backend)),
       memory_bank_(std::move(memory_bank)),
       tab_group_store_(std::move(tab_group_store)),
@@ -82,6 +83,38 @@ void ContextHubService::OnAutoTodosFetched(
   }
 
   std::move(callback).Run(std::move(response));
+}
+
+void ContextHubService::SetTodoFeedback(
+    browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback) {
+  if (!feedback) {
+    return;
+  }
+  todo_feedback_cache_.Put(feedback->todo_id, feedback->liked);
+}
+
+void ContextHubService::DeleteTodoFeedback(const std::string& id) {
+  auto it = todo_feedback_cache_.Peek(id);
+  if (it != todo_feedback_cache_.end()) {
+    todo_feedback_cache_.Erase(it);
+  }
+}
+
+void ContextHubService::ClearTodoFeedbacks() {
+  todo_feedback_cache_.Clear();
+}
+
+std::vector<browser::context_hub::mojom::AutoTodoItemFeedbackPtr>
+ContextHubService::GetTodoFeedbacks() const {
+  std::vector<browser::context_hub::mojom::AutoTodoItemFeedbackPtr> feedbacks;
+  feedbacks.reserve(todo_feedback_cache_.size());
+  for (const auto& [todo_id, liked] : todo_feedback_cache_) {
+    auto feedback = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+    feedback->todo_id = todo_id;
+    feedback->liked = liked;
+    feedbacks.push_back(std::move(feedback));
+  }
+  return feedbacks;
 }
 
 void ContextHubService::AddTabGroupChatHistoryTurn(

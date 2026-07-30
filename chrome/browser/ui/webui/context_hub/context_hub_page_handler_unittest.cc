@@ -146,6 +146,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateAutoTodos_Success) {
       result = future.Take();
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
+  EXPECT_EQ(result->at(0)->id, "Test Title");
   EXPECT_EQ(result->at(0)->title, "Test Title");
   EXPECT_EQ(result->at(0)->description, "Test Description");
   EXPECT_EQ(result->at(0)->actionable_url, GURL("https://example.com/action"));
@@ -630,6 +631,70 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_Success) {
               std::string::npos);
   EXPECT_TRUE(response->content.find("2 selected memory ID(s)") !=
               std::string::npos);
+}
+
+TEST_F(ContextHubPageHandlerTest, ClearTodoFeedbacks) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  // Add a feedback item.
+  auto feedback = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+  feedback->todo_id = "todo_1";
+  feedback->liked = true;
+
+  base::test::TestFuture<void> set_future;
+  handler_->SetTodoFeedback(std::move(feedback), set_future.GetCallback());
+  EXPECT_TRUE(set_future.Wait());
+  // Verify that the feedback item was added.
+  EXPECT_EQ(1u, service->GetTodoFeedbacks().size());
+
+  base::test::TestFuture<void> clear_future;
+  handler_->ClearTodoFeedbacks(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Wait());
+  // Verify that the feedback item was cleared.
+  EXPECT_TRUE(service->GetTodoFeedbacks().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, DeleteTodoFeedback) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  auto feedback1 = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+  feedback1->todo_id = "todo_1";
+  feedback1->liked = true;
+
+  auto feedback2 = browser::context_hub::mojom::AutoTodoItemFeedback::New();
+  feedback2->todo_id = "todo_2";
+  feedback2->liked = false;
+
+  // Add two feedback items.
+  base::test::TestFuture<void> set_future1;
+  handler_->SetTodoFeedback(std::move(feedback1), set_future1.GetCallback());
+  EXPECT_TRUE(set_future1.Wait());
+
+  base::test::TestFuture<void> set_future2;
+  handler_->SetTodoFeedback(std::move(feedback2), set_future2.GetCallback());
+  EXPECT_TRUE(set_future2.Wait());
+
+  // Verify that the feedback items were added.
+  EXPECT_EQ(2u, service->GetTodoFeedbacks().size());
+
+  base::test::TestFuture<void> clear_future;
+  handler_->DeleteTodoFeedback("todo_1", clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Wait());
+
+  // Verify that the feedback item for todo_1 was cleared.
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::AutoTodoItemFeedbackPtr>>
+      get_future;
+  handler_->GetTodoFeedbacks(get_future.GetCallback());
+  std::vector<browser::context_hub::mojom::AutoTodoItemFeedbackPtr> feedbacks =
+      get_future.Take();
+  ASSERT_EQ(1u, feedbacks.size());
+  EXPECT_EQ("todo_2", feedbacks[0]->todo_id);
+  EXPECT_FALSE(feedbacks[0]->liked);
 }
 
 }  // namespace

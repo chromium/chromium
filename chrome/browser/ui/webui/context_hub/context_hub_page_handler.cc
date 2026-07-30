@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -134,6 +135,8 @@ void ContextHubPageHandler::OnAutoTodosGenerated(
          result.value().todos()) {
       browser::context_hub::mojom::AutoTodoItemPtr mojo_todo =
           browser::context_hub::mojom::AutoTodoItem::New();
+      // TODO(b/540562062): Use the ID from the response.
+      mojo_todo->id = todo.title();
       mojo_todo->title = todo.title();
       mojo_todo->description = todo.description();
       mojo_todo->actionable_url = GURL(todo.actionable_url());
@@ -161,6 +164,50 @@ void ContextHubPageHandler::OnAutoTodosGenerated(
     }
   }
   std::move(callback).Run(std::move(mojo_todos));
+}
+
+void ContextHubPageHandler::SetTodoFeedback(
+    browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback,
+    SetTodoFeedbackCallback callback) {
+  CHECK(feedback);
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->SetTodoFeedback(std::move(feedback));
+  }
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::DeleteTodoFeedback(
+    const std::string& id,
+    DeleteTodoFeedbackCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->DeleteTodoFeedback(id);
+  }
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::ClearTodoFeedbacks(
+    ClearTodoFeedbacksCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->ClearTodoFeedbacks();
+  }
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::GetTodoFeedbacks(
+    GetTodoFeedbacksCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    std::move(callback).Run(service->GetTodoFeedbacks());
+    return;
+  }
+  std::move(callback).Run({});
 }
 
 void ContextHubPageHandler::GetAllMemoryBankEntries(

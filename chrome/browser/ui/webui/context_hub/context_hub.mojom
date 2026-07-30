@@ -32,6 +32,7 @@ union SourceReference {
 
 // Represents an item in the Auto Todo list.
 struct AutoTodoItem {
+  string id;
   string title;
   string description;
   array<SourceReference> source_references;
@@ -77,6 +78,15 @@ struct ChatMessage {
   string content;
 };
 
+// Represents feedback on an Auto Todo item.
+struct AutoTodoItemFeedback {
+  // The ID of the Auto Todo item in question.
+  string todo_id;
+  // Whether the item was liked or disliked by the user. Used to gather quick
+  // feedback from teamfood users in a lightweight way.
+  bool liked;
+};
+
 // Factory used by the WebUI page (caller) to create a PageHandler in the
 // browser process (callee) for the Context Hub page.
 interface PageHandlerFactory {
@@ -91,6 +101,22 @@ interface PageHandler {
   // Generates and returns a list of Auto Todos. Gated by kAutoTodos flag.
   [RuntimeFeature=kAutoTodos]
   GenerateAutoTodos() => (array<AutoTodoItem>? todos);
+
+  // Stores or updates feedback on an Auto Todo item in the cache.
+  [RuntimeFeature=kAutoTodos]
+  SetTodoFeedback(AutoTodoItemFeedback feedback) => ();
+
+  // Deletes feedback on an Auto Todo item by Todo item ID from the cache.
+  [RuntimeFeature=kAutoTodos]
+  DeleteTodoFeedback(string id) => ();
+
+  // Clears all todo feedback items from the cache.
+  [RuntimeFeature=kAutoTodos]
+  ClearTodoFeedbacks() => ();
+
+  // Returns all cached todo feedback items from the cache.
+  [RuntimeFeature=kAutoTodos]
+  GetTodoFeedbacks() => (array<AutoTodoItemFeedback> feedbacks);
 
   // Returns all entries currently stored in the memory bank.
   GetAllMemoryBankEntries() => (array<MemoryBankEntry> entries);

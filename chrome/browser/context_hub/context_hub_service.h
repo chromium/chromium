@@ -18,6 +18,7 @@
 #include "base/types/id_type.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -61,6 +62,17 @@ class ContextHubService : public KeyedService {
   // Generates auto-todos and invokes `callback` on completion, whether it's
   // successful or not.
   void GenerateAutoTodos(AutoTodosCallback callback);
+
+  // Stores or updates a todo feedback item in the in-memory cache.
+  void SetTodoFeedback(
+      browser::context_hub::mojom::AutoTodoItemFeedbackPtr feedback);
+  // Deletes a todo feedback item by id from the in-memory cache.
+  void DeleteTodoFeedback(const std::string& id);
+  // Clears all todo feedback items from the in-memory cache.
+  void ClearTodoFeedbacks();
+  // Returns all cached todo feedback items.
+  std::vector<browser::context_hub::mojom::AutoTodoItemFeedbackPtr>
+  GetTodoFeedbacks() const;
 
   using GroupTabsCallback =
       base::OnceCallback<void(std::vector<TabGroupEntry> groups,
@@ -141,6 +153,11 @@ class ContextHubService : public KeyedService {
   base::LRUCache<TabGroupChatHistoryTurnId,
                  optimization_guide::proto::ChatHistoryTurn>
       tab_group_chat_history_cache_;
+
+  // In-memory storage for feedback on Auto Todo items. The key is the ID of the
+  // Auto Todo item in question and the value is whether the item was liked or
+  // disliked by the user. This cache is to gather teamfood feedback only.
+  base::LRUCache<std::string, bool> todo_feedback_cache_;
 
   // Backend storage engine for SQLite operations. May be null if DB storage is
   // disabled.
