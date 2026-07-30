@@ -57,6 +57,20 @@ class AbusiveNotificationPermissionsManager {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SafetyCheckUnusedSitePermissionsModuleInteractions)
 
+  // LINT.IfChange(AbusiveNotificationPermissionsCheckResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CheckResult {
+    // The check completed and the site was safe.
+    kSafe = 0,
+    // The check completed and the site was classified as phishing.
+    kPhishing = 1,
+    // The check timed out before a result was received.
+    kTimeout = 2,
+    kMaxValue = kTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:AbusiveNotificationPermissionsCheckResult)
+
   explicit AbusiveNotificationPermissionsManager(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
@@ -250,6 +264,9 @@ class AbusiveNotificationPermissionsManager {
     // Callback to be run if a Safe Browsing blocklist request does not return
     // a response within `kCheckUrlTimeoutMs` time.
     void OnCheckBlocklistTimeout();
+
+    // Logs the outcome of the Safe Browsing blocklist check.
+    void LogCheckResult(CheckResult result);
 
     // A pointer to the `database_manager_` of the
     // `AbusiveNotificationPermissionsManager`.
