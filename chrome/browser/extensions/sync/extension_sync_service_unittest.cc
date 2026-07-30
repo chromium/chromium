@@ -1431,7 +1431,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataNotInstalled) {
   ext_specifics->set_id(kGoodCrx);
   ext_specifics->set_enabled(false);
   ext_specifics->set_incognito_enabled(true);
-  ext_specifics->set_update_url("http://www.google.com/");
+  ext_specifics->set_update_url(extension_urls::GetWebstoreUpdateUrl().spec());
   ext_specifics->set_version("1.2.3.4");
 
   SyncChangeList list =

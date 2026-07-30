@@ -17,6 +17,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -231,9 +232,13 @@ bool ExtensionSyncData::PopulateFromExtensionSpecifics(
     return false;
   }
 
-  // The update URL must be either empty or valid.
+  // The update URL must be either empty or the Web Store update URL. Syncable
+  // extensions never have a non-gallery update URL (see
+  // sync_helper::IsSyncable()), so anything else can only come from an outdated
+  // or misbehaving client and should not be fetched by the extension updater.
   GURL specifics_update_url(specifics.update_url());
-  if (!specifics_update_url.is_empty() && !specifics_update_url.is_valid()) {
+  if (!specifics_update_url.is_empty() &&
+      !extension_urls::IsWebstoreUpdateUrl(specifics_update_url)) {
     LOG(ERROR) << "Attempt to sync bad ExtensionSpecifics (bad update URL):\n"
                << GetExtensionSpecificsLogMessage(specifics);
     RecordBadSyncData(BadSyncDataReason::kUpdateUrl);
