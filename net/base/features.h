@@ -757,9 +757,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTLSTrustAnchorIDs);
 // Controls whether TLS Trust Anchor IDs that are not for MTCs are sent.
 NET_EXPORT BASE_DECLARE_FEATURE(kNonMtcTrustAnchorIDs);
 
-// Enables ML-DSA signature support in TLS (draft-ietf-tls-mldsa-02).
-NET_EXPORT BASE_DECLARE_FEATURE(kTlsMldsaSignatures);
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 // Enables support for Merkle Tree Certificates. `kTLSTrustAnchorIDs` must also
 // be enabled for this to be useful.

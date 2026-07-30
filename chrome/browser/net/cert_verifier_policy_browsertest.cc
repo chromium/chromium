@@ -184,8 +184,6 @@ class CertVerifierServiceCACertificatesPolicyMldsaTest
 
   net::EmbeddedTestServer https_test_server_{
       net::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList feature_list_{
-      net::features::kTlsMldsaSignatures};
 };
 
 IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertificatesPolicyMldsaTest,
