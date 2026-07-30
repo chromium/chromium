@@ -266,9 +266,6 @@ class ExecutionEngine : public ToolDelegate,
 
   static std::string StateToString(State state);
 
-  void OnMayActOnTabDecision(const url::Origin& evaluated_origin,
-                             MayActOnUrlBlockReason block_reason);
-
   void UserTakeover(mojom::ActionResultCode takeover_response_code,
                     base::OnceCallback<void(bool)> callback);
 

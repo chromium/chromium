@@ -1292,6 +1292,10 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
     return task_->GetExecutionEngine();
   }
 
+  MockActorTaskDelegate& mock_actor_task_delegate() {
+    return mock_actor_task_delegate_;
+  }
+
  private:
   static std::unique_ptr<KeyedService> CreateOptimizationService(
       content::BrowserContext* context) {
@@ -1545,6 +1549,39 @@ TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {
 
   GetExecutionEngine().origin_gating_checker().AllowNavigationTo(
       url::Origin::Create(url), /*is_user_confirmed=*/true);
+  CheckUrl(url, /*expected_allowed=*/true);
+}
+
+TEST_F(ExecutionEngineUrlGatingTest,
+       SafetyChecksForNextAction_PromptsForSensitiveSite) {
+  const GURL url("https://c.test/");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGlicActionAllowlist, CreateFieldTrialParams()},
+       {kGlicCrossOriginNavigationGating,
+        {{"prompt_user_for_sensitive_navigations", "true"}}}},
+      {});
+
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kFalse);
+
+  EXPECT_CALL(
+      mock_actor_task_delegate(),
+      RequestToShowUserConfirmationDialog(_, url::Origin::Create(url),
+                                          /*for_blocklisted_origin=*/true, _))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          webui::mojom::UserConfirmationDialogResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
+
+  CheckUrl(url, /*expected_allowed=*/true);
+
+  // Subsequent check for the same origin is allowed via cache without
+  // re-prompting.
+  EXPECT_CALL(mock_actor_task_delegate(),
+              RequestToShowUserConfirmationDialog(_, _, _, _))
+      .Times(0);
   CheckUrl(url, /*expected_allowed=*/true);
 }
 
