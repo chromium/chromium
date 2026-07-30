@@ -32,9 +32,9 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
@@ -43,7 +43,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/experiences/clipboard/clipboard_history_test_util.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/user_manager/user_manager.h"
@@ -1366,8 +1365,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
   // Lock the screen.
-  ash::SessionManagerClient::Get()->RequestLockScreen();
-  ash::SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
+  ash::ScreenLockerTester().Lock();
 
   // Verify that the item was not pasted.
   WaitForOperationConfirmed(/*success_expected=*/false);

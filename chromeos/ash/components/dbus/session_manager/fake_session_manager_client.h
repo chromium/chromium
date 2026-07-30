@@ -68,7 +68,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   static FakeSessionManagerClient* Get();
 
   // SessionManagerClient overrides
-  void SetStubDelegate(StubDelegate* delegate) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
@@ -325,6 +324,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     on_load_shill_profile_callback_ = std::move(callback);
   }
 
+  void set_on_request_lock_screen_callback(base::RepeatingClosure callback) {
+    on_request_lock_screen_callback_ = std::move(callback);
+  }
+
   bool session_stopped() const { return session_stopped_; }
 
   const SessionManagerClient::ActiveSessionsMap& user_sessions() const {
@@ -402,6 +405,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       ServerBackedStateKeysHandling::kRegular;
   OnLoadShillProfileCallback on_load_shill_profile_callback_;
 
+  // Callback which is triggered on `RequestLockScreen` call.
+  base::RepeatingClosure on_request_lock_screen_callback_;
+
   bool arc_available_ = false;
   bool force_upgrade_failure_ = false;
   base::TimeTicks arc_start_time_;
@@ -417,8 +423,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   // Contains last request passed to StartArcInstance
   arc::UpgradeArcContainerRequest last_upgrade_arc_request_;
-
-  raw_ptr<StubDelegate> delegate_ = nullptr;
 
   bool session_stopped_ = false;
 

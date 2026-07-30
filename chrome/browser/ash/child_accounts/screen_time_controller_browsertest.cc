@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -82,6 +83,16 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
         ->set_value(utils::PolicyToString(policy_content));
   }
 
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    scoped_request_lock_screen_override_.emplace();
+  }
+
+  void TearDownOnMainThread() override {
+    scoped_request_lock_screen_override_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   void LogInChildAndSetupClockWithTime(const char* time) {
     SetupTaskRunnerWithTime(utils::TimeFromString(time));
@@ -142,6 +153,9 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
   raw_ptr<Profile, DanglingUntriaged> child_profile_ = nullptr;
 
  private:
+  std::optional<ash::ScreenLockerTester::ScopedRequestLockScreenOverride>
+      scoped_request_lock_screen_override_;
+
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, /*test_base=*/this, embedded_test_server(),
       LoggedInUserMixin::LogInType::kChild, /*include_initial_user=*/false};

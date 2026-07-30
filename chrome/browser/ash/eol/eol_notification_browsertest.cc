@@ -18,11 +18,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
@@ -400,8 +400,7 @@ IN_PROC_BROWSER_TEST_F(EolNotificationTest, NoTrayNoticeOnLockScreen) {
   logged_in_user_mixin_.LogInUser();
   base::RunLoop().RunUntilIdle();
 
-  SessionManagerClient::Get()->RequestLockScreen();
-  SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
+  ScreenLockerTester().Lock();
 
   SystemTrayTestApi tray_test_api;
   EXPECT_FALSE(tray_test_api.IsBubbleViewVisible(VIEW_ID_QS_EOL_NOTICE_BUTTON,

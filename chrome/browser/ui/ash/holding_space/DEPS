@@ -16,7 +16,7 @@ include_rules = [
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/file_suggest",
-  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps/test_support",
   "+chrome/browser/download",

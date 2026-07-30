@@ -176,10 +176,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
   ~SessionManagerClientImpl() override = default;
 
   // SessionManagerClient overrides:
-  void SetStubDelegate(StubDelegate* delegate) override {
-    // Do nothing; this isn't a stub implementation.
-  }
-
   void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
   }

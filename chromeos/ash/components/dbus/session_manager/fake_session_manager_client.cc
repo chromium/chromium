@@ -280,10 +280,6 @@ FakeSessionManagerClient* FakeSessionManagerClient::Get() {
     return nullptr;
 }
 
-void FakeSessionManagerClient::SetStubDelegate(StubDelegate* delegate) {
-  delegate_ = delegate;
-}
-
 void FakeSessionManagerClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -449,8 +445,9 @@ void FakeSessionManagerClient::StartTPMFirmwareUpdate(
 
 void FakeSessionManagerClient::RequestLockScreen() {
   request_lock_screen_call_count_++;
-  if (delegate_)
-    delegate_->LockScreenForStub();
+  if (on_request_lock_screen_callback_) {
+    on_request_lock_screen_callback_.Run();
+  }
 }
 
 void FakeSessionManagerClient::NotifyLockScreenShown() {

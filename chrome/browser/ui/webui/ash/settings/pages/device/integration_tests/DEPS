@@ -18,5 +18,7 @@ specific_include_rules = {
     '+ash/ash_element_identifiers.h',
     '+ash/public/cpp/accelerator_actions.h',
     '+ash/shell.h',
+
+    '+chrome/browser/ash/login/lock',
   ],
 }

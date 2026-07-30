@@ -72,9 +72,6 @@ class HoldingSpaceBrowserTestBase : public SystemWebAppBrowserTestBase {
   base::FilePath CreateFile(
       const std::optional<std::string>& extension = std::nullopt);
 
-  // Requests lock screen, waiting to return until session state is locked.
-  void RequestAndAwaitLockScreen();
-
   // Returns the holding space test API.
   HoldingSpaceTestApi& test_api() { return *test_api_; }
 

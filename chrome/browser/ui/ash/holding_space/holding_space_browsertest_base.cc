@@ -15,15 +15,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "components/session_manager/core/session_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
@@ -135,15 +132,6 @@ void HoldingSpaceBrowserTestBase::RemoveItem(const HoldingSpaceItem* item) {
 base::FilePath HoldingSpaceBrowserTestBase::CreateFile(
     const std::optional<std::string>& extension) {
   return test::CreateFile(GetProfile(), extension.value_or("txt"));
-}
-
-void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
-  if (session_manager::SessionManager::Get()->IsScreenLocked()) {
-    return;
-  }
-
-  SessionManagerClient::Get()->RequestLockScreen();
-  SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
 }
 
 // HoldingSpaceUiBrowserTestBase -----------------------------------------------

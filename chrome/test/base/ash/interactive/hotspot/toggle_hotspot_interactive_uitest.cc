@@ -4,11 +4,11 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/style/switch.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/test/base/ash/interactive/hotspot/hotspot_state_observer.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -96,8 +96,6 @@ class ToggleHotspotInteractiveUITest : public InteractiveAshTest {
       base::RunLoop().RunUntilIdle();
     }));
   }
-
-  void LockScreen() { SessionManagerClient::Get()->RequestLockScreen(); }
 
  private:
   const ShillServiceInfo shill_service_info_ =
@@ -391,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest, AutoDisableHotspot) {
 
 IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
                        ToggleHotspotFromLockScreen) {
-  LockScreen();
+  ScreenLockerTester().Lock();
   SimulateHotspotUsedBefore();
   AddCellularService();
   ShillManagerClient::Get()

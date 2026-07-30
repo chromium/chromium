@@ -10,11 +10,14 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -80,6 +83,20 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 
 }  // namespace
 
+ScreenLockerTester::ScopedRequestLockScreenOverride::
+    ScopedRequestLockScreenOverride()
+    : fake_session_manager_client_(
+          CHECK_DEREF(FakeSessionManagerClient::Get())) {
+  fake_session_manager_client_->set_on_request_lock_screen_callback(
+      base::BindRepeating(&ScreenLocker::HandleShowLockScreenRequest));
+}
+
+ScreenLockerTester::ScopedRequestLockScreenOverride::
+    ~ScopedRequestLockScreenOverride() {
+  fake_session_manager_client_->set_on_request_lock_screen_callback(
+      base::NullCallback());
+}
+
 ScreenLockerTester::ScreenLockerTester() = default;
 
 ScreenLockerTester::~ScreenLockerTester() = default;
@@ -88,7 +105,8 @@ void ScreenLockerTester::Lock() {
   CHECK_EQ(CHECK_DEREF(session_manager::SessionManager::Get()).session_state(),
            session_manager::SessionState::ACTIVE);
 
-  ScreenLocker::Show();
+  ScopedRequestLockScreenOverride scoped_request_lock_screen_override;
+  CHECK_DEREF(SessionManagerClient::Get()).RequestLockScreen();
   WaitForLock();
   base::RunLoop().RunUntilIdle();
 }

@@ -15,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_tags.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -556,6 +557,9 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
 // screen.
 IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest,
                        LaunchAudioSettingDisabledOnLockScreen) {
+  ScreenLockerTester::ScopedRequestLockScreenOverride
+      scoped_request_lock_screen_override;
+
   base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
 
   RunTestSequence(

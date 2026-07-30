@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
-
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer_test_api.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/power_manager_emitter.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +33,9 @@ using LockScreen = AshIntegrationTest;
 //     chromeos-sw-engprod@google.com
 //     cros-exp-wg+testresults@google.com (for fieldtrial_testing_config)
 IN_PROC_BROWSER_TEST_F(LockScreen, CloseLidDbusIntegration) {
+  ash::ScreenLockerTester::ScopedRequestLockScreenOverride
+      scoped_request_lock_screen_override;
+
   PowerManagerEmitter emitter;
   ash::ScreenLockerTester locker_tester;
 

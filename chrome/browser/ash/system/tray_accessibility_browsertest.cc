@@ -15,11 +15,11 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
   EXPECT_TRUE(IsMenuButtonVisible());
 
   // Locks the screen.
-  SessionControllerClientImpl::Get()->RequestLockScreen();
+  ScreenLockerTester().Lock();
 
   // Resets the test API because UnifiedSystemTray is recreated.
   tray_test_api_ = ash::SystemTrayTestApi::Create();

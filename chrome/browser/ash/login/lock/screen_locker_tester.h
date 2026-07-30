@@ -7,19 +7,37 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
-#include "base/scoped_observation.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
+#include "base/memory/raw_ref.h"
 
 class AccountId;
 
 namespace ash {
 
+class FakeSessionManagerClient;
+
 // ScreenLockerTester provides a high-level API to test the lock screen.
 // Must be created after the SessionManager is initialized.
 class ScreenLockerTester {
  public:
+  // RAII object to set/reset a fake callback for
+  // FakeSessionManagerClient::RequestLockScreen. In production,
+  // `RequestLockScreen` sends a request to the session_manager daemon, then it
+  // will call back into `ScreenLockServiceProvider`. This class enables the
+  // plumbing for browser tests.
+  class ScopedRequestLockScreenOverride {
+   public:
+    // FakeSessionManagerClient must outlive this instance.
+    ScopedRequestLockScreenOverride();
+    ScopedRequestLockScreenOverride(const ScopedRequestLockScreenOverride&) =
+        delete;
+    ScopedRequestLockScreenOverride& operator=(
+        const ScopedRequestLockScreenOverride&) = delete;
+    ~ScopedRequestLockScreenOverride();
+
+   private:
+    const raw_ref<FakeSessionManagerClient> fake_session_manager_client_;
+  };
+
   ScreenLockerTester();
   ScreenLockerTester(const ScreenLockerTester&) = delete;
   ScreenLockerTester& operator=(const ScreenLockerTester&) = delete;

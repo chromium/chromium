@@ -94,13 +94,11 @@ bool IsFingerprintAvailableForUser(
 }
 
 // Observer to start ScreenLocker when locking the screen is requested.
-class ScreenLockObserver : public SessionManagerClient::StubDelegate,
-                           public UserAddingScreen::Observer,
+class ScreenLockObserver : public UserAddingScreen::Observer,
                            public session_manager::SessionManagerObserver {
  public:
   ScreenLockObserver() : session_started_(false) {
     session_manager::SessionManager::Get()->AddObserver(this);
-    SessionManagerClient::Get()->SetStubDelegate(this);
   }
 
   ScreenLockObserver(const ScreenLockObserver&) = delete;
@@ -108,17 +106,9 @@ class ScreenLockObserver : public SessionManagerClient::StubDelegate,
 
   ~ScreenLockObserver() override {
     session_manager::SessionManager::Get()->RemoveObserver(this);
-    if (SessionManagerClient::Get()) {
-      SessionManagerClient::Get()->SetStubDelegate(nullptr);
-    }
   }
 
   bool session_started() const { return session_started_; }
-
-  // SessionManagerClient::StubDelegate overrides:
-  void LockScreenForStub() override {
-    ScreenLocker::HandleShowLockScreenRequest();
-  }
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override {

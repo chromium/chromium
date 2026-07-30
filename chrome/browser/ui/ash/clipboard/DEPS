@@ -11,6 +11,7 @@ include_rules = [
 specific_include_rules = {
   "clipboard_history_browsertest\\.cc": [
     "+chrome/app/chrome_command_ids.h",
+    "+chrome/browser/ash/login/lock",
     "+chrome/browser/ash/login/login_manager_test.h",
     "+chrome/browser/ash/login/test",
     "+chrome/browser/profiles/profile.h",

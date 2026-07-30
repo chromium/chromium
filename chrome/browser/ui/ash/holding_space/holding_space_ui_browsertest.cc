@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -819,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   ASSERT_TRUE(test_api().IsShowingInShelf());
-  RequestAndAwaitLockScreen();
+  ash::ScreenLockerTester().Lock();
   ASSERT_FALSE(test_api().IsShowingInShelf());
 }
 

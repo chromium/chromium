@@ -21,6 +21,7 @@ if (!is_chromeos_device) {
       "//ash/webui/settings/public/constants:mojom",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/ash/login/lock:test_support",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//chrome/test/base/ash/interactive:test_support",
