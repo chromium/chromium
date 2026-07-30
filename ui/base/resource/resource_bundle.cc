@@ -461,7 +461,7 @@ void ResourceBundle::AddOptionalDataPackFromPath(
 
 void ResourceBundle::AddDataPackFromBuffer(base::span<const uint8_t> buffer,
                                            ResourceScaleFactor scale_factor) {
-  std::unique_ptr<DataPack> data_pack(new DataPack(scale_factor));
+  auto data_pack = std::make_unique<DataPack>(scale_factor);
   if (data_pack->LoadFromBuffer(buffer)) {
     AddResourceHandle(std::move(data_pack));
   } else {
@@ -739,12 +739,13 @@ bool ResourceBundle::HasDataResource(int resource_id) const {
   return false;
 }
 
-base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
+scoped_refptr<base::RefCountedMemory> ResourceBundle::LoadDataResourceBytes(
     int resource_id) const {
   return LoadDataResourceBytesForScale(resource_id, ui::kScaleFactorNone);
 }
 
-base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
+scoped_refptr<base::RefCountedMemory>
+ResourceBundle::LoadDataResourceBytesForScale(
     int resource_id,
     ResourceScaleFactor scale_factor) const {
   TRACE_EVENT("ui", "ResourceBundle::LoadDataResourceBytesForScale",
@@ -756,7 +757,7 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
               });
 
   if (delegate_) {
-    base::RefCountedMemory* bytes =
+    scoped_refptr<base::RefCountedMemory> bytes =
         delegate_->LoadDataResourceBytes(resource_id, scale_factor);
     if (bytes)
       return bytes;
@@ -768,12 +769,13 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
 
   if (net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
       HasBrotliHeader(data)) {
-    base::RefCountedString* bytes_string = new base::RefCountedString();
+    auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
     DecompressIfNeeded(data, &bytes_string->as_string());
     return bytes_string;
   }
 
-  return new base::RefCountedStaticMemory(base::as_byte_span(data));
+  return base::MakeRefCounted<base::RefCountedStaticMemory>(
+      base::as_byte_span(data));
 }
 
 std::string_view ResourceBundle::GetRawDataResource(int resource_id) const {
@@ -900,8 +902,8 @@ std::u16string ResourceBundle::GetLocalizedString(int resource_id) {
   return GetLocalizedStringImpl(resource_id);
 }
 
-base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
-    int resource_id) const {
+scoped_refptr<base::RefCountedMemory>
+ResourceBundle::LoadLocalizedResourceBytes(int resource_id) const {
   {
     base::AutoLock lock_scope(*locale_resources_data_lock_);
 
@@ -909,7 +911,8 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
       auto data =
           locale_data->GetStringView(static_cast<uint16_t>(resource_id));
       if (data.has_value() && !data->empty()) {
-        return new base::RefCountedStaticMemory(base::as_byte_span(*data));
+        return base::MakeRefCounted<base::RefCountedStaticMemory>(
+            base::as_byte_span(*data));
       }
     }
   }
@@ -1016,8 +1019,8 @@ void ResourceBundle::CheckCanOverrideStringResources() {
 
 ResourceBundle::ResourceBundle(Delegate* delegate)
     : delegate_(delegate),
-      locale_resources_data_lock_(new base::Lock),
-      resource_handles_lock_(new base::Lock),
+      locale_resources_data_lock_(std::make_unique<base::Lock>()),
+      resource_handles_lock_(std::make_unique<base::Lock>()),
       max_scale_factor_(k100Percent) {
   mangle_localized_strings_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kMangleLocalizedStrings);
