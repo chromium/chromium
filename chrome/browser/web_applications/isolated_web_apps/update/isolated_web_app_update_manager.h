@@ -34,6 +34,7 @@
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
 #include "net/base/backoff_entry.h"
 
 class GURL;
@@ -103,12 +104,12 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
    public:
     virtual void OnUpdateDiscoveryCompleted(
         const webapps::AppId& app_id,
-        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status,
+        IwaUpdateCheckAndPrepareResult status,
         std::optional<IwaVersion> discovered_version) {}
 
     virtual void OnUpdateDiscoverAndPrepareTaskCompleted(
         const webapps::AppId& app_id,
-        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) {}
+        IwaUpdateCheckAndPrepareResult status) {}
 
     // Will be invoked only if the discovery task finished with
     // `kUpdateFoundAndSavedInDatabase`.
@@ -206,7 +207,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   }
 
   void TrackResultOfUpdateDiscoveryTaskForTesting(
-      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) const {
+      IwaUpdateCheckAndPrepareResult status) const {
     TrackResultOfUpdateDiscoveryTask(status);
   }
 
@@ -274,7 +275,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
     void OnUpdateDiscoverAndPrepareTaskCompleted(
         IsolatedWebAppUpdateCheckAndPrepareTask* task_ptr,
-        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status);
+        IwaUpdateCheckAndPrepareResult status);
 
     void OnUpdateApplyTaskCompleted(
         IsolatedWebAppUpdateApplyTask* task_ptr,
@@ -331,7 +332,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   void OnUpdateDiscoverAndPrepareTaskCompleted(
       std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task,
-      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status);
+      IwaUpdateCheckAndPrepareResult status);
 
   void OnUpdateApplyWaiterFinished(
       IsolatedWebAppUrlInfo url_info,
@@ -415,10 +416,10 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
 
   IsolatedWebAppUpdateError FromDiscoveryTaskError(
-      const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error) const;
+      const IwaUpdateCheckAndPrepareError& error) const;
 
   void TrackResultOfUpdateDiscoveryTask(
-      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) const;
+      IwaUpdateCheckAndPrepareResult status) const;
 
   void TrackResultOfUpdateApplyTask(
       IsolatedWebAppApplyUpdateCommandResult status) const;

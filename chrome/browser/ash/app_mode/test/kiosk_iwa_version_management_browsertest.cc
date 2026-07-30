@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -42,6 +41,7 @@
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -128,10 +128,9 @@ void WaitForKioskProfile() {
   ASSERT_TRUE(CurrentProfile().IsSameOrParent(profile));
 }
 
-web_app::IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus
-WaitForTestAppUpdateDiscovery() {
-  using UpdateDiscoveryTaskFuture = base::test::TestFuture<
-      web_app::IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>;
+web_app::IwaUpdateCheckAndPrepareResult WaitForTestAppUpdateDiscovery() {
+  using UpdateDiscoveryTaskFuture =
+      base::test::TestFuture<web_app::IwaUpdateCheckAndPrepareResult>;
 
   UpdateDiscoveryTaskFuture update_discovery_future;
   web_app::UpdateDiscoveryTaskResultWaiter update_discovery_waiter(
@@ -169,45 +168,44 @@ void ExpectTestAppUpdatedToVersion(
 }
 
 void ExpectAppUpdateSkipped() {
-  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
-                          Success::kNoUpdateFound));
+  ASSERT_THAT(
+      WaitForTestAppUpdateDiscovery(),
+      ValueIs(web_app::IwaUpdateCheckAndPrepareSuccess::kNoUpdateFound));
 }
 
 void ExpectAppUpdateDiscovered() {
   ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
-                          Success::kUpdateFoundAndSavedInDatabase));
+              ValueIs(web_app::IwaUpdateCheckAndPrepareSuccess::
+                          kUpdateFoundAndSavedInDatabase));
 }
 
 void ExpectAppDowngradeDiscovered() {
   ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
-                          Success::kDowngradeVersionFoundAndSavedInDatabase));
+              ValueIs(web_app::IwaUpdateCheckAndPrepareSuccess::
+                          kDowngradeVersionFoundAndSavedInDatabase));
 }
 
 void ExpectAppPinnedVersionDiscovered() {
-  ASSERT_THAT(
-      WaitForTestAppUpdateDiscovery(),
-      ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-                  kPinnedVersionUpdateFoundAndSavedInDatabase));
+  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
+              ValueIs(web_app::IwaUpdateCheckAndPrepareSuccess::
+                          kPinnedVersionUpdateFoundAndSavedInDatabase));
 }
 
 void ExpectDowngradeNotAllowed() {
-  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ErrorIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-                          kDowngradetNotAllowed));
+  ASSERT_THAT(
+      WaitForTestAppUpdateDiscovery(),
+      ErrorIs(web_app::IwaUpdateCheckAndPrepareError::kDowngradetNotAllowed));
 }
 
 void ExpectNoApplicableVersion() {
   EXPECT_THAT(WaitForTestAppUpdateDiscovery(),
-              ErrorIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+              ErrorIs(web_app::IwaUpdateCheckAndPrepareError::
                           kUpdateManifestNoApplicableVersion));
 }
 
 void ExpectPinnedVersionNotFoundInUpdateManifest() {
   EXPECT_THAT(WaitForTestAppUpdateDiscovery(),
-              ErrorIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+              ErrorIs(web_app::IwaUpdateCheckAndPrepareError::
                           kPinnedVersionNotFoundInUpdateManifest));
 }
 

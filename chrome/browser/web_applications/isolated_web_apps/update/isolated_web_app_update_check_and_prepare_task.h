@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_CHECK_AND_PREPARE_TASK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_CHECK_AND_PREPARE_TASK_H_
 
-#include <iosfwd>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -21,6 +21,7 @@
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
 #include "net/base/net_errors.h"
 
 namespace web_app {
@@ -74,48 +75,13 @@ class IwaUpdateCheckAndPrepareTaskParams {
 
 class IsolatedWebAppUpdateCheckAndPrepareTask {
  public:
-  enum class Success {
-    kNoUpdateFound,
-    kUpdateAlreadyPending,
-    kPinnedVersionUpdateFoundAndSavedInDatabase,  // Update to pinned version
-                                                  // was successful. This type
-                                                  // of update can happen only
-                                                  // once, right after the app
-                                                  // is pinned. After that, no
-                                                  // update should happen.
-    kDowngradeVersionFoundAndSavedInDatabase,
-    kUpdateFoundAndSavedInDatabase,
-    kUpdateFound
-  };
-
-  enum class Error {
-    // Update Manifest errors
-    kUpdateManifestDownloadFailed,
-    kUpdateManifestInvalidJson,
-    kUpdateManifestInvalidManifest,
-    kUpdateManifestNoApplicableVersion,
-    kIwaNotInstalled,
-
-    // Version pinning errors
-    kPinnedVersionNotFoundInUpdateManifest,
-
-    // Version downgrade errors
-    kDowngradetNotAllowed,
-
-    // Signed Web Bundle download errors
-    kDownloadPathCreationFailed,
-    kBundleDownloadError,
-
-    // Update dry run errors
-    kUpdateDryRunFailed,
-
-    kSystemShutdown,
-  };
+  using Success = IwaUpdateCheckAndPrepareSuccess;
+  using Error = IwaUpdateCheckAndPrepareError;
+  using CompletionStatus = IwaUpdateCheckAndPrepareResult;
 
   static std::string SuccessToString(Success success);
   static std::string ErrorToString(Error error);
 
-  using CompletionStatus = base::expected<Success, Error>;
   using CompletionCallback = base::OnceCallback<void(CompletionStatus status)>;
 
   IsolatedWebAppUpdateCheckAndPrepareTask(
@@ -200,14 +166,6 @@ class IsolatedWebAppUpdateCheckAndPrepareTask {
   base::WeakPtrFactory<IsolatedWebAppUpdateCheckAndPrepareTask> weak_factory_{
       this};
 };
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const IsolatedWebAppUpdateCheckAndPrepareTask::Success& success);
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error);
 
 }  // namespace web_app
 

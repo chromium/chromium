@@ -141,59 +141,13 @@ IwaUpdateCheckAndPrepareTaskParams::~IwaUpdateCheckAndPrepareTaskParams() =
 // static
 std::string IsolatedWebAppUpdateCheckAndPrepareTask::SuccessToString(
     Success success) {
-  switch (success) {
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kNoUpdateFound:
-      return "Success::kNoUpdateFound";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-        kUpdateAlreadyPending:
-      return "Success::kUpdateAlreadyPending";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-        kPinnedVersionUpdateFoundAndSavedInDatabase:
-      return "Success::kPinnedVersionUpdateFoundAndSavedInDatabase";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-        kDowngradeVersionFoundAndSavedInDatabase:
-      return "Success::kDowngradeVersionFoundAndSavedInDatabase";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-        kUpdateFoundAndSavedInDatabase:
-      return "Success::kUpdateFoundAndDryRunSuccessful";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kUpdateFound:
-      return "Success::kUpdateFound";
-  }
+  return IwaUpdateCheckAndPrepareSuccessToString(success);
 }
 
 // static
 std::string IsolatedWebAppUpdateCheckAndPrepareTask::ErrorToString(
     Error error) {
-  switch (error) {
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestDownloadFailed:
-      return "Error::kUpdateManifestDownloadFailed";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestInvalidJson:
-      return "Error::kUpdateManifestInvalidJson";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestInvalidManifest:
-      return "Error::kUpdateManifestInvalidManifest";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestNoApplicableVersion:
-      return "Error::kUpdateManifestNoApplicableVersion";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kIwaNotInstalled:
-      return "Error::kIwaNotInstalled";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kPinnedVersionNotFoundInUpdateManifest:
-      return "Error::kPinnedVersionNotFoundInUpdateManifest";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kDowngradetNotAllowed:
-      return "Error::kDowngradetNotAllowed";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kBundleDownloadError:
-      return "Error::kBundleDownloadError";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kDownloadPathCreationFailed:
-      return "Error::kDownloadPathCreationFailed";
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kUpdateDryRunFailed:
-      return "Error::kUpdateDryRunFailed";
-    case Error::kSystemShutdown:
-      return "Error::kSystemShutdown";
-  }
+  return IwaUpdateCheckAndPrepareErrorToString(error);
 }
 
 IsolatedWebAppUpdateCheckAndPrepareTask::
@@ -508,19 +462,6 @@ void IsolatedWebAppUpdateCheckAndPrepareTask::FailWith(Error error) {
 
 base::Value IsolatedWebAppUpdateCheckAndPrepareTask::AsDebugValue() const {
   return base::Value(debug_log_.Clone());
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const IsolatedWebAppUpdateCheckAndPrepareTask::Success& success) {
-  return os << IsolatedWebAppUpdateCheckAndPrepareTask::SuccessToString(
-             success);
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error) {
-  return os << IsolatedWebAppUpdateCheckAndPrepareTask::ErrorToString(error);
 }
 
 }  // namespace web_app

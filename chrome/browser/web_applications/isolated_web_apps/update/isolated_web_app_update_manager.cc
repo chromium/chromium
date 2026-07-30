@@ -713,7 +713,7 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
 
 void IsolatedWebAppUpdateManager::OnUpdateDiscoverAndPrepareTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task,
-    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) {
+    IwaUpdateCheckAndPrepareResult status) {
   TrackResultOfUpdateDiscoveryTask(status);
 
   for (auto& observer : task_observers_) {
@@ -727,18 +727,16 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoverAndPrepareTaskCompleted(
 
   if (status.has_value()) {
     switch (*status) {
-      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-          kUpdateFoundAndSavedInDatabase:
-      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+      case IwaUpdateCheckAndPrepareSuccess::kUpdateFoundAndSavedInDatabase:
+      case IwaUpdateCheckAndPrepareSuccess::
           kPinnedVersionUpdateFoundAndSavedInDatabase:
-      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+      case IwaUpdateCheckAndPrepareSuccess::
           kDowngradeVersionFoundAndSavedInDatabase:
         CreateUpdateApplyWaiter(task->url_info());
         break;
-      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kNoUpdateFound:
-      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
-          kUpdateAlreadyPending:
-      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kUpdateFound:
+      case IwaUpdateCheckAndPrepareSuccess::kNoUpdateFound:
+      case IwaUpdateCheckAndPrepareSuccess::kUpdateAlreadyPending:
+      case IwaUpdateCheckAndPrepareSuccess::kUpdateFound:
         break;
     }
   }
@@ -747,7 +745,7 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoverAndPrepareTaskCompleted(
 }
 
 void IsolatedWebAppUpdateManager::TrackResultOfUpdateDiscoveryTask(
-    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) const {
+    IwaUpdateCheckAndPrepareResult status) const {
   if (!status.has_value()) {
     web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
         "WebApp.Isolated.Update",
@@ -1032,7 +1030,7 @@ bool IsolatedWebAppUpdateManager::TaskQueue::IsAnyTaskRunning() const {
 void IsolatedWebAppUpdateManager::TaskQueue::
     OnUpdateDiscoverAndPrepareTaskCompleted(
         IsolatedWebAppUpdateCheckAndPrepareTask* task_ptr,
-        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) {
+        IwaUpdateCheckAndPrepareResult status) {
   auto task_it = std::ranges::find_if(update_discovery_tasks_,
                                       base::MatchesUniquePtr(task_ptr));
   CHECK(task_it != update_discovery_tasks_.end());
@@ -1080,35 +1078,29 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
 }
 
 IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
-    const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error) const {
+    const IwaUpdateCheckAndPrepareError& error) const {
   switch (error) {
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestDownloadFailed:
+    case IwaUpdateCheckAndPrepareError::kUpdateManifestDownloadFailed:
       return IsolatedWebAppUpdateError::kUpdateManifestDownloadFailed;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestInvalidJson:
+    case IwaUpdateCheckAndPrepareError::kUpdateManifestInvalidJson:
       return IsolatedWebAppUpdateError::kUpdateManifestInvalidJson;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestInvalidManifest:
+    case IwaUpdateCheckAndPrepareError::kUpdateManifestInvalidManifest:
       return IsolatedWebAppUpdateError::kUpdateManifestInvalidManifest;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kUpdateManifestNoApplicableVersion:
+    case IwaUpdateCheckAndPrepareError::kUpdateManifestNoApplicableVersion:
       return IsolatedWebAppUpdateError::kUpdateManifestNoApplicableVersion;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kIwaNotInstalled:
+    case IwaUpdateCheckAndPrepareError::kIwaNotInstalled:
       return IsolatedWebAppUpdateError::kIwaNotInstalled;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kPinnedVersionNotFoundInUpdateManifest:
+    case IwaUpdateCheckAndPrepareError::kPinnedVersionNotFoundInUpdateManifest:
       return IsolatedWebAppUpdateError::kPinnedVersionNotFoundInUpdateManifest;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kDowngradetNotAllowed:
+    case IwaUpdateCheckAndPrepareError::kDowngradetNotAllowed:
       return IsolatedWebAppUpdateError::kDowngradeNotAllowed;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
-        kDownloadPathCreationFailed:
+    case IwaUpdateCheckAndPrepareError::kDownloadPathCreationFailed:
       return IsolatedWebAppUpdateError::kDownloadPathCreationFailed;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kBundleDownloadError:
+    case IwaUpdateCheckAndPrepareError::kBundleDownloadError:
       return IsolatedWebAppUpdateError::kBundleDownloadError;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kUpdateDryRunFailed:
+    case IwaUpdateCheckAndPrepareError::kUpdateDryRunFailed:
       return IsolatedWebAppUpdateError::kUpdateDryRunFailed;
-    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kSystemShutdown:
+    case IwaUpdateCheckAndPrepareError::kSystemShutdown:
       return IsolatedWebAppUpdateError::kSystemShutdown;
   }
 }

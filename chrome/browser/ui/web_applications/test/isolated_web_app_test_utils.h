@@ -22,6 +22,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "components/webapps/isolated_web_apps/types/update_check_and_prepare_result.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -86,8 +87,8 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
 
 class UpdateDiscoveryTaskResultWaiter
     : public IsolatedWebAppUpdateManager::Observer {
-  using TaskResultCallback = base::OnceCallback<void(
-      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status)>;
+  using TaskResultCallback =
+      base::OnceCallback<void(IwaUpdateCheckAndPrepareResult status)>;
 
  public:
   UpdateDiscoveryTaskResultWaiter(WebAppProvider& provider,
@@ -98,8 +99,7 @@ class UpdateDiscoveryTaskResultWaiter
   // IsolatedWebAppUpdateManager::Observer:
   void OnUpdateDiscoverAndPrepareTaskCompleted(
       const webapps::AppId& app_id,
-      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status)
-      override;
+      IwaUpdateCheckAndPrepareResult status) override;
 
  private:
   const webapps::AppId expected_app_id_;
