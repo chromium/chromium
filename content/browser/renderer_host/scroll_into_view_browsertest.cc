@@ -29,6 +29,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/display/display_switches.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -975,6 +976,140 @@ IN_PROC_BROWSER_TEST_F(ScrollIntoViewFencedFrameBrowserTest,
                        FencedFrameInRemoteFrame) {
   ASSERT_TRUE(SetupTest("siteA(siteB{FencedFrame}(siteC))"));
   RunTest();
+}
+
+class ScrollRectToVisibleClampBrowserTestBase
+    : public ScrollIntoViewBrowserTestBase {
+ protected:
+  bool IsForceLocalFrames() const override { return false; }
+  bool IsWritingModeLTR() const override { return true; }
+  TestInvokeMethod GetInvokeMethod() const override { return kJavaScript; }
+
+  void VerifyRectFromChildIsClamped();
+  void VerifyValidScrollIsNotClamped();
+};
+
+void ScrollRectToVisibleClampBrowserTestBase::VerifyRectFromChildIsClamped() {
+  ASSERT_TRUE(SetupTest("siteA(siteB)"));
+
+  // The child frame's location and size in the root document, at the initial
+  // (0,0) scroll position established by SetupTest.
+  gfx::RectF child_rect = GetClientRect(RootFrameTreeNode(), "#childframe");
+
+  double max_scroll_y = EvalJs(RootFrameTreeNode(),
+                               "document.scrollingElement.scrollHeight - "
+                               "document.scrollingElement.clientHeight")
+                            .ExtractDouble();
+  // The page is built so that there is scrollable extent well beyond the
+  // child frame; otherwise the assertion below isn't meaningful.
+  ASSERT_GT(max_scroll_y, child_rect.bottom() + 100);
+  ASSERT_EQ(0, EvalJs(RootFrameTreeNode(), "window.scrollY"));
+
+  auto params = blink::mojom::ScrollIntoViewParams::New();
+  params->align_x = blink::mojom::ScrollAlignment::New();
+  params->align_y = blink::mojom::ScrollAlignment::New();
+  params->align_y->rect_visible = blink::mojom::ScrollAlignment::Behavior::kTop;
+  params->align_y->rect_hidden = blink::mojom::ScrollAlignment::Behavior::kTop;
+  params->align_y->rect_partial = blink::mojom::ScrollAlignment::Behavior::kTop;
+  params->behavior = blink::mojom::ScrollBehavior::kInstant;
+  params->type = blink::mojom::ScrollType::kProgrammatic;
+  params->cross_origin_boundaries = true;
+
+  RenderFrameSubmissionObserver frame_observer(web_contents());
+  static_cast<blink::mojom::LocalFrameHost*>(
+      InnerMostFrameTreeNode()->current_frame_host())
+      ->ScrollRectToVisibleInParentFrame(gfx::RectF(0, 10000000, 1, 1),
+                                         std::move(params));
+  frame_observer.WaitForScrollOffsetAtTop(
+      /*expected_scroll_offset_at_top=*/false);
+
+  // The resulting scroll must stay within the child frame's extent in the
+  // embedder rather than reaching the document's maximum scroll offset.
+  double scroll_y =
+      EvalJs(RootFrameTreeNode(), "window.scrollY").ExtractDouble();
+  EXPECT_NEAR(scroll_y, child_rect.y(), 0.5);
+  EXPECT_LT(scroll_y, max_scroll_y);
+}
+
+void ScrollRectToVisibleClampBrowserTestBase::VerifyValidScrollIsNotClamped() {
+  ASSERT_TRUE(SetupTest("siteA(siteB)"));
+
+  gfx::RectF child_rect = GetClientRect(RootFrameTreeNode(), "#childframe");
+  double dsf =
+      EvalJs(RootFrameTreeNode(), "window.devicePixelRatio").ExtractDouble();
+
+  double max_scroll_y = EvalJs(RootFrameTreeNode(),
+                               "document.scrollingElement.scrollHeight - "
+                               "document.scrollingElement.clientHeight")
+                            .ExtractDouble();
+  ASSERT_GT(max_scroll_y, child_rect.bottom() + 100);
+  ASSERT_EQ(0, EvalJs(RootFrameTreeNode(), "window.scrollY"));
+
+  auto params = blink::mojom::ScrollIntoViewParams::New();
+  params->align_x = blink::mojom::ScrollAlignment::New();
+  params->align_y = blink::mojom::ScrollAlignment::New();
+  params->align_y->rect_visible = blink::mojom::ScrollAlignment::Behavior::kTop;
+  params->align_y->rect_hidden = blink::mojom::ScrollAlignment::Behavior::kTop;
+  params->align_y->rect_partial = blink::mojom::ScrollAlignment::Behavior::kTop;
+  params->behavior = blink::mojom::ScrollBehavior::kInstant;
+  params->type = blink::mojom::ScrollType::kProgrammatic;
+  params->cross_origin_boundaries = true;
+
+  // Target 50 DIPs inside the child frame.
+  // We must send it in physical pixels because the Mojo call expects physical
+  // pixels (when zoom-for-dsf is enabled).
+  double target_y_dip = child_rect.height() - 50;
+  double target_y_px = target_y_dip * dsf;
+
+  RenderFrameSubmissionObserver frame_observer(web_contents());
+  static_cast<blink::mojom::LocalFrameHost*>(
+      InnerMostFrameTreeNode()->current_frame_host())
+      ->ScrollRectToVisibleInParentFrame(gfx::RectF(0, target_y_px, 1, 1),
+                                         std::move(params));
+  frame_observer.WaitForScrollOffsetAtTop(
+      /*expected_scroll_offset_at_top=*/false);
+
+  double scroll_y =
+      EvalJs(RootFrameTreeNode(), "window.scrollY").ExtractDouble();
+  // It should scroll to the target.
+  EXPECT_NEAR(scroll_y, child_rect.y() + target_y_dip, 0.5);
+}
+
+class ScrollRectToVisibleClampBrowserTest
+    : public ScrollRectToVisibleClampBrowserTestBase {};
+
+// The rect bubbled from a child frame to its embedder is in the child's local
+// frame coordinates. Ensure the embedder only scrolls within the child's
+// extent even if the requested rect lies far outside it.
+IN_PROC_BROWSER_TEST_F(ScrollRectToVisibleClampBrowserTest,
+                       RectFromChildIsClampedToFrameBounds) {
+  VerifyRectFromChildIsClamped();
+}
+
+IN_PROC_BROWSER_TEST_F(ScrollRectToVisibleClampBrowserTest,
+                       ValidScrollInsideChildIsNotClamped) {
+  VerifyValidScrollIsNotClamped();
+}
+
+class ScrollRectToVisibleClampHighDPIBrowserTest
+    : public ScrollRectToVisibleClampBrowserTestBase {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ScrollRectToVisibleClampBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2.0");
+  }
+};
+
+// Ensure clamping works correctly on High-DPI displays where the device scale
+// factor is not 1.
+IN_PROC_BROWSER_TEST_F(ScrollRectToVisibleClampHighDPIBrowserTest,
+                       RectFromChildIsClampedToFrameBounds) {
+  VerifyRectFromChildIsClamped();
+}
+
+IN_PROC_BROWSER_TEST_F(ScrollRectToVisibleClampHighDPIBrowserTest,
+                       ValidScrollInsideChildIsNotClamped) {
+  VerifyValidScrollIsNotClamped();
 }
 
 IN_PROC_BROWSER_TEST_F(ScrollIntoViewFencedFrameBrowserTest,
