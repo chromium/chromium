@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -62,7 +63,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewBinder;
-import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
@@ -75,7 +75,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -137,16 +137,15 @@ public class VerticalTabListCoordinator {
     private final PropertyModel mContainerModel;
     private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
     private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
+    private final VerticalTabHoverCardController mTabHoverCardController;
+    private final RecyclerView.OnScrollListener mOnScrollListener;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
-    private final @Nullable TabHoverCardListener mTabHoverCardListener;
-    private final @Nullable ViewStub mTabHoverCardViewStub;
     private final @Nullable UndoBarThrottle mUndoBarThrottle;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
-    private @Nullable TabHoverCardView mTabHoverCardView;
     private @Nullable Token mLastDraggedGroupId;
     private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
 
@@ -230,23 +229,9 @@ public class VerticalTabListCoordinator {
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
         mDataSharingTabManager = dataSharingTabManager;
-        mTabHoverCardViewStub = tabHoverCardViewStub;
-        mTabHoverCardListener = this::showOrHideTabHoverCard;
         mUndoBarThrottle = undoBarThrottle;
         mCollapseController = new VerticalTabRailCollapseController(this::setRailCollapseState);
         mModelList = new TabListModel();
-
-        if (tabHoverCardViewStub != null) {
-            tabHoverCardViewStub.setOnInflateListener(
-                    (viewStub, view) -> {
-                        mTabHoverCardView = (TabHoverCardView) view;
-                        @SuppressWarnings("NullAway")
-                        Supplier<@Nullable TabContentManager> nullableSupplier =
-                                tabContentManagerSupplier;
-
-                        mTabHoverCardView.initialize(mTabModelSelector, nullableSupplier);
-                    });
-        }
         SimpleRecyclerViewAdapter adapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
                     @Override
@@ -309,9 +294,29 @@ public class VerticalTabListCoordinator {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        @SuppressWarnings("NullAway")
+        Supplier<@Nullable TabContentManager> nullableSupplier = tabContentManagerSupplier;
+        mTabHoverCardController =
+                new VerticalTabHoverCardController(
+                        mContainerView,
+                        tabHoverCardViewStub,
+                        tabModelSelector,
+                        nullableSupplier,
+                        this::isAnyContextMenuShowing);
+
         TabListRecyclerView recyclerView = mContainerView.getRecyclerView();
         mRecyclerView = recyclerView;
         mContainerView.initRecyclerView(adapter);
+        mOnScrollListener =
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                            mTabHoverCardController.hideHoverCard();
+                        }
+                    }
+                };
+        recyclerView.addOnScrollListener(mOnScrollListener);
 
         // Create the gesture detector to catch long-presses on VT empty space for the tab list
         // recycler view.
@@ -436,7 +441,7 @@ public class VerticalTabListCoordinator {
 
                     @Override
                     public @Nullable TabHoverCardListener getTabHoverCardListener() {
-                        return mTabHoverCardListener;
+                        return mTabHoverCardController.getTabHoverCardListener();
                     }
                 };
 
@@ -609,6 +614,22 @@ public class VerticalTabListCoordinator {
                         if (mIsActive) {
                             scrollActiveTabIntoView();
                         }
+                        mTabHoverCardController.hideHoverCard();
+                    }
+
+                    @Override
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        mTabHoverCardController.hideHoverCard();
+                    }
+
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        mTabHoverCardController.hideHoverCard();
+                    }
+
+                    @Override
+                    public void willAddTab(Tab tab, @TabLaunchType int type) {
+                        mTabHoverCardController.hideHoverCard();
                     }
                 };
 
@@ -667,14 +688,10 @@ public class VerticalTabListCoordinator {
         }
         mTabSwitcherDragHandlers.clear();
 
-        if (mTabHoverCardView != null) {
-            mTabHoverCardView.destroy();
-            mTabHoverCardView = null;
-        }
+        mTabHoverCardController.destroy();
 
-        if (mContainerView != null) {
-            mContainerView.removeOnLayoutChangeListener(mContainerLayoutChangeListener);
-        }
+        mContainerView.removeOnLayoutChangeListener(mContainerLayoutChangeListener);
+        mRecyclerView.removeOnScrollListener(mOnScrollListener);
 
         mCollapseController.destroy();
         mLastDraggedGroupId = null;
@@ -713,6 +730,8 @@ public class VerticalTabListCoordinator {
         mIsActive = isActive;
         if (mIsActive) {
             scrollActiveTabIntoView();
+        } else {
+            mTabHoverCardController.hideHoverCard();
         }
     }
 
@@ -793,30 +812,6 @@ public class VerticalTabListCoordinator {
             }
         } else {
             mPinnedTabsRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
-        if (isHovered) {
-            // Skip showing for the selected tab.
-            if (mTabModelSelector.getCurrentTabId() == tabId) return;
-
-            if (mTabHoverCardViewStub != null && mTabHoverCardViewStub.getParent() != null) {
-                mTabHoverCardViewStub.inflate();
-            }
-            if (mTabHoverCardView == null) return;
-
-            Tab tab = mTabModelSelector.getTabById(tabId);
-            if (tab == null) return;
-
-            float[] position =
-                    VerticalTabHoverCardHelper.getHoverCardPosition(
-                            view, mContainerView, mTabHoverCardView);
-            mTabHoverCardView.show(tab, position[0], position[1]);
-        } else {
-            if (mTabHoverCardView != null) {
-                mTabHoverCardView.hide();
-            }
         }
     }
 
@@ -987,6 +982,7 @@ public class VerticalTabListCoordinator {
         return new TabSwitcherDragHandler.DragHandlerDelegate() {
             @Override
             public boolean handleDragStart(float xPx, float yPx) {
+                mTabHoverCardController.hideHoverCard();
                 itemTouchHelper.onExternalDragStart(xPx, yPx, /* hideItemWhileDragging= */ true);
 
                 // Since the OS-level drag-and-drop only initiates after the cursor has moved
@@ -1166,6 +1162,7 @@ public class VerticalTabListCoordinator {
                             TabClosingSource.VERTICAL_TAB_STRIP,
                             TabStripLayoutType.VERTICAL);
         }
+        mTabHoverCardController.hideHoverCard();
         mTabGroupContextMenuCoordinator.showMenu(rectProvider, tabGroupId);
     }
 
@@ -1203,6 +1200,7 @@ public class VerticalTabListCoordinator {
                             mCanActivateTabLayoutToggleMenuSupplier,
                             TabStripLayoutType.VERTICAL);
         }
+        mTabHoverCardController.hideHoverCard();
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
     }
 
@@ -1222,6 +1220,7 @@ public class VerticalTabListCoordinator {
         }
 
         boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();
+        mTabHoverCardController.hideHoverCard();
         mTabStripContextMenuCoordinator.showMenu(rectProvider, isIncognito, activity);
     }
 
@@ -1393,6 +1392,15 @@ public class VerticalTabListCoordinator {
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
     }
 
+    private boolean isAnyContextMenuShowing() {
+        return (mTabStripContextMenuCoordinator != null
+                        && mTabStripContextMenuCoordinator.isMenuShowing())
+                || (mTabContextMenuCoordinator != null
+                        && mTabContextMenuCoordinator.isMenuShowing())
+                || (mTabGroupContextMenuCoordinator != null
+                        && mTabGroupContextMenuCoordinator.isMenuShowing());
+    }
+
     private void updateSpacerVisibility(@Nullable AppHeaderState appHeaderState) {
         boolean isInDesktopWindow = appHeaderState != null && appHeaderState.isInDesktopWindow();
         mContainerView.setDesktopWindowSpacerVisible(isInDesktopWindow);
@@ -1507,7 +1515,11 @@ public class VerticalTabListCoordinator {
         return mTabSwitcherDragHandlers;
     }
 
-    @Nullable TabHoverCardListener getTabHoverCardListenerForTesting() {
-        return mTabHoverCardListener;
+    TabHoverCardListener getTabHoverCardListenerForTesting() {
+        return mTabHoverCardController.getTabHoverCardListener();
+    }
+
+    RecyclerView.OnScrollListener getOnScrollListenerForTesting() {
+        return mOnScrollListener;
     }
 }

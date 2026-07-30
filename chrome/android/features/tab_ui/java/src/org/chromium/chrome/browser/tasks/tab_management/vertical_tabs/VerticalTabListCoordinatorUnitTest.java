@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -91,6 +92,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
@@ -101,7 +103,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -203,6 +205,7 @@ public class VerticalTabListCoordinatorUnitTest {
     private final SettableNonNullObservableSupplier<Integer> mVerticalTabsWidthSupplier =
             ObservableSuppliers.createNonNull(0);
     private final List<TabGroupObserver> mTabGroupObservers = new ArrayList<>();
+    private final List<TabModelObserver> mTabModelObservers = new ArrayList<>();
     private VerticalTabListCoordinator mCoordinator;
 
     @Before
@@ -225,6 +228,7 @@ public class VerticalTabListCoordinatorUnitTest {
         mCurrentTabModelSupplier.set(mTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTabModel.isTabModelRestored()).thenReturn(true);
@@ -254,6 +258,14 @@ public class VerticalTabListCoordinatorUnitTest {
                         })
                 .when(mTabModel)
                 .addTabGroupObserver(any(TabGroupObserver.class));
+
+        doAnswer(
+                        invocation -> {
+                            mTabModelObservers.add(invocation.getArgument(0));
+                            return null;
+                        })
+                .when(mTabModel)
+                .addObserver(any(TabModelObserver.class));
     }
 
     @After
@@ -1242,41 +1254,86 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testHoverCard_ShowAndHide() {
-        createCoordinator();
-        int tabId = 1;
-        Tab tab = prepareMockTab(mMockTab1, tabId);
-        when(mTabModelSelector.getTabById(tabId)).thenReturn(tab);
-        // Set tab not selected
-        when(mTabModelSelector.getCurrentTabId()).thenReturn(tabId + 1);
+    public void testHoverCard_TabClosed_HidesHoverCard() {
+        Tab tab = prepareAndShowHoverCard(mMockTab1);
 
-        TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
-        assertNotNull(hoverListener);
-        hoverListener.onTabHoverCardStateChanged(tabId, mMockChildView, true);
-
-        verify(mTabHoverCardViewStub).inflate();
-        verify(mTabHoverCardView).show(eq(tab), anyFloat(), anyFloat());
-
-        hoverListener.onTabHoverCardStateChanged(tabId, mMockChildView, false);
+        // Notify tab model that tab will close
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.willCloseTab(tab, /* didCloseAlone= */ false);
+        }
         verify(mTabHoverCardView).hide();
     }
 
     @Test
     @SmallTest
-    public void testHoverCard_SelectedTab_DoNotShow() {
-        createCoordinator();
-        int tabId = 1;
-        Tab tab = prepareMockTab(mMockTab1, tabId);
-        when(mTabModelSelector.getTabById(tabId)).thenReturn(tab);
-        // Set tab selected
-        when(mTabModelSelector.getCurrentTabId()).thenReturn(tabId);
+    public void testHoverCard_Deactivate_HidesHoverCard() {
+        mIsVerticalTabsActiveSupplier.set(true);
+        prepareAndShowHoverCard(mMockTab1);
 
+        // Deactivating vertical tabs should hide the active hover card.
+        mIsVerticalTabsActiveSupplier.set(false);
+        verify(mTabHoverCardView).hide();
+    }
+
+    @Test
+    @SmallTest
+    public void testHoverCard_Scroll_HidesHoverCard() {
+        prepareAndShowHoverCard(mMockTab1);
+
+        // Dragging the recycler view during scroll should hide the active hover card.
+        TabListRecyclerView mainRecyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        assertNotNull(mainRecyclerView);
+
+        RecyclerView.OnScrollListener scrollListener = mCoordinator.getOnScrollListenerForTesting();
+        assertNotNull(scrollListener);
+        scrollListener.onScrollStateChanged(mainRecyclerView, RecyclerView.SCROLL_STATE_DRAGGING);
+        verify(mTabHoverCardView).hide();
+    }
+
+    @Test
+    @SmallTest
+    public void testHoverCard_ContextMenu_HidesHoverCard() {
+        Tab tab = prepareAndShowHoverCard(mMockTab1);
+
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        assertNotNull(recyclerView);
+
+        // Showing context menu should hide hover card view.
+        mCoordinator.handleContextMenuInteractionForTesting(
+                mActivity, recyclerView, /* localX= */ 100f, /* localY= */ 100f);
+
+        verify(mTabHoverCardView).hide();
+
+        // While context menu is showing, attempting to hover a tab should not show a hover card.
+        when(mTabContextMenuCoordinator.isMenuShowing()).thenReturn(true);
         TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
         assertNotNull(hoverListener);
-        hoverListener.onTabHoverCardStateChanged(tabId, mMockChildView, true);
+        hoverListener.onTabHoverCardStateChanged(
+                tab.getId(), mMockChildView, /* isHovered= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardViewStub, never()).inflate();
         verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @SmallTest
+    public void testHoverCard_DragStart_HidesHoverCard() {
+        Tab tab = prepareAndShowHoverCard(mMockTab1);
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, tab.getId());
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> captor =
+            ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(captor.capture());
+
+        captor.getValue().handleDragStart(10f, 10f);
+
+        verify(mTabHoverCardView).hide();
     }
 
     @Test
@@ -1837,5 +1894,24 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(repTab));
         when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(repTabId);
         return repTab;
+    }
+
+    private Tab prepareAndShowHoverCard(Tab mockTab) {
+        createCoordinator();
+        Tab tab = prepareMockTab(mockTab, TAB_ID_1);
+        when(mTabModelSelector.getTabById(TAB_ID_1)).thenReturn(tab);
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_2);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab);
+
+        TabHoverCardListener hoverListener = mCoordinator.getTabHoverCardListenerForTesting();
+        assertNotNull(hoverListener);
+        hoverListener.onTabHoverCardStateChanged(TAB_ID_1, mMockChildView, /* isHovered= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabHoverCardView).show(eq(tab), anyFloat(), anyFloat());
+
+        // Clear initial hide() invocation from setup/setActive(false)
+        clearInvocations(mTabHoverCardView);
+        return tab;
     }
 }
