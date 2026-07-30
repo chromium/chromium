@@ -109,6 +109,16 @@ class CrossDeviceSigninQrWebView : public views::WebView,
     }
   }
 
+  void DidStopLoading() override {
+    views::Widget* widget = GetWidget();
+    // Fallback: If auto-resize didn't fire (e.g. because the size matched
+    // the placeholder or due to Wayland hidden state issues), ensure the
+    // widget is shown to avoid deadlocks.
+    if (widget && !widget->IsVisible()) {
+      widget->Show();
+    }
+  }
+
   // content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
