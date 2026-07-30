@@ -19,7 +19,27 @@
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/prefs/pref_service.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
+
+namespace {
+
+bool IsPasswordChangeSubmissionEnabledForProfile(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  return static_cast<optimization_guide::prefs::FeatureOptInState>(
+             profile->GetPrefs()->GetInteger(
+                 optimization_guide::prefs::GetSettingEnabledPrefName(
+                     optimization_guide::UserVisibleFeatureKey::
+                         kPasswordChangeSubmission))) ==
+         optimization_guide::prefs::FeatureOptInState::kEnabled;
+}
+
+}  // namespace
 
 // static
 PasswordFieldClassificationModelHandlerFactory*
@@ -78,11 +98,23 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
 
   // Special case for Automated Password Change which uses a model in a very
   // limited scope.
-  ChromePasswordChangeService* password_change_service =
-      PasswordChangeServiceFactory::GetForProfile(profile);
-  if (password_change_service &&
-      password_change_service->UserIsActivePasswordChangeUser()) {
-    return context;
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationAutofillAndPassword.Get()) {
+    if (IsPasswordChangeSubmissionEnabledForProfile(profile)) {
+      ChromePasswordChangeService* password_change_service =
+          PasswordChangeServiceFactory::GetForProfile(profile);
+      if (password_change_service &&
+          password_change_service->UserIsActivePasswordChangeUser()) {
+        return context;
+      }
+    }
+  } else {
+    ChromePasswordChangeService* password_change_service =
+        PasswordChangeServiceFactory::GetForProfile(profile);
+    if (password_change_service &&
+        password_change_service->UserIsActivePasswordChangeUser()) {
+      return context;
+    }
   }
 
   // Special case for ActorLogin which uses a model in a very limited scope.
