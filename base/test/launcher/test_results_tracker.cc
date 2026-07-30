@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
 
@@ -46,8 +45,11 @@ const FilePath::CharType kDefaultOutputFile[] =
 // 8601 format, without the timezone information.
 // TODO(pkasting): Consider using `TimeFormatAsIso8601()`, possibly modified.
 std::string FormatTimeAsIso8601(Time time) {
-  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss",
-                                                icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  time.UTCExplode(&exploded);
+  return base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d", exploded.year,
+                            exploded.month, exploded.day_of_month,
+                            exploded.hour, exploded.minute, exploded.second);
 }
 
 struct TestSuiteResultsAggregator {
