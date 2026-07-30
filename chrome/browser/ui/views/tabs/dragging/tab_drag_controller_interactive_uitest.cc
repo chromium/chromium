@@ -549,7 +549,8 @@ void ResizeUsingMouseEmulation(Browser* browser,
           kTabStripFrameGrabHandleElementId);
   auto grab_coordinates =
       ui_test_utils::GetCenterInScreenCoordinates(grab_handle_space);
-  gfx::Vector2d grab_offset = {grab_coordinates.x(), grab_coordinates.y()};
+  gfx::Rect window_bounds = browser->GetWindow()->GetBounds();
+  gfx::Vector2d grab_offset = grab_coordinates - window_bounds.origin();
   auto move_target = target_bounds.origin() + grab_offset;
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(grab_coordinates, window));
   ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
@@ -1997,9 +1998,11 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
   // cleared on the source tabstrip.
   EXPECT_TRUE(test->IsTabDraggingInfoCleared(not_attached_tab_strip));
   // At this moment there should be a new browser window for the dragged tabs.
-  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const new_browser =
       ui_test_utils::GetBrowserNotInSet({not_attached_browser, target_browser});
+  ASSERT_TRUE(new_browser);
+
   TabStrip* const new_tab_strip = GetTabStripForBrowser(new_browser);
   EXPECT_TRUE(IsDragSessionActive(new_tab_strip));
   // Test that the tab dragging info should be correctly set on the new window.
@@ -2452,17 +2455,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // then detaching it again retains the original window's size.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DetachAttachDetachRetainsOriginalSize) {
-#if BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI "
-                    "enabled. See crbug.com/477426026.";
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-
   Browser* browser_large = browser();
   // Set up two windows with different sizes. `browser_large` is the source.
   AddTabsAndResetBrowser(browser_large, 1);
   TabStrip* tab_strip_large = GetTabStripForBrowser(browser_large);
+  if (!tab_strip_large->GetWidget()->IsMoveLoopSupported()) {
+    GTEST_SKIP() << "Not relevant for fallback tab dragging";
+  }
   tabs::TabHandle dragged_tab =
       browser_large->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
@@ -2476,6 +2475,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       gfx::ScaleToFlooredSize(browser_small->GetWindow()->GetBounds().size(),
                               kSmallWindowScaleFactor));
   ui_test_utils::SetAndWaitForBounds(*browser_small, small_rect);
+
+  browser_large->GetWindow()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser_large);
 
   Tab* tab = tab_strip_large->tab_at(0);
   // Move to the first tab and drag it enough so that it detaches and attaches
