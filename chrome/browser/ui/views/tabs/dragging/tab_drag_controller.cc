@@ -102,6 +102,10 @@
 #include "ui/wm/core/window_modality_controller.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
+#endif
+
 using content::OpenURLParams;
 using content::WebContents;
 
@@ -1767,6 +1771,13 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       current_state_ = DragState::kWaitingForWindowToShow;
       VisibilityWaiter waiter(dragged_widget);
 
+#if BUILDFLAG(IS_LINUX)
+      // VisibilityWaiter runs a kNestableTasksAllowed loop while the user holds
+      // the pointer button, before the move loop's own suppression scope is
+      // established; suppress data drags for its duration as well.
+      auto suppress_data_drag =
+          views::DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
+#endif
       base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
       waiter.Wait();
       if (!ref) {

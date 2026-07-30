@@ -159,6 +159,9 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
+#include "chrome/common/chrome_features.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/linux/linux_ui.h"
 #define DESKTOP_BROWSER_FRAME_AURA BrowserNativeWidgetAuraLinux
 #else
@@ -686,6 +689,14 @@ void TabDragControllerTest::HandleGestureEvent(TabStrip* tab_strip,
 bool TabDragControllerTest::HasDragStarted(TabStrip* tab_strip) const {
   return GetTabDragController(tab_strip) &&
          GetTabDragController(tab_strip)->started_drag();
+}
+
+bool TabDragControllerTest::IsWaitingForWindowToShow(
+    TabStrip* tab_strip) const {
+  TabDragController* controller = GetTabDragController(tab_strip);
+  return controller &&
+         controller->current_state_ ==
+             TabDragController::DragState::kWaitingForWindowToShow;
 }
 
 void TabDragControllerTest::SetTabDragPointResolver(
@@ -3651,6 +3662,106 @@ INSTANTIATE_TEST_SUITE_P(
         /*input_source=*/::testing::Values("mouse")));
 
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+
+// Variant of DetachToBrowserTabDragControllerTest that enables InitialWebUI
+// with deferred BrowserView::Show() so that the detached browser is not
+// immediately visible after Show() and TabDragController spins its
+// kWaitingForWindowToShow nested RunLoop before entering the move loop.
+class DetachTabWithDeferredShowDragControllerTest
+    : public DetachToBrowserTabDragControllerTest {
+ public:
+  DetachTabWithDeferredShowDragControllerTest() {
+    deferred_show_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kInitialWebUI, {}},
+         {features::kWebUIReloadButton, {}},
+         {features::kArtificialUIDelay,
+          {{"initial_web_ui_delay_duration", "2s"},
+           {"views_ui_delay_duration", "0ms"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList deferred_show_feature_list_;
+};
+
+// Detaches a tab into a new browser and, while the controller is waiting for
+// the new browser's deferred Show() to complete, attempts to start a data drag
+// from the source browser's window. The data drag must be rejected so that it
+// cannot release the tab drag's pointer capture and take over the gesture.
+IN_PROC_BROWSER_TEST_P(DetachTabWithDeferredShowDragControllerTest,
+                       RejectDataDragWhileWaitingForDetachedWindow) {
+  // The kWaitingForWindowToShow state is only reached on the RunMoveLoop path.
+  if (!test::PlatformSupportsScreenCoordinates()) {
+    GTEST_SKIP() << "RunMoveLoop is not used on this platform.";
+  }
+
+  AddTabsAndResetBrowser(browser(), 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  aura::Window* const source_window = browser()->GetWindow()->GetNativeWindow();
+  aura::Window* const source_root = source_window->GetRootWindow();
+
+  bool data_drag_attempted = false;
+  TabStrip* new_tab_strip = nullptr;
+  // Releases the pointer once the controller has left kWaitingForWindowToShow
+  // and entered the move loop, so the move loop sees the button-up.
+  base::RepeatingClosure release_when_in_move_loop =
+      base::BindLambdaForTesting([&]() {
+        if (new_tab_strip && IsWaitingForWindowToShow(new_tab_strip)) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, release_when_in_move_loop);
+          return;
+        }
+        ASSERT_TRUE(ReleaseInput(0, /*async=*/true));
+      });
+
+  Tab* const tab = tab_strip->tab_at(0);
+  ASSERT_TRUE(PressInputAtCenter(tab));
+  ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
+      tab, base::BindLambdaForTesting([&]() {
+        // The mouse-move that triggered detach has entered the
+        // kWaitingForWindowToShow nested loop; post into it.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&]() {
+              data_drag_attempted = true;
+              ASSERT_TRUE(TabDragController::IsActive());
+              ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+              BrowserWindowInterface* const new_browser =
+                  ui_test_utils::GetBrowserNotInSet({browser()});
+              ASSERT_TRUE(new_browser);
+              new_tab_strip = GetTabStripForBrowser(new_browser);
+              ASSERT_TRUE(IsWaitingForWindowToShow(new_tab_strip));
+
+              auto data = std::make_unique<ui::OSExchangeData>();
+              data->SetString(u"test");
+              ui::mojom::DragOperation result =
+                  aura::client::GetDragDropClient(source_root)
+                      ->StartDragAndDrop(std::move(data), source_root,
+                                         source_window, gfx::Point(),
+                                         ui::DragDropTypes::DRAG_COPY,
+                                         ui::mojom::DragEventSource::kMouse);
+              EXPECT_EQ(ui::mojom::DragOperation::kNone, result);
+
+              release_when_in_move_loop.Run();
+            }));
+      }),
+      gfx::Vector2d(0, GetDetachY(tab_strip))));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([]() { return !TabDragController::IsActive(); }));
+  EXPECT_TRUE(data_drag_attempted);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TabDragging,
+    DetachTabWithDeferredShowDragControllerTest,
+    ::testing::Combine(
+        /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
+        /*input_source=*/::testing::Values("mouse")));
+
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace {
 

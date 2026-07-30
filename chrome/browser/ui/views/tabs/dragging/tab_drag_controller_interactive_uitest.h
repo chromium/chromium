@@ -62,6 +62,11 @@ class TabDragControllerTest : public InProcessBrowserTest {
 
   bool HasDragStarted(TabStrip* tab_strip) const;
 
+  // Returns true if `tab_strip`'s drag controller is in the state where it has
+  // detached into a new browser and is waiting for that browser's widget to
+  // become visible before entering the window-move loop.
+  bool IsWaitingForWindowToShow(TabStrip* tab_strip) const;
+
   void SetTabDragPointResolver(TabDragPointResolver& resolver);
 
   // InProcessBrowserTest:
