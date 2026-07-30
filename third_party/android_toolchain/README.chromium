@@ -22,16 +22,17 @@ This allows us to use tracing and gdb support, while limiting our dependencies.
 How to upgrade NDK:
 1. Commit #1:
    * Assign `_URL` variable in `3pp/fetch.py` to point to the new file.
-   * Edit `3pp/install.sh` as needed.
-2. The builder for CIPD packagers
+   * Edit `3pp/install.sh` (Linux) and `3pp/install_mac.sh` (macOS) as needed.
+2. The CIPD packager builders (one per host platform)
 https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
-   should run (trigger if needed) with the commit. Wait for it to finish.
+https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-mac-arm64-packager
+   should run (trigger if needed) with the commit. Wait for them to finish.
 3. The `fetch.py` change leads to version code change, which triggers update in
    "latest" entry for the page:
 https://chrome-infra-packages.appspot.com/p/chromium/third_party/android_toolchain/android_toolchain
 4. Commit #2:
    * Update the DEPS entry `src/third_party/android_toolchain/ndk` with the new
-     Instance ID.
+     Instance ID (the package is per-platform: `.../android_toolchain/${platform}`).
    * Update this README.chromium with the new version.
    * Update //build/config/android/config.gni ("default_android_ndk_version")
    * Add change log URL to commit message (e.g.: https://github.com/android/ndk/releases/tag/r26b)

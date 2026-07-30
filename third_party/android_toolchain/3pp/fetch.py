@@ -33,6 +33,7 @@ def do_latest():
 
 def get_url():
     v = os.environ['_3PP_VERSION']
+    platform = os.environ['_3PP_PLATFORM']
     md = get_md()
 
     # Split by sections starting with ### as these headers seperate the LTS,
@@ -40,11 +41,15 @@ def get_url():
     sections = md.split('###')
     for section in sections:
         if f'ndkVersion "{v}"' in section:
-            # Find linux download url in this section.
+            # The wiki only links the Linux zip. The macOS zip lives at the
+            # parallel repository URL, so derive it from the Linux one.
             match = re.search(r'href="(http\S+android-ndk-[^"]+-linux\.zip)"',
                               section)
             if match:
                 artifact_url = match.group(1)
+                if platform == 'mac-arm64':
+                    artifact_url = artifact_url.replace('-linux.zip',
+                                                        '-darwin.zip')
                 partial_manifest = {'url': [artifact_url], 'ext': '.zip'}
                 print(json.dumps(partial_manifest))
                 return
