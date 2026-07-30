@@ -53,11 +53,9 @@ class GlicSplitButtonController {
   GlicNudgeController* nudge_controller() {
     return glic_nudge_controller_.get();
   }
-#if !BUILDFLAG(IS_ANDROID)
   GlicActorNudgeController* actor_nudge_controller() {
     return glic_actor_nudge_controller_.get();
   }
-#endif
 
  private:
   bool IsToolbarButton() const;
@@ -74,8 +72,8 @@ class GlicSplitButtonController {
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;
-  std::unique_ptr<GlicActorNudgeController> glic_actor_nudge_controller_;
 #endif
+  std::unique_ptr<GlicActorNudgeController> glic_actor_nudge_controller_;
 
   ui::ScopedUnownedUserData<GlicSplitButtonController>
       scoped_unowned_user_data_;

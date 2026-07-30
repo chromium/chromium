@@ -5,12 +5,12 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
@@ -22,6 +22,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#endif
 
 namespace glic {
 
@@ -44,6 +48,7 @@ GlicActorNudgeController::GlicActorNudgeController(
     RegisterActorNudgeStateCallback();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   ActorTaskListBubbleController* bubble_controller =
       ActorTaskListBubbleController::From(browser_);
   bubble_visibility_change_subscription_.push_back(
@@ -54,6 +59,7 @@ GlicActorNudgeController::GlicActorNudgeController(
       bubble_controller->RegisterBubbleDestroyedCallback(base::BindRepeating(
           &GlicActorNudgeController::OnBubbleVisibilityChange,
           weak_ptr_factory_.GetWeakPtr(), /*is_bubble_open=*/false)));
+#endif
 }
 
 GlicActorNudgeController::~GlicActorNudgeController() = default;
@@ -199,11 +205,15 @@ void GlicActorNudgeController::ShowBubble() {
 }
 
 void GlicActorNudgeController::CloseBubble() {
+#if !BUILDFLAG(IS_ANDROID)
   ActorTaskListBubbleController* bubble_controller =
       ActorTaskListBubbleController::From(browser_);
   if (bubble_controller->GetBubbleWidget()) {
     bubble_controller->GetBubbleWidget()->Close();
   }
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
+#endif
 }
 
 bool GlicActorNudgeController::IsShowingNudge() {

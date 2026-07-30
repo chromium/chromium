@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
@@ -30,7 +31,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #endif
 
 namespace glic {
@@ -58,18 +58,18 @@ GlicSplitButtonController::GlicSplitButtonController(
   glic_button_controller_ = std::make_unique<GlicButtonController>(
       browser->GetProfile(), *browser, this, glic_service);
 
-  // TODO(crbug.com/518584352): Port these to Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicActor) &&
       base::FeatureList::IsEnabled(features::kGlicActorUi) &&
       features::kGlicActorUiTaskIcon.Get() &&
       browser->GetProfile()->IsRegularProfile()) {
+// TODO(crbug.com/518584352): Port this to Android.
+#if !BUILDFLAG(IS_ANDROID)
     actor_task_list_bubble_controller_ =
         std::make_unique<ActorTaskListBubbleController>(browser);
+#endif
     glic_actor_nudge_controller_ =
         std::make_unique<GlicActorNudgeController>(browser, this);
   }
-#endif
 }
 
 GlicSplitButtonController::~GlicSplitButtonController() = default;

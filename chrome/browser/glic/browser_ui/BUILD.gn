@@ -9,12 +9,17 @@ import("//chrome/common/features.gni")
 
 source_set("browser_ui") {
   sources = [
+    "glic_actor_nudge_controller.h",
+    "glic_actor_task_icon_manager.h",
+    "glic_actor_task_icon_manager_factory.h",
     "glic_nudge_controller.h",
     "glic_split_button_controller.h",
     "glic_split_button_delegate.h",
   ]
 
   public_deps = [
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/tab_list",
@@ -28,9 +33,6 @@ source_set("browser_ui") {
 
   if (!is_android) {
     sources += [
-      "glic_actor_nudge_controller.h",
-      "glic_actor_task_icon_manager.h",
-      "glic_actor_task_icon_manager_factory.h",
       "glic_iph_controller.h",
       "glic_selection_widget.h",
       "glic_tab_indicator_helper.h",
@@ -38,9 +40,7 @@ source_set("browser_ui") {
     ]
 
     public_deps += [
-      "//chrome/browser/actor",
       "//chrome/browser/actor:types",
-      "//chrome/browser/actor/ui",
       "//components/actor/core:task_id",
       "//ui/base/unowned_user_data",
     ]
@@ -52,6 +52,9 @@ source_set("browser_ui") {
 
 source_set("impl") {
   sources = [
+    "glic_actor_nudge_controller.cc",
+    "glic_actor_task_icon_manager.cc",
+    "glic_actor_task_icon_manager_factory.cc",
     "glic_button_controller.cc",
     "glic_button_controller.h",
     "glic_nudge_controller.cc",
@@ -62,9 +65,6 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
-      "glic_actor_nudge_controller.cc",
-      "glic_actor_task_icon_manager.cc",
-      "glic_actor_task_icon_manager_factory.cc",
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",
       "glic_tab_indicator_helper.cc",
