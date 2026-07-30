@@ -26,6 +26,37 @@
 
 namespace local_network_access {
 
+using blink::mojom::WebFeature;
+
+std::vector<WebFeature> AllAddressSpaceFeatures() {
+  return {
+      WebFeature::kAddressSpaceLocalSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpaceLocalSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpaceLocalNonSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextNavigatedToLocalV2,
+      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLocalV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocalV2,
+      WebFeature::kPrivateNetworkAccessFetchedWorkerScript,
+      WebFeature::kPrivateNetworkAccessFetchedSubFrame,
+      WebFeature::kPrivateNetworkAccessFetchedTopFrame,
+      WebFeature::kPrivateNetworkAccessWithinWorker,
+  };
+}
+
 LocalNetworkAccessBrowserTestBase::LocalNetworkAccessBrowserTestBase(
     bool map_all_hosts_to_localhost)
     : map_all_hosts_to_localhost_(map_all_hosts_to_localhost),

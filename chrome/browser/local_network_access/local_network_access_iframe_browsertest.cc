@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 // Local Network Access browser tests related to iframes.
 //
@@ -110,6 +113,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 // page.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavigationPublicPagePublicIframe) {
+  WebFeatureHistogramTester feature_histogram_tester;
   GURL initial_url = https_public_server().GetURL(
       "a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
@@ -119,12 +123,21 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                                                      final_url.spec());
 
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
+
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
+           1},
+          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
+      }));
 }
 
 // Open a public page that iframes a loopback page, then navigate it to a
 // loopback page.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavigationPublicPageLoopbackIframe) {
+  WebFeatureHistogramTester feature_histogram_tester;
   GURL initial_url = https_public_server().GetURL(
       "a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
@@ -132,12 +145,20 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
       "b.com",
       "/local_network_access/client-redirect.html?url=" + final_url.spec());
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
+           1},
+          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
+      }));
 }
 
 // Open a loopback page that iframes a public page, then navigate it to a
 // loopback page.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavLoopbackPagePublicIframe) {
+  WebFeatureHistogramTester feature_histogram_tester;
   GURL initial_url =
       https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
@@ -146,12 +167,20 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                                                  "client-redirect.html?url=" +
                                                      final_url.spec());
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
+           1},
+          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
+      }));
 }
 
 // Open a loopback page that iframes a loopback page, then navigate it to a
 // loopback page.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
                        IframeNavLoopbackPageLoopbackIframe) {
+  WebFeatureHistogramTester feature_histogram_tester;
   GURL initial_url =
       https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
   GURL final_url = https_server().GetURL("c.com", "/defaultresponse");
@@ -159,6 +188,9 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
       "b.com",
       "/local_network_access/client-redirect.html?url=" + final_url.spec());
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
+  EXPECT_THAT(
+      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
+      testing::IsEmpty());
 }
 
 // Open a public page that iframes a public page, then navigate it to a loopback

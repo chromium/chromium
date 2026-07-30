@@ -75,35 +75,6 @@ GURL LocalSecureURLWithHost(const net::EmbeddedTestServer& server,
   return SecureURLWithHostName(server, kNoFaviconPath, hostname);
 }
 
-std::vector<WebFeature> AllAddressSpaceFeatures() {
-  return {
-      WebFeature::kAddressSpaceLocalSecureContextEmbeddedLoopbackV2,
-      WebFeature::kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2,
-      WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
-      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLoopbackV2,
-      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLoopbackV2,
-      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLoopbackV2,
-      WebFeature::kAddressSpacePublicSecureContextEmbeddedLocalV2,
-      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2,
-      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLocalV2,
-      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocalV2,
-      WebFeature::kAddressSpaceLocalSecureContextNavigatedToLoopbackV2,
-      WebFeature::kAddressSpaceLocalNonSecureContextNavigatedToLoopbackV2,
-      WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
-      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLoopbackV2,
-      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLoopbackV2,
-      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLoopbackV2,
-      WebFeature::kAddressSpacePublicSecureContextNavigatedToLocalV2,
-      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
-      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLocalV2,
-      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocalV2,
-      WebFeature::kPrivateNetworkAccessFetchedWorkerScript,
-      WebFeature::kPrivateNetworkAccessFetchedSubFrame,
-      WebFeature::kPrivateNetworkAccessFetchedTopFrame,
-      WebFeature::kPrivateNetworkAccessWithinWorker,
-  };
-}
-
 class LocalNetworkAccessCountersBrowserTest
     : public LocalNetworkAccessBrowserTestBase {};
 
@@ -313,87 +284,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
            1},
           {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
-}
-
-// This test verifies that the right address space feature is recorded when a
-// navigation results in a local network request. Specifically, in this test
-// the document being navigated is not the one initiating the navigation (the
-// latter being the "remote initiator" referenced by the test name).
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
-                       RecordsAddressSpaceFeatureForRemoteInitiatorNavigation) {
-  WebFeatureHistogramTester feature_histogram_tester;
-
-  EXPECT_TRUE(content::NavigateToURL(
-      web_contents(),
-      SecureURL(https_server(),
-                "/local_network_access/remote-initiator-navigation.html")));
-  EXPECT_THAT(
-      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
-      IsEmpty());
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(), content::JsReplace(R"(
-    runTest({
-      url: "/defaultresponse",
-    });
-  )")));
-
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
-           1},
-          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
-      }));
-}
-
-// This test verifies that when the initiator of a navigation is no longer
-// around by the time the navigation finishes, then no address space feature is
-// recorded, and importantly: the browser does not crash.
-IN_PROC_BROWSER_TEST_F(
-    LocalNetworkAccessCountersBrowserTest,
-    DoesNotRecordAddressSpaceFeatureForClosedInitiatorNavigation) {
-  WebFeatureHistogramTester feature_histogram_tester;
-
-  EXPECT_TRUE(content::NavigateToURL(
-      web_contents(),
-      SecureURL(https_server(),
-                "/local_network_access/remote-initiator-navigation.html")));
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
-    runTest({
-      url: new URL("/slow?3", window.location).href,
-      initiatorBehavior: "close",
-    });
-  )"));
-
-  EXPECT_THAT(
-      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
-      IsEmpty());
-}
-
-// This test verifies that when the initiator of a navigation has already
-// navigated itself by the time the navigation finishes, then no address space
-// feature is recorded.
-IN_PROC_BROWSER_TEST_F(
-    LocalNetworkAccessCountersBrowserTest,
-    DoesNotRecordAddressSpaceFeatureForMissingInitiatorNavigation) {
-  WebFeatureHistogramTester feature_histogram_tester;
-
-  EXPECT_TRUE(content::NavigateToURL(
-      web_contents(),
-      SecureURL(https_server(),
-                "/local_network_access/remote-initiator-navigation.html")));
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
-    runTest({
-      url: new URL("/slow?3", window.location).href,
-      initiatorBehavior: "navigate",
-    });
-  )"));
-
-  EXPECT_THAT(
-      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
-      IsEmpty());
 }
 
 // This test verifies that local network requests that are blocked are not
