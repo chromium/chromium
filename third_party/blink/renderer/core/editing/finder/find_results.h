@@ -64,7 +64,7 @@ class CORE_EXPORT FindResults {
   MatchResultIcu front() const;
   MatchResultIcu back() const;
 
-  unsigned CountForTesting() const;
+  wtf_size_t CountForTesting() const;
 
  private:
   String search_text_;

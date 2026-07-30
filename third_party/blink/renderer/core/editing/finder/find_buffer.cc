@@ -240,13 +240,13 @@ bool FindBuffer::IsInvalidMatch(MatchResultIcu match) const {
   // replaced with the kNonCharacter, and may lead to crashes. To avoid
   // crashing, we should skip the matches that are invalid - they would have
   // either an empty position or a non-offset-in-anchor position.
-  const unsigned start_index = match.start;
+  const wtf_size_t start_index = match.start;
   PositionInFlatTree start_position =
       PositionAtStartOfCharacterAtIndex(start_index);
   if (start_position.IsNull() || !start_position.IsOffsetInAnchor())
     return true;
 
-  const unsigned end_index = match.start + match.length;
+  const wtf_size_t end_index = match.start + match.length;
   DCHECK_LE(start_index, end_index);
   PositionInFlatTree end_position =
       PositionAtEndOfCharacterAtIndex(end_index - 1);
@@ -537,8 +537,8 @@ void FindBuffer::ReplaceNodeWithCharConstants(const Node& node,
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
-    unsigned start_index,
-    unsigned end_index) const {
+    wtf_size_t start_index,
+    wtf_size_t end_index) const {
   DCHECK_LE(start_index, end_index);
   PositionInFlatTree start_position =
       PositionAtStartOfCharacterAtIndex(start_index);
@@ -548,12 +548,12 @@ EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
 }
 
 const FindBuffer::BufferNodeMapping* FindBuffer::MappingForIndex(
-    unsigned index) const {
+    wtf_size_t index) const {
   // Get the first entry that starts at a position higher than offset, and
   // move back one entry.
   auto it = std::upper_bound(
       buffer_node_mappings_.begin(), buffer_node_mappings_.end(), index,
-      [](const unsigned offset, const BufferNodeMapping& entry) {
+      [](const wtf_size_t offset, const BufferNodeMapping& entry) {
         return offset < entry.offset_in_buffer;
       });
   if (it == buffer_node_mappings_.begin())
@@ -563,7 +563,7 @@ const FindBuffer::BufferNodeMapping* FindBuffer::MappingForIndex(
 }
 
 PositionInFlatTree FindBuffer::PositionAtStartOfCharacterAtIndex(
-    unsigned index) const {
+    wtf_size_t index) const {
   DCHECK_LT(index, buffer_.size());
   DCHECK(offset_mapping_);
   const BufferNodeMapping* entry = MappingForIndex(index);
@@ -574,7 +574,7 @@ PositionInFlatTree FindBuffer::PositionAtStartOfCharacterAtIndex(
 }
 
 PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
-    unsigned index) const {
+    wtf_size_t index) const {
   DCHECK_LT(index, buffer_.size());
   DCHECK(offset_mapping_);
   const BufferNodeMapping* entry = MappingForIndex(index);
@@ -644,7 +644,7 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
       (&text_node == range.EndPosition().ComputeContainerNode())
           ? ToPositionInDomTree(range.EndPosition().ToOffsetInAnchor())
           : Position::LastPositionInNode(text_node);
-  unsigned last_unit_end = 0;
+  wtf_size_t last_unit_end = 0;
   bool first_unit = true;
   const String mapped_text = offset_mapping_->GetText();
   for (const OffsetMappingUnit& unit :

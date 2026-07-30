@@ -24,8 +24,8 @@ class FindResultsTest : public EditingTestBase {
     return buffer;
   }
 
-  Vector<unsigned> ResultOffsets(FindResults& results) {
-    Vector<unsigned> offsets;
+  Vector<wtf_size_t> ResultOffsets(FindResults& results) {
+    Vector<wtf_size_t> offsets;
     for (const auto match : results) {
       offsets.push_back(match.start);
     }
@@ -45,8 +45,8 @@ TEST_F(FindResultsTest, MultipleIdenticalCorpora) {
 
   // We have three identical buffers, and each buffer contains three matches.
   // FindResults should merge nine matches into three.
-  Vector<unsigned> offsets = ResultOffsets(results);
-  EXPECT_EQ((Vector<unsigned>{0u, 4u, 8u}), offsets);
+  Vector<wtf_size_t> offsets = ResultOffsets(results);
+  EXPECT_EQ((Vector<wtf_size_t>{0u, 4u, 8u}), offsets);
 }
 
 TEST_F(FindResultsTest, MultipleCorpora) {
@@ -58,8 +58,8 @@ TEST_F(FindResultsTest, MultipleCorpora) {
   FindResults results(find_buffer, &main_searcher_, buffer0, &extra_buffers,
                       query, FindOptions());
 
-  Vector<unsigned> offsets = ResultOffsets(results);
-  EXPECT_EQ((Vector<unsigned>{0u, 4u, 6u, 10u}), offsets);
+  Vector<wtf_size_t> offsets = ResultOffsets(results);
+  EXPECT_EQ((Vector<wtf_size_t>{0u, 4u, 6u, 10u}), offsets);
 }
 
 TEST_F(FindResultsTest, AnIteratorReachesToEnd) {
@@ -71,8 +71,8 @@ TEST_F(FindResultsTest, AnIteratorReachesToEnd) {
   FindResults results(find_buffer, &main_searcher_, buffer0, &extra_buffers,
                       query, FindOptions());
 
-  Vector<unsigned> offsets = ResultOffsets(results);
-  EXPECT_EQ((Vector<unsigned>{0u, 4u, 6u}), offsets);
+  Vector<wtf_size_t> offsets = ResultOffsets(results);
+  EXPECT_EQ((Vector<wtf_size_t>{0u, 4u, 6u}), offsets);
 }
 
 }  // namespace blink

@@ -234,16 +234,16 @@ gfx::RectF FindInPage::ActiveFindMatchRect() {
 void FindInPage::ActivateNearestFindResult(int request_id,
                                            const gfx::PointF& point) {
   gfx::Rect active_match_rect;
-  const int ordinal =
+  std::optional<wtf_size_t> ordinal =
       EnsureTextFinder().SelectNearestFindMatch(point, &active_match_rect);
-  if (ordinal == -1) {
+  if (!ordinal) {
     // Something went wrong, so send a no-op reply (force the frame to report
     // the current match count) in case the host is waiting for a response due
     // to rate-limiting.
     EnsureTextFinder().IncreaseMatchCount(request_id, 0);
     return;
   }
-  ReportFindInPageSelection(request_id, ordinal, active_match_rect,
+  ReportFindInPageSelection(request_id, *ordinal, active_match_rect,
                             true /* final_update */);
 }
 

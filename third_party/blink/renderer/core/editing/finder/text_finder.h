@@ -65,7 +65,8 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 #if BUILDFLAG(IS_ANDROID)
   gfx::RectF ActiveFindMatchRect();
   Vector<gfx::RectF> FindMatchRects();
-  int SelectNearestFindMatch(const gfx::PointF&, gfx::Rect* selection_rect);
+  std::optional<wtf_size_t> SelectNearestFindMatch(const gfx::PointF&,
+                                                   gfx::Rect* selection_rect);
 #endif
 
   // Starts brand new scoping request: resets the scoping state and
@@ -83,10 +84,11 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the index in the find-in-page cache of the match closest to the
-  // provided point in find-in-page coordinates, or -1 in case of error.
-  // The squared distance to the closest match is returned in the
+  // provided point in find-in-page coordinates, or std::nullopt in case of
+  // error. The squared distance to the closest match is returned in the
   // |distanceSquared| parameter.
-  int NearestFindMatch(const gfx::PointF&, float* distance_squared);
+  std::optional<wtf_size_t> NearestFindMatch(const gfx::PointF&,
+                                             float* distance_squared);
 #endif
 
   // Returns whether this frame has the active match.
@@ -191,9 +193,10 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 #if BUILDFLAG(IS_ANDROID)
   // Select a find-in-page match marker in the current frame using a cache
   // match index returned by nearestFindMatch. Returns the ordinal of the new
-  // selected match or -1 in case of error. Also provides the bounding box of
-  // the marker in window coordinates if selectionRect is not null.
-  int SelectFindMatch(unsigned index, gfx::Rect* selection_rect);
+  // selected match or std::nullopt in case of error. Also provides the bounding
+  // box of the marker in window coordinates if selectionRect is not null.
+  std::optional<wtf_size_t> SelectFindMatch(wtf_size_t index,
+                                            gfx::Rect* selection_rect);
 #endif
 
   // Compute and cache the rects for FindMatches if required.

@@ -70,8 +70,8 @@ class CORE_EXPORT FindBuffer {
 
   // Gets a flat tree range corresponding to text in the [start_index,
   // end_index) of |buffer|.
-  EphemeralRangeInFlatTree RangeFromBufferIndex(unsigned start_index,
-                                                unsigned end_index) const;
+  EphemeralRangeInFlatTree RangeFromBufferIndex(wtf_size_t start_index,
+                                                wtf_size_t end_index) const;
 
   // Returns a position at which the next FindBuffer should start.
   //
@@ -121,8 +121,8 @@ class CORE_EXPORT FindBuffer {
     DISALLOW_NEW();
     void Trace(Visitor*) const;
     const Member<const OffsetMapping> offset_mapping;
-    const unsigned offset_in_buffer;
-    const unsigned offset_in_mapping;
+    const wtf_size_t offset_in_buffer;
+    const wtf_size_t offset_in_mapping;
   };
 
   Vector<String> BuffersForTesting() const;
@@ -140,11 +140,11 @@ class CORE_EXPORT FindBuffer {
   static void ReplaceNodeWithCharConstants(const Node& node,
                                            Vector<UChar>& buffer);
 
-  const BufferNodeMapping* MappingForIndex(unsigned index) const;
+  const BufferNodeMapping* MappingForIndex(wtf_size_t index) const;
 
-  PositionInFlatTree PositionAtStartOfCharacterAtIndex(unsigned index) const;
+  PositionInFlatTree PositionAtStartOfCharacterAtIndex(wtf_size_t index) const;
 
-  PositionInFlatTree PositionAtEndOfCharacterAtIndex(unsigned index) const;
+  PositionInFlatTree PositionAtEndOfCharacterAtIndex(wtf_size_t index) const;
 
   Vector<UChar> SerializeLevelInGraph(
       const HeapVector<Member<CorpusChunk>>& chunk_list,

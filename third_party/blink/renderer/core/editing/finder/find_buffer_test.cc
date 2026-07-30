@@ -31,14 +31,14 @@ class FindBufferTest : public EditingTestBase {
                                     LastPositionInDocument());
   }
 
-  PositionInFlatTree PositionFromParentId(const char* id, unsigned offset) {
+  PositionInFlatTree PositionFromParentId(const char* id, wtf_size_t offset) {
     return PositionInFlatTree(GetElementById(id)->firstChild(), offset);
   }
 
   EphemeralRangeInFlatTree CreateRange(const Node& start_node,
-                                       int start_offset,
+                                       wtf_size_t start_offset,
                                        const Node& end_node,
-                                       int end_offset) {
+                                       wtf_size_t end_offset) {
     return EphemeralRangeInFlatTree(
         PositionInFlatTree(start_node, start_offset),
         PositionInFlatTree(end_node, end_offset));
@@ -49,8 +49,8 @@ class FindBufferTest : public EditingTestBase {
         SelectionInFlatTree::Builder().SetAsForwardSelection(range).Build());
   }
 
-  static unsigned CaseInsensitiveMatchCount(FindBuffer& buffer,
-                                            const String& query) {
+  static wtf_size_t CaseInsensitiveMatchCount(FindBuffer& buffer,
+                                              const String& query) {
     return buffer.FindMatches(query, kCaseInsensitive).CountForTesting();
   }
 
