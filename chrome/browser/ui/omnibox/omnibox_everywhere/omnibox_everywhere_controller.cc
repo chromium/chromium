@@ -44,10 +44,18 @@ OmniboxEverywhereController::OmniboxEverywhereController(
 }
 
 OmniboxEverywhereController::~OmniboxEverywhereController() {
-  listener_->UnregisterAccelerators(this);
+  if (listener_) {
+    listener_->UnregisterAccelerators(this);
+  }
 }
 
 void OmniboxEverywhereController::UpdateHotkeyRegistration() {
+  // `GlobalAcceleratorListener::GetInstance()` may return null on platforms
+  // where global accelerators are not supported or unavailable (e.g. Wayland).
+  if (!listener_) {
+    return;
+  }
+
   listener_->UnregisterAccelerators(this);
 
   const bool is_enabled =
