@@ -157,7 +157,7 @@ void FontAccess::DidGetEnumerationResponse(
     // If the optional postscript name filter is set in QueryOptions,
     // only allow items that match.
     if (hasPostscriptNameFilter &&
-        !selection_utf8.contains(element.postscript_name().c_str())) {
+        !selection_utf8.contains(element.postscript_name())) {
       continue;
     }
 

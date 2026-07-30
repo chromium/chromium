@@ -707,14 +707,14 @@ BluetoothDevice* Bluetooth::GetOrCreateBluetoothDevice(
     const mojom::blink::WebBluetoothDevicePtr& device_ptr,
     ExecutionContext* context) {
   auto& device_cache = GetOrCreateWorldDeviceCache(world);
-  auto it = device_cache.find(device_ptr->id.DeviceIdInBase64().c_str());
+  auto it = device_cache.find(String(device_ptr->id.DeviceIdInBase64()));
   if (it != device_cache.end()) {
     return it->value.Get();
   }
 
   BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(
       context, device_ptr.Clone(), this, &world);
-  device_cache.insert(device->GetDevice()->id.DeviceIdInBase64().c_str(),
+  device_cache.insert(String(device->GetDevice()->id.DeviceIdInBase64()),
                       device);
   return device;
 }
@@ -736,7 +736,7 @@ BluetoothDevice* Bluetooth::GetOrCreateBluetoothDevice(
   // TODO(crbug.com/1275634): convert device_instance_map_ to use
   // WebBluetoothDeviceId as key
   auto it =
-      device_instance_map_.find(device_ptr->id.DeviceIdInBase64().c_str());
+      device_instance_map_.find(String(device_ptr->id.DeviceIdInBase64()));
   if (it != device_instance_map_.end()) {
     return it->value.Get();
   }
@@ -744,7 +744,7 @@ BluetoothDevice* Bluetooth::GetOrCreateBluetoothDevice(
   BluetoothDevice* device =
       MakeGarbageCollected<BluetoothDevice>(context, device_ptr.Clone(), this);
   device_instance_map_.insert(
-      device->GetDevice()->id.DeviceIdInBase64().c_str(), device);
+      String(device->GetDevice()->id.DeviceIdInBase64()), device);
   return device;
 }
 

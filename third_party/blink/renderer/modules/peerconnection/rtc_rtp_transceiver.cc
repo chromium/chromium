@@ -357,7 +357,7 @@ RTCRtpTransceiver::getHeaderExtensionsToNegotiate() const {
   for (const auto& webrtc_ext : webrtc_exts) {
     auto* ext = MakeGarbageCollected<RTCRtpHeaderExtensionCapability>();
     ext->setDirection(TransceiverDirectionToEnum(webrtc_ext.direction));
-    ext->setUri(webrtc_ext.uri.c_str());
+    ext->setUri(String(webrtc_ext.uri));
     exts.push_back(ext);
   }
   return exts;
@@ -370,7 +370,7 @@ RTCRtpTransceiver::getNegotiatedHeaderExtensions() const {
   for (const auto& webrtc_ext : webrtc_exts) {
     auto* ext = MakeGarbageCollected<RTCRtpHeaderExtensionCapability>();
     ext->setDirection(TransceiverDirectionToEnum(webrtc_ext.direction));
-    ext->setUri(webrtc_ext.uri.c_str());
+    ext->setUri(String(webrtc_ext.uri));
     exts.push_back(ext);
   }
   return exts;

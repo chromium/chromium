@@ -288,7 +288,7 @@ String FontPlatformData::GetPostScriptName() const {
 
   SkString postscript_name;
   bool success = typeface_->getPostScriptName(&postscript_name);
-  return success ? postscript_name.c_str() : String();
+  return success ? String(base::as_byte_span(postscript_name)) : String();
 }
 
 }  // namespace blink

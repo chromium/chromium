@@ -1089,7 +1089,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
         }
         target_property_id = cc::KeyframeModel::TargetPropertyId(
             cc::TargetProperty::CSS_CUSTOM_PROPERTY,
-            property.CustomPropertyName().Utf8().data());
+            property.CustomPropertyName().Utf8());
         break;
       }
       default:

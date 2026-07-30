@@ -152,7 +152,7 @@ void FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion(
 sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueNameFromFirmwareFonts(
     const String& font_unique_name) {
   std::optional<FontTableMatcher::MatchResult> match_result =
-      font_table_matcher_->MatchName(font_unique_name.Utf8().c_str());
+      font_table_matcher_->MatchName(font_unique_name.Utf8());
   if (!match_result) {
     return nullptr;
   }

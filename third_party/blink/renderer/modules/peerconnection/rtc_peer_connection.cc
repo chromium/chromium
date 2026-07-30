@@ -1443,14 +1443,14 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
     url_vector.reserve(
         base::checked_cast<wtf_size_t>(webrtc_server.urls.size()));
     for (const auto& url : webrtc_server.urls) {
-      url_vector.emplace_back(url.c_str());
+      url_vector.emplace_back(url);
     }
     auto* urls = MakeGarbageCollected<V8UnionStringOrStringSequence>(
         std::move(url_vector));
 
     ice_server->setUrls(urls);
-    ice_server->setUsername(webrtc_server.username.c_str());
-    ice_server->setCredential(webrtc_server.password.c_str());
+    ice_server->setUsername(String(webrtc_server.username));
+    ice_server->setCredential(String(webrtc_server.password));
     ice_servers.push_back(ice_server);
   }
   result->setIceServers(ice_servers);
