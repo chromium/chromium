@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
   ASSERT_NE(popup_browser, nullptr);
 
   EXPECT_NE(popup_browser, browser());
-  EXPECT_TRUE(popup_browser->is_type_popup());
+  EXPECT_EQ(popup_browser->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   EXPECT_EQ(popup_browser->GetProfile(), browser()->GetProfile());
   EXPECT_EQ(popup_browser->tab_strip_model()->GetActiveWebContents(),
             raw_contents);

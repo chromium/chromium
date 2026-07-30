@@ -451,7 +451,8 @@ BrowserFrameViewMac::GetCaptionButtonBounds() const {
 
   // In popups, the titlebar is system-drawn and the caption buttons aren't part
   // of the client area.
-  if (GetBrowserView()->browser()->is_type_popup() ||
+  if (GetBrowserView()->browser()->GetType() ==
+          BrowserWindowInterface::Type::TYPE_POPUP ||
       GetBrowserView()->browser()->is_type_devtools()) {
     return result;
   }

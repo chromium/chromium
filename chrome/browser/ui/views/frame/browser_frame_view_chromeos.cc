@@ -98,7 +98,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(BrowserFrameViewChromeOS*,
 // the header used for packaged apps.
 bool UsePackagedAppHeaderStyle(const Browser* browser) {
   if (browser->is_type_normal() ||
-      (browser->is_type_popup() &&
+      (browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP &&
        !WindowFeatureController::From(browser)->IsTrustedSource())) {
     return false;
   }
@@ -983,7 +983,7 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
     return false;
   }
 
-  if (browser->is_type_popup()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) {
     return false;
   }
 

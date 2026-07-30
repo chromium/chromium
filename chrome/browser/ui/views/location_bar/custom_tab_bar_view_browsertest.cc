@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
 
   // Popups are not the normal browser view.
   EXPECT_FALSE(popup_view->GetIsNormalType());
-  EXPECT_TRUE(popup->is_type_popup());
+  EXPECT_EQ(popup->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   // Popups should not have a custom tab bar view.
   EXPECT_FALSE(popup_view->toolbar()->custom_tab_bar());
 }

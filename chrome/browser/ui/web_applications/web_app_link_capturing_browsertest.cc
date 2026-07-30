@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   navigation_observer->Wait();
 
   EXPECT_FALSE(AppBrowserController::IsForWebApp(popup_browser, app_id));
-  EXPECT_TRUE(popup_browser->is_type_popup());
+  EXPECT_EQ(popup_browser->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   ExpectTabs(popup_browser, {in_scope});
 }
 

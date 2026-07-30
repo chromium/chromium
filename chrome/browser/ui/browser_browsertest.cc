@@ -1372,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInRegularWindows) {
 IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInPopups) {
   Browser* popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_POPUP, browser()->GetProfile(), true));
-  ASSERT_TRUE(popup_browser->is_type_popup());
+  ASSERT_EQ(popup_browser->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   EXPECT_TRUE(
       BrowserWebContentsDelegate::From(popup_browser)->CanOverscrollContent());
 }

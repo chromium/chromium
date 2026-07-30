@@ -260,7 +260,8 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
 
   bool app_browser =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->is_type_app_popup() || browser->is_type_popup();
+      browser->is_type_app_popup() ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP;
   if (!app_browser) {
     // If this browser is not an app browser, create a new app browser if none
     // yet exists.

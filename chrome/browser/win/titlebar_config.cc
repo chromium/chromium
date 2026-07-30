@@ -11,10 +11,11 @@
 #include "chrome/browser/win/mica_titlebar.h"
 
 bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view) {
+  const BrowserWindowInterface::Type type = browser_view->browser()->GetType();
   return !ShouldDefaultThemeUseMicaTitlebar() ||
          !ThemeServiceFactory::GetForProfile(browser_view->GetProfile())
               ->UsingSystemTheme() ||
-         (!browser_view->browser()->is_type_normal() &&
-          !browser_view->browser()->is_type_popup() &&
-          !browser_view->browser()->is_type_devtools());
+         (type != BrowserWindowInterface::Type::TYPE_NORMAL &&
+          type != BrowserWindowInterface::Type::TYPE_POPUP &&
+          type != BrowserWindowInterface::Type::TYPE_DEVTOOLS);
 }

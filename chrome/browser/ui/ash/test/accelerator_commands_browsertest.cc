@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
                                           true));
 
   Browser* app_host_browser = Browser::Create(browser_create_params);
-  ASSERT_FALSE(app_host_browser->is_type_popup());
+  ASSERT_NE(app_host_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_POPUP);
   ASSERT_EQ(app_host_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_APP);
   AddBlankTabAndShow(app_host_browser);
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   browser_create_params =
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true);
   Browser* popup_browser = Browser::Create(browser_create_params);
-  ASSERT_TRUE(popup_browser->is_type_popup());
+  ASSERT_EQ(popup_browser->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   ASSERT_NE(popup_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   AddBlankTabAndShow(popup_browser);
   window = popup_browser->GetWindow()->GetNativeWindow();

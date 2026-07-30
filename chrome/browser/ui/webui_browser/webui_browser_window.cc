@@ -670,8 +670,10 @@ void WebUIBrowserWindow::LoadAccelerators() {
   for (const auto& entry : GetAcceleratorList()) {
     // In app mode, only allow accelerators of allowlisted commands to pass
     // through.
-    if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
-                                                  browser_->is_type_popup())) {
+    if (is_app_mode &&
+        !IsCommandAllowedInAppMode(
+            entry.command_id,
+            browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP)) {
       continue;
     }
 
