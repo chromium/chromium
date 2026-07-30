@@ -65,7 +65,8 @@ class DevToolsSession : public protocol::FrontendChannel,
   static CONTENT_EXPORT bool ValidateMessage(
       const std::string& expected_session_id,
       const bool expected_has_id,
-      base::span<const uint8_t> message);
+      base::span<const uint8_t> message,
+      bool expect_cbor);
 
   // For sessions attached to the Tab target, the mode is set to TabTarget.
   // For other sessions, the mode is inherited from the parent.

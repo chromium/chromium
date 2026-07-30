@@ -591,9 +591,12 @@ void DevToolsSession::DispatchProtocolResponseOrNotification(
       break;
   }
 
-  if (message_span.empty() ||
-      !ValidateMessage(session_id, /*expected_has_id=*/!is_notification,
-                       message_span)) {
+  const bool message_is_valid =
+      !message_span.empty() &&
+      ValidateMessage(session_id,
+                      /*expected_has_id=*/!is_notification, message_span,
+                      /*expect_cbor */ client->UsesBinaryProtocol());
+  if (!message_is_valid) {
     if (RenderProcessHost* process_host = agent_host->GetProcessHost()) {
       bad_message::ReceivedBadMessage(
           process_host, bad_message::RFH_INCONSISTENT_DEVTOOLS_MESSAGE);
@@ -771,11 +774,18 @@ DevToolsSession* DevToolsSession::GetSessionById(const std::string& session_id) 
 // static
 bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
                                       const bool expected_has_id,
-                                      base::span<const uint8_t> message) {
+                                      base::span<const uint8_t> message,
+                                      bool expect_cbor) {
   std::vector<uint8_t> cbor_message;
   crdtp::span<uint8_t> span_message = crdtp::SpanFrom(message);
 
-  if (!crdtp::cbor::IsCBORMessage(span_message)) {
+  const bool is_cbor = crdtp::cbor::IsCBORMessage(span_message);
+  if (expect_cbor != is_cbor) {
+    // The renderer has sent a message in the format different that we asked
+    // for, something is fishy.
+    return false;
+  }
+  if (!is_cbor) {
     if (!crdtp::json::ConvertJSONToCBOR(span_message, &cbor_message).ok()) {
       return false;  // Safely terminate renderer on malformed JSON
     }
