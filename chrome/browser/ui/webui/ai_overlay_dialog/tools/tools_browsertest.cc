@@ -8,10 +8,13 @@
 #include <string>
 
 #include "base/hash/hash.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "content/public/test/browser_test.h"
@@ -582,5 +586,30 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FollowLinkWithHashSymbol) {
                             ->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, AddAndRemoveBookmark) {
+  GURL active_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), active_url));
+
+  // Add bookmark for active tab via Mojo tool call.
+  base::test::TestFuture<base::expected<std::monostate, std::string>> add_future;
+  tools()->AddBookmark(add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get().has_value());
+
+  // Verify in BookmarkModel.
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(GetProfile());
+  ASSERT_TRUE(model);
+  auto nodes = model->GetNodesByURL(active_url);
+  EXPECT_EQ(1u, nodes.size());
+
+  // Remove bookmark for active tab via Mojo tool call.
+  base::test::TestFuture<base::expected<std::monostate, std::string>> remove_future;
+  tools()->RemoveBookmark(remove_future.GetCallback());
+  EXPECT_TRUE(remove_future.Get().has_value());
+
+  // Verify removed.
+  nodes = model->GetNodesByURL(active_url);
+  EXPECT_TRUE(nodes.empty());
+}
 }  // namespace
 }  // namespace ttc

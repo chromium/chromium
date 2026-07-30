@@ -108,6 +108,16 @@ interface AiOverlayTools {
   TranslatePage(string target_language)
       => result<mojo_base.mojom.Empty, string>;
 
+  // Bookmark tools
+
+  // Bookmark the current active tab.
+  AddBookmark()
+      => result<mojo_base.mojom.Empty, string>;
+
+  // Remove the bookmark for the current active tab.
+  RemoveBookmark()
+      => result<mojo_base.mojom.Empty, string>;
+
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
   // video, or long text. Prefer direct voice replies for quick (<1s) tasks.

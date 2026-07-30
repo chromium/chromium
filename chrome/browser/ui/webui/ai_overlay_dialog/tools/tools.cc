@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -18,14 +20,21 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/history/core/browser/history_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
@@ -477,6 +486,65 @@ void AiOverlayTools::TranslatePage(const std::string& target_language,
                                        /*triggered_from_menu=*/true);
   }
 
+  std::move(callback).Run(std::monostate());
+}
+
+void AiOverlayTools::AddBookmark(AddBookmarkCallback callback) {
+  RecordToolCallInvoked("AddBookmark");
+  Profile* profile = browser_->GetProfile();
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  if (!bookmark_model || !bookmark_model->loaded()) {
+    std::move(callback).Run(base::unexpected("Bookmark model not loaded"));
+    return;
+  }
+
+  content::WebContents* active_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_contents) {
+    std::move(callback).Run(base::unexpected("No active tab"));
+    return;
+  }
+
+  const GURL& target_url = active_contents->GetVisibleURL();
+  const std::u16string& title = active_contents->GetTitle();
+
+  const bookmarks::BookmarkNode* other_node = bookmark_model->other_node();
+  bookmark_model->AddNewURL(other_node, other_node->children().size(), title,
+                            target_url);
+  std::move(callback).Run(std::monostate());
+}
+
+void AiOverlayTools::RemoveBookmark(RemoveBookmarkCallback callback) {
+  RecordToolCallInvoked("RemoveBookmark");
+  Profile* profile = browser_->GetProfile();
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  if (!bookmark_model || !bookmark_model->loaded()) {
+    std::move(callback).Run(base::unexpected("Bookmark model not loaded"));
+    return;
+  }
+
+  content::WebContents* active_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_contents) {
+    std::move(callback).Run(base::unexpected("No active tab"));
+    return;
+  }
+
+  const GURL& target_url = active_contents->GetVisibleURL();
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      nodes = bookmark_model->GetNodesByURL(target_url);
+  if (nodes.empty()) {
+    std::move(callback).Run(base::unexpected("Active tab is not bookmarked"));
+    return;
+  }
+
+  for (const auto& node : nodes) {
+    bookmark_model->Remove(node.get(),
+                           bookmarks::metrics::BookmarkEditSource::kUser,
+                           FROM_HERE);
+  }
   std::move(callback).Run(std::monostate());
 }
 

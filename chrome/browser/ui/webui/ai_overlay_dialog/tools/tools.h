@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -56,6 +55,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
                        SeekToTimestampCallback callback) override;
   void TranslatePage(const std::string& target_language,
                      TranslatePageCallback callback) override;
+  void AddBookmark(AddBookmarkCallback callback) override;
+  void RemoveBookmark(RemoveBookmarkCallback callback) override;
   void InvokeGlic(const std::string& prompt,
                   InvokeGlicCallback callback) override;
 
@@ -91,6 +92,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
   std::unique_ptr<AnnotationTask> annotation_task_;
   content::WeakDocumentPtr annotation_document_;
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
+  base::CancelableTaskTracker task_tracker_;
 };
 
 }  // namespace ttc

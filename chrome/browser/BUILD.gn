@@ -4279,7 +4279,7 @@ source_set("browser") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
-      "//chrome/browser/ui/webui/ai_overlay_dialog",
+      "//chrome/browser/ui/webui/ai_overlay_dialog:impl",
       "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings",
     ]
   }
