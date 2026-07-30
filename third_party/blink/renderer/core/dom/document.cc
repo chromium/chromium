@@ -2379,27 +2379,37 @@ Document::StyleAndLayoutTreeUpdate Document::CalculateStyleAndLayoutTreeUpdate()
 
 Document::StyleAndLayoutTreeUpdate
 Document::CalculateStyleAndLayoutTreeUpdateForThisDocument() const {
-  if (!IsActive() || !View())
+  if (!IsActive() || !View()) {
     return StyleAndLayoutTreeUpdate::kNone;
+  }
 
   if (style_engine_->NeedsFullStyleUpdate()) {
     return StyleAndLayoutTreeUpdate::kFull;
   }
-  if (!use_elements_needing_update_.empty())
+  if (!use_elements_needing_update_.empty()) {
     return StyleAndLayoutTreeUpdate::kFull;
+  }
   // We have scheduled an invalidation set on the document node which means any
   // element may need a style recalc.
-  if (NeedsStyleInvalidation())
+  if (NeedsStyleInvalidation()) {
     return StyleAndLayoutTreeUpdate::kFull;
-  if (IsSlotAssignmentDirty())
+  }
+  if (IsSlotAssignmentDirty()) {
     return StyleAndLayoutTreeUpdate::kFull;
-  if (document_animations_->NeedsAnimationTimingUpdate())
+  }
+  if (document_animations_->NeedsAnimationTimingUpdate()) {
     return StyleAndLayoutTreeUpdate::kFull;
+  }
 
-  if (style_engine_->NeedsStyleRecalc())
+  if (style_engine_->NeedsStyleRecalc()) {
     return StyleAndLayoutTreeUpdate::kAnalyzed;
-  if (style_engine_->NeedsStyleInvalidation())
+  }
+  if (style_engine_->NeedsStyleInvalidation()) {
     return StyleAndLayoutTreeUpdate::kAnalyzed;
+  }
+  if (overscroll_command_targets_dirty_) {
+    return StyleAndLayoutTreeUpdate::kAnalyzed;
+  }
   if (style_engine_->NeedsLayoutTreeRebuild()) {
     // TODO(futhark): there a couple of places where call back into the top
     // frame while recursively doing a lifecycle update. One of them are for the
@@ -2715,6 +2725,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   document_animations_->UpdateAnimationTimingIfNeeded();
   EvaluateMediaQueryListIfNeeded();
   UpdateUseShadowTreesIfNeeded();
+
+  UpdateOverscrollCommandTargets();
 
   style_engine.UpdateActiveStyle();
   style_engine.UpdateCounterStyles();
@@ -9590,6 +9602,8 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(payment_link_handler_);
 #endif  // BUILDFLAG(IS_ANDROID)
   visitor->Trace(view_transitions_);
+  visitor->Trace(overscroll_command_targets_);
+  visitor->Trace(overscroll_command_invokers_);
 
   visitor->Trace(menu_safe_triangle_);
   Supplementable<Document>::Trace(visitor);
@@ -10384,7 +10398,67 @@ CustomElementRegistry* Document::EffectiveGlobalCustomElementRegistry() const {
   return nullptr;
 }
 
+bool Document::IsOverscrollCommandTarget(Element& element) const {
+  return overscroll_command_targets_.Contains(&element);
+}
 
+void Document::UpdateOverscrollCommandTargets() {
+  if (!overscroll_command_targets_dirty_) {
+    return;
+  }
+
+  if (overscroll_command_invokers_.empty() &&
+      overscroll_command_targets_.empty()) {
+    overscroll_command_targets_dirty_ = false;
+    return;
+  }
+
+  HeapHashSet<Member<Element>> new_targets;
+  for (Element* element : overscroll_command_invokers_) {
+    if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+      if (Element* target = html_element->commandForElement()) {
+        new_targets.insert(target);
+      }
+    }
+  }
+
+  // Calculate the difference and call OverscrollTargetStateChanged.
+  for (Element* entry : overscroll_command_targets_) {
+    if (!new_targets.Contains(entry)) {
+      entry->OverscrollTargetStateChanged();
+    }
+  }
+  for (Element* entry : new_targets) {
+    if (!overscroll_command_targets_.Contains(entry)) {
+      entry->OverscrollTargetStateChanged();
+    }
+  }
+
+  overscroll_command_targets_ = std::move(new_targets);
+  overscroll_command_targets_dirty_ = false;
+}
+
+void Document::MarkOverscrollCommandTargetsDirty() {
+  if (overscroll_command_invokers_.empty() &&
+      overscroll_command_targets_.empty()) {
+    return;
+  }
+  overscroll_command_targets_dirty_ = true;
+  ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+void Document::AddOverscrollCommandInvoker(Element& invoker) {
+  if (overscroll_command_invokers_.insert(&invoker).is_new_entry) {
+    MarkOverscrollCommandTargetsDirty();
+  }
+}
+
+void Document::RemoveOverscrollCommandInvoker(Element& invoker) {
+  if (overscroll_command_invokers_.Contains(&invoker)) {
+    overscroll_command_invokers_.erase(&invoker);
+    MarkOverscrollCommandTargetsDirty();
+  }
+}
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 

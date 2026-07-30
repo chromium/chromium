@@ -159,7 +159,8 @@ TEST_F(OverscrollAreaTrackerTest, OverscrollAreaAttribute) {
   SetInnerHTML(R"HTML(
     <div id="container" overscrollcontainer>
       <div id="menu" overscrollarea></div>
-    </div>)HTML");
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
   auto* area_tracker = OverscrollAreaTrackerById("container");
@@ -167,6 +168,152 @@ TEST_F(OverscrollAreaTrackerTest, OverscrollAreaAttribute) {
   Element* menu = GetDocument().getElementById(AtomicString("menu"));
   EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
   EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+}
+
+TEST_F(OverscrollAreaTrackerTest,
+       OverscrollAreaAttributeWithoutButtonDoesNotCreateArea) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(OverscrollAreaTrackerById("container"));
+}
+
+TEST_F(OverscrollAreaTrackerTest, DynamicButtonAddRemove) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(OverscrollAreaTrackerById("container"));
+
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>
+    <button id="btn" command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  Element* menu = GetDocument().getElementById(AtomicString("menu"));
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+
+  Element* btn = GetDocument().getElementById(AtomicString("btn"));
+  btn->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 0u);
+}
+
+TEST_F(OverscrollAreaTrackerTest, DynamicCommandAttributeChange) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>
+    <button id="btn" command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  Element* menu = GetDocument().getElementById(AtomicString("menu"));
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+
+  Element* btn = GetDocument().getElementById(AtomicString("btn"));
+  btn->setAttribute(html_names::kCommandAttr, AtomicString("toggle-foo"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 0u);
+
+  btn->setAttribute(html_names::kCommandAttr,
+                    AtomicString("toggle-overscroll"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+}
+
+TEST_F(OverscrollAreaTrackerTest, DynamicCommandForAttributeChange) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu1" overscrollarea></div>
+      <div id="menu2" overscrollarea></div>
+    </div>
+    <button id="btn" command="toggle-overscroll" commandfor="menu1"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  Element* menu1 = GetDocument().getElementById(AtomicString("menu1"));
+  Element* menu2 = GetDocument().getElementById(AtomicString("menu2"));
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu1);
+
+  Element* btn = GetDocument().getElementById(AtomicString("btn"));
+  btn->setAttribute(html_names::kCommandforAttr, AtomicString("menu2"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu2);
+
+  btn->setAttribute(html_names::kCommandforAttr, AtomicString("menu1"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu1);
+}
+
+TEST_F(OverscrollAreaTrackerTest, DynamicTargetIdAttributeChange) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>
+    <button id="btn" command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  Element* menu = GetDocument().getElementById(AtomicString("menu"));
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+
+  menu->setAttribute(html_names::kIdAttr, AtomicString("other"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 0u);
+
+  menu->setAttribute(html_names::kIdAttr, AtomicString("menu"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+}
+
+TEST_F(OverscrollAreaTrackerTest, MultipleIdsReferToFirstElement) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="duplicate" overscrollarea></div>
+      <div id="duplicate" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="duplicate"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0],
+            GetDocument().getElementById(AtomicString("duplicate")));
 }
 
 TEST_F(OverscrollAreaTrackerTest, EmptyCommandForIsNotValid) {
@@ -439,6 +586,7 @@ TEST_F(OverscrollAreaTrackerTest, OverscrollAreaRebuildLayoutTree) {
     <div id="container" overscrollcontainer>
       <div id="menu"></div>
     </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
@@ -484,6 +632,7 @@ TEST_F(OverscrollAreaTrackerTest, BackdropClickDismiss) {
     <div id="container" overscrollcontainer>
       <div id="menu" overscrollarea></div>
     </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
@@ -1119,12 +1268,9 @@ TEST_P(OverscrollAreaTrackerPageTest,
   Element* menu = GetElementById("menu");
   Element* content = GetElementById("content");
 
-  EXPECT_TRUE(overscroll_area_parent);
+  EXPECT_FALSE(overscroll_area_parent);
   EXPECT_TRUE(menu);
   EXPECT_TRUE(content);
-
-  EXPECT_EQ(menu->GetLayoutObject()->Parent(),
-            overscroll_area_parent->GetLayoutObject());
 }
 
 TEST_F(OverscrollAreaTrackerTest,
@@ -1135,6 +1281,7 @@ TEST_F(OverscrollAreaTrackerTest,
         <div id="menu" overscrollarea></div>
       </div>
     </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();

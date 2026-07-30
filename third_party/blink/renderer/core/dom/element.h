@@ -1206,6 +1206,7 @@ class CORE_EXPORT Element : public ContainerNode {
   void FocusWithinStateChanged();
   void ActiveViewTransitionStateChanged();
   void ActiveViewTransitionTypeStateChanged();
+  void OverscrollTargetStateChanged();
 
   void SetDragged(bool) override;
 

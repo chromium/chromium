@@ -3716,6 +3716,9 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     if (new_id != GetElementData()->IdForStyleResolution()) {
       AtomicString old_id = GetElementData()->SetIdForStyleResolution(new_id);
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
+      if (isConnected()) {
+        GetDocument().MarkOverscrollCommandTargetsDirty();
+      }
     }
 
     ProcessElementRenderBlocking(new_id);
@@ -4265,6 +4268,10 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     }
   }
 
+  if (insertion_point.isConnected() && !GetIdAttribute().empty()) {
+    GetDocument().MarkOverscrollCommandTargetsDirty();
+  }
+
   return kInsertionDone;
 }
 
@@ -4570,6 +4577,9 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     tracker->RemoveAllOverscroll();
   }
 
+  if (was_in_document && !GetIdAttribute().empty()) {
+    document.MarkOverscrollCommandTargetsDirty();
+  }
 }
 
 void Element::AttachColumnPseudoElements(AttachContext& context) {
@@ -5596,7 +5606,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
   // also clear GetOverscrollContainer() on `this`).
   bool is_valid_overscroll_area =
       new_style && new_style->IsInternalOverscrollPositionAuto() &&
-      style_recalc_context.parent_is_overscroll_container;
+      style_recalc_context.parent_is_overscroll_container &&
+      GetDocument().IsOverscrollCommandTarget(*this);
   Element* parent = parentElement();
 
   if (GetOverscrollContainer() && (!new_style || !is_valid_overscroll_area ||
@@ -8979,6 +8990,11 @@ void Element::ActiveViewTransitionTypeStateChanged() {
           style_change_reason::kPseudoClass,
           style_change_extra_data::g_active_view_transition_type));
   PseudoStateChanged(CSSSelector::kPseudoActiveViewTransitionType);
+}
+
+void Element::OverscrollTargetStateChanged() {
+  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                             style_change_reason::kOverscroll));
 }
 
 bool Element::MatchesOverscrollOpen() const {

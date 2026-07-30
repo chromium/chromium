@@ -1760,6 +1760,7 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
       <div id="container" overscrollcontainer>
         <div id="menu" overscrollarea></div>
       </div>
+      <button command="toggle-overscroll" commandfor="menu"></button>
       )HTML");
 
     GetDocument().UpdateStyleAndLayoutTree();
@@ -1786,6 +1787,7 @@ TEST_F(ElementTest, OverscrollBackdropPseudoElement) {
       <div id="container" overscrollcontainer>
         <div id="menu" overscrollarea></div>
       </div>
+      <button command="toggle-overscroll" commandfor="menu"></button>
       )HTML");
 
     GetDocument().UpdateStyleAndLayoutTree();
@@ -1824,6 +1826,7 @@ TEST_F(ElementTest, OverscrollBackdropClickDisposeCrash) {
     <div id="container" overscrollcontainer>
       <div id="menu" overscrollarea></div>
     </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
   )HTML");
 
   GetDocument().UpdateStyleAndLayoutTree();
