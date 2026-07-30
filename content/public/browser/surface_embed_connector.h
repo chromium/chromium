@@ -90,6 +90,11 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
   virtual void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) = 0;
 
+  // Called by the SurfaceEmbedHost to update the render throttling status.
+  virtual void UpdateRenderThrottlingStatus(bool is_throttled,
+                                            bool subtree_throttled,
+                                            bool display_locked) = 0;
+
   // Gets the FrameSinkId of the child's view.
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;
 
@@ -102,6 +107,18 @@ class CONTENT_EXPORT SurfaceEmbedConnector {
   // Exposed for testing to cleanly verify properties without creating flakes
   // from cross-process EvalJs layout evaluation delays.
   virtual const gfx::Size& GetLocalFrameSizeInPixelsForTesting() = 0;
+
+  // Returns whether rendering is currently throttled.
+  // Exposed for testing to verify throttling propagation.
+  virtual bool IsThrottledForTesting() = 0;
+
+  // Returns whether the subtree is currently throttled.
+  // Exposed for testing to verify throttling propagation.
+  virtual bool IsSubtreeThrottledForTesting() = 0;
+
+  // Returns whether the display is currently locked.
+  // Exposed for testing to verify throttling propagation.
+  virtual bool IsDisplayLockedForTesting() = 0;
 };
 
 }  // namespace content

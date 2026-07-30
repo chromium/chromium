@@ -4009,6 +4009,8 @@ void LocalFrameView::DetachFromLayout() {
 void LocalFrameView::AddPlugin(WebPluginContainerImpl* plugin) {
   DCHECK(!plugins_.Contains(plugin));
   plugins_.insert(plugin);
+  plugin->UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
+                                       IsSubtreeThrottled(), IsDisplayLocked());
 }
 
 void LocalFrameView::RemovePlugin(WebPluginContainerImpl* plugin) {
@@ -4923,10 +4925,24 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
                                                   bool display_locked,
                                                   bool recurse) {
   bool was_throttled = CanThrottleRendering();
+  bool was_hidden = IsHiddenForThrottling();
+  bool was_subtree_throttled = IsSubtreeThrottled();
+  bool was_display_locked = IsDisplayLocked();
+
   FrameView::UpdateRenderThrottlingStatus(
       hidden_for_throttling, subtree_throttled, display_locked, recurse);
+
   if (was_throttled != CanThrottleRendering())
     RenderThrottlingStatusChanged();
+
+  if (was_hidden != IsHiddenForThrottling() ||
+      was_subtree_throttled != IsSubtreeThrottled() ||
+      was_display_locked != IsDisplayLocked()) {
+    for (const auto& plugin : plugins_) {
+      plugin->UpdateRenderThrottlingStatus(
+          IsHiddenForThrottling(), IsSubtreeThrottled(), IsDisplayLocked());
+    }
+  }
 }
 
 void LocalFrameView::SetThrottledForViewTransition(bool throttled) {

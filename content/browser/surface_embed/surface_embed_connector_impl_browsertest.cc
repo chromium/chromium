@@ -23,7 +23,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1117,6 +1119,77 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   EXPECT_FALSE(parent_web_contents_impl->mouse_lock_widget_for_testing());
 
   parent_web_contents_impl->SetDelegate(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       ThrottlingPropagationIPC) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(context.child_web_contents.get(), url));
+
+  context.rwhvcf = static_cast<RenderWidgetHostViewChildFrame*>(
+      static_cast<WebContentsImpl*>(context.child_web_contents.get())
+          ->GetRenderWidgetHostView());
+  ASSERT_TRUE(context.rwhvcf);
+
+  connector->SetView(context.rwhvcf, /*allow_paint_holding=*/false);
+
+  RenderWidgetHostImpl* child_rwh = context.rwhvcf->host();
+  ASSERT_TRUE(child_rwh);
+
+  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
+  auto blink_frame_widget_host_receiver =
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+  mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
+  auto blink_frame_widget_receiver =
+      blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
+  child_rwh->BindFrameWidgetInterfaces(
+      std::move(blink_frame_widget_host_receiver), blink_frame_widget.Unbind());
+  FakeFrameWidget fake_frame_widget(std::move(blink_frame_widget_receiver));
+
+  EXPECT_FALSE(connector->IsThrottled());
+  EXPECT_FALSE(connector->IsSubtreeThrottled());
+  EXPECT_FALSE(connector->IsDisplayLocked());
+
+  connector->UpdateRenderThrottlingStatus(/*is_throttled=*/true,
+                                          /*subtree_throttled=*/false,
+                                          /*display_locked=*/true);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_frame_widget.IsThrottled() == true &&
+           fake_frame_widget.IsSubtreeThrottled() == false &&
+           fake_frame_widget.IsDisplayLocked() == true;
+  }));
+
+  EXPECT_TRUE(connector->IsThrottled());
+  EXPECT_FALSE(connector->IsSubtreeThrottled());
+  EXPECT_TRUE(connector->IsDisplayLocked());
+
+  EXPECT_EQ(true, fake_frame_widget.IsThrottled());
+  EXPECT_EQ(false, fake_frame_widget.IsSubtreeThrottled());
+  EXPECT_EQ(true, fake_frame_widget.IsDisplayLocked());
+
+  connector->UpdateRenderThrottlingStatus(/*is_throttled=*/false,
+                                          /*subtree_throttled=*/true,
+                                          /*display_locked=*/false);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_frame_widget.IsThrottled() == false &&
+           fake_frame_widget.IsSubtreeThrottled() == true &&
+           fake_frame_widget.IsDisplayLocked() == false;
+  }));
+
+  EXPECT_FALSE(connector->IsThrottled());
+  EXPECT_TRUE(connector->IsSubtreeThrottled());
+  EXPECT_FALSE(connector->IsDisplayLocked());
+
+  EXPECT_EQ(false, fake_frame_widget.IsThrottled());
+  EXPECT_EQ(true, fake_frame_widget.IsSubtreeThrottled());
+  EXPECT_EQ(false, fake_frame_widget.IsDisplayLocked());
 }
 
 }  // namespace content

@@ -131,6 +131,10 @@ class WebPlugin {
 
   virtual void UpdateVisibility(bool) = 0;
 
+  virtual void UpdateRenderThrottlingStatus(bool is_throttled,
+                                            bool subtree_throttled,
+                                            bool display_locked) {}
+
   virtual WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&,
                                                ui::Cursor*) = 0;
 

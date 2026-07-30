@@ -164,6 +164,16 @@ void WebPluginContainerImpl::UpdateAllLifecyclePhases() {
   web_plugin_->UpdateAllLifecyclePhases(DocumentUpdateReason::kPlugin);
 }
 
+void WebPluginContainerImpl::UpdateRenderThrottlingStatus(
+    bool is_throttled,
+    bool subtree_throttled,
+    bool display_locked) {
+  if (web_plugin_) {
+    web_plugin_->UpdateRenderThrottlingStatus(is_throttled, subtree_throttled,
+                                              display_locked);
+  }
+}
+
 void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
                                    const CullRect& cull_rect,
                                    const gfx::Vector2d& paint_offset) const {

@@ -165,6 +165,26 @@ void SurfaceEmbedWebPlugin::UpdateVisibility(bool visible) {
   }
 }
 
+void SurfaceEmbedWebPlugin::UpdateRenderThrottlingStatus(bool is_throttled,
+                                                         bool subtree_throttled,
+                                                         bool display_locked) {
+  if (last_is_throttled_ == is_throttled &&
+      last_subtree_throttled_ == subtree_throttled &&
+      last_display_locked_ == display_locked) {
+    return;
+  }
+
+  last_is_throttled_ = is_throttled;
+  last_subtree_throttled_ = subtree_throttled;
+  last_display_locked_ = display_locked;
+
+  if (host_) {
+    host_->OnEmbedElementThrottlingStatusChanged(
+        mojom::RenderThrottlingStatus::New(is_throttled, subtree_throttled,
+                                           display_locked));
+  }
+}
+
 blink::WebInputEventResult SurfaceEmbedWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& event,
     ui::Cursor* cursor) {

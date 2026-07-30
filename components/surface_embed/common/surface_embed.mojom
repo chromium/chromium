@@ -43,6 +43,16 @@ interface SurfaceEmbed {
   RequestFocusOnEmbedElement() => ();
 };
 
+// Represents the render throttling status of an embedded frame.
+// Uses the same set of parameters as RemoteFrame::UpdateRenderThrottlingStatus.
+// TODO(crbug.com/532190467): Make this a shared struct across RemoteFrame,
+// FrameWidget, and SurfaceEmbedHost.
+struct RenderThrottlingStatus {
+  bool is_throttled;
+  bool subtree_throttled;
+  bool display_locked;
+};
+
 // Implemented by SurfaceEmbedHost in the browser process.
 // The render process will use this interface to initiate the child WebContents
 // attachment and synchronize with the browser about the visual properties of
@@ -70,5 +80,11 @@ interface SurfaceEmbedHost {
   // WebContents::Focus() on the embedded WebContents in multi-level embedding
   // setups.
   OnEmbedElementFocused(bool focused, blink.mojom.FocusType focus_type);
+
+  // Called when the render throttling status of the <embed> element changes.
+  // `SurfaceEmbedHost` will decide how this state is applied to the child
+  // WebContents (e.g. it may reject throttling when the child WebContents is
+  // being screen-captured).
+  OnEmbedElementThrottlingStatusChanged(RenderThrottlingStatus status);
 };
 

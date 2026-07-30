@@ -105,6 +105,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   bool CanProcessDrag() const;
   bool WantsWheelEvents() const;
   void UpdateAllLifecyclePhases();
+  void UpdateRenderThrottlingStatus(bool is_throttled,
+                                    bool subtree_throttled,
+                                    bool display_locked);
   void SetFocused(bool, mojom::blink::FocusType);
   void HandleEvent(Event&);
   bool IsErrorplaceholder();

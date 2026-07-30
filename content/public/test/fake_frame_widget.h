@@ -34,6 +34,9 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
       const;
 
   std::optional<bool> GetActive() const;
+  std::optional<bool> IsThrottled() const;
+  std::optional<bool> IsSubtreeThrottled() const;
+  std::optional<bool> IsDisplayLocked() const;
 
  private:
   void DragTargetDragEnter(blink::mojom::DragDataPtr drag_data,
@@ -77,7 +80,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
       const cc::TouchAction touch_action) override {}
   void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
                                                bool subtree_throttled,
-                                               bool display_locked) override {}
+                                               bool display_locked) override;
   void SetIsInertForSubFrame(bool inert) override {}
 #if BUILDFLAG(IS_MAC)
   void GetStringAtPoint(const gfx::Point& point_in_local_root,
@@ -98,6 +101,9 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   base::i18n::TextDirection text_direction_ =
       base::i18n::TextDirection::UNKNOWN_DIRECTION;
   std::optional<bool> active_;
+  std::optional<bool> is_throttled_;
+  std::optional<bool> subtree_throttled_;
+  std::optional<bool> display_locked_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
 };
 

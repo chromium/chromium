@@ -58,6 +58,8 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
       bool is_visible) override;
   void OnEmbedElementFocused(bool focused,
                              blink::mojom::FocusType focus_type) override;
+  void OnEmbedElementThrottlingStatusChanged(
+      mojom::RenderThrottlingStatusPtr status) override;
 
   // content::SurfaceEmbedConnector::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,

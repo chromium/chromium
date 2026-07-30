@@ -64,6 +64,9 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
                       bool is_visible) override;
   void UpdateFocus(bool focused, blink::mojom::FocusType focus_type) override;
   void UpdateVisibility(bool visible) override;
+  void UpdateRenderThrottlingStatus(bool is_throttled,
+                                    bool subtree_throttled,
+                                    bool display_locked) override;
   blink::WebInputEventResult HandleInputEvent(
       const blink::WebCoalescedInputEvent& event,
       ui::Cursor* cursor) override;
@@ -120,6 +123,9 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   gfx::Rect last_clip_rect_;
   gfx::Rect last_unobscured_rect_;
   bool last_is_visible_ = false;
+  bool last_is_throttled_ = false;
+  bool last_subtree_throttled_ = false;
+  bool last_display_locked_ = false;
   bool frame_sink_id_changed_ = false;
 
   viz::FrameSinkId frame_sink_id_;

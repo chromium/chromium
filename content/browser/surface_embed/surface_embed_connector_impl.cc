@@ -220,6 +220,22 @@ void SurfaceEmbedConnectorImpl::OnSynchronizeVisualProperties(
   SynchronizeVisualProperties(visual_properties, true);
 }
 
+void SurfaceEmbedConnectorImpl::UpdateRenderThrottlingStatus(
+    bool is_throttled,
+    bool subtree_throttled,
+    bool display_locked) {
+  if (is_throttled != is_throttled_ ||
+      subtree_throttled != subtree_throttled_ ||
+      display_locked != display_locked_) {
+    is_throttled_ = is_throttled;
+    subtree_throttled_ = subtree_throttled;
+    display_locked_ = display_locked;
+    if (view_) {
+      view_->UpdateRenderThrottlingStatus();
+    }
+  }
+}
+
 // static
 WebContentsImpl* SurfaceEmbedConnectorImpl::GetParentWebContents(
     WebContentsImpl* web_contents) {
@@ -354,6 +370,7 @@ void SurfaceEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
   // try to move these updates to a single IPC (see https://crbug.com/750179).
   if (view_) {
     view_->SetFrameConnector(this);
+    view_->host()->UpdateVisualProperties(/*propagate=*/true);
 
     // If the child frame is already visible, it became visible before the
     // frame connector was attached. We need to retroactively update the
@@ -539,6 +556,18 @@ double SurfaceEmbedConnectorImpl::GetCssZoomFactorForTesting() {
 const gfx::Size&
 SurfaceEmbedConnectorImpl::GetLocalFrameSizeInPixelsForTesting() {
   return local_frame_size_in_pixels_;
+}
+
+bool SurfaceEmbedConnectorImpl::IsThrottledForTesting() {
+  return IsThrottled();
+}
+
+bool SurfaceEmbedConnectorImpl::IsSubtreeThrottledForTesting() {
+  return IsSubtreeThrottled();
+}
+
+bool SurfaceEmbedConnectorImpl::IsDisplayLockedForTesting() {
+  return IsDisplayLocked();
 }
 
 void SurfaceEmbedConnectorImpl::EnableAutoResize(const gfx::Size& min_size,

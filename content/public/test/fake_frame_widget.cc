@@ -49,4 +49,25 @@ void FakeFrameWidget::SetViewportIntersection(
   intersection_state_ = std::move(intersection_state);
 }
 
+void FakeFrameWidget::UpdateRenderThrottlingStatusForSubFrame(
+    bool is_throttled,
+    bool subtree_throttled,
+    bool display_locked) {
+  is_throttled_ = is_throttled;
+  subtree_throttled_ = subtree_throttled;
+  display_locked_ = display_locked;
+}
+
+std::optional<bool> FakeFrameWidget::IsThrottled() const {
+  return is_throttled_;
+}
+
+std::optional<bool> FakeFrameWidget::IsSubtreeThrottled() const {
+  return subtree_throttled_;
+}
+
+std::optional<bool> FakeFrameWidget::IsDisplayLocked() const {
+  return display_locked_;
+}
+
 }  // namespace content

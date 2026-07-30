@@ -113,6 +113,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -3423,6 +3424,14 @@ void WebContentsImpl::AttachInnerWebContentsImpl(
     inner_web_contents_impl->SetAsFocusedWebContentsIfNecessary();
   }
 
+  // Synchronize visual properties so that the inner main frame's renderer
+  // process immediately receives initial throttling status upon being attached
+  // as an embedded main frame.
+  if (auto* rwh = inner_web_contents_impl->GetPrimaryMainFrame()
+                      ->GetRenderWidgetHost()) {
+    rwh->SynchronizeVisualProperties();
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::InnerWebContentsAttached,
                              inner_web_contents_impl, render_frame_host);
 
@@ -3717,6 +3726,14 @@ void WebContentsImpl::AttachGuestPage(
 
   outer_render_manager->set_attach_inner_delegate_complete();
   inner_main_frame->PropagateEmbeddingTokenToParentFrame();
+
+  // Synchronize visual properties so that the guest main frame's renderer
+  // process immediately receives initial throttling status upon being attached
+  // as an embedded main frame.
+  if (auto* rwh = inner_main_frame->GetRenderWidgetHost()) {
+    rwh->SynchronizeVisualProperties();
+  }
+
   // TODO(crbug.com/40202416): Determine if anything else is needed here.
 }
 

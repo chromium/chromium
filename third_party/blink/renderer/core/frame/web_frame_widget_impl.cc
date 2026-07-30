@@ -925,7 +925,10 @@ void WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame(
     bool is_throttled,
     bool subtree_throttled,
     bool display_locked) {
-  DCHECK(ForSubframe());
+  // Note: This Mojo message is received by OOPIF subframes as well as
+  // embedded main frames (GuestView, SurfaceEmbed) via
+  // RenderWidgetHostViewChildFrame.
+  DCHECK(LocalRootImpl() && LocalRootImpl()->GetFrameView());
   // TODO(szager,vmpstr): The parent render process currently rolls up
   // display_locked into the value of subtree throttled here; display_locked
   // should be maintained as a separate bit and transmitted between render

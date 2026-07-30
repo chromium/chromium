@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
@@ -1360,6 +1361,37 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, MultilevelFocusAndInput) {
   EXPECT_EQ("r", content::EvalJsAfterLifecycleUpdate(
                      child_contents.get(), "",
                      "document.getElementById('inner').value"));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, ThrottlingPropagation) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  auto* connector = child_contents->GetSurfaceEmbedConnector();
+  ASSERT_NE(nullptr, connector);
+
+  // Wait for initial visual properties to propagate to the child.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return connector->GetLocalFrameSizeInPixelsForTesting() ==
+           gfx::Size(150, 150);
+  }));
+
+  EXPECT_FALSE(connector->IsThrottledForTesting());
+  EXPECT_FALSE(connector->IsSubtreeThrottledForTesting());
+  EXPECT_FALSE(connector->IsDisplayLockedForTesting());
+
+  SurfaceEmbedHost* host = GetHost(0);
+  ASSERT_NE(nullptr, host);
+
+  host->OnEmbedElementThrottlingStatusChanged(
+      mojom::RenderThrottlingStatus::New(
+          /*is_throttled=*/true,
+          /*subtree_throttled=*/true,
+          /*display_locked=*/true));
+
+  EXPECT_TRUE(connector->IsThrottledForTesting());
+  EXPECT_TRUE(connector->IsSubtreeThrottledForTesting());
+  EXPECT_TRUE(connector->IsDisplayLockedForTesting());
 }
 
 }  // namespace surface_embed

@@ -75,9 +75,15 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   SurfaceEmbedConnector::Delegate* GetDelegate() override;
   void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) override;
+  void UpdateRenderThrottlingStatus(bool is_throttled,
+                                    bool subtree_throttled,
+                                    bool display_locked) override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   double GetCssZoomFactorForTesting() override;
   const gfx::Size& GetLocalFrameSizeInPixelsForTesting() override;
+  bool IsThrottledForTesting() override;
+  bool IsSubtreeThrottledForTesting() override;
+  bool IsDisplayLockedForTesting() override;
 
   // FrameConnector:
   void SetKeepSurfaceAlive(bool keep_alive) override;

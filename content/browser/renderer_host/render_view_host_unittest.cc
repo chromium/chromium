@@ -232,6 +232,10 @@ TEST_F(RenderViewHostTest, RoutingIdSane) {
   EXPECT_NE(test_rvh()->GetRoutingID(), root_rfh->GetRoutingID());
 }
 
+TEST_F(RenderViewHostTest, ViewWidgetType) {
+  EXPECT_EQ(test_rvh()->ViewWidgetType(), mojom::ViewWidgetType::kTopLevel);
+}
+
 class RenderViewHostTestIgnoringKeyboardEvents
     : public RenderViewHostTest,
       public testing::WithParamInterface<blink::WebInputEvent::Type> {};

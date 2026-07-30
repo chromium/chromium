@@ -213,6 +213,15 @@ void SurfaceEmbedHost::OnEmbedElementFocused(
   }
 }
 
+void SurfaceEmbedHost::OnEmbedElementThrottlingStatusChanged(
+    mojom::RenderThrottlingStatusPtr status) {
+  if (content::SurfaceEmbedConnector* connector = GetConnector()) {
+    connector->UpdateRenderThrottlingStatus(status->is_throttled,
+                                            status->subtree_throttled,
+                                            status->display_locked);
+  }
+}
+
 void SurfaceEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
                                       bool allow_paint_holding) {
   if (surface_embed_) {
