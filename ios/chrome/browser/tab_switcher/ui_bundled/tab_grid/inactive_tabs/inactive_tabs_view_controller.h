@@ -22,7 +22,7 @@
 // Invoked when the button to close all inactive tabs is tapped.
 - (void)inactiveTabsViewController:
             (InactiveTabsViewController*)inactiveTabsViewController
-    didTapCloseAllInactiveBarButtonItem:(UIBarButtonItem*)barButtonItem;
+    didTapCloseAllInactiveFromSourceView:(UIView*)sourceView;
 
 @end
 

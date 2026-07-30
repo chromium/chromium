@@ -142,11 +142,24 @@
   [_bottomBar layoutIfNeeded];
   NSString* buttonTitle =
       l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_CLOSE_ALL_BUTTON);
-  _closeAllInactiveButton = [[UIBarButtonItem alloc]
-      initWithTitle:buttonTitle
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(didTapCloseAllInactive)];
+  UIButton* closeAllButton;
+  if (@available(iOS 26, *)) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kTextPrimaryColor];
+    buttonConfiguration.title = buttonTitle;
+    closeAllButton = [UIButton buttonWithConfiguration:buttonConfiguration
+                                         primaryAction:nil];
+  } else {
+    closeAllButton = [UIButton systemButtonWithPrimaryAction:nil];
+    [closeAllButton setTitle:buttonTitle forState:UIControlStateNormal];
+  }
+  [closeAllButton addTarget:self
+                     action:@selector(didTapCloseAllInactive:)
+           forControlEvents:UIControlEventTouchUpInside];
+  _closeAllInactiveButton =
+      [[UIBarButtonItem alloc] initWithCustomView:closeAllButton];
   _closeAllInactiveButton.accessibilityIdentifier =
       kInactiveTabGridCloseAllButtonIdentifier;
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
@@ -203,9 +216,9 @@
 #pragma mark - Private
 
 // Called when the user tapped the Close All Inactive button.
-- (void)didTapCloseAllInactive {
+- (void)didTapCloseAllInactive:(UIButton*)sender {
   [self.delegate inactiveTabsViewController:self
-        didTapCloseAllInactiveBarButtonItem:self.closeAllInactiveButton];
+       didTapCloseAllInactiveFromSourceView:sender];
 }
 
 // Updates the bottom bar constraints based on the App Bar position.

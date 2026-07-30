@@ -440,7 +440,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)inactiveTabsViewController:
             (InactiveTabsViewController*)inactiveTabsViewController
-    didTapCloseAllInactiveBarButtonItem:(UIBarButtonItem*)barButtonItem {
+    didTapCloseAllInactiveFromSourceView:(UIView*)sourceView {
   NSInteger numberOfTabs = [self.mediator numberOfItems];
   if (numberOfTabs <= 0) {
     return;
@@ -464,7 +464,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
                          browser:self.browser
                            title:title
                          message:message
-                   barButtonItem:barButtonItem];
+                            rect:sourceView.bounds
+                            view:sourceView];
 
   __weak __typeof(self) weakSelf = self;
   NSString* closeAllActionTitle = l10n_util::GetNSString(
