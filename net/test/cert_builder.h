@@ -616,6 +616,9 @@ class MtcLogBuilder {
   std::optional<std::vector<uint8_t>> CreateStandaloneCertificate(
       LogIndex index,
       std::vector<Cosigner*> cosigners);
+  bssl::UniquePtr<CRYPTO_BUFFER> CreateStandaloneCertificateBuffer(
+      LogIndex index,
+      std::vector<Cosigner*> cosigners);
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Helper to fill a MtcAnchorData protobuf object with the information from

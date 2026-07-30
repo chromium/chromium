@@ -179,8 +179,7 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
 
   std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
   GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const override {
-    // TODO(crbug.com/452983502): Hook this up to TrustStoreChrome.
-    return std::nullopt;
+    return trust_store_chrome_->GetMtcMirrorKey(cosigner_id);
   }
 
   bool IsMtcCosignerPolicySatisfied(
@@ -189,8 +188,8 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
       const bssl::MTCAnchor* mtc_anchor,
       base::span<const std::vector<uint8_t>> valid_additional_cosigners)
       const override {
-    // TODO(crbug.com/452983502): Hook this up to TrustStoreChrome.
-    return false;
+    return trust_store_chrome_->IsMtcCosignerPolicySatisfied(
+        target_cert, current_time, mtc_anchor, valid_additional_cosigners);
   }
 
   std::optional<int32_t> GetCrsRootIdForCert(

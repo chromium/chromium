@@ -2138,6 +2138,16 @@ std::optional<std::vector<uint8_t>> MtcLogBuilder::CreateStandaloneCertificate(
       index, CreateMtcProof(index, subtree, std::move(cosigners)));
 }
 
+bssl::UniquePtr<CRYPTO_BUFFER> MtcLogBuilder::CreateStandaloneCertificateBuffer(
+    LogIndex index,
+    std::vector<Cosigner*> cosigners) {
+  auto cert = CreateStandaloneCertificate(index, cosigners);
+  if (cert) {
+    return x509_util::CreateCryptoBuffer(*cert);
+  }
+  return nullptr;
+}
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void MtcLogBuilder::FillMtcMetadataAnchorProto(
     chrome_root_store::MtcAnchorData* mtc_anchor_data) const {
