@@ -482,8 +482,6 @@ static_library("ui") {
     "tab_modal_confirm_dialog.h",
     "tab_ui_helper.cc",
     "tab_ui_helper.h",
-    "views/frame/glass_frame_service.cc",
-    "views/frame/glass_frame_service.h",
   ]
 
   defines = []
@@ -1132,6 +1130,7 @@ static_library("ui") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/infobars",
+      "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/views/relaunch_notification",
       "//chrome/browser/ui/views/relaunch_notification:impl",
       "//chrome/browser/ui/webui:chrome_web_contents_handler",

@@ -140,3 +140,18 @@ source_set("app_menu_button_observer") {
 source_set("top_controls_slide_controller") {
   sources = [ "top_controls_slide_controller.h" ]
 }
+
+source_set("glass_frame_service") {
+  public = [ "glass_frame_service.h" ]
+  sources = [ "glass_frame_service.cc" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/performance_manager/public/user_tuning",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//ui/base/unowned_user_data",
+  ]
+}

@@ -93,6 +93,7 @@ source_set("impl") {
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:glass_frame_service",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",

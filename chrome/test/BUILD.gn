@@ -8614,6 +8614,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/extensions:interactive_ui_tests",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/file_system_access:interactive_ui_tests",
+      "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",

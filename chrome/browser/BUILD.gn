@@ -1293,6 +1293,7 @@ source_set("core") {
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl",
+      "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/views/tabs/organizer",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webui:chrome_content_browser_client_webui_part",
