@@ -159,9 +159,7 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
       web_state, /*url_language_histogram=*/nullptr, &language_detection_model_,
       profile_->GetPrefs());
 
-  if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
-    AddReadabilityHeuristicResultToFrame(result, web_frame);
-  }
+  AddReadabilityHeuristicResultToFrame(result, web_frame);
 
   // Set up the fake web frame to return a custom result after executing
   // the Readability Javascript.

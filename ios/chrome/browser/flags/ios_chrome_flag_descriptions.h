@@ -1764,11 +1764,6 @@ inline constexpr char kReaderModeOmniboxEntrypointInUSName[] =
 inline constexpr char kReaderModeOmniboxEntrypointInUSDescription[] =
     "Enables the omnibox entrypoint for Reader Mode for users in the US.";
 
-inline constexpr char kReaderModeReadabilityHeuristicName[] =
-    "Enables Readability heuristic for Reader Mode";
-inline constexpr char kReaderModeReadabilityHeuristicDescription[] =
-    "Enables Readability heuristic for Reader Mode UI.";
-
 inline constexpr char kReaderModeSupportNewFontsName[] =
     "Reader Mode support new fonts";
 inline constexpr char kReaderModeSupportNewFontsDescription[] =

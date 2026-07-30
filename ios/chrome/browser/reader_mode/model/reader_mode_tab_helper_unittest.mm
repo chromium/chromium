@@ -878,9 +878,6 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest,
        TriggerReadabilityHeuristicOnPageLoad) {
   ReaderModeHeuristicResult eligibility = GetEligibility();
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableReadabilityHeuristic);
-
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
   ASSERT_EQ(0u, GetHeuristicResultEntries().size());
 

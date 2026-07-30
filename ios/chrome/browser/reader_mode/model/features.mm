@@ -29,7 +29,6 @@ bool IsUSCountryCode() {
 
 BASE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableContentSettingsOptionForLinks,
              base::FEATURE_ENABLED_BY_DEFAULT);

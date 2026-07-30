@@ -174,16 +174,11 @@ void ReaderModeEligibilityDecider::TriggerReaderModeHeuristic(const GURL& url) {
 
   metrics_helper_->RecordReaderHeuristicTriggered();
   eligibility_heuristic_url_ = url;
-  if (base::FeatureList::IsEnabled(kEnableReadabilityHeuristic)) {
-    main_frame->ExecuteJavaScript(
-        base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript()),
-        base::BindOnce(
-            &ReaderModeEligibilityDecider::HandleReadabilityHeuristicResult,
-            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    ReaderModeJavaScriptFeature::GetInstance()->TriggerReaderModeHeuristic(
-        main_frame);
-  }
+  main_frame->ExecuteJavaScript(
+      base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript()),
+      base::BindOnce(
+          &ReaderModeEligibilityDecider::HandleReadabilityHeuristicResult,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ReaderModeEligibilityDecider::HandleReadabilityHeuristicResult(

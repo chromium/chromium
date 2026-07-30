@@ -11,9 +11,6 @@
 // Feature to enable Reader Mode omnibox entry point in the US country code.
 BASE_DECLARE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS);
 
-// Feature to enable Readability heuristic for page triggering eligibility.
-BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
-
 // Feature to enable disabling links in Reading Mode from Content Settings.
 BASE_DECLARE_FEATURE(kEnableContentSettingsOptionForLinks);
 
