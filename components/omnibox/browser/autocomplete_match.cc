@@ -1223,10 +1223,10 @@ url_formatter::FormatUrlTypes AutocompleteMatch::GetFormatTypes(
 // static
 void AutocompleteMatch::LogSearchEngineUsed(
     const AutocompleteMatch& match,
-    TemplateURLService* template_url_service) {
+    const TemplateURLService* template_url_service) {
   DCHECK(template_url_service);
 
-  TemplateURL* template_url = match.GetTemplateURL(template_url_service);
+  const TemplateURL* template_url = match.GetTemplateURL(template_url_service);
   if (!template_url) {
     return;
   }
@@ -1319,7 +1319,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
 
 void AutocompleteMatch::ComputeStrippedDestinationURL(
     const AutocompleteInput& input,
-    TemplateURLService* template_url_service) {
+    const TemplateURLService* template_url_service) {
   // Other than document suggestions, computing `stripped_destination_url` will
   // have the same result during a match's lifecycle, so it's safe to skip
   // re-computing it if it's already computed. Document provider and history
@@ -1373,7 +1373,7 @@ bool AutocompleteMatch::ShouldHideBasedOnStarterPack(
 }
 
 void AutocompleteMatch::GetKeywordUiState(
-    TemplateURLService* template_url_service,
+    const TemplateURLService* template_url_service,
     bool is_history_embeddings_enabled,
     KeywordState* keyword_state,
     std::u16string* keyword_out,
@@ -1392,7 +1392,7 @@ void AutocompleteMatch::GetKeywordUiState(
 }
 
 bool AutocompleteMatch::IsExplicitlyInvokedKeyword(
-    TemplateURLService* template_url_service) const {
+    const TemplateURLService* template_url_service) const {
   if (keyword.empty() ||
       !ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_KEYWORD) ||
       template_url_service == nullptr) {
@@ -1456,13 +1456,17 @@ TemplateURL* AutocompleteMatch::GetTemplateURL(
   return GetTemplateURLWithKeyword(template_url_service, keyword, "");
 }
 
+const TemplateURL* AutocompleteMatch::GetTemplateURL(
+    const TemplateURLService* template_url_service) const {
+  return GetTemplateURLWithKeyword(template_url_service, keyword, "");
+}
+
 template_url_starter_pack_data::StarterPackId AutocompleteMatch::StarterPackId(
     const TemplateURLService* template_url_service) const {
   if (!from_keyword) {
     return template_url_starter_pack_data::StarterPackId::kNone;
   }
-  const TemplateURL* turl =
-      GetTemplateURLWithKeyword(template_url_service, keyword, "");
+  const TemplateURL* turl = GetTemplateURL(template_url_service);
   return turl ? turl->starter_pack_id()
               : template_url_starter_pack_data::StarterPackId::kNone;
 }

@@ -551,14 +551,16 @@ struct AutocompleteMatch {
                                                       bool preserve_subdomain);
   // Logs the search engine used to navigate to a search page or auto complete
   // suggestion. For direct URL navigations, nothing is logged.
-  static void LogSearchEngineUsed(const AutocompleteMatch& match,
-                                  TemplateURLService* template_url_service);
+  static void LogSearchEngineUsed(
+      const AutocompleteMatch& match,
+      const TemplateURLService* template_url_service);
 
   // Computes the stripped destination URL (via GURLToStrippedGURL()) and
   // stores the result in |stripped_destination_url|.  |input| is used for the
   // same purpose as in GURLToStrippedGURL().
-  void ComputeStrippedDestinationURL(const AutocompleteInput& input,
-                                     TemplateURLService* template_url_service);
+  void ComputeStrippedDestinationURL(
+      const AutocompleteInput& input,
+      const TemplateURLService* template_url_service);
 
   // Returns whether `destination_url` looks like a doc URL. If so, will also
   // set `stripped_destination_url` to avoid repeating the computation later.
@@ -632,7 +634,7 @@ struct AutocompleteMatch {
   // wants to display. Set for both hint and non-hint keyword modes.
   // `is_history_embeddings_enabled` will affect the placeholder text for the
   // @history keyword.
-  void GetKeywordUiState(TemplateURLService* template_url_service,
+  void GetKeywordUiState(const TemplateURLService* template_url_service,
                          bool is_history_embeddings_enabled,
                          KeywordState* keyword_state,
                          std::u16string* keyword_out,
@@ -642,7 +644,7 @@ struct AutocompleteMatch {
   // with the default search engine (and the user didn't explicitly invoke its
   // keyword), this returns false even though `keyword` won't be empty.
   bool IsExplicitlyInvokedKeyword(
-      TemplateURLService* template_url_service) const;
+      const TemplateURLService* template_url_service) const;
 
   // Returns the placeholder text to display for the given starter pack keyword
   // TemplateURL, returned for both hint and non-hint keyword modes.
@@ -656,6 +658,8 @@ struct AutocompleteMatch {
   // if the match has no keyword OR if the keyword no longer corresponds to a
   // valid `TemplateURL`. See comments on `keyword` below.
   TemplateURL* GetTemplateURL(TemplateURLService* template_url_service) const;
+  const TemplateURL* GetTemplateURL(
+      const TemplateURLService* template_url_service) const;
 
   // Returns the `StarterPackId` associated with this match's `keyword`, or
   // `StarterPackId::kNone` if not a starter pack match.
