@@ -10,7 +10,10 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/prefs/pref_service.h"
+
+#if !BUILDFLAG(IS_IOS)
 #include "content/public/browser/site_isolation_policy.h"
+#endif
 
 namespace {
 
@@ -83,7 +86,11 @@ std::optional<std::string> TryGetEnrollmentDomain(
 }
 
 bool GetSiteIsolationEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return false;
+#else
   return content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
+#endif
 }
 
 }  // namespace device_signals

@@ -5,6 +5,7 @@
 static_library("browser") {
   public = [
     "base_signals_collector.h",
+    "browser_utils.h",
     "file_system_signals_collector.h",
     "metrics_utils.h",
     "pref_names.h",
@@ -23,6 +24,7 @@ static_library("browser") {
 
   sources = [
     "base_signals_collector.cc",
+    "browser_utils.cc",
     "file_system_signals_collector.cc",
     "metrics_utils.cc",
     "pref_names.cc",
@@ -45,6 +47,7 @@ static_library("browser") {
     "//components/device_signals/core/common",
     "//components/device_signals/core/common:features",
     "//components/enterprise/connectors/core:constants",
+    "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -54,13 +57,7 @@ static_library("browser") {
   ]
 
   if (!is_ios) {
-    public += [ "browser_utils.h" ]
-    sources += [ "browser_utils.cc" ]
-
-    deps += [
-      "//components/policy/core/browser",
-      "//content/public/browser",
-    ]
+    deps += [ "//content/public/browser" ]
   }
 
   if (is_android) {

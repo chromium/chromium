@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("signals") {
+  sources = [
+    "profile_signals_collector_ios.h",
+    "profile_signals_collector_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/device_signals/core/browser",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/version_info",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+
+  frameworks = [ "LocalAuthentication.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_signals_collector_ios_unittest.mm" ]
+  deps = [
+    ":signals",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/browser",
+    "//components/enterprise:test_support",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:constants",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
