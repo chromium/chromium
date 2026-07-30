@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
+#include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -659,6 +661,15 @@ std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()
   return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
 }
 
+void ProfilePickerFlowController::OnWindowClosing() {
+  if (current_step() == Step::kDeviceSignalsDisclaimer &&
+      !signals_disclaimer_result_recorded_) {
+    base::UmaHistogramEnumeration(
+        kEnterpriseSignalsDisclaimerProfilePickerResult,
+        EnterpriseSignalsDisclaimerProfilePickerResult::kProfilePickerClosed);
+  }
+}
+
 std::unique_ptr<ProfilePickerPostSignInAdapter>
 ProfilePickerFlowController::CreatePostSignInAdapter(
     Profile* signed_in_profile,
@@ -934,8 +945,13 @@ void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
     bool open_command_line_urls,
     base::OnceCallback<void(Browser*)> pick_profile_complete_callback,
     signin::DeviceSignalsDisclaimerResult result) {
+  signals_disclaimer_result_recorded_ = true;
   switch (result) {
     case signin::DeviceSignalsDisclaimerResult::kAccepted:
+      base::UmaHistogramEnumeration(
+          kEnterpriseSignalsDisclaimerProfilePickerResult,
+          EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted);
+
       ProfileManagementDisclaimerServiceFactory::GetForProfile(profile)
           ->OnDeviceSignalsCollectionConsentGranted();
 
@@ -944,6 +960,10 @@ void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
           /*is_new_profile=*/false, open_command_line_urls, profile);
       break;
     case signin::DeviceSignalsDisclaimerResult::kCanceled:
+      base::UmaHistogramEnumeration(
+          kEnterpriseSignalsDisclaimerProfilePickerResult,
+          EnterpriseSignalsDisclaimerProfilePickerResult::kDeclined);
+
       SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
       UnregisterStep(Step::kDeviceSignalsDisclaimer);
       if (pick_profile_complete_callback) {
@@ -951,8 +971,15 @@ void ProfilePickerFlowController::OnDeviceSignalsDisclaimerResult(
       }
       break;
     case signin::DeviceSignalsDisclaimerResult::kDismissed:
-      // signin::DeviceSignalsDisclaimerResult::kDismissed is caused by the
-      // destruction of WebUI.
+      base::UmaHistogramEnumeration(
+          kEnterpriseSignalsDisclaimerProfilePickerResult,
+          EnterpriseSignalsDisclaimerProfilePickerResult::
+              kDismissedWithoutExplicitUserAction);
+
+      // kDismissed is caused by the destruction of WebUI.
+      // However it will not be trigger if `this` is destroyed because `this`
+      // owns the webcontents hosting the dialog, so by the time WebUI is
+      // destroyed the WeakPtr will already have been invalidated.
       if (pick_profile_complete_callback) {
         std::move(pick_profile_complete_callback).Run(nullptr);
       }

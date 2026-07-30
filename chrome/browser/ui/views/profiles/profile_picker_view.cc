@@ -755,6 +755,10 @@ void ProfilePickerView::WindowClosing() {
   // delete the profile.
   ClearLockedProfilesFirstBrowserKeepAlive();
 
+  if (flow_controller_) {
+    flow_controller_->OnWindowClosing();
+  }
+
   views::WidgetDelegateView::WindowClosing();
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we

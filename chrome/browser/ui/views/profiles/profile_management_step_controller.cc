@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -388,6 +390,9 @@ class DeviceSignalsDisclaimerStepController
             bool reset_state) override {
     CHECK(reset_state);
     CHECK(!step_shown_callback->is_null());
+
+    base::UmaHistogramBoolean(kEnterpriseSignalsDisclaimerProfilePickerShown,
+                              true);
 
     base::OnceClosure navigation_finished_closure =
         base::BindOnce(std::move(step_shown_callback.value()), true)

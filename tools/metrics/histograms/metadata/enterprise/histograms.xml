@@ -4136,6 +4136,71 @@ chromium-metrics-reviews@google.com.
   <summary>The source trigger of security signals-only reports</summary>
 </histogram>
 
+<histogram name="Enterprise.SignalsDisclaimer.Modal.LearnMoreClicked"
+    enum="BooleanClicked" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records when the Learn More link is clicked on the Enterprise Signals
+    Disclaimer modal dialog shown on browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.Modal.Result"
+    enum="EnterpriseSignalsDisclaimerModalResult" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the result of the Enterprise Signals Disclaimer modal dialog shown
+    on browser startup for managed profiles missing device signals collection
+    consent. Emitted when the modal dialog is accepted, declined, or dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.Modal.Shown" enum="BooleanShown"
+    expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records when the Enterprise Signals Disclaimer modal dialog is shown on
+    browser startup for managed profiles missing device signals collection
+    consent.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.ProfilePicker.LearnMoreClicked"
+    enum="BooleanClicked" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records when the Learn More link is clicked on the Enterprise Signals
+    Disclaimer view shown in the Profile Picker.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.ProfilePicker.Result"
+    enum="EnterpriseSignalsDisclaimerProfilePickerResult"
+    expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the result of the Enterprise Signals Disclaimer shown in the Profile
+    Picker after selecting a managed profile missing the device signals consent.
+    Emitted when the view is accepted, declined, or dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SignalsDisclaimer.ProfilePicker.Shown"
+    enum="BooleanShown" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records when the Enterprise Signals Disclaimer view is shown in the Profile
+    Picker after selecting a managed profile missing device signals collection
+    consent.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
     enum="BooleanEnabled" expires_after="2026-12-16">
   <owner>aidazolic@google.com</owner>

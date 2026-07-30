@@ -2654,6 +2654,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed (Permanent Error)"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseSignalsDisclaimerModalResult) -->
+
+<enum name="EnterpriseSignalsDisclaimerModalResult">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Dismissed by another window"/>
+  <int value="3" label="Dismissed without explicit user action"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/signals_disclaimer_metrics.h:EnterpriseSignalsDisclaimerModalResult) -->
+
+<!-- LINT.IfChange(EnterpriseSignalsDisclaimerProfilePickerResult) -->
+
+<enum name="EnterpriseSignalsDisclaimerProfilePickerResult">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Profile picker closed"/>
+  <int value="3" label="Dismissed without explicit user action"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/signals_disclaimer_metrics.h:EnterpriseSignalsDisclaimerProfilePickerResult) -->
+
 <!-- LINT.IfChange(EnterpriseSkyVaultMigrationDialogAction) -->
 
 <enum name="EnterpriseSkyVaultMigrationDialogAction">

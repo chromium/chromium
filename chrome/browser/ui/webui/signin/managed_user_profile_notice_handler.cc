@@ -101,6 +101,7 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
       type_(type),
       profile_creation_required_by_policy_(
           create_param->profile_creation_required_by_policy),
+      is_modal_dialog_(create_param->is_device_signals_disclaimer_modal),
 #if !BUILDFLAG(IS_CHROMEOS)
       show_link_data_option_(create_param->show_link_data_option),
 #endif
@@ -417,7 +418,7 @@ void ManagedUserProfileNoticeHandler::HandleLearnMoreClicked(
   auto* service = ProfileManagementDisclaimerServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
   if (service) {
-    service->OpenPrivacyPolicyArticlePopUp();
+    service->OpenPrivacyPolicyArticlePopUp(is_modal_dialog_);
   }
 }
 

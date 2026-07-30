@@ -41,6 +41,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
+#include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
@@ -4393,9 +4394,14 @@ class ProfilePickerDeviceSignalsDisclaimerBrowserTest
     return content::ExecJs(wc, script);
   }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath managed_profile_path_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4418,6 +4424,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   WaitForPickerClosed();
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4442,6 +4453,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       g_browser_process->profile_manager()->GetProfile(managed_profile_path());
   EXPECT_FALSE(managed_profile->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::kDeclined, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4465,6 +4481,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       g_browser_process->profile_manager()->GetProfile(managed_profile_path());
   EXPECT_FALSE(managed_profile->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::kProfilePickerClosed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4489,6 +4510,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   WaitForPickerClosed();
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester().ExpectTotalCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, 0);
+  histogram_tester().ExpectTotalCount(
+      kEnterpriseSignalsDisclaimerProfilePickerResult, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4513,6 +4538,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   WaitForPickerClosed();
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4542,6 +4572,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   WaitForPickerClosed();
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerShown, true, 1);
+  histogram_tester().ExpectUniqueSample(
+      kEnterpriseSignalsDisclaimerProfilePickerResult,
+      EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4575,6 +4610,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(ProfilePicker::IsOpen());
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
@@ -4608,4 +4645,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   // No new window should open, instead the existing popup should be focused.
   ui_test_utils::WaitUntilBrowserBecomeActive(popup_browser);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+  histogram_tester().ExpectBucketCount(
+      kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 2);
 }

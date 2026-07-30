@@ -92,7 +92,7 @@ class ProfileManagementDisclaimerService
   // Marks the consent as granted in the profile preferences.
   void OnDeviceSignalsCollectionConsentGranted();
 
-  void OpenPrivacyPolicyArticlePopUp();
+  void OpenPrivacyPolicyArticlePopUp(bool is_modal_dialog);
 
   // The device signals disclaimer is gated behind --no-first-run, however for
   // accurate browser tests it can be bypassed using this function.
@@ -174,6 +174,7 @@ class ProfileManagementDisclaimerService
   void MaybeShowDeviceSignalsDisclaimerDialog(BrowserWindowInterface* browser);
 
   void HandleDeviceSignalsDisclaimerChoice(
+      base::WeakPtr<BrowserWindowInterface> source_browser,
       signin::DeviceSignalsDisclaimerResult result);
 
   // signin::IdentityManager::Observer:

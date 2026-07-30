@@ -47,6 +47,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   std::u16string GetFallbackAccessibleWindowTitle() const override;
 
+  void OnWindowClosing() override;
+
   // Switch to the flow that is shown when the user decides to create a profile
   // without signing in.
   void SwitchToSignedOutPostIdentityFlow(Profile* profile);
@@ -121,6 +123,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   // Email to be prefilled in the profile creation flow.
   std::string initial_email_;
+
+  bool signals_disclaimer_result_recorded_ = false;
 
   base::WeakPtrFactory<ProfilePickerFlowController> weak_ptr_factory_{this};
 };

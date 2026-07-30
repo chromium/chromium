@@ -137,6 +137,9 @@ class ProfileManagementFlowController
   // (which is the default), the host will choose itself some generic title.
   virtual std::u16string GetFallbackAccessibleWindowTitle() const;
 
+  // Called when the native window hosting the flow is being closed.
+  virtual void OnWindowClosing() {}
+
   // A helper method to create a pop callback that will switch to the given
   // step (can be used with `current_step()` to facilitate switching back to the
   // current active step).
