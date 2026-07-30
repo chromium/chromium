@@ -4505,11 +4505,12 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
     // content view.
     gfx::Point screen_point(point);
     View::ConvertPointToScreen(this, &screen_point);
-    if (tab_overlay_widget() &&
+    if (tab_overlay_widget() && tab_overlay_widget()->IsVisible() &&
         tab_overlay_widget()->GetWindowBoundsInScreen().Contains(
             screen_point)) {
       return HTCAPTION;
-    } else if (overlay_widget()->GetWindowBoundsInScreen().Contains(
+    } else if (overlay_widget() && overlay_widget()->IsVisible() &&
+               overlay_widget()->GetWindowBoundsInScreen().Contains(
                    screen_point)) {
       return HTCLIENT;
     }
