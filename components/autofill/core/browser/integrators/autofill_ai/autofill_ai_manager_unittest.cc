@@ -117,19 +117,8 @@ const AutofillClient::EntityImportUIContext kIgnoreUIContext(
     /*accepted_consent_string_id=*/123,
     /*accept_button_string_id=*/std::nullopt);
 
-auto FirstElementIs(auto&& matcher) {
-  return ResultOf(
-      "first element", [](const auto& container) { return *container.begin(); },
-      std::move(matcher));
-}
-
 auto HasType(SuggestionType expected_type) {
   return Field("Suggestion::type", &Suggestion::type, Eq(expected_type));
-}
-
-auto HasAutofillAiPayload(auto expected_payload) {
-  return Field("Suggestion::payload", &Suggestion::payload,
-               VariantWith<AutofillAiPayload>(expected_payload));
 }
 
 auto HasAttributeWithValue(AttributeType attribute_type,
@@ -667,10 +656,11 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreatePassportForm(
       std::u16string passport_number = std::u16string(kDefaultPassportNumber),
-      std::string url = std::string(kDefaultUrl)) {
+      std::string url = std::string(kDefaultUrl),
+      std::u16string name = u"Jon Doe") {
     std::unique_ptr<FormStructure> form = CreateFormStructure(
         {NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER}, std::move(url));
-    form->field(0)->set_value(u"Jon Doe");
+    form->field(0)->set_value(std::move(name));
     form->field(1)->set_value(std::move(passport_number));
     return form;
   }
@@ -933,9 +923,11 @@ TEST_F(AutofillAiManagerImportFormTest,
 
 // Tests that update prompts are only shown three times per entity that is to
 // be updated. Tests that accepting a prompt resets the counter.
+// Note that for an update prompt to be shown, the name of an existing passport
+// number is changed. Changing the passport number would trigger a save.
 TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
-  constexpr char16_t kOtherPassportNumber[] = u"67867";
-  constexpr char16_t kOtherPassportNumber2[] = u"6785634567";
+  constexpr char16_t kOtherName[] = u"Jane Doe";
+  constexpr char16_t kOtherName2[] = u"Jack Doe";
 
   {
     InSequence s;
@@ -950,23 +942,23 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
 
     // Accept the third prompt.
     EXPECT_CALL(autofill_client(),
-                ShowEntityImportBubble(PassportWithNumber(kOtherPassportNumber),
-                                       _, _, _))
+                ShowEntityImportBubble(
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
         .Times(2)
         .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
             kDeclineBubble, std::nullopt, kDeclineUIContext));
     EXPECT_CALL(autofill_client(),
-                ShowEntityImportBubble(PassportWithNumber(kOtherPassportNumber),
-                                       _, _, _))
+                ShowEntityImportBubble(
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
         .WillOnce(
             RunOnceCallback<3>(kAcceptBubble, std::nullopt, kAcceptUIContext));
-    EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance)
-        .WillOnce(WithArgs<0, 2>(ReplyWithMaskedEntity()));
+    EXPECT_CALL(wallet_manager(), UpdateWalletEntityInstance)
+        .WillOnce(WithArgs<0, 1>(ReplyWithMaskedEntity()));
 
     // If the user just ignores the prompt, no strikes are recorded.
     EXPECT_CALL(autofill_client(),
                 ShowEntityImportBubble(
-                    PassportWithNumber(kOtherPassportNumber2), _, _, _))
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
         .Times(2)
         .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
             kIgnoreBubble, std::nullopt, kIgnoreUIContext));
@@ -975,7 +967,7 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
     // user declines explicitly.
     EXPECT_CALL(autofill_client(),
                 ShowEntityImportBubble(
-                    PassportWithNumber(kOtherPassportNumber2), _, _, _))
+                    PassportWithNumber(kDefaultPassportNumber), _, _, _))
         .Times(3)
         .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
             kDeclineBubble, std::nullopt, kDeclineUIContext));
@@ -988,25 +980,34 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
 
   // Simulate three submissions - the last prompt is accepted.
   ASSERT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName),
+      /*ukm_source_id=*/{}));
   ASSERT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName),
+      /*ukm_source_id=*/{}));
   ASSERT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName),
+      /*ukm_source_id=*/{}));
 
-  // Simulate four more submissions - only three prompts are shown.
+  // Simulate six more submissions - 2 ignored, 3 declined and 1 blocked prompt.
   EXPECT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName2),
+      /*ukm_source_id=*/{}));
   EXPECT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName2),
+      /*ukm_source_id=*/{}));
   EXPECT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName2),
+      /*ukm_source_id=*/{}));
   EXPECT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName2),
+      /*ukm_source_id=*/{}));
   EXPECT_TRUE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName2),
+      /*ukm_source_id=*/{}));
   EXPECT_FALSE(manager().OnFormSubmitted(
-      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+      *CreatePassportForm(kDefaultPassportNumber, kDefaultUrl, kOtherName2),
+      /*ukm_source_id=*/{}));
 }
 
 // Tests that accepting a save prompt for an entity resets the strike counter
