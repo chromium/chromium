@@ -106,6 +106,7 @@ fuzzer_test("template_url_parser_fuzzer") {
     "//mojo/core/embedder",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/libxml",
   ]
   dict = "//third_party/libxml/fuzz/xml.dict"
@@ -379,6 +380,7 @@ fuzzer_test("skia_path_fuzzer") {
   deps = [
     "//base",
     "//skia",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   libfuzzer_options = [ "max_len=256" ]
   if (is_debug) {
@@ -396,6 +398,7 @@ fuzzer_test("skia_pathop_fuzzer") {
   deps = [
     "//base",
     "//skia",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   libfuzzer_options = [ "max_len=512" ]
   if (is_debug) {
@@ -406,7 +409,10 @@ fuzzer_test("skia_pathop_fuzzer") {
 
 fuzzer_test("prtime_fuzzer") {
   sources = [ "prtime_fuzzer.cc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
   dict = "dicts/prtime.dict"
   libfuzzer_options = [ "max_len=1024" ]
 }

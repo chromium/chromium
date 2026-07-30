@@ -5,35 +5,27 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "testing/libfuzzer/fuzzers/skia_path_common.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathUtils.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> bytes) {
+  base::SpanReader reader(bytes);
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   uint8_t w, h, anti_alias;
-  if (!read<uint8_t>(&data, &size, &w))
-    return 0;
-  if (!read<uint8_t>(&data, &size, &h))
-    return 0;
-  if (!read<uint8_t>(&data, &size, &anti_alias))
-    return 0;
-
   SkScalar a, b, c, d;
-  if (!read<SkScalar>(&data, &size, &a))
+  if (!read(reader, &w, &h, &anti_alias, &a, &b, &c, &d)) {
     return 0;
-  if (!read<SkScalar>(&data, &size, &b))
-    return 0;
-  if (!read<SkScalar>(&data, &size, &c))
-    return 0;
-  if (!read<SkScalar>(&data, &size, &d))
-    return 0;
+  }
 
   // In this case, we specifically don't want to include kDone_Verb.
-  const SkPath path = BuildPath(&data, &size, SkPath::Verb::kClose_Verb);
+  const SkPath path = BuildPath(reader, SkPath::Verb::kClose_Verb);
 
   // Try a few potentially interesting things with our path.
   path.contains(a, b);

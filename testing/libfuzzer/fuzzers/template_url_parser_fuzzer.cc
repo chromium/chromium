@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/search_engines/template_url_parser.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -13,19 +10,20 @@
 #include <random>
 #include <string>
 
-#include "libxml/parser.h"
-
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_parser.h"
+#include "libxml/parser.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 
 bool PseudoRandomFilter(std::mt19937* generator,
@@ -47,7 +45,8 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   // Avoid crashing if CommandLine is already initialized, which can happen on
   // Android.
   if (!base::CommandLine::InitializedForCurrentProcess()) {
-    CHECK(base::CommandLine::Init(*argc, *argv));
+    // SAFETY: argv has size argc, guaranteed by the fuzzer environment.
+    CHECK(UNSAFE_BUFFERS(base::CommandLine::Init(*argc, *argv)));
   }
   return 0;
 }
@@ -64,20 +63,20 @@ class Env {
   }
 };
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> bytes) {
   static Env env;
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
   data_decoder::test::InProcessDataDecoder data_decoder;
 
-  if (size < sizeof(FuzzerFixedParams)) {
+  if (bytes.size() < sizeof(FuzzerFixedParams)) {
     return 0;
   }
+  auto [params_span, remaining_span] =
+      bytes.split_at<sizeof(FuzzerFixedParams)>();
+  FuzzerFixedParams params;
+  base::as_writable_bytes(base::span_from_ref(params)).copy_from(params_span);
 
-  const FuzzerFixedParams* params =
-      reinterpret_cast<const FuzzerFixedParams*>(data);
-  size -= sizeof(FuzzerFixedParams);
-
-  std::mt19937 generator(params->seed_);
+  std::mt19937 generator(params.seed_);
   // Use a uint16_t here instead of uint8_t because uniform_int_distribution
   // does not support 8 bit types on Windows.
   std::uniform_int_distribution<uint16_t> pool(0, 1);
@@ -85,7 +84,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::RunLoop run_loop;
 
   SearchTermsData search_terms_data;
-  std::string string_data(reinterpret_cast<const char*>(params + 1), size);
+  std::string string_data(base::as_string_view(remaining_span));
   TemplateURLParser::ParameterFilter filter =
       base::BindRepeating(&PseudoRandomFilter, base::Unretained(&generator),
                           base::Unretained(&pool));

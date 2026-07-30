@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "testing/libfuzzer/fuzzers/skia_path_common.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -22,14 +23,14 @@ Environment* env = new Environment();
 
 const int kLastOp = SkPathOp::kReverseDifference_SkPathOp;
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  SkOpBuilder builder;
-  while (size > 0) {
-    uint8_t op;
-    if (!read<uint8_t>(&data, &size, &op))
-      break;
+#include "base/containers/span_reader.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-    const SkPath path = BuildPath(&data, &size, SkPath::Verb::kDone_Verb);
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> bytes) {
+  base::SpanReader reader(bytes);
+  SkOpBuilder builder;
+  for (uint8_t op; read(reader, &op);) {
+    const SkPath path = BuildPath(reader, SkPath::Verb::kDone_Verb);
     builder.add(path, static_cast<SkPathOp>(op % (kLastOp + 1)));
   }
 

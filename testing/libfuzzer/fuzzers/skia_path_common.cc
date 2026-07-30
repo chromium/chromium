@@ -9,51 +9,44 @@
 
 // This is needed because SkPath::readFromMemory does not seem to be able to
 // be able to handle arbitrary input.
-SkPath BuildPath(const uint8_t** data, size_t* size, int last_verb) {
+SkPath BuildPath(base::SpanReader<const uint8_t>& reader, int last_verb) {
   uint8_t operation;
   SkScalar a, b, c, d, e, f;
   SkPathBuilder path;
-  while (read<uint8_t>(data, size, &operation)) {
+  while (read(reader, &operation)) {
     switch (operation % (last_verb + 1)) {
       case SkPath::Verb::kMove_Verb:
-        if (!read<SkScalar>(data, size, &a) || !read<SkScalar>(data, size, &b))
+        if (!read(reader, &a, &b)) {
           return path.detach();
+        }
         path.moveTo(a, b);
         break;
 
       case SkPath::Verb::kLine_Verb:
-        if (!read<SkScalar>(data, size, &a) || !read<SkScalar>(data, size, &b))
+        if (!read(reader, &a, &b)) {
           return path.detach();
+        }
         path.lineTo(a, b);
         break;
 
       case SkPath::Verb::kQuad_Verb:
-        if (!read<SkScalar>(data, size, &a) ||
-            !read<SkScalar>(data, size, &b) ||
-            !read<SkScalar>(data, size, &c) ||
-            !read<SkScalar>(data, size, &d))
+        if (!read(reader, &a, &b, &c, &d)) {
           return path.detach();
+        }
         path.quadTo(a, b, c, d);
         break;
 
       case SkPath::Verb::kConic_Verb:
-        if (!read<SkScalar>(data, size, &a) ||
-            !read<SkScalar>(data, size, &b) ||
-            !read<SkScalar>(data, size, &c) ||
-            !read<SkScalar>(data, size, &d) ||
-            !read<SkScalar>(data, size, &e))
+        if (!read(reader, &a, &b, &c, &d, &e)) {
           return path.detach();
+        }
         path.conicTo(a, b, c, d, e);
         break;
 
       case SkPath::Verb::kCubic_Verb:
-        if (!read<SkScalar>(data, size, &a) ||
-            !read<SkScalar>(data, size, &b) ||
-            !read<SkScalar>(data, size, &c) ||
-            !read<SkScalar>(data, size, &d) ||
-            !read<SkScalar>(data, size, &e) ||
-            !read<SkScalar>(data, size, &f))
+        if (!read(reader, &a, &b, &c, &d, &e, &f)) {
           return path.detach();
+        }
         path.cubicTo(a, b, c, d, e, f);
         break;
 
