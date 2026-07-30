@@ -25,38 +25,26 @@ from itertools import chain
 # which may disappear.
 ALIGNMENT_ORDER = [
     # Aligns like double
-    'ScaleTransformOperation',
-    'RotateTransformOperation',
-    'TranslateTransformOperation',
     'GridTrackList',
     'StyleHighlightData',
     'FilterOperations',
     'DynamicRangeLimit',
-    'std::optional<gfx::Size>',
-    'double',
     'StyleViewTransitionGroup',
     'Superellipse',
     'FlowTolerance',
     # Aligns like a pointer (can be 32 or 64 bits)
-    'NamedGridLinesMap',
-    'NamedGridAreaMap',
     'TransformOperations',
-    'Vector<CSSPropertyID>',
     'Vector<AtomicString>',
-    'Vector<TimelineAttachment>',
     'Vector<TimelineAxis>',
     'Vector<TimelineInset>',
-    'HeapVector<Member<StyleTriggerAttachmentVector>>',
     'GridPosition',
     'AtomicString',
     'scoped_refptr',
     'std::unique_ptr',
     'Vector<String>',
-    'Font',
     'FillLayer',
     'NinePieceImage',
     'SVGPaint',
-    'IntrinsicLength',
     'TextBoxEdge',
     'TextDecorationThickness',
     'TextOverflowData',
@@ -64,7 +52,6 @@ ALIGNMENT_ORDER = [
     'StyleAspectRatio',
     'StyleIntrinsicLength',
     'StyleInheritedVariables',
-    'StyleNameScope',
     'StyleNonInheritedVariables',
     'StylePositionAnchor',
     'StyleTimelineScope',
@@ -83,8 +70,6 @@ ALIGNMENT_ORDER = [
     'StyleInitialLetter',
     'StyleOffsetRotation',
     'TransformOrigin',
-    'ScrollPadding',
-    'ScrollMargin',
     'LengthBox',
     'LengthSize',
     'gfx::SizeF',
@@ -99,18 +84,12 @@ ALIGNMENT_ORDER = [
     # Aligns like int
     'cc::ScrollSnapType',
     'cc::ScrollSnapAlign',
-    'BorderValue',
     'StyleColor',
     'StyleAutoColor',
     'StyleCaretColor',
-    'Color',
     'StyleHyphenateLimitChars',
-    'LayoutUnit',
     'MaxLinesData',
-    'OutlineValue',
     'unsigned',
-    'size_t',
-    'wtf_size_t',
     'int',
     'PositionArea',
     'GridLanesDirection',
@@ -122,11 +101,20 @@ ALIGNMENT_ORDER = [
     'StyleSelfAlignmentData',
     'StyleContentAlignmentData',
     'StyleFlexWrapData',
-    'uint8_t',
-    'char',
     # Aligns like bool
     'bool'
 ]
+
+
+def _check_unused_alignment_types(fields):
+    """Check if the ALIGNMENT_ORDER order list contains type entries that are
+    not used by any fields.
+    """
+    diff = set(ALIGNMENT_ORDER).difference(
+        {field.alignment_type
+         for field in fields})
+    assert len(diff) == 0, \
+        "Unused alignment types in ALIGNMENT_ORDER: {}".format(list(diff))
 
 # FIXME: Improve documentation and add docstrings.
 
@@ -535,6 +523,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         _evaluate_misc_group(self._properties, bitfield_properties, False)
         _evaluate_misc_group(self._properties, bitfield_properties, True)
         self._root_group = _create_groups(self._properties)
+        _check_unused_alignment_types(self._root_group.all_fields)
         # We create separate groups/fields for generating ComputedStyle-
         # BuilderBase. The only difference between these fields and the regular
         # fields, is that the builder fields have the "builder" flag set, which
