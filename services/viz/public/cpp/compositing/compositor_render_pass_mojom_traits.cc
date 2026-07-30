@@ -76,8 +76,6 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       viz::SetDeserializationCrashKeyString("AllocateAndConstruct quad failed");
       return false;
     }
-    if (!quads.Read(i, quad))
-      return false;
 
     // Read the SharedQuadState.
     viz::mojom::SharedQuadStateDataView sqs_data_view;
@@ -94,6 +92,10 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
     quad->shared_quad_state = last_sqs;
     if (!quad->shared_quad_state) {
       viz::SetDeserializationCrashKeyString("No shared quad state");
+      return false;
+    }
+
+    if (!quads.Read(i, quad)) {
       return false;
     }
   }

@@ -22,6 +22,7 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/trees_in_viz_timing.h"
@@ -1336,6 +1337,50 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(is_horizontally_positioned,
             out_rounded_display_mask_quad->rounded_display_masks_info
                 .is_horizontally_positioned);
+}
+
+TEST_F(StructTraitsTest, SharedElementDrawQuadValid) {
+  auto render_pass = CompositorRenderPass::Create();
+  render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 100, 100),
+                      gfx::Rect(0, 0, 100, 100), gfx::Transform());
+  SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
+
+  blink::ViewTransitionToken transition_token;
+  ViewTransitionElementResourceId resource_id(transition_token, 1u, false);
+
+  auto* quad = render_pass->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
+  quad->SetNew(sqs, gfx::Rect(0, 0, 100, 100), gfx::Rect(0, 0, 100, 100),
+               resource_id);
+
+  std::unique_ptr<CompositorRenderPass> output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(
+      render_pass, output));
+  ASSERT_TRUE(output);
+  ASSERT_EQ(1u, output->quad_list.size());
+  const auto* out_quad =
+      SharedElementDrawQuad::MaterialCast(output->quad_list.ElementAt(0));
+  ASSERT_TRUE(out_quad);
+  EXPECT_EQ(resource_id, out_quad->element_resource_id);
+  EXPECT_TRUE(out_quad->element_resource_id.IsValid());
+}
+
+TEST_F(StructTraitsTest, SharedElementDrawQuadInvalid) {
+  auto render_pass = CompositorRenderPass::Create();
+  render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 100, 100),
+                      gfx::Rect(0, 0, 100, 100), gfx::Transform());
+  SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
+
+  // Create an invalid (default-constructed) ViewTransitionElementResourceId.
+  ViewTransitionElementResourceId invalid_resource_id;
+
+  auto* quad = render_pass->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
+  quad->SetNew(sqs, gfx::Rect(0, 0, 100, 100), gfx::Rect(0, 0, 100, 100),
+               invalid_resource_id);
+
+  std::unique_ptr<CompositorRenderPass> output;
+  // Should fail IPC deserialization because element_resource_id is invalid.
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(
+      render_pass, output));
 }
 
 TEST_F(StructTraitsTest, SurfaceId) {

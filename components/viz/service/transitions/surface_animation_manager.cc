@@ -264,6 +264,11 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
   }
 
   const auto& shared_element_quad = *SharedElementDrawQuad::MaterialCast(&quad);
+  if (!shared_element_quad.element_resource_id.IsValid()) {
+    LOG(ERROR)
+        << "Invalid ViewTransitionElementResourceId in SharedElementDrawQuad";
+    return true;
+  }
 
   // Look up the shared element in textures first. This ordering is important
   // since there can be situations where we created a texture _and_ we have a

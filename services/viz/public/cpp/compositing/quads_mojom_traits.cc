@@ -224,7 +224,15 @@ bool StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::SharedElementQuadStateDataView data, viz::DrawQuad* out) {
   viz::SharedElementDrawQuad* shared_element_quad =
       static_cast<viz::SharedElementDrawQuad*>(out);
-  return data.ReadElementResourceId(&shared_element_quad->element_resource_id);
+  if (!data.ReadElementResourceId(&shared_element_quad->element_resource_id)) {
+    return false;
+  }
+  if (!shared_element_quad->element_resource_id.IsValid()) {
+    viz::SetDeserializationCrashKeyString(
+        "Invalid ViewTransitionElementResourceId in SharedElementDrawQuad");
+    return false;
+  }
+  return true;
 }
 
 // static
