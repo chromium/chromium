@@ -674,14 +674,13 @@ const char* PreinstalledWebAppManager::
 
 void PreinstalledWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  // LINT.IfChange(WebAppPrefs)
   registry->RegisterStringPref(prefs::kWebAppsLastPreinstallSynchronizeVersion,
                                "");
   registry->RegisterListPref(webapps::kWebAppsMigratedPreinstalledApps);
   registry->RegisterListPref(prefs::kWebAppsDidMigrateDefaultChromeApps);
   registry->RegisterListPref(prefs::kWebAppsUninstalledDefaultChromeApps);
-  // NOTE: If you add new prefs here that should be cleared during database
-  // corruption recovery, make sure to update
-  // `RemoveWebAppJob::RemoveForCorruptDatabase`.
+  // LINT.ThenChange(chrome/browser/web_applications/web_app_utils.cc:WebAppPrefs)
 }
 
 // static

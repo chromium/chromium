@@ -57,6 +57,7 @@
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/web_app_error_page_constants.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -608,5 +609,23 @@ bool WillBeSystemWebApp(const webapps::AppId& app_id,
   return false;
 #endif
 }
+
+// LINT.IfChange(WebAppPrefs)
+void ClearWebAppProfilePrefs(PrefService* profile_prefs) {
+  profile_prefs->ClearPref(prefs::kWebAppsPreferences);
+  profile_prefs->ClearPref(prefs::kWebAppsDailyMetrics);
+  profile_prefs->ClearPref(prefs::kWebAppsAppAgnosticIphState);
+  profile_prefs->ClearPref(prefs::kWebAppsAppAgnosticMlState);
+  profile_prefs->ClearPref(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+  profile_prefs->ClearPref(prefs::kWebAppsLastPreinstallSynchronizeVersion);
+  profile_prefs->ClearPref(webapps::kWebAppsMigratedPreinstalledApps);
+  profile_prefs->ClearPref(prefs::kWebAppsDidMigrateDefaultChromeApps);
+  profile_prefs->ClearPref(prefs::kWebAppsUninstalledDefaultChromeApps);
+  profile_prefs->ClearPref(prefs::kAppShortcutsVersion);
+  profile_prefs->ClearPref(prefs::kAppShortcutsArch);
+  profile_prefs->ClearPref(prefs::kIsolatedWebAppPendingInitializationCount);
+  profile_prefs->ClearPref(prefs::kIsolatedWebAppUserInstallationEnabled);
+}
+// LINT.ThenChange()
 
 }  // namespace web_app

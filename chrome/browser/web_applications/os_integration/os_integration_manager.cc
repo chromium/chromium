@@ -143,14 +143,13 @@ bool OsIntegrationManager::AreOsHooksSuppressedForTesting() {
 // static
 void OsIntegrationManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  // LINT.IfChange(WebAppPrefs)
   // Indicates whether app shortcuts have been created.
   registry->RegisterIntegerPref(prefs::kAppShortcutsVersion,
                                 kCurrentAppShortcutsVersion);
   registry->RegisterStringPref(prefs::kAppShortcutsArch,
                                CurrentAppShortcutsArch());
-  // NOTE: If you add new prefs here that should be cleared during database
-  // corruption recovery, make sure to update
-  // `RemoveWebAppJob::RemoveForCorruptDatabase`.
+  // LINT.ThenChange(chrome/browser/web_applications/web_app_utils.cc:WebAppPrefs)
 }
 
 // static

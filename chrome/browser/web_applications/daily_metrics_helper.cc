@@ -244,7 +244,9 @@ void SkipOriginCheckForTesting() {
 }
 
 void RegisterDailyWebAppMetricsProfilePrefs(PrefRegistrySimple* registry) {
+  // LINT.IfChange(WebAppPrefs)
   registry->RegisterDictionaryPref(prefs::kWebAppsDailyMetrics);
+  // LINT.ThenChange(chrome/browser/web_applications/web_app_utils.cc:WebAppPrefs)
   metrics::date_changed_helper::RegisterPref(registry,
                                              prefs::kWebAppsDailyMetricsDate);
 }
