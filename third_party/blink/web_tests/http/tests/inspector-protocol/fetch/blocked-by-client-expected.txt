@@ -1,0 +1,11 @@
+Tests blocking requests with Fetch.failRequest.
+Fetch.requestPaused: .../fetch/resources/Ahem.ttf
+Fetch.requestPaused: .../fetch/resources/empty.html
+Fetch.requestPaused: .../fetch/resources/hello-world.html
+Fetch.requestPaused: .../fetch/resources/resource-cancel-test.html
+Fetch.requestPaused: .../fetch/resources/test.jpg
+Network.loadingFailed for .../fetch/resources/Ahem.ttf: blockedReason=inspector
+Network.loadingFailed for .../fetch/resources/empty.html: blockedReason=inspector
+Network.loadingFailed for .../fetch/resources/test.jpg: blockedReason=inspector
+Navigation complete.
+

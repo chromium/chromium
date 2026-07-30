@@ -1,0 +1,9 @@
+Tests network interception with auth proxy.
+
+Auth challenge seen: true
+Files loaded:
+  /Ahem.ttf
+  /dom_tree_test.css
+  /dom_tree_test.html
+  /hello.html
+  /iframe.html

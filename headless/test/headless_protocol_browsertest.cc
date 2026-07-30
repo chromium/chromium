@@ -26,6 +26,7 @@
 #include "headless/public/switches.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -511,6 +512,45 @@ class HeadlessProtocolBrowserTestWithProxy
 HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithProxy,
                          BrowserSetProxyConfig,
                          "sanity/browser-set-proxy-config.js")
+
+class HeadlessProtocolBrowserTestWithAuthProxy
+    : public HeadlessProtocolBrowserTest {
+ public:
+  HeadlessProtocolBrowserTestWithAuthProxy()
+      : proxy_server_(net::EmbeddedTestServer::TYPE_HTTP) {
+    net::test_server::RegisterProxyBasicAuthHandler(proxy_server_, "user",
+                                                    "pass");
+    proxy_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("headless/test/data")));
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(proxy_server_.Start());
+    HeadlessProtocolBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    EXPECT_TRUE(proxy_server_.ShutdownAndWaitUntilComplete());
+    HeadlessProtocolBrowserTest::TearDown();
+  }
+
+  net::EmbeddedTestServer* proxy_server() { return &proxy_server_; }
+
+ protected:
+  base::DictValue GetPageUrlExtraParams() override {
+    std::string proxy = proxy_server()->host_port_pair().ToString();
+    base::DictValue dict;
+    dict.Set("proxy", proxy);
+    return dict;
+  }
+
+ private:
+  net::EmbeddedTestServer proxy_server_;
+};
+
+HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithAuthProxy,
+                         DevtoolsInterceptionWithAuthProxy,
+                         "sanity/devtools-interception-with-auth-proxy.js")
 
 class PopupWindowOpenTest : public HeadlessProtocolBrowserTest,
                             public testing::WithParamInterface<bool> {
