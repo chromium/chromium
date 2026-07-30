@@ -206,12 +206,14 @@ source_set("unit_tests") {
     "url_list/url_blocklist_manager_unittest.cc",
     "url_list/url_blocklist_policy_handler_unittest.cc",
     "url_list/url_scheme_list_policy_handler_unittest.cc",
+    "webui/statistics_collector_unittest.cc",
   ]
   deps = [
     ":browser",
     ":incognito_mode_policy_test_support",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//build:android_buildflags",
     "//components/policy:generated",
     "//components/prefs:test_support",
