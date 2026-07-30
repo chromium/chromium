@@ -424,20 +424,18 @@ void ReaderModeTabHelper::PageDistillationCompleted(
                         ? ReaderModeDistillerResult::kPageIsDistillable
                         : ReaderModeDistillerResult::kPageIsNotDistillable);
 
-  if (IsReaderModeAvailable()) {
-    if (is_distillable_page) {
-      // Load the Reader mode content in the Reader mode content WebState.
-      NSData* content_data = [NSData dataWithBytes:html.data()
-                                            length:html.length()];
-      metrics_helper_.RecordDataLoadTriggered();
-      ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
-          ->LoadContent(page_url, content_data);
-    } else {
-      RecordDistillationFailure();
-      // If the page could not be distilled, deactivate Reader mode in this tab.
-      DeactivateReader(
-          ReaderModeDeactivationReason::kDistillationFailureDeactivated);
-    }
+  if (is_distillable_page) {
+    // Load the Reader mode content in the Reader mode content WebState.
+    NSData* content_data = [NSData dataWithBytes:html.data()
+                                          length:html.length()];
+    metrics_helper_.RecordDataLoadTriggered();
+    ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
+        ->LoadContent(page_url, content_data);
+  } else {
+    RecordDistillationFailure();
+    // If the page could not be distilled, deactivate Reader mode in this tab.
+    DeactivateReader(
+        ReaderModeDeactivationReason::kDistillationFailureDeactivated);
   }
 }
 

@@ -69,7 +69,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
             (testAskGeminiChipAppearsWithReaderModeLargeEntrypoint)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name;
-    config.features_enabled.push_back(kEnableReaderModeInUS);
   }
 
   return config;

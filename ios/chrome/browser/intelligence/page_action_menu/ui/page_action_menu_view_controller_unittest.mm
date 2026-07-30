@@ -113,7 +113,6 @@ class PageActionMenuViewControllerTest : public PlatformTest {
   }
 
   void StubMutatorWithDefaults() {
-    OCMStub([mock_mutator_ isReaderModeAvailable]).andReturn(YES);
     OCMStub([mock_mutator_ shouldShowFeatureEntryPoints]).andReturn(YES);
 
     PageActionMenuContentEntryPoint* enabledEntryPoint =

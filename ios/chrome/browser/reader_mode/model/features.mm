@@ -27,8 +27,6 @@ bool IsUSCountryCode() {
 
 }  // namespace
 
-BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -40,14 +38,6 @@ BASE_FEATURE(kEnableContentSettingsOptionForLinks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReaderModeIgnoreBadgeThreshold, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsReaderModeAvailable() {
-  if (IsUSCountryCode() &&
-      !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return base::FeatureList::IsEnabled(kEnableReaderModeInUS);
-  }
-  return true;
-}
 
 bool IsReaderModeOmniboxEntryPointEnabled() {
   if (IsUSCountryCode() &&

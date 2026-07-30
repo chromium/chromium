@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -146,14 +147,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 }
 
 - (BOOL)isReaderModeActive {
-  if (!_readerModeTabHelper) {
-    return NO;
-  }
-  return _readerModeTabHelper->IsActive();
-}
-
-- (BOOL)isReaderModeAvailable {
-  return IsReaderModeAvailable();
+  return IsReaderModeActiveInWebState(_webState);
 }
 
 - (PageActionMenuContentEntryPoint*)geminiEntryPoint {

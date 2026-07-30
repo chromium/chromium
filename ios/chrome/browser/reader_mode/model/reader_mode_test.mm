@@ -65,7 +65,6 @@ ReaderModeTest::ReaderModeTest()
 ReaderModeTest::~ReaderModeTest() = default;
 
 void ReaderModeTest::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(kEnableReaderModeInUS);
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       OptimizationGuideServiceFactory::GetInstance(),
