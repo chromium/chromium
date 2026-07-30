@@ -229,7 +229,7 @@ bool IsFormatEnabled(media::VideoPixelFormat fmt) {
 }
 
 BASE_FEATURE(kUseSharedImageFormatForWebcodecsVideoFrame,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
                              public Supplement<ExecutionContext>,
