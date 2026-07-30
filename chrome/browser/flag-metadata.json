@@ -3192,7 +3192,7 @@
       "skavuluru@google.com",
       "twellington@chromium.org"
     ],
-    "expiry_milestone": 152
+    "expiry_milestone": 158
   },
   {
     "name": "enable-android-side-panel-dev-feature",
@@ -3203,7 +3203,7 @@
       "skavuluru@google.com",
       "twellington@chromium.org"
     ],
-    "expiry_milestone": 152
+    "expiry_milestone": 158
   },
   {
     "name": "enable-android-side-panel-logs",
