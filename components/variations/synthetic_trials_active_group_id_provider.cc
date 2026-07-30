@@ -50,6 +50,7 @@ void SyntheticTrialsActiveGroupIdProvider::OnSyntheticTrialsChanged(
   {
     base::AutoLock scoped_lock(lock_);
     group_ids_.clear();
+    group_ids_.reserve(groups.size());
     for (const auto& group : groups) {
       group_ids_.push_back(group.id());
     }
