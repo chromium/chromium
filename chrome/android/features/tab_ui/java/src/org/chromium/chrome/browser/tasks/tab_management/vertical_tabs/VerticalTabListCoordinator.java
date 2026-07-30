@@ -897,7 +897,7 @@ public class VerticalTabListCoordinator {
 
                         itemTouchHelper.setExternalDragItem(viewHolder);
                         dragHandler.setDragHandlerDelegate(
-                                createDragHandlerDelegate(itemTouchHelper));
+                                createDragHandlerDelegate(itemTouchHelper, model));
 
                         mLastDraggedGroupId = tabGroupId;
 
@@ -940,7 +940,8 @@ public class VerticalTabListCoordinator {
                     }
 
                     itemTouchHelper.setExternalDragItem(viewHolder);
-                    dragHandler.setDragHandlerDelegate(createDragHandlerDelegate(itemTouchHelper));
+                    dragHandler.setDragHandlerDelegate(
+                            createDragHandlerDelegate(itemTouchHelper, model));
 
                     mLastDraggedGroupId = null;
                     View gridCardView = buildGridCardDragShadow(activity, model);
@@ -982,7 +983,7 @@ public class VerticalTabListCoordinator {
     }
 
     private TabSwitcherDragHandler.DragHandlerDelegate createDragHandlerDelegate(
-            ItemTouchHelper2 itemTouchHelper) {
+            ItemTouchHelper2 itemTouchHelper, @Nullable PropertyModel model) {
         return new TabSwitcherDragHandler.DragHandlerDelegate() {
             @Override
             public boolean handleDragStart(float xPx, float yPx) {
@@ -992,6 +993,7 @@ public class VerticalTabListCoordinator {
                 // outside the bounds of the RecyclerView, we will never receive an
                 // ACTION_DRAG_EXITED event. Therefore, we must explicitly trigger the collapse of
                 // the drag gap right away.
+                moveDraggedPinnedTabToEndIfNeeded(model);
                 itemTouchHelper.clearExternalDragItemVisibility();
                 return true;
             }
@@ -1010,6 +1012,7 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragExit() {
+                moveDraggedPinnedTabToEndIfNeeded(model);
                 itemTouchHelper.clearExternalDragItemVisibility();
                 return true;
             }
@@ -1044,6 +1047,27 @@ public class VerticalTabListCoordinator {
                 return itemTouchHelper.isDragInProcess();
             }
         };
+    }
+
+    private void moveDraggedPinnedTabToEndIfNeeded(@Nullable PropertyModel model) {
+        if (model == null || !TabProperties.isPinnedTab(model)) return;
+
+        int draggedTabId = model.get(TabProperties.TAB_ID);
+        if (draggedTabId == Tab.INVALID_TAB_ID) return;
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        if (tabModel == null) return;
+
+        Tab tab = tabModel.getTabById(draggedTabId);
+        if (tab == null) return;
+
+        int numPinned = tabModel.getPinnedTabsCount();
+        if (numPinned <= 1) return;
+
+        int currentIndex = tabModel.indexOf(tab);
+        int lastPinnedIndex = numPinned - 1;
+        if (currentIndex != TabModel.INVALID_TAB_INDEX && currentIndex < lastPinnedIndex) {
+            tabModel.moveTab(draggedTabId, lastPinnedIndex);
+        }
     }
 
     /** Returns the grid column span count for the Left Rail based on measured width. */
