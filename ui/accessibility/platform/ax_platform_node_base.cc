@@ -1981,6 +1981,153 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
   return AXNodePosition::CreateNullPosition();
 }
 
+AXPlatformNodeBase::TextSelectionResult AXPlatformNodeBase::GetTextSelection(
+    TextSelection* selection) {
+  DCHECK(selection);
+
+  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
+
+  AXNodeID anchor_id = unignored_selection.anchor_object_id;
+  if (unignored_selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
+    // This indicates there is no selection.
+    return TextSelectionResult::kNoSelection;
+  }
+
+  auto* anchor_node =
+      static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(anchor_id));
+  if (!anchor_node) {
+    return TextSelectionResult::kFailure;
+  }
+
+  // IAccessibleTextSelectionContainer::get_selections requires selections to
+  // be cropped to the subtree on which the method is called. If an endpoint is
+  // inside this object, convert it to a hypertext offset within the endpoint
+  // object. Otherwise, crop it to this object. Callers implementing other
+  // platform APIs, including ATK/AT-SPI Document text selections, must decide
+  // whether this IA2 subtree-cropping behavior is appropriate before using
+  // this helper. `AXPlatformNodeBase::GetHypertextOffsetFromEndpoint` handles
+  // an endpoint outside this object by returning either 0 or the hypertext
+  // length; see the related comment in that method's declaration.
+
+  // TODO(accessibility): IA2 also requires no selection to be returned when
+  // the physical selection is entirely outside this subtree. The current
+  // implementation instead crops both endpoints to the same subtree boundary
+  // and returns a collapsed selection.
+
+  int anchor_offset = unignored_selection.anchor_offset;
+  if (anchor_node->IsDescendantOf(this)) {
+    anchor_offset =
+        anchor_node->GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
+  } else {
+    anchor_offset = GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
+    anchor_node = this;
+  }
+  DCHECK_GE(anchor_offset, 0)
+      << "This value is unexpected here, since we have already determined in "
+         "this method that anchor_object is in the accessibility tree.";
+
+  AXNodeID focus_id = unignored_selection.focus_object_id;
+  auto* focus_node =
+      static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(focus_id));
+  if (!focus_node) {
+    return TextSelectionResult::kFailure;
+  }
+
+  int focus_offset = unignored_selection.focus_offset;
+  if (focus_node->IsDescendantOf(this)) {
+    focus_offset =
+        focus_node->GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
+  } else {
+    focus_offset = GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
+    focus_node = this;
+  }
+  DCHECK_GE(focus_offset, 0)
+      << "This value is unexpected here, since we have already determined in "
+         "this method that focus_object is in the accessibility tree.";
+
+  if (unignored_selection.is_backward) {
+    selection->start_object = focus_node;
+    selection->start_offset = focus_offset;
+    selection->end_object = anchor_node;
+    selection->end_offset = anchor_offset;
+    selection->start_is_active = true;
+  } else {
+    selection->start_object = anchor_node;
+    selection->start_offset = anchor_offset;
+    selection->end_object = focus_node;
+    selection->end_offset = focus_offset;
+    selection->start_is_active = false;
+  }
+
+  return TextSelectionResult::kSuccess;
+}
+
+AXPlatformNodeBase::TextSelectionResult AXPlatformNodeBase::SetTextSelection(
+    const TextSelection& selection) {
+  // TODO(crbug.com/324445642): Both IA2 and AT-SPI require the endpoint objects
+  // to be descendants of the object on which the operation is called. This
+  // helper preserves the existing Windows behavior, which does not validate
+  // that requirement. Resolve this before using the helper for ATK/AT-SPI.
+  AXPosition start_position =
+      selection.start_object->HypertextOffsetToEndpoint(selection.start_offset)
+          ->AsDomSelectionPosition();
+  AXPosition end_position =
+      selection.end_object->HypertextOffsetToEndpoint(selection.end_offset)
+          ->AsDomSelectionPosition();
+  if (start_position->IsNullPosition() || end_position->IsNullPosition()) {
+    return TextSelectionResult::kInvalidSelection;
+  }
+
+  AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetSelection;
+  action_data.target_tree_id = start_position->tree_id();
+  int start_offset = start_position->IsTextPosition()
+                         ? start_position->text_offset()
+                         : start_position->child_index();
+  int end_offset = end_position->IsTextPosition() ? end_position->text_offset()
+                                                  : end_position->child_index();
+  if (selection.start_is_active) {
+    action_data.focus_node_id = start_position->anchor_id();
+    action_data.focus_offset = start_offset;
+    action_data.anchor_node_id = end_position->anchor_id();
+    action_data.anchor_offset = end_offset;
+  } else {
+    action_data.anchor_node_id = start_position->anchor_id();
+    action_data.anchor_offset = start_offset;
+    action_data.focus_node_id = end_position->anchor_id();
+    action_data.focus_offset = end_offset;
+  }
+
+  return GetDelegate()->AccessibilityPerformAction(action_data)
+             ? TextSelectionResult::kSuccess
+             : TextSelectionResult::kFailure;
+}
+
+AXPlatformNodeBase::TextSelectionResult
+AXPlatformNodeBase::ClearTextSelection() {
+  // Clear the selection by using an anchor offset of
+  // kNoSelectionOffset. If it's a plain textfield, this will
+  // collapse the selection to the caret, as plain textfields always need to
+  // have some selection.
+  AXActionData clear_action;
+  clear_action.action = ax::mojom::Action::kSetSelection;
+  clear_action.target_tree_id = GetDelegate()->GetTreeData().tree_id;
+  clear_action.anchor_node_id = GetData().id;
+  clear_action.focus_node_id = GetData().id;
+  if (GetData().IsAtomicTextField()) {
+    int caret_offset = GetCaretOffset();
+    clear_action.anchor_offset = caret_offset;
+    clear_action.focus_offset = caret_offset;
+  } else {
+    clear_action.anchor_offset = ax::mojom::kNoSelectionOffset;
+    clear_action.focus_offset = ax::mojom::kNoSelectionOffset;
+  }
+
+  return GetDelegate()->AccessibilityPerformAction(clear_action)
+             ? TextSelectionResult::kSuccess
+             : TextSelectionResult::kFailure;
+}
+
 int AXPlatformNodeBase::GetSelectionAnchor(const AXSelection* selection) {
   DCHECK(selection);
   AXNodeID anchor_id = selection->anchor_object_id;

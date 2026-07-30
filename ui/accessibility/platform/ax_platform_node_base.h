@@ -546,6 +546,34 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // embedded element character.
   void UpdateComputedHypertext() const;
 
+  enum class TextSelectionResult {
+    kSuccess,
+    kNoSelection,
+    // IA2 maps an invalid selection to E_INVALIDARG and an operation failure
+    // to S_FALSE. APIs with a boolean result may map both to false.
+    kInvalidSelection,
+    kFailure,
+  };
+
+  // A single text selection whose endpoints are expressed as offsets in the
+  // hypertext of their respective objects. The start and end are in logical
+  // tree order; `start_is_active` preserves the direction of the selection.
+  struct TextSelection {
+    raw_ptr<AXPlatformNodeBase> start_object = nullptr;
+    int start_offset = 0;
+    raw_ptr<AXPlatformNodeBase> end_object = nullptr;
+    int end_offset = 0;
+    bool start_is_active = false;
+  };
+
+  // Gets, sets, or clears a text selection spanning descendant objects. These
+  // helpers use Chromium's UTF-16 hypertext offsets. Platform adapters are
+  // responsible for converting offsets and object references to and from
+  // their native representations.
+  TextSelectionResult GetTextSelection(TextSelection* selection);
+  TextSelectionResult SetTextSelection(const TextSelection& selection);
+  TextSelectionResult ClearTextSelection();
+
   // Selection helper functions.
   // The following functions retrieve the endpoints of the current selection.
   // First they check for a local selection found on the current control, e.g.
@@ -629,6 +657,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
       AXPlatformNodeDelegate& delegate);
 
   FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeTest, HypertextOffsetFromEndpoint);
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeTest, GetTextSelection);
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeTest, SetTextSelection);
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeTest, ClearTextSelection);
 
   // Returns true if the index represents a text character.
   bool IsText(const std::u16string& text,

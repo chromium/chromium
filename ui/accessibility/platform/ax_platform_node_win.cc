@@ -4780,82 +4780,37 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
 
   COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
 
-  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
-
-  AXNodeID anchor_id = unignored_selection.anchor_object_id;
-  if (unignored_selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
-    // This indicates there is no selection.
+  TextSelection selection;
+  TextSelectionResult result = GetTextSelection(&selection);
+  if (result == TextSelectionResult::kNoSelection) {
     return S_FALSE;
   }
-  AXPlatformNodeWin* anchor_node =
-      static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(anchor_id));
-  if (!anchor_node) {
+  if (result != TextSelectionResult::kSuccess) {
     return E_FAIL;
   }
 
-  // If the selection endpoint is inside this object and therefore, at least
-  // from this side, we do not need to crop the selection. Simply convert
-  // selection anchor/focus offset to a hypertext offset within anchor/focus
-  // object. Otherwise per the IA2 Spec, we need to crop the selection to be
-  // within this object. `AXPlatformNodeBase::GetHypertextOffsetFromEndpoint`
-  // can correctly handle endpoint offsets that are outside this object by
-  // returning either 0 or hypertext length; see the related comment in
-  // the method's declaration.
+  auto* start_node =
+      static_cast<AXPlatformNodeWin*>(selection.start_object.get());
+  auto* end_node = static_cast<AXPlatformNodeWin*>(selection.end_object.get());
 
-  int anchor_offset = unignored_selection.anchor_offset;
-  if (anchor_node->IsDescendantOf(this)) {
-    anchor_offset =
-        anchor_node->GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
-  } else {
-    anchor_offset = GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
-    anchor_node = this;
+  Microsoft::WRL::ComPtr<IAccessibleText> start_text_node;
+  if (FAILED(start_node->QueryInterface(IID_PPV_ARGS(&start_text_node)))) {
+    return E_FAIL;
   }
-  DCHECK_GE(anchor_offset, 0)
-      << "This value is unexpected here, since we have already determined in "
-         "this method that anchor_object is in the accessibility tree.";
 
-  AXNodeID focus_id = unignored_selection.focus_object_id;
-  AXPlatformNodeWin* focus_node =
-      static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(focus_id));
-  if (!focus_node)
+  Microsoft::WRL::ComPtr<IAccessibleText> end_text_node;
+  if (FAILED(end_node->QueryInterface(IID_PPV_ARGS(&end_text_node)))) {
     return E_FAIL;
-
-  int focus_offset = unignored_selection.focus_offset;
-  if (focus_node->IsDescendantOf(this)) {
-    focus_offset =
-        focus_node->GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
-  } else {
-    focus_offset = GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
-    focus_node = this;
   }
-  DCHECK_GE(focus_offset, 0)
-      << "This value is unexpected here, since we have already determined in "
-         "this method that focus_object is in the accessibility tree.";
-
-  Microsoft::WRL::ComPtr<IAccessibleText> anchor_text_node;
-  if (FAILED(anchor_node->QueryInterface(IID_PPV_ARGS(&anchor_text_node))))
-    return E_FAIL;
-
-  Microsoft::WRL::ComPtr<IAccessibleText> focus_text_node;
-  if (FAILED(focus_node->QueryInterface(IID_PPV_ARGS(&focus_text_node))))
-    return E_FAIL;
 
   *selections = reinterpret_cast<IA2TextSelection*>(
       CoTaskMemAlloc(sizeof(IA2TextSelection)));
 
-  if (unignored_selection.is_backward) {
-    selections[0]->startObj = focus_text_node.Detach();
-    selections[0]->startOffset = focus_offset;
-    selections[0]->endObj = anchor_text_node.Detach();
-    selections[0]->endOffset = anchor_offset;
-    selections[0]->startIsActive = true;
-  } else {
-    selections[0]->startObj = anchor_text_node.Detach();
-    selections[0]->startOffset = anchor_offset;
-    selections[0]->endObj = focus_text_node.Detach();
-    selections[0]->endOffset = focus_offset;
-    selections[0]->startIsActive = false;
-  }
+  selections[0]->startObj = start_text_node.Detach();
+  selections[0]->startOffset = selection.start_offset;
+  selections[0]->endObj = end_text_node.Detach();
+  selections[0]->endOffset = selection.end_offset;
+  selections[0]->startIsActive = selection.start_is_active;
 
   *nSelections = 1;
   return S_OK;
@@ -4869,25 +4824,8 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
   COM_OBJECT_VALIDATE();
 
   if (nSelections == 0) {
-    // Clear the selection by using an anchor offset of
-    // kNoSelectionOffset. If it's a plain textfield, this will
-    // collapse the selection to the caret, as plain textfields always need to
-    // have some selection.
-    AXActionData clear_action;
-    clear_action.action = ax::mojom::Action::kSetSelection;
-    clear_action.target_tree_id = GetDelegate()->GetTreeData().tree_id;
-    clear_action.anchor_node_id = GetData().id;
-    clear_action.focus_node_id = GetData().id;
-    if (GetData().IsAtomicTextField()) {
-      int caret_offset = GetCaretOffset();
-      clear_action.anchor_offset = caret_offset;
-      clear_action.focus_offset = caret_offset;
-    } else {
-      clear_action.anchor_offset = ax::mojom::kNoSelectionOffset;
-      clear_action.focus_offset = ax::mojom::kNoSelectionOffset;
-    }
-    return GetDelegate()->AccessibilityPerformAction(clear_action) ? S_OK
-                                                                   : S_FALSE;
+    return ClearTextSelection() == TextSelectionResult::kSuccess ? S_OK
+                                                                 : S_FALSE;
   }
 
   // Chromium does not currently support more than one selection.
@@ -4905,45 +4843,27 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
   if (FAILED(selections->endObj->QueryInterface(IID_PPV_ARGS(&end_obj))))
     return E_INVALIDARG;
 
-  const auto* start_node = static_cast<AXPlatformNodeWin*>(
+  auto* start_node = static_cast<AXPlatformNodeWin*>(
       FromNativeViewAccessible(start_obj.Get()));
-  const auto* end_node =
+  auto* end_node =
       static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(end_obj.Get()));
   if (!start_node || !end_node)
     return E_INVALIDARG;
 
-  AXPosition start_position =
-      start_node->HypertextOffsetToEndpoint(selections->startOffset)
-          ->AsDomSelectionPosition();
-  AXPosition end_position =
-      end_node->HypertextOffsetToEndpoint(selections->endOffset)
-          ->AsDomSelectionPosition();
-  if (start_position->IsNullPosition() || end_position->IsNullPosition()) {
+  TextSelection selection = {
+      .start_object = start_node,
+      .start_offset = selections->startOffset,
+      .end_object = end_node,
+      .end_offset = selections->endOffset,
+      .start_is_active = static_cast<bool>(selections->startIsActive),
+  };
+  TextSelectionResult result = SetTextSelection(selection);
+  if (result == TextSelectionResult::kSuccess) {
+    return S_OK;
+  }
+  if (result == TextSelectionResult::kInvalidSelection) {
     return E_INVALIDARG;
   }
-
-  AXActionData action_data;
-  action_data.action = ax::mojom::Action::kSetSelection;
-  action_data.target_tree_id = start_position->tree_id();
-  int start_offset = start_position->IsTextPosition()
-                         ? start_position->text_offset()
-                         : start_position->child_index();
-  int end_offset = end_position->IsTextPosition() ? end_position->text_offset()
-                                                  : end_position->child_index();
-  if (selections->startIsActive) {
-    action_data.focus_node_id = start_position->anchor_id();
-    action_data.focus_offset = start_offset;
-    action_data.anchor_node_id = end_position->anchor_id();
-    action_data.anchor_offset = end_offset;
-  } else {
-    action_data.anchor_node_id = start_position->anchor_id();
-    action_data.anchor_offset = start_offset;
-    action_data.focus_node_id = end_position->anchor_id();
-    action_data.focus_offset = end_offset;
-  }
-
-  if (GetDelegate()->AccessibilityPerformAction(action_data))
-    return S_OK;
 
   return S_FALSE;
 }
