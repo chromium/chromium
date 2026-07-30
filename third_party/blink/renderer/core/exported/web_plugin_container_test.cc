@@ -1293,7 +1293,9 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTest) {
 
   auto* plugin_container_impl = To<WebPluginContainerImpl>(
       GetWebPluginContainer(web_view, WebString("translated-plugin")));
-  gfx::Rect rect(plugin_container_impl->GetElement().BoundsInWidget().size());
+  plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
+
+  gfx::Rect rect = plugin_container_impl->GetElement().BoundsInWidget();
   EXPECT_TRUE(plugin_container_impl->IsRectTopmost(rect));
 
   // Cause the plugin's frame to be detached.
@@ -1314,14 +1316,14 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTestWithOddAndEvenDimensions) {
 
   auto* even_plugin_container_impl = To<WebPluginContainerImpl>(
       GetWebPluginContainer(web_view, WebString("translated-plugin")));
-  gfx::Rect even_rect(
-      even_plugin_container_impl->GetElement().BoundsInWidget().size());
+  even_plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
+  auto even_rect = even_plugin_container_impl->GetElement().BoundsInWidget();
   EXPECT_TRUE(even_plugin_container_impl->IsRectTopmost(even_rect));
 
   auto* odd_plugin_container_impl = To<WebPluginContainerImpl>(
       GetWebPluginContainer(web_view, WebString("odd-dimensions-plugin")));
-  gfx::Rect odd_rect(
-      odd_plugin_container_impl->GetElement().BoundsInWidget().size());
+  odd_plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
+  auto odd_rect = odd_plugin_container_impl->GetElement().BoundsInWidget();
   EXPECT_TRUE(odd_plugin_container_impl->IsRectTopmost(odd_rect));
 }
 
@@ -1484,7 +1486,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForSubpixelPositionedPlugin) {
 }
 
 TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
-  static constexpr gfx::Rect kTopmostRect(0, 0, 40, 40);
+  static constexpr gfx::Rect kTopmostRect(10, 10, 40, 40);
 
   // Plugin that checks isRectTopmost in destroy().
   class TopmostPlugin : public FakeWebPlugin {
@@ -1514,6 +1516,8 @@ TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
 
   auto* plugin_container_impl = To<WebPluginContainerImpl>(
       GetWebPluginContainer(web_view, WebString("translated-plugin")));
+  plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
+
   EXPECT_TRUE(plugin_container_impl->IsRectTopmost(kTopmostRect));
 
   TopmostPlugin* test_plugin =
