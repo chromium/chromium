@@ -137,6 +137,26 @@ TEST_F(PrivateInsightsServiceTest,
   histogram_tester.ExpectUniqueSample(kContributedTaskCountHistogram, 1, 2);
 }
 
+TEST_F(PrivateInsightsServiceTest, ShutdownLogsHistogram) {
+  base::HistogramTester histogram_tester;
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+
+  events::ContextualCueLogEvent event1;
+  event1.set_cue_id("cue_1");
+  service.LogContextualCueEvent(event1);
+
+  events::ContextualCueLogEvent event2;
+  event2.set_cue_id("cue_2");
+  service.LogContextualCueEvent(event2);
+
+  service.Shutdown();
+
+  histogram_tester.ExpectUniqueSample(
+      kContextualCueEventsLoggingOnShutdownCountHistogram, 2, 1);
+}
+
 TEST_F(PrivateInsightsServiceTest, MetricsChoiceCoupling) {
 
   TestingPrefServiceSimple local_state;
