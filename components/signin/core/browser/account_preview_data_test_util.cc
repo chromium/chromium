@@ -61,7 +61,7 @@ void SimulateSuccessfulStatsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const DataTypeCounts& counts) {
   EXPECT_TRUE(test_url_loader_factory->SimulateResponseForPendingRequest(
-      kTestStatsUrl, FormatStatsJson(counts)));
+      GetTestStatsUrl(), FormatStatsJson(counts)));
 }
 
 void SimulateSuccessfulPreviewsFetch(
@@ -76,7 +76,8 @@ void SimulateSuccessfulPreviewsFetch(
 void MockSuccessfulStatsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const DataTypeCounts& counts) {
-  test_url_loader_factory->AddResponse(kTestStatsUrl, FormatStatsJson(counts));
+  test_url_loader_factory->AddResponse(GetTestStatsUrl(),
+                                       FormatStatsJson(counts));
 }
 
 void MockSuccessfulPreviewsFetch(
@@ -97,8 +98,9 @@ void MockFailedStatsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     net::Error error_code) {
   network::URLLoaderCompletionStatus status(error_code);
-  test_url_loader_factory->AddResponse(
-      GURL(kTestStatsUrl), network::mojom::URLResponseHead::New(), "", status);
+  test_url_loader_factory->AddResponse(GURL(GetTestStatsUrl()),
+                                       network::mojom::URLResponseHead::New(),
+                                       "", status);
 }
 
 void MockFailedPreviewsFetch(
