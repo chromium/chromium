@@ -39,6 +39,7 @@ class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
 
 namespace glic {
+class ContextualCueingHelper;
 class GlicInstanceHelper;
 class GlicSidePanelCoordinator;
 }  // namespace glic
@@ -101,6 +102,7 @@ class TabFeatures {
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_tab_controller_;
 
+  std::unique_ptr<glic::ContextualCueingHelper> contextual_cueing_helper_;
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
   std::unique_ptr<actor::ui::ActorUiTabControllerInterface>

@@ -130,6 +130,7 @@ class ExtensionSidePanelManager;
 }  // namespace extensions
 
 namespace glic {
+class ContextualCueingHelper;
 class GlicCueTabState;
 class GlicInstanceHelper;
 class GlicTabIndicatorHelper;
@@ -532,6 +533,9 @@ class TabFeatures {
       glic_selection_overlay_controller_;
 
   std::unique_ptr<glic::GlicPageFeaturesManager> glic_page_features_manager_;
+
+  // Observes page loads to decide when to offer glic contextual cueing.
+  std::unique_ptr<glic::ContextualCueingHelper> contextual_cueing_helper_;
 
   // Per-tab eligibility state for the glic contextual cue.
   std::unique_ptr<glic::GlicCueTabState> glic_cue_tab_state_;

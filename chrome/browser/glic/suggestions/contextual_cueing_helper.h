@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_HELPER_H_
 #define CHROME_BROWSER_GLIC_SUGGESTIONS_CONTEXTUAL_CUEING_HELPER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
@@ -15,9 +16,13 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class OptimizationGuideKeyedService;
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace glic {
 class GlicNudgeController;
@@ -29,13 +34,20 @@ class ContextualCueingService;
 class ScopedNudgeDecisionRecorder;
 struct CueingResult;
 
-class ContextualCueingHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<ContextualCueingHelper> {
+class ContextualCueingHelper : public content::WebContentsObserver {
  public:
-  // Creates ContextualCueingHelper and attaches it the `web_contents` if
-  // contextual cueing is enabled.
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  DECLARE_USER_DATA(ContextualCueingHelper);
+
+  // Creates a ContextualCueingHelper for `tab` if contextual cueing is
+  // enabled. The returned helper is owned by the tab's TabFeatures. `tab`
+  // must be non-null and must outlive the returned helper (the helper
+  // registers itself on the tab's UnownedUserDataHost).
+  static std::unique_ptr<ContextualCueingHelper> MaybeCreate(
+      tabs::TabInterface* tab);
+
+  // Returns the helper owned by `tab`'s TabFeatures, or nullptr if it was
+  // not created.
+  static ContextualCueingHelper* From(tabs::TabInterface* tab);
 
   ContextualCueingHelper(const ContextualCueingHelper&) = delete;
   ContextualCueingHelper& operator=(const ContextualCueingHelper&) = delete;
@@ -66,7 +78,8 @@ class ContextualCueingHelper
   glic::GlicNudgeController* GetGlicNudgeController();
 
  private:
-  ContextualCueingHelper(content::WebContents* contents,
+  // All pointers must be non-null and must outlive `this`.
+  ContextualCueingHelper(tabs::TabInterface* tab,
                          OptimizationGuideKeyedService* ogks,
                          ContextualCueingService* ccs);
 
@@ -107,10 +120,9 @@ class ContextualCueingHelper
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<ContextualCueingService> contextual_cueing_service_ = nullptr;
 
-  base::WeakPtrFactory<ContextualCueingHelper> weak_ptr_factory_{this};
+  ui::ScopedUnownedUserData<ContextualCueingHelper> scoped_unowned_user_data_;
 
-  friend WebContentsUserData<ContextualCueingHelper>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<ContextualCueingHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

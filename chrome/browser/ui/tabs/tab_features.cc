@@ -327,7 +327,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           std::make_unique<RollBackModeBInfoBarController>(tab.GetContents());
     }
 
-    glic::ContextualCueingHelper::MaybeCreateForWebContents(tab.GetContents());
+    contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(&tab);
     glic_cue_tab_state_ = std::make_unique<glic::GlicCueTabState>(tab);
 
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
@@ -335,7 +335,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       saved_tab_group_web_contents_listener_ =
           std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
               tab_group_sync_service, &tab);
-
     }
 
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {

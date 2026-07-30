@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -68,6 +69,8 @@
 
 namespace glic {
 
+DEFINE_USER_DATA(ContextualCueingHelper);
+
 ContextualCueingHelper::AutoOpenResult
 ContextualCueingHelper::RecordAutoOpenResult(GlicAutoOpenResult result) {
   base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result", result);
@@ -110,13 +113,13 @@ class ScopedNudgeDecisionRecorder {
 };
 
 ContextualCueingHelper::ContextualCueingHelper(
-    content::WebContents* web_contents,
+    tabs::TabInterface* tab,
     OptimizationGuideKeyedService* ogks,
     ContextualCueingService* ccs)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
+    : content::WebContentsObserver(tab->GetContents()),
       optimization_guide_keyed_service_(ogks),
-      contextual_cueing_service_(ccs) {
+      contextual_cueing_service_(ccs),
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   if (IsContextualCueingEnabled()) {
     // LINT.IfChange(OptType)
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
@@ -552,35 +555,37 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
 }
 
 // static
-void ContextualCueingHelper::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
+std::unique_ptr<ContextualCueingHelper> ContextualCueingHelper::MaybeCreate(
+    tabs::TabInterface* tab) {
   if (!IsContextualCueingEnabled() && !IsZeroStateSuggestionsEnabled()) {
-    return;
+    return nullptr;
   }
 
   Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(tab->GetContents()->GetBrowserContext());
   if (!glic::GlicEnabling::IsProfileEligible(profile)) {
-    return;
+    return nullptr;
   }
 
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!optimization_guide_keyed_service) {
-    return;
+    return nullptr;
   }
 
   auto* contextual_cueing_service =
       ContextualCueingServiceFactory::GetForProfile(profile);
   if (!contextual_cueing_service) {
-    return;
+    return nullptr;
   }
 
-  ContextualCueingHelper::CreateForWebContents(web_contents,
-                                               optimization_guide_keyed_service,
-                                               contextual_cueing_service);
+  return base::WrapUnique(new ContextualCueingHelper(
+      tab, optimization_guide_keyed_service, contextual_cueing_service));
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextualCueingHelper);
+// static
+ContextualCueingHelper* ContextualCueingHelper::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 }  // namespace glic

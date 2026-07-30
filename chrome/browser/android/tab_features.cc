@@ -140,7 +140,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
             .CreateInstance<glic::GlicSidePanelCoordinatorAndroid>(*tab, tab);
   }
 
-  glic::ContextualCueingHelper::MaybeCreateForWebContents(web_contents);
+  contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(tab);
 }
 
 TabFeatures::~TabFeatures() = default;

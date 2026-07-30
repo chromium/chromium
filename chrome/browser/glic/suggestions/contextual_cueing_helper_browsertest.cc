@@ -105,9 +105,8 @@ class ContextualCueingHelperBaseBrowserTest : public glic::GlicBrowserTest {
   }
 
   glic::GlicNudgeController* glic_nudge_controller() {
-    content::WebContents* web_contents =
-        GetTabListInterface()->GetActiveTab()->GetContents();
-    auto* helper = glic::ContextualCueingHelper::FromWebContents(web_contents);
+    tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+    auto* helper = glic::ContextualCueingHelper::From(tab);
     CHECK(helper);
     return helper->GetGlicNudgeController();
   }
