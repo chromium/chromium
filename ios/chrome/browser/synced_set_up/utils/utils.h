@@ -9,6 +9,8 @@ class PrefService;
 @class ProfileState;
 @class SceneState;
 
+extern const int kSyncedSetUpImpressionLimit;
+
 // Returns the active, non-incognito `SceneState` if preconditions for
 // triggering the Synced Set Up flow are met based on `profile_state`, and `nil`
 // otherwise.

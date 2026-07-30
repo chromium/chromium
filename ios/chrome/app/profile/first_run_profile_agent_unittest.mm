@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
+#import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -230,7 +231,7 @@ TEST_F(FirstRunProfileAgentTest, SyncedSetUpDoesNotTriggerInIncognito) {
       prefs::kSyncedSetUpImpressionCount, 0);
   ASSERT_TRUE(pref_service->FindPreference(prefs::kSyncedSetUpImpressionCount));
   ASSERT_LT(pref_service->GetInteger(prefs::kSyncedSetUpImpressionCount),
-            GetSyncedSetUpImpressionLimit());
+            kSyncedSetUpImpressionLimit);
 
   TestProfileIOS::Builder builder;
   builder.SetPrefService(std::move(pref_service));

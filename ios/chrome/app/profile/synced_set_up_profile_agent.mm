@@ -130,8 +130,6 @@ using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
                                        tracker:(sync_preferences::
                                                     CrossDevicePrefTracker*)
                                                    tracker {
-  CHECK(IsSyncedSetUpEnabled());
-
   if (_activationAlreadyHandled) {
     return;
   }

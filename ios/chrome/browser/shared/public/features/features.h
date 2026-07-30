@@ -647,21 +647,6 @@ enum class TipsNotificationsAlternativeStringVersion {
 TipsNotificationsAlternativeStringVersion
 GetTipsNotificationsAlternativeStringVersion();
 
-// Feature for applying cross device settings through the Synced Set Up
-// experience.
-BASE_DECLARE_FEATURE(kIOSSyncedSetUp);
-
-// Returns true if `kIOSSyncedSetUp` is enabled.
-bool IsSyncedSetUpEnabled();
-
-// Name of the Finch parameter controlling the maximum number of impressions
-// allowed for the Synced Set Up promo.
-extern const char kSyncedSetUpImpressionLimit[];
-
-// Returns the maximum number of impressions allowed for the Synced Set Up
-// promo, as specified by the `kSyncedSetUpImpressionLimit` Finch parameter.
-int GetSyncedSetUpImpressionLimit();
-
 // Enables the DisableKeyboardAccessory feature.
 BASE_DECLARE_FEATURE(kDisableKeyboardAccessory);
 

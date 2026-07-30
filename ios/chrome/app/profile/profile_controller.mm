@@ -656,9 +656,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
   }
 
-  if (IsSyncedSetUpEnabled()) {
-    [_state addAgent:[[SyncedSetUpProfileAgent alloc] init]];
-  }
+  [_state addAgent:[[SyncedSetUpProfileAgent alloc] init]];
 
   if (IsIOSBackendPromoServiceIntegrationEnabled()) {
     [_state addAgent:[[BackendPromoProfileAgent alloc] init]];

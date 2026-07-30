@@ -6355,15 +6355,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "ios-synced-set-up",
-    "owners": [
-      "bwwilliams@google.com",
-      "ericekey@google.com",
-      "bling-pandamonium@google.com"
-      ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "ios-tab-reminders",
     "owners": ["bwwilliams@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 151

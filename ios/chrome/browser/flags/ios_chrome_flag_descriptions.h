@@ -1142,11 +1142,6 @@ inline constexpr char kIOSSoftLockName[] = "Soft Lock on iOS";
 inline constexpr char kIOSSoftLockDescription[] =
     "Enables experimental Soft Lock on iOS.";
 
-inline constexpr char kIOSSyncedSetUpName[] = "Synced Set Up";
-inline constexpr char kIOSSyncedSetUpDescription[] =
-    "Enables the Synced Set Up experience, allowing the user to locally apply "
-    "settings from their synced devices.";
-
 inline constexpr char kIOSTabRemindersName[] = "Tab Reminders";
 inline constexpr char kIOSTabRemindersDescription[] =
     "Enables the Tab Reminder notifications feature on iOS.";

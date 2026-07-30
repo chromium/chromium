@@ -735,26 +735,6 @@ GetTipsNotificationsAlternativeStringVersion() {
       kTipsNotificationsAlternativeStringVersionFeatureParam.Get());
 }
 
-BASE_FEATURE(kIOSSyncedSetUp, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsSyncedSetUpEnabled() {
-  return base::FeatureList::IsEnabled(
-             sync_preferences::features::kEnableCrossDevicePrefTracker) &&
-         base::FeatureList::IsEnabled(kIOSSyncedSetUp);
-}
-
-const char kSyncedSetUpImpressionLimit[] = "SyncedSetUpImpressionLimit";
-
-BASE_FEATURE_PARAM(int,
-                   kSyncedSetUpImpressionLimitFeatureParam,
-                   &kIOSSyncedSetUp,
-                   kSyncedSetUpImpressionLimit,
-                   1);
-
-int GetSyncedSetUpImpressionLimit() {
-  return kSyncedSetUpImpressionLimitFeatureParam.Get();
-}
-
 BASE_FEATURE(kDisableKeyboardAccessory, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kDisableKeyboardAccessoryParam[] = "kDisableKeyboardAccessoryParam";

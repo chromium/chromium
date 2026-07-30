@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+const int kSyncedSetUpImpressionLimit = 1;
+
 SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state) {
   if (!profile_state) {
     return nil;
@@ -61,5 +63,5 @@ bool CanShowSyncedSetUp(const PrefService* profile_pref_service) {
   int impression_count =
       profile_pref_service->GetInteger(prefs::kSyncedSetUpImpressionCount);
 
-  return impression_count < GetSyncedSetUpImpressionLimit();
+  return impression_count < kSyncedSetUpImpressionLimit;
 }
