@@ -1244,6 +1244,139 @@ TEST_F(SessionTest, InvalidRefreshInitiators) {
                   SessionError::kRefreshInitiatorInvalidHostPattern)));
 }
 
+TEST_F(SessionTest, MinimumBoundCookieLifetime_CookieList_NoCravings) {
+  auto params = CreateValidParams();
+  params.credentials.clear();
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+
+  CookieAccessResultList cookies;
+  EXPECT_EQ(session->MinimumBoundCookieLifetime(cookies),
+            base::TimeDelta::Max());
+}
+
+TEST_F(SessionTest, MinimumBoundCookieLifetime_CookieList_MissingCookie) {
+  auto params = CreateValidParams();
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+
+  CookieAccessResultList cookies;
+  EXPECT_TRUE(session->MinimumBoundCookieLifetime(cookies).is_zero());
+}
+
+TEST_F(SessionTest, MinimumBoundCookieLifetime_CookieList_SatisfiedNullExpiry) {
+  auto params = CreateValidParams();
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+
+  CookieInclusionStatus status;
+  auto cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Domain=example.test", base::Time::Now(),
+      std::nullopt, std::nullopt, CookieSourceType::kHTTP, &status);
+  ASSERT_TRUE(cookie);
+
+  CookieAccessResultList cookies;
+  cookies.emplace_back(*cookie, CookieAccessResult());
+  EXPECT_EQ(session->MinimumBoundCookieLifetime(cookies),
+            base::TimeDelta::Max());
+}
+
+TEST_F(SessionTest, MinimumBoundCookieLifetime_CookieList_SatisfiedWithExpiry) {
+  auto params = CreateValidParams();
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+
+  CookieInclusionStatus status;
+  auto cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Domain=example.test; Max-Age=500",
+      base::Time::Now(), std::nullopt, std::nullopt, CookieSourceType::kHTTP,
+      &status);
+  ASSERT_TRUE(cookie);
+
+  CookieAccessResultList cookies;
+  cookies.emplace_back(*cookie, CookieAccessResult());
+  base::TimeDelta lifetime = session->MinimumBoundCookieLifetime(cookies);
+  EXPECT_NEAR(lifetime.InSecondsF(), 500.0, 5.0);
+}
+
+TEST_F(SessionTest,
+       MinimumBoundCookieLifetime_CookieList_MultipleCravingsAndCookies) {
+  SessionParams params = CreateValidParams();
+  params.credentials = {
+      {
+          .name = "cookie1",
+          .attributes = "Secure; Domain=example.test",
+      },
+      {
+          .name = "cookie2",
+          .attributes = "Secure; Domain=example.test",
+      },
+  };
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+
+  CookieInclusionStatus status;
+  auto unmatching_cookie = CanonicalCookie::Create(
+      kTestUrl, "other_cookie=v; Secure; Domain=example.test; Max-Age=100",
+      base::Time::Now(), std::nullopt, std::nullopt, CookieSourceType::kHTTP,
+      &status);
+  auto cookie1 = CanonicalCookie::Create(
+      kTestUrl, "cookie1=v; Secure; Domain=example.test; Max-Age=500",
+      base::Time::Now(), std::nullopt, std::nullopt, CookieSourceType::kHTTP,
+      &status);
+  auto cookie2 = CanonicalCookie::Create(
+      kTestUrl, "cookie2=v; Secure; Domain=example.test; Max-Age=300",
+      base::Time::Now(), std::nullopt, std::nullopt, CookieSourceType::kHTTP,
+      &status);
+  ASSERT_TRUE(unmatching_cookie);
+  ASSERT_TRUE(cookie1);
+  ASSERT_TRUE(cookie2);
+
+  CookieAccessResultList cookies;
+  cookies.emplace_back(*unmatching_cookie, CookieAccessResult());
+  cookies.emplace_back(*cookie1, CookieAccessResult());
+  cookies.emplace_back(*cookie2, CookieAccessResult());
+
+  base::TimeDelta lifetime = session->MinimumBoundCookieLifetime(cookies);
+  EXPECT_NEAR(lifetime.InSecondsF(), 300.0, 5.0);
+}
+
+TEST_F(SessionTest,
+       MinimumBoundCookieLifetime_CookieList_MultipleCookiesSameName) {
+  auto params = CreateValidParams();
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+
+  CookieInclusionStatus status;
+  // Same name "test_cookie", but different domain so it doesn't satisfy
+  // craving.
+  GURL other_url("https://other.test/");
+  auto wrong_domain_cookie = CanonicalCookie::Create(
+      other_url, "test_cookie=v; Secure; Domain=other.test; Max-Age=100",
+      base::Time::Now(), std::nullopt, std::nullopt, CookieSourceType::kHTTP,
+      &status);
+  auto matching_cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Domain=example.test; Max-Age=400",
+      base::Time::Now(), std::nullopt, std::nullopt, CookieSourceType::kHTTP,
+      &status);
+  ASSERT_TRUE(wrong_domain_cookie);
+  ASSERT_TRUE(matching_cookie);
+
+  CookieAccessResultList cookies;
+  cookies.emplace_back(*wrong_domain_cookie, CookieAccessResult());
+  cookies.emplace_back(*matching_cookie, CookieAccessResult());
+
+  base::TimeDelta lifetime = session->MinimumBoundCookieLifetime(cookies);
+  EXPECT_NEAR(lifetime.InSecondsF(), 400.0, 5.0);
+}
+
 }  // namespace
 
 }  // namespace net::device_bound_sessions

@@ -23,6 +23,7 @@
 
 namespace net {
 class FirstPartySetMetadata;
+struct CookieWithAccessResult;
 }  // namespace net
 
 namespace net::device_bound_sessions {
@@ -89,6 +90,11 @@ class NET_EXPORT Session {
       DbscRequest& request,
       const FirstPartySetMetadata& first_party_set_metadata,
       const SessionKey& session_key);
+  // Evaluates the minimum remaining lifetime across all bound cookie cravings
+  // satisfied by `cookies`. Returns base::TimeDelta() if any craving is
+  // missing/unsatisfied.
+  base::TimeDelta MinimumBoundCookieLifetime(
+      base::span<const CookieWithAccessResult> cookies) const;
 
   const Id& id() const { return id_; }
 
