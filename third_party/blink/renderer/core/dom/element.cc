@@ -3917,6 +3917,7 @@ void Element::ParserSetAttributes(
   DCHECK(!element_data_);
   DCHECK(!HasChildren());
   DCHECK_EQ(attribute_or_class_bloom_, 0u);
+  EventDispatchForbiddenScope assert_no_event_dispatch;
 
   if (!attribute_vector.empty()) {
     if (ElementDataCache* cache = GetDocument().GetElementDataCache()) {
@@ -11108,6 +11109,7 @@ void Element::CloneAttributesFrom(const Element& other) {
   CHECK_EQ(attribute_or_class_bloom_, 0u);
   CHECK(!hasAttributes());
   CHECK(!GetAttrNodeList());
+  EventDispatchForbiddenScope assert_no_event_dispatch;
 
   other.SynchronizeAllAttributes();
   if (!other.element_data_) {
