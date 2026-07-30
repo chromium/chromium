@@ -738,6 +738,23 @@
             ]
         }
     ],
+    "AiSubscriptionAvatarRingDesktop": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAiSubscriptionAvatarRing"
+                    ]
+                }
+            ]
+        }
+    ],
     "Aim3pEntrypoint": [
         {
             "platforms": [
@@ -9995,23 +10012,6 @@
                     "name": "Enabled_20260309",
                     "enable_features": [
                         "EnableAccountPreviewData"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableAiSubscriptionAvatarRing": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableAiSubscriptionAvatarRing"
                     ]
                 }
             ]
