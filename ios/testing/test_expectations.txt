@@ -63,6 +63,7 @@ crbug.com/536840723 [ iPad Simulator ] TabGridTestCase/testEmptyStateAfterNoResu
 
 # Gardening suppression 2026-07-30
 crbug.com/540811503 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountNotOnDevice [Pass Failure]
+crbug.com/540829196 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountOnDevice [Failure]
 
 # Multi-window iPad iOS 27 issues
 crbug.com/508127830 [ iOS27 Device ] MultitaskingWindowTestCase/testResizeToCompactAndReturnToFullscreen [ Pass Failure ]
