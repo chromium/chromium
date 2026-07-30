@@ -210,7 +210,25 @@ H264RateCtrlRTC::FrameDropDecision H264RateCtrlRTC::ComputeQP(
     allow_drop = false;
   }
 
-  if (allow_drop && buffer_left == 0) {
+  bool drop_frame = false;
+  if (allow_drop) {
+    if (config_.content_type ==
+        VideoEncodeAccelerator::Config::ContentType::kDisplay) {
+      // For display content, drop a delta frame whose predicted encoded size
+      // would not fit within the remaining HRD buffer headroom.
+      H264RateController::Layer& layer =
+          rate_controller_.temporal_layers(frame_params.temporal_layer_id);
+      const int pred_inter_frame_size = static_cast<int>(
+          layer.pred_p_frame_size() + layer.GetFrameSizeEstimatorError());
+      drop_frame = pred_inter_frame_size > buffer_left;
+    } else {
+      // For video content, drop a delta frame only when the HRD buffer has no
+      // remaining headroom.
+      drop_frame = buffer_left == 0;
+    }
+  }
+
+  if (drop_frame) {
     frame_qp_ = -1;  // Drop frame.
     DVLOG(3) << "Estimated QP - "
              << "temporal_layer_id: " << frame_params.temporal_layer_id

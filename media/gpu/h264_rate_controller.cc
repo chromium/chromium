@@ -138,8 +138,11 @@ std::partial_ordering H264RateControllerSettings::operator<=>(
 H264RateController::Layer::Layer(H264RateControllerLayerSettings settings,
                                  float expected_fps,
                                  base::TimeDelta short_term_window_size,
-                                 base::TimeDelta long_term_window_size)
-    : hrd_buffer_(settings.hrd_buffer_size, settings.avg_bitrate),
+                                 base::TimeDelta long_term_window_size,
+                                 bool cap_buffer_fullness)
+    : hrd_buffer_(settings.hrd_buffer_size,
+                  settings.avg_bitrate,
+                  cap_buffer_fullness),
       src_frame_rate_(kWindowFrameCount),
       expected_fps_(expected_fps),
       min_qp_(settings.min_qp),
@@ -284,9 +287,12 @@ H264RateController::H264RateController(H264RateControllerSettings settings)
           settings.layer_settings[kBaseLayerIndex].hrd_buffer_size * 8) *
       base::Time::kMillisecondsPerSecond /
       settings.layer_settings[kBaseLayerIndex].avg_bitrate);
+  const bool cap_buffer_fullness =
+      content_type_ == VideoEncodeAccelerator::Config::ContentType::kDisplay;
   for (auto& tls : settings.layer_settings) {
-    temporal_layers_.emplace_back(std::make_unique<Layer>(
-        tls, target_fps_, short_term_window_size, long_term_window_size));
+    temporal_layers_.emplace_back(
+        std::make_unique<Layer>(tls, target_fps_, short_term_window_size,
+                                long_term_window_size, cap_buffer_fullness));
   }
 }
 

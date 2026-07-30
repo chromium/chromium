@@ -121,7 +121,8 @@ class MEDIA_GPU_EXPORT H264RateController {
     Layer(H264RateControllerLayerSettings settings,
           float expected_fps,
           base::TimeDelta short_term_window_size,
-          base::TimeDelta long_term_window_size);
+          base::TimeDelta long_term_window_size,
+          bool cap_buffer_fullness);
     ~Layer();
 
     Layer(const Layer&) = delete;

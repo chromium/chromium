@@ -25,8 +25,11 @@ class MEDIA_GPU_EXPORT HRDBuffer {
  public:
   // A basic constructor. Buffer size and bitrate are specified while the
   // internal buffer state is set to default values. `buffer_size` is in bytes,
-  // `avg_bitrate` is in bits per second.
-  HRDBuffer(size_t buffer_size, uint32_t avg_bitrate);
+  // `avg_bitrate` is in bits per second. Buffer fullness is capped for desktop
+  // sources.
+  HRDBuffer(size_t buffer_size,
+            uint32_t avg_bitrate,
+            bool cap_buffer_fullness = false);
 
   // A constructor where the initial internal buffer state is specified: the
   // size of the buffer and the timestamp when the last frame was added. It is
@@ -34,7 +37,8 @@ class MEDIA_GPU_EXPORT HRDBuffer {
   HRDBuffer(size_t buffer_size,
             uint32_t avg_bitrate,
             int last_frame_buffer_bytes,
-            base::TimeDelta last_frame_timestamp);
+            base::TimeDelta last_frame_timestamp,
+            bool cap_buffer_fullness = false);
   ~HRDBuffer();
 
   HRDBuffer(const HRDBuffer& other) = delete;
@@ -78,6 +82,10 @@ class MEDIA_GPU_EXPORT HRDBuffer {
   void AddFrameBytes(size_t frame_bytes, base::TimeDelta frame_timestamp);
 
  private:
+  // Caps the buffer fullness by discarding any bytes that exceed the maximum
+  // limit. Does nothing unless `cap_buffer_fullness_` is set.
+  void CapBufferBytes();
+
   // Buffer size in bytes after the last frame has been added.
   int last_frame_buffer_bytes_ = 0;
   // Timestamp of the last added frame.
@@ -98,6 +106,9 @@ class MEDIA_GPU_EXPORT HRDBuffer {
   base::TimeDelta shrinking_bucket_wait_time_ = base::Microseconds(0);
   // Delta rate used in the buffer size change.
   int buffer_size_delta_rate_ = 0;
+
+  // Whether the buffer fullness is capped.
+  const bool cap_buffer_fullness_ = false;
 };
 
 }  // namespace media

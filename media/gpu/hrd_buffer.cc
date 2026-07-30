@@ -9,16 +9,30 @@
 #include "media/gpu/h264_rate_control_util.h"
 
 namespace media {
-HRDBuffer::HRDBuffer(size_t buffer_size, uint32_t avg_bitrate) {
+namespace {
+// The HRD buffer fullness is capped at 1.5x the buffer size for desktop
+// sources. Under low bandwidth conditions the buffer load can grow to several
+// times the buffer size after a steep bandwidth drop or when a large frame is
+// encoded. Such an overload takes a long time to drain, causing video stalls.
+// Capping the buffer simulates the effect of packet dropping on the network.
+constexpr float kMaxBufferFullness = 1.5f;
+}  // namespace
+
+HRDBuffer::HRDBuffer(size_t buffer_size,
+                     uint32_t avg_bitrate,
+                     bool cap_buffer_fullness)
+    : cap_buffer_fullness_(cap_buffer_fullness) {
   SetParameters(buffer_size, avg_bitrate, 0, false);
 }
 
 HRDBuffer::HRDBuffer(size_t buffer_size,
                      uint32_t avg_bitrate,
                      int last_frame_buffer_bytes,
-                     base::TimeDelta last_frame_timestamp)
+                     base::TimeDelta last_frame_timestamp,
+                     bool cap_buffer_fullness)
     : last_frame_buffer_bytes_(last_frame_buffer_bytes),
-      last_frame_timestamp_(last_frame_timestamp) {
+      last_frame_timestamp_(last_frame_timestamp),
+      cap_buffer_fullness_(cap_buffer_fullness) {
   SetParameters(buffer_size, avg_bitrate, 0, false);
 }
 
@@ -101,6 +115,8 @@ void HRDBuffer::Shrink(base::TimeDelta timestamp) {
                         shrinking_bucket_wait_time_.InMillisecondsF()) *
                        buffer_size_delta_rate_);
   buffer_size_ = std::max(target_buffer_size, new_buffer_size_);
+
+  CapBufferBytes();
 }
 
 void HRDBuffer::AddFrameBytes(size_t frame_bytes,
@@ -112,6 +128,18 @@ void HRDBuffer::AddFrameBytes(size_t frame_bytes,
 
   last_frame_buffer_bytes_ = buffer_bytes_new;
   last_frame_timestamp_ = frame_timestamp;
+
+  CapBufferBytes();
+}
+
+void HRDBuffer::CapBufferBytes() {
+  if (!cap_buffer_fullness_) {
+    return;
+  }
+  const int max_buffer_bytes =
+      static_cast<int>(buffer_size_ * kMaxBufferFullness);
+  last_frame_buffer_bytes_ =
+      std::min(last_frame_buffer_bytes_, max_buffer_bytes);
 }
 
 }  // namespace media

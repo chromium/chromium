@@ -44,13 +44,17 @@ H264RateControlConfigRTC H264RateControl::ConvertControlConfig(
   rc_config.content_type = config.content_type;
   rc_config.fixed_delta_qp = config.fixed_delta_qp;
   rc_config.ease_hrd_reduction = true;
+  const float peak_to_avg_ratio =
+      config.content_type ==
+              VideoEncodeAccelerator::Config::ContentType::kCamera
+          ? 1.5f
+          : 2.0f;
   for (int tid = 0; tid < config.ts_number_layers; ++tid) {
     rc_config.layer_settings.emplace_back();
     rc_config.layer_settings[tid].avg_bitrate =
         config.layer_target_bitrate[tid] * 1000;
-    // Peak bitrate is set to 1.5 times the average bitrate.
-    rc_config.layer_settings[tid].peak_bitrate =
-        config.layer_target_bitrate[tid] * 1000 * 3 / 2;
+    rc_config.layer_settings[tid].peak_bitrate = static_cast<uint32_t>(
+        rc_config.layer_settings[tid].avg_bitrate * peak_to_avg_ratio);
     base::TimeDelta buffer_delay;
     if (config.content_type ==
         VideoEncodeAccelerator::Config::ContentType::kCamera) {

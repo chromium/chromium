@@ -361,5 +361,24 @@ TEST_F(HRDBufferTest, CheckBufferOvershoot) {
   }
 }
 
+// Checks the buffer fullness cap used for desktop sources. A large frame drives
+// the buffer above the cap. It must clamp the buffered bytes to
+// kMaxBufferFullness (1.5x) of the buffer size.
+TEST_F(HRDBufferTest, CheckDesktopBufferFullnessCap) {
+  const size_t buffer_size =
+      GetBufferSizeFromDelay(kCommonAvgBitrate, kCommonBufferDelay);
+  const size_t kLargeFrameBytes = 2 * buffer_size;
+  const int kExpectedCappedBytes = static_cast<int>(buffer_size * 3 / 2);
+  constexpr base::TimeDelta kTimestamp = base::Microseconds(0);
+
+  // The buffer fullness is capped.
+  auto capped_buffer =
+      std::make_unique<HRDBuffer>(buffer_size, kCommonAvgBitrate, true);
+  capped_buffer->AddFrameBytes(kLargeFrameBytes, kTimestamp);
+
+  EXPECT_TRUE(capped_buffer->frame_overshooting());
+  EXPECT_EQ(kExpectedCappedBytes, capped_buffer->last_frame_buffer_bytes());
+}
+
 }  // namespace
 }  // namespace media

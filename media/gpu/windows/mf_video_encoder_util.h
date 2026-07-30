@@ -113,6 +113,10 @@ static constexpr uint8_t kAV1MaxQuantizer = 56;
 // scenarios.
 static constexpr uint8_t kH264MinQuantizer = 16;
 static constexpr uint8_t kH264MaxQuantizer = 51;
+// Maximum quantizer applied by the H.264 SW bitrate controller for desktop
+// sources. It keeps minimum video quality at the expense of motion. The value
+// is determined by examining the subjective quality of the encoded video.
+static constexpr uint8_t kH264DesktopSWBRCMaxQuantizer = 35;
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265, ideally we may reuse Min/MaxQp for H.264 from

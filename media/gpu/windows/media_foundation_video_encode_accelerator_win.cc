@@ -168,6 +168,13 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
     default:
       NOTREACHED();
   }
+
+  if (codec == VideoCodec::kH264 &&
+      content_type == VideoEncodeAccelerator::Config::ContentType::kDisplay &&
+      base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH264Desktop)) {
+    config.max_quantizer = kH264DesktopSWBRCMaxQuantizer;
+  }
+
   int bitrate_sum = 0;
   for (int tid = 0; tid < num_temporal_layers; ++tid) {
     bitrate_sum += bitrate_allocation.GetBitrateBps(0, tid);

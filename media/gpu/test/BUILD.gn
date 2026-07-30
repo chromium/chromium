@@ -80,6 +80,7 @@ if (enable_av1_decoder &&
       ":test_helpers",
       ":video_encoder",
       ":video_encoder_test_environment",
+      "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:buildflags",
       "//testing/gmock",
