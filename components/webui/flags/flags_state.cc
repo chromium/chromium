@@ -594,6 +594,10 @@ std::vector<std::string> FlagsState::RegisterAllFeatureVariationParameters(
     base::FeatureList* feature_list) {
   std::set<std::string> enabled_entries;
   GetSanitizedEnabledFlagsForCurrentPlatform(flags_storage, &enabled_entries);
+  // Nothing to register when no flags are enabled; skip the feature-entry scan.
+  if (enabled_entries.empty()) {
+    return {};
+  }
   return RegisterEnabledFeatureVariationParameters(
       feature_entries_, enabled_entries, internal::kTrialGroupAboutFlags,
       feature_list);
