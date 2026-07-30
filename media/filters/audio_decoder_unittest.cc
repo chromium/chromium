@@ -1027,6 +1027,39 @@ TEST_P(AudioDecoderTest, OpusDisableDiscardDecoderDelay) {
   EXPECT_EQ(total_frames_disabled_discard - total_frames_default, 312);
 }
 
+TEST_P(AudioDecoderTest, OpusMismatchedExtraDataChannels) {
+  if (codec() != AudioCodec::kOpus ||
+      decoder_type() != AudioDecoderType::kOpus) {
+    GTEST_SKIP() << "Only for OpusAudioDecoder";
+  }
+
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+
+  // Construct Opus extradata for 2 channels with Vorbis mapping family 1.
+  const uint8_t extra_data_vorbis2ch[] = {
+      'O',  'p',  'u',  's',  'H', 'e', 'a', 'd',  // Magic
+      1,                                           // Version
+      2,                                           // Channels = 2
+      0x38, 0x01,                                  // Skip samples = 312
+      0x80, 0xBB, 0x00, 0x00,                      // Sample rate = 48000
+      0x00, 0x00,                                  // Gain = 0
+      1,       // Channel mapping family = 1 (Vorbis)
+      1,       // Streams = 1
+      1,       // Coupled = 1
+      0,    1  // Stream map (2 bytes)
+  };
+
+  AudioDecoderConfig config;
+  config.Initialize(AudioCodec::kOpus, kSampleFormatF32,
+                    ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>(),
+                    48000,
+                    std::vector<uint8_t>(std::begin(extra_data_vorbis2ch),
+                                         std::end(extra_data_vorbis2ch)),
+                    EncryptionScheme::kUnencrypted, base::TimeDelta(), 312);
+
+  InitializeDecoderWithResult(config, false);
+}
+
 TEST_P(AudioDecoderTest, Decode) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();

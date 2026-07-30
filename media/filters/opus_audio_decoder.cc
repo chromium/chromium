@@ -102,6 +102,15 @@ std::optional<OpusExtraData> ParseOpusExtraData(
                 << extra_data.channels;
     return std::nullopt;
   }
+
+  if (extra_data.channels != config.channels()) {
+    DLOG(ERROR) << "extra data channel count ("
+                << static_cast<int>(extra_data.channels)
+                << ") does not match config channel count ("
+                << config.channels() << ")";
+    return std::nullopt;
+  }
+
   extra_data.stream_map.resize(extra_data.channels);
 
   if (!reader.ReadU16LittleEndian(extra_data.skip_samples)) {
@@ -147,7 +156,11 @@ std::optional<OpusExtraData> ParseOpusExtraData(
 
   if (extra_data.channel_mapping == OPUS_CHANNEL_MAPPING_FAMILY_VORBIS &&
       extra_data.num_streams + extra_data.num_coupled != extra_data.channels) {
-    DVLOG(1) << "Inconsistent channel mapping.";
+    DLOG(ERROR) << "Inconsistent channel mapping: num_streams="
+                << static_cast<int>(extra_data.num_streams)
+                << ", num_coupled=" << static_cast<int>(extra_data.num_coupled)
+                << ", channels=" << extra_data.channels;
+    return std::nullopt;
   }
 
   for (int i = 0; i < extra_data.channels; ++i) {
