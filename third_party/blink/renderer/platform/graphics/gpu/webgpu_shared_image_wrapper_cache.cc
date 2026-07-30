@@ -40,7 +40,10 @@ WebGpuSharedImageWrapperLease::GetSharedImage() const {
 }
 
 gpu::SyncToken WebGpuSharedImageWrapperLease::GetSyncToken() const {
-  return shared_image_wrapper_->GetSyncToken();
+  if (shared_image_wrapper_->IsGpuContextLost()) {
+    return gpu::SyncToken();
+  }
+  return shared_image_wrapper_->release_sync_token_;
 }
 
 bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(

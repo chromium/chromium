@@ -185,12 +185,6 @@ bool WebGpuSharedImageWrapper::IsGpuContextLost() const {
 
 
 
-gpu::SyncToken WebGpuSharedImageWrapper::GetSyncToken() const {
-  if (IsGpuContextLost()) {
-    return gpu::SyncToken();
-  }
-  return release_sync_token_;
-}
 
 
 void WebGpuSharedImageWrapper::OnMemoryDump(

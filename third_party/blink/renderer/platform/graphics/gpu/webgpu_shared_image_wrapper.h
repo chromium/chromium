@@ -64,8 +64,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
   }
   SkAlphaType GetAlphaType() const { return shared_image_->alpha_type(); }
 
-  gpu::SyncToken GetSyncToken() const;
-
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
   gpu::raster::RasterInterface* RasterInterface() const;
