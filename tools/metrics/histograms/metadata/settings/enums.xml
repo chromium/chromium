@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1768724911" label="HomepageSettings"/>
   <int value="-1752194986" label="SingleWebsiteSettings"/>
   <int value="-1696636734" label="EnhancedProtectionSettingsFragment"/>
-  <int value="-1583431738" label="FledgeLearnMoreFragment"/>
+  <int value="-1583431738" label="(Obsolete) FledgeLearnMoreFragment"/>
   <int value="-1481342482" label="LocationPermissionSubpageSettings"/>
   <int value="-1467975767" label="StandardPreloadingSettingsFragment"/>
   <int value="-1422587744" label="DownloadLocationPreferenceDialog"/>
@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1035378917" label="PrivacySettingsFragment"/>
   <int value="-1022730020" label="AutofillOptionsFragment"/>
   <int value="-988526347" label="(Obsolete) RWSCookieSettings"/>
-  <int value="-980428258" label="FledgeAllSitesFragment"/>
+  <int value="-980428258" label="(Obsolete) FledgeAllSitesFragment"/>
   <int value="-894030932" label="AutofillLocalIbanEditor"/>
   <int value="-847585811" label="DeveloperSettings"/>
   <int value="-789502130" label="AutofillCardBenefitsFragment"/>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
   <int value="-94642184" label="BlockedCredentialFragmentView"/>
   <int value="-67456740" label="MainSettings"/>
   <int value="-45144853" label="DownloadSettings"/>
-  <int value="-27162861" label="FledgeFragment"/>
+  <int value="-27162861" label="(Obsolete) FledgeFragment"/>
   <int value="19814032" label="(Renamed) ClearBrowsingDataFragmentAdvanced"/>
   <int value="51577713" label="AccessibilitySettings"/>
   <int value="91451948" label="ContextualSearchSettingsFragment"/>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
       label="(Obsolete) FingerprintingProtectionSettingsFragment"/>
   <int value="894297033" label="SingleCategorySettings"/>
   <int value="895945357" label="AutofillPersonalContextFragment"/>
-  <int value="903277107" label="FledgeBlockedSitesFragment"/>
+  <int value="903277107" label="(Obsolete) FledgeBlockedSitesFragment"/>
   <int value="1015549581" label="AlwaysTranslateListFragment"/>
   <int value="1068718433" label="RecentSearchesFragment"/>
   <int value="1118292269" label="(Obsolete) HomeModulesConfigSettings"/>

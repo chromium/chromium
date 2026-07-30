@@ -7,13 +7,6 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="fledge"
-        android:title="@string/ad_privacy_page_fledge_link_row_label"
-        android:icon="@drawable/ic_checklist_24dp"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeFragment"
-        app:iconTint="@macro/default_icon_color"
-        app:userAction="Settings.PrivacySandbox.Fledge.Opened" />
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="ad_measurement"
         android:title="@string/ad_privacy_page_ad_measurement_link_row_label"
         android:icon="@drawable/ic_bar_chart_24dp"

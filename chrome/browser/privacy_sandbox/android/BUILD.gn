@@ -15,12 +15,6 @@ generate_jni("jni_headers") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragment.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeAllSitesFragment.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeBlockedSitesFragment.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeFragment.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeLearnMoreFragment.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgePreference.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PreferenceCategoryWithClickableSummary.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsBaseFragment.java",
@@ -83,8 +77,6 @@ android_library("javatests") {
   resources_package = "org.chromium.chrome.browser.privacy_sandbox"
   sources = [
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragmentTest.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FledgeFragmentTest.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridgeTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
   ]
   deps = [
@@ -190,15 +182,9 @@ android_resources("java_resources") {
     "java/res/drawable/cookie_24dp.xml",
     "java/res/drawable/ic_auto_delete_24dp.xml",
     "java/res/drawable/ic_background_replace_24dp.xml",
-    "java/res/drawable/ic_checklist_24dp.xml",
     "java/res/drawable/ic_devices_24dp.xml",
     "java/res/drawable/ic_filter_list_24dp.xml",
-    "java/res/layout/category_with_clickable_summary_preference.xml",
-    "java/res/values/dimens.xml",
     "java/res/xml/ad_measurement_preference.xml",
-    "java/res/xml/block_list_preference.xml",
-    "java/res/xml/fledge_learn_more_preference.xml",
-    "java/res/xml/fledge_preference.xml",
     "java/res/xml/privacy_sandbox_preferences.xml",
     "java/res/xml/privacy_sandbox_preferences_restricted.xml",
   ]

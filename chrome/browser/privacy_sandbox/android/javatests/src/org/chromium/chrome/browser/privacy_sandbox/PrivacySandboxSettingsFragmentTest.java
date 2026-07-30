@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.hasItems;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment.setAdMeasurementPrefEnabled;
-import static org.chromium.chrome.browser.privacy_sandbox.FledgeFragment.setFledgePrefEnabled;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Bundle;
@@ -66,8 +65,6 @@ public final class PrivacySandboxSettingsFragmentTest {
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-                    prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
-                    prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
                 });
 
@@ -81,29 +78,6 @@ public final class PrivacySandboxSettingsFragmentTest {
                 PrivacySandboxReferrer.PRIVACY_SETTINGS);
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
         onViewWaiting(withText(R.string.ad_privacy_page_title));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-    public void testFledgePrefDisabledDescription() {
-        runOnUiThreadBlocking(
-                () -> setFledgePrefEnabled(ProfileManager.getLastUsedRegularProfile(), false));
-        startPrivacySandboxSettingsV4();
-
-        onView(withText(R.string.ad_privacy_page_fledge_link_row_sub_label_disabled))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testFledgePrefEnabledDescription() {
-        runOnUiThreadBlocking(
-                () -> setFledgePrefEnabled(ProfileManager.getLastUsedRegularProfile(), true));
-        startPrivacySandboxSettingsV4();
-
-        onView(withText(R.string.ad_privacy_page_fledge_link_row_sub_label_enabled))
-                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -132,18 +106,6 @@ public final class PrivacySandboxSettingsFragmentTest {
 
         onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled))
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-    public void testNavigateToFledgePageV2() {
-        startPrivacySandboxSettingsV4();
-        onView(withText(R.string.ad_privacy_page_fledge_link_row_label)).perform(click());
-
-        onViewWaiting(withText(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2));
-        assertThat(
-                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Fledge.Opened"));
     }
 
     @Test

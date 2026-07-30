@@ -53,39 +53,6 @@ static bool JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
   return GetPrivacySandboxService(j_profile)->IsRestrictedNoticeEnabled();
 }
 
-static void JNI_PrivacySandboxBridge_GetFledgeJoiningEtldPlusOneForDisplay(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile,
-    const JavaRef<jobject>& j_callback) {
-  GetPrivacySandboxService(j_profile)->GetFledgeJoiningEtldPlusOneForDisplay(
-      base::BindOnce(
-          [](const base::android::JavaRef<jobject>& j_callback,
-             std::vector<std::string> strings) {
-            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-            JNIEnv* env = base::android::AttachCurrentThread();
-            base::android::RunObjectCallbackAndroid(
-                j_callback, base::android::ToJavaArrayOfStrings(env, strings));
-          },
-          base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
-}
-
-static std::vector<std::string>
-JNI_PrivacySandboxBridge_GetBlockedFledgeJoiningTopFramesForDisplay(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
-  return GetPrivacySandboxService(j_profile)
-      ->GetBlockedFledgeJoiningTopFramesForDisplay();
-}
-
-static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile,
-    const JavaRef<jstring>& top_frame_etld_plus1,
-    bool allowed) {
-  GetPrivacySandboxService(j_profile)->SetFledgeJoiningAllowed(
-      base::android::ConvertJavaStringToUTF8(top_frame_etld_plus1), allowed);
-}
-
 static bool JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {

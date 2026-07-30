@@ -4,15 +4,10 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
-
-import java.util.Arrays;
-import java.util.List;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
 @NullMarked
@@ -30,21 +25,6 @@ public class PrivacySandboxBridge {
 
     public boolean isRestrictedNoticeEnabled() {
         return PrivacySandboxBridgeJni.get().isRestrictedNoticeEnabled(mProfile);
-    }
-
-    public void getFledgeJoiningEtldPlusOneForDisplay(Callback<List<String>> callback) {
-        Callback<String[]> arrayCallback =
-                (String[] domains) -> callback.onResult(Arrays.asList(domains));
-        PrivacySandboxBridgeJni.get()
-                .getFledgeJoiningEtldPlusOneForDisplay(mProfile, arrayCallback);
-    }
-
-    public List<String> getBlockedFledgeJoiningTopFramesForDisplay() {
-        return PrivacySandboxBridgeJni.get().getBlockedFledgeJoiningTopFramesForDisplay(mProfile);
-    }
-
-    public void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed) {
-        PrivacySandboxBridgeJni.get().setFledgeJoiningAllowed(mProfile, topFrameEtldPlus1, allowed);
     }
 
     public boolean isRelatedWebsiteSetsDataAccessEnabled() {
@@ -104,13 +84,6 @@ public class PrivacySandboxBridge {
         void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled);
 
         String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin);
-
-        void getFledgeJoiningEtldPlusOneForDisplay(Profile profile, Callback<String[]> callback);
-
-        @JniType("std::vector<std::string>")
-        List<String> getBlockedFledgeJoiningTopFramesForDisplay(Profile profile);
-
-        void setFledgeJoiningAllowed(Profile profile, String topFrameEtldPlus1, boolean allowed);
 
         void setAllPrivacySandboxAllowedForTesting(Profile profile); // IN-TEST
 
