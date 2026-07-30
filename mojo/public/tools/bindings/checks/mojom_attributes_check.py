@@ -108,7 +108,6 @@ _NATIVE_ALLOWLIST = {
     'content.mojom.DropData',
     'content.mojom.PageTransition',
     'content.mojom.WebPluginInfo',
-    'gpu.mojom.SwapBuffersCompleteParams',
     'media.mojom.AudioCodec',
     'media.mojom.AudioCodecProfile',
     'media.mojom.AudioDecoderType',

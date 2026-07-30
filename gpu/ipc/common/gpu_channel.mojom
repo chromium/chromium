@@ -248,10 +248,6 @@ interface CommandBuffer {
   SignalQuery(uint32 query, uint32 signal_id);
 };
 
-// Corresponds to gpu::SwapBuffersCompleteParams.
-[Native]
-struct SwapBuffersCompleteParams;
-
 // Interface used by the GPU process to send the client messages from a specific
 // CommandBuffer instance.
 interface CommandBufferClient {

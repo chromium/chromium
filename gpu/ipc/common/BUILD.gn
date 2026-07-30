@@ -51,9 +51,6 @@ source_set("ipc_common_sources") {
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
     "gpu_memory_buffer_handle_info.h",
-    "gpu_param_traits.cc",
-    "gpu_param_traits.h",
-    "gpu_param_traits_macros.h",
     "gpu_watchdog_timeout.h",
     "result_codes.h",
   ]
@@ -185,15 +182,6 @@ mojom("gpu_channel_mojom") {
       ]
       traits_headers = [ "scheduling_priority_mojom_traits.h" ]
       traits_public_deps = [ "//gpu/command_buffer/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.SwapBuffersCompleteParams"
-          cpp = "::gpu::SwapBuffersCompleteParams"
-        },
-      ]
-      traits_headers = [ "gpu_param_traits_macros.h" ]
     },
   ]
 
