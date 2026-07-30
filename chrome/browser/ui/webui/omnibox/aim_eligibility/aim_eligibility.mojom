@@ -31,6 +31,8 @@ struct DriveStatus {
   bool is_search_content_sharing_enabled;
   // The status of the Drive disclaimer.
   DisclaimerState disclaimer_state;
+  // Whether the kComposeboxDriveContextMenuOptionDisclaimer feature flag is enabled.
+  bool is_disclaimer_flag_enabled;
 };
 
 // The AIM eligibility state.

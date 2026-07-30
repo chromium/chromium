@@ -200,6 +200,15 @@ export class AimEligibilityAppElement extends CrLitElement {
         '✗ Disabled';
   }
 
+  protected getDisclaimerFlagText_(): string {
+    if (!this.eligibilityState_.driveStatus) {
+      return '';
+    }
+    return this.eligibilityState_.driveStatus.isDisclaimerFlagEnabled ?
+        '✓ Enabled' :
+        '✗ Disabled';
+  }
+
   protected getForceDisclaimerText_(): string {
     if (!this.eligibilityState_.driveStatus) {
       return '';
