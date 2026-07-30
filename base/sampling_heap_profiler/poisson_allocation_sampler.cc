@@ -25,8 +25,6 @@ namespace {
 
 using ::base::allocator::dispatcher::ReentryGuard;
 
-const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
-
 const intptr_t kAccumulatedBytesOffset = 1 << 29;
 
 // Controls if sample intervals should not be randomized. Used for testing.
@@ -36,7 +34,8 @@ bool g_deterministic = false;
 constinit std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
 
 // Sampling interval parameter, the mean value for intervals between samples.
-constinit std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
+constinit std::atomic_size_t g_sampling_interval{
+    PoissonAllocationSampler::kDefaultSamplingIntervalBytes};
 
 struct ThreadLocalData {
   // Accumulated bytes towards sample.

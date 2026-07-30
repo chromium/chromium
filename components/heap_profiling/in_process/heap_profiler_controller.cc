@@ -269,7 +269,7 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
 std::vector<base::SamplingHeapProfiler::Sample> RetrieveAndLogSnapshot(
     ProcessType process_type,
     base::ByteSize expected_sampling_interval) {
-  auto samples = base::SamplingHeapProfiler::Get()->GetSamples(0);
+  auto samples = base::SamplingHeapProfiler::Get()->GetSamples(std::nullopt);
   const base::PoissonAllocationSamplerStats profiler_stats =
       base::PoissonAllocationSampler::Get()->GetAndResetStats();
   LogProfilerStats(process_type, profiler_stats, samples.size(),
@@ -360,6 +360,10 @@ HeapProfilerController::~HeapProfilerController() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 
+  if (profiling_session_) {
+    base::SamplingHeapProfiler::Get()->Stop(*profiling_session_);
+  }
+
   // BrowserProcessSnapshotController must be deleted on the sequence that its
   // WeakPtr's are bound to.
   if (browser_process_snapshot_controller_) {
@@ -383,21 +387,20 @@ bool HeapProfilerController::StartIfEnabled() {
     return false;
   }
   const size_t sampling_rate_bytes = GetSamplingRateForProcess(process_type_);
-  if (sampling_rate_bytes > 0) {
-    base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate_bytes);
-    expected_sampling_rate_ = base::ByteSize(sampling_rate_bytes);
-  } else {
-    // Using the default rate.
-    expected_sampling_rate_ = base::ByteSize(
-        base::PoissonAllocationSampler::Get()->SamplingInterval());
+  if (sampling_rate_bytes == 0) {
+    return false;
   }
+  expected_sampling_rate_ = base::ByteSize(sampling_rate_bytes);
+
   const float hash_set_load_factor =
       GetHashSetLoadFactorForProcess(process_type_);
   if (hash_set_load_factor > 0) {
     base::PoissonAllocationSampler::Get()->SetTargetHashSetLoadFactor(
         hash_set_load_factor);
   }
-  base::SamplingHeapProfiler::Get()->Start();
+  profiling_session_ = base::SamplingHeapProfiler::Get()->Start(
+      expected_sampling_rate_,
+      base::SamplingHeapProfiler::Priority::kBackground);
 
   if (process_type_ != ProcessType::kBrowser) {
     // ChildProcessSnapshotController will trigger snapshots.

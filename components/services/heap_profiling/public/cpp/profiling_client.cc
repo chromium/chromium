@@ -88,7 +88,10 @@ void ProfilingClient::StopProfiling(StopProfilingCallback callback) {
     return;
   }
 
-  base::SamplingHeapProfiler::Get()->Stop();
+  if (profiling_session_) {
+    base::SamplingHeapProfiler::Get()->Stop(*profiling_session_);
+    profiling_session_ = std::nullopt;
+  }
   started_profiling_ = false;
   std::move(callback).Run();
 }
@@ -185,8 +188,9 @@ void ProfilingClient::StartProfilingInternal(mojom::ProfilingParamsPtr params,
   size_t sampling_rate = params->sampling_rate;
   InitAllocationRecorder(std::move(params));
   auto* profiler = base::SamplingHeapProfiler::Get();
-  profiler->SetSamplingInterval(sampling_rate);
-  profiler->Start();
+  profiling_session_ =
+      profiler->Start(base::ByteSize(sampling_rate),
+                      base::SamplingHeapProfiler::Priority::kInteractive);
   AllocatorHooksHaveBeenInitialized();
   std::move(callback).Run();
 }
@@ -195,7 +199,7 @@ void ProfilingClient::RetrieveHeapProfile(
     RetrieveHeapProfileCallback callback) {
   auto* profiler = base::SamplingHeapProfiler::Get();
   std::vector<base::SamplingHeapProfiler::Sample> samples =
-      profiler->GetSamples(/*profile_id=*/0);
+      profiler->GetSamples(std::nullopt);
   // It's important to retrieve strings after samples, as otherwise it could
   // miss a string referenced by a sample.
   std::vector<const char*> strings = profiler->GetStrings();

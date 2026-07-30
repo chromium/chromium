@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_HEAP_PROFILING_PUBLIC_CPP_PROFILING_CLIENT_H_
 #define COMPONENTS_SERVICES_HEAP_PROFILING_PUBLIC_CPP_PROFILING_CLIENT_H_
 
+#include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -42,6 +43,7 @@ class ProfilingClient : public mojom::ProfilingClient {
   mojo::ReceiverSet<mojom::ProfilingClient> receivers_;
 
   bool started_profiling_{false};
+  std::optional<base::SamplingHeapProfiler::Session> profiling_session_;
 };
 
 // Initializes the TLS slot globally. This will be called early in Chrome's

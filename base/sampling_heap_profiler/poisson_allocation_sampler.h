@@ -68,6 +68,7 @@ struct BASE_EXPORT PoissonAllocationSamplerStats {
 //
 class BASE_EXPORT PoissonAllocationSampler {
  public:
+  static constexpr size_t kDefaultSamplingIntervalBytes = 128 * 1024;
   class SamplesObserver {
    public:
     virtual ~SamplesObserver() = default;

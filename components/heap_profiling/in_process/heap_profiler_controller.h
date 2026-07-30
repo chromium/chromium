@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
@@ -245,6 +246,9 @@ class HeapProfilerController {
 
   // A callback to call before the first scheduled snapshot in tests.
   base::OnceClosure on_first_snapshot_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::optional<base::SamplingHeapProfiler::Session> profiling_session_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

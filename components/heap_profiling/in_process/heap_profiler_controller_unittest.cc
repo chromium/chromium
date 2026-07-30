@@ -348,10 +348,6 @@ class ProfilerSetUpMixin {
     // threads are started.
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-    if (!base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
-      // Set the sampling rate manually since there's no feature param to read.
-      base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
-    }
   }
 
   ~ProfilerSetUpMixin() = default;
