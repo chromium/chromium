@@ -15,6 +15,13 @@ if (!defined(partition_alloc_remove_configs)) {
   partition_alloc_remove_configs = []
 }
 
+_can_unwind_with_frame_pointers =
+    defined(can_unwind_with_frame_pointers) && can_unwind_with_frame_pointers
+_dcheck_is_configurable =
+    defined(dcheck_is_configurable) && dcheck_is_configurable
+_enable_expensive_dchecks =
+    defined(enable_expensive_dchecks) && enable_expensive_dchecks
+
 record_alloc_info = false
 
 # GWP-ASan is tied to BRP's enablement.
@@ -151,11 +158,11 @@ pa_buildflag_header("buildflags") {
     "USER_SPACE_ZERO_SEGMENT_SIZE_MB=$user_space_zero_segment_size_mb",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
-    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
+    "CAN_UNWIND_WITH_FRAME_POINTERS=$_can_unwind_with_frame_pointers",
     "CHECKED_SPAN=$use_checked_span",
     "CHECKED_SPAN_HAS_METADATA_SUPPORT=$checked_span_has_metadata_support",
     "DCHECKS_ARE_ON=$partition_alloc_dchecks_are_on",
-    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "DCHECK_IS_CONFIGURABLE=$_dcheck_is_configurable",
     "ENABLE_AUTO_PARTITIONING=$enable_auto_partitioning",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
     "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
@@ -175,7 +182,7 @@ pa_buildflag_header("buildflags") {
     "MOVE_METADATA_OUT_OF_GIGACAGE_FOR_64_BITS_POINTERS=$move_metadata_outside_gigacage",
     "ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL=$enable_move_metadata_outside_gigacage_trial",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
-    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "EXPENSIVE_DCHECKS_ARE_ON=$_enable_expensive_dchecks",
     "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
