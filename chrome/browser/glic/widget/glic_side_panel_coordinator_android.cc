@@ -162,6 +162,16 @@ void GlicSidePanelCoordinatorAndroid::SetState(State state) {
   state_callbacks_.Notify(state_);
 }
 
+void GlicSidePanelCoordinatorAndroid::SaveStateBeforeDeactivation() {
+  if (state_ == State::kShown) {
+    initial_state_override_for_activity_recreation_ =
+        ShowOptions::InitialState::kExpanded;
+  } else if (state_ == State::kPeek) {
+    initial_state_override_for_activity_recreation_ =
+        ShowOptions::InitialState::kPeeked;
+  }
+}
+
 void GlicSidePanelCoordinatorAndroid::OnTabDidActivate(
     tabs::TabInterface* tab) {
   if (state_ == State::kClosed) {
@@ -180,6 +190,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
   if (state_ == State::kClosed) {
     return;
   }
+  SaveStateBeforeDeactivation();
   SetState(State::kBackgrounded);
 
   tab_bottom_sheet_bridge_->Close(/* animate= */ false);
@@ -194,6 +205,7 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
   // foldable fold/unfold).
   pending_show_options_.reset();
   if (state_ != State::kClosed) {
+    SaveStateBeforeDeactivation();
     SetState(State::kBackgrounded);
     tab_bottom_sheet_bridge_->Close(/* animate= */ false);
   }
@@ -232,6 +244,12 @@ void GlicSidePanelCoordinatorAndroid::OnManagerInitialized(
                                        /*request_focus=*/false);
     ShowOptions options = std::exchange(pending_show_options_, std::nullopt)
                               .value_or(ShowOptions());
+    if (initial_state_override_for_activity_recreation_.has_value()) {
+      options.initial_state =
+          std::exchange(initial_state_override_for_activity_recreation_,
+                        std::nullopt)
+              .value();
+    }
     Show(options);
   }
 }
