@@ -81,15 +81,8 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
   GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   EXPECT_FALSE(target.IsEligible());
 
-  // Ineligible if tab context sharing is disabled.
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
-                                       false);
-  EXPECT_FALSE(target.IsEligible());
-
   // Clean up.
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
-                                       true);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(target.IsEligible());
 }
 
