@@ -1239,9 +1239,8 @@ class LocationBarMediator
     }
 
     /* package */ void zoomButtonClicked(View view) {
-        WebContents webContents = getWebContentsForCurrentTab();
-        if (mPageZoomIndicatorCoordinator == null || webContents == null) return;
-        mPageZoomIndicatorCoordinator.show(webContents);
+        if (mPageZoomIndicatorCoordinator == null) return;
+        mPageZoomIndicatorCoordinator.show();
     }
 
     private @Nullable AddToHomescreenCoordinator getAddToHomescreenCoordinator() {

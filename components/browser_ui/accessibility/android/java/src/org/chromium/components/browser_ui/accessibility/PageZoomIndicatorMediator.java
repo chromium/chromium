@@ -52,13 +52,15 @@ class PageZoomIndicatorMediator {
 
     /** Sets the initial state of the model. */
     protected void pushProperties() {
-        // We must first fetch the current zoom factor for the given web contents.
-        double currentZoomFactor = mManager.getZoomLevel();
+        updateZoomPercentage();
         mDefaultZoomFactor = mManager.getDefaultZoomLevel();
-        updateZoomPercentageText(currentZoomFactor);
-
         mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, mDefaultZoomFactor);
+    }
 
+    /** Updates the zoom percentage text and button states for the current zoom factor. */
+    void updateZoomPercentage() {
+        double currentZoomFactor = mManager.getZoomLevel();
+        updateZoomPercentageText(currentZoomFactor);
         updateButtonStates(currentZoomFactor);
     }
 
@@ -97,7 +99,7 @@ class PageZoomIndicatorMediator {
                         ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setElevation(
                 view.getContext().getResources().getDimension(R.dimen.dropdown_elevation));
-        popupWindow.setFocusable(true);
+        popupWindow.setFocusable(false);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setOnDismissListener(onDismissListener);
 

@@ -140,6 +140,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarCoordinatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarMediatorUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomIndicatorCoordinatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomIndicatorMediatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMenuItemMediatorUnitTest.java",
