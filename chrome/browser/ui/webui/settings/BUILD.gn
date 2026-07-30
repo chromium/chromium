@@ -246,6 +246,7 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:confirm_bubble",
+    "//chrome/browser/ui:managed_ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:url_identity",
     "//chrome/browser/ui/desktop_to_mobile_promos:service",

@@ -2242,6 +2242,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_ui_prefs",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:confirm_bubble",
+      "//chrome/browser/ui:managed_ui",
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui:sad_tab_browser_tests",
       "//chrome/browser/ui:simple_message_box_internal",

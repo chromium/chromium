@@ -49,6 +49,7 @@ source_set("impl") {
     "//chrome/browser/resources/new_tab_shared:resources_grit",
     "//chrome/browser/search",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:managed_ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/views/side_panel",

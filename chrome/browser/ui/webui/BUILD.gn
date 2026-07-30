@@ -699,6 +699,7 @@ if (enable_extensions_core) {
       "//chrome/browser:browser_process",
       "//chrome/browser/policy",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:managed_ui",
       "//chrome/common",
       "//chrome/common:constants",
       "//components/supervised_user/core/common",

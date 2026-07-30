@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/url_constants.h"
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 #include "components/policy/core/common/policy_service.h"

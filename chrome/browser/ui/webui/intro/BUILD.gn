@@ -48,6 +48,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/resources/intro:resources",
       "//chrome/browser/resources/signin:resources",
       "//chrome/browser/signin",
+      "//chrome/browser/ui:managed_ui",
       "//chrome/browser/ui/webui/signin",
       "//chrome/common",
       "//components/regional_capabilities",

@@ -72,6 +72,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/profiles:misc",
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
+      "//chrome/browser/ui:managed_ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/signin",
       "//chrome/test:test_support",

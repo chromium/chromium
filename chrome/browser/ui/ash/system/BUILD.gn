@@ -33,6 +33,7 @@ static_library("system") {
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:managed_ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/navigator",

@@ -59,6 +59,10 @@ source_set("management") {
     ]
   }
 
+  if (!is_chromeos) {
+    deps += [ "//chrome/browser/ui:managed_ui" ]
+  }
+
   if (is_chromeos) {
     sources += [ "management_ui_handler_chromeos.cc" ]
     public += [ "management_ui_handler_chromeos.h" ]

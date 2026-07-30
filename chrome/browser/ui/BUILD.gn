@@ -394,6 +394,39 @@ source_set("view_ids") {
   public = [ "view_ids.h" ]
 }
 
+source_set("managed_ui") {
+  public = [ "managed_ui.h" ]
+  sources = [ "managed_ui.cc" ]
+  public_deps = [
+    "//base",
+    "//extensions/buildflags",
+  ]
+  deps = [
+    ":ui_features",
+    "//chrome:strings",
+    "//chrome/browser:browser_features",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/policy/core/common",
+    "//components/strings:components_strings",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ui/webui/management",
+      "//chromeos/ash/components/demo_mode",
+      "//ui/chromeos",
+    ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -404,8 +437,6 @@ static_library("ui") {
   sources = [
     "crypto_module_password_dialog.h",
     "idle_bubble.h",
-    "managed_ui.cc",
-    "managed_ui.h",
     "screen_capture_notification_ui.h",
     "tab_dialogs.cc",
     "tab_dialogs.h",
@@ -465,6 +496,7 @@ static_library("ui") {
     ":browser_otr_state",
     ":browser_ui_prefs",
     ":incognito_allowed_url",
+    ":managed_ui",
     ":recently_audible_helper",
     ":session_crashed_bubble",
     ":simple_message_box_internal",
@@ -1118,21 +1150,9 @@ static_library("ui") {
       # browser_window.h) that can't be split out yet.
       "//chrome/browser/ui/webui/downloads",
 
-      # management includes headers from //chrome/browser/ui (e.g. managed_ui.h)
-      # that can't be split out yet.
-      "//chrome/browser/ui/webui/management",
-
       # web_app_internals includes headers from //chrome/browser/ui (e.g.
       # browser.h) that can't be split out yet.
       "//chrome/browser/ui/webui/web_app_internals",
-    ]
-  }
-
-  if (is_android) {
-    allow_circular_includes_from += [
-      # management includes headers from //chrome/browser/ui (e.g. managed_ui.h)
-      # that can't be split out yet.
-      "//chrome/browser/ui/webui/management",
     ]
   }
 
@@ -5047,10 +5067,6 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/extensions",
       "//chrome/browser/ui/webui/extensions",
-
-      # managed_ui_handler includes managed_ui.h from //chrome/browser/ui that
-      # can't be split out yet.
-      "//chrome/browser/ui/webui:managed_ui_handler",
     ]
   }
 
