@@ -254,12 +254,7 @@ public class OmniboxTestUtils {
 
     /** Waits for a non-empty list of omnibox suggestions to be shown. */
     public void checkSuggestionsShown() {
-        noopTo().waitFor(new SuggestionsShownCondition(mLocationBar, /* shown= */ true));
-    }
-
-    /** Waits for an empty list of omnibox suggestions to be shown. */
-    public void checkSuggestionsNotShown() {
-        noopTo().waitFor(new SuggestionsShownCondition(mLocationBar, /* shown= */ false));
+        noopTo().waitFor(new SuggestionsShownCondition(mLocationBar));
     }
 
     /**
@@ -671,11 +666,9 @@ public class OmniboxTestUtils {
     /** Checks that the suggestions dropdown is shown. */
     public static class SuggestionsShownCondition extends UiThreadCondition {
         private final LocationBarLayout mLocationBar;
-        private final boolean mSuggestionsShouldBeShown;
 
-        public SuggestionsShownCondition(LocationBarLayout locationBar, boolean shown) {
+        public SuggestionsShownCondition(LocationBarLayout locationBar) {
             mLocationBar = locationBar;
-            mSuggestionsShouldBeShown = shown;
         }
 
         @Override
@@ -685,22 +678,14 @@ public class OmniboxTestUtils {
             OmniboxSuggestionsDropdown dropdown =
                     (OmniboxSuggestionsDropdown)
                             mLocationBar.getAutocompleteCoordinator().getSuggestionsDropdown();
-            // Container and dropdown should be inflated whether we show suggestions or not.
             if (container == null || dropdown == null) {
                 return notFulfilled("suggestion list is null");
             }
-            // Confirm container and dropdown are showing when we're expecting them to.
-            if (mSuggestionsShouldBeShown != (container.isShown() && dropdown.isShown())) {
+            if (!container.isShown() || !dropdown.isShown()) {
                 return notFulfilled("suggestion list is not shown");
             }
-            // Use ex-or below to ensure that we either
-            // 1. don't want suggestions and count is 0, or
-            // 2. want suggestions and count is > 0.
             int count = dropdown.getDropdownItemViewCountForTest();
-            return whether(
-                    mSuggestionsShouldBeShown ^ (count == 0),
-                    "suggestion list has %d entries",
-                    count);
+            return whether(count > 0, "suggestion list has %d entries", count);
         }
 
         @Override
