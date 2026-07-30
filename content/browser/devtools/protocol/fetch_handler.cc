@@ -61,15 +61,15 @@ void FetchHandler::Wire(UberDispatcher* dispatcher) {
   Fetch::Dispatcher::wire(dispatcher, this);
 }
 
-DevToolsURLLoaderInterceptor::InterceptionStage RequestStageToInterceptorStage(
-    const Fetch::RequestStage& stage) {
+std::optional<DevToolsURLLoaderInterceptor::InterceptionStage>
+RequestStageToInterceptorStage(const Fetch::RequestStage& stage) {
   if (stage == Fetch::RequestStageEnum::Request) {
     return DevToolsURLLoaderInterceptor::kRequest;
   }
   if (stage == Fetch::RequestStageEnum::Response) {
     return DevToolsURLLoaderInterceptor::kResponse;
   }
-  NOTREACHED();
+  return std::nullopt;
 }
 
 Response ToInterceptionPatterns(
@@ -92,10 +92,15 @@ Response ToInterceptionPatterns(
                                resource_type.c_str()));
       }
     }
-    result->emplace_back(
-        pattern->GetUrlPattern("*"), std::move(resource_types),
-        RequestStageToInterceptorStage(
-            pattern->GetRequestStage(Fetch::RequestStageEnum::Request)));
+    auto stage = RequestStageToInterceptorStage(
+        pattern->GetRequestStage(Fetch::RequestStageEnum::Request));
+    if (!stage.has_value()) {
+      return Response::InvalidParams(
+          base::StringPrintf("Unsupported request stage '%s'",
+                             pattern->GetRequestStage("").c_str()));
+    }
+    result->emplace_back(pattern->GetUrlPattern("*"), std::move(resource_types),
+                         stage.value());
   }
   return Response::Success();
 }

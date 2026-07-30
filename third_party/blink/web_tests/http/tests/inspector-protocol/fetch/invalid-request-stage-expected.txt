@@ -1,0 +1,10 @@
+Tests the browser does not crash when an invalid request stage is requested in Fetch.enable
+{
+    error : {
+        code : -32602
+        message : Unsupported request stage 'FOO'
+    }
+    id : <number>
+    sessionId : <string>
+}
+
