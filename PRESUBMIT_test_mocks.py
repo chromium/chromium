@@ -141,7 +141,7 @@ class MockInputApi(object):
         self.os_path.isfile = mock_isfile
         self.glob = mock_glob
 
-    def AffectedFiles(self, file_filter=None, include_deletes=True):
+    def AffectedFiles(self, include_deletes=True, file_filter=None):
         for file in self.files:
             if file_filter and not file_filter(file):
                 continue
