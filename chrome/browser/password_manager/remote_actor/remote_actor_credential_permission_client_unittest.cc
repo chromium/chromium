@@ -147,7 +147,7 @@ TEST_F(RemoteActorCredentialPermissionClientTest,
   client_->GrantPasswordPermission(permission, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      GoogleServiceAuthError::FromServiceUnavailable(""));
 
   EXPECT_FALSE(future.Get());
 }

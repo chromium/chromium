@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -118,7 +119,7 @@ TEST_F(RemoteActorRequestTest, AccessTokenFetchFailure) {
 
   // Fail to fetch token
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   run_loop.Run();
 
