@@ -1548,9 +1548,13 @@
                     ]
                 },
                 {
-                    "name": "EnabledByDefault",
+                    "name": "EnabledWithIPHTrackingOnly",
                     "params": {
-                        "enable_by_default": "true"
+                        "availability": "any",
+                        "event_trigger": "name:android_vertical_tabs_promo_iph_triggered;comparator:==0;window:7;storage:360",
+                        "event_trigger_1": "name:android_vertical_tabs_promo_iph_triggered;comparator:<3;window:360;storage:360",
+                        "event_used": "name:android_vertical_tabs_promo_used;comparator:==0;window:360;storage:360",
+                        "session_rate": "==0"
                     },
                     "enable_features": [
                         "AndroidVerticalTabs",
@@ -1559,14 +1563,9 @@
                     ]
                 },
                 {
-                    "name": "EnabledByDefaultIPHTrackingOnly",
+                    "name": "EnabledDefaultVisible",
                     "params": {
-                        "availability": "any",
-                        "enable_by_default": "true",
-                        "event_trigger": "name:android_vertical_tabs_promo_iph_triggered;comparator:==0;window:7;storage:360",
-                        "event_trigger_1": "name:android_vertical_tabs_promo_iph_triggered;comparator:<3;window:360;storage:360",
-                        "event_used": "name:android_vertical_tabs_promo_used;comparator:==0;window:360;storage:360",
-                        "session_rate": "==0"
+                        "enable_by_default": "true"
                     },
                     "enable_features": [
                         "AndroidVerticalTabs",
