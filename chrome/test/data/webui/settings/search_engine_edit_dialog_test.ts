@@ -10,7 +10,7 @@ import type {CrInputElement, SettingsSearchEngineEditDialogElement} from 'chrome
 import {loadTimeData, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
 import type {SearchEngine} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
@@ -34,7 +34,6 @@ suite('SearchEngineEditDialog', function() {
     dialog = document.createElement('settings-search-engine-edit-dialog');
     dialog.model = engine;
     document.body.appendChild(dialog);
-    return flushTasks();
   }
 
   /**
@@ -48,12 +47,12 @@ suite('SearchEngineEditDialog', function() {
       engine: SearchEngine, expectedDialogTitle: string,
       expectedReadonly: boolean) {
     const policySubtitleContainer =
-        dialog.shadowRoot!.querySelector('#policySubtitleContainer');
+        dialog.shadowRoot.querySelector('#policySubtitleContainer');
     assertTrue(!!policySubtitleContainer);
     assertEquals(
         expectedDialogTitle,
-        dialog.shadowRoot!.querySelector(
-                              'div[slot="title"]')!.textContent.trim());
+        dialog.shadowRoot.querySelector(
+                             'div[slot="title"]')!.textContent.trim());
 
     // Check that the cr-input fields are pre-populated.
     assertEquals(engine.name, dialog.$.searchEngine.value);
@@ -102,7 +101,7 @@ suite('SearchEngineEditDialog', function() {
      */
     function inputAndValidate(inputId: string): Promise<void> {
       const inputElement =
-          dialog.shadowRoot!.querySelector<CrInputElement>(`#${inputId}`)!;
+          dialog.shadowRoot.querySelector<CrInputElement>(`#${inputId}`)!;
       browserProxy.resetResolver('validateSearchEngineInput');
       inputElement.dispatchEvent(
           new CustomEvent('input', {bubbles: true, composed: true}));
@@ -151,9 +150,10 @@ suite('SearchEngineEditDialog', function() {
     return browserProxy.whenCalled('searchEngineEditCancelled');
   });
 
-  test('DialogValidateInputsWhenEnginesChanged', function() {
+  test('DialogValidateInputsWhenEnginesChanged', async function() {
     dialog.model = createSampleSearchEngine({name: 'G'});
-    dialog.set('keyword_', 'G');
+    dialog.$.keyword.value = 'G';
+    await microtasksFinished();
     webUIListenerCallback('search-engines-changed', {
       activeSiteShortcuts: [],
       inactiveSiteShortcuts: [createSampleSearchEngine({name: 'G'})],
@@ -287,15 +287,23 @@ suite('SearchEngineEditDialogInSearchEnginesPage', function() {
     return browserProxy.whenCalled('searchEngineEditCancelled');
   });
 
-  test('DialogValidateInputsWhenEnginesChanged', function() {
+  test('DialogValidateInputsWhenEnginesChanged', async function() {
     dialog.model = createSampleSearchEngine({name: 'G'});
-    dialog.set('keyword_', 'G');
+    await microtasksFinished();
+    browserProxy.resetResolver('validateSearchEngineInput');
+
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
       others: [createSampleSearchEngine({name: 'G'})],
       extensions: [],
     });
-    return browserProxy.whenCalled('validateSearchEngineInput');
+
+    // This may be called 3 times, once for each of searchEngine, keyword,
+    // and queryUrl, but searchEngine comes first.
+    const args = await browserProxy.whenCalled('validateSearchEngineInput');
+    assertEquals(2, args.length);
+    assertEquals('searchEngine', args[0]);
+    assertEquals('G', args[1]);
   });
 });

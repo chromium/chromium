@@ -329,7 +329,7 @@ suite('SearchEnginePageTests', function() {
         page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
     assertTrue(!!dialog);
     const policySubtitleContainer =
-        dialog.shadowRoot!.querySelector('#policySubtitleContainer');
+        dialog.shadowRoot.querySelector('#policySubtitleContainer');
     assertFalse(!!policySubtitleContainer);
 
     // Check that the cr-input fields are pre-populated.

@@ -104,28 +104,29 @@ suite('SearchPageTests', function() {
     openSearchEngineListButton.click();
     assertEquals(metrics.count('ChooseDefaultSearchEngine'), 1);
 
-    await flushTasks();
+    await microtasksFinished();
 
     const searchEngineListDialog =
         page.shadowRoot!.querySelector('settings-search-engine-list-dialog');
     assertTrue(!!searchEngineListDialog);
 
     const radioGroupElement =
-        searchEngineListDialog.shadowRoot!.querySelector('cr-radio-group')!;
+        searchEngineListDialog.shadowRoot.querySelector('cr-radio-group')!;
     assertEquals('0', radioGroupElement.selected);
 
     const saveGuestChoiceCheckbox =
-        searchEngineListDialog.shadowRoot!.querySelector(
+        searchEngineListDialog.shadowRoot.querySelector(
             '#saveGuestChoiceCheckbox')!;
     assertFalse(!!saveGuestChoiceCheckbox);
 
     // Simulate a user initiated change of the default search engine.
     const radioButtons =
-        searchEngineListDialog.shadowRoot!.querySelectorAll('cr-radio-button');
+        searchEngineListDialog.shadowRoot.querySelectorAll('cr-radio-button');
     const setAsDefaultButton =
-        searchEngineListDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        searchEngineListDialog.shadowRoot.querySelector<HTMLButtonElement>(
             '#setAsDefaultButton')!;
     radioButtons[1]!.click();
+    await microtasksFinished();
     setAsDefaultButton.click();
 
     const [, , saveGuestChoice] =
@@ -142,7 +143,7 @@ suite('SearchPageTests', function() {
 
     browserProxy.resetResolver('setDefaultSearchEngine');
     webUIListenerCallback('search-engines-changed', searchEnginesInfo);
-    flush();
+    await microtasksFinished();
     assertEquals('2', radioGroupElement.selected);
 
     browserProxy.whenCalled('setDefaultSearchEngine').then(function() {
@@ -224,7 +225,7 @@ suite('SearchPageTests', function() {
     assertTrue(!!searchEngineListDialog);
 
     const saveGuestChoiceCheckbox =
-        searchEngineListDialog.shadowRoot!.querySelector<CrCheckboxElement>(
+        searchEngineListDialog.shadowRoot.querySelector<CrCheckboxElement>(
             '#saveGuestChoiceCheckbox')!;
     assertTrue(!!saveGuestChoiceCheckbox);
     assertTrue(saveGuestChoiceCheckbox.checked);
@@ -234,7 +235,7 @@ suite('SearchPageTests', function() {
     assertFalse(saveGuestChoiceCheckbox.checked);
 
     const setAsDefaultButton =
-        searchEngineListDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+        searchEngineListDialog.shadowRoot.querySelector<HTMLButtonElement>(
             '#setAsDefaultButton')!;
     setAsDefaultButton.click();
 

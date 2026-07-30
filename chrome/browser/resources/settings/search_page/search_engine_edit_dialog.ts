@@ -14,13 +14,15 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './search_engine_edit_dialog.html.js';
+import {getCss} from './search_engine_edit_dialog.css.js';
+import {getHtml} from './search_engine_edit_dialog.html.js';
 import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
@@ -39,8 +41,11 @@ export interface SettingsSearchEngineEditDialogElement {
   };
 }
 
+export type SearchEngineEditDialogElement =
+    SettingsSearchEngineEditDialogElement;
+
 const SettingsSearchEngineEditDialogElementBase =
-    WebUiListenerMixin(PolymerElement);
+    WebUiListenerMixinLit(CrLitElement);
 
 export class SettingsSearchEngineEditDialogElement extends
     SettingsSearchEngineEditDialogElementBase {
@@ -48,92 +53,148 @@ export class SettingsSearchEngineEditDialogElement extends
     return 'settings-search-engine-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The search engine to be edited. If not populated a new search engine
        * should be added.
        */
-      model: Object,
-
-      searchEngine_: String,
-      keyword_: String,
-      queryUrl_: String,
-      dialogTitle_: String,
-      actionButtonText_: String,
-      showPolicySubtitle_: Boolean,
-      readonly_: Boolean,
-      urlIsReadonly_: {
-        type: Boolean,
-        computed: 'computeUrlIsReadonly_(model, readonly_)',
-      },
+      model: {type: Object},
+      searchEngine_: {type: String},
+      keyword_: {type: String},
+      queryUrl_: {type: String},
+      dialogTitle_: {type: String},
+      actionButtonText_: {type: String},
+      showPolicySubtitle_: {type: Boolean},
+      readonly_: {type: Boolean},
+      urlIsReadonly_: {type: Boolean},
     };
   }
 
-  declare model: SearchEngine|null;
-  declare private searchEngine_: string;
-  declare private keyword_: string;
-  declare private queryUrl_: string;
-  declare private dialogTitle_: string;
-  declare private actionButtonText_: string;
-  declare private showPolicySubtitle_: boolean;
-  declare private readonly_: boolean;
-  declare private urlIsReadonly_: boolean;
+  accessor model: SearchEngine|null = null;
+  protected accessor searchEngine_: string = '';
+  protected accessor keyword_: string = '';
+  protected accessor queryUrl_: string = '';
+  protected accessor dialogTitle_: string = '';
+  protected accessor actionButtonText_: string = '';
+  protected accessor showPolicySubtitle_: boolean = false;
+  protected accessor readonly_: boolean = false;
+  protected accessor urlIsReadonly_: boolean = false;
+
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
-
-    if (this.model) {
-      this.readonly_ = this.model.isManaged && !this.model.canBeEdited;
-      if (this.model.isPrepopulated || this.model.default) {
-        this.dialogTitle_ = loadTimeData.getString(
-            this.readonly_ ? 'searchEnginesViewSearchEngine' :
-                             'searchEnginesEditSearchEngine');
-      } else {
-        this.dialogTitle_ = loadTimeData.getString(
-            this.readonly_ ? 'searchEnginesViewSiteSearch' :
-                             'searchEnginesEditSiteSearch');
-      }
-
-      this.actionButtonText_ =
-          loadTimeData.getString(this.readonly_ ? 'done' : 'save');
-      this.showPolicySubtitle_ = this.model.isManaged;
-
-      // If editing an existing search engine, pre-populate the input fields.
-      this.searchEngine_ = this.model.name;
-      this.keyword_ = this.model.keyword;
-      this.queryUrl_ = this.model.url;
-    } else {
-      this.dialogTitle_ = loadTimeData.getString('searchEnginesAddSiteSearch');
-      this.actionButtonText_ = loadTimeData.getString('add');
-      this.readonly_ = false;
-      this.showPolicySubtitle_ = false;
-    }
-
-    this.addEventListener('cancel', () => {
-      this.browserProxy_.searchEngineEditCancelled();
-    });
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'search-engines-changed',
         loadTimeData.getBoolean('searchSettingsUpdate') ?
             this.updateEnginesFromCategorizedUrls_.bind(this) :
             this.updateEnginesFromSearchEnginesInfo_.bind(this));
-  }
 
-  override connectedCallback() {
-    super.connectedCallback();
-
-    microTask.run(() => this.updateActionButtonState_());
     this.browserProxy_.searchEngineEditStarted(
         this.model ? this.model.id : DEFAULT_MODEL_ID);
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('model')) {
+      if (this.model) {
+        this.readonly_ = this.model.isManaged && !this.model.canBeEdited;
+        if (this.model.isPrepopulated || this.model.default) {
+          this.dialogTitle_ = loadTimeData.getString(
+              this.readonly_ ? 'searchEnginesViewSearchEngine' :
+                               'searchEnginesEditSearchEngine');
+        } else {
+          this.dialogTitle_ = loadTimeData.getString(
+              this.readonly_ ? 'searchEnginesViewSiteSearch' :
+                               'searchEnginesEditSiteSearch');
+        }
+
+        this.actionButtonText_ =
+            loadTimeData.getString(this.readonly_ ? 'done' : 'save');
+        this.showPolicySubtitle_ = this.model.isManaged;
+
+        // If editing an existing search engine, pre-populate the input fields.
+        this.searchEngine_ = this.model.name;
+        this.keyword_ = this.model.keyword;
+        this.queryUrl_ = this.model.url;
+      } else {
+        this.dialogTitle_ =
+            loadTimeData.getString('searchEnginesAddSiteSearch');
+        this.actionButtonText_ = loadTimeData.getString('add');
+        this.readonly_ = false;
+        this.showPolicySubtitle_ = false;
+        this.searchEngine_ = '';
+        this.keyword_ = '';
+        this.queryUrl_ = '';
+      }
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedProperties.has('model') ||
+        changedPrivateProperties.has('readonly_')) {
+      this.urlIsReadonly_ =
+          this.readonly_ || (!!this.model && this.model.urlLocked);
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+
+    this.addEventListener('cancel', () => {
+      this.browserProxy_.searchEngineEditCancelled();
+    });
+
+    this.updateActionButtonState_();
     this.$.dialog.showModal();
+  }
+
+  protected onSearchEngineValueChanged_(e: CustomEvent<{value: string}>) {
+    this.searchEngine_ = e.detail.value;
+  }
+
+  protected onSearchEngineInput_(e: Event) {
+    this.validate_(e);
+  }
+
+  protected onKeywordValueChanged_(e: CustomEvent<{value: string}>) {
+    this.keyword_ = e.detail.value;
+  }
+
+  protected onKeywordFocus_(e: Event) {
+    this.validate_(e);
+  }
+
+  protected onKeywordInput_(e: Event) {
+    this.validate_(e);
+  }
+
+  protected onQueryUrlValueChanged_(e: CustomEvent<{value: string}>) {
+    this.queryUrl_ = e.detail.value;
+  }
+
+  protected onQueryUrlFocus_(e: Event) {
+    this.validate_(e);
+  }
+
+  protected onQueryUrlInput_(e: Event) {
+    this.validate_(e);
+  }
+
+  protected onCancelClick_() {
+    this.cancel_();
   }
 
   private updateEnginesFromCategorizedUrls_(
@@ -178,11 +239,11 @@ export class SettingsSearchEngineEditDialogElement extends
         element => this.validateElement_(element));
   }
 
-  private cancel_() {
+  protected cancel_() {
     this.$.dialog.cancel();
   }
 
-  private onActionButtonClick_() {
+  protected onActionButtonClick_() {
     this.browserProxy_.searchEngineEditCompleted(
         this.searchEngine_, this.keyword_, this.queryUrl_);
     this.$.dialog.close();
@@ -226,10 +287,6 @@ export class SettingsSearchEngineEditDialogElement extends
       return !inputElement.invalid && inputElement.value.length > 0;
     });
     this.$.actionButton.disabled = !allValid;
-  }
-
-  private computeUrlIsReadonly_(): boolean {
-    return this.readonly_ || (!!this.model && this.model.urlLocked);
   }
 }
 
