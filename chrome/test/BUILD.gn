@@ -1021,6 +1021,7 @@ source_set("platform_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "../browser/chrome_content_browser_client_platform_browsertest.cc",
     "../browser/loadtimes_extension_bindings_browsertest.cc",
     "../browser/no_best_effort_tasks_browsertest.cc",
     "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
