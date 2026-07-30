@@ -543,7 +543,9 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
            /*search=*/std::nullopt,
            /*hash=*/std::nullopt),
        .match_urls = {"https://example.com/foo", "https://example.com/foo?bar"},
-       .non_match_urls = {"https://example.com/bar"}},
+       .non_match_urls = {"https://example.com/bar", "https://example.com/foo/",
+                          "https://example.com/foo/bar",
+                          "https://subdomain.example.com/foo"}},
 
       // Absolute URL with different hostname
       {.constructor_string = "https://example.net/piyo/fuga",
@@ -556,7 +558,9 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
        .match_urls = {"https://example.net/piyo/fuga",
                       "https://example.net/piyo/fuga?bar"},
        .non_match_urls = {"https://example.com/foo/",
-                          "https://example.com/foo/piyo/fuga"}},
+                          "https://example.com/foo/piyo/fuga",
+                          "https://anexample.net/piyo/fuga",
+                          "https://example.net.com/piyo/fuga"}},
 
       // Absolute URL with a default port
       {.constructor_string = "https://example.com:443/piyo/fuga",
@@ -592,7 +596,8 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
            /*port=*/"", /*pathname=*/std::nullopt,
            /*search=*/std::nullopt,
            /*hash=*/std::nullopt),
-       .match_urls = {"https://example.com", "https://example.com/piyo/"},
+       .match_urls = {"https://example.com", "https://example.com/piyo/",
+                      "https://example.com/"},
        .non_match_urls = {"https://example.net/"}},
 
       // pathname = `/`
@@ -603,7 +608,7 @@ TEST_F(SimpleUrlPatternMatcherTest, CreateWithoutBaseUrl) {
            /*port=*/"", /*pathname=*/"/",
            /*search=*/std::nullopt,
            /*hash=*/std::nullopt),
-       .match_urls = {"https://example.com"},
+       .match_urls = {"https://example.com", "https://example.com/"},
        .non_match_urls = {"https://example.net/", "https://example.com/piyo/"}},
 
       // Test cases for SimpleUrlPatternMatcher creation failure
