@@ -6357,11 +6357,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPageInfoAsAppMenuItemDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidPageInfoAsAppMenuItem)},
 
-    {"android-system-contacts-picker",
-     flag_descriptions::kAndroidSystemContactsPickerName,
-     flag_descriptions::kAndroidSystemContactsPickerDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(browser_ui::kAndroidSystemContactsPicker)},
-
     {"user-media-screen-capturing",
      flag_descriptions::kUserMediaScreenCapturingName,
      flag_descriptions::kUserMediaScreenCapturingDescription, kOsAndroid,

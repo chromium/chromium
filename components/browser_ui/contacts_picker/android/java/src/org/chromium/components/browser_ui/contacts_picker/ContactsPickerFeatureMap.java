@@ -44,10 +44,6 @@ public class ContactsPickerFeatureMap extends FeatureMap {
 
     /** Returns whether the system contacts picker should be used instead of the built-in one. */
     public static boolean shouldShowSystemContactsPicker() {
-        if (!isEnabled(ContactsPickerFeatureList.ANDROID_SYSTEM_CONTACTS_PICKER)) {
-            return false;
-        }
-
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
         return delegate != null && delegate.isSystemContactsPickerEnabled();
     }

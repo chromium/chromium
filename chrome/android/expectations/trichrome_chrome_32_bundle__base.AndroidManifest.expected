@@ -77,7 +77,7 @@
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
   <uses-permission-sdk-23 android:name="android.permission.HAND_TRACKING"/>
-  <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS" android:maxSdkVersion="36"/>
   <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
   <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
   <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING_FINE"/>

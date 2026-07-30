@@ -28,7 +28,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
@@ -46,7 +45,6 @@ import java.util.ArrayList;
 /** Tests for the System Contacts Picker integration. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@EnableFeatures(ContactsPickerFeatureList.ANDROID_SYSTEM_CONTACTS_PICKER)
 public class SystemContactsPickerTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
@@ -61,7 +59,6 @@ public class SystemContactsPickerTest {
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ContactsPickerListener mListener;
-    @Mock private ContactsPickerFeatureMap mMockFeatureMap;
 
     private PickerCategoryView mCategoryView;
     private Activity mActivity;
@@ -83,12 +80,6 @@ public class SystemContactsPickerTest {
         FakeAconfigFlaggedApiDelegate fakeDelegate = new FakeAconfigFlaggedApiDelegate();
         fakeDelegate.setSystemContactsPickerEnabled(true);
         AconfigFlaggedApiDelegate.setInstanceForTesting(fakeDelegate);
-
-        // Mock the feature map to avoid native calls.
-        ContactsPickerFeatureMap.setInstanceForTesting(mMockFeatureMap);
-        Mockito.doReturn(true)
-                .when(mMockFeatureMap)
-                .isEnabledInNative(ContactsPickerFeatureList.ANDROID_SYSTEM_CONTACTS_PICKER);
 
         mActivity = activityTestRule.getActivity();
 

@@ -19,7 +19,6 @@ namespace {
 // locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kContactsPickerSelectAll,
-    &kAndroidSystemContactsPicker,
 };
 
 // static

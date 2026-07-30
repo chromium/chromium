@@ -428,12 +428,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-system-contacts-picker",
-    "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
-    "expiry_milestone": 160
-  },
-
-  {
     "name": "android-tabstrip-startup-capture-bug-fix",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 160

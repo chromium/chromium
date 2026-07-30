@@ -11,7 +11,6 @@
 namespace browser_ui {
 
 BASE_DECLARE_FEATURE(kContactsPickerSelectAll);
-BASE_DECLARE_FEATURE(kAndroidSystemContactsPicker);
 
 }  // namespace browser_ui
 

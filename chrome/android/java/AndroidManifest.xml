@@ -62,7 +62,7 @@ by a child template that "extends" this file.
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN"
                             android:usesPermissionFlags="neverForLocation"/>
 
-    <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS" android:maxSdkVersion="36"/>
     <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
 
     <!--  Needed for allowing downloaded APKs to be installed. -->
