@@ -29,6 +29,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedKnownInterceptionDisclosure,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedPageInfo,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -53,6 +58,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedGoogleApiKeys;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:
       return &kMigratedInstallerDownloader;
+    case InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE:
+      return &kMigratedKnownInterceptionDisclosure;
     case InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE:
       return &kMigratedPageInfo;
     case InfoBarDelegate::PDF_INFOBAR_DELEGATE:

@@ -395,6 +395,7 @@ source_set("platform_browser_tests") {
     ":ssl",
     ":test_support",
     "//base",
+    "//chrome/browser/infobars",
     "//chrome/browser/interstitials:test_support",
     "//chrome/test:test_support",
     "//components/infobars/content",

@@ -16,6 +16,8 @@
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -93,6 +95,35 @@ void RegisterInfoBars() {
             .SetLinkNavigationUrl(GURL(ObsoleteSystem::GetLinkURL()))
             .SetScope(InfoBarScope::kTab)
             .SetExpireOnNavigation(false)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+    auto spec =
+        InfoBarSpec::Builder(
+            InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)
+            .SetMessageText(
+                l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_HEADER))
+            .SetLinkText(l10n_util::GetStringUTF16(IDS_LEARN_MORE))
+            .SetLinkNavigationUrl(
+                GURL("chrome://connection-monitoring-detected/"))
+            .SetScope(InfoBarScope::kTab)
+            .SetPriority(InfoBarPriority::kCriticalSecurity)
+            .SetExpireOnNavigation(false)
+            .SetDismissAction(
+                base::BindRepeating([](content::WebContents* web_contents) {
+                  if (web_contents) {
+                    Profile* profile = Profile::FromBrowserContext(
+                        web_contents->GetBrowserContext());
+                    KnownInterceptionDisclosureCooldown::GetInstance()
+                        ->Activate(profile);
+                  }
+                }))
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }

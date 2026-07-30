@@ -14,6 +14,7 @@ source_set("infobars") {
     "//chrome/browser:browser_process",
     "//chrome/browser/infobars",
     "//chrome/browser/obsolete_system",
+    "//chrome/browser/ssl",
     "//chrome/browser/ui/page_info",
     "//components/infobars/core",
     "//components/strings:components_strings",

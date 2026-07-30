@@ -11,7 +11,10 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -94,11 +97,22 @@ void MaybeShowKnownInterceptionDisclosureDialog(
     KnownInterceptionDisclosureMessageDelegate::FromWebContents(web_contents)
         ->MaybeShow();
 #else
-    infobars::ContentInfoBarManager* infobar_manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    auto delegate =
-        std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
-    infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+    if (infobars::IsInfoBarMigrated(
+            infobars::InfoBarDelegate::
+                KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)) {
+      if (auto* manager =
+              infobars::BrowserInfoBarManager::From(g_browser_process)) {
+        manager->Show(web_contents,
+                      infobars::InfoBarDelegate::
+                          KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE);
+      }
+    } else {
+      infobars::ContentInfoBarManager* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents);
+      auto delegate =
+          std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
+      infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+    }
 #endif
   }
 }
