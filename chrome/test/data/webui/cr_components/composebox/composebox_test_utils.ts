@@ -203,12 +203,12 @@ export type MockComposeboxVoiceSearch = Omit<
     ComposeboxVoiceSearchElement,
     'state_'|'voiceRecognition_'|'onFinalResult_'|'onCloseClick_'|'onEnd_'|
     'onTryAgainClick_'|'onLinkClick_'|'errorMessage_'|'voiceModeEndCleanup_'|
-    'detailedError_'|'onStopClick_'|'recordMetric_'>&{
+    'detailedError'|'onStopClick_'|'recordMetric_'>&{
   state_: number,
   metricSource_: string,
   voiceRecognition_: MockSpeechRecognition,
   errorMessage_: string,
-  detailedError_: VoiceSearchError | null,
+  detailedError: VoiceSearchError | null,
   voiceModeEndCleanup_: () => void,
   onFinalResult_: (result: string, forceSubmit?: boolean) => void,
   onCloseClick_: () => void,

@@ -419,7 +419,7 @@ suite('ComposeboxVoiceSearch', () => {
         await microtasksFinished();
 
         // Assert: Component state is cleared due to instant resetState_().
-        assertEquals(null, voiceSearchElement.detailedError_);
+        assertEquals(null, voiceSearchElement.detailedError);
         // Assert: NO_SPEECH error was successfully recorded in metrics.
         assertEquals(
             1,
@@ -465,7 +465,7 @@ suite('ComposeboxVoiceSearch', () => {
         await microtasksFinished();
 
         assertTrue(cancelEventFired);
-        assertEquals(null, voiceSearchElement.detailedError_);
+        assertEquals(null, voiceSearchElement.detailedError);
         assertEquals(
             1,
             metrics.count(
@@ -500,7 +500,7 @@ suite('ComposeboxVoiceSearch', () => {
         await microtasksFinished();
 
         assertTrue(cancelEventFired);
-        assertEquals(null, voiceSearchElement.detailedError_);
+        assertEquals(null, voiceSearchElement.detailedError);
         assertEquals(
             1,
             metrics.count(

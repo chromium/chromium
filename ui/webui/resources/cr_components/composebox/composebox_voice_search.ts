@@ -140,8 +140,6 @@ function toError(webkitError: string): VoiceSearchError {
   }
 }
 
-
-
 export interface ComposeboxVoiceSearchElement {
   $: {
     input: HTMLInputElement,
@@ -182,7 +180,7 @@ export class ComposeboxVoiceSearchElement extends
       errorMessage_: {type: String},
       error_: {type: Number},
       detailsUrl_: {type: String},
-      detailedError_: {type: Number},
+      detailedError: {type: Number},
       hasErrorTimer: {type: Boolean},
       isPermissionPromptOpen: {
         type: Boolean,
@@ -220,50 +218,52 @@ export class ComposeboxVoiceSearchElement extends
     };
   }
 
-  accessor activatedByKeyboard: boolean = false;
-  accessor submitStopButtonsEnabled: boolean = false;
-  accessor liveTranscriptEnabled: boolean = true;
-  // Accept page callback router attribute asynchronously, so that the parent
-  // and voice search component can share the same mojo connection and source of
-  // truth (to avoid race conditions).
-  accessor pageCallbackRouter: PageCallbackRouter|null = null;
-  protected accessor transcript_: string = '';
-  protected accessor listeningPlaceholder_: string =
-      loadTimeData.getString('voiceListening');
-  protected accessor finalResult_: string = '';
-  protected accessor interimResult_: string = '';
-  protected accessor error_: VoiceSearchError|null = null;
-  protected accessor errorMessage_: string = '';
-  accessor detailedError_: VoiceSearchError|null = null;
-  protected accessor detailsUrl_: string =
-      `https://support.google.com/chrome/?p=ui_voice_search&hl=${
-          window.navigator.language}`;
-  accessor isPermissionPromptOpen: boolean = false;
-
-  private accessor state_: State = State.UNINITIALIZED;
-  accessor metricSource: string = '';
-  private blurTimeoutId_: number|null = null;
-
   // Shared statically to coordinate the singleton SpeechRecognition service
   // across element instances (which are destroyed/recreated on toggle) and
   // prevent InvalidStateError crashes on rapid restarts.
   private static activeRecognition_: SpeechRecognition|null = null;
-  private static pendingStartInstance_: ComposeboxVoiceSearchElement|null = null;
+  private static pendingStartInstance_: ComposeboxVoiceSearchElement|null =
+      null;
 
-  private pageHandler_: PageHandlerRemote =
-      ComposeboxProxyImpl.getInstance().handler;
-  private voiceRecognition_: SpeechRecognition;
-  private timerId_: number|null = null;
-  private searchboxHandler_: SearchboxPageHandlerRemote =
-      ComposeboxProxyImpl.getInstance().searchboxHandler;
-  private listenerIds_: number[] = [];
+  accessor activatedByKeyboard: boolean = false;
+  accessor autosubmitEnabled: boolean = false;
+  accessor detailedError: VoiceSearchError|null = null;
+  accessor dynamicTimeoutEnabled: boolean = false;
   accessor hasErrorTimer: boolean = false;
+  accessor idleTimeout: number = 3000;
+  accessor isPermissionPromptOpen: boolean = false;
+  accessor liveTranscriptEnabled: boolean = true;
+  accessor metricSource: string = '';
+  // Accept page callback router attribute asynchronously, so that the parent
+  // and voice search component can share the same mojo connection and source of
+  // truth (to avoid race conditions).
+  accessor pageCallbackRouter: PageCallbackRouter|null = null;
+  accessor queryLengthLimit: number|undefined = undefined;
   accessor submitButtonIconType: SubmitButtonIconType =
       SubmitButtonIconType.FORWARD;
-  accessor autosubmitEnabled: boolean = false;
-  accessor dynamicTimeoutEnabled: boolean = false;
-  accessor queryLengthLimit: number|undefined = undefined;
-  accessor idleTimeout: number = 3000;
+  accessor submitStopButtonsEnabled: boolean = false;
+
+  protected accessor detailsUrl_: string =
+      `https://support.google.com/chrome/?p=ui_voice_search&hl=${
+          window.navigator.language}`;
+  protected accessor error_: VoiceSearchError|null = null;
+  protected accessor errorMessage_: string = '';
+  protected accessor finalResult_: string = '';
+  protected accessor interimResult_: string = '';
+  protected accessor listeningPlaceholder_: string =
+      loadTimeData.getString('voiceListening');
+  protected accessor transcript_: string = '';
+
+  private accessor state_: State = State.UNINITIALIZED;
+
+  private blurTimeoutId_: number|null = null;
+  private listenerIds_: number[] = [];
+  private pageHandler_: PageHandlerRemote =
+      ComposeboxProxyImpl.getInstance().handler;
+  private searchboxHandler_: SearchboxPageHandlerRemote =
+      ComposeboxProxyImpl.getInstance().searchboxHandler;
+  private timerId_: number|null = null;
+  private voiceRecognition_: SpeechRecognition;
 
   constructor() {
     super();
@@ -681,7 +681,7 @@ export class ComposeboxVoiceSearchElement extends
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.state_ = State.ERROR_RECEIVED;
     this.error_ = error;
-    this.detailedError_ = error;
+    this.detailedError = error;
 
     // Handle error display and dismissal behavior based on the embedder.
     if (!this.hasErrorTimer) {
@@ -801,7 +801,7 @@ export class ComposeboxVoiceSearchElement extends
     this.interimResult_ = '';
     this.error_ = null;
     this.errorMessage_ = '';
-    this.detailedError_ = null;
+    this.detailedError = null;
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = null;
   }
