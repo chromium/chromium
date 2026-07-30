@@ -252,9 +252,6 @@ BASE_FEATURE_PARAM(double,
 BASE_FEATURE(kScrollJankV4MetricFastScrollContinuityRequiresSameDirection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseScrollIdToCalculateScrollJankV4FrameStages,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnlockDuringGpuImageOperations, base::FEATURE_ENABLED_BY_DEFAULT);

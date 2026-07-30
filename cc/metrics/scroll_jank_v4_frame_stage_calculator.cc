@@ -8,19 +8,15 @@
 #include <cmath>
 #include <memory>
 #include <optional>
-#include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
-#include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 
@@ -28,272 +24,6 @@ namespace cc {
 
 namespace {
 
-template <typename EventMetricsPtr>
-ScrollJankV4Frame::StageList CalculateStagesDefaultImpl(
-    std::vector<EventMetricsPtr>& events_metrics,
-    uint64_t result_id) {
-  TRACE_EVENT("input.scrolling",
-              "Processing ScrollJankV4Frame stages (default)",
-              [&](perfetto::EventContext context) {
-                auto* scroll_jank_v4 =
-                    context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                        ->set_scroll_jank_v4();
-                scroll_jank_v4->set_result_id(result_id);
-              });
-
-  ScrollJankV4Frame::StageList stages;
-
-  // Any scroll updates (real or synthetic).
-  //
-  // This handles cases when we have multiple scroll events. Events for dropped
-  // frames are reported by the reporter for next presented frame which could
-  // lead to having multiple scroll events.
-  //
-  // These timestamps are used to decide the relative ordering of scroll starts,
-  // updates and ends.
-  //
-  // These timestamps are
-  // `EventMetrics::DispatchStage::kArrivedInRendererCompositor` timestamps.
-  base::TimeTicks first_input_arrived_in_compositor_ts = base::TimeTicks::Max();
-  base::TimeTicks last_input_arrived_in_compositor_ts = base::TimeTicks::Min();
-
-  // Real scroll updates.
-  //
-  // The timestamps are `EventMetrics::DispatchStage::kGenerated` timestamps.
-  bool had_real_input = false;
-  base::TimeTicks first_real_input_generation_ts = base::TimeTicks::Max();
-  base::TimeTicks last_real_input_generation_ts = base::TimeTicks::Min();
-  bool has_real_inertial_input = false;
-  float total_real_raw_delta_pixels = 0;
-  float max_abs_real_inertial_raw_delta_pixels = 0;
-  std::optional<EventMetrics::TraceId> first_real_input_trace_id = std::nullopt;
-
-  // Synthetic scroll updates.
-  bool had_synthetic_input = false;
-  bool has_synthetic_inertial_input = false;
-  base::TimeTicks first_synthetic_input_begin_frame_ts = base::TimeTicks::Max();
-  std::optional<EventMetrics::TraceId> first_synthetic_input_trace_id =
-      std::nullopt;
-
-  // Scroll start and end.
-  //
-  // These timestamps are used to decide the relative ordering of scroll starts,
-  // updates and ends.
-  //
-  // These timestamps are
-  // `EventMetrics::DispatchStage::kArrivedInRendererCompositor` timestamps.
-  std::optional<base::TimeTicks> scroll_start_arrived_in_compositor_ts =
-      std::nullopt;
-  std::optional<base::TimeTicks> scroll_end_arrived_in_compositor_ts =
-      std::nullopt;
-
-  // We expect that `events_metrics` contains:
-  //   E. Zero or one scroll ends (`kGestureScrollEnd` or
-  //      `kInertialGestureScrollEnd`).
-  //   F. Zero or one first scroll updates (`kFirstGestureScrollUpdate`).
-  //   U. Zero or more continuing scroll updates (`kGestureScrollUpdate` or
-  //      `kInertialGestureScrollUpdate`s).
-  // Furthermore, we expect that:
-  //   * If there's a scroll end (E), it comes:
-  //       * either before all scroll updates (F/U), in which case we assume
-  //         that it ends the previous scroll,
-  //       * or after all scroll updates (F/U), in which case we assume that
-  //         it ends the current scroll.
-  //   * If there's a first scroll update (F), it precedes all continuing
-  //   scroll
-  //     updates (U).
-  // So E?F?U* and F?U*E? are the two possible orderings. Based on local
-  // testing, the first ordering is much more likely.
-  for (auto& event : events_metrics) {
-    EventMetrics::EventType event_type = event->type();
-    base::TimeTicks generation_ts = event->GetDispatchStageTimestamp(
-        EventMetrics::DispatchStage::kGenerated);
-    base::TimeTicks arrived_in_compositor_ts = event->GetDispatchStageTimestamp(
-        EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-
-    if (event_type == EventMetrics::EventType::kGestureScrollEnd ||
-        event_type == EventMetrics::EventType::kInertialGestureScrollEnd) {
-      if (scroll_end_arrived_in_compositor_ts) {
-        TRACE_EVENT("input",
-                    "CalculateStages: Multiple scroll ends in a frame");
-      }
-      if (auto* scroll_event = event->AsScroll()) {
-        DCHECK(!scroll_event->scroll_jank_v4_result_id().has_value());
-        scroll_event->set_scroll_jank_v4_result_id(result_id);
-      }
-      scroll_end_arrived_in_compositor_ts = arrived_in_compositor_ts;
-      continue;
-    }
-    auto* scroll_update = event->AsScrollUpdate();
-    if (!scroll_update) {
-      continue;
-    }
-
-    DCHECK(!scroll_update->scroll_jank_v4_result_id().has_value());
-    scroll_update->set_scroll_jank_v4_result_id(result_id);
-
-    first_input_arrived_in_compositor_ts = std::min(
-        first_input_arrived_in_compositor_ts, arrived_in_compositor_ts);
-    bool is_synthetic = scroll_update->is_synthetic();
-    if (is_synthetic) {
-      base::TimeTicks begin_frame_ts =
-          scroll_update->dispatch_args().frame_time;
-      if (begin_frame_ts < first_synthetic_input_begin_frame_ts) {
-        first_synthetic_input_begin_frame_ts = begin_frame_ts;
-        first_synthetic_input_trace_id = scroll_update->trace_id();
-      }
-    } else {
-      total_real_raw_delta_pixels += scroll_update->delta();
-      if (generation_ts < first_real_input_generation_ts) {
-        first_real_input_generation_ts = generation_ts;
-        first_real_input_trace_id = scroll_update->trace_id();
-      }
-    }
-
-    switch (event_type) {
-      case EventMetrics::EventType::kFirstGestureScrollUpdate:
-        if (scroll_start_arrived_in_compositor_ts) {
-          TRACE_EVENT("input",
-                      "CalculateStages: Multiple scroll starts in a "
-                      "single frame (unexpected)");
-          scroll_start_arrived_in_compositor_ts = std::min(
-              arrived_in_compositor_ts, *scroll_start_arrived_in_compositor_ts);
-          break;
-        }
-        scroll_start_arrived_in_compositor_ts = arrived_in_compositor_ts;
-        break;
-      case EventMetrics::EventType::kGestureScrollUpdate:
-        break;
-      case EventMetrics::EventType::kInertialGestureScrollUpdate:
-        if (is_synthetic) {
-          has_synthetic_inertial_input = true;
-        } else {
-          has_real_inertial_input = true;
-          max_abs_real_inertial_raw_delta_pixels =
-              std::max(max_abs_real_inertial_raw_delta_pixels,
-                       std::abs(scroll_update->delta()));
-        }
-        break;
-      default:
-        NOTREACHED();
-    }
-
-    if (is_synthetic) {
-      had_synthetic_input = true;
-    } else {
-      had_real_input = true;
-    }
-    last_input_arrived_in_compositor_ts = std::max(
-        last_input_arrived_in_compositor_ts, scroll_update->last_timestamp());
-    if (!is_synthetic) {
-      last_real_input_generation_ts = std::max(last_real_input_generation_ts,
-                                               scroll_update->last_timestamp());
-    }
-  }
-
-  bool is_scroll_start = scroll_start_arrived_in_compositor_ts.has_value();
-  bool had_gesture_scroll = had_real_input || had_synthetic_input;
-
-  // If the scroll END arrived to the renderer compositor before all scroll
-  // UPDATES, then we assume that the scroll end belongs to the PREVIOUS scroll
-  // (the E?F?U* ordering above). Note that this case also covers the scenario
-  // where there were no scroll updates in this frame (i.e. `had_gesture_scroll`
-  // is false).
-  if (scroll_end_arrived_in_compositor_ts &&
-      *scroll_end_arrived_in_compositor_ts <=
-          first_input_arrived_in_compositor_ts) {
-    if (had_gesture_scroll && !is_scroll_start) {
-      TRACE_EVENT("input",
-                  "CalculateStages: Scroll end followed by scroll updates "
-                  "without a scroll start (unexpected)");
-    }
-    stages.emplace_back(ScrollJankV4Frame::Stage::ScrollEnd{});
-  }
-
-  if (is_scroll_start) {
-    if (*scroll_start_arrived_in_compositor_ts >
-        first_input_arrived_in_compositor_ts) {
-      TRACE_EVENT("input",
-                  "CalculateStages: First scroll starts after another "
-                  "scroll update in a single frame (unexpected)");
-    }
-    stages.emplace_back(ScrollJankV4Frame::Stage::ScrollStart{});
-  }
-
-  if (!had_gesture_scroll) {
-    return stages;
-  }
-
-  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Real> real_updates =
-      had_real_input
-          ? std::make_optional(ScrollJankV4Frame::Stage::ScrollUpdates::Real{
-                .first_input_generation_ts = first_real_input_generation_ts,
-                .last_input_generation_ts = last_real_input_generation_ts,
-                .has_inertial_input = has_real_inertial_input,
-                .total_raw_delta_pixels = total_real_raw_delta_pixels,
-                .max_abs_inertial_raw_delta_pixels =
-                    max_abs_real_inertial_raw_delta_pixels,
-                .first_input_trace_id = first_real_input_trace_id,
-            })
-          : std::nullopt;
-  std::optional<ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic>
-      synthetic_updates =
-          had_synthetic_input
-              ? std::make_optional(
-                    ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic{
-                        .first_input_begin_frame_ts =
-                            first_synthetic_input_begin_frame_ts,
-                        .has_inertial_input = has_synthetic_inertial_input,
-                        .first_input_trace_id = first_synthetic_input_trace_id,
-                    })
-              : std::nullopt;
-
-  stages.emplace_back(
-      ScrollJankV4Frame::Stage::ScrollUpdates(real_updates, synthetic_updates));
-
-  // If the scroll END arrived to the renderer compositor after at least one
-  // scroll UPDATE, then we assume that the scroll end belongs to the CURRENT
-  // scroll (the F?U*E? ordering above).
-  if (scroll_end_arrived_in_compositor_ts &&
-      *scroll_end_arrived_in_compositor_ts >
-          first_input_arrived_in_compositor_ts) {
-    if (*scroll_end_arrived_in_compositor_ts <
-        last_input_arrived_in_compositor_ts) {
-      // We deliberately treat the unexpected situation where a scroll end
-      // appears in the middle of scroll updates
-      // (`first_input_arrived_in_compositor_ts` <
-      // `*scroll_end_arrived_in_compositor_ts` <
-      // `last_input_arrived_in_compositor_ts`) as if the scroll end came AFTER
-      // all scroll updates here because the situation was most likely caused by
-      // scroll updates from the previous scroll being delayed, so we want to
-      // evaluate the current frame against the previous scroll (so that the
-      // frame would potentially be marked as janky).
-      TRACE_EVENT("input",
-                  "CalculateStages: Scroll end between two scroll "
-                  "updates in a single frame (unexpected)");
-    }
-    stages.emplace_back(ScrollJankV4Frame::Stage::ScrollEnd{});
-  }
-
-  return stages;
-}
-
-class DefaultCalculator final : public ScrollJankV4FrameStageCalculator {
- public:
-  ~DefaultCalculator() override = default;
-
-  ScrollJankV4Frame::StageList CalculateStages(
-      EventMetrics::List& events_metrics,
-      uint64_t result_id) override {
-    return CalculateStagesDefaultImpl(events_metrics, result_id);
-  }
-
-  ScrollJankV4Frame::StageList CalculateStages(
-      std::vector<raw_ptr<ScrollEventMetrics>>& events_metrics,
-      uint64_t result_id) override {
-    return CalculateStagesDefaultImpl(events_metrics, result_id);
-  }
-};
 
 // Implementation of `ScrollJankV4FrameStageCalculator` which takes the scroll
 // ID (`ScrollEventMetrics::scroll_begin_arrival_timestamp()`) into account when
@@ -743,11 +473,9 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
 // static
 std::unique_ptr<ScrollJankV4FrameStageCalculator>
 ScrollJankV4FrameStageCalculator::Create() {
-  if (base::FeatureList::IsEnabled(
-          features::kUseScrollIdToCalculateScrollJankV4FrameStages)) {
-    return std::make_unique<ScrollIdBasedCalculator>();
-  }
-  return std::make_unique<DefaultCalculator>();
+  // TODO: b/496151166 - Merge ScrollIdBasedCalculator into
+  // ScrollJankV4FrameStageCalculator.
+  return std::make_unique<ScrollIdBasedCalculator>();
 }
 
 }  // namespace cc
