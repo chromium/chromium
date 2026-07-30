@@ -899,6 +899,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   // Lock the boca app and tabs in boca app browser are not muted.
   bundle.set_locked(true);
   on_task_session_manager->OnBundleUpdated(bundle);
+  WaitForLockedModeCountdown();
   auto* const tab_strip_model = boca_app_browser->tab_strip_model();
   ASSERT_EQ(tab_strip_model->count(), 2);
   tab_strip_model->ActivateTabAt(1);

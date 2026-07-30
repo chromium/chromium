@@ -355,7 +355,6 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
   should_lock_window_ = lock_window;
   notifications_manager_->ConfigureForLockedMode(should_lock_window_);
   if (should_lock_window_) {
-    system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/true);
     extensions_manager_->DisableExtensions();
     if (locked_mode_state_changed && !enter_pause_mode_) {
       // Show notification before locking the window.
@@ -385,9 +384,6 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
       EnterLockedMode();
     }
   } else {
-    if (features::IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled()) {
-      system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/false);
-    }
     // Re-enable extensions before attempting to unlock the window.
     extensions_manager_->ReEnableExtensions();
 
@@ -400,7 +396,7 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
     system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
         /*pinned=*/false,
         base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr(), /*pinned=*/false));
   }
 }
 
@@ -416,7 +412,7 @@ void OnTaskSessionManager::EnterLockedMode() {
   system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
       /*pinned=*/true,
       base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(), /*pinned=*/true));
 }
 
 void OnTaskSessionManager::SetActiveTabTrackerForTesting(
@@ -665,16 +661,22 @@ void OnTaskSessionManager::OnBundleTabRemoved(GURL url) {
   }
 }
 
-void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow() {
+void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow(bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_in_progress_ = false;
   // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
-  // `OnTaskSystemWebAppManager` eliminating the need for this callback.
+  // `OnTaskSystemWebAppManager`.
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
         window_id, {active_tab_tracker_.get(), this});
+  }
+
+  if (pinned) {
+    system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/true);
+  } else if (features::IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled()) {
+    system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/false);
   }
 }
 

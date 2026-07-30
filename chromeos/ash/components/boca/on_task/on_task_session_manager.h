@@ -163,7 +163,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   void OnBundleTabRemoved(GURL url);
 
   // Callback triggered when the Boca SWA window pin state is set.
-  void OnSetPinStateOnBocaSWAWindow();
+  void OnSetPinStateOnBocaSWAWindow(bool pinned);
 
   // Set the `active_tab_url_` to be the url associated with `tab_id`.
   void TrackActiveTabURLFromTab(SessionID tab_id);

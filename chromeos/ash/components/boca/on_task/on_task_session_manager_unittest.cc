@@ -1179,4 +1179,70 @@ TEST_F(OnTaskSessionManagerTest, ShouldRelockWindowAfterInterval) {
   task_environment_.FastForwardBy(base::Seconds(60));
 }
 
+TEST_F(OnTaskSessionManagerTest, ShouldMuteTabsAfterLockingWindow) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId));
+  EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions).Times(1);
+
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_, SetAllChromeTabsMuted(true))
+      .Times(1)
+      .InSequence(s);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.set_locked(true);
+  session_manager_->OnBundleUpdated(bundle);
+
+  // Trigger the countdown and wait for its completion to enter locked mode.
+  task_environment_.FastForwardBy(kOnTaskNotificationCountdownInterval);
+  EXPECT_TRUE(fake_notifications_delegate_ptr_->WasNotificationShown(
+      kOnTaskEnterLockedModeNotificationId));
+  task_environment_.FastForwardBy(
+      ash::features::kBocaLockedModeCountdownDurationInSeconds.Get() +
+      kOnTaskNotificationCountdownInterval);
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldUnmuteTabsAfterUnlockingWindow) {
+  // Enable the feature flag for unmuting tabs.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kBocaOnTaskUnmuteBrowserTabsOnUnlock);
+
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId));
+
+  // Initialize in locked mode.
+  *should_lock_window() = true;
+
+  Sequence s;
+  EXPECT_CALL(*extensions_manager_ptr_, ReEnableExtensions).Times(1);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(false, kWindowId))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_, SetAllChromeTabsMuted(false))
+      .Times(1)
+      .InSequence(s);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.set_locked(false);
+  session_manager_->OnBundleUpdated(bundle);
+}
+
 }  // namespace ash::boca
