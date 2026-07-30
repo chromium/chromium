@@ -253,7 +253,6 @@ class FocusActivationStore {
  public:
   FocusActivationStore()
       : activation_client_(nullptr),
-        capture_client_(nullptr),
         focus_client_(nullptr),
         focused_(nullptr),
         active_(nullptr) {}
@@ -262,18 +261,22 @@ class FocusActivationStore {
   FocusActivationStore& operator=(const FocusActivationStore&) = delete;
 
   void Store(bool clear_focus) {
+    aura::Window* root = Shell::GetPrimaryRootWindow();
+    aura::client::CaptureClient* capture_client =
+        aura::client::GetCaptureClient(root);
     if (!activation_client_) {
-      aura::Window* root = Shell::GetPrimaryRootWindow();
       activation_client_ = ::wm::GetActivationClient(root);
-      capture_client_ = aura::client::GetCaptureClient(root);
       focus_client_ = aura::client::GetFocusClient(root);
     }
-    focused_ = focus_client_->GetFocusedWindow();
-    if (focused_)
-      tracker_.Add(focused_);
-    active_ = activation_client_->GetActiveWindow();
-    if (active_ && focused_ != active_)
-      tracker_.Add(active_);
+    aura::Window* focused = focus_client_->GetFocusedWindow();
+    if (focused) {
+      focused_ = focused->GetWeakPtrAsWindow();
+    }
+
+    aura::Window* active = activation_client_->GetActiveWindow();
+    if (active) {
+      active_ = active->GetWeakPtrAsWindow();
+    }
 
     // Deactivate the window to close menu / bubble windows. Deactivating by
     // setting active window to nullptr to avoid side effects of activating an
@@ -282,7 +285,7 @@ class FocusActivationStore {
       activation_client_->ActivateWindow(nullptr);
 
     // Release capture if any.
-    capture_client_->SetCapture(nullptr);
+    capture_client->SetCapture(nullptr);
 
     // Clear the focused window if any. This is necessary because a
     // window may be deleted when losing focus (fullscreen flash for
@@ -294,26 +297,18 @@ class FocusActivationStore {
 
   void Restore() {
     // Restore focused or active window if it's still alive.
-    if (focused_ && tracker_.Contains(focused_)) {
-      focus_client_->FocusWindow(focused_);
-    } else if (active_ && tracker_.Contains(active_)) {
-      activation_client_->ActivateWindow(active_);
+    if (focused_) {
+      focus_client_->FocusWindow(focused_.get());
+    } else if (active_) {
+      activation_client_->ActivateWindow(active_.get());
     }
-    if (focused_)
-      tracker_.Remove(focused_);
-    if (active_)
-      tracker_.Remove(active_);
-    focused_ = nullptr;
-    active_ = nullptr;
   }
 
  private:
   raw_ptr<::wm::ActivationClient> activation_client_;
-  raw_ptr<aura::client::CaptureClient> capture_client_;
   raw_ptr<aura::client::FocusClient> focus_client_;
-  aura::WindowTracker tracker_;
-  raw_ptr<aura::Window, DanglingUntriaged> focused_;
-  raw_ptr<aura::Window, DanglingUntriaged> active_;
+  base::WeakPtr<aura::Window> focused_;
+  base::WeakPtr<aura::Window> active_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -843,6 +838,29 @@ void WindowTreeHostManager::PreDisplayConfigurationChange(bool clear_focus) {
   cursor_location_in_native_coords_for_restore_ = point_in_native;
 }
 
+void WindowTreeHostManager::PostDisplayConfigurationChange() {
+  focus_activation_store_->Restore();
+
+  UpdateMouseLocationAfterDisplayChange();
+
+  // Enable cursor compositing, so that cursor could be mirrored to
+  // destination displays along with other display content.
+  Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // Unpause occlusion tracking.
+  scoped_pause_.reset();
+
+  // Notify all widgets only when font render parameters actually change.
+  const bool current_subpixel_rendering_enabled =
+      gfx::GetFontRenderParamsSubpixelRenderingEnabled();
+  if (subpixel_rendering_enabled_ != current_subpixel_rendering_enabled) {
+    subpixel_rendering_enabled_ = current_subpixel_rendering_enabled;
+    for (aura::Window* root : GetAllRootWindows()) {
+      PropagateFontRenderParamsChange(root);
+    }
+  }
+}
+
 void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   // TODO(oshima): Move primary display management to DisplayManager.
   DCHECK_NE(display::kInvalidDisplayId, id);
@@ -930,29 +948,6 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   GetDisplayManager()->set_force_bounds_changed(true);
   GetDisplayManager()->UpdateDisplays();
   GetDisplayManager()->set_force_bounds_changed(false);
-}
-
-void WindowTreeHostManager::PostDisplayConfigurationChange() {
-  focus_activation_store_->Restore();
-
-  UpdateMouseLocationAfterDisplayChange();
-
-  // Enable cursor compositing, so that cursor could be mirrored to
-  // destination displays along with other display content.
-  Shell::Get()->UpdateCursorCompositingEnabled();
-
-  // Unpause occlusion tracking.
-  scoped_pause_.reset();
-
-  // Notify all widgets only when font render parameters actually change.
-  const bool current_subpixel_rendering_enabled =
-      gfx::GetFontRenderParamsSubpixelRenderingEnabled();
-  if (subpixel_rendering_enabled_ != current_subpixel_rendering_enabled) {
-    subpixel_rendering_enabled_ = current_subpixel_rendering_enabled;
-    for (aura::Window* root : GetAllRootWindows()) {
-      PropagateFontRenderParamsChange(root);
-    }
-  }
 }
 
 ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(
