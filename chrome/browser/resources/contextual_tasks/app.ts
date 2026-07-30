@@ -1332,7 +1332,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       `--composebox-margin-bottom: 0;`,  // Need to remove margin on the child
                                          // container.
       `position: ${this.inNlm_ ? 'fixed' : 'absolute'};`,
-      `bottom: ${window.innerHeight - relativeRect.bottom}px;`,
+      `bottom: ${this.offsetHeight - relativeRect.bottom}px;`,
       `left: ${relativeRect.left}px;`,
       `width: ${relativeRect.width}px;`,
       `margin: 0;`,
@@ -1354,7 +1354,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     return [
       `position: ${this.inNlm_ ? 'fixed' : 'absolute'};`,
-      `bottom: ${window.innerHeight - relativeRectTop + bottomGap}px;`,
+      `bottom: ${this.offsetHeight - relativeRectTop + bottomGap}px;`,
       `left: ${relativeRectLeft}px;`,
       `width: ${width}px;`,
       `margin: 0;`,

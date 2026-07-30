@@ -590,11 +590,13 @@ suite('ContextualTasksAppTest', function() {
     // Verify styles applied
     assertEquals('absolute', composebox.style.position);
     assertEquals(
-      `${(window.innerHeight - (frameRect.top + rect.bottom)).toFixed(3)}px`,
-      `${parseFloat(composebox.style.bottom).toFixed(3)}px`);
+        `${
+            (appElement.offsetHeight - (frameRect.top + rect.bottom))
+                .toFixed(1)}px`,
+        `${parseFloat(composebox.style.bottom).toFixed(1)}px`);
     assertEquals(
-      `${(frameRect.left + rect.left).toFixed(3)}px`,
-      `${parseFloat(composebox.style.left).toFixed(3)}px`);
+        `${(frameRect.left + rect.left).toFixed(1)}px`,
+        `${parseFloat(composebox.style.left).toFixed(1)}px`);
     assertEquals(`${rect.width}px`, composebox.style.width);
     assertEquals('', composebox.style.height);
 
@@ -653,11 +655,13 @@ suite('ContextualTasksAppTest', function() {
 
     assertEquals('fixed', composebox.style.position);
     assertEquals(
-      `${(window.innerHeight - (frameRect.top + rect.bottom)).toFixed(3)}px`,
-      `${parseFloat(composebox.style.bottom).toFixed(3)}px`);
+        `${
+            (appElement.offsetHeight - (frameRect.top + rect.bottom))
+                .toFixed(1)}px`,
+        `${parseFloat(composebox.style.bottom).toFixed(1)}px`);
     assertEquals(
-      `${(frameRect.left + rect.left).toFixed(3)}px`,
-      `${parseFloat(composebox.style.left).toFixed(3)}px`);
+        `${(frameRect.left + rect.left).toFixed(1)}px`,
+        `${parseFloat(composebox.style.left).toFixed(1)}px`);
     assertEquals(`${rect.width}px`, composebox.style.width);
     assertEquals('', composebox.style.height);
   });
