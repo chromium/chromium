@@ -10,7 +10,9 @@
 // Mutator for the Suggestions from Gemini settings ViewController.
 @protocol SuggestionsFromGeminiMutator <NSObject>
 
-// TODO(crbug.com/509479601): Implement settings linkout to open new page.
+// Informs the delegate that the user tapped on the link to manage connected
+// apps.
+- (void)didSelectManageConnectedApps;
 
 @end
 

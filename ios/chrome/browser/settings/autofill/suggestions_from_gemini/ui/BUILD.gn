@@ -15,6 +15,7 @@ source_set("ui") {
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
   ]
 }
@@ -27,7 +28,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

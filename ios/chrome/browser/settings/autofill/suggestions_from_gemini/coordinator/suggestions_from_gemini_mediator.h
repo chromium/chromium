@@ -10,7 +10,17 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 
 @protocol SuggestionsFromGeminiConsumer;
+@class SuggestionsFromGeminiMediator;
 class PrefService;
+
+// Delegate for SuggestionsFromGeminiMediator.
+@protocol SuggestionsFromGeminiMediatorDelegate <NSObject>
+
+// Tells the delegate to open the Gemini connected apps management page.
+- (void)suggestionsFromGeminiMediatorOpenConnectedApps:
+    (SuggestionsFromGeminiMediator*)mediator;
+
+@end
 
 // The Mediator for controlling the Suggestions from Gemini settings.
 @interface SuggestionsFromGeminiMediator
@@ -18,6 +28,9 @@ class PrefService;
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<SuggestionsFromGeminiConsumer> consumer;
+
+// The delegate for this mediator.
+@property(nonatomic, weak) id<SuggestionsFromGeminiMediatorDelegate> delegate;
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;

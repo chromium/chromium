@@ -8,6 +8,17 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "url/gurl.h"
+
+@interface SuggestionsFromGeminiCoordinator () <
+    SuggestionsFromGeminiMediatorDelegate>
+
+@end
 
 @implementation SuggestionsFromGeminiCoordinator {
   SuggestionsFromGeminiTableViewController* _viewController;
@@ -34,6 +45,7 @@
 
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
+  _mediator.delegate = self;
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
@@ -45,6 +57,21 @@
   _mediator = nil;
   _viewController.mutator = nil;
   _viewController = nil;
+}
+
+#pragma mark - SuggestionsFromGeminiMediatorDelegate
+
+- (void)suggestionsFromGeminiMediatorOpenConnectedApps:
+    (SuggestionsFromGeminiMediator*)mediator {
+  OpenNewTabCommand* command =
+      [[OpenNewTabCommand alloc] initWithURL:GURL(kGeminiExtensionsURL)
+                                    referrer:web::Referrer()
+                                 inIncognito:NO
+                                inBackground:NO
+                                    appendTo:OpenPosition::kLastTab];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
 @end

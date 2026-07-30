@@ -7,11 +7,23 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/test/fakes/fake_ui_navigation_controller.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
+
+@interface SuggestionsFromGeminiCoordinator (Testing) <
+    SuggestionsFromGeminiMediatorDelegate>
+@end
 
 namespace {
 
@@ -41,6 +53,27 @@ TEST_F(SuggestionsFromGeminiCoordinatorTest, TestStartStop) {
   [coordinator_ start];
   EXPECT_EQ(1u, navigation_controller_.viewControllers.count);
   [coordinator_ stop];
+}
+
+// Tests that the mediator delegate call triggers the SceneCommands
+// closePresentedViewsAndOpenURL: method.
+TEST_F(SuggestionsFromGeminiCoordinatorTest, TestManageConnectedAppsOpensUrl) {
+  [coordinator_ start];
+
+  id mockSceneCommandsHandler = OCMProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mockSceneCommandsHandler
+                   forProtocol:@protocol(SceneCommands)];
+
+  OCMExpect([mockSceneCommandsHandler
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
+                                                OpenNewTabCommand* cmd) {
+        return cmd.URL == GURL(kGeminiExtensionsURL);
+      }]]);
+
+  [coordinator_ suggestionsFromGeminiMediatorOpenConnectedApps:nil];
+
+  EXPECT_OCMOCK_VERIFY(mockSceneCommandsHandler);
 }
 
 }  // namespace

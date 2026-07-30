@@ -25,4 +25,10 @@
   _prefs = nullptr;
 }
 
+#pragma mark - SuggestionsFromGeminiMutator
+
+- (void)didSelectManageConnectedApps {
+  [self.delegate suggestionsFromGeminiMediatorOpenConnectedApps:self];
+}
+
 @end

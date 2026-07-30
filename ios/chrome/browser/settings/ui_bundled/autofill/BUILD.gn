@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/settings/ui_bundled/autofill/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
