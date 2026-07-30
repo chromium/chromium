@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.h"
+#include "chrome/browser/ttc/resources/generated_tool_definitions.h"
 
 #include <algorithm>
 #include <optional>
@@ -104,6 +105,12 @@ AiOverlayTools::AiOverlayTools(
       page_context_monitor_(page_context_monitor) {}
 
 AiOverlayTools::~AiOverlayTools() = default;
+
+void AiOverlayTools::BindRegistryReceiver(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
+        registry_receiver) {
+  registry_receiver_.Bind(std::move(registry_receiver));
+}
 
 void AiOverlayTools::OpenUrl(const std::string& url_string,
                              bool new_tab,
@@ -770,6 +777,10 @@ void AiOverlayTools::OpenPage(const std::string& query,
           std::move(response), std::move(callback), weak_factory_.GetWeakPtr(),
           target_id_counter),
       &task_tracker_);
+}
+
+void AiOverlayTools::GetToolDefinitions(GetToolDefinitionsCallback callback) {
+  std::move(callback).Run(kBuiltInToolDefinitionsJson);
 }
 
 }  // namespace ttc

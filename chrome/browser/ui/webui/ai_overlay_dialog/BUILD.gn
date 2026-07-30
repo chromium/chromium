@@ -60,6 +60,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/translate",
     "//chrome/browser/ttc/resources",
+    "//chrome/browser/ttc/resources:generate_tool_definitions",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:ui",
     "//chrome/browser/ui:ui_features",

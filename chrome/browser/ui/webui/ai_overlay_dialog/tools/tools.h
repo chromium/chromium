@@ -21,13 +21,18 @@ namespace ttc {
 
 class PageContextMonitor;
 
-class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
+class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
+                       public ai_overlay_dialog::mojom::AiOverlayToolRegistry {
  public:
   AiOverlayTools(
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
       BrowserWindowInterface* browser,
       PageContextMonitor* page_context_monitor);
   ~AiOverlayTools() override;
+
+  void BindRegistryReceiver(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
+          registry_receiver);
   AiOverlayTools(const AiOverlayTools&) = delete;
   AiOverlayTools& operator=(const AiOverlayTools&) = delete;
 
@@ -61,6 +66,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
                 OpenPageCallback callback) override;
   void InvokeGlic(const std::string& prompt,
                   InvokeGlicCallback callback) override;
+  void GetToolDefinitions(GetToolDefinitionsCallback callback) override;
 
  private:
   class AnnotationTask : public blink::mojom::AnnotationAgentHost {
@@ -86,6 +92,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
   void OnAnnotationAgentDisconnected();
 
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver_;
+  mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
+      registry_receiver_{this};
   raw_ptr<BrowserWindowInterface> browser_;
   // `page_context_monitor_` is owned by `AiOverlayDialogUntrustedUI` and must
   // outlive `AiOverlayTools`.

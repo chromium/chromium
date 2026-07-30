@@ -10,12 +10,17 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 action("generate_tool_definitions") {
   script = "tools/generate_tool_definitions.py"
   sources = [ "//chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom" ]
-  outputs = [ "$target_gen_dir/generated_tool_definitions.ts" ]
+  outputs = [
+    "$target_gen_dir/generated_tool_definitions.h",
+    "$target_gen_dir/generated_tool_definitions.ts",
+  ]
   args = [
     "--in-files",
     rebase_path(sources[0], root_build_dir),
     "--out-file",
     rebase_path(outputs[0], root_build_dir),
+    "--out-ts-file",
+    rebase_path(outputs[1], root_build_dir),
   ]
 }
 

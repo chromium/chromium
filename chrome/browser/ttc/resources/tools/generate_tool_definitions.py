@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''
-Reads tools/*_tools.mojom and outputs generated tool definitions to
-generated_tool_definitions.ts.
+Reads tools/*.mojom and outputs generated tool definitions to
+generated_tool_definitions.h.
 '''
 
 import argparse
@@ -103,11 +103,18 @@ def ParseMojomFile(header_path):
 
     tool_declarations = []
 
+    # Extract methods belonging to interface AiOverlayTools
+    interface_match = re.search(r'interface\s+AiOverlayTools\s*\{(.*?)\};', text, re.DOTALL)
+    if not interface_match:
+        return tool_declarations
+
+    interface_text = interface_match.group(1)
+
     pattern = re.compile(
         r'((?:[ \t]*//[^\n]*\n)+)[ \t]*'
         r'([A-Z]\w*)\((.*?)\)\s*=>\s*(?:result<.*?>|\(.*?\));', re.DOTALL)
 
-    for m in pattern.finditer(text):
+    for m in pattern.finditer(interface_text):
         comments, name, args_str = m.groups()
 
         # Parse mojom arguments
@@ -160,30 +167,44 @@ def ParseMojomFile(header_path):
     return tool_declarations
 
 
-def GenerateToolsJson(header_paths):
-    tool_declarations = []
-    for path in header_paths:
-        tool_declarations.extend(ParseMojomFile(path))
+def GenerateToolsJson(mojom_paths):
+    all_decls = []
+    for path in mojom_paths:
+        all_decls.extend(ParseMojomFile(path))
 
-    full_json_obj = [{"functionDeclarations": tool_declarations}]
-    json_str = json.dumps(full_json_obj, indent=2)
+    return json.dumps([{"functionDeclarations": all_decls}], indent=2)
 
+
+def GenerateHeaderFile(json_str):
     output = io.StringIO()
     output.write("// Copyright 2026 The Chromium Authors\n")
-    output.write("// Use of this source code is governed by a BSD-style "
-                 "license that can be\n")
+    output.write("// Use of this source code is governed by a BSD-style license that can be\n")
     output.write("// found in the LICENSE file.\n\n")
-    output.write("// THIS FILE IS GENERATED FROM tools/*_tools.mojom. "
-                 "DO NOT EDIT.\n\n")
+    output.write("// THIS FILE IS GENERATED FROM tools/*.mojom. DO NOT EDIT.\n\n")
+    output.write("#ifndef CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_TOOLS_GENERATED_TOOL_DEFINITIONS_H_\n")
+    output.write("#define CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_TOOLS_GENERATED_TOOL_DEFINITIONS_H_\n\n")
+    output.write("namespace ttc {\n")
+    output.write("inline constexpr char kBuiltInToolDefinitionsJson[] = R\"json(\n")
+    output.write(json_str)
+    output.write("\n)json\";\n")
+    output.write("}  // namespace ttc\n\n")
+    output.write("#endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_TOOLS_GENERATED_TOOL_DEFINITIONS_H_\n")
+    return output.getvalue()
+
+
+def GenerateTsFile(json_str):
+    output = io.StringIO()
+    output.write("// Copyright 2026 The Chromium Authors\n")
+    output.write("// Use of this source code is governed by a BSD-style license that can be\n")
+    output.write("// found in the LICENSE file.\n\n")
+    output.write("// THIS FILE IS GENERATED FROM tools/*.mojom. DO NOT EDIT.\n\n")
     output.write("/**\n")
-    output.write(" * Returns the built-in tool definitions for the Gemini "
-                 "Live API based on the\n")
+    output.write(" * Returns the built-in tool definitions for the Gemini Live API based on the\n")
     output.write(" * AiOverlayTools mojom interfaces.\n")
     output.write(" */\n")
     output.write("export const kBuiltInToolDefinitions = JSON.stringify(\n")
     output.write(json_str)
     output.write("\n);\n")
-
     return output.getvalue()
 
 
@@ -195,14 +216,22 @@ def Main():
                         help='Path to mojom files')
     parser.add_argument('--out-file',
                         required=True,
+                        help='Path to write generated_tool_definitions.h')
+    parser.add_argument('--out-ts-file',
+                        required=False,
                         help='Path to write generated_tool_definitions.ts')
     args = parser.parse_args()
 
-    tools_text = GenerateToolsJson(args.in_files)
-    target_path = args.out_file
+    json_str = GenerateToolsJson(args.in_files)
+    tools_text = GenerateHeaderFile(json_str)
 
-    with open(target_path, 'w', newline='') as f:
+    with open(args.out_file, 'w', newline='') as f:
         f.write(tools_text)
+
+    if args.out_ts_file:
+        ts_text = GenerateTsFile(json_str)
+        with open(args.out_ts_file, 'w', newline='') as f:
+            f.write(ts_text)
 
 
 if __name__ == '__main__':

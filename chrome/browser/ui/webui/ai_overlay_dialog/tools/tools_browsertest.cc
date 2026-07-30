@@ -763,5 +763,23 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageSearchByTitle) {
   EXPECT_EQ("switched_tab", GetToolResultAction(future));
   EXPECT_EQ(0, tab_strip->active_index());
 }
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GetToolDefinitions) {
+  mojo::Remote<ai_overlay_dialog::mojom::AiOverlayToolRegistry> registry_remote;
+  tools()->BindRegistryReceiver(registry_remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<const std::string&> future;
+  registry_remote->GetToolDefinitions(future.GetCallback());
+
+  std::string json_res = future.Get();
+  auto list = base::JSONReader::ReadList(json_res, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(list.has_value());
+  ASSERT_FALSE(list->empty());
+
+  auto tool_list_str = base::WriteJsonWithOptions(*list, base::OPTIONS_PRETTY_PRINT);
+  ASSERT_TRUE(tool_list_str.has_value());
+  EXPECT_FALSE(tool_list_str->empty());
+  EXPECT_NE(std::string::npos, tool_list_str->find("functionDeclarations"));
+}
 }  // namespace
 }  // namespace ttc
