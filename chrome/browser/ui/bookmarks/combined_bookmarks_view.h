@@ -20,6 +20,8 @@
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/browser_apis/bookmarks/bookmark_event_translator.h"
+#include "components/browser_apis/bookmarks/bookmark_uuid_mapper.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
 #include "url/gurl.h"
@@ -63,7 +65,10 @@ class CombinedBookmarksView : public bookmarks_api::BookmarksView,
   bool IsPermanentNode(const bookmarks::BookmarkNode* node) const override;
   bookmarks_api::mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const override;
+  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const override;
   bool IsSynced(const bookmarks::BookmarkNode* node) const override;
+  const bookmarks_api::BookmarkEventTranslator& GetEventTranslator()
+      const override;
   const bookmarks::BookmarkNode* AddURL(const bookmarks::BookmarkNode* parent,
                                         size_t index,
                                         const std::u16string& title,
@@ -113,15 +118,14 @@ class CombinedBookmarksView : public bookmarks_api::BookmarksView,
   void ExtensiveBookmarkChangesEnded() override;
 
  private:
-  void RebuildPermanentNodeUuids();
   void Notify(std::vector<bookmarks_api::mojom::BookmarksEventPtr> events);
+  void RegisterAccountNodeOverrides();
 
   raw_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   std::unique_ptr<bookmarks::BookmarkNode> synthetic_root_node_;
-
-  base::flat_map<int64_t, base::Uuid> node_id_to_uuid_;
-  base::flat_map<base::Uuid, int64_t> uuid_to_node_id_;
+  bookmarks_api::BookmarkUuidMapper uuid_mapper_;
+  bookmarks_api::BookmarkEventTranslator translator_{this};
 
   base::ObserverList<bookmarks_api::BookmarksViewObserver> observers_;
   base::ScopedObservation<bookmarks::BookmarkModel,

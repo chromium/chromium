@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/browser_apis/bookmarks/bookmark_event_translator.h"
+#include "components/browser_apis/bookmarks/bookmark_uuid_mapper.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
 #include "url/gurl.h"
 
@@ -55,7 +56,9 @@ class DefaultBookmarksView : public BookmarksView,
   bool IsPermanentNode(const bookmarks::BookmarkNode* node) const override;
   mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const override;
+  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const override;
   bool IsSynced(const bookmarks::BookmarkNode* node) const override;
+  const BookmarkEventTranslator& GetEventTranslator() const override;
   const bookmarks::BookmarkNode* AddURL(const bookmarks::BookmarkNode* parent,
                                         size_t index,
                                         const std::u16string& title,
@@ -108,6 +111,7 @@ class DefaultBookmarksView : public BookmarksView,
 
  private:
   void Notify(std::vector<mojom::BookmarksEventPtr> events);
+  void RegisterAccountNodeOverrides();
 
   raw_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_service_;
@@ -116,7 +120,8 @@ class DefaultBookmarksView : public BookmarksView,
                           bookmarks::BookmarkModelObserver>
       model_observation_{this};
 
-  BookmarkEventTranslator translator_;
+  BookmarkUuidMapper uuid_mapper_;
+  BookmarkEventTranslator translator_{this};
   std::vector<mojom::BookmarksEventPtr> queued_events_;
 };
 

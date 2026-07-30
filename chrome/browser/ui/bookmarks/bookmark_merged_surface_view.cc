@@ -26,6 +26,7 @@ BookmarkMergedSurfaceView::BookmarkMergedSurfaceView(
           GURL())) {
   CHECK(service_);
   service_observation_.Observe(service_);
+  translator_.Init();
 }
 
 BookmarkMergedSurfaceView::~BookmarkMergedSurfaceView() = default;
@@ -131,12 +132,28 @@ BookmarkMergedSurfaceView::GetPermanentFolderType(
   return bookmarks_api::mojom::PermanentFolderType::kUnknown;
 }
 
+base::Uuid BookmarkMergedSurfaceView::GetUuid(
+    const bookmarks::BookmarkNode* node) const {
+  if (!node) {
+    return base::Uuid();
+  }
+  if (node == synthetic_root_node_.get()) {
+    return synthetic_root_node_->uuid();
+  }
+  return node->uuid();
+}
+
 bool BookmarkMergedSurfaceView::IsSynced(
     const bookmarks::BookmarkNode* node) const {
   if (node == synthetic_root_node_.get()) {
     return false;
   }
   return !service_->bookmark_model()->IsLocalOnlyNode(*node);
+}
+
+const bookmarks_api::BookmarkEventTranslator&
+BookmarkMergedSurfaceView::GetEventTranslator() const {
+  return translator_;
 }
 
 const bookmarks::BookmarkNode* BookmarkMergedSurfaceView::AddURL(
@@ -250,8 +267,7 @@ void BookmarkMergedSurfaceView::BookmarkNodeAdded(
     return;
   }
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(bookmarks_api::BookmarkEventTranslator::CreateAddedEvent(
-      this, parent_node, index));
+  events.push_back(translator_.CreateAddedEvent(parent_node, index));
   Notify(std::move(events));
 }
 
@@ -260,8 +276,7 @@ void BookmarkMergedSurfaceView::BookmarkNodesRemoved(
     const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
   for (const auto* node : nodes) {
-    events.push_back(
-        bookmarks_api::BookmarkEventTranslator::CreateRemovedEvent(node));
+    events.push_back(translator_.OnNodeRemoved(node));
   }
   Notify(std::move(events));
 }
@@ -279,16 +294,15 @@ void BookmarkMergedSurfaceView::BookmarkNodeMoved(
     return;
   }
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(bookmarks_api::BookmarkEventTranslator::CreateMovedEvent(
-      old_parent_node, old_index, new_parent_node, new_index));
+  events.push_back(translator_.CreateMovedEvent(old_parent_node, old_index,
+                                                new_parent_node, new_index));
   Notify(std::move(events));
 }
 
 void BookmarkMergedSurfaceView::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(
-      bookmarks_api::BookmarkEventTranslator::CreateChangedEvent(this, node));
+  events.push_back(translator_.CreateChangedEvent(node));
   Notify(std::move(events));
 }
 

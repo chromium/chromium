@@ -18,6 +18,7 @@
 
 namespace bookmarks_api {
 
+class BookmarkEventTranslator;
 class BookmarksViewObserver;
 
 // Represents a hierarchical view of bookmark nodes and supports operations on
@@ -42,7 +43,9 @@ class BookmarksView {
   virtual bool IsPermanentNode(const bookmarks::BookmarkNode* node) const = 0;
   virtual mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const = 0;
+  virtual base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const = 0;
   virtual bool IsSynced(const bookmarks::BookmarkNode* node) const = 0;
+  virtual const BookmarkEventTranslator& GetEventTranslator() const = 0;
 
   // Hierarchical mutations (all indices are visual view indices).
   virtual const bookmarks::BookmarkNode* AddURL(

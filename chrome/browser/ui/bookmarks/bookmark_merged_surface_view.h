@@ -19,6 +19,7 @@
 #include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/browser_apis/bookmarks/bookmark_event_translator.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
 #include "url/gurl.h"
@@ -50,7 +51,10 @@ class BookmarkMergedSurfaceView : public bookmarks_api::BookmarksView,
   bool IsPermanentNode(const bookmarks::BookmarkNode* node) const override;
   bookmarks_api::mojom::PermanentFolderType GetPermanentFolderType(
       const bookmarks::BookmarkNode* node) const override;
+  base::Uuid GetUuid(const bookmarks::BookmarkNode* node) const override;
   bool IsSynced(const bookmarks::BookmarkNode* node) const override;
+  const bookmarks_api::BookmarkEventTranslator& GetEventTranslator()
+      const override;
   const bookmarks::BookmarkNode* AddURL(const bookmarks::BookmarkNode* parent,
                                         size_t index,
                                         const std::u16string& title,
@@ -103,6 +107,7 @@ class BookmarkMergedSurfaceView : public bookmarks_api::BookmarksView,
 
   raw_ptr<BookmarkMergedSurfaceService> service_;
   std::unique_ptr<bookmarks::BookmarkNode> synthetic_root_node_;
+  bookmarks_api::BookmarkEventTranslator translator_{this};
 
   base::ObserverList<bookmarks_api::BookmarksViewObserver> observers_;
   base::ScopedObservation<BookmarkMergedSurfaceService,

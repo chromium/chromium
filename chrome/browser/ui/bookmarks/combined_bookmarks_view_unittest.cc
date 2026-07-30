@@ -68,4 +68,25 @@ TEST_F(CombinedBookmarksViewTest, AddAndRemove) {
   EXPECT_EQ(view().GetChildren(bar).size(), 1u);
 }
 
+TEST_F(CombinedBookmarksViewTest,
+       UniqueUuidMappingForAccountAndLocalPermanentNodes) {
+  model().CreateAccountPermanentFolders();
+  auto account_view =
+      std::make_unique<CombinedBookmarksView>(&model(), nullptr);
+
+  auto children = account_view->GetChildren(account_view->GetRootNode());
+  EXPECT_EQ(children.size(), 6u);
+
+  std::set<base::Uuid> uuids;
+  for (const BookmarkNode* child : children) {
+    base::Uuid uuid = account_view->GetUuid(child);
+    EXPECT_TRUE(uuid.is_valid());
+    EXPECT_TRUE(uuids.insert(uuid).second)
+        << "Duplicate UUID found for node: " << child->GetTitle();
+    auto found = account_view->FindNodeByUuid(uuid);
+    ASSERT_TRUE(found.has_value());
+    EXPECT_EQ(*found, child);
+  }
+}
+
 }  // namespace

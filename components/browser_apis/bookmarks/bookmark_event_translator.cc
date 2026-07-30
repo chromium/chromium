@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -13,32 +14,28 @@
 
 namespace bookmarks_api {
 
-// static
 mojom::RootNodePtr BookmarkEventTranslator::ConvertRootNode(
-    const bookmarks::BookmarkNode* node,
-    const BookmarksView* view) {
-  CHECK(view);
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(view_);
   auto root_node = mojom::RootNode::New();
-  root_node->id = node->uuid();
-  for (const bookmarks::BookmarkNode* child : view->GetChildren(node)) {
-    root_node->children.push_back(ConvertFolderNode(child, view));
+  root_node->id = view_->GetUuid(node);
+  for (const bookmarks::BookmarkNode* child : view_->GetChildren(node)) {
+    root_node->children.push_back(ConvertFolderNode(child));
   }
   return root_node;
 }
 
-// static
 mojom::FolderPtr BookmarkEventTranslator::ConvertFolderNode(
-    const bookmarks::BookmarkNode* node,
-    const BookmarksView* view) {
-  CHECK(view);
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(view_);
   auto folder_node = mojom::Folder::New();
-  folder_node->id = node->uuid();
+  folder_node->id = view_->GetUuid(node);
   folder_node->title = base::UTF16ToUTF8(node->GetTitle());
-  for (const bookmarks::BookmarkNode* child : view->GetChildren(node)) {
-    folder_node->children.push_back(ConvertNode(child, view));
+  for (const bookmarks::BookmarkNode* child : view_->GetChildren(node)) {
+    folder_node->children.push_back(ConvertNode(child));
   }
-  folder_node->is_synced = view->IsSynced(node);
-  mojom::PermanentFolderType perm_type = view->GetPermanentFolderType(node);
+  folder_node->is_synced = view_->IsSynced(node);
+  mojom::PermanentFolderType perm_type = view_->GetPermanentFolderType(node);
   if (perm_type != mojom::PermanentFolderType::kUnknown) {
     folder_node->permanent_folder_type = perm_type;
   }
@@ -46,66 +43,63 @@ mojom::FolderPtr BookmarkEventTranslator::ConvertFolderNode(
   return folder_node;
 }
 
-// static
 mojom::BookmarkNodePtr BookmarkEventTranslator::ConvertNode(
-    const bookmarks::BookmarkNode* node,
-    const BookmarksView* view) {
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(view_);
   switch (node->type()) {
     case bookmarks::BookmarkNode::URL: {
       auto url_node = mojom::Url::New();
-      url_node->id = node->uuid();
+      url_node->id = view_->GetUuid(node);
       url_node->title = base::UTF16ToUTF8(node->GetTitle());
       url_node->url = node->url();
       if (node->icon_url()) {
         url_node->favicon_url = *node->icon_url();
       }
-      url_node->is_synced = view->IsSynced(node);
+      url_node->is_synced = view_->IsSynced(node);
       return mojom::BookmarkNode::NewUrl(std::move(url_node));
     }
     case bookmarks::BookmarkNode::FOLDER:
     case bookmarks::BookmarkNode::BOOKMARK_BAR:
     case bookmarks::BookmarkNode::OTHER_NODE:
     case bookmarks::BookmarkNode::MOBILE: {
-      return mojom::BookmarkNode::NewFolder(ConvertFolderNode(node, view));
+      return mojom::BookmarkNode::NewFolder(ConvertFolderNode(node));
     }
   }
 }
 
-// static
 mojom::BookmarksEventPtr BookmarkEventTranslator::CreateAddedEvent(
-    const BookmarksView* view,
     const bookmarks::BookmarkNode* parent,
-    size_t index) {
-  const bookmarks::BookmarkNode* node = view->GetChildren(parent)[index];
+    size_t index) const {
+  CHECK(view_);
+  const bookmarks::BookmarkNode* node = view_->GetChildren(parent)[index];
   auto added_event = mojom::BookmarkNodeCreated::New(
-      parent->uuid(), static_cast<int32_t>(index), ConvertNode(node, view));
+      view_->GetUuid(parent), static_cast<int32_t>(index), ConvertNode(node));
   return mojom::BookmarksEvent::NewAdded(std::move(added_event));
 }
 
-// static
 mojom::BookmarksEventPtr BookmarkEventTranslator::CreateRemovedEvent(
-    const bookmarks::BookmarkNode* node) {
-  auto removed_event = mojom::BookmarkNodeRemoved::New(node->uuid());
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(view_);
+  auto removed_event = mojom::BookmarkNodeRemoved::New(view_->GetUuid(node));
   return mojom::BookmarksEvent::NewRemoved(std::move(removed_event));
 }
 
-// static
 mojom::BookmarksEventPtr BookmarkEventTranslator::CreateMovedEvent(
     const bookmarks::BookmarkNode* old_parent,
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
-    size_t new_index) {
+    size_t new_index) const {
+  CHECK(view_);
   auto moved_event = mojom::BookmarkNodeMoved::New(
-      old_parent->uuid(), static_cast<int32_t>(old_index), new_parent->uuid(),
-      static_cast<int32_t>(new_index));
+      view_->GetUuid(old_parent), static_cast<int32_t>(old_index),
+      view_->GetUuid(new_parent), static_cast<int32_t>(new_index));
   return mojom::BookmarksEvent::NewMoved(std::move(moved_event));
 }
 
-// static
 mojom::BookmarksEventPtr BookmarkEventTranslator::CreateChangedEvent(
-    const BookmarksView* view,
-    const bookmarks::BookmarkNode* node) {
-  auto changed_event = mojom::BookmarkNodeChanged::New(ConvertNode(node, view));
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(view_);
+  auto changed_event = mojom::BookmarkNodeChanged::New(ConvertNode(node));
   return mojom::BookmarksEvent::NewChanged(std::move(changed_event));
 }
 
@@ -130,7 +124,7 @@ class BookmarkEventTranslator::FolderSnapshot {
     const auto view_children = view->GetChildren(parent);
     children.reserve(view_children.size());
     for (const auto* child : view_children) {
-      children.push_back(child->uuid());
+      children.push_back(view->GetUuid(child));
     }
     snapshot_[parent] = std::move(children);
   }
@@ -158,8 +152,8 @@ class BookmarkEventTranslator::FolderSnapshot {
 
     for (size_t i = 0; i < new_ordering.size(); ++i) {
       const auto* target = new_ordering[i];
-      auto it =
-          std::find(current_view.begin(), current_view.end(), target->uuid());
+      auto it = std::find(current_view.begin(), current_view.end(),
+                          view->GetUuid(target));
 
       CHECK(it != current_view.end())
           << "a reordered node could not be found in the current folder "
@@ -168,10 +162,10 @@ class BookmarkEventTranslator::FolderSnapshot {
       size_t current_index = std::distance(current_view.begin(), it);
       if (current_index != i) {
         current_view.erase(it);
-        current_view.insert(current_view.begin() + i, target->uuid());
+        current_view.insert(current_view.begin() + i, view->GetUuid(target));
         auto moved_event = mojom::BookmarkNodeMoved::New(
-            parent->uuid(), static_cast<int32_t>(current_index), parent->uuid(),
-            static_cast<int32_t>(i));
+            view->GetUuid(parent), static_cast<int32_t>(current_index),
+            view->GetUuid(parent), static_cast<int32_t>(i));
         events.push_back(
             mojom::BookmarksEvent::NewMoved(std::move(moved_event)));
       }
@@ -206,7 +200,7 @@ class BookmarkEventTranslator::FolderSnapshot {
     if (node->is_folder()) {
       std::vector<base::Uuid> children;
       for (const bookmarks::BookmarkNode* child : view->GetChildren(node)) {
-        children.push_back(child->uuid());
+        children.push_back(view->GetUuid(child));
         Populate(child, view);
       }
       snapshot_[node] = std::move(children);
@@ -216,20 +210,16 @@ class BookmarkEventTranslator::FolderSnapshot {
   std::map<const bookmarks::BookmarkNode*, std::vector<base::Uuid>> snapshot_;
 };
 
-BookmarkEventTranslator::BookmarkEventTranslator()
-    : snapshot_(std::make_unique<FolderSnapshot>()) {}
-
 BookmarkEventTranslator::BookmarkEventTranslator(const BookmarksView* view)
-    : snapshot_(std::make_unique<FolderSnapshot>()) {
-  if (view) {
-    Init(view);
-  }
+    : view_(view), snapshot_(std::make_unique<FolderSnapshot>()) {
+  CHECK(view_);
 }
 
 BookmarkEventTranslator::~BookmarkEventTranslator() = default;
 
-void BookmarkEventTranslator::Init(const BookmarksView* view) {
-  snapshot_->Refresh(view);
+void BookmarkEventTranslator::Init() {
+  CHECK(view_);
+  snapshot_->Refresh(view_);
 }
 
 mojom::BookmarksEventPtr BookmarkEventTranslator::OnNodeRemoved(
@@ -239,26 +229,23 @@ mojom::BookmarksEventPtr BookmarkEventTranslator::OnNodeRemoved(
 }
 
 void BookmarkEventTranslator::OnWillReorderFolder(
-    const bookmarks::BookmarkNode* parent,
-    const BookmarksView* view) {
-  snapshot_->UpdateFolder(parent, view);
+    const bookmarks::BookmarkNode* parent) {
+  snapshot_->UpdateFolder(parent, view_);
 }
 
 std::vector<mojom::BookmarksEventPtr>
 BookmarkEventTranslator::OnFolderReordered(
-    const bookmarks::BookmarkNode* parent,
-    const BookmarksView* view) {
-  return snapshot_->DiffReorderedFolder(parent, view);
+    const bookmarks::BookmarkNode* parent) {
+  return snapshot_->DiffReorderedFolder(parent, view_);
 }
 
-void BookmarkEventTranslator::OnWillRemoveAllUserBookmarks(
-    const BookmarksView* view) {
-  snapshot_->Refresh(view);
+void BookmarkEventTranslator::OnWillRemoveAllUserBookmarks() {
+  snapshot_->Refresh(view_);
 }
 
 std::vector<mojom::BookmarksEventPtr>
-BookmarkEventTranslator::OnAllUserBookmarksRemoved(const BookmarksView* view) {
-  return snapshot_->ClearAllUserBookmarks(view);
+BookmarkEventTranslator::OnAllUserBookmarksRemoved() {
+  return snapshot_->ClearAllUserBookmarks(view_);
 }
 
 }  // namespace bookmarks_api

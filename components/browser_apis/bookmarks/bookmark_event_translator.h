@@ -6,8 +6,10 @@
 #define COMPONENTS_BROWSER_APIS_BOOKMARKS_BOOKMARK_EVENT_TRANSLATOR_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
 #include "components/browser_apis/bookmarks/bookmarks_view.h"
@@ -21,63 +23,50 @@ namespace bookmarks_api {
 // Helper class to translate BookmarkModel/View changes to Mojo events.
 class BookmarkEventTranslator {
  public:
-  BookmarkEventTranslator();
   explicit BookmarkEventTranslator(const BookmarksView* view);
   ~BookmarkEventTranslator();
 
   BookmarkEventTranslator(const BookmarkEventTranslator&) = delete;
   BookmarkEventTranslator& operator=(const BookmarkEventTranslator&) = delete;
 
-  // Initializes or refreshes the internal snapshot state for `view`.
-  void Init(const BookmarksView* view);
+  // Initializes or refreshes the internal snapshot state for the view.
+  void Init();
 
-  // Static conversion helpers.
-  static mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node,
-                                            const BookmarksView* view);
+  // Conversion helpers.
+  mojom::BookmarkNodePtr ConvertNode(const bookmarks::BookmarkNode* node) const;
+  mojom::RootNodePtr ConvertRootNode(const bookmarks::BookmarkNode* node) const;
+  mojom::FolderPtr ConvertFolderNode(const bookmarks::BookmarkNode* node) const;
 
-  static mojom::RootNodePtr ConvertRootNode(const bookmarks::BookmarkNode* node,
-                                            const BookmarksView* view);
-
-  static mojom::FolderPtr ConvertFolderNode(const bookmarks::BookmarkNode* node,
-                                            const BookmarksView* view);
-
-  // Static event builders.
-  static mojom::BookmarksEventPtr CreateAddedEvent(
-      const BookmarksView* view,
+  // Event builders.
+  mojom::BookmarksEventPtr CreateAddedEvent(
       const bookmarks::BookmarkNode* parent,
-      size_t index);
+      size_t index) const;
 
-  static mojom::BookmarksEventPtr CreateRemovedEvent(
-      const bookmarks::BookmarkNode* node);
+  mojom::BookmarksEventPtr CreateRemovedEvent(
+      const bookmarks::BookmarkNode* node) const;
 
-  static mojom::BookmarksEventPtr CreateMovedEvent(
+  mojom::BookmarksEventPtr CreateMovedEvent(
       const bookmarks::BookmarkNode* old_parent,
       size_t old_index,
       const bookmarks::BookmarkNode* new_parent,
-      size_t new_index);
+      size_t new_index) const;
 
-  static mojom::BookmarksEventPtr CreateChangedEvent(
-      const BookmarksView* view,
-      const bookmarks::BookmarkNode* node);
+  mojom::BookmarksEventPtr CreateChangedEvent(
+      const bookmarks::BookmarkNode* node) const;
 
   // Instance methods that manage snapshot tracking and translation for
   // removals, reordering, and clearing all user nodes.
   mojom::BookmarksEventPtr OnNodeRemoved(const bookmarks::BookmarkNode* node);
-
-  void OnWillReorderFolder(const bookmarks::BookmarkNode* parent,
-                           const BookmarksView* view);
-
+  void OnWillReorderFolder(const bookmarks::BookmarkNode* parent);
   std::vector<mojom::BookmarksEventPtr> OnFolderReordered(
-      const bookmarks::BookmarkNode* parent,
-      const BookmarksView* view);
-
-  void OnWillRemoveAllUserBookmarks(const BookmarksView* view);
-
-  std::vector<mojom::BookmarksEventPtr> OnAllUserBookmarksRemoved(
-      const BookmarksView* view);
+      const bookmarks::BookmarkNode* parent);
+  void OnWillRemoveAllUserBookmarks();
+  std::vector<mojom::BookmarksEventPtr> OnAllUserBookmarksRemoved();
 
  private:
   class FolderSnapshot;
+
+  raw_ptr<const BookmarksView> view_;
   std::unique_ptr<FolderSnapshot> snapshot_;
 };
 

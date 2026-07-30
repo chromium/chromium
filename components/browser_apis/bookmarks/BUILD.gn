@@ -17,6 +17,9 @@ mojom("mojom") {
 
 source_set("bookmarks") {
   sources = [
+    "bookmark_event_translator.cc",
+    "bookmark_event_translator.h",
+    "bookmark_uuid_mapper.h",
     "bookmarks_service.h",
     "bookmarks_view.h",
     "bookmarks_view_observer.h",
@@ -27,14 +30,14 @@ source_set("bookmarks") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/bookmarks/managed",
     "//url",
   ]
 }
 
 source_set("impl") {
   sources = [
-    "bookmark_event_translator.cc",
-    "bookmark_event_translator.h",
+    "bookmark_uuid_mapper.cc",
     "bookmarks_service_impl.cc",
     "bookmarks_service_impl.h",
   ]

@@ -80,12 +80,12 @@ mojom::BookmarksService::GetBookmarkResult BookmarksServiceImpl::GetBookmark(
 
 mojom::BookmarkNodePtr BookmarksServiceImpl::ConvertNode(
     const bookmarks::BookmarkNode* node) {
-  return BookmarkEventTranslator::ConvertNode(node, view_.get());
+  return view_->GetEventTranslator().ConvertNode(node);
 }
 
 mojom::RootNodePtr BookmarksServiceImpl::ConvertRootNode(
     const bookmarks::BookmarkNode* node) {
-  return BookmarkEventTranslator::ConvertRootNode(node, view_.get());
+  return view_->GetEventTranslator().ConvertRootNode(node);
 }
 
 mojom::BookmarksService::CreateBookmarkNodeResult

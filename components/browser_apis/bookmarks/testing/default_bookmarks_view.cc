@@ -5,23 +5,49 @@
 #include "components/browser_apis/bookmarks/testing/default_bookmarks_view.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/browser_apis/bookmarks/bookmark_uuid_mapper.h"
 #include "components/browser_apis/bookmarks/bookmarks_view_observer.h"
 
 namespace bookmarks_api {
 
+namespace {
+
+const bookmarks::BookmarkNode* FindNodeById(
+    const bookmarks::BookmarkModel* model,
+    int64_t id) {
+  if (!model) {
+    return nullptr;
+  }
+  if (model->account_bookmark_bar_node() &&
+      model->account_bookmark_bar_node()->id() == id) {
+    return model->account_bookmark_bar_node();
+  }
+  if (model->account_other_node() && model->account_other_node()->id() == id) {
+    return model->account_other_node();
+  }
+  if (model->account_mobile_node() &&
+      model->account_mobile_node()->id() == id) {
+    return model->account_mobile_node();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 DefaultBookmarksView::DefaultBookmarksView(
     bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_service)
-    : model_(model), managed_service_(managed_service) {
+    : model_(model), managed_service_(managed_service), translator_(this) {
   CHECK(model_);
+  CHECK(model_->loaded());
   model_observation_.Observe(model_);
-  if (model_->loaded()) {
-    translator_.Init(this);
-  }
+  RegisterAccountNodeOverrides();
+  translator_.Init();
 }
 
 DefaultBookmarksView::~DefaultBookmarksView() = default;
@@ -44,10 +70,9 @@ const bookmarks::BookmarkNode* DefaultBookmarksView::GetRootNode() const {
 
 std::vector<const bookmarks::BookmarkNode*> DefaultBookmarksView::GetChildren(
     const bookmarks::BookmarkNode* parent) const {
+  CHECK(parent != nullptr);
+  CHECK(parent->is_folder());
   std::vector<const bookmarks::BookmarkNode*> children;
-  if (!parent) {
-    return children;
-  }
   children.reserve(parent->children().size());
   for (const auto& child : parent->children()) {
     children.push_back(child.get());
@@ -57,13 +82,23 @@ std::vector<const bookmarks::BookmarkNode*> DefaultBookmarksView::GetChildren(
 
 std::optional<const bookmarks::BookmarkNode*>
 DefaultBookmarksView::FindNodeByUuid(const base::Uuid& uuid) const {
+  if (std::optional<int64_t> override_id =
+          uuid_mapper_.MaybeGetIdFromUuidOverride(uuid)) {
+    const bookmarks::BookmarkNode* found = FindNodeById(model_, *override_id);
+    if (found) {
+      return found;
+    }
+  }
+
   const bookmarks::BookmarkNode* node = model_->GetNodeByUuid(
       uuid,
       bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
   if (!node) {
-    return std::nullopt;
+    node = model_->GetNodeByUuid(
+        uuid, bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
   }
-  return node;
+  return node ? std::optional<const bookmarks::BookmarkNode*>(node)
+              : std::nullopt;
 }
 
 bool DefaultBookmarksView::IsPermanentNode(
@@ -88,8 +123,46 @@ mojom::PermanentFolderType DefaultBookmarksView::GetPermanentFolderType(
   return mojom::PermanentFolderType::kUnknown;
 }
 
+// For signed-in profiles with account bookmark storage enabled, assign unique
+// UUID overrides to account permanent folders so they do not collide with local
+// permanent folder UUIDs. We infer signed-in status by checking if
+// account_bookmark_bar_node() exists.
+void DefaultBookmarksView::RegisterAccountNodeOverrides() {
+  if (!model_->account_bookmark_bar_node()) {
+    return;
+  }
+
+  if (!uuid_mapper_.HasOverrideFor(model_->account_bookmark_bar_node())) {
+    if (model_->account_bookmark_bar_node()) {
+      uuid_mapper_.SetUuidOverride(model_->account_bookmark_bar_node(),
+                                   base::Uuid::GenerateRandomV4());
+    }
+    if (model_->account_other_node()) {
+      uuid_mapper_.SetUuidOverride(model_->account_other_node(),
+                                   base::Uuid::GenerateRandomV4());
+    }
+    if (model_->account_mobile_node()) {
+      uuid_mapper_.SetUuidOverride(model_->account_mobile_node(),
+                                   base::Uuid::GenerateRandomV4());
+    }
+  }
+}
+
+base::Uuid DefaultBookmarksView::GetUuid(
+    const bookmarks::BookmarkNode* node) const {
+  if (!node) {
+    return base::Uuid();
+  }
+  return uuid_mapper_.GetUuidFor(node);
+}
+
 bool DefaultBookmarksView::IsSynced(const bookmarks::BookmarkNode* node) const {
   return !model_->IsLocalOnlyNode(*node);
+}
+
+const BookmarkEventTranslator& DefaultBookmarksView::GetEventTranslator()
+    const {
+  return translator_;
 }
 
 const bookmarks::BookmarkNode* DefaultBookmarksView::AddURL(
@@ -144,7 +217,8 @@ void DefaultBookmarksView::RemoveNodes(
 }
 
 void DefaultBookmarksView::BookmarkModelLoaded(bool ids_reassigned) {
-  translator_.Init(this);
+  RegisterAccountNodeOverrides();
+  translator_.Init();
 }
 
 void DefaultBookmarksView::BookmarkModelBeingDeleted() {
@@ -159,8 +233,8 @@ void DefaultBookmarksView::BookmarkNodeMoved(
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
   std::vector<mojom::BookmarksEventPtr> events;
-  events.push_back(BookmarkEventTranslator::CreateMovedEvent(
-      old_parent, old_index, new_parent, new_index));
+  events.push_back(translator_.CreateMovedEvent(old_parent, old_index,
+                                                new_parent, new_index));
   Notify(std::move(events));
 }
 
@@ -168,9 +242,12 @@ void DefaultBookmarksView::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
+  // If account permanent folders were created dynamically (e.g., user signed in
+  // or enabled bookmark sync during an active session), register their
+  // overrides.
+  RegisterAccountNodeOverrides();
   std::vector<mojom::BookmarksEventPtr> events;
-  events.push_back(
-      BookmarkEventTranslator::CreateAddedEvent(this, parent, index));
+  events.push_back(translator_.CreateAddedEvent(parent, index));
   Notify(std::move(events));
 }
 
@@ -188,7 +265,7 @@ void DefaultBookmarksView::BookmarkNodeRemoved(
 void DefaultBookmarksView::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
   std::vector<mojom::BookmarksEventPtr> events;
-  events.push_back(BookmarkEventTranslator::CreateChangedEvent(this, node));
+  events.push_back(translator_.CreateChangedEvent(node));
   Notify(std::move(events));
 }
 
@@ -199,23 +276,23 @@ void DefaultBookmarksView::BookmarkNodeFaviconChanged(
 
 void DefaultBookmarksView::BookmarkNodeChildrenReordered(
     const bookmarks::BookmarkNode* node) {
-  Notify(translator_.OnFolderReordered(node, this));
+  Notify(translator_.OnFolderReordered(node));
 }
 
 void DefaultBookmarksView::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  Notify(translator_.OnAllUserBookmarksRemoved(this));
+  Notify(translator_.OnAllUserBookmarksRemoved());
 }
 
 void DefaultBookmarksView::OnWillReorderBookmarkNode(
     const bookmarks::BookmarkNode* node) {
-  translator_.OnWillReorderFolder(node, this);
+  translator_.OnWillReorderFolder(node);
 }
 
 void DefaultBookmarksView::OnWillRemoveAllUserBookmarks(
     const base::Location& location) {
-  translator_.OnWillRemoveAllUserBookmarks(this);
+  translator_.OnWillRemoveAllUserBookmarks();
 }
 
 void DefaultBookmarksView::ExtensiveBookmarkChangesBeginning() {

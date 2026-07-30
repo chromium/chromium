@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/bookmarks/combined_bookmarks_view.h"
 
+#include <inttypes.h>
+
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -24,35 +27,13 @@ CombinedBookmarksView::CombinedBookmarksView(
           base::Uuid::GenerateRandomV4(),
           GURL())) {
   CHECK(model_);
+  CHECK(model_->loaded()) << "the view can only accept loaded models";
   model_observation_.Observe(model_);
-  RebuildPermanentNodeUuids();
+  RegisterAccountNodeOverrides();
+  translator_.Init();
 }
 
 CombinedBookmarksView::~CombinedBookmarksView() = default;
-
-void CombinedBookmarksView::RebuildPermanentNodeUuids() {
-  node_id_to_uuid_.clear();
-  uuid_to_node_id_.clear();
-
-  const auto& children = model_->root_node()->children();
-
-  auto register_permanent_node =
-      [this](const bookmarks::BookmarkNode* model_node) {
-        if (!model_node) {
-          return;
-        }
-        base::Uuid uuid = base::Uuid::GenerateRandomV4();
-        node_id_to_uuid_[model_node->id()] = uuid;
-        uuid_to_node_id_[uuid] = model_node->id();
-      };
-
-  for (const auto& child : children) {
-    register_permanent_node(child.get());
-  }
-  if (managed_bookmark_service_ && managed_bookmark_service_->managed_node()) {
-    register_permanent_node(managed_bookmark_service_->managed_node());
-  }
-}
 
 void CombinedBookmarksView::AddObserver(
     bookmarks_api::BookmarksViewObserver* observer) {
@@ -97,42 +78,57 @@ std::vector<const bookmarks::BookmarkNode*> CombinedBookmarksView::GetChildren(
   return children;
 }
 
+namespace {
+
+const bookmarks::BookmarkNode* FindNodeById(
+    const bookmarks::BookmarkModel* model,
+    int64_t id) {
+  if (!model) {
+    return nullptr;
+  }
+  if (model->account_bookmark_bar_node() &&
+      model->account_bookmark_bar_node()->id() == id) {
+    return model->account_bookmark_bar_node();
+  }
+  if (model->account_other_node() && model->account_other_node()->id() == id) {
+    return model->account_other_node();
+  }
+  if (model->account_mobile_node() &&
+      model->account_mobile_node()->id() == id) {
+    return model->account_mobile_node();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 std::optional<const bookmarks::BookmarkNode*>
 CombinedBookmarksView::FindNodeByUuid(const base::Uuid& uuid) const {
   if (uuid == synthetic_root_node_->uuid()) {
     return synthetic_root_node_.get();
   }
-  auto it = uuid_to_node_id_.find(uuid);
-  if (it != uuid_to_node_id_.end()) {
-    int64_t target_id = it->second;
-    for (const auto& child : model_->root_node()->children()) {
-      if (child->id() == target_id) {
-        return child.get();
-      }
-    }
-    if (managed_bookmark_service_ &&
-        managed_bookmark_service_->managed_node() &&
-        managed_bookmark_service_->managed_node()->id() == target_id) {
-      return managed_bookmark_service_->managed_node();
+  if (std::optional<int64_t> override_id =
+          uuid_mapper_.MaybeGetIdFromUuidOverride(uuid)) {
+    const bookmarks::BookmarkNode* found = FindNodeById(model_, *override_id);
+    if (found) {
+      return found;
     }
   }
+
   const bookmarks::BookmarkNode* node = model_->GetNodeByUuid(
-      uuid, bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+      uuid,
+      bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
   if (!node) {
     node = model_->GetNodeByUuid(
-        uuid,
-        bookmarks::BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+        uuid, bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
   }
-  if (!node) {
-    return std::nullopt;
-  }
-  return node;
+  return node ? std::optional<const bookmarks::BookmarkNode*>(node)
+              : std::nullopt;
 }
 
 bool CombinedBookmarksView::IsPermanentNode(
     const bookmarks::BookmarkNode* node) const {
-  if (node == synthetic_root_node_.get() ||
-      node_id_to_uuid_.contains(node->id())) {
+  if (node == synthetic_root_node_.get()) {
     return true;
   }
   return model_->is_permanent_node(node);
@@ -160,12 +156,53 @@ CombinedBookmarksView::GetPermanentFolderType(
   return bookmarks_api::mojom::PermanentFolderType::kUnknown;
 }
 
+// For signed-in profiles with account bookmark storage enabled, assign unique
+// UUID overrides to account permanent folders so they do not collide with local
+// permanent folder UUIDs. We infer signed-in status by checking if
+// account_bookmark_bar_node() exists.
+void CombinedBookmarksView::RegisterAccountNodeOverrides() {
+  if (!model_->account_bookmark_bar_node()) {
+    return;
+  }
+
+  if (!uuid_mapper_.HasOverrideFor(model_->account_bookmark_bar_node())) {
+    if (model_->account_bookmark_bar_node()) {
+      uuid_mapper_.SetUuidOverride(model_->account_bookmark_bar_node(),
+                                   base::Uuid::GenerateRandomV4());
+    }
+    if (model_->account_other_node()) {
+      uuid_mapper_.SetUuidOverride(model_->account_other_node(),
+                                   base::Uuid::GenerateRandomV4());
+    }
+    if (model_->account_mobile_node()) {
+      uuid_mapper_.SetUuidOverride(model_->account_mobile_node(),
+                                   base::Uuid::GenerateRandomV4());
+    }
+  }
+}
+
+base::Uuid CombinedBookmarksView::GetUuid(
+    const bookmarks::BookmarkNode* node) const {
+  if (!node) {
+    return base::Uuid();
+  }
+  if (node == synthetic_root_node_.get()) {
+    return synthetic_root_node_->uuid();
+  }
+  return uuid_mapper_.GetUuidFor(node);
+}
+
 bool CombinedBookmarksView::IsSynced(
     const bookmarks::BookmarkNode* node) const {
   if (node == synthetic_root_node_.get()) {
     return false;
   }
   return !model_->IsLocalOnlyNode(*node);
+}
+
+const bookmarks_api::BookmarkEventTranslator&
+CombinedBookmarksView::GetEventTranslator() const {
+  return translator_;
 }
 
 const bookmarks::BookmarkNode* CombinedBookmarksView::AddURL(
@@ -226,9 +263,7 @@ void CombinedBookmarksView::RemoveNodes(
   }
 }
 
-void CombinedBookmarksView::BookmarkModelLoaded(bool ids_reassigned) {
-  RebuildPermanentNodeUuids();
-}
+void CombinedBookmarksView::BookmarkModelLoaded(bool ids_reassigned) {}
 
 void CombinedBookmarksView::BookmarkModelBeingDeleted() {
   for (auto& observer : observers_) {
@@ -240,9 +275,12 @@ void CombinedBookmarksView::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
+  // If account permanent folders were created dynamically (e.g., user signed in
+  // or enabled bookmark sync during an active session), register their
+  // overrides.
+  RegisterAccountNodeOverrides();
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(bookmarks_api::BookmarkEventTranslator::CreateAddedEvent(
-      this, parent, index));
+  events.push_back(translator_.CreateAddedEvent(parent, index));
   Notify(std::move(events));
 }
 
@@ -253,8 +291,7 @@ void CombinedBookmarksView::BookmarkNodeRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(
-      bookmarks_api::BookmarkEventTranslator::CreateRemovedEvent(node));
+  events.push_back(translator_.OnNodeRemoved(node));
   Notify(std::move(events));
 }
 
@@ -264,16 +301,15 @@ void CombinedBookmarksView::BookmarkNodeMoved(
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(bookmarks_api::BookmarkEventTranslator::CreateMovedEvent(
-      old_parent, old_index, new_parent, new_index));
+  events.push_back(translator_.CreateMovedEvent(old_parent, old_index,
+                                                new_parent, new_index));
   Notify(std::move(events));
 }
 
 void CombinedBookmarksView::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(
-      bookmarks_api::BookmarkEventTranslator::CreateChangedEvent(this, node));
+  events.push_back(translator_.CreateChangedEvent(node));
   Notify(std::move(events));
 }
 
