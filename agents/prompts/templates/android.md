@@ -24,3 +24,24 @@ To install or run an apk/bundle, use the generated wrapper script in
     `out/Debug/bin/chrome_public_apk install`.
   * "Launch" installs and starts the app - eg.
     `out/Release/bin/trichrome_chrome_google_bundle launch`.
+
+## Running Tests and Emulators
+When no physical Android device is connected, use prebuilt AVD (Android Virtual
+Device) configurations. Run `tools/android/avd/avd.py list` to see available
+configurations (e.g.
+`tools/android/avd/proto/android_35_google_apis_x64.textpb`). See
+[`//docs/android_emulator.md`](../../../docs/android_emulator.md) for full
+details.
+  * **Running tests on an emulator:** test wrapper scripts in
+    `out/{USERS_OUT_DIR}/bin/` can automatically start, test against, and tear
+    down an emulator instance using `--avd-config` - eg.
+    `out/Debug/bin/run_base_unittests --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb`.
+    As a faster alternative when an emulator is already running, specify which
+    emulator to use with `-d emulator-5554`.
+  * **Running a standalone emulator:** to start an emulator independently when
+    installing or launching an APK - eg.
+    `tools/android/avd/avd.py start --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb`.
+  * **Stopping the emulator:** to terminate a running emulator, use
+    `tools/android/avd/avd.py stop` - eg.
+    `tools/android/avd/avd.py stop --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb`
+    (or omit `--avd-config` to stop all running emulators).
