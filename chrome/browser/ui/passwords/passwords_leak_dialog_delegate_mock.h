@@ -24,6 +24,11 @@ class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));
+  MOCK_METHOD(void, OnPasswordChangeFinishedSuccessfully, (), (override));
+  MOCK_METHOD(void,
+              ShowChangePasswordBubble,
+              (const std::u16string&, const std::u16string&),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_H_
 
+#include <string>
+
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 
 // An interface for leak detection dialog implemented by
@@ -18,6 +20,15 @@ class PasswordsLeakDialogDelegate {
   // Open a new tab pointing to Password Checkup.
   virtual void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) = 0;
+
+  // Called if the password change flow finishes successfully. It ensures the
+  // correct state after the flow.
+  virtual void OnPasswordChangeFinishedSuccessfully() = 0;
+
+  // Opens change password bubble and passes `username` and `new_password` that
+  // should be displayed on it.
+  virtual void ShowChangePasswordBubble(const std::u16string& username,
+                                        const std::u16string& new_password) = 0;
 
  protected:
   virtual ~PasswordsLeakDialogDelegate() = default;

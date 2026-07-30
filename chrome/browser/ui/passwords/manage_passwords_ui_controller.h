@@ -142,10 +142,6 @@ class ManagePasswordsUIController
       password_manager::PasswordStoreInterface* store,
       password_manager::ActionableError new_state) override;
 
-  // Called if the password change flow finishes successfully. It ensures the
-  // correct state after the flow.
-  void OnPasswordChangeFinishedSuccessfully();
-
   // True iff the bubble is to be opened automatically.
   bool IsAutomaticallyOpeningBubble() const {
     return bubble_status_ == BubbleStatus::SHOULD_POP_UP;
@@ -251,10 +247,13 @@ class ManagePasswordsUIController
   bool IsMouseHovered() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
-  // Opens change password bubble and passes `username` and `new_password` that
-  // should be displayed on it.
+  // PasswordsLeakDialogDelegate:
+  void NavigateToPasswordCheckup(
+      password_manager::PasswordCheckReferrer referrer) override;
+  void OnLeakDialogHidden() override;
+  void OnPasswordChangeFinishedSuccessfully() override;
   void ShowChangePasswordBubble(const std::u16string& username,
-                                const std::u16string& new_password);
+                                const std::u16string& new_password) override;
 
   void ShowAutoSignInToast();
 
@@ -311,11 +310,6 @@ class ManagePasswordsUIController
   friend class content::WebContentsUserData<ManagePasswordsUIController>;
 
   void OnReauthCompleted();
-
-  // PasswordsLeakDialogDelegate:
-  void NavigateToPasswordCheckup(
-      password_manager::PasswordCheckReferrer referrer) override;
-  void OnLeakDialogHidden() override;
 
   enum class BubbleStatus {
     NOT_SHOWN,
