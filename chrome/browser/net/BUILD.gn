@@ -291,6 +291,7 @@ source_set("impl") {
       "nss_service.cc",
       "nss_service_factory.cc",
     ]
+    deps += [ "//chrome/browser/ui:crypto_module_password_dialog" ]
     if (is_chromeos) {
       sources += [
         "nss_service_chromeos.cc",

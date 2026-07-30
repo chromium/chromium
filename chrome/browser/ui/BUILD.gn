@@ -427,6 +427,44 @@ source_set("managed_ui") {
   }
 }
 
+source_set("crypto_module_password_dialog") {
+  public = [ "crypto_module_password_dialog.h" ]
+
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+
+  if (use_nss_certs) {
+    public += [ "crypto_module_delegate_nss.h" ]
+    sources = [
+      "crypto_module_delegate_nss.cc",
+      "crypto_module_password_dialog_nss.cc",
+      "crypto_module_password_dialog_nss.h",
+    ]
+
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//content/public/browser",
+      "//crypto",
+      "//net",
+    ]
+
+    if (use_aura) {
+      public += [ "views/crypto_module_password_dialog_view.h" ]
+      sources += [ "views/crypto_module_password_dialog_view.cc" ]
+
+      deps += [
+        "//chrome/app:generated_resources",
+        "//chrome/browser/ui/views:layout_provider",
+        "//components/strings:components_strings",
+        "//ui/base",
+        "//ui/views",
+      ]
+    }
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -435,7 +473,6 @@ source_set("managed_ui") {
 # circular includes from each other.
 static_library("ui") {
   sources = [
-    "crypto_module_password_dialog.h",
     "idle_bubble.h",
     "screen_capture_notification_ui.h",
     "tab_dialogs.cc",
@@ -464,6 +501,7 @@ static_library("ui") {
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     ":accelerator_utils_headers",
+    ":crypto_module_password_dialog",
     ":enterprise_startup_dialog",
     ":simple_message_box_headers",
     "//chrome/browser:browser_public_dependencies",
@@ -5213,22 +5251,6 @@ static_library("ui") {
 
   if (use_dbus) {
     deps += [ "//dbus" ]
-  }
-
-  if (use_nss_certs) {
-    sources += [
-      "crypto_module_delegate_nss.cc",
-      "crypto_module_delegate_nss.h",
-      "crypto_module_password_dialog_nss.cc",
-      "crypto_module_password_dialog_nss.h",
-    ]
-
-    if (use_aura) {
-      sources += [
-        "views/crypto_module_password_dialog_view.cc",
-        "views/crypto_module_password_dialog_view.h",
-      ]
-    }
   }
 
   if (chrome_root_store_cert_management_ui) {

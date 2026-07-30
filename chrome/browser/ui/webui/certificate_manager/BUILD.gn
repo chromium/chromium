@@ -75,6 +75,9 @@ if (chrome_root_store_cert_management_ui) {
         "//chromeos/components/certificate_provider",
       ]
     }
+    if (use_nss_certs) {
+      deps += [ "//chrome/browser/ui:crypto_module_password_dialog" ]
+    }
   }
 
   source_set("unit_tests") {
