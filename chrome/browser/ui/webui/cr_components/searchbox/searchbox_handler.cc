@@ -382,7 +382,6 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
       {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
       {"searchBoxHintMultimodal", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL},
-      {"lensSearchHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL},
       {"searchboxThumbnailLabel",
        IDS_GOOGLE_SEARCH_BOX_MULTIMODAL_IMAGE_THUMBNAIL},
       {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
@@ -475,6 +474,13 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   for (const auto& entry : kStrings) {
     dict.Set(entry.name, l10n_util::GetStringUTF16(entry.id));
   }
+
+  int lens_search_hint_id = IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL;
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage) &&
+      omnibox::kAskGLensSearchHintText.Get()) {
+    lens_search_hint_id = IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_TITLE;
+  }
+  dict.Set("lensSearchHint", l10n_util::GetStringUTF16(lens_search_hint_id));
 
   dict.Set("searchboxComposePlaceholder", ntp_composebox::FeatureConfig::Get()
                                               .config.composebox()
