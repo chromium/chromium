@@ -6,4 +6,7 @@ specific_include_rules = {
   "gdbus_connection_ref_unittest\\.cc": [
     "+dbus",
   ],
+  "gnome_lock_state_tracker_unittest\\.cc": [
+    "+dbus",
+  ],
 }

@@ -11,8 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/linux/capture_stream_manager.h"
-#include "remoting/host/linux/clipboard_gnome.h"
-#include "remoting/host/linux/gdbus_connection_ref.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -20,6 +18,7 @@ namespace remoting {
 class Clipboard;
 class EiSenderSession;
 class EiKeymap;
+class LockStateTracker;
 
 class EiInputInjector : public InputInjector {
  public:
@@ -27,7 +26,8 @@ class EiInputInjector : public InputInjector {
   // mouse motion.
   EiInputInjector(base::WeakPtr<EiSenderSession> session,
                   base::WeakPtr<const CaptureStreamManager> stream_manager,
-                  std::unique_ptr<Clipboard> clipboard);
+                  std::unique_ptr<Clipboard> clipboard,
+                  std::unique_ptr<LockStateTracker> lock_state_tracker);
   ~EiInputInjector() override;
 
   base::WeakPtr<EiInputInjector> GetWeakPtr();
@@ -54,6 +54,8 @@ class EiInputInjector : public InputInjector {
   base::WeakPtr<const CaptureStreamManager> stream_manager_;
   std::unique_ptr<Clipboard> clipboard_;
   std::set<uint32_t> pressed_keys_;
+
+  std::unique_ptr<LockStateTracker> lock_state_tracker_;
 
   base::WeakPtrFactory<EiInputInjector> weak_factory_{this};
 };

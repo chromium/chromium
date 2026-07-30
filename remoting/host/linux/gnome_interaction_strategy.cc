@@ -26,6 +26,7 @@
 #include "remoting/host/linux/ei_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_action_executor.h"
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
+#include "remoting/host/linux/gnome_lock_state_tracker.h"
 #include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "remoting/host/linux/pipewire_local_input_monitor.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_monitor.h"
@@ -85,7 +86,9 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
   auto result = std::make_unique<EiInputInjector>(
       remote_desktop_session_->ei_session(),
       remote_desktop_session_->capture_stream_manager(),
-      std::make_unique<ClipboardGnome>(
+      std::make_unique<ClipboardGnome>(remote_desktop_session_->connection(),
+                                       remote_desktop_session_->session_path()),
+      std::make_unique<GnomeLockStateTracker>(
           remote_desktop_session_->connection(),
           remote_desktop_session_->session_path()));
   remote_desktop_session_->ei_session()->SetInputInjector(result->GetWeakPtr());

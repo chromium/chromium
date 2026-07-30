@@ -11,18 +11,29 @@
 #include "remoting/host/clipboard.h"
 #include "remoting/host/linux/ei_keymap.h"
 #include "remoting/host/linux/ei_sender_session.h"
+#include "remoting/host/linux/lock_state_tracker.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
+#include "remoting/proto/event.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
+namespace {
+
+constexpr uint32_t kCapsLockUsbKeyCode = 0x070039;
+constexpr uint32_t kNumLockUsbKeyCode = 0x070053;
+
+}  // namespace
+
 EiInputInjector::EiInputInjector(
     base::WeakPtr<EiSenderSession> session,
     base::WeakPtr<const CaptureStreamManager> stream_manager,
-    std::unique_ptr<Clipboard> clipboard)
+    std::unique_ptr<Clipboard> clipboard,
+    std::unique_ptr<LockStateTracker> lock_state_tracker)
     : ei_session_(session),
       stream_manager_(stream_manager),
-      clipboard_(std::move(clipboard)) {}
+      clipboard_(std::move(clipboard)),
+      lock_state_tracker_(std::move(lock_state_tracker)) {}
 
 EiInputInjector::~EiInputInjector() = default;
 
@@ -41,6 +52,9 @@ void EiInputInjector::SetEiSession(base::WeakPtr<EiSenderSession> session) {
 void EiInputInjector::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   clipboard_->Start(std::move(client_clipboard));
+  if (lock_state_tracker_) {
+    lock_state_tracker_->Start();
+  }
 }
 
 void EiInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
@@ -51,6 +65,40 @@ void EiInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
     LOG(WARNING) << "Key event with no key info";
     return;
   }
+
+  // If a lock state tracker is available, synchronize the lock state on key
+  // presses.
+  if (lock_state_tracker_ && event.pressed() &&
+      event.usb_keycode() != kCapsLockUsbKeyCode &&
+      event.usb_keycode() != kNumLockUsbKeyCode) {
+    std::optional<bool> caps_lock;
+    if (event.has_caps_lock_state()) {
+      caps_lock = event.caps_lock_state();
+    } else if (event.has_lock_states()) {
+      caps_lock =
+          (event.lock_states() & protocol::KeyEvent::LOCK_STATES_CAPSLOCK) != 0;
+    }
+
+    if (caps_lock.has_value() &&
+        *caps_lock != lock_state_tracker_->GetCapsLockState()) {
+      ei_session_->InjectKeyEvent(kCapsLockUsbKeyCode, true);
+      ei_session_->InjectKeyEvent(kCapsLockUsbKeyCode, false);
+      lock_state_tracker_->SetExpectedCapsLockState(*caps_lock);
+    }
+
+    // Not all clients have a concept of num lock. Since there's no way to
+    // distinguish these clients using the legacy lock_states field, only
+    // update if the new num_lock field is specified.
+    if (event.has_num_lock_state()) {
+      bool num_lock = event.num_lock_state();
+      if (num_lock != lock_state_tracker_->GetNumLockState()) {
+        ei_session_->InjectKeyEvent(kNumLockUsbKeyCode, true);
+        ei_session_->InjectKeyEvent(kNumLockUsbKeyCode, false);
+        lock_state_tracker_->SetExpectedNumLockState(num_lock);
+      }
+    }
+  }
+
   if (!event.pressed()) {
     // If the key isn't pressed, there's nothing to do. This is expected if
     // the key was released immediately after being pressed in order to avoid
