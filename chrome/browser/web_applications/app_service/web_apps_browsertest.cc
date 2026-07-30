@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps.h"
-
 #include <vector>
 
 #include "base/files/file_path.h"
