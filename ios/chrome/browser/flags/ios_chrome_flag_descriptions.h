@@ -1779,12 +1779,6 @@ inline constexpr char kReaderModeSupportNewFontsName[] =
 inline constexpr char kReaderModeSupportNewFontsDescription[] =
     "Enables new accessible font options in Reader Mode.";
 
-inline constexpr char kReaderModeTranslationWithInfobarName[] =
-    "Enables Reader Mode Translation Settings";
-inline constexpr char kReaderModeTranslationWithInfobarDescription[] =
-    "Enables translation of web pages in Reader Mode with Settings available "
-    "via the infobar.";
-
 inline constexpr char kReaderModeUSEnabledName[] = "Enables Reader Mode in US";
 inline constexpr char kReaderModeUSEnabledDescription[] =
     "Enables Reader Mode for users in the US. Requires reader-mode-enabled.";

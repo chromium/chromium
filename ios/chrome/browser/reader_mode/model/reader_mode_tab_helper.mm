@@ -471,8 +471,7 @@ void ReaderModeTabHelper::CreateReaderModeContent(
 
   // Apply a blurring effect to the original web page as part of the translation
   // settings experiment.
-  if (reader_mode_handler_ &&
-      base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar)) {
+  if (reader_mode_handler_) {
     [reader_mode_handler_
         showReaderModeBlurOverlay:
             base::CallbackToBlock(
@@ -630,8 +629,7 @@ void ReaderModeTabHelper::CompleteDistillation(
       ChromeIOSTranslateClient::FromWebState(web_state_.get());
   source_translation_state_ =
       GenerateTranslationState(translate_client, web_state_.get());
-  if (source_translation_state_.is_page_translated &&
-      base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar)) {
+  if (source_translation_state_.is_page_translated) {
     translate_client->GetTranslateManager()->RevertTranslation();
   }
 

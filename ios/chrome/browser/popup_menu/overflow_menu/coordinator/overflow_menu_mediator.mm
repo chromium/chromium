@@ -2116,10 +2116,7 @@ void GetPresetNTPBackgroundPreview(
 
 // Returns whether translate is enabled on the current page.
 - (BOOL)isTranslateEnabled {
-  return
-      [self canManuallyTranslate:NO] && ![self isLensOverlayVisible] &&
-      (![self isReaderModeActive] ||
-       base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar));
+  return [self canManuallyTranslate:NO] && ![self isLensOverlayVisible];
 }
 
 // Returns whether lens overlay is enabled on the current page.

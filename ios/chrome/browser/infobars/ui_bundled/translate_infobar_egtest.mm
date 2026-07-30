@@ -286,7 +286,6 @@ class TestResponseProvider {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kEnableReaderModeTranslationWithInfobar);
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kUseDefaultInfobarDuration);
 
