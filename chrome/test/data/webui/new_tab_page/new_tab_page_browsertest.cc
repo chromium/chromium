@@ -105,16 +105,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Transparency) {
   RunTest("new_tab_page/transparency_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxV2ForkTrue) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, Composebox) {
   RunTest("new_tab_page/composebox/composebox_test.js",
-          "runMochaSuite('NewTabPageComposeboxTestV2 \\\\(useNtpComposeboxFork = "
-          "true\\\\)')");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxV2ForkFalse) {
-  RunTest("new_tab_page/composebox/composebox_test.js",
-          "runMochaSuite('NewTabPageComposeboxTestV2 \\\\(useNtpComposeboxFork = "
-          "false\\\\)')");
+          "runMochaSuite('NewTabPageComposeboxTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxResizeObserver) {
