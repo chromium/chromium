@@ -12,7 +12,7 @@
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
-import type {TrackedElementVisibilityUpdate} from '//resources/js/tracked_element/tracked_element_manager.js';
+import type {TrackedElement} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {TrackedElementIdentifier} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT} from './help_bubble.js';
@@ -246,7 +246,7 @@ export class HelpBubbleMixinCommon {
   /**
    * This event is emitted by the TrackedElementManager
    */
-  private onAnchorVisibilityChanged_(update: TrackedElementVisibilityUpdate) {
+  private onAnchorVisibilityChanged_(update: TrackedElement) {
     const id = TrackedElementManager.getElementId(update.element);
     assert(id, 'Got visibility event for element without an identifier.');
     const ctrl = this.helpBubbleControllerById_.get(id.nativeIdentifier);

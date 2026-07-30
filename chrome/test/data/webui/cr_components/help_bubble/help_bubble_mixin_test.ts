@@ -135,13 +135,13 @@ enum Version {
     let container: HelpBubbleMixinTestElement|HelpBubbleMixinLitTestElement;
 
     function getId(nativeIdentifier: string): TrackedElementIdentifier {
-      const elements: HTMLElement[] =
-          TrackedElementManager.getInstance().getAllElementsWithId(
+      const trackedElements =
+          TrackedElementManager.getInstance().getAllElementsWithNativeId(
               nativeIdentifier);
       let secondaryIdentifier = UNKNOWN_SECONDARY_ID;
-      if (elements.length) {
-        const element: HTMLElement = elements[0]!;
-        const id = TrackedElementManager.getElementId(element);
+      if (trackedElements.length) {
+        const trackedElement = trackedElements[0]!;
+        const id = TrackedElementManager.getElementId(trackedElement.element);
         if (!id) {
           console.warn(
               'Invalid or missing secondary ID for element "', nativeIdentifier,

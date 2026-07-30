@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import {TRACKED_ELEMENT_VISIBILITY_CHANGED_EVENT, TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
-import type {TrackedElementVisibilityChangedEvent, TrackedElementVisibilityUpdate} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
+import type {TrackedElement, TrackedElementVisibilityChangedEvent} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import type {TrackedElementProxy} from 'chrome://resources/js/tracked_element/tracked_element_proxy.js';
 import {TrackedElementProxyImpl} from 'chrome://resources/js/tracked_element/tracked_element_proxy.js';
 import type {RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {TrackedElementHandlerInterface, TrackedElementIdentifier, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {TrackedElementManagerCallbackRouter} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotDeepEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -100,8 +100,7 @@ suite('TrackedElementTest', function() {
   }
 
   function addVisibilityListener(
-      nativeId: string,
-      cb: (update: TrackedElementVisibilityUpdate) => void): EventListener {
+      nativeId: string, cb: (update: TrackedElement) => void): EventListener {
     const listener = (e: Event) =>
         cb((e as TrackedElementVisibilityChangedEvent).detail);
     manager.getVisibilityEventTarget(nativeId).addEventListener(
@@ -150,7 +149,7 @@ suite('TrackedElementTest', function() {
     manager.startTracking(
         element, ELEMENT_ID.nativeIdentifier,
         {secondaryId: ELEMENT_ID.secondaryIdentifier},
-        (detail: TrackedElementVisibilityUpdate) => {
+        (detail: TrackedElement) => {
           if (detail.visible) {
             assertGT(detail.bounds.width, 0);
             assertGT(detail.bounds.height, 0);
@@ -234,8 +233,7 @@ suite('TrackedElementTest', function() {
         {secondaryId: ELEMENT_ID.secondaryIdentifier});
     await new Promise<void>((resolve) => {
       const listener = addVisibilityListener(
-          ELEMENT_ID.nativeIdentifier,
-          (update: TrackedElementVisibilityUpdate) => {
+          ELEMENT_ID.nativeIdentifier, (update: TrackedElement) => {
             if (update.visible && !sawVisible) {
               sawVisible = true;
               // Hide the element.
@@ -262,8 +260,7 @@ suite('TrackedElementTest', function() {
             {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
         const p1 = new Promise<void>((resolve) => {
           const listener = addVisibilityListener(
-              ELEMENT_ID.nativeIdentifier,
-              (update: TrackedElementVisibilityUpdate) => {
+              ELEMENT_ID.nativeIdentifier, (update: TrackedElement) => {
                 if (update.visible && update.element === element) {
                   assertGT(update.bounds.width, 0);
                   assertGT(update.bounds.height, 0);
@@ -276,7 +273,7 @@ suite('TrackedElementTest', function() {
         const p2 = new Promise<void>((resolve) => {
           const listener = addVisibilityListener(
               OTHER_ELEMENT_SAME_ID.nativeIdentifier,
-              (update: TrackedElementVisibilityUpdate) => {
+              (update: TrackedElement) => {
                 if (update.visible && update.element === element2) {
                   assertGT(update.bounds.width, 0);
                   assertGT(update.bounds.height, 0);
@@ -300,8 +297,7 @@ suite('TrackedElementTest', function() {
             {secondaryId: NOT_ELEMENT_ID.secondaryIdentifier});
         const p1 = new Promise<void>((resolve) => {
           const listener = addVisibilityListener(
-              ELEMENT_ID.nativeIdentifier,
-              (update: TrackedElementVisibilityUpdate) => {
+              ELEMENT_ID.nativeIdentifier, (update: TrackedElement) => {
                 if (update.visible && update.element === element) {
                   assertGT(update.bounds.width, 0);
                   assertGT(update.bounds.height, 0);
@@ -313,8 +309,7 @@ suite('TrackedElementTest', function() {
         });
         const p2 = new Promise<void>((resolve) => {
           const listener = addVisibilityListener(
-              NOT_ELEMENT_ID.nativeIdentifier,
-              (update: TrackedElementVisibilityUpdate) => {
+              NOT_ELEMENT_ID.nativeIdentifier, (update: TrackedElement) => {
                 if (update.visible && update.element === element2) {
                   assertGT(update.bounds.width, 0);
                   assertGT(update.bounds.height, 0);
@@ -739,15 +734,14 @@ suite('TrackedElementTest', function() {
             {x: rect2.x, y: rect2.y, width: rect2.width, height: rect2.height},
             args2[2]);
 
-        assertEquals(
-            manager.getTrackedElement(element),
-            manager.getTrackedElementById(ELEMENT_ID));
-        assertEquals(
-            manager.getTrackedElement(element2),
-            manager.getTrackedElementById(OTHER_ELEMENT_SAME_ID));
-        assertNotEquals(
-            manager.getTrackedElement(element),
-            manager.getTrackedElement(element2));
+        assertDeepEquals(
+            manager.getElementFor(element),
+            manager.getElementWithId(ELEMENT_ID));
+        assertDeepEquals(
+            manager.getElementFor(element2),
+            manager.getElementWithId(OTHER_ELEMENT_SAME_ID));
+        assertNotDeepEquals(
+            manager.getElementFor(element), manager.getElementFor(element2));
       });
 
   test('getElementWithId returns correct element', async () => {
@@ -760,15 +754,18 @@ suite('TrackedElementTest', function() {
     await waitForVisibilityEvents();
 
     // Get elements unconditionally.
-    assertEquals(element, manager.getElementWithId(ELEMENT_ID));
-    assertEquals(element2, manager.getElementWithId(OTHER_ELEMENT_SAME_ID));
-    assertEquals(undefined, manager.getElementWithId(NOT_ELEMENT_ID));
+    assertEquals(element, manager.getElementWithId(ELEMENT_ID)?.element);
+    assertEquals(
+        element2, manager.getElementWithId(OTHER_ELEMENT_SAME_ID)?.element);
+    assertEquals(undefined, manager.getElementWithId(NOT_ELEMENT_ID)?.element);
 
     // Get only visible elements.
-    assertEquals(element, manager.getElementWithId(ELEMENT_ID, true));
+    assertEquals(element, manager.getElementWithId(ELEMENT_ID, true)?.element);
     assertEquals(
-        element2, manager.getElementWithId(OTHER_ELEMENT_SAME_ID, true));
-    assertEquals(undefined, manager.getElementWithId(NOT_ELEMENT_ID, true));
+        element2,
+        manager.getElementWithId(OTHER_ELEMENT_SAME_ID, true)?.element);
+    assertEquals(
+        undefined, manager.getElementWithId(NOT_ELEMENT_ID, true)?.element);
   });
 
   test(
@@ -784,18 +781,23 @@ suite('TrackedElementTest', function() {
         await waitForVisibilityEvents();
 
         // Get elements unconditionally.
-        assertEquals(element, manager.getElementWithId(ELEMENT_ID));
-        assertEquals(element2, manager.getElementWithId(OTHER_ELEMENT_SAME_ID));
-        assertEquals(undefined, manager.getElementWithId(NOT_ELEMENT_ID));
+        assertEquals(element, manager.getElementWithId(ELEMENT_ID)?.element);
+        assertEquals(
+            element2, manager.getElementWithId(OTHER_ELEMENT_SAME_ID)?.element);
+        assertEquals(
+            undefined, manager.getElementWithId(NOT_ELEMENT_ID)?.element);
 
         // Get only visible elements.
-        assertEquals(undefined, manager.getElementWithId(ELEMENT_ID, true));
         assertEquals(
-            element2, manager.getElementWithId(OTHER_ELEMENT_SAME_ID, true));
-        assertEquals(undefined, manager.getElementWithId(NOT_ELEMENT_ID));
+            undefined, manager.getElementWithId(ELEMENT_ID, true)?.element);
+        assertEquals(
+            element2,
+            manager.getElementWithId(OTHER_ELEMENT_SAME_ID, true)?.element);
+        assertEquals(
+            undefined, manager.getElementWithId(NOT_ELEMENT_ID)?.element);
       });
 
-  test('getAllElementsWithId returns multiple elements', async () => {
+  test('getAllElementsWithNativeId returns multiple elements', async () => {
     manager.startTracking(
         element, ELEMENT_ID.nativeIdentifier,
         {secondaryId: ELEMENT_ID.secondaryIdentifier});
@@ -805,21 +807,26 @@ suite('TrackedElementTest', function() {
     await waitForVisibilityEvents();
 
     // Get all elements unconditionally.
-    let elements: HTMLElement[] =
-        manager.getAllElementsWithId(ELEMENT_ID.nativeIdentifier);
+    let elements: TrackedElement[] =
+        manager.getAllElementsWithNativeId(ELEMENT_ID.nativeIdentifier);
     assertEquals(2, elements.length);
-    assertTrue(elements[0] === element || elements[1] === element);
-    assertTrue(elements[0] === element2 || elements[1] === element2);
+    assertTrue(
+        elements[0]!.element === element || elements[1]!.element === element);
+    assertTrue(
+        elements[0]!.element === element2 || elements[1]!.element === element2);
 
     // Get only visible elements.
-    elements = manager.getAllElementsWithId(ELEMENT_ID.nativeIdentifier, true);
+    elements =
+        manager.getAllElementsWithNativeId(ELEMENT_ID.nativeIdentifier, true);
     assertEquals(2, elements.length);
-    assertTrue(elements[0] === element || elements[1] === element);
-    assertTrue(elements[0] === element2 || elements[1] === element2);
+    assertTrue(
+        elements[0]!.element === element || elements[1]!.element === element);
+    assertTrue(
+        elements[0]!.element === element2 || elements[1]!.element === element2);
   });
 
   test(
-      'getAllElementsWithId returns only visible elements if asked',
+      'getAllElementsWithNativeId returns only visible elements if asked',
       async () => {
         manager.startTracking(
             element, ELEMENT_ID.nativeIdentifier,
@@ -831,17 +838,21 @@ suite('TrackedElementTest', function() {
         await waitForVisibilityEvents();
 
         // Get all elements unconditionally.
-        let elements: HTMLElement[] =
-            manager.getAllElementsWithId(ELEMENT_ID.nativeIdentifier);
+        let elements =
+            manager.getAllElementsWithNativeId(ELEMENT_ID.nativeIdentifier);
         assertEquals(2, elements.length);
-        assertTrue(elements[0] === element || elements[1] === element);
-        assertTrue(elements[0] === element2 || elements[1] === element2);
+        assertTrue(
+            elements[0]!.element === element ||
+            elements[1]!.element === element);
+        assertTrue(
+            elements[0]!.element === element2 ||
+            elements[1]!.element === element2);
 
         // Get only visible elements.
-        elements =
-            manager.getAllElementsWithId(ELEMENT_ID.nativeIdentifier, true);
+        elements = manager.getAllElementsWithNativeId(
+            ELEMENT_ID.nativeIdentifier, true);
         assertEquals(1, elements.length);
-        assertEquals(element2, elements[0]);
+        assertEquals(element2, elements[0]!.element);
       });
 
   test(
@@ -855,14 +866,14 @@ suite('TrackedElementTest', function() {
             {secondaryId: OTHER_ELEMENT_SAME_ID.secondaryIdentifier});
         await waitForVisibilityEvents();
         manager.stopTracking(element);
-        assertEquals(undefined, manager.getTrackedElement(element));
-        assertEquals(undefined, manager.getTrackedElementById(ELEMENT_ID));
-        assertNotEquals(undefined, manager.getTrackedElement(element2));
+        assertEquals(undefined, manager.getElementFor(element));
+        assertEquals(undefined, manager.getElementWithId(ELEMENT_ID));
+        assertNotEquals(undefined, manager.getElementFor(element2));
         assertNotEquals(
-            undefined, manager.getTrackedElementById(OTHER_ELEMENT_SAME_ID));
-        assertEquals(
-            manager.getTrackedElement(element2),
-            manager.getTrackedElementById(OTHER_ELEMENT_SAME_ID));
+            undefined, manager.getElementWithId(OTHER_ELEMENT_SAME_ID));
+        assertDeepEquals(
+            manager.getElementFor(element2),
+            manager.getElementWithId(OTHER_ELEMENT_SAME_ID));
       });
 
   test('notifyElementActivated calls handler for correct element', () => {

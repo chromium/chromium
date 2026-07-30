@@ -114,29 +114,28 @@ export const TRACKED_ELEMENT_VISIBILITY_CHANGED_EVENT =
     'tracked-element-visibility-changed';
 
 /**
- * Event data when an element's visibility changes.
+ * Provides the current state of a tracked element.
  */
-export interface TrackedElementVisibilityUpdate {
+export interface TrackedElement {
+  // The element itself.
+  element: HTMLElement;
   // Is the element visible?
   visible: boolean;
   // The element's bounds in the viewport.
   bounds: RectF;
-  // The element itself.
-  element: HTMLElement;
 }
 
 /**
  * Event type when an element's visibility changes; used when observing all
  * elements with a particular native ID.
  */
-export type TrackedElementVisibilityChangedEvent =
-    CustomEvent<TrackedElementVisibilityUpdate>;
+export type TrackedElementVisibilityChangedEvent = CustomEvent<TrackedElement>;
 
 /**
  * Callback when observing visibility changes on a specific element.
  */
 export type TrackedElementVisibilityChangedCallback =
-    (update: TrackedElementVisibilityUpdate) => void;
+    (update: TrackedElement) => void;
 
 /**
  * Callback when an element's highlight state changes.
@@ -178,7 +177,7 @@ export interface Options {
   onHighlightChanged?: (highlighted: boolean) => void;
 }
 
-interface TrackedElement {
+interface TrackedElementData {
   element: HTMLElement;
   nativeId: string;
   secondaryId: string;
@@ -195,7 +194,7 @@ interface TrackedElement {
  * `TrackedElement`s and native-id-wide visibility callbacks.
  */
 class ElementData {
-  elements: Map<string, TrackedElement> = new Map();
+  elements: Map<string, TrackedElementData> = new Map();
 
   /**
    * Callbacks are routed through an `EventTarget` to avoid concurrency and
@@ -300,7 +299,7 @@ export class TrackedElementManager {
       for (const mutation of mutations) {
         // Style or class attribute changed on a tracked element.
         const target = mutation.target as HTMLElement;
-        if (this.getTrackedElement(target)) {
+        if (this.getDataForElement_(target)) {
           this.onElementVisibilityChanged_(target, computeIsVisible(target));
         }
       }
@@ -311,13 +310,13 @@ export class TrackedElementManager {
       nodes.forEach(node => {
         if (node instanceof HTMLElement) {
           // Check if the node is a tracked element.
-          if (this.getTrackedElement(node)) {
+          if (this.getDataForElement_(node)) {
             this.onElementVisibilityChanged_(node, computeIsVisible(node));
           }
           // Check if any descendants are tracked elements.
           node.querySelectorAll('*').forEach(descendant => {
             if (descendant instanceof HTMLElement &&
-                this.getTrackedElement(descendant)) {
+                this.getDataForElement_(descendant)) {
               this.onElementVisibilityChanged_(
                   descendant, computeIsVisible(descendant));
             }
@@ -358,7 +357,8 @@ export class TrackedElementManager {
     return {nativeIdentifier, secondaryIdentifier};
   }
 
-  getTrackedElement(element: HTMLElement): TrackedElement|undefined {
+  private getDataForElement_(element: HTMLElement): TrackedElementData
+      |undefined {
     const id = TrackedElementManager.getElementId(element);
     if (!id) {
       return undefined;
@@ -376,7 +376,7 @@ export class TrackedElementManager {
     return maybeTrackedElement;
   }
 
-  getTrackedElementById(id: TrackedElementIdentifier): TrackedElement
+  private getDataForId_(id: TrackedElementIdentifier): TrackedElementData
       |undefined {
     const nativeId = id.nativeIdentifier;
     const secondaryId = id.secondaryIdentifier;
@@ -386,23 +386,30 @@ export class TrackedElementManager {
     return this.trackedElements_.get(nativeId)?.elements.get(secondaryId);
   }
 
+  getElementFor(element: HTMLElement): TrackedElement|undefined {
+    const id = TrackedElementManager.getElementId(element);
+    return id ? this.getElementWithId(id) : undefined;
+  }
+
   getElementWithId(id: TrackedElementIdentifier, visibleOnly: boolean = false):
-      HTMLElement|undefined {
-    const el = this.getTrackedElementById(id);
+      TrackedElement|undefined {
+    const el = this.getDataForId_(id);
     if (!el || (visibleOnly && !el.visible)) {
       return undefined;
     }
-    return el.element;
+    return {element: el.element, visible: el.visible, bounds: el.bounds};
   }
 
-  getAllElementsWithId(nativeIdentifier: string, visibleOnly: boolean = false):
-      HTMLElement[] {
+  getAllElementsWithNativeId(
+      nativeIdentifier: string,
+      visibleOnly: boolean = false): TrackedElement[] {
     const result = [];
     const data = this.trackedElements_.get(nativeIdentifier);
     if (data) {
-      for (const trackedElement of data.elements.values()) {
-        if (!visibleOnly || trackedElement.visible) {
-          result.push(trackedElement.element);
+      for (const el of data.elements.values()) {
+        if (!visibleOnly || el.visible) {
+          result.push(
+              {element: el.element, visible: el.visible, bounds: el.bounds});
         }
       }
     }
@@ -449,7 +456,7 @@ export class TrackedElementManager {
       onVisibilityChanged?: TrackedElementVisibilityChangedCallback) {
     // Remove tracking of the old element before registering the nativeId to a
     // new element.
-    if (this.getTrackedElement(element)) {
+    if (this.getDataForElement_(element)) {
       this.stopTracking(element);
     }
     const secondaryId = options?.secondaryId ||
@@ -459,7 +466,7 @@ export class TrackedElementManager {
 
     const parsedOptions = parseOptions(options);
     const initialVisible = computeIsVisible(element);
-    const trackedElement: TrackedElement = {
+    const trackedElement: TrackedElementData = {
       element,
       nativeId,
       secondaryId,
@@ -524,7 +531,7 @@ export class TrackedElementManager {
    * @param element The element to stop tracking.
    */
   stopTracking(element: HTMLElement) {
-    const trackedElement = this.getTrackedElement(element);
+    const trackedElement = this.getDataForElement_(element);
     if (!trackedElement) {
       return;
     }
@@ -552,21 +559,21 @@ export class TrackedElementManager {
   }
 
   notifyElementActivated(element: HTMLElement) {
-    const el = this.getTrackedElement(element);
+    const el = this.getDataForElement_(element);
     assert(el);
     this.trackedElementHandler_.trackedElementActivated(
         TrackedElementManager.elementToIdentifier_(el));
   }
 
   notifyCustomEvent(element: HTMLElement, customEventName: string) {
-    const el = this.getTrackedElement(element);
+    const el = this.getDataForElement_(element);
     assert(el);
     this.trackedElementHandler_.trackedElementCustomEvent(
         TrackedElementManager.elementToIdentifier_(el), customEventName);
   }
 
   private onElementVisibilityChanged_(element: HTMLElement, visible: boolean) {
-    const trackedElement = this.getTrackedElement(element);
+    const trackedElement = this.getDataForElement_(element);
     if (!trackedElement) {
       // When we stop tracking an element we continue to get events for it. Just
       // ignore these events.
@@ -623,7 +630,7 @@ export class TrackedElementManager {
     rect.width = bounds.width;
     rect.height = bounds.height;
 
-    const trackedElement = this.getTrackedElement(element);
+    const trackedElement = this.getDataForElement_(element);
     if (trackedElement) {
       const padding = trackedElement.padding;
       rect.x -= padding.left;
@@ -637,7 +644,7 @@ export class TrackedElementManager {
   /* Called from browser to add/remove highlights. */
   private onElementHighlightChanged_(
       id: TrackedElementIdentifier, highlighted: boolean) {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     const maybeCallback = trackedElement?.onHighlightChanged;
     if (maybeCallback) {
       maybeCallback(highlighted, trackedElement.element);
@@ -673,7 +680,7 @@ export class TrackedElementManager {
 
   private async clickElement_(id: TrackedElementIdentifier):
       Promise<{success: boolean}> {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     if (!trackedElement) {
       console.error(`TrackedElementManager: Click failed, element not found: ${
           TrackedElementManager.idToString_(id)}`);
@@ -752,7 +759,7 @@ export class TrackedElementManager {
   }
 
   private focusElement_(id: TrackedElementIdentifier): {success: boolean} {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     if (!trackedElement) {
       console.error(`TrackedElementManager: Focus failed, element not found: ${
           TrackedElementManager.idToString_(id)}`);
@@ -764,7 +771,7 @@ export class TrackedElementManager {
 
   private selectTab_(id: TrackedElementIdentifier, index: number):
       {success: boolean} {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: SelectTab failed, element not found: ${
@@ -801,7 +808,7 @@ export class TrackedElementManager {
 
   private selectDropdownItem_(id: TrackedElementIdentifier, index: number):
       {success: boolean} {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: SelectDropdownItem failed, element not found: ${
@@ -841,7 +848,7 @@ export class TrackedElementManager {
     return {success: false};
   }
 
-  private static elementToIdentifier_(element: TrackedElement):
+  private static elementToIdentifier_(element: TrackedElementData):
       TrackedElementIdentifier {
     return {
       nativeIdentifier: element.nativeId,
@@ -852,7 +859,7 @@ export class TrackedElementManager {
   private enterText_(
       id: TrackedElementIdentifier, text: string,
       mode: TextEntryMode): {success: boolean} {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: EnterText failed, element not found: ${
@@ -905,7 +912,7 @@ export class TrackedElementManager {
   }
 
   private confirm_(id: TrackedElementIdentifier): {success: boolean} {
-    const trackedElement = this.getTrackedElementById(id);
+    const trackedElement = this.getDataForId_(id);
     if (!trackedElement) {
       console.error(
           `TrackedElementManager: Confirm failed, element not found: ${
