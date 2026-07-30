@@ -23,6 +23,9 @@ PaintPropertyChangeType ComputeFilterChange(
   if (!a || !b || a->output_bounds != b->output_bounds) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
+  if (a->operations.OriginTainted() != b->operations.OriginTainted()) {
+    return PaintPropertyChangeType::kChangedOnlyValues;
+  }
   if (a->operations != b->operations) {
     return is_running_filter_animation_on_compositor
                ? PaintPropertyChangeType::kChangedOnlyCompositedValues
@@ -65,6 +68,7 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
           other.self_or_ancestor_participates_in_view_transition ||
       needs_effect_for_2d_scale_transform !=
           other.needs_effect_for_2d_scale_transform ||
+      is_in_tainted_subtree != other.is_in_tainted_subtree ||
       is_in_canvas_subtree != other.is_in_canvas_subtree) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }

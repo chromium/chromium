@@ -168,6 +168,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
     bool needs_effect_for_2d_scale_transform = false;
 
+    bool is_in_tainted_subtree = false;
+
     bool is_in_canvas_subtree = false;
 
     PaintPropertyChangeType ComputeChange(
@@ -302,6 +304,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   bool RequiresCompositingForCanvasChild() const {
     return state_.direct_compositing_reasons & CompositingReason::kCanvasChild;
   }
+
+  bool IsInTaintedSubtree() const { return state_.is_in_tainted_subtree; }
 
   bool IsInCanvasSubtree() const { return state_.is_in_canvas_subtree; }
 

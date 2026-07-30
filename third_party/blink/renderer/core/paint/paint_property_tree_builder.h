@@ -217,6 +217,10 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // all non-alias effects.
   bool self_or_ancestor_participates_in_view_transition = false;
 
+  // Set to true when we visit an object with filter operations that have a
+  // tainted origin, and propagated to all its descendants.
+  bool is_in_tainted_subtree = false;
+
   // Set to true when we visit a canvas child and is propagated to all
   // descendant effects.
   bool is_in_canvas_subtree = false;
