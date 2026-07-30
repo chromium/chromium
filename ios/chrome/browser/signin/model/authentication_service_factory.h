@@ -27,9 +27,13 @@ class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static AuthenticationService* GetForProfile(ProfileIOS* profile);
   static AuthenticationServiceFactory* GetInstance();
 
+  // TODO(crbug.com/449708427): Remove after migrating internal usage.
+  static TestingFactory GetFactoryWithDelegate(
+      std::unique_ptr<AuthenticationServiceDelegate> delegate);
+
   // Returns a factory that builds an AuthenticationService using a custom
   // delegate instance (needs to be constructible before the profile).
-  static TestingFactory GetFactoryWithDelegate(
+  static TestingFactory GetFactoryWithDelegateForTesting(
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
  private:

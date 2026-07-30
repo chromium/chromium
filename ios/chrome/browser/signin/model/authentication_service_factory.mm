@@ -53,6 +53,13 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
 AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegate(
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
+  return GetFactoryWithDelegateForTesting(std::move(delegate));
+}
+
+// static
+AuthenticationServiceFactory::TestingFactory
+AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
+    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
   return base::BindOnce(&BuildAuthenticationService, std::move(delegate));
 }
 
