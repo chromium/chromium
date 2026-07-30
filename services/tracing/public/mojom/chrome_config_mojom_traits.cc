@@ -16,7 +16,10 @@ bool StructTraits<
   if (!data.ReadTraceConfig(&config)) {
     return false;
   }
-  out->set_trace_config(std::move(config));
+
+  if (!config.empty()) {
+    out->set_trace_config(std::move(config));
+  }
   out->set_privacy_filtering_enabled(data.privacy_filtering_enabled());
   out->set_convert_to_legacy_json(data.convert_to_legacy_json());
   out->set_event_package_name_filter_enabled(
