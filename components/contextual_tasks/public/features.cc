@@ -375,6 +375,9 @@ const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};
 
+const base::FeatureParam<int> kMinQueryWords{
+    &kContextualTasksContext, "ContextualTasksContextMinQueryWords", 3};
+
 const base::FeatureParam<bool> kSendContextualInputUploadTypeInSearchUrl{
     &kContextualTasksSendContextualInputUploadType, "send_in_search_url", true};
 

@@ -67,10 +67,12 @@ enum class ContextDeterminationStatus {
   kQueryEmbeddingOutputMalformed = 3,
   kNoEligibleTabs = 4,
   kTimedOut = 5,
+  kQueryEmpty = 6,
+  kQueryTooFewWords = 7,
 
   // Keep in sync with ContextualTasksContextDeterminationStatus in
   // contextual_tasks/enums.xml.
-  kMaxValue = kTimedOut,
+  kMaxValue = kQueryTooFewWords,
 };
 
 // Options to regulate tab selection behavior.
