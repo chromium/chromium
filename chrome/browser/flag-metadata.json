@@ -7382,12 +7382,12 @@
   {
     "name": "ntp-tab-groups-module",
     "owners": [ "tiborg@chromium.org", "dpenning@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 165
   },
   {
     "name": "ntp-tab-groups-module-zero-state",
     "owners": [ "tiborg@chromium.org", "dpenning@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 165
   },
   {
     "name": "ntp-threads-rail",
