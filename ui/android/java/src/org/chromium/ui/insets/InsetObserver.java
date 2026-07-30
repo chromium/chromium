@@ -144,6 +144,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
             InsetConsumerSource.UPLOAD_IMAGE_PREVIEW_DIALOG,
             InsetConsumerSource.WEBXR_OVERLAY,
+            InsetConsumerSource.WEB_APP_EDGE_TO_EDGE,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
             InsetConsumerSource.APP_HEADER_COORDINATOR_BOTTOM,
             InsetConsumerSource.COUNT
@@ -172,11 +173,17 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             int EDGE_TO_EDGE_CONTROLLER_IMPL = 5;
             int UPLOAD_IMAGE_PREVIEW_DIALOG = 6;
             int WEBXR_OVERLAY = 7;
-            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 8;
-            int APP_HEADER_COORDINATOR_BOTTOM = 9;
+
+            // Consumes system bar and display cutout insets while an installed web app draws
+            // edge-to-edge, so the EdgeToEdgeLayoutCoordinator below draws zero-height system
+            // bars instead of padding the content. Must stay directly before
+            // EDGE_TO_EDGE_LAYOUT_COORDINATOR.
+            int WEB_APP_EDGE_TO_EDGE = 8;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 9;
+            int APP_HEADER_COORDINATOR_BOTTOM = 10;
 
             // Update this whenever a consumer source is added or removed.
-            int COUNT = 10;
+            int COUNT = 11;
         }
     }
 
