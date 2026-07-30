@@ -87,42 +87,15 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!PrefetchURLLoaderServiceContext::IsPrefetchRequest(
-          resource_request_in) &&
-      !resource_request_in.browsing_topics) {
+          resource_request_in)) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): it's not "
-        "a prefetch or browsing_topics request.");
+        "a prefetch request.");
     return;
   }
 
-  if (PrefetchURLLoaderServiceContext::IsPrefetchRequest(resource_request_in) &&
-      resource_request_in.browsing_topics) {
-    loader_factory_receivers_.ReportBadMessage(
-        "Unexpected `resource_request_in` in "
-        "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): prefetch "
-        "cannot be set at the same time with browsing_topics.");
-    return;
-  }
-
-  if (resource_request_in.browsing_topics &&
-      !base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
-    loader_factory_receivers_.ReportBadMessage(
-        "Unexpected `resource_request_in` in "
-        "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
-        "browsing_topics is set when Topics API is disabled.");
-    return;
-  }
-
-  if (PrefetchURLLoaderServiceContext::IsPrefetchRequest(resource_request_in)) {
-    prefetch_url_loader_service_context_->CreatePrefetchLoaderAndStart(
-        std::move(receiver), request_id, options, resource_request_in,
-        std::move(client), traffic_annotation);
-    return;
-  }
-
-  // For non-prefetch requests, fall back to `SubresourceProxyingURLLoader`.
-  CreateSubresourceProxyingLoaderAndStart(
+  prefetch_url_loader_service_context_->CreatePrefetchLoaderAndStart(
       std::move(receiver), request_id, options, resource_request_in,
       std::move(client), traffic_annotation);
 }

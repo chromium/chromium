@@ -81,7 +81,6 @@ namespace {
   DO_FIELD(original_destination) __VA_ARGS__                       \
   DO_FIELD(request_body) __VA_ARGS__                               \
   DO_FIELD(keepalive) __VA_ARGS__                                  \
-  DO_FIELD(browsing_topics) __VA_ARGS__                            \
   DO_FIELD(has_user_gesture) __VA_ARGS__                           \
   DO_FIELD(enable_load_timing) __VA_ARGS__                         \
   DO_FIELD(enable_upload_progress) __VA_ARGS__                     \
@@ -252,7 +251,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::koriginal_destination, FieldsForUma::kOriginalDestination},
     {Fields::krequest_body, FieldsForUma::kRequestBody},
     {Fields::kkeepalive, FieldsForUma::kKeepalive},
-    {Fields::kbrowsing_topics, FieldsForUma::kBrowsingTopics},
     {Fields::khas_user_gesture, FieldsForUma::kHasUserGesture},
     {Fields::kenable_load_timing, FieldsForUma::kEnableLoadTiming},
     {Fields::kenable_upload_progress, FieldsForUma::kEnableUploadProgress},

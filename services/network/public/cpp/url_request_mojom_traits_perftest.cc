@@ -73,7 +73,6 @@ network::ResourceRequest CreateResourceRequest() {
   request.fetch_integrity = "dummy_fetch_integrity";
   request.expected_public_keys = {};
   request.keepalive = true;
-  request.browsing_topics = true;
   request.has_user_gesture = false;
   request.enable_load_timing = true;
   request.enable_upload_progress = false;

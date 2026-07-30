@@ -45,7 +45,6 @@ mojom("mojom_platform") {
     "background_sync/background_sync.mojom",
     "badging/badging.mojom",
     "browser_interface_broker.mojom",
-    "browsing_topics/browsing_topics.mojom",
     "cache_storage/cache_storage.mojom",
     "call_stack_generator/call_stack_generator.mojom",
     "choosers/color_chooser.mojom",

@@ -193,7 +193,6 @@ bool StructTraits<
   out->skip_service_worker = data.skip_service_worker();
   out->destination = data.destination();
   out->keepalive = data.keepalive();
-  out->browsing_topics = data.browsing_topics();
   out->has_user_gesture = data.has_user_gesture();
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
