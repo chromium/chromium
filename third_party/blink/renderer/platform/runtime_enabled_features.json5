@@ -685,7 +685,7 @@
     {
       name: "ApproximateGeolocationWebVisibleAPI",
       depends_on: ["ApproximateGeolocationPermission"],
-      status: "experimental",
+      status: {"Android": "stable", "default": "experimental"},
     },
     {
       name: "AppTitle",
