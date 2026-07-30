@@ -206,6 +206,10 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
     CUEING_LOG("Missing Gemini surface data.");
     return data;
   }
+  if (cue.gemini_in_chrome_surface().prompt().empty()) {
+    CUEING_LOG("Missing prompt in Gemini surface data.");
+    return data;
+  }
   data.prompt = cue.gemini_in_chrome_surface().prompt();
   data.tabs_to_share = std::move(tabs_to_show);
   return data;
