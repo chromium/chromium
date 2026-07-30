@@ -114,11 +114,11 @@ void DismissSnackbar() {
 - (void)testShowPromoIfSignedOutAndHasDeviceAccount {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
 
@@ -151,11 +151,11 @@ void DismissSnackbar() {
 - (void)testTapManageDevicesOpensMyAccountDevicesPage {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -181,11 +181,11 @@ void DismissSnackbar() {
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -220,11 +220,11 @@ void DismissSnackbar() {
   // considered expired and won't be displayed.
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -247,11 +247,11 @@ void DismissSnackbar() {
 
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -299,12 +299,12 @@ void DismissSnackbar() {
 - (void)testSendTabToSelfAndVerifySuccessSnackbar {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -338,11 +338,11 @@ void DismissSnackbar() {
 - (void)testSendTabToSelfAndVerifyErrorSnackbar {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
@@ -651,11 +651,11 @@ void DismissSnackbar() {
 - (void)testLongPressTabSwitcherTabToShowSendToYourDevice {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab switcher.
   [ChromeEarlGrey showTabSwitcher];
@@ -695,11 +695,11 @@ void DismissSnackbar() {
     testDismissSendToYourDeviceBottomSheetWhenOpenedFromTabSwitcherOnExternalURL {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab switcher.
   [ChromeEarlGrey showTabSwitcher];
@@ -742,11 +742,11 @@ void DismissSnackbar() {
 - (void)testLongPressTabSwitcherTabToShowSigninPromo {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL(
                   "/send_tab_to_self/send_tab_to_self_active_page.html")];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab switcher.
   [ChromeEarlGrey showTabSwitcher];
@@ -797,6 +797,10 @@ void DismissSnackbar() {
 - (void)testLongPressOmniboxToShowSendToYourDevice {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
   // Disable EarlGrey's synchronization during sign-in because the concurrent
   // sync/sign-in initialization triggers micro-animations and layouts on the
   // Location Bar steady view, which makes EarlGrey's synchronization hang
@@ -806,10 +810,6 @@ void DismissSnackbar() {
     ScopedSynchronizationDisabler disabler;
     [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   }
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
-  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   // Long press the DefocusedLocationView.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
@@ -870,12 +870,12 @@ void DismissSnackbar() {
 // while active in the foreground automatically opens it as a background tab
 // and presents a snackbar banner.
 - (void)testSendTabToSelfAutoOpenWhenReceivedInForeground {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
 
   // Load a starting page so there is an active, visible WebState.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   NSUInteger initialTabCount = [ChromeEarlGrey mainTabCount];
 
@@ -983,12 +983,12 @@ void DismissSnackbar() {
 // displays the "From remote_device" activity label, and that the label
 // disappears once the tab is viewed.
 - (void)testTabCardLabelDisplayedInTabGrid {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
 
   // Load a starting page so there is an active, visible WebState.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   NSUInteger initialTabCount = [ChromeEarlGrey mainTabCount];
 
@@ -1030,12 +1030,12 @@ void DismissSnackbar() {
 // Tests that the tab card activity label is correctly persisted and restored
 // across app relaunch, and is dismissed once the tab is viewed.
 - (void)testTabCardLabelPersistsAcrossRelaunch {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
 
   // Load a starting page.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   NSUInteger initialTabCount = [ChromeEarlGrey mainTabCount];
 
@@ -1106,12 +1106,12 @@ void DismissSnackbar() {
 // logs the activation metrics (both the entry point and the time from opened to
 // activated).
 - (void)testTabCardActivationLogsMetrics {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
 
   // Load a starting page so there is an active, visible WebState.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   NSUInteger initialTabCount = [ChromeEarlGrey mainTabCount];
 
@@ -1193,7 +1193,6 @@ void DismissSnackbar() {
 // adjacent to the active tab, displays its activity badge in the switcher, and
 // does not display an infobar banner upon returning to the foreground.
 - (void)testSendTabToSelfAutoOpenWhenReceivedInTabGrid {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
 
@@ -1206,6 +1205,7 @@ void DismissSnackbar() {
 
   // Open tab 1.
   [ChromeEarlGrey loadURL:tab1URL];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Open tab 2 from the tab grid so it does not inherit the first tab as its
   // opener, then load its URL.
