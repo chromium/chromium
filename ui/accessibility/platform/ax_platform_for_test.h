@@ -27,9 +27,14 @@ class AXPlatformForTest : public AXPlatform::Delegate {
 
   // AXPlatform::Delegate:
   AXMode GetAccessibilityMode() override;
+  void OnInlineTextBoxesUsedInWebContent() override;
 #if BUILDFLAG(IS_WIN)
   AXPlatform::ProductStrings GetProductStrings() override;
 #endif
+
+  int inline_text_boxes_used_in_web_content_count() const {
+    return inline_text_boxes_used_in_web_content_count_;
+  }
 
  private:
   friend class ScopedAXModeSetter;
@@ -37,6 +42,7 @@ class AXPlatformForTest : public AXPlatform::Delegate {
   AXPlatform ax_platform_{*this};
 
   AXMode mode_;
+  int inline_text_boxes_used_in_web_content_count_ = 0;
 };
 
 // Provides a way for tests to temporarily override the accessibility mode flags

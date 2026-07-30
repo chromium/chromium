@@ -1155,6 +1155,12 @@ char* GetTextWithBoundaryType(AtkText* atk_text,
   // need to convert this input value.
   offset = obj->UnicodeToUTF16OffsetInText(offset);
 
+  if (boundary == ax::mojom::TextBoundary::kLineStart ||
+      boundary == ax::mojom::TextBoundary::kLineEnd ||
+      boundary == ax::mojom::TextBoundary::kLineStartOrEnd) {
+    obj->OnInlineTextBoxesUsed();
+  }
+
   int start_offset = obj->FindTextBoundary(
       boundary, offset, ax::mojom::MoveDirection::kBackward,
       ax::mojom::TextAffinity::kDownstream);
@@ -1388,6 +1394,22 @@ gfx::Rect GetUnclippedParentHypertextRangeBoundsRect(
              .OffsetFromOrigin();
 }
 
+gfx::Rect ComputeAtkTextRangeBoundsRect(AXPlatformNodeAuraLinux& obj,
+                                        int start_offset,
+                                        int end_offset,
+                                        AtkCoordType coordinate_type) {
+  if (coordinate_type == ATK_XY_PARENT) {
+    return GetUnclippedParentHypertextRangeBoundsRect(obj.GetDelegate(),
+                                                      start_offset, end_offset);
+  }
+
+  return obj.GetDelegate()->GetHypertextRangeBoundsRect(
+      obj.UnicodeToUTF16OffsetInText(start_offset),
+      obj.UnicodeToUTF16OffsetInText(end_offset),
+      AtkCoordTypeToAXCoordinateSystem(coordinate_type),
+      AXClippingBehavior::kUnclipped);
+}
+
 void GetCharacterExtents(AtkText* atk_text,
                          int offset,
                          int* x,
@@ -1401,19 +1423,9 @@ void GetCharacterExtents(AtkText* atk_text,
   AXPlatformNodeAuraLinux* obj =
       AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(atk_text));
   if (obj) {
-    switch (coordinate_type) {
-      case ATK_XY_PARENT:
-        rect = GetUnclippedParentHypertextRangeBoundsRect(obj->GetDelegate(),
-                                                          offset, offset + 1);
-        break;
-      default:
-        rect = obj->GetDelegate()->GetHypertextRangeBoundsRect(
-            obj->UnicodeToUTF16OffsetInText(offset),
-            obj->UnicodeToUTF16OffsetInText(offset + 1),
-            AtkCoordTypeToAXCoordinateSystem(coordinate_type),
-            AXClippingBehavior::kUnclipped);
-        break;
-    }
+    obj->OnInlineTextBoxesUsed();
+    rect = ComputeAtkTextRangeBoundsRect(*obj, offset, offset + 1,
+                                         coordinate_type);
   }
 
   if (x)
@@ -1440,19 +1452,9 @@ void GetRangeExtents(AtkText* atk_text,
   AXPlatformNodeAuraLinux* obj =
       AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(atk_text));
   if (obj) {
-    switch (coordinate_type) {
-      case ATK_XY_PARENT:
-        rect = GetUnclippedParentHypertextRangeBoundsRect(
-            obj->GetDelegate(), start_offset, end_offset);
-        break;
-      default:
-        rect = obj->GetDelegate()->GetHypertextRangeBoundsRect(
-            obj->UnicodeToUTF16OffsetInText(start_offset),
-            obj->UnicodeToUTF16OffsetInText(end_offset),
-            AtkCoordTypeToAXCoordinateSystem(coordinate_type),
-            AXClippingBehavior::kUnclipped);
-        break;
-    }
+    obj->OnInlineTextBoxesUsed();
+    rect = ComputeAtkTextRangeBoundsRect(*obj, start_offset, end_offset,
+                                         coordinate_type);
   }
 
   out_rectangle->x = rect.x();
@@ -4349,6 +4351,8 @@ size_t AXPlatformNodeAuraLinux::UnicodeToUTF16OffsetInText(int unicode_offset) {
 int AXPlatformNodeAuraLinux::GetTextOffsetAtPoint(int x,
                                                   int y,
                                                   AtkCoordType atk_coord_type) {
+  OnInlineTextBoxesUsed();
+
   if (!GetExtentsRelativeToAtkCoordinateType(atk_coord_type).Contains(x, y))
     return -1;
 
@@ -4358,10 +4362,8 @@ int AXPlatformNodeAuraLinux::GetTextOffsetAtPoint(int x,
 
   int count = atk_text::GetCharacterCount(ATK_TEXT(atk_object));
   for (int i = 0; i < count; i++) {
-    int out_x, out_y, out_width, out_height;
-    atk_text::GetCharacterExtents(ATK_TEXT(atk_object), i, &out_x, &out_y,
-                                  &out_width, &out_height, atk_coord_type);
-    gfx::Rect rect(out_x, out_y, out_width, out_height);
+    gfx::Rect rect = atk_text::ComputeAtkTextRangeBoundsRect(*this, i, i + 1,
+                                                             atk_coord_type);
     if (rect.Contains(x, y))
       return i;
   }
@@ -5071,6 +5073,8 @@ void AXPlatformNodeAuraLinux::ScrollNodeIntoView(
 std::optional<gfx::Rect>
 AXPlatformNodeAuraLinux::GetUnclippedHypertextRangeBoundsRect(int start_offset,
                                                               int end_offset) {
+  OnInlineTextBoxesUsed();
+
   start_offset = UnicodeToUTF16OffsetInText(start_offset);
   end_offset = UnicodeToUTF16OffsetInText(end_offset);
 
@@ -5125,6 +5129,12 @@ bool AXPlatformNodeAuraLinux::ScrollSubstringToPoint(
                 y - (rect.y() - node_rect.y()));
 
   return true;
+}
+
+void AXPlatformNodeAuraLinux::OnInlineTextBoxesUsed() const {
+  if (IsWebContent()) {
+    AXPlatform::GetInstance().OnInlineTextBoxesUsedInWebContent();
+  }
 }
 
 void AXPlatformNodeAuraLinux::ComputeStylesIfNeeded() {

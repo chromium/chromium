@@ -201,6 +201,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   // Misc helpers
   void GetFloatAttributeInGValue(ax::mojom::FloatAttribute attr, GValue* value);
+  void OnInlineTextBoxesUsed() const;
 
   // Event helpers
   void OnBusyStateChanged(bool is_busy);

@@ -1477,6 +1477,63 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextCharacterGranularity) {
   g_object_unref(root_obj);
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest,
+       AtkTextLineBoundaryRequestsInlineTextBoxes) {
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+  Init(BuildTextField());
+
+  AtkObject* root_obj = GetRootAtkObject();
+  ASSERT_TRUE(ATK_IS_TEXT(root_obj));
+  AtkText* atk_text = ATK_TEXT(root_obj);
+
+  const int initial_call_count =
+      AXPlatformForTest::GetInstance()
+          .inline_text_boxes_used_in_web_content_count();
+
+  EXPECT_GT(atk_text_get_character_count(atk_text), 0);
+  EXPECT_EQ(initial_call_count,
+            AXPlatformForTest::GetInstance()
+                .inline_text_boxes_used_in_web_content_count());
+
+  int start_offset = -1;
+  int end_offset = -1;
+  char* text = atk_text_get_text_at_offset(
+      atk_text, 0, ATK_TEXT_BOUNDARY_LINE_START, &start_offset, &end_offset);
+  g_free(text);
+  EXPECT_EQ(initial_call_count + 1,
+            AXPlatformForTest::GetInstance()
+                .inline_text_boxes_used_in_web_content_count());
+}
+
+TEST_F(AXPlatformNodeAuraLinuxTest, AtkTextGeometryRequestsInlineTextBoxes) {
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+  Init(BuildTextField());
+
+  AtkObject* root_obj = GetRootAtkObject();
+  ASSERT_TRUE(ATK_IS_TEXT(root_obj));
+  AtkText* atk_text = ATK_TEXT(root_obj);
+
+  const int initial_call_count =
+      AXPlatformForTest::GetInstance()
+          .inline_text_boxes_used_in_web_content_count();
+
+  int x;
+  int y;
+  int width;
+  int height;
+  atk_text_get_character_extents(atk_text, 0, &x, &y, &width, &height,
+                                 ATK_XY_SCREEN);
+
+  AtkTextRectangle rectangle;
+  atk_text_get_range_extents(atk_text, 0, 1, ATK_XY_SCREEN, &rectangle);
+
+  atk_text_get_offset_at_point(atk_text, 0, 0, ATK_XY_SCREEN);
+
+  EXPECT_EQ(initial_call_count + 3,
+            AXPlatformForTest::GetInstance()
+                .inline_text_boxes_used_in_web_content_count());
+}
+
 struct GetTextSegmentTest {
   int offset;
   const char* content;
