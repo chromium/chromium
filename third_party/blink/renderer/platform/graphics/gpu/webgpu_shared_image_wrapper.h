@@ -30,10 +30,6 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
-namespace cc {
-class PaintCanvas;
-}  // namespace cc
-
 namespace gfx {
 class ColorSpace;
 struct HDRMetadata;
@@ -70,9 +66,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
 
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
-
-  void DrawToBackingSharedImage(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 

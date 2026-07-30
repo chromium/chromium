@@ -7,10 +7,12 @@
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/display_item_list.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/common/capabilities.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -80,7 +82,94 @@ bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
 
 void WebGpuSharedImageWrapperLease::DrawToBackingSharedImage(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  shared_image_wrapper_->DrawToBackingSharedImage(draw_callback);
+  if (shared_image_wrapper_->IsGpuContextLost()) {
+    return;
+  }
+
+  draw_callback(shared_image_wrapper_->recorder_for_external_draws_
+                    ->getRecordingCanvas());
+  if (shared_image_wrapper_->recorder_for_external_draws_
+          ->HasReleasableDrawOps()) {
+    cc::PaintRecord last_recording =
+        shared_image_wrapper_->recorder_for_external_draws_
+            ->ReleaseMainRecording();
+
+    auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
+        shared_image_wrapper_->RasterInterface(),
+        shared_image_wrapper_->acquire_sync_token_,
+        /*readonly=*/false);
+
+    const bool needs_clear = !shared_image_wrapper_->is_cleared_;
+    shared_image_wrapper_->is_cleared_ = true;
+
+    gpu::raster::RasterInterface* ri = shared_image_wrapper_->RasterInterface();
+    SkColor4f background_color =
+        shared_image_wrapper_->GetAlphaType() == kOpaque_SkAlphaType
+            ? SkColors::kBlack
+            : SkColors::kTransparent;
+
+    auto list = base::MakeRefCounted<cc::DisplayItemList>();
+    list->StartPaint();
+    list->push<cc::DrawRecordOp>(std::move(last_recording));
+    list->EndPaintOfUnpaired(gfx::Rect(shared_image_wrapper_->Size().width(),
+                                       shared_image_wrapper_->Size().height()));
+    list->Finalize();
+
+    gfx::Size size(shared_image_wrapper_->Size().width(),
+                   shared_image_wrapper_->Size().height());
+    size_t max_op_size_hint =
+        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
+    gfx::Rect full_raster_rect(shared_image_wrapper_->Size().width(),
+                               shared_image_wrapper_->Size().height());
+    gfx::Rect playback_rect(shared_image_wrapper_->Size().width(),
+                            shared_image_wrapper_->Size().height());
+    gfx::Vector2dF post_translate(0.f, 0.f);
+    gfx::Vector2dF post_scale(1.f, 1.f);
+
+    const bool can_use_lcd_text =
+        shared_image_wrapper_->GetAlphaType() == kOpaque_SkAlphaType;
+    const auto& caps =
+        shared_image_wrapper_->context_provider_wrapper_->ContextProvider()
+            .GetCapabilities();
+    bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+    ri->BeginRasterCHROMIUM(
+        background_color, needs_clear,
+        /*msaa_sample_count=*/use_msaa ? 1 : 0,
+        use_msaa ? gpu::raster::MsaaMode::kDMSAA
+                 : gpu::raster::MsaaMode::kNoMSAA,
+        can_use_lcd_text, /*visible=*/true,
+        shared_image_wrapper_->GetColorSpace(),
+        /*hdr_headroom=*/0.f,
+        shared_image_wrapper_->shared_image_->mailbox().name);
+
+    auto& context_provider =
+        shared_image_wrapper_->context_provider_wrapper_->ContextProvider();
+    CanvasImageProvider image_provider(
+        context_provider.ImageDecodeCache(kN32_SkColorType),
+        shared_image_wrapper_->GetSharedImageFormat() ==
+                viz::SinglePlaneFormat::kRGBA_F16
+            ? context_provider.ImageDecodeCache(kRGBA_F16_SkColorType)
+            : nullptr,
+        shared_image_wrapper_->GetColorSpace(),
+        shared_image_wrapper_->GetSharedImageFormat(),
+        cc::PlaybackImageProvider::RasterMode::kGpu,
+        shared_image_wrapper_->context_provider_wrapper_);
+
+    ri->RasterCHROMIUM(
+        list.get(), &image_provider, size, full_raster_rect, playback_rect,
+        post_translate, post_scale, /*requires_clear=*/false,
+        /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
+        base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
+
+    ri->EndRasterCHROMIUM();
+    auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+    shared_image_wrapper_->release_sync_token_ = sync_token;
+    shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(
+        sync_token);
+
+    image_provider.ReleaseLockedImages();
+    image_provider.UnbindTextureBackedImages();
+  }
 }
 
 const gpu::SyncToken& WebGpuSharedImageWrapperLease::acquire_sync_token()
