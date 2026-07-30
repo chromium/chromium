@@ -116,7 +116,6 @@ class AwProxyingRestrictedCookieManager
   AwProxyingRestrictedCookieManager(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>
           underlying_restricted_cookie_manager,
-      bool is_service_worker,
       const std::optional<const content::GlobalRenderFrameHostToken>&
           global_frame_token,
       const net::SiteForCookies& site_for_cookies,
@@ -125,7 +124,6 @@ class AwProxyingRestrictedCookieManager
   static void CreateAndBindOnIoThread(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>
           underlying_rcm,
-      bool is_service_worker,
       const std::optional<const content::GlobalRenderFrameHostToken>&
           global_frame_token,
       const net::SiteForCookies& site_for_cookies,
@@ -134,7 +132,6 @@ class AwProxyingRestrictedCookieManager
 
   mojo::Remote<network::mojom::RestrictedCookieManager>
       underlying_restricted_cookie_manager_;
-  bool is_service_worker_;
   std::optional<const content::GlobalRenderFrameHostToken> global_frame_token_;
 
   raw_ref<AwCookieAccessPolicy> cookie_access_policy_;

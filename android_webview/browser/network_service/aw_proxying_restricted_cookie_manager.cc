@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/common/aw_features.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -84,7 +85,13 @@ void AwProxyingRestrictedCookieManager::CreateAndBind(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::optional<content::GlobalRenderFrameHostToken> frame_token;
-  if (!is_service_worker) {
+  if (is_service_worker) {
+    // A nullopt global_frame_token_ is used for service workers, so no value
+    // for the per-WebView acceptThirdPartyCookies web setting can be obtained.
+    // However, without third-party storage partitioning, WebView service
+    // workers always have a first-party (same-site) site_for_cookies.
+    CHECK(!site_for_cookies.IsNull(), base::NotFatalUntil::M159);
+  } else {
     if (auto* rfh = content::RenderFrameHost::FromID(process_id, frame_id)) {
       frame_token = rfh->GetGlobalFrameToken();
     }
@@ -94,8 +101,8 @@ void AwProxyingRestrictedCookieManager::CreateAndBind(
       FROM_HERE,
       base::BindOnce(
           &AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread,
-          std::move(underlying_rcm), is_service_worker, frame_token,
-          site_for_cookies, std::move(receiver), aw_cookie_access_policy));
+          std::move(underlying_rcm), frame_token, site_for_cookies,
+          std::move(receiver), aw_cookie_access_policy));
 }
 
 AwProxyingRestrictedCookieManager::~AwProxyingRestrictedCookieManager() {
@@ -280,14 +287,12 @@ void AwProxyingRestrictedCookieManager::CookiesEnabledFor(
 AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
     mojo::PendingRemote<network::mojom::RestrictedCookieManager>
         underlying_restricted_cookie_manager,
-    bool is_service_worker,
     const std::optional<const content::GlobalRenderFrameHostToken>&
         global_frame_token,
     const net::SiteForCookies& site_for_cookies,
     AwCookieAccessPolicy* cookie_access_policy)
     : underlying_restricted_cookie_manager_(
           std::move(underlying_restricted_cookie_manager)),
-      is_service_worker_(is_service_worker),
       global_frame_token_(global_frame_token),
       cookie_access_policy_(*cookie_access_policy),
       site_for_cookies_(site_for_cookies) {
@@ -307,7 +312,6 @@ AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
 // static
 void AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread(
     mojo::PendingRemote<network::mojom::RestrictedCookieManager> underlying_rcm,
-    bool is_service_worker,
     const std::optional<const content::GlobalRenderFrameHostToken>&
         global_frame_token,
     const net::SiteForCookies& site_for_cookies,
@@ -315,8 +319,8 @@ void AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread(
     AwCookieAccessPolicy* cookie_access_policy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto wrapper = base::WrapUnique(new AwProxyingRestrictedCookieManager(
-      std::move(underlying_rcm), is_service_worker, global_frame_token,
-      site_for_cookies, cookie_access_policy));
+      std::move(underlying_rcm), global_frame_token, site_for_cookies,
+      cookie_access_policy));
   mojo::MakeSelfOwnedReceiver(std::move(wrapper), std::move(receiver));
 }
 
@@ -325,36 +329,21 @@ PrivacySetting AwProxyingRestrictedCookieManager::AllowCookies(
   // When feature is enabled, use latched cookie policy state captured at
   // construction time. This enables shared memory cookie versioning.
   if (base::FeatureList::IsEnabled(features::kWebViewLatchedCookiePolicy)) {
-    if (is_service_worker_) {
-      // Service worker cookies are always first-party, so only need to check
-      // the global toggle.
-      //
-      // Note: For service workers, cookie policy updates may be slightly
-      // delayed. Service workers are only killed after some seconds of
-      // inactivity (no controlled fetch events). This means a cookie policy
-      // change may apply to a new page, but a reused service worker will still
-      // have the old cookie policy until it is terminated and recreated. We
-      // accept this as a limited edge case unlikely to cause issues in
-      // practice.
-      return latched_accept_cookies_ ? PrivacySetting::kStateAllowed
-                                     : PrivacySetting::kStateDisallowed;
-    }
+    // Note: For service workers, cookie policy updates may be slightly
+    // delayed. Service workers are only killed after some seconds of
+    // inactivity (no controlled fetch events). This means a cookie policy
+    // change may apply to a new page, but a reused service worker will still
+    // have the old cookie policy until it is terminated and recreated. We
+    // accept this as a limited edge case unlikely to cause issues in
+    // practice.
     return AwCookieAccessPolicy::CanAccessCookies(url, site_for_cookies_,
                                                   latched_accept_cookies_,
                                                   latched_accept_third_party_);
   }
 
   // Original dynamic behavior.
-  if (is_service_worker_) {
-    // Service worker cookies are always first-party, so only need to check
-    // the global toggle.
-    return cookie_access_policy_->GetShouldAcceptCookies()
-               ? PrivacySetting::kStateAllowed
-               : PrivacySetting::kStateDisallowed;
-  } else {
-    return cookie_access_policy_->AllowCookies(url, site_for_cookies_,
-                                               global_frame_token_);
-  }
+  return cookie_access_policy_->AllowCookies(url, site_for_cookies_,
+                                             global_frame_token_);
 }
 
 }  // namespace android_webview
