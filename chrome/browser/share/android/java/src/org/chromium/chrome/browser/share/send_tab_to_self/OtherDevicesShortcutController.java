@@ -348,10 +348,12 @@ public class OtherDevicesShortcutController implements Destroyable {
                     if (!newShortcuts.isEmpty()) {
                         assert ChromeFeatureList.sSendTabToSelfDynamicShortcuts.isEnabled();
                         try {
-                            boolean result = shortcutManager.addDynamicShortcuts(newShortcuts);
-                            Log.d(TAG, "Set " + newShortcuts.size() + " shortcuts: " + result);
+                            for (ShortcutInfo shortcut : newShortcuts) {
+                                shortcutManager.pushDynamicShortcut(shortcut);
+                            }
+                            Log.d(TAG, "Pushed " + newShortcuts.size() + " shortcuts");
                         } catch (IllegalArgumentException e) {
-                            Log.e(TAG, "Max number of dynamic shortcuts exceeded", e);
+                            Log.e(TAG, "Tried to update immutable shortcut", e);
                         } catch (IllegalStateException e) {
                             Log.e(TAG, "Failed to add dynamic shortcuts", e);
                         }
