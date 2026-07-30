@@ -3927,7 +3927,7 @@
   {
     "name": "enable-jxl-image-format",
     "owners": [ "helmut@januschka.com" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 158
   },
   {
     "name": "enable-keyboard-used-palm-suppression",
