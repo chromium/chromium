@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -1173,9 +1174,7 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
       // elements since scripts can never see those flags or effects thereof.
       .SetCreatedByParser(should_be_parser_inserted,
                           should_be_parser_inserted ? document_ : nullptr)
-      .SetAlreadyStarted(is_parsing_fragment_ && flags.IsCreatedByParser() &&
-                         parser_content_policy_ !=
-                             kAllowScriptingContentAndMarkAsParserInserted);
+      .SetAlreadyStarted(ShouldMarkScriptAlreadyStarted());
   HTMLScriptElement* element = nullptr;
   const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   bool sanitizer_allows_is_attribute =
@@ -1285,6 +1284,14 @@ void HTMLConstructionSite::TakeAllChildren(HTMLStackItem* new_parent,
 CreateElementFlags HTMLConstructionSite::GetCreateElementFlags() const {
   return is_parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
                               : CreateElementFlags::ByParser(document_);
+}
+
+bool HTMLConstructionSite::ShouldMarkScriptAlreadyStarted() const {
+  return is_parsing_fragment_ &&
+         parser_content_policy_ !=
+             kAllowScriptingContentAndDoNotMarkAlreadyStarted &&
+         parser_content_policy_ !=
+             kAllowScriptingContentAndMarkAsParserInserted;
 }
 
 Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
@@ -1474,8 +1481,17 @@ Element* HTMLConstructionSite::CreateElement(
       element = definition->CreateElement(document, tag_name,
                                           GetCreateElementFlags());
     } else {
+      CreateElementFlags flags = GetCreateElementFlags();
+      // SVG <script> in foreign content is created here, not in
+      // InsertScriptElement(). Mark fragment-parsed ones "already started" too,
+      // so an innerHTML-injected SVG script can't run when later cloned.
+      if (RuntimeEnabledFeatures::SvgScriptFragmentAlreadyStartedEnabled() &&
+          tag_name == svg_names::kScriptTag &&
+          ShouldMarkScriptAlreadyStarted()) {
+        flags.SetAlreadyStarted(true);
+      }
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, GetCreateElementFlags(), is,
+          document, tag_name, flags, is,
           CustomElementRegistryAssignment::ResolveNullableRegistry(
               registry,
               CustomElementRegistryAssignment::NullRegistryFallback::kWait));

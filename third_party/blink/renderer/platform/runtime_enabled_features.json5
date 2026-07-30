@@ -6211,6 +6211,12 @@
       status: "stable",
     },
     {
+      // Kill switch for marking fragment-parsed SVG <script> elements
+      // "already started" so they stay inert when cloned. crbug.com/538197148
+      name: "SvgScriptFragmentAlreadyStarted",
+      status: "stable",
+    },
+    {
       name: "SvgSizingWithPreserveAspectRatioNone",
       status: "experimental",
     },
