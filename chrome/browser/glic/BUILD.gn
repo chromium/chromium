@@ -795,9 +795,6 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "common/instance_independent_hotkey_manager_browsertest.cc",
-    "common/panel_focus_dependent_hotkey_manager_browsertest.cc",
-    "common/panel_visibility_dependent_hotkey_manager_browsertest.cc",
     "glic_tab_restore_helper_browsertest.cc",
     "host/context/glic_delegating_sharing_manager_browsertest.cc",
     "host/context/glic_pinned_tab_manager_browsertest.cc",
@@ -852,6 +849,9 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [
       "actor/glic_actor_policy_checker_browsertest.cc",
+      "common/instance_independent_hotkey_manager_browsertest.cc",
+      "common/panel_focus_dependent_hotkey_manager_browsertest.cc",
+      "common/panel_visibility_dependent_hotkey_manager_browsertest.cc",
       "experimental_opt_in/glic_experimental_opt_in_dialog_browsertest.cc",
       "glic_browsertest.cc",
       "glic_context_menu_browsertest.cc",

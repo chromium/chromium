@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerBrowserTest,
   TriggerHotkey(LocalHotkeyManager::Command::kFocusToggle);
 
   // Verify Glic lost focus.
-  ASSERT_OK(RunUntilEqual<bool>(
+  ASSERT_TRUE(RunUntilEqual<bool>(
       [&]() { return instance->GetActiveEmbedder()->HasFocus(); }, false,
       "Timeout waiting for Glic to lose focus"));
 
@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerBrowserTest,
   TriggerHotkey(LocalHotkeyManager::Command::kFocusToggle);
 
   // Verify Glic got focus.
-  ASSERT_OK(RunUntilEqual<bool>(
+  ASSERT_TRUE(RunUntilEqual<bool>(
       [&]() { return instance->GetActiveEmbedder()->HasFocus(); }, true,
       "Timeout waiting for Glic to get focus"));
 }

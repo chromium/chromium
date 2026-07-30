@@ -16,8 +16,6 @@
 #include "base/command_line.h"
 #include "base/functional/function_ref.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -483,31 +481,6 @@ class GlicBrowserTestMixin : public T {
     return blink::ZoomLevelToZoomFactor(zoom_level);
   }
 
-  [[nodiscard]] TestResult<> WaitForGuestFrameSubmission(
-      GlicInstanceImpl* instance = nullptr) {
-    if (!instance) {
-      instance = GetOnlyGlicInstance();
-    }
-    if (!instance) {
-      return base::unexpected("No Glic instance available");
-    }
-    content::RenderFrameHost* guest_frame =
-        instance->host().GetGuestMainFrame();
-    if (!guest_frame) {
-      return base::unexpected("No Guest frame available");
-    }
-    content::RenderFrameSubmissionObserver frame_observer(guest_frame);
-    frame_observer.WaitForAnyFrameSubmission();
-    return base::ok();
-  }
-
-  void WaitForDuration(base::TimeDelta duration) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), duration);
-    run_loop.Run();
-  }
-
   [[nodiscard]] TestResult<GlicInstanceImpl*> WaitForGlicInstanceBoundToTab(
       tabs::TabInterface* tab) {
     bool success =
@@ -811,7 +784,6 @@ class GlicBrowserTestMixin : public T {
   void TriggerHotkey(ui::Accelerator accelerator) {
 #if BUILDFLAG(IS_ANDROID)
     gfx::NativeWindow window = GetBrowser()->GetWindow()->GetNativeWindow();
-    CHECK(window);
     int accelerator_state = ui_controls::kNoAccelerator;
     if (accelerator.IsCtrlDown()) {
       accelerator_state |= ui_controls::kControl;
