@@ -29,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/secure_dns_config.h"
@@ -762,9 +763,9 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     raw_ptr<PKIMetadataComponentChromeRootStoreUpdateTest> test_;
   };
 
-  void InstallCRSUpdate(
-      chrome_root_store::RootStore root_store_proto,
-      std::optional<chrome_root_store::MtcConfig> mtc_config = std::nullopt) {
+  void InstallCRSUpdate(const chrome_root_store::RootStore& root_store_proto,
+                        base::optional_ref<const chrome_root_store::MtcConfig>
+                            mtc_config = std::nullopt) {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(
@@ -792,11 +793,11 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
       root_store_proto.add_trust_anchors()->set_der(der_root);
     }
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   void InstallMtcMetadataUpdate(
-      chrome_root_store::MtcMetadata mtc_metadata_proto) {
+      const chrome_root_store::MtcMetadata& mtc_metadata_proto) {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(PKIMetadataComponentInstallerService::GetInstance()
@@ -1009,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
     anchor->set_der(std::string(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
     anchor->set_crs_root_id(kFakeCrsRootId);
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   base::HistogramTester histograms;
@@ -1068,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
         root_store_proto.add_trust_anchors();
     anchor->set_der(std::string(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1107,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
     additional_cert2->set_trust_anchor_id({0x02, 0x03});
     additional_cert2->set_tls_trust_anchor(true);
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -1154,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
     anchor->set_trust_anchor_id(
         {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08});
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1228,7 +1229,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
     anchor->add_constraints()->add_permitted_dns_names("example.com");
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1251,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
     anchor->add_constraints()->add_permitted_dns_names("example.org");
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1409,7 +1410,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
           net::x509_util::CreateMtcLandmarkGroupTrustAnchorID(ca_id, 3, 2);
     }
 
-    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    InstallMtcMetadataUpdate(mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1455,7 +1456,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                             std::nullopt)
         ->set_realm(realm());
 
-    InstallCRSUpdate(std::move(root_store_proto), std::move(mtc_config));
+    InstallCRSUpdate(root_store_proto, mtc_config);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -1548,7 +1549,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                             std::nullopt)
         ->set_realm(realm());
 
-    InstallCRSUpdate(std::move(root_store_proto), std::move(mtc_config));
+    InstallCRSUpdate(root_store_proto, mtc_config);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -1607,7 +1608,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       revoked_range->set_end_exclusive(10);
     }
 
-    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    InstallMtcMetadataUpdate(mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1688,7 +1689,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                             kMtcCaWithLandmarksId, "op2", std::nullopt)
         ->set_realm(realm());
 
-    InstallCRSUpdate(std::move(root_store_proto), std::move(mtc_config));
+    InstallCRSUpdate(root_store_proto, mtc_config);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -1737,7 +1738,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
         base_mtc_metadata_proto;
     old_mtc_metadata_proto.set_update_time_seconds(
         SecondsSinceEpoch(base::Time::Now() - base::Days(14)));
-    InstallMtcMetadataUpdate(std::move(old_mtc_metadata_proto));
+    InstallMtcMetadataUpdate(old_mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1764,7 +1765,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
         base_mtc_metadata_proto;
     new_mtc_metadata_proto.set_update_time_seconds(
         SecondsSinceEpoch(base::Time::Now()));
-    InstallMtcMetadataUpdate(std::move(new_mtc_metadata_proto));
+    InstallMtcMetadataUpdate(new_mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1797,7 +1798,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     old_mtc_metadata_proto.mutable_mtc_anchor_data(0)
         ->mutable_mtc_log_data(0)
         ->set_log_number(1);
-    InstallMtcMetadataUpdate(std::move(old_mtc_metadata_proto));
+    InstallMtcMetadataUpdate(old_mtc_metadata_proto);
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
@@ -1999,7 +2000,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     mirror->set_key(
         base::as_string_view(mirror_cosigner.key.ToSubjectPublicKeyInfo()));
 
-    InstallCRSUpdate(root_store_proto, std::move(mtc_config));
+    InstallCRSUpdate(root_store_proto, mtc_config);
   }
 
   {
@@ -2066,7 +2067,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     mtc_log.FillMtcMetadataAnchorProto(
         mtc_metadata_proto.add_mtc_anchor_data());
 
-    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    InstallMtcMetadataUpdate(mtc_metadata_proto);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -2289,7 +2290,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     mirror->set_key(
         base::as_string_view(mirror_cosigner.key.ToSubjectPublicKeyInfo()));
 
-    InstallCRSUpdate(std::move(root_store_proto), std::move(mtc_config));
+    InstallCRSUpdate(root_store_proto, mtc_config);
   }
 
   // Install fastpush proto with the MTC anchor metadata.
@@ -2317,7 +2318,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
       test_cert_data[4].expect_is_revoked = true;
     }
 
-    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    InstallMtcMetadataUpdate(mtc_metadata_proto);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -2693,7 +2694,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     constraint->add_permitted_dns_names("example.org");
     constraint->set_index_not_after((kLogNumber << 48) + mtc_log_index2);
 
-    InstallCRSUpdate(std::move(root_store_proto), std::move(mtc_config));
+    InstallCRSUpdate(root_store_proto, mtc_config);
   }
 
   // Install fastpush proto with the MTC anchor metadata.
@@ -2705,7 +2706,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
         mtc_metadata_proto.add_mtc_anchor_data();
     mtc_log.FillMtcMetadataAnchorProto(mtc_anchor_metadata);
 
-    InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
+    InstallMtcMetadataUpdate(mtc_metadata_proto);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -2819,7 +2820,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreUpdateQwacTest,
     auto* trust_anchor = root_store_proto.add_trust_anchors();
     trust_anchor->set_der(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(https_server_ok.Start());
@@ -2854,7 +2855,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreUpdateQwacTest,
     additional_cert->set_der(net::x509_util::CryptoBufferAsStringPiece(
         intermediate_cert->cert_buffer()));
     additional_cert->set_eutl(true);
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2881,7 +2882,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreUpdateQwacTest,
     trust_anchor->set_der(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
     trust_anchor->set_eutl(true);
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3065,7 +3066,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
     anchor->set_der(std::string(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   // Install CT configuration that trusts log1 and log2.
@@ -3107,7 +3108,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
     anchor->add_constraints()->set_sct_not_after_sec(
         SecondsSinceEpoch(kSctTime1 + base::Seconds(1)));
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3129,7 +3130,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
     anchor->add_constraints()->set_sct_not_after_sec(
         SecondsSinceEpoch(kSctTime0UnknownLog + base::Seconds(1)));
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3164,7 +3165,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
     anchor->add_constraints()->set_sct_all_after_sec(
         SecondsSinceEpoch(kSctTime1 - base::Seconds(1)));
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3187,7 +3188,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
     anchor->add_constraints()->set_sct_all_after_sec(
         SecondsSinceEpoch(kSctTime1 + base::Seconds(1)));
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3394,7 +3395,7 @@ IN_PROC_BROWSER_TEST_F(
         trust_anchor_ids_server_.GetRoot(kDefaultCredentialNum)
             ->cert_buffer())));
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
@@ -3449,7 +3450,7 @@ IN_PROC_BROWSER_TEST_F(
         base::as_string_view(kNotAdvertisedAndNotServedTrustAnchorId));
     additional_cert2->set_tls_trust_anchor(true);
 
-    InstallCRSUpdate(std::move(root_store_proto));
+    InstallCRSUpdate(root_store_proto);
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
