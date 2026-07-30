@@ -58,7 +58,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/media/prefs",
     "//chrome/browser/ui/views:layout_provider",
-    "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/browser/ui/views/media_preview",
     "//chrome/test:test_support",
     "//components/media_effects/test:test_support",
