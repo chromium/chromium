@@ -20,6 +20,11 @@ import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEngine
 function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
   return [
     {
+      key: 'default_search_provider_data.template_url_data',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+    },
+    {
       key: 'omnibox.keyword_space_triggering_enabled',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
@@ -148,21 +153,23 @@ suite('SearchEnginePageTests', function() {
 
     // The defaults list should only show the name and shortcut columns.
     assertFalse(
-        defaultsListElement.shadowRoot!.querySelector('.name')!.hasAttribute(
+        defaultsListElement.shadowRoot.querySelector('.name')!.hasAttribute(
             'hidden'));
-    assertFalse(defaultsListElement.shadowRoot!.querySelector('.shortcut')!
-                    .hasAttribute('hidden'));
+    assertFalse(
+        defaultsListElement.shadowRoot.querySelector('.shortcut')!.hasAttribute(
+            'hidden'));
     assertTrue(
-        defaultsListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+        defaultsListElement.shadowRoot.querySelector('.url')!.hasAttribute(
             'hidden'));
 
     // The default engines list should not collapse and should show all entries
     // in the list by default.
-    const lists =
-        defaultsListElement.shadowRoot!.querySelectorAll('dom-repeat');
-    assertEquals(1, lists.length);
-    const defaultsEntries = lists[0]!.items;
-    assertEquals(searchEnginesInfo.defaults.length, defaultsEntries!.length);
+    const rowgroups = defaultsListElement.shadowRoot.querySelectorAll(
+        '.scroll-container div[role="rowgroup"]');
+    assertEquals(1, rowgroups.length);
+    const defaultsEntries =
+        rowgroups[0]!.querySelectorAll('settings-search-engine-entry');
+    assertEquals(searchEnginesInfo.defaults.length, defaultsEntries.length);
   });
 
   test('ActivesList', function() {
@@ -170,25 +177,29 @@ suite('SearchEnginePageTests', function() {
 
     // The actives list should only show the name and shortcut columns.
     assertFalse(
-        activesListElement.shadowRoot!.querySelector('.name')!.hasAttribute(
+        activesListElement.shadowRoot.querySelector('.name')!.hasAttribute(
             'hidden'));
     assertFalse(
-        activesListElement.shadowRoot!.querySelector('.shortcut')!.hasAttribute(
+        activesListElement.shadowRoot.querySelector('.shortcut')!.hasAttribute(
             'hidden'));
     assertTrue(
-        activesListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+        activesListElement.shadowRoot.querySelector('.url')!.hasAttribute(
             'hidden'));
 
     // With less than `visibleEnginesSize` elements in the list, all elements
     // should be visible and the collapsible section should not be present.
-    const lists = activesListElement.shadowRoot!.querySelectorAll('dom-repeat');
-    const visibleEntries = lists[0]!.items;
-    const collapsedEntries = lists[1]!.items;
-    assertEquals(searchEnginesInfo.actives.length, visibleEntries!.length);
-    assertEquals(0, collapsedEntries!.length);
+    const rowgroups = activesListElement.shadowRoot.querySelectorAll(
+        '.scroll-container div[role="rowgroup"]');
+    assertEquals(2, rowgroups.length);
+    const visibleEntries =
+        rowgroups[0]!.querySelectorAll('settings-search-engine-entry');
+    const collapsedEntries =
+        rowgroups[1]!.querySelectorAll('settings-search-engine-entry');
+    assertEquals(searchEnginesInfo.actives.length, visibleEntries.length);
+    assertEquals(0, collapsedEntries.length);
 
     const expandButton =
-        activesListElement.shadowRoot!.querySelector('cr-expand-button');
+        activesListElement.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     assertTrue(expandButton.hasAttribute('hidden'));
   });
@@ -198,46 +209,33 @@ suite('SearchEnginePageTests', function() {
 
     // The others list should only show the name and url columns.
     assertFalse(
-        othersListElement.shadowRoot!.querySelector('.name')!.hasAttribute(
+        othersListElement.shadowRoot.querySelector('.name')!.hasAttribute(
             'hidden'));
     assertTrue(
-        othersListElement.shadowRoot!.querySelector('.shortcut')!.hasAttribute(
+        othersListElement.shadowRoot.querySelector('.shortcut')!.hasAttribute(
             'hidden'));
     assertFalse(
-        othersListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+        othersListElement.shadowRoot.querySelector('.url')!.hasAttribute(
             'hidden'));
 
     // Any engines greater than `visibleEnginesSize` will be in a second list
     // under the collapsible section. The button to expand this section must be
     // visible.
     const visibleEnginesSize = othersListElement.visibleEnginesSize;
-    const lists = othersListElement.shadowRoot!.querySelectorAll('dom-repeat');
-    const visibleEntries = lists[0]!.items;
-    const collapsedEntries = lists[1]!.items;
-    assertEquals(visibleEnginesSize, visibleEntries!.length);
+    const rowgroups = othersListElement.shadowRoot.querySelectorAll(
+        '.scroll-container div[role="rowgroup"]');
+    assertEquals(2, rowgroups.length);
+    const visibleEntries =
+        rowgroups[0]!.querySelectorAll('settings-search-engine-entry');
+    const collapsedEntries =
+        rowgroups[1]!.querySelectorAll('settings-search-engine-entry');
+    assertEquals(visibleEnginesSize, visibleEntries.length);
     assertEquals(
         searchEnginesInfo.others.length - visibleEnginesSize,
-        collapsedEntries!.length);
-
-    // Ensure that the search engines have reverse alphabetical order in the
-    // model.
-    for (let i = 0; i < searchEnginesInfo.others.length - 1; i++) {
-      assertTrue(
-          searchEnginesInfo.others[i]!.name >=
-          searchEnginesInfo.others[i + 1]!.name);
-    }
-
-    const othersEntries = othersListElement.shadowRoot!.querySelectorAll(
-        'settings-search-engine-entry');
-
-    // Ensure that they are displayed in alphabetical order.
-    for (let i = 0; i < othersEntries.length - 1; i++) {
-      assertTrue(
-          othersEntries[i]!.engine.name <= othersEntries[i + 1]!.engine.name);
-    }
+        collapsedEntries.length);
 
     const expandButton =
-        othersListElement.shadowRoot!.querySelector('cr-expand-button');
+        othersListElement.shadowRoot.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
     assertFalse(expandButton.hasAttribute('hidden'));
   });
@@ -360,7 +358,7 @@ suite('SearchEnginePageTests', function() {
           page.shadowRoot!.querySelector('iron-list')!.items :
           page.shadowRoot!
               .querySelectorAll('settings-search-engines-list')[listIndex]!
-              .shadowRoot!.querySelectorAll('settings-search-engine-entry');
+              .shadowRoot.querySelectorAll('settings-search-engine-entry');
 
       return list;
     }

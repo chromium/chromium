@@ -5,13 +5,11 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import type { SettingsSearchEngineIconElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSearchEngineIconElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import { eventToPromise, isVisible } from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSampleSearchEngine} from './test_search_engines_browser_proxy.js';
-
 
 suite('SearchEngineIconTest', function() {
   let icon: SettingsSearchEngineIconElement;
@@ -21,24 +19,23 @@ suite('SearchEngineIconTest', function() {
 
     icon = document.createElement('settings-search-engine-icon');
     document.body.appendChild(icon);
-
-    return flushTasks();
   });
 
   // Test that when a search engine has an iconPath, site-favicon displays the
   // icon. Downloaded icon should not be visible.
-  test('FaviconWithIconPath', function() {
+  test('FaviconWithIconPath', async function() {
     icon.engine = createSampleSearchEngine({
       iconPath: 'images/foo.png',
       iconURL: 'http://www.google.com/favicon.ico',
     });
+    await microtasksFinished();
 
     assertEquals(
         'chrome://image/?http://www.google.com/favicon.ico',
         icon.$.downloadedIcon.src);
     assertFalse(isVisible(icon.$.downloadedIcon));
 
-    const siteFavicon = icon.shadowRoot!.querySelector('site-favicon');
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
     const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
     assertTrue(!!favicon);
@@ -60,7 +57,7 @@ suite('SearchEngineIconTest', function() {
         icon.$.downloadedIcon.src);
     assertTrue(isVisible(icon.$.downloadedIcon));
 
-    const siteFavicon = icon.shadowRoot!.querySelector('site-favicon');
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
     const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
     assertTrue(!!favicon);
@@ -78,7 +75,7 @@ suite('SearchEngineIconTest', function() {
         'chrome://resources/images/invalid_url', icon.$.downloadedIcon.src);
     assertFalse(isVisible(icon.$.downloadedIcon));
 
-    const siteFavicon = icon.shadowRoot!.querySelector('site-favicon');
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
     const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
     assertTrue(!!favicon);
@@ -87,13 +84,14 @@ suite('SearchEngineIconTest', function() {
 
   // Test that when a search engine has neither an iconPath nor an iconURL,
   // site-favicon displays the icon based on the search engine's URL.
-  test('FaviconWithURL', function() {
+  test('FaviconWithURL', async function() {
     icon.engine = createSampleSearchEngine({iconPath: '', iconURL: ''});
+    await microtasksFinished();
 
     assertEquals('', icon.$.downloadedIcon.src);
     assertFalse(isVisible(icon.$.downloadedIcon));
 
-    const siteFavicon = icon.shadowRoot!.querySelector('site-favicon');
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
     const favicon = siteFavicon.shadowRoot!.querySelector('#favicon')!;
     assertTrue(!!favicon);
@@ -101,10 +99,12 @@ suite('SearchEngineIconTest', function() {
   });
 
   // Tests that the icon is not picked up by the screen reader.
-  test('IconsHiddenForScreenReader', function() {
+  test('IconsHiddenForScreenReader', async function() {
     icon.engine = createSampleSearchEngine();
+    await microtasksFinished();
+
     assertEquals('', icon.$.downloadedIcon.alt);
-    const siteFavicon = icon.shadowRoot!.querySelector('site-favicon');
+    const siteFavicon = icon.shadowRoot.querySelector('site-favicon');
     assertTrue(!!siteFavicon);
     assertEquals('true', siteFavicon.ariaHidden);
   });
