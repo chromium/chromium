@@ -185,14 +185,6 @@ bool WebGpuSharedImageWrapper::IsGpuContextLost() const {
 
 
 
-scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageWrapper::GetSharedImage()
-    const {
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
-  return shared_image_;
-}
-
 gpu::SyncToken WebGpuSharedImageWrapper::GetSyncToken() const {
   if (IsGpuContextLost()) {
     return gpu::SyncToken();

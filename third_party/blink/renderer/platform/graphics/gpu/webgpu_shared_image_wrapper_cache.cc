@@ -33,7 +33,10 @@ WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
 
 scoped_refptr<gpu::ClientSharedImage>
 WebGpuSharedImageWrapperLease::GetSharedImage() const {
-  return shared_image_wrapper_->GetSharedImage();
+  if (shared_image_wrapper_->IsGpuContextLost()) {
+    return nullptr;
+  }
+  return shared_image_wrapper_->shared_image_;
 }
 
 gpu::SyncToken WebGpuSharedImageWrapperLease::GetSyncToken() const {
