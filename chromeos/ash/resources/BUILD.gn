@@ -10,6 +10,37 @@ assert(is_chromeos)
 grit("resources") {
   source = "ash_resources.grd"
 
+  inputs = [
+    "audio_resources.grdp",
+    "public/sounds/accessibility/camera_snap.wav",
+    "public/sounds/accessibility/earcons/enter_screen.wav",
+    "public/sounds/accessibility/earcons/exit_screen.wav",
+    "public/sounds/accessibility/earcons/passthrough.wav",
+    "public/sounds/accessibility/lock.wav",
+    "public/sounds/accessibility/object_delete.wav",
+    "public/sounds/accessibility/shutdown.wav",
+    "public/sounds/accessibility/spoken_feedback_disabled.wav",
+    "public/sounds/accessibility/spoken_feedback_enabled.wav",
+    "public/sounds/accessibility/spoken_feedback_toggle_countdown_high.wav",
+    "public/sounds/accessibility/spoken_feedback_toggle_countdown_low.wav",
+    "public/sounds/accessibility/touch_type.wav",
+    "public/sounds/accessibility/unlock.wav",
+    "public/sounds/accessibility/volume_adjust.wav",
+    "public/sounds/focus_mode_ending_moment.flac",
+    "public/sounds/power/charging_started_high.flac",
+    "public/sounds/power/charging_started_low.flac",
+    "public/sounds/power/charging_started_medium.flac",
+    "public/sounds/power/low_battery.flac",
+  ]
+
+  if (is_chrome_branded) {
+    inputs += [
+      "growth_framework_resources.grdp",
+      "scalable_iph_unscaled_resources.grdp",
+      "scanner_resources.grdp",
+    ]
+  }
+
   outputs = [
     "grit/ash_resources.h",
     "grit/ash_resources_map.cc",

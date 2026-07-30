@@ -145,6 +145,24 @@ grit("help_app_kids_magazine_bundle_resources") {
 grit("media_app_resources") {
   source = "//ash/webui/media_app_ui/resources/media_app_resources.grd"
 
+  inputs = [
+    "//ash/webui/media_app_ui/resources/app.html",
+    "//ash/webui/media_app_ui/resources/assets/audio_icon.svg",
+    "//ash/webui/media_app_ui/resources/assets/audio_icon_dark.svg",
+    "//ash/webui/media_app_ui/resources/assets/file_icon.svg",
+    "//ash/webui/media_app_ui/resources/assets/file_icon_dark.svg",
+    "//ash/webui/media_app_ui/resources/assets/image_icon.svg",
+    "//ash/webui/media_app_ui/resources/assets/image_icon_dark.svg",
+    "//ash/webui/media_app_ui/resources/assets/pdf_icon.svg",
+    "//ash/webui/media_app_ui/resources/assets/pdf_icon_dark.svg",
+    "//ash/webui/media_app_ui/resources/assets/video_icon.svg",
+    "//ash/webui/media_app_ui/resources/assets/video_icon_dark.svg",
+    "//ash/webui/media_app_ui/resources/index_dark_light.html",
+    "//ash/webui/media_app_ui/resources/js/first_message_received.js",
+    "//ash/webui/media_app_ui/resources/js/viewpdfhost.js",
+    "//ash/webui/media_app_ui/resources/viewpdfhost.html",
+  ]
+
   outputs = [
     "grit/ash_media_app_resources.h",
     "ash_media_app_resources.pak",
