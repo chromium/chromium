@@ -51,7 +51,9 @@ public interface SelectionPopupController {
     }
 
     /**
-     * Makes {@link SelectionPopupcontroller} to use the readback view from {@link WindowAndroid}
+     * Makes {@link SelectionPopupController} globally use the readback view from {@link
+     * WindowAndroid}. For instance-level overrides (e.g. embedded WebContents), see {@link
+     * #setUseWindowReadbackView}.
      */
     static void setShouldGetReadbackViewFromWindowAndroid() {
         SelectionPopupControllerImpl.setShouldGetReadbackViewFromWindowAndroid();
@@ -66,6 +68,15 @@ public interface SelectionPopupController {
     static boolean needsSurfaceViewDuringSelection() {
         return !SelectionPopupControllerImpl.isMagnifierWithSurfaceControlSupported();
     }
+
+    /**
+     * Controls whether this SelectionPopupController instance gets its readback view from
+     * WindowAndroid instead of its local container view.
+     *
+     * @param useWindow True to query WindowAndroid for readback view, false to use local container
+     *     View.
+     */
+    default void setUseWindowReadbackView(boolean useWindow) {}
 
     /** Set {@link ActionModeCallback} used by {@link SelectionPopupController}. */
     void setActionModeCallback(ActionModeCallback callback);

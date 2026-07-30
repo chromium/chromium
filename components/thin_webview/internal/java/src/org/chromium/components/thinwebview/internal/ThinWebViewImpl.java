@@ -162,6 +162,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
 
         // Allow highlighting text.
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
+        controller.setUseWindowReadbackView(false);
         if (attachParams.selectionDropdownMenuDelegate != null) {
             controller.setDropdownMenuDelegate(attachParams.selectionDropdownMenuDelegate);
         } else {

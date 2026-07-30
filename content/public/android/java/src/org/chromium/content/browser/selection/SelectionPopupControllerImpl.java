@@ -127,7 +127,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     // A flag to determine if we should get readback view from WindowAndroid.
     // The readback view could be the ContainerView, which WindowAndroid has no control on that.
-    // Embedders should set this properly to use the correct view for readback.
+    // Embedders should set this properly to use the correct view for readback. To override this
+    // per-instance (e.g. for embedded WebContents in ThinWebView), use setUseWindowReadbackView.
     private static boolean sShouldGetReadbackViewFromWindowAndroid;
 
     // Allow using magnifer built using surface control instead of the system-proivded one.
@@ -243,6 +244,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     /** Menu model bridge used to display extra items. */
     private @Nullable MenuModelBridge mMenuModelBridge;
+    private @Nullable Boolean mUseWindowReadbackViewOverride;
 
     /** An interface for getting {@link View} for readback. */
     public interface ReadbackViewCallback {
@@ -254,6 +256,26 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     /** Sets to use the readback view from {@link WindowAndroid}. */
     public static void setShouldGetReadbackViewFromWindowAndroid() {
         sShouldGetReadbackViewFromWindowAndroid = true;
+    }
+
+    @Override
+    public void setUseWindowReadbackView(boolean useWindow) {
+        mUseWindowReadbackViewOverride = useWindow;
+    }
+
+    @VisibleForTesting
+    ReadbackViewCallback getReadbackViewCallback() {
+        return () -> {
+            boolean useWindow =
+                    mUseWindowReadbackViewOverride != null
+                            ? mUseWindowReadbackViewOverride
+                            : sShouldGetReadbackViewFromWindowAndroid;
+            if (useWindow) {
+                return mWindowAndroid == null ? null : mWindowAndroid.getReadbackView();
+            } else {
+                return mView;
+            }
+        };
     }
 
     public static void setAllowSurfaceControlMagnifier() {
@@ -1819,14 +1841,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (sDisableMagnifierForTesting || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             return null;
         }
-        ReadbackViewCallback callback =
-                () -> {
-                    if (sShouldGetReadbackViewFromWindowAndroid) {
-                        return mWindowAndroid == null ? null : mWindowAndroid.getReadbackView();
-                    } else {
-                        return mView;
-                    }
-                };
+        ReadbackViewCallback callback = getReadbackViewCallback();
         MagnifierWrapper magnifier;
         if (isMagnifierWithSurfaceControlSupported()) {
             magnifier = new MagnifierSurfaceControl(mWebContents, callback);

@@ -41,6 +41,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.ActionMode;
 import android.view.Menu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.textclassifier.TextClassification;
 
@@ -558,6 +559,25 @@ public class SelectionPopupControllerTest {
         // Insertion handle drag stopped.
         mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_DRAG_STOPPED, 0, 0, 1, 1);
         order.verify(magnifierAnimator).handleDragStopped();
+    }
+
+    @Test
+    @Feature({"TextInput", "Magnifier"})
+    public void testSetUseWindowReadbackView() {
+        View windowReadbackView = Mockito.mock(View.class);
+        when(mWindowAndroid.getReadbackView()).thenReturn(windowReadbackView);
+        SelectionPopupControllerImpl.setShouldGetReadbackViewFromWindowAndroid();
+
+        // Default: sShouldGetReadbackViewFromWindowAndroid is true, so returns windowReadbackView.
+        assertEquals(windowReadbackView, mController.getReadbackViewCallback().getReadbackView());
+
+        // When useWindowReadbackView is explicitly set to false, it overrides to mView.
+        mController.setUseWindowReadbackView(false);
+        assertEquals(mView, mController.getReadbackViewCallback().getReadbackView());
+
+        // When useWindowReadbackView is explicitly set to true, it returns windowReadbackView.
+        mController.setUseWindowReadbackView(true);
+        assertEquals(windowReadbackView, mController.getReadbackViewCallback().getReadbackView());
     }
 
     @Test
