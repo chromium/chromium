@@ -16,6 +16,23 @@ package sync_pb;
 
 // Specifics for a history journey.
 message JourneySpecifics {
-  // TODO(crbug.com/526686844): In CL #2, add fields that you wish to sync, then
-  // update proto_visitors.h and potentially proto_enum_conversions.*.
+  // Used as a client_tag by Sync - unique identifier for the entity (GUID).
+  optional string journey_id = 1;
+  optional string title = 2;
+  // UTF-8 encoded strings.
+  optional string emoji = 3;
+  optional string overview = 4;
+  optional string short_overview = 5;
+  optional int64 creation_time_windows_epoch_micros = 6;
+
+  message HistoryEntry {
+    optional int64 visit_timestamp_windows_epoch_micros = 1;
+  }
+  repeated HistoryEntry history_entries = 7;
+
+  message ContinuationQuery {
+    optional string title = 1;
+    optional string prompt = 2;
+  }
+  repeated ContinuationQuery continuation_queries = 8;
 }

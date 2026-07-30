@@ -2471,8 +2471,25 @@ VISIT_PROTO_FIELDS(const sync_pb::NotebookSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::Notebook& proto) {}
 
+VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics::HistoryEntry& proto) {
+  VISIT(visit_timestamp_windows_epoch_micros);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::JourneySpecifics::ContinuationQuery& proto) {
+  VISIT(title);
+  VISIT(prompt);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::JourneySpecifics& proto) {
-  // TODO(crbug.com/526686844): In CL #2, VISIT fields added to specifics.
+  VISIT(journey_id);
+  VISIT(title);
+  VISIT(emoji);
+  VISIT(overview);
+  VISIT(short_overview);
+  VISIT(creation_time_windows_epoch_micros);
+  VISIT_REP(history_entries);
+  VISIT_REP(continuation_queries);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {
