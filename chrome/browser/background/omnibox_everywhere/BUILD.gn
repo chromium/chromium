@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("omnibox_everywhere") {
+  public = [ "omnibox_everywhere_background_mode_manager.h" ]
+  sources = [ "omnibox_everywhere_background_mode_manager.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/prefs",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
+    "//chrome/common",
+  ]
+}

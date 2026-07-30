@@ -6,11 +6,17 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views)
 
+source_set("prefs") {
+  sources = [ "omnibox_everywhere_prefs.cc" ]
+  public = [ "omnibox_everywhere_prefs.h" ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/prefs" ]
+}
+
 # Omnibox Everywhere global features on desktop.
 source_set("omnibox_everywhere") {
   sources = [
     "omnibox_everywhere_controller.cc",
-    "omnibox_everywhere_prefs.cc",
     "omnibox_everywhere_ui_manager.cc",
     "omnibox_everywhere_ui_manager.h",
     "omnibox_everywhere_widget_delegate.cc",
@@ -18,7 +24,6 @@ source_set("omnibox_everywhere") {
   ]
   public = [
     "omnibox_everywhere_controller.h",
-    "omnibox_everywhere_prefs.h",
     "omnibox_everywhere_ui_manager.h",
   ]
   friend = [
@@ -27,7 +32,9 @@ source_set("omnibox_everywhere") {
   ]
   public_deps = [ "//base" ]
   deps = [
+    ":prefs",
     "//chrome/browser:file_select_helper",
+    "//chrome/browser/background/omnibox_everywhere",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/profiles",
@@ -59,6 +66,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":omnibox_everywhere",
+    ":prefs",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
