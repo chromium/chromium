@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "suggestions_from_gemini_consumer.h",
+    "suggestions_from_gemini_mutator.h",
+    "suggestions_from_gemini_table_view_controller.h",
+    "suggestions_from_gemini_table_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "suggestions_from_gemini_table_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

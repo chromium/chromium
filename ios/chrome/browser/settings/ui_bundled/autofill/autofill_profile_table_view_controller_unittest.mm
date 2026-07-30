@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -20,10 +21,16 @@
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/personal_context/core/mock_personal_context_eligibility_service.h"
+#import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller+testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_profile_item.h"
@@ -41,17 +48,31 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+std::unique_ptr<KeyedService> CreateMockPersonalContextEligibilityService(
+    ProfileIOS* profile) {
+  auto service = std::make_unique<testing::NiceMock<
+      personal_context::MockPersonalContextEligibilityService>>();
+  ON_CALL(*service, GetEligibilityState())
+      .WillByDefault(testing::Return(
+          personal_context::PersonalContextEligibilityState::kEligible));
+  return service;
+}
 
 class AutofillProfileTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
@@ -66,9 +87,16 @@ class AutofillProfileTableViewControllerTest
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        IOSPersonalContextEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockPersonalContextEligibilityService));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -102,6 +130,21 @@ class AutofillProfileTableViewControllerTest
             GetApplicationContext()->GetSystemIdentityManager());
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager->AddIdentity(fake_identity);
+
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    AccountInfo account_info = signin::MakeAccountAvailable(
+        identity_manager,
+        signin::AccountAvailabilityOptionsBuilder()
+            .WithGaiaId(fake_identity.gaiaId)
+            .Build(base::SysNSStringToUTF8(fake_identity.userEmail)));
+
+    AccountInfo::Builder builder(account_info);
+    AccountCapabilities capabilities = account_info.GetAccountCapabilities();
+    AccountCapabilitiesTestMutator mutator(&capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    builder.UpdateAccountCapabilitiesWith(capabilities);
+    signin::UpdateAccountInfoForAccount(identity_manager, builder.Build());
 
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
@@ -452,6 +495,32 @@ TEST_F(AutofillProfileTableViewControllerTest,
     EXPECT_EQ(count, 1) << "Type " << autofill::EntityType(type)
                         << " appeared in more than one category";
   }
+}
+
+// Tests that when ShouldShowPersonalContextAutofillSetting is true,
+// the suggestions from Gemini section is visible with a footer.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestSuggestionsFromGeminiSettingSectionVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{autofill::features::kAutofillAmbientAutofill,
+        {{"ambient_autofill_eligible_tiers", "1"}}},
+       {autofill::features::kAutofillAiAvailableByDefault, {}}},
+      /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
+  SignIn();
+  profile_->GetPrefs()->SetInteger("sync.ai_subscription_tier", 1);
+
+  CreateController();
+  CheckController();
+
+  // Expect 4 sections (address toggle, suggestions from gemini, enhanced
+  // autofill, user verification).
+  EXPECT_EQ(4, NumberOfSections());
+  // The suggestions from gemini section should be index 1.
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  CheckSectionFooterWithId(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY, 1);
 }
 
 class AutofillProfileTableViewControllerYourSavedInfoEnabledTest

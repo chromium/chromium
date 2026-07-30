@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "suggestions_from_gemini_coordinator.h",
+    "suggestions_from_gemini_coordinator.mm",
+    "suggestions_from_gemini_mediator.h",
+    "suggestions_from_gemini_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "suggestions_from_gemini_coordinator_unittest.mm",
+    "suggestions_from_gemini_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

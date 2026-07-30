@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_add_entities_menu_builder.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/utils/autofill_settings_ui_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
@@ -115,6 +116,7 @@ const CGFloat kEntityIconPointSize = 20;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitches = kSectionIdentifierEnumZero,
   SectionIdentifierProfiles,
+  SectionIdentifierSuggestionsFromGemini,
   SectionIdentifierEnhancedAutofill,
   SectionIdentifierVerificationSwitch,
   SectionIdentifierWalletPromo,
@@ -130,6 +132,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeAddress,
   ItemTypeHeader,
   ItemTypeFooter,
+  ItemTypeSuggestionsFromGemini,
   ItemTypeEnhancedAutofill,
   ItemTypeEnhancedAutofillManaged,
   ItemTypeVerificationSwitch,
@@ -245,6 +248,9 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   // Item for the Enhanced Autofill settings menu.
   TableViewDetailIconItem* _enhancedAutofillItem;
 
+  // Item for the Suggestions from Gemini settings menu.
+  TableViewDetailIconItem* _suggestionsFromGeminiItem;
+
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
 
@@ -285,6 +291,9 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   // Coordinator to view/edit entity details.
   AutofillAIEntityEditCoordinator* _autofillAiEntityEditCoordinator;
+
+  // Coordinator to manage Suggestions from Gemini.
+  SuggestionsFromGeminiCoordinator* _suggestionsFromGeminiCoordinator;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -378,6 +387,16 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   [model setFooter:[self addressSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierSwitches];
+
+  if (!IsYourSavedInfoSettingsPageIosEnabled() &&
+      autofill::ShouldShowPersonalContextAutofillSetting(
+          _browser->GetProfile())) {
+    [model addSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+    [model addItem:[self suggestionsFromGeminiItem]
+        toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+    [model setFooter:[self suggestionsFromGeminiFooter]
+        forSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+  }
 
   bool isEnhancedAutofillEnabled =
       !IsYourSavedInfoSettingsPageIosEnabled() &&
@@ -530,6 +549,27 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   [self configureEnhancedAutofillItem];
 
   return _enhancedAutofillItem;
+}
+
+- (TableViewItem*)suggestionsFromGeminiItem {
+  _suggestionsFromGeminiItem = [[TableViewDetailIconItem alloc]
+      initWithType:ItemTypeSuggestionsFromGemini];
+  _suggestionsFromGeminiItem.text =
+      l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE);
+  _suggestionsFromGeminiItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _suggestionsFromGeminiItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _suggestionsFromGeminiItem.accessibilityIdentifier =
+      kSuggestionsFromGeminiTableViewId;
+  return _suggestionsFromGeminiItem;
+}
+
+- (TableViewHeaderFooterItem*)suggestionsFromGeminiFooter {
+  TableViewLinkHeaderFooterItem* footer =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  footer.text = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY);
+  return footer;
 }
 
 - (TableViewInfoButtonItem*)managedAddressItem {
@@ -806,6 +846,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   [self stopAutofillProfileEditCoordinator];
   [self stopAutofillAIEntityEditCoordinator];
+  [self stopSuggestionsFromGeminiCoordinator];
   [self dismissDeletionSheet];
 
   // Remove pref changes registrations.
@@ -952,6 +993,17 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
               initWithBrowser:_browser];
       [self configureHandlersForRootViewController:controller];
       [self.navigationController pushViewController:controller animated:YES];
+      return;
+    }
+    case ItemTypeSuggestionsFromGemini: {
+      CHECK(self.navigationController);
+      // TODO(crbug.com/539811785): Implement navigation metrics.
+      [self stopSuggestionsFromGeminiCoordinator];
+      _suggestionsFromGeminiCoordinator =
+          [[SuggestionsFromGeminiCoordinator alloc]
+              initWithBaseNavigationController:self.navigationController
+                                       browser:_browser];
+      [_suggestionsFromGeminiCoordinator start];
       return;
     }
     case ItemTypeWalletPromoButton: {
@@ -1385,6 +1437,11 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   [_autofillAddProfileCoordinator stop];
   _autofillAddProfileCoordinator = nil;
   _addProfileBottomSheetHandler = nil;
+}
+
+- (void)stopSuggestionsFromGeminiCoordinator {
+  [_suggestionsFromGeminiCoordinator stop];
+  _suggestionsFromGeminiCoordinator = nil;
 }
 
 // Removes the item from the personal data manager model.

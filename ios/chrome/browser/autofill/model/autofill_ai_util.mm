@@ -8,6 +8,7 @@
 #import "components/account_settings/account_setting_service.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#import "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
 #import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_types.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -140,6 +142,20 @@ base::optional_ref<const EntityInstance> GetEntityInstance(
 
   return edm->GetEntityInstance(
       EntityInstance::EntityId(base::Uuid::ParseCaseInsensitive(guid)));
+}
+
+bool ShouldShowPersonalContextAutofillSetting(ProfileIOS* profile) {
+  CHECK(profile);
+  return ShouldShowPersonalContextAutofillSetting(
+      GoogleGroupsManagerFactory::GetForProfile(profile->GetOriginalProfile()),
+      profile->GetPrefs(),
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
+      SyncServiceFactory::GetForProfile(profile),
+      IsWalletPublicPassStorageEnabled(profile), profile->IsOffTheRecord(),
+      GeoIpCountryCode(GetCountryCodeFromVariations()),
+      IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile),
+      SubscriptionEligibilityServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace autofill

@@ -38,6 +38,8 @@ source_set("autofill") {
   public_deps = [
     "//ios/chrome/browser/settings/autofill/bnpl/coordinator",
     "//ios/chrome/browser/settings/autofill/bnpl/ui",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
     "//ios/chrome/browser/settings/autofill/ui",
   ]
   deps = [
@@ -138,7 +140,9 @@ source_set("unit_tests") {
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/personal_context/core:test_support",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",
@@ -150,8 +154,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/autofill/ui_bundled/util",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/bnpl/coordinator:unit_tests",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator:unit_tests",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui:unit_tests",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled:test_support",
     "//ios/chrome/browser/settings/ui_bundled/autofill/cells",

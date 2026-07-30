@@ -36,6 +36,10 @@ bool IsAutofillAtMemoryEnabled();
 // Returns whether Enhanced Autofill is enabled.
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile);
 
+// Returns whether the Personal Context Autofill setting should be shown.
+// Required to be called with a non-nil profile.
+bool ShouldShowPersonalContextAutofillSetting(ProfileIOS* profile);
+
 // Enables or disables Enhanced Autofill.
 void SetEnhancedAutofillEnabled(ProfileIOS* profile, bool enabled);
 
