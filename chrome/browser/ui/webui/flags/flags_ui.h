@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
@@ -40,7 +41,7 @@ class FlagsUI : public content::WebUIController {
   ~FlagsUI() override;
 
   static void AddStrings(content::WebUIDataSource* source);
-  static base::RefCountedMemory* GetFaviconResourceBytes(
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
  private:

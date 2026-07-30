@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BOOKMARKS_BOOKMARKS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_BOOKMARKS_BOOKMARKS_UI_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -31,7 +32,7 @@ class BookmarksUI : public ui::MojoWebUIController {
   BookmarksUI(const BookmarksUI&) = delete;
   BookmarksUI& operator=(const BookmarksUI&) = delete;
 
-  static base::RefCountedMemory* GetFaviconResourceBytes(
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 };
 

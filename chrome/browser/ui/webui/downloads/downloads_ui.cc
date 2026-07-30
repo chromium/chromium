@@ -291,7 +291,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(DownloadsUI)
 DownloadsUI::~DownloadsUI() = default;
 
 // static
-base::RefCountedMemory* DownloadsUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> DownloadsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_DOWNLOADS_FAVICON, scale_factor);

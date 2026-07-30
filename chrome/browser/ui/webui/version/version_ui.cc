@@ -231,7 +231,7 @@ int VersionUI::VersionProcessorVariation() {
 }
 
 // static
-base::RefCountedMemory* VersionUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> VersionUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_PRODUCT_FAVICON, scale_factor);

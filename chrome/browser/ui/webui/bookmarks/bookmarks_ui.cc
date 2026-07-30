@@ -203,7 +203,7 @@ BookmarksUI::BookmarksUI(content::WebUI* web_ui)
 }
 
 // static
-base::RefCountedMemory* BookmarksUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> BookmarksUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_BOOKMARKS_FAVICON, scale_factor);

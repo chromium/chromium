@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -90,7 +91,7 @@ ComponentsUI::ComponentsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 ComponentsUI::~ComponentsUI() = default;
 
 // static
-base::RefCountedMemory* ComponentsUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> ComponentsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_PLUGINS_FAVICON, scale_factor);

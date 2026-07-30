@@ -585,7 +585,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
 ExtensionsUI::~ExtensionsUI() = default;
 
 // static
-base::RefCountedMemory* ExtensionsUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> ExtensionsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   return rb.LoadDataResourceBytesForScale(IDR_EXTENSIONS_FAVICON, scale_factor);

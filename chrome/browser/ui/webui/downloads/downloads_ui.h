@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "content/public/browser/webui_config.h"
@@ -39,7 +40,7 @@ class DownloadsUI : public ui::MojoWebUIController,
 
   ~DownloadsUI() override;
 
-  static base::RefCountedMemory* GetFaviconResourceBytes(
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo

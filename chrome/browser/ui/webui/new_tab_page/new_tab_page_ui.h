@@ -12,6 +12,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
@@ -21,18 +24,11 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups.mojom.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
-#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
-#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
-#if !defined(OFFICIAL_BUILD)
-#include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/40147906
-#endif
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -51,13 +47,19 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"  // nogncheck
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "components/user_education/webui/help_bubble_handler.h"  // nogncheck
+#endif
+
+#if !defined(OFFICIAL_BUILD)
+#include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/40147906
 #endif
 
 namespace base {
@@ -241,7 +243,7 @@ class NewTabPageUI
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
           child_page);
 
-  static base::RefCountedMemory* GetFaviconResourceBytes(
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
   // Lazily creates and returns a reference to the owned contextual search

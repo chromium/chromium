@@ -293,11 +293,10 @@ HistoryUI::~HistoryUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryUI)
 
 // static
-base::RefCountedMemory* HistoryUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> HistoryUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
-  return static_cast<base::RefCountedMemory*>(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-          IDR_HISTORY_FAVICON, scale_factor));
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_HISTORY_FAVICON, scale_factor);
 }
 
 void HistoryUI::BindInterface(

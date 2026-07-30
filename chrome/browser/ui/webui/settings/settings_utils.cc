@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
+#include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
@@ -23,7 +24,7 @@ bool FixupAndValidateStartupPage(const std::string& url_string,
   return valid;
 }
 
-base::RefCountedMemory* GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_SETTINGS_FAVICON, scale_factor);

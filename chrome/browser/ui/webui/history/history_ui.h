@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -65,7 +66,7 @@ class HistoryUI : public ui::MojoWebUIController,
   HistoryUI& operator=(const HistoryUI&) = delete;
   ~HistoryUI() override;
 
-  static base::RefCountedMemory* GetFaviconResourceBytes(
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
   // Instantiates the implementors of mojom interfaces.

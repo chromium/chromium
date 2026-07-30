@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"
 
+#include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
@@ -75,7 +76,7 @@ void AppHomeUI::BindInterface(
 }
 
 // static
-base::RefCountedMemory* AppHomeUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> AppHomeUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_BOOKMARK_BAR_APPS_SHORTCUT, scale_factor);

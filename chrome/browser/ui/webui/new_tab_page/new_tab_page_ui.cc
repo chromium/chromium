@@ -1603,11 +1603,10 @@ void NewTabPageUI::MaybeEnableEnterpriseShortcutsVisibility() {
 }
 
 // static
-base::RefCountedMemory* NewTabPageUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> NewTabPageUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
-  return static_cast<base::RefCountedMemory*>(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-          IDR_NTP_FAVICON, scale_factor));
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_NTP_FAVICON, scale_factor);
 }
 
 std::string_view NewTabPageUI::GetNtpPromoType() {

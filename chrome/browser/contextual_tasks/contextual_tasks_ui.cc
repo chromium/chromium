@@ -70,6 +70,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/logger.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
@@ -103,11 +104,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#endif
-
-#include "components/omnibox/common/omnibox_features.h"
-
-#if !BUILDFLAG(IS_ANDROID)
+#else
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
@@ -1961,19 +1958,18 @@ void ContextualTasksUI::OnRestoredTabsFetched(
 #if !BUILDFLAG(IS_ANDROID)
 // static
 // Favicons for WebUI pages are only used on desktop builds.
-base::RefCountedMemory* ContextualTasksUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory>
+ContextualTasksUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Use the Google G favicon for Google Chrome branded builds.
-  return static_cast<base::RefCountedMemory*>(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-          IDR_GOOGLE_G_GRADIENT_16, scale_factor));
+  constexpr int kId = IDR_GOOGLE_G_GRADIENT_16;
 #else
   // Use the Chromium favicon for Chromium builds.
-  return static_cast<base::RefCountedMemory*>(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-          IDR_NTP_FAVICON, scale_factor));
+  constexpr int kId = IDR_NTP_FAVICON;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      kId, scale_factor);
 }
 
 void ContextualTasksUI::SyncZoom(bool site_to_webui) {

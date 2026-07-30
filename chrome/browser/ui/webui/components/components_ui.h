@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -34,7 +35,7 @@ class ComponentsUI : public content::WebUIController {
 
   ~ComponentsUI() override;
 
-  static base::RefCountedMemory* GetFaviconResourceBytes(
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 };
 

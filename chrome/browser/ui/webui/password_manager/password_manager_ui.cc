@@ -832,11 +832,11 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
 PasswordManagerUI::~PasswordManagerUI() = default;
 
 // static
-base::RefCountedMemory* PasswordManagerUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory>
+PasswordManagerUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
-  return static_cast<base::RefCountedMemory*>(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-          IDR_PASSWORD_MANAGER_FAVICON, scale_factor));
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_PASSWORD_MANAGER_FAVICON, scale_factor);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PasswordManagerUI)

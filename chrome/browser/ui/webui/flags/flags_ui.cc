@@ -214,7 +214,7 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
 FlagsUI::~FlagsUI() = default;
 
 // static
-base::RefCountedMemory* FlagsUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> FlagsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_FLAGS_FAVICON, scale_factor);

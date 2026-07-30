@@ -314,8 +314,8 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     ui::ResourceScaleFactor selected_resource_scale =
         resource_scale_factors[selected_index];
 
-    scoped_refptr<base::RefCountedMemory> bitmap(
-        GetFaviconResourceBytes(url, selected_resource_scale));
+    scoped_refptr<base::RefCountedMemory> bitmap =
+        GetFaviconResourceBytes(url, selected_resource_scale);
     if (bitmap.get() && bitmap->size()) {
       favicon_base::FaviconRawBitmapResult bitmap_result;
       bitmap_result.bitmap_data = bitmap;
@@ -361,7 +361,8 @@ ChromeWebUIControllerFactory::ChromeWebUIControllerFactory() = default;
 
 ChromeWebUIControllerFactory::~ChromeWebUIControllerFactory() = default;
 
-base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory>
+ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     const GURL& page_url,
     ui::ResourceScaleFactor scale_factor) const {
 #if !BUILDFLAG(IS_ANDROID)

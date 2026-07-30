@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
@@ -17,9 +18,6 @@
 #include "chrome/browser/ui/webui/current_channel_logo.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/theme_source.h"
-#endif
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,6 +32,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/theme_source.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/strings/grit/ash_strings.h"
@@ -105,7 +107,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
 }  // namespace
 
 // static
-base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> ManagementUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_MANAGEMENT_FAVICON, scale_factor);

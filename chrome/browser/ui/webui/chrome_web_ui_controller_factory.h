@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -68,7 +69,7 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
   // The returned favicon data must be
   // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP. GetFaviconForURL() should
   // be updated if this changes.
-  base::RefCountedMemory* GetFaviconResourceBytes(
+  scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       const GURL& page_url,
       ui::ResourceScaleFactor scale_factor) const;
 

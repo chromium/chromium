@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
@@ -35,7 +36,7 @@ void ShowManageSSLCertificates(content::WebContents* web_contents);
 bool FixupAndValidateStartupPage(const std::string& url_string,
                                  GURL* fixed_url);
 
-base::RefCountedMemory* GetFaviconResourceBytes(
+scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor);
 
 #if BUILDFLAG(IS_MAC)
