@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/credential_provider_migrator_app_agent.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_migrator_app_agent.h"
 
 #import <algorithm>
 #import <deque>

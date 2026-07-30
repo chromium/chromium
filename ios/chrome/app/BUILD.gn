@@ -377,33 +377,6 @@ compile_entitlements("entitlements") {
   output_name = "$target_gen_dir/$chromium_short_name.entitlements"
 }
 
-if (ios_enable_credential_provider_extension) {
-  source_set("credential_provider_migrator_app_agent") {
-    sources = [
-      "credential_provider_migrator_app_agent.h",
-      "credential_provider_migrator_app_agent.mm",
-    ]
-    deps = [
-      "//components/webauthn/core/browser:passkey_model",
-      "//ios/chrome/app/application_delegate:app_state",
-      "//ios/chrome/app/application_delegate:observing_app_state_agent",
-      "//ios/chrome/app/profile",
-      "//ios/chrome/browser/credential_provider/model",
-      "//ios/chrome/browser/passwords/model:store_factory",
-      "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-      "//ios/chrome/browser/shared/model/application_context",
-      "//ios/chrome/browser/shared/model/profile",
-      "//ios/chrome/browser/shared/model/profile:features",
-      "//ios/chrome/browser/signin/model:authentication_service",
-      "//ios/chrome/browser/signin/model:authentication_service_factory",
-      "//ios/chrome/browser/sync/model",
-      "//ios/chrome/browser/webauthn/model",
-      "//ios/chrome/common/app_group",
-      "//ios/chrome/common/credential_provider",
-    ]
-  }
-}
-
 source_set("app_metrics_app_state_agent") {
   sources = [
     "app_metrics_app_state_agent.h",
@@ -700,7 +673,7 @@ source_set("app_internal") {
   }
 
   if (ios_enable_credential_provider_extension) {
-    deps += [ ":credential_provider_migrator_app_agent" ]
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
   }
 
   if (enable_rlz) {

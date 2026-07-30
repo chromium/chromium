@@ -159,7 +159,7 @@
 #import "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
-#import "ios/chrome/app/credential_provider_migrator_app_agent.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_migrator_app_agent.h"
 #endif
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
