@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `futures-util-0.3.32` crate.
+# `futures-util-0.3.33` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "futures-util"
-version = "0.3.32"
+version = "0.3.33"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -36,6 +36,9 @@ is_placeholder = true
 "libc" = []
 "memchr" = []
 "portable-atomic" = []
+"portable-atomic-alloc" = []
+"portable-atomic-util" = []
+"portable_atomic_crate" = []
 "sink" = []
 "slab" = []
 "spin" = []
@@ -45,10 +48,10 @@ is_placeholder = true
 "write-all-vectored" = []
 
 [dependencies.futures-core]
-version = "^0.3.32"
+version = "^0.3.33"
 default_features = false
 [dependencies.futures-task]
-version = "^0.3.32"
+version = "^0.3.33"
 default_features = false
 [dependencies.pin-project-lite]
 version = "^0.2.6"
