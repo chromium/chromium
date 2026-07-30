@@ -1283,3 +1283,21 @@ try_.builder(
     gn_args = "ci/linux-tsgo-rel",
     contact_team_email = "chrome-webui@google.com",
 )
+
+try_.builder(
+    name = "linux-separate-renderer-rel",
+    description_html = "Runs separate renderer tests on Linux, mirroring linux-separate-renderer-fyi-rel.",
+    mirrors = [
+        "ci/linux-separate-renderer-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-separate-renderer-fyi-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    contact_team_email = "toyoshim@chromium.org",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+)

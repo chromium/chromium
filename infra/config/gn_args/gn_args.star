@@ -1625,3 +1625,10 @@ gn_args.config(
         "use_typescript_go": True,
     },
 )
+
+gn_args.config(
+    name = "separate_renderer",
+    args = {
+        "enable_separate_renderer_binary": True,
+    },
+)

@@ -2848,3 +2848,92 @@ ci.builder(
     ),
     contact_team_email = "chrome-devtools@google.com",
 )
+
+ci.builder(
+    name = "win-separate-renderer-fyi-rel",
+    description_html = "Windows Release build and test with enable_separate_renderer_binary=true.",
+    schedule = "with 6h interval",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "separate_renderer",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "win10",
+        ],
+    ),
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|separate-renderer",
+        short_name = "tst",
+    ),
+    contact_team_email = "toyoshim@chromium.org",
+)
+
+ci.builder(
+    name = "linux-separate-renderer-fyi-rel",
+    description_html = "Linux Release build and test with enable_separate_renderer_binary=true.",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Linux Builder"),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder",
+            "separate_renderer",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests",
+        ],
+        additional_compile_targets = [
+            "chrome",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|separate-renderer",
+        short_name = "tst",
+    ),
+    contact_team_email = "toyoshim@chromium.org",
+)
+
+fyi_mac_builder(
+    name = "mac-separate-renderer-fyi-rel",
+    description_html = "Mac Release build and test with enable_separate_renderer_binary=true.",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Mac Builder"),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Mac Builder",
+            "separate_renderer",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests",
+        ],
+        additional_compile_targets = [
+            "chrome",
+        ],
+    ),
+    builderless = True,
+    cores = None,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|separate-renderer",
+        short_name = "tst",
+    ),
+    contact_team_email = "toyoshim@chromium.org",
+)

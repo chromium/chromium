@@ -666,3 +666,21 @@ gpu.try_.optional_tests_builder(
     max_concurrent_builds = 9,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
+
+try_.builder(
+    name = "win-separate-renderer-rel",
+    description_html = "Runs separate renderer tests on Windows, mirroring win-separate-renderer-fyi-rel.",
+    mirrors = [
+        "ci/win-separate-renderer-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-separate-renderer-fyi-rel",
+            "dcheck_always_on",
+        ],
+    ),
+    contact_team_email = "toyoshim@chromium.org",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+)

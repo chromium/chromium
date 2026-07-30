@@ -10694,6 +10694,27 @@
           }
         ]
       },
+      "linux-separate-renderer-fyi-rel": {
+        "contact_team_email": "toyoshim@chromium.org",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "linux-surface-embed-rel": {
         "contact_team_email": "chrome-webium-product-eng@google.com",
         "problem_specs": [
@@ -11730,6 +11751,27 @@
       },
       "mac-rust-arm64-dbg": {
         "contact_team_email": "rust-in-chrome@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "mac-separate-renderer-fyi-rel": {
+        "contact_team_email": "toyoshim@chromium.org",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12928,6 +12970,27 @@
         ]
       },
       "win-rust-x64-rel": {
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "win-separate-renderer-fyi-rel": {
+        "contact_team_email": "toyoshim@chromium.org",
         "problem_specs": [
           {
             "name": "Unhealthy",

@@ -640,6 +640,7 @@ try/linux-perfetto-rel
 try/linux-presubmit
 try/linux-rel
 try/linux-rel-cft
+try/linux-separate-renderer-rel
 try/linux-swangle-chromium-try-x64
 try/linux-swangle-chromium-try-x64-exp
 try/linux-swangle-try-tot-swiftshader-x64
@@ -690,6 +691,7 @@ try/mac-no-initial-webui-rel
 try/mac-official
 try/mac-rel
 try/mac-rel-cft
+try/mac-separate-renderer-rel
 try/mac-swangle-chromium-try-x64
 try/mac-updater-try-builder-dbg
 try/mac-updater-try-builder-rel
@@ -732,6 +734,7 @@ try/win-official
 try/win-presubmit
 try/win-rel
 try/win-rel-cft
+try/win-separate-renderer-rel
 try/win-swangle-chromium-try-x86
 try/win-swangle-try-tot-swiftshader-x64
 try/win-swangle-try-tot-swiftshader-x86
