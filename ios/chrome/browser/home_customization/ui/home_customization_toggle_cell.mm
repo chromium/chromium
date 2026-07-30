@@ -199,6 +199,7 @@ const CGFloat kNavigationIconImageViewWidth = 16;
   _subtitle.text = [HomeCustomizationHelper subtitleForToggleType:type];
   _iconImageView.image = [HomeCustomizationHelper iconForToggleType:type];
   _switch.on = enabled;
+  _switch.accessibilityLabel = _title.text;
 
   if ([HomeCustomizationHelper doesTypeHaveSubmenu:type]) {
     _tapRecognizer = [[UITapGestureRecognizer alloc]
@@ -226,6 +227,7 @@ const CGFloat kNavigationIconImageViewWidth = 16;
   _subtitle.text = nil;
   _iconImageView.image = nil;
   _switch.on = NO;
+  _switch.accessibilityLabel = nil;
   _navigationImageView.hidden = NO;
   [_navigableStackView removeGestureRecognizer:_tapRecognizer];
   _tapRecognizer = nil;
