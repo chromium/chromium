@@ -363,6 +363,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-bluebird-rel",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.LINUX_BRANCHES,
     builder = "linux-chrome",
 )
