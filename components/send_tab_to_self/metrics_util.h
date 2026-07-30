@@ -37,7 +37,9 @@ enum class ShareEntryPoint {
   kTabMenu = 6,
   // A physical gesture.
   kGesture = 7,
-  kMaxValue = kGesture,
+  // A DirectShare target on the OS-level Share Sheet.
+  kShareSheetDirectShare = 8,
+  kMaxValue = kShareSheetDirectShare,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfShareEntryPoint)
 

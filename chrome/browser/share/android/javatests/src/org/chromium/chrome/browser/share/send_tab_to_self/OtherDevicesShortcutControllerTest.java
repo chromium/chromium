@@ -150,7 +150,7 @@ public class OtherDevicesShortcutControllerTest {
                         eq(URL),
                         eq(TITLE),
                         any(),
-                        eq(ShareEntryPoint.SHARE_SHEET));
+                        eq(ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE));
     }
 
     @Test

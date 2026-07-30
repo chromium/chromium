@@ -197,7 +197,7 @@ public class OtherDevicesShortcutController implements Destroyable {
                                         targetDeviceName,
                                         url,
                                         title != null ? title : "",
-                                        ShareEntryPoint.SHARE_SHEET);
+                                        ShareEntryPoint.SHARE_SHEET_DIRECT_SHARE);
                             });
                 });
     }
