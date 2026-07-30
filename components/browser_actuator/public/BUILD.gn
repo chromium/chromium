@@ -7,7 +7,10 @@ source_set("feature_list") {
     "features.cc",
     "features.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//url",
+  ]
 }
 
 source_set("public") {
