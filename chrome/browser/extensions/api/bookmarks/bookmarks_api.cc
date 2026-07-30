@@ -45,6 +45,10 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/buildflags/buildflags.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using bookmarks::BookmarkModel;
@@ -630,6 +634,16 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
     return nullptr;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Match tabs.create/tabs.update: extensions may not plant isolated-app://
+  // deep-link bookmarks. Opening such a bookmark would deep-link the IWA via
+  // PAGE_TRANSITION_AUTO_BOOKMARK, bypassing start_url + launchQueue routing.
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    *error = bookmarks_errors::kInvalidUrlError;
+    return nullptr;
+  }
+#endif
+
   const BookmarkNode* node;
   if (url_string.length()) {
     node = model->AddNewURL(parent, index, title, FixupURL(url_string));
@@ -751,6 +765,14 @@ ExtensionFunction::ResponseAction BookmarksUpdateFunction::RunOnReady() {
   if (!url_string.empty() && !url.is_valid()) {
     return RespondNow(Error(bookmarks_errors::kInvalidUrlError));
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Match tabs.create/tabs.update: reject isolated-app:// URLs. See
+  // BookmarksCreateFunction::CreateBookmarkNode.
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return RespondNow(Error(bookmarks_errors::kInvalidUrlError));
+  }
+#endif
 
   std::string error;
   const BookmarkNode* node = GetBookmarkNodeFromId(params->id, &error);
