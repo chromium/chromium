@@ -836,6 +836,11 @@ TEST_F(AutofillEntityInstanceTest, MatchesMergeConstraintsOf) {
 // not.
 TEST_P(AutofillEntityInstanceAmbientAutofillTest,
        MatchesMergeConstraintsOf_MixedMasking) {
+  // This test is run with AmbientAutofill enabled and disabled. Comparing
+  // suffixes for masked attributes is also controlled by the Wallet feature.
+  // Disable it to avoid it interfering with the expectations.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiWalletPrivatePasses);
   EntityInstance passport_masked =
       test::MaskEntityInstance(test::GetPassportEntityInstanceWithRandomGuid(
           {.number = u"1234567890",

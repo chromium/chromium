@@ -8,19 +8,28 @@
 
 namespace autofill::features {
 
-// The Wallet private passes integration is only launched in these countries.
-#define WALLET_SUPPORTED_COUNTRIES "us"
+// The Wallet private passes integration is only launched outside these
+// countries on desktop and android. On iOS, it's only launched in the US.
+#define WALLET_UNSUPPORTED_COUNTRIES                                          \
+  "ao", "at", "au", "be", "bg", "br", "ca", "ch", "cy", "cz", "de", "dk",     \
+      "dz", "ee", "es", "fi", "fr", "gb", "gr", "hr", "hu", "id", "ie", "in", \
+      "is", "it", "jp", "kr", "li", "lt", "lu", "lv", "md", "mk", "ml", "mt", \
+      "nl", "no", "om", "pl", "pt", "ro", "se", "si", "sk", "th"
 
 // Like DECLARE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION but for the definition.
 // Used for certain AutofillAi features, which are launched globally on desktop
-// but only in WALLET_SUPPORTED_COUNTRIES on mobile.
+// but only in certain countries on mobile.
 // Note that even on desktop, the Wallet private passes integration is only
-// launched in WALLET_SUPPORTED_COUNTRIES.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-#define DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(feature_name)          \
-  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature_name,                        \
-                                         base::FEATURE_ENABLED_FOR_COUNTRIES, \
-                                         WALLET_SUPPORTED_COUNTRIES)
+// launched outside of WALLET_UNSUPPORTED_COUNTRIES.
+#if BUILDFLAG(IS_ANDROID)
+#define DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(feature_name)           \
+  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(feature_name,                         \
+                                         base::FEATURE_DISABLED_FOR_COUNTRIES, \
+                                         WALLET_UNSUPPORTED_COUNTRIES)
+#elif BUILDFLAG(IS_IOS)
+#define DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(feature_name) \
+  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(                            \
+      feature_name, base::FEATURE_ENABLED_FOR_COUNTRIES, "us")
 #else
 #define DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(feature_name) \
   BASE_FEATURE(feature_name, base::FEATURE_ENABLED_BY_DEFAULT)
@@ -358,9 +367,15 @@ BASE_FEATURE(kAutofillAiWalletPassBranding2026,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports private passes entities from Google Wallet.
+#if BUILDFLAG(IS_IOS)
 BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePasses,
                                        base::FEATURE_ENABLED_FOR_COUNTRIES,
-                                       WALLET_SUPPORTED_COUNTRIES);
+                                       "us");
+#else
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePasses,
+                                       base::FEATURE_DISABLED_FOR_COUNTRIES,
+                                       WALLET_UNSUPPORTED_COUNTRIES);
+#endif
 
 // When enabled, account location rather than geo-location is used to determine
 // the eligiblity to save Wallet private passes.

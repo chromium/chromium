@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -50,6 +51,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
@@ -87,6 +89,7 @@ using ::testing::Values;
 using ::testing::WithParamInterface;
 
 constexpr size_t kVisibleSuffixLength = 4;
+constexpr std::u16string_view kDots = u"\u2022\u2060\u2006\u2060";
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -155,7 +158,11 @@ class AtMemoryManagerTest : public Test,
                                 NiceMock<MockBrowserAutofillManager>> {
  public:
   AtMemoryManagerTest() {
-    feature_list_.InitWithFeatures({features::kAutofillAtMemory}, {});
+    // AutofillAiWalletPrivatePasses is default enabled on most platforms and
+    // affects how sensitive attributes are masked.
+    feature_list_.InitWithFeatures(
+        {features::kAutofillAtMemory, features::kAutofillAiWalletPrivatePasses},
+        {});
   }
 
   void SetUp() override {
@@ -1442,17 +1449,21 @@ INSTANTIATE_TEST_SUITE_P(
                                          MemoryEntrySourceType::kAutofill,
                                          true},
            AtMemoryManagerFilterTestCase{
-               MemoryDataType::kCreditCardNumber, u"Credit Card", u"1111",
+               MemoryDataType::kCreditCardNumber, u"Credit Card",
+               base::StrCat({kDots, kDots, kDots, kDots, u"1111"}),
                MemoryEntrySourceType::kAutofill, false},
-           AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
-                                         u"Credit Card", u"2222",
-                                         MemoryEntrySourceType::kGmail, true},
            AtMemoryManagerFilterTestCase{
-               MemoryDataType::kPassportNumber, u"Passport", u"1234",
+               MemoryDataType::kCreditCardNumber, u"Credit Card",
+               base::StrCat({kDots, kDots, kDots, kDots, u"2222"}),
+               MemoryEntrySourceType::kGmail, true},
+           AtMemoryManagerFilterTestCase{
+               MemoryDataType::kPassportNumber, u"Passport",
+               base::StrCat({kDots, kDots, kDots, kDots, u"1234"}),
                MemoryEntrySourceType::kAutofill, false},
-           AtMemoryManagerFilterTestCase{MemoryDataType::kPassportNumber,
-                                         u"Passport", u"5678",
-                                         MemoryEntrySourceType::kGmail, true}));
+           AtMemoryManagerFilterTestCase{
+               MemoryDataType::kPassportNumber, u"Passport",
+               base::StrCat({kDots, kDots, kDots, kDots, u"5678"}),
+               MemoryEntrySourceType::kGmail, true}));
 
 // Tests that credit card suggestions are filtered out when the credit card
 // autofill preference is disabled.
@@ -1508,11 +1519,13 @@ INSTANTIATE_TEST_SUITE_P(
                                          MemoryEntrySourceType::kAutofill,
                                          true},
            AtMemoryManagerFilterTestCase{
-               MemoryDataType::kCreditCardNumber, u"Credit Card", u"1111",
+               MemoryDataType::kCreditCardNumber, u"Credit Card",
+               base::StrCat({kDots, kDots, kDots, kDots, u"1111"}),
                MemoryEntrySourceType::kAutofill, false},
-           AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
-                                         u"Credit Card", u"2222",
-                                         MemoryEntrySourceType::kGmail, true}));
+           AtMemoryManagerFilterTestCase{
+               MemoryDataType::kCreditCardNumber, u"Credit Card",
+               base::StrCat({kDots, kDots, kDots, kDots, u"2222"}),
+               MemoryEntrySourceType::kGmail, true}));
 
 // Tests that non-SPII data fills correctly and records the funnel metrics.
 TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {

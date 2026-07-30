@@ -1007,6 +1007,8 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseForPrivatePassesIfFeatureIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiWalletPrivatePasses);
   client().SetWalletPublicPassStorageEnabled(true);
   for (const EntityType entity_type : GetPrivatePasses()) {
     EXPECT_FALSE(MayPerformAutofillAiAction(

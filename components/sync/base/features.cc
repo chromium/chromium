@@ -95,7 +95,15 @@ bool IsReplaceSyncPromosWithSignInPromosEnabled() {
 }
 
 // Like DECLARE_SYNC_AUTOFILL_AI_FEATURE but for the definition.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+#define DEFINE_SYNC_AUTOFILL_AI_FEATURE(feature_name)                         \
+  BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(                                     \
+      feature_name, base::FEATURE_DISABLED_FOR_COUNTRIES, "ao", "at", "au",   \
+      "be", "bg", "br", "ca", "ch", "cy", "cz", "de", "dk", "dz", "ee", "es", \
+      "fi", "fr", "gb", "gr", "hr", "hu", "id", "ie", "in", "is", "it", "jp", \
+      "kr", "li", "lt", "lu", "lv", "md", "mk", "ml", "mt", "nl", "no", "om", \
+      "pl", "pt", "ro", "se", "si", "sk", "th")
+#elif BUILDFLAG(IS_IOS)
 #define DEFINE_SYNC_AUTOFILL_AI_FEATURE(feature_name) \
   BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(             \
       feature_name, base::FEATURE_ENABLED_FOR_COUNTRIES, "us")

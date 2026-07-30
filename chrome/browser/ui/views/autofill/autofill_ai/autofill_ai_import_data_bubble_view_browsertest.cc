@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
   ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
   ON_CALL(mock_controller(), GetNoticeStringId())
       .WillByDefault(
-          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
   ON_CALL(mock_controller(), GetPrimaryAccountEmail())
       .WillByDefault(Return(u"machadodeassis@gmail.com"));
   std::vector<EntityAttributeUpdateDetails> details = {

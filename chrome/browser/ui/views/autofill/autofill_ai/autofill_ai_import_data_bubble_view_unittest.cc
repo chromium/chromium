@@ -192,7 +192,7 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
       .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
       .WillRepeatedly(
-          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
   CreateViewAndShow();
 
   ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
@@ -212,7 +212,7 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
       .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
       .WillRepeatedly(
-          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW));
   CreateViewAndShow();
 
   ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
