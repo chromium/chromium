@@ -1419,6 +1419,9 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
   if (!history_embeddings::GetFeatureParameters().omnibox_scoped) {
     return std::u16string();
   }
+  if (template_url->CreatedByEnterpriseSearchAggregatorPolicy()) {
+    return l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT);
+  }
   int message_id;
   switch (template_url->starter_pack_id()) {
     case template_url_starter_pack_data::StarterPackId::kBookmarks:

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -1258,6 +1259,7 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
                             &keyword, &keyword_placeholder);
     EXPECT_TRUE(keyword.empty());
     EXPECT_EQ(keyword_state, KeywordState::kNone);
+    EXPECT_TRUE(keyword_placeholder.empty());
   }
 
   {
@@ -1268,6 +1270,7 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
                             &keyword, &keyword_placeholder);
     EXPECT_EQ(keyword, u"keyword");
     EXPECT_EQ(keyword_state, KeywordState::kHint);
+    EXPECT_TRUE(keyword_placeholder.empty());
   }
 
   {
@@ -1279,5 +1282,31 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
                             &keyword, &keyword_placeholder);
     EXPECT_EQ(keyword, u"keyword");
     EXPECT_EQ(keyword_state, KeywordState::kKeyword);
+    EXPECT_TRUE(keyword_placeholder.empty());
+  }
+
+  {
+    SCOPED_TRACE("Search Aggregator keyword mode");
+    TemplateURLData aggregator_turl_data;
+    aggregator_turl_data.SetShortName(u"aggregator");
+    aggregator_turl_data.SetKeyword(u"aggregator");
+    aggregator_turl_data.SetURL("http://aggregator.com/?q={searchTerms}");
+    aggregator_turl_data.policy_origin =
+        TemplateURLData::PolicyOrigin::kSearchAggregator;
+    template_url_service->Add(
+        std::make_unique<TemplateURL>(aggregator_turl_data));
+
+    AutocompleteMatch match;
+    match.keyword = u"aggregator";
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.GetKeywordUiState(template_url_service, false, &keyword_state,
+                            &keyword, &keyword_placeholder);
+    EXPECT_EQ(keyword, u"aggregator");
+    EXPECT_EQ(keyword_state, KeywordState::kKeyword);
+#if BUILDFLAG(IS_IOS)
+    EXPECT_TRUE(keyword_placeholder.empty());
+#else
+    EXPECT_EQ(keyword_placeholder, u"Enter a question");
+#endif
   }
 }
