@@ -123,6 +123,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FetchKeepAlive.ProcessAlive.HeldPastLastWindowClose"
+    enum="Boolean" expires_after="2027-06-30">
+  <owner>helmutjanuschka@chromium.org</owner>
+  <owner>mych@chromium.org</owner>
+  <summary>
+    Recorded each time Chrome releases the FETCH_KEEPALIVE_REQUEST
+    ScopedKeepAlive. True if no browser windows were open at that moment, i.e.
+    this keep-alive was the only reason the process was still alive. Desktop
+    only; only when kKeepAliveBrowserProcessAlive is enabled. See
+    https://crbug.com/408010432.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FetchKeepAlive.ProcessAlive.HoldDuration" units="ms"
+    expires_after="2027-06-30">
+  <owner>helmutjanuschka@chromium.org</owner>
+  <owner>mych@chromium.org</owner>
+  <summary>
+    Wall-clock duration the FETCH_KEEPALIVE_REQUEST ScopedKeepAlive was held
+    (in-flight fetch keepalive URLLoader count 0 -&gt; &gt;0 -&gt; 0). Desktop
+    only; only when kKeepAliveBrowserProcessAlive is enabled. See
+    https://crbug.com/408010432.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FetchKeepAlive.ProcessAlive.MaxConcurrentLoaders"
+    units="loaders" expires_after="2027-06-30">
+  <owner>helmutjanuschka@chromium.org</owner>
+  <owner>mych@chromium.org</owner>
+  <summary>
+    Peak number of fetch keepalive URLLoaders in flight during a single hold of
+    the FETCH_KEEPALIVE_REQUEST ScopedKeepAlive. Desktop only; only when
+    kKeepAliveBrowserProcessAlive is enabled. See https://crbug.com/408010432.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataManager.NumMappedFiles" units="files"
     expires_after="2027-01-10">
   <owner>andresrperez@chromium.org</owner>

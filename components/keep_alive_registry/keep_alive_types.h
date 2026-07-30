@@ -87,6 +87,9 @@ enum class KeepAliveOrigin {
 
   // components/metrics
   UMA_LOG,
+
+  // c/b/loader
+  FETCH_KEEPALIVE_REQUEST,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

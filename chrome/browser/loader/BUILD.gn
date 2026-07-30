@@ -18,6 +18,15 @@ source_set("loader") {
     "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
+
+  # ScopedKeepAlive / ScopedProfileKeepAlive are desktop-only.
+  if (!is_android) {
+    sources += [
+      "features.cc",
+      "features.h",
+      "fetch_keepalive_process_manager.h",
+    ]
+  }
 }
 
 source_set("impl") {
@@ -37,6 +46,16 @@ source_set("impl") {
     "//services/metrics/public/cpp:metrics_cpp",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  # ScopedKeepAlive / ScopedProfileKeepAlive are desktop-only.
+  if (!is_android) {
+    sources += [ "fetch_keepalive_process_manager.cc" ]
+    deps += [
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui/browser_window",
+      "//components/keep_alive_registry",
+    ]
+  }
 }
 
 if (!is_android) {
@@ -44,6 +63,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "keep_alive_browser_process_alive_browsertest.cc",
       "keep_alive_category_request_browsertest.cc",
       "keep_alive_request_browsertest_util.cc",
       "keep_alive_request_browsertest_util.h",
@@ -53,11 +73,13 @@ if (!is_android) {
     deps = [
       ":impl",
       ":loader",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/lifetime",
       "//chrome/browser/ssl:cert_verifier_test_support",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/keep_alive_registry",
       "//components/page_load_metrics/browser",
     ]
   }

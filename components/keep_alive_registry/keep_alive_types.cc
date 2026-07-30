@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/keep_alive_registry/keep_alive_types.h"
+
 #include "base/logging.h"
 #include "base/notreached.h"
 
@@ -92,6 +93,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "SESSION_DATA_DELETER";
     case KeepAliveOrigin::UMA_LOG:
       return out << "UMA_LOG";
+    case KeepAliveOrigin::FETCH_KEEPALIVE_REQUEST:
+      return out << "FETCH_KEEPALIVE_REQUEST";
   }
 
   NOTREACHED() << static_cast<int>(origin);

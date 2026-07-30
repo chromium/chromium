@@ -2766,6 +2766,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // unsuccessfully.
   virtual void OnKeepaliveRequestFinished();
 
+  // Called for the browser-side lifetime of a fetch keepalive URLLoader. Both
+  // methods receive the same `browser_context` for a given loader. The context
+  // passed to OnFetchKeepAliveRequestDestroyed() may be in destruction
+  // (loaders are torn down with its StoragePartition), so it must only be used
+  // as a lookup key.
+  virtual void OnFetchKeepAliveRequestCreated(BrowserContext& browser_context);
+  virtual void OnFetchKeepAliveRequestDestroyed(
+      BrowserContext& browser_context);
+
 #if BUILDFLAG(IS_MAC)
   // Sets up the embedder sandbox parameters for the given sandbox type. Returns
   // true if parameters were successfully set up or false if no additional

@@ -471,6 +471,9 @@ KeepAliveURLLoader::KeepAliveURLLoader(
   if (IsFetchLater()) {
     base::UmaHistogramBoolean("FetchLater.Browser.Total", true);
   }
+
+  GetContentClient()->browser()->OnFetchKeepAliveRequestCreated(
+      *storage_partition_->browser_context());
 }
 
 void KeepAliveURLLoader::Start() {
@@ -537,6 +540,8 @@ KeepAliveURLLoader::~KeepAliveURLLoader() {
   if (IsStarted()) {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
   }
+  GetContentClient()->browser()->OnFetchKeepAliveRequestDestroyed(
+      *storage_partition_->browser_context());
 }
 
 void KeepAliveURLLoader::set_on_delete_callback(
