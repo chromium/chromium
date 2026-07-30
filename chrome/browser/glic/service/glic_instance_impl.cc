@@ -1422,7 +1422,11 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
 
 void GlicInstanceImpl::OnBoundTabActivatedAsync(
     base::WeakPtr<tabs::TabInterface> tab) {
-  if (!tab) {
+  // It is possible for the tab to be deactivated between the time this async
+  // task is posted and when it runs (e.g., during rapid tab switching). If the
+  // tab is no longer active, we should abort to avoid erroneously showing the
+  // side panel on a background tab.
+  if (!tab || !tab->IsActivated()) {
     return;
   }
   auto* embedder = GetEmbedderForTab(tab.get());
