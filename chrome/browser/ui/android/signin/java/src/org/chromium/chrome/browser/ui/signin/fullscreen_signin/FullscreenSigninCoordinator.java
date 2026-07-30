@@ -85,6 +85,10 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
          */
         default void showInfoPage(@StringRes int url) {}
 
+        // TODO(crbug.com/537826242): Remove once AndroidFreLayoutUpdate is enabled by default.
+        /** Called when the initial loading phase (native, policies, accounts) is completed. */
+        default void onInitialLoadCompleted() {}
+
         /** Returns the supplier that provides the Profile (when available). */
         OneshotSupplier<ProfileProvider> getProfileSupplier();
 

@@ -348,6 +348,7 @@ public class FullscreenSigninMediator
         // Directly start the flow to add a selected account if it is specified in the config for
         // signin and does not already exist on the device.
         maybeStartAddingSelectedAccount();
+        mDelegate.onInitialLoadCompleted();
     }
 
     private void initializeProfileDataCache(Profile profile) {
