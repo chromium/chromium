@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.signin_button;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -362,6 +363,21 @@ public class SigninButtonCoordinatorTest {
         mPage.loadWebPageProgrammatically(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         onView(withId(R.id.signin_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
+    public void testSigninButton_InflatesAndShowsWhenNavigatingToNtp() {
+        // Start on a non-NTP page so button should not be inflated.
+        WebPageStation blankPage = mActivityTestRule.startOnBlankPage();
+        onView(withId(R.id.signin_button)).check(doesNotExist());
+
+        // Navigate to the NTP. This triggers updateButtonVisibility -> inflation.
+        blankPage.loadPageProgrammatically(
+                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
     }
 
     @Test
