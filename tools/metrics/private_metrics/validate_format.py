@@ -26,9 +26,6 @@ def main():
   if filepath.endswith('dwa.xml'):
     root_tag = 'dwa-configuration'
     validation = private_metrics_validations.DwaXmlValidation
-  elif filepath.endswith('dkm.xml'):
-    root_tag = 'dkm-configuration'
-    validation = private_metrics_validations.DkmXmlValidation
   else:
     print(f'Unsupported file: {filepath}', file=sys.stderr)
     sys.exit(1)

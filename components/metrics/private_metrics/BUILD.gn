@@ -146,7 +146,3 @@ source_set("unit_tests") {
     "//third_party/oak:oak_proto",
   ]
 }
-
-private_metrics_builders("dkm_builders") {
-  type = "dkm"
-}

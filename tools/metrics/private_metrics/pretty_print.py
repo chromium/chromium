@@ -9,7 +9,6 @@ import argparse
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
-import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
 import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
 
 
@@ -45,9 +44,6 @@ def main():
   if filepath.endswith('dwa.xml'):
     status = presubmit_util.DoPresubmit(args, filepath, 'dwa.old.xml',
                                         dwa_model.PrettifyXML)
-  elif filepath.endswith('dkm.xml'):
-    status = presubmit_util.DoPresubmit(args, filepath, 'dkm.old.xml',
-                                        dkm_model.prettify_xml)
   else:
     print(f'Unsupported file: {filepath}', file=sys.stderr)
     return 1

@@ -62,7 +62,7 @@ EVENT_TYPE = models.ObjectNodeType(
 def create_event_based_document_type(tag):
   """Create new document type for an event-based Private Metrics configuration.
 
-  Currently, that includes DKM and DWA. See go/pmc-dkm for details.
+  Currently, that includes DWA. See go/pmc-dkm for details.
 
   Args:
     tag: Tag of the root node

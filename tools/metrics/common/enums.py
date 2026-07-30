@@ -15,7 +15,6 @@ import chromium_src.tools.metrics.histograms.merge_xml as merge_xml
 
 _METRIC_FILES_WITH_ENUMS = [
     path_util.GetInputFile('tools/metrics/ukm/ukm.xml'),
-    path_util.GetInputFile('tools/metrics/private_metrics/dkm.xml'),
     path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml'),
 ]
 

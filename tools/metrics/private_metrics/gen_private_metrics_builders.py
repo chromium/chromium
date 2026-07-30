@@ -14,15 +14,14 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
-import chromium_src.tools.metrics.private_metrics.dkm_builders_template as dkm_builders_template
+
 import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
 import chromium_src.tools.metrics.private_metrics.dwa_builders_template as dwa_builders_template
 import chromium_src.tools.metrics.private_metrics.dwa_decode_template as dwa_decode_template
 
 parser = argparse.ArgumentParser(
     description='Generate Private Metrics builders')
-parser.add_argument('--input-dkm', help='Path to dkm.xml')
+
 parser.add_argument('--input-dwa', help='Path to dwa.xml')
 parser.add_argument('--output', help='Path to generated files.')
 
@@ -33,11 +32,6 @@ def main():
   relpath = 'components/metrics/private_metrics/'
   relpath_dwa = 'components/metrics/dwa/'
 
-  # DKM
-  if args.input_dkm:
-    data_dkm = read_dkm(args.input_dkm)
-    dkm_builders_template.WriteFiles(args.output, relpath, data_dkm)
-
   # DWA
   if args.input_dwa:
     data_dwa = read_dwa(args.input_dwa)
@@ -46,9 +40,6 @@ def main():
 
   return 0
 
-
-def read_dkm(path):
-  return read_xml(path, dkm_model.DKM_XML_TYPE)
 
 
 def read_dwa(path):

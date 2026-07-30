@@ -22,18 +22,14 @@ sys.path.remove('.')
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 
 DWA_XML = 'dwa.xml'
-DKM_XML = 'dkm.xml'
-
 
 def CheckChangeOnUpload(input_api, output_api):
   result = []
   result.extend(presubmit_util.CheckChange(DWA_XML, input_api, output_api))
-  result.extend(presubmit_util.CheckChange(DKM_XML, input_api, output_api))
   return result
 
 
 def CheckChangeOnCommit(input_api, output_api):
   result = []
   result.extend(presubmit_util.CheckChange(DWA_XML, input_api, output_api))
-  result.extend(presubmit_util.CheckChange(DKM_XML, input_api, output_api))
   return result
