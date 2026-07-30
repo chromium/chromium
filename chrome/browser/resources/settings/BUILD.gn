@@ -447,6 +447,7 @@ build_webui("build") {
 
   css_files = [
     "settings_columned_section.css",
+    "settings_columned_section_lit.css",
     "settings_shared.css",
     "settings_shared_lit.css",
     "settings_vars.css",
@@ -471,6 +472,8 @@ build_webui("build") {
     "on_startup_page/startup_urls_page.css",
     "performance_page/battery_page.css",
     "performance_page/memory_page.css",
+    "performance_page/performance_page_index.css",
+    "performance_page/speed_page.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "reset_page/reset_profile_banner.css",
     "reset_page/reset_profile_dialog.css",

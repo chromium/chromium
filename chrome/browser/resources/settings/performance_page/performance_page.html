@@ -1,28 +1,28 @@
 <settings-section
 <if expr="_google_chrome">
     show-send-feedback-button
-    on-send-feedback="onSendFeedbackClick_"
+    @send-feedback="${this.onSendFeedback_}"
 </if>
     page-title="$i18n{generalPageTitle}">
   <settings-toggle-button id="performanceInterventionToggleButton"
-      on-change="onPerformanceInterventionToggleButtonChange_"
+      @change="${this.onPerformanceInterventionToggleButtonChange_}"
       pref-key="performance_tuning.intervention_notification.enabled"
       label="$i18n{performanceInterventionEnabledLabel}"
       sub-label-with-link="$i18n{performanceInterventionEnabledDescription}"
-      on-sub-label-link-clicked="onPerformanceInterventionLearnMoreLinkClick_">
+      @sub-label-link-clicked="${this.onPerformanceInterventionSubLabelLinkClicked_}">
   </settings-toggle-button>
   <settings-toggle-button id="discardRingTreatmentToggleButton"
-      on-change="onDiscardRingChange_"
+      @change="${this.onDiscardRingChange_}"
       pref-key="performance_tuning.discard_ring_treatment.enabled"
       label="$i18n{discardRingTreatmentEnabledLabel}"
       sub-label-with-link="
             $i18n{discardRingTreatmentEnabledDescriptionWithLearnLink}"
-      on-sub-label-link-clicked="onDiscardRingTreatmentLearnMoreLinkClick_">
+      @sub-label-link-clicked="${this.onDiscardRingTreatmentSubLabelLinkClicked_}">
   </settings-toggle-button>
   <cr-link-row
       label="$i18n{tabHoverPreviewCardLinkTitle}"
       sub-label="$i18n{tabHoverPreviewCardLinkSubtitle}"
-      on-click="onTabHoverPreviewCardLinkClick_" external>
+      @click="${this.onTabHoverPreviewCardLinkClick_}" external>
   </cr-link-row>
   <tab-discard-exception-list id="exceptionList">
   </tab-discard-exception-list>

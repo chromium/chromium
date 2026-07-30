@@ -4,7 +4,6 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
@@ -53,7 +52,7 @@ suite('DiscardIndicator', function() {
    */
   function getPerformancePageElement<T extends HTMLElement = HTMLElement>(
       id: string): T {
-    const el = performancePage.shadowRoot!.querySelector<T>(`#${id}`);
+    const el = performancePage.shadowRoot.querySelector<T>(`#${id}`);
     assertTrue(!!el);
     assertTrue(el instanceof HTMLElement);
     return el;
@@ -115,7 +114,7 @@ suite('PerformanceIntervention', function() {
   test('PerformanceInterventionChangeState', async function() {
     await prefService.setPrefValue(
         PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, false);
-    const toggle = performancePage.shadowRoot!.querySelector<HTMLElement>(
+    const toggle = performancePage.shadowRoot.querySelector<HTMLElement>(
         '#performanceInterventionToggleButton');
     assertTrue(!!toggle);
     toggle.click();
@@ -193,7 +192,7 @@ suite('TabDiscardExceptionList', function() {
     await prefService.setPrefValue(
         TAB_DISCARD_EXCEPTIONS_PREF,
         Object.fromEntries(rules.map(r => [r, convertDateToWindowsEpoch()])));
-    flush();
+    await microtasksFinished();
     assertExceptionListEquals([...managedRules ?? [], ...rules]);
   }
 
@@ -275,7 +274,7 @@ suite('TabDiscardExceptionList', function() {
 
     clickMoreActionsButton(getExceptionListEntry(0));
     clickDeleteMenuItem();
-    flush();
+    await microtasksFinished();
     assertExceptionListEquals(['bar']);
     assertEquals(
         MemorySaverModeExceptionListAction.REMOVE,
@@ -283,7 +282,7 @@ suite('TabDiscardExceptionList', function() {
 
     clickMoreActionsButton(getExceptionListEntry(0));
     clickDeleteMenuItem();
-    flush();
+    await microtasksFinished();
     assertExceptionListEquals([]);
   });
 
@@ -352,7 +351,7 @@ suite('TabDiscardExceptionList', function() {
 
     clickMoreActionsButton(entry);
     clickEditMenuItem();
-    flush();
+    await microtasksFinished();
 
     const editDialog = getEditDialog();
     assertTrue(editDialog.$.dialog.open);
@@ -368,7 +367,7 @@ suite('TabDiscardExceptionList', function() {
     await setupExceptionListEntries(['foo']);
     clickMoreActionsButton(getExceptionListEntry(0));
     exceptionList.$.addButton.click();
-    flush();
+    await microtasksFinished();
 
     const addDialog = await getTabbedAddDialog();
     assertEquals('', addDialog.$.input.$.input.value);
@@ -393,7 +392,7 @@ suite('TabDiscardExceptionList', function() {
     assertFalse(exceptionList.$.collapse.opened);
 
     exceptionList.$.addButton.click();
-    flush();
+    await microtasksFinished();
 
     const newRule = `rule${TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1}`;
     const addDialog = await getTabbedAddDialog();
@@ -410,11 +409,11 @@ suite('TabDiscardExceptionList', function() {
     ].map(index => `rule${index}`);
     performanceBrowserProxy.setCurrentOpenSites(entries);
     exceptionList.$.addButton.click();
-    flush();
+    await microtasksFinished();
 
     const addDialog = await getTabbedAddDialog();
     await eventToPromise('iron-resize', addDialog);
-    flush();
+    await microtasksFinished();
 
     const listEntries = addDialog.$.list.$.list
                             .querySelectorAll<SettingsCheckboxListEntryElement>(
@@ -426,7 +425,7 @@ suite('TabDiscardExceptionList', function() {
 
     assertFalse(addDialog.$.actionButton.disabled);
     addDialog.$.actionButton.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(exceptionList.$.collapse.opened);
     assertExceptionListEquals([existingEntry, ...entries]);
@@ -441,7 +440,7 @@ suite('TabDiscardExceptionList', function() {
     const entry = getExceptionListEntry(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE);
     clickMoreActionsButton(entry);
     clickEditMenuItem();
-    flush();
+    await microtasksFinished();
     const editDialog = getEditDialog();
     assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'foo');
@@ -449,7 +448,7 @@ suite('TabDiscardExceptionList', function() {
 
     clickMoreActionsButton(entry);
     clickEditMenuItem();
-    flush();
+    await microtasksFinished();
     await inputDialog(editDialog, getExceptionListEntry(0).entry.site);
     assertExceptionListEquals(entries.slice(0, -1));
   });
@@ -464,13 +463,13 @@ suite('TabDiscardExceptionList', function() {
         getExceptionListEntry(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1);
     clickMoreActionsButton(entry);
     clickDeleteMenuItem();
-    flush();
+    await microtasksFinished();
     assertExceptionListEquals(entries.slice(0, -1));
 
     entry = getExceptionListEntry(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE);
     clickMoreActionsButton(entry);
     clickDeleteMenuItem();
-    flush();
+    await microtasksFinished();
     assertExceptionListEquals(entries.slice(0, -2));
   });
 });

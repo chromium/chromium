@@ -9,7 +9,6 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsPerformancePageIndexElement} from 'chrome://settings/settings.js';
 import {BatterySaverModeState, MemorySaverModeAggressiveness, MemorySaverModeState, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService, Router, routes, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
@@ -78,7 +77,6 @@ suite('PerformancePageIndex', function() {
 
     index = document.createElement('settings-performance-page-index');
     document.body.appendChild(index);
-    return flushTasks();
   });
 
   test('Routing', async function() {
@@ -107,6 +105,7 @@ suite('PerformancePageIndex', function() {
 
     // Simulate OnDeviceHasBatteryChanged from backend
     webUIListenerCallback('device-has-battery-changed', true);
+    await microtasksFinished();
     assertTrue(isVisible(batteryPage));
   });
 

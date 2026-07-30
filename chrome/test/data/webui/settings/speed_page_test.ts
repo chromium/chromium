@@ -6,9 +6,9 @@ import 'chrome://settings/lazy_load.js';
 
 import {NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
 import type {SettingsDropdownMenuElement, SpeedPageElement} from 'chrome://settings/settings.js';
-import {loadTimeData, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {loadTimeData, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
@@ -50,7 +50,6 @@ suite('SpeedPage', function() {
 
     speedPage = document.createElement('settings-speed-page');
     document.body.appendChild(speedPage);
-    await microtasksFinished();
   });
 
   test('PreloadPagesDefault', function() {
@@ -152,12 +151,17 @@ suite('CpuPerformanceOverride', function() {
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let prefsBrowserProxy: TestPrefsBrowserProxy;
   let prefService: PrefService;
+  let pluralStringProxy: TestPluralStringProxy;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       cpuPerformanceEnabled: true,
     });
+
+    pluralStringProxy = new TestPluralStringProxy();
+    pluralStringProxy.text = '8 cores';
+    SettingsPluralStringProxyImpl.setInstance(pluralStringProxy);
 
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     performanceBrowserProxy.setCpuPerformanceInfo({
@@ -189,12 +193,11 @@ suite('CpuPerformanceOverride', function() {
     speedPage = document.createElement('settings-speed-page');
     document.body.appendChild(speedPage);
     await performanceBrowserProxy.whenCalled('getCpuPerformanceInfo');
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('HardwareInfoPresent', function() {
-    const secondary =
-        speedPage.shadowRoot!.querySelector('#cpuPerformanceInfo');
+    const secondary = speedPage.shadowRoot.querySelector('#cpuPerformanceInfo');
 
     assertTrue(!!secondary);
     const text = secondary.textContent || '';
@@ -205,7 +208,7 @@ suite('CpuPerformanceOverride', function() {
 
   test('DropdownSelectionUpdatesPref', async function() {
     const dropdown =
-        speedPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+        speedPage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
             '#cpuPerformanceOverrideDropdown');
     assertTrue(!!dropdown);
 
@@ -220,7 +223,7 @@ suite('CpuPerformanceOverride', function() {
     // Select 'High' (value 3).
     dropdown.$.dropdownMenu.value = '3';
     dropdown.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify that the pref changed.
     assertEquals(
@@ -237,11 +240,11 @@ suite('CpuPerformanceOverride', function() {
     }]);
 
     const dropdown =
-        speedPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+        speedPage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
             '#cpuPerformanceOverrideDropdown');
     assertTrue(!!dropdown);
 
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify that the dropdown is disabled and shows the policy indicator.
     assertTrue(dropdown.shadowRoot.querySelector('select')!.disabled);
@@ -286,13 +289,12 @@ suite('CpuPerformanceOverrideFeatureDisabled', function() {
 
     speedPage = document.createElement('settings-speed-page');
     document.body.appendChild(speedPage);
-    await flushTasks();
   });
 
   test('FeatureDisabled', function() {
     // Verify that the setting is missing.
     const section =
-        speedPage.shadowRoot!.querySelector('#cpuPerformanceOverrideDropdown');
+        speedPage.shadowRoot.querySelector('#cpuPerformanceOverrideDropdown');
     assertNull(section);
   });
 });

@@ -1,0 +1,31 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_columned_section_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit settings-columned-section-lit
+ * #css_wrapper_metadata_end */
+
+.settings-section-bottom-padding {
+  padding-block-end: var(--cr-section-vertical-padding);
+}
+
+settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
+  --settings-collapse-separator-line: 0;
+}
+
+settings-collapse-radio-button:not(:first-of-type) {
+  --settings-collapse-separator-line: var(--cr-separator-line);
+}
+
+.cpu-performance-override-header,
+#cpuPerformanceInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+}

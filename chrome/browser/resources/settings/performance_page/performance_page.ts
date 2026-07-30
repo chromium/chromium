@@ -10,10 +10,11 @@ import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -23,7 +24,7 @@ import {Router} from '../router.js';
 import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
 import {PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
-import {getTemplate} from './performance_page.html.js';
+import {getHtml} from './performance_page.html.js';
 import type {ExceptionListElement} from './tab_discard/exception_list.js';
 
 export const DISCARD_RING_PREF =
@@ -36,7 +37,7 @@ export const PERFORMANCE_INTERVENTION_NOTIFICATION_PREF =
 const INACTIVE_TAB_SETTING_ELEMENT_ID = 'kInactiveTabSettingElementId';
 
 const SettingsPerformancePageElementBase =
-    HelpBubbleMixin(PrefServiceObserverMixin(PolymerElement));
+    HelpBubbleMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
 export interface SettingsPerformancePageElement {
   $: {
@@ -50,48 +51,45 @@ export class SettingsPerformancePageElement extends
     return 'settings-performance-page';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
-    // Remove afterNextRender when feature is launched and dom-if is removed.
-    afterNextRender(this, () => {
-      const discardRingTreatmentToggleButton =
-          this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#discardRingTreatmentToggleButton');
-      if (discardRingTreatmentToggleButton) {
-        this.registerHelpBubble(
-            INACTIVE_TAB_SETTING_ELEMENT_ID,
-            discardRingTreatmentToggleButton.getBubbleAnchor());
-      }
-    });
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    const discardRingTreatmentToggleButton =
+        this.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#discardRingTreatmentToggleButton');
+    if (discardRingTreatmentToggleButton) {
+      this.registerHelpBubble(
+          INACTIVE_TAB_SETTING_ELEMENT_ID,
+          discardRingTreatmentToggleButton.getBubbleAnchor());
+    }
   }
 
-  private onDiscardRingChange_() {
+  protected onDiscardRingChange_() {
     this.metricsProxy_.recordDiscardRingTreatmentEnabledChanged(
         PrefService.getInstance().getPref<boolean>(DISCARD_RING_PREF).value);
   }
 
-  private onDiscardRingTreatmentLearnMoreLinkClick_() {
+  protected onDiscardRingTreatmentSubLabelLinkClicked_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('discardRingTreatmentLearnMoreUrl'));
   }
 
-  private onPerformanceInterventionLearnMoreLinkClick_() {
+  protected onPerformanceInterventionSubLabelLinkClicked_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('performanceInterventionLearnMoreUrl'));
   }
 
-  private onTabHoverPreviewCardLinkClick_(): void {
+  protected onTabHoverPreviewCardLinkClick_(): void {
     Router.getInstance().navigateTo(routes.APPEARANCE);
   }
 
-  private onPerformanceInterventionToggleButtonChange_() {
+  protected onPerformanceInterventionToggleButtonChange_() {
     this.metricsProxy_.recordPerformanceInterventionToggleButtonChanged(
         PrefService.getInstance()
             .getPref<boolean>(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
@@ -99,7 +97,7 @@ export class SettingsPerformancePageElement extends
   }
 
   // <if expr="_google_chrome">
-  private onSendFeedbackClick_(e: Event) {
+  protected onSendFeedback_(e: Event) {
     e.stopPropagation();
     PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
         PerformanceFeedbackCategory.NOTIFICATIONS);
@@ -112,6 +110,8 @@ declare global {
     'settings-performance-page': SettingsPerformancePageElement;
   }
 }
+
+export {SettingsPerformancePageElement as PerformancePageElement};
 
 customElements.define(
     SettingsPerformancePageElement.is, SettingsPerformancePageElement);
