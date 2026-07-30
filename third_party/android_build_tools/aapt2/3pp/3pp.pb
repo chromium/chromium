@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 create {
+  platform_re: "linux-amd64|mac-arm64"
   source {
     script {
       name: "3pp.py"
@@ -17,5 +18,4 @@ create {
 
 upload {
   pkg_prefix: "chromium/third_party/android_build_tools"
-  universal: true
 }

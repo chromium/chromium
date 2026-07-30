@@ -3,23 +3,26 @@ Short name: aapt2
 Version: N/A
 Revision: DEPS
 Update Mechanism: Autoroll
-URL:  https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${Version}/aapt2-${Version}-linux.jar
+URL:  https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${Version}/
 Security Critical: no
 Shipped: no
 License: Apache-2.0
 
 Description:
-The Linux host aapt2 tool is now released on Google Maven, however as a .jar
-file that contains host-specific binaries, which must be extracted. They are
-distributed here as a CIPD package instead.
+The host aapt2 tool is released on Google Maven, however as a .jar file that
+contains host-specific binaries, which must be extracted. They are distributed
+here as a per-platform CIPD package instead. The linux jar holds the Linux
+binary; the osx jar holds a universal (x86_64 + arm64) macOS binary.
 
 What version is this:
   * Run print_version.sh to find out the version.
-  * New instances are uploaded by the packager bot:
+  * New instances are uploaded by the packager bots (one per host platform):
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
-    trigger it if you need it sooner:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-mac-arm64-packager
+  * The bots autorun every 6 hours. Ping a trooper or a clank-build-core@ dev to
+    trigger them if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-mac-arm64-packager
   * New versions are rolled automatically by:
     https://autoroll.skia.org/r/aapt2-chromium
 

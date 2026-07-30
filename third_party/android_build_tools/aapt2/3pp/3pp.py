@@ -19,8 +19,13 @@ _SRC_ROOT = _THIS_DIR.parents[3 if _THIS_DIR.name == "3pp" else 2]
 sys.path.insert(1, str(_SRC_ROOT / "build" / "3pp_common"))
 import common
 
-_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/{0}/aapt2-{0}-linux.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/{0}/aapt2-{0}-{1}.jar'
 _GROUP_INDEX_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/group-index.xml'
+
+_PLATFORM_FILE_SUFFIX = {
+    'linux-amd64': 'linux',
+    'mac-arm64': 'osx',
+}
 
 
 def do_latest():
@@ -38,7 +43,8 @@ def do_latest():
 def do_install(args):
     """Downloads and extracts the aapt2 binary."""
     version = args.version
-    url = _FILE_URL.format(version)
+    suffix = _PLATFORM_FILE_SUFFIX[os.environ['_3PP_PLATFORM']]
+    url = _FILE_URL.format(version, suffix)
     jar_path = 'aapt2.jar'
     common.download_file(url, jar_path)
 
