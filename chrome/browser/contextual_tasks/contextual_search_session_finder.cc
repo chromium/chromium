@@ -74,6 +74,9 @@ void UpdateContextualSearchWebContentsHelperForTask(
     return;
   }
 
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents);
+
   // Since the task has just changed, find if the task has an existing session,
   // i.e. if the task is already open anywhere in the browser.
   // If not found, create a new session for the task.
@@ -83,11 +86,27 @@ void UpdateContextualSearchWebContentsHelperForTask(
       FindSessionForTask(task_id, contextual_tasks_service, browser_window,
                          panel_controller);
 
+  if (!existing_session) {
+    existing_session = helper->GetSessionForTask(task_id);
+  }
+  if (!existing_session) {
+    existing_session = helper->session_handle();
+  }
+
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
   if (existing_session) {
     session_handle = contextual_search_service->GetSession(
         existing_session->session_id(), existing_session->invocation_source());
+    session_handle->set_submitted_context_tokens(
+        existing_session->GetSubmittedContextTokens());
+    session_handle->set_persisted_tabs(existing_session->persisted_tabs());
+    session_handle->set_deselected_tabs_urls(
+        existing_session->deselected_tabs_urls());
+    session_handle->set_smart_tab_sharing_active(
+        existing_session->smart_tab_sharing_active());
+    session_handle->set_smart_tab_sharing_toggled_since_last_turn(
+        existing_session->smart_tab_sharing_toggled_since_last_turn());
   } else {
     session_handle = contextual_search_service->CreateSession(
         CreateQueryControllerConfigParams(),
@@ -100,8 +119,6 @@ void UpdateContextualSearchWebContentsHelperForTask(
   if (session_handle) {
     session_handle->CheckSearchContentSharingSettings(
         browser_window->GetProfile()->GetPrefs());
-    auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-        web_contents);
     helper->SetTaskSession(task_id, std::move(session_handle),
                            /*input_state_model=*/nullptr);
   }
