@@ -1744,11 +1744,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON, true);
 
   // Window management commands
-  auto* const app_controller = web_app::AppBrowserController::From(browser_);
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
-  command_updater_->UpdateCommandEnabled(
-      IDC_NEW_TAB,
-      !app_controller || !app_controller->ShouldHideNewTabButton());
+  command_updater_->UpdateCommandEnabled(IDC_NEW_TAB, true);
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_->UpdateCommandEnabled(
       IDC_DUPLICATE_TAB,

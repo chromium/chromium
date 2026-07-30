@@ -427,6 +427,19 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       NewTabEnabledForAppBrowser) {
+  auto params = Browser::CreateParams::CreateForApp(
+      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
+      gfx::Rect(), /* window_bounts */
+      browser()->GetProfile(), true /* user_gesture */);
+  Browser* app_browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      app_browser->GetFeatures().browser_command_controller();
+  EXPECT_TRUE(commandController->IsCommandEnabled(IDC_NEW_TAB));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        OpenDisabledForAppPopupBrowser) {
   auto params = Browser::CreateParams::CreateForAppPopup(
       "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
