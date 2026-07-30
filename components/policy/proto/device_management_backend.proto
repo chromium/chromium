@@ -2603,6 +2603,14 @@ message OSReport {
   // The user-visible security patch level. This value represents the date when
   // the device most recently applied a security patch. Android only.
   optional int64 security_patch_ms = 23;
+
+  message IosSpecificAttributes {
+    // Unique identifier for the vendor.
+    optional string vendor_id = 1;
+  }
+
+  // iOS specific attributes.
+  optional IosSpecificAttributes ios_specific_attributes = 24;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.
