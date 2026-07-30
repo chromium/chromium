@@ -47,6 +47,9 @@ chromeos::network_config::mojom::SecurityType ConvertSecurityType(
     quick_start::mojom::WifiSecurityType type) {
   switch (type) {
     case quick_start::mojom::WifiSecurityType::kPSK:
+    case quick_start::mojom::WifiSecurityType::kSAE:
+      // Shill groups WPA3-SAE under the same "psk" security class as WPA2-PSK
+      // and negotiates the actual key management with the access point.
       return chromeos::network_config::mojom::SecurityType::kWpaPsk;
     case quick_start::mojom::WifiSecurityType::kWEP:
       return chromeos::network_config::mojom::SecurityType::kWepPsk;
@@ -54,12 +57,17 @@ chromeos::network_config::mojom::SecurityType ConvertSecurityType(
       return chromeos::network_config::mojom::SecurityType::kWpaEap;
     case quick_start::mojom::WifiSecurityType::kOpen:
     case quick_start::mojom::WifiSecurityType::kOWE:
-    case quick_start::mojom::WifiSecurityType::kSAE:
+      // OWE (Enhanced Open) does not use a passphrase and shares the "none"
+      // security class with open networks.
       return chromeos::network_config::mojom::SecurityType::kNone;
   }
 }
 
-chromeos::network_config::mojom::ConfigPropertiesPtr CreateNetworkConfig(
+}  // namespace
+
+// static
+chromeos::network_config::mojom::ConfigPropertiesPtr
+NetworkScreen::CreateNetworkConfig(
     const quick_start::mojom::WifiCredentials& wifi_credentials) {
   auto wifi = chromeos::network_config::mojom::WiFiConfigProperties::New();
   wifi->ssid = wifi_credentials.ssid;
@@ -78,8 +86,6 @@ chromeos::network_config::mojom::ConfigPropertiesPtr CreateNetworkConfig(
   // Proxy settings are not supported for now.
   return config;
 }
-
-}  // namespace
 
 // static
 std::string NetworkScreen::GetResultString(Result result) {

@@ -135,6 +135,12 @@ class NetworkScreen : public BaseScreen,
   void OnQuickStartButtonClicked();
   void SetQuickStartButtonVisibility(bool visible);
 
+  // Builds network config properties from WiFi credentials collected from the
+  // Quick Start process.
+  static chromeos::network_config::mojom::ConfigPropertiesPtr
+  CreateNetworkConfig(
+      const quick_start::mojom::WifiCredentials& wifi_credentials);
+
   // Does an async call to add WiFi network with given credentials collected
   // from the Quick Start process.
   void ConfigureWifiNetwork(
