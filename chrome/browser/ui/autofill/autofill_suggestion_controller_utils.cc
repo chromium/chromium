@@ -156,6 +156,10 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
   NOTREACHED();
 }
 
+bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
+  return !suggestion.IsSelectable();
+}
+
 content::RenderFrameHost* GetRenderFrameHost_DoNotUse(
     AutofillSuggestionDelegate& delegate) {
   return std::visit(

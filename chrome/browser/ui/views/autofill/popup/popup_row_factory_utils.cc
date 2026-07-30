@@ -208,7 +208,7 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
     std::optional<user_education::DisplayNewBadge> show_new_badge,
     views::style::TextStyle primary_text_style = kMainTextStyle) {
   views::style::TextStyle main_text_label_style;
-  if (!suggestion.IsSelectable()) {
+  if (ShouldApplyDeactivatedStyle(suggestion)) {
     main_text_label_style = kDisabledTextStyle;
   } else {
     main_text_label_style = suggestion.main_text.is_primary
@@ -243,7 +243,8 @@ std::vector<std::unique_ptr<views::View>> CreateMinorTextLabels(
     }
     auto label = std::make_unique<views::Label>(
         text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        suggestion.IsSelectable() ? kMinorTextStyle : kDisabledTextStyle);
+        ShouldApplyDeactivatedStyle(suggestion) ? kDisabledTextStyle
+                                                : kMinorTextStyle);
     label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
     minor_text_labels.push_back(std::move(label));
   }

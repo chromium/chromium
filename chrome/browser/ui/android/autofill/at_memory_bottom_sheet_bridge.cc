@@ -17,6 +17,7 @@
 #include "chrome/browser/personal_context/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/at_memory_suggestion_controller.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/personal_context/first_run/personal_context_first_run_service.h"
 #include "content/public/browser/web_contents.h"
@@ -74,7 +75,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaSuggestion(
   return Java_AtMemoryBottomSheetBridge_createAutofillSuggestion(
       env, label, secondary_label, sub_label, android_icon_id,
       std::to_underlying(suggestion.type), children, suggestion.IsAcceptable(),
-      !suggestion.IsSelectable());
+      ShouldApplyDeactivatedStyle(suggestion));
 }
 
 }  // namespace

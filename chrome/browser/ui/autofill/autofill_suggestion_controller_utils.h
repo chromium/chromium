@@ -45,6 +45,10 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
 // all non-footer suggestions and false for most footer suggestions.
 bool IsStandaloneSuggestionType(SuggestionType type);
 
+// Returns whether `suggestion` should be displayed with deactivated visual
+// styling (e.g. disabled text style and grayed-out icons).
+bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion);
+
 // Will be removed together with kAutofillSimplifyFocusCheck.
 // Returns the `RenderFrameHost` corresponding to an
 // `AutofillSuggestionDelegate`.

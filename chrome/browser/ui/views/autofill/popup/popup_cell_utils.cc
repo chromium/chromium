@@ -21,6 +21,7 @@
 #include "build/branding_buildflags.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
@@ -817,7 +818,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     return ConvertModelToImageView(
         ImageModelFromImageSkia(
             gfx::Image::CreateFrom1xBitmap(bitmap).AsImageSkia()),
-        !suggestion.IsSelectable());
+        ShouldApplyDeactivatedStyle(suggestion));
   }
   if (auto* image = std::get_if<gfx::Image>(&suggestion.custom_icon);
       image && !image->IsEmpty()) {
@@ -828,10 +829,11 @@ std::unique_ptr<views::ImageView> GetIconImageView(
           image_skia, webid::kDesiredAvatarSizeInAutofillDropdown);
     }
     return ConvertModelToImageView(ImageModelFromImageSkia(image_skia),
-                                   !suggestion.IsSelectable());
+                                   ShouldApplyDeactivatedStyle(suggestion));
   }
-  std::unique_ptr<views::ImageView> icon_image_view = ConvertModelToImageView(
-      GetIconImageModelFromIcon(suggestion.icon), !suggestion.IsSelectable());
+  std::unique_ptr<views::ImageView> icon_image_view =
+      ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
+                              ShouldApplyDeactivatedStyle(suggestion));
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
@@ -855,8 +857,8 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
   base::TimeTicks start_time = base::TimeTicks::Now();
   std::optional<ui::ImageModel> image_model =
       GetIconImageModelFromIcon(suggestion.trailing_icon);
-  std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(image_model, !suggestion.IsSelectable());
+  std::unique_ptr<views::ImageView> icon_image_view = ConvertModelToImageView(
+      image_model, ShouldApplyDeactivatedStyle(suggestion));
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
