@@ -9,6 +9,7 @@
 // Obj-C and have no C++ in them.
 
 #import "ios/chrome/common/app_group/app_group_helper.h"
+#import "ios/chrome/common/app_group/widget_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/widget_kit_extension/crash_helper.h"
 

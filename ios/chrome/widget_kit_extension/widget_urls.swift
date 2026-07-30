@@ -4,44 +4,78 @@
 
 import Foundation
 
+// Constants for WidgetKit extension URLs.
+// The underlying scheme, host, and action strings are defined in
+// ios/chrome/common/app_group/widget_constants.h and bridged via
+// widget_kit_swift_bridge.h so Swift code can re-use them.
 struct WidgetConstants {
   struct SearchWidget {
-    static let url = URL(string: "chromewidgetkit://search-widget/search")!
+    static let url = URL(
+      string: "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostSearchWidget)\(kWidgetKitActionSearch)"
+    )!
   }
   struct QuickActionsWidget {
-    static let searchUrl =
-      URL(string: "chromewidgetkit://quick-actions-widget/search")!
-    static let incognitoUrl =
-      URL(string: "chromewidgetkit://quick-actions-widget/incognito")!
-    static let voiceSearchUrl =
-      URL(string: "chromewidgetkit://quick-actions-widget/voicesearch")!
-    static let qrCodeUrl =
-      URL(string: "chromewidgetkit://quick-actions-widget/qrreader")!
-    static let lensUrl =
-      URL(string: "chromewidgetkit://quick-actions-widget/lens")!
+    static let searchUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostQuickActionsWidget)\(kWidgetKitActionSearch)"
+    )!
+    static let incognitoUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostQuickActionsWidget)\(kWidgetKitActionIncognito)"
+    )!
+    static let voiceSearchUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostQuickActionsWidget)\(kWidgetKitActionVoiceSearch)"
+    )!
+    static let qrCodeUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostQuickActionsWidget)\(kWidgetKitActionQRReader)"
+    )!
+    static let lensUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostQuickActionsWidget)\(kWidgetKitActionLens)"
+    )!
     static let isGoogleDefaultSearchEngineKey = "isGoogleDefaultSearchEngine"
     static let enableLensInWidgetKey = "enableLensInWidget"
   }
   struct DinoGameWidget {
-    static let url = URL(string: "chromewidgetkit://dino-game-widget/game")!
+    static let url = URL(
+      string: "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostDinoGameWidget)\(kWidgetKitActionGame)"
+    )!
   }
   struct LockscreenLauncherWidget {
-    static let searchUrl =
-      URL(string: "chromewidgetkit://lockscreen-launcher-widget/search")!
-    static let incognitoUrl =
-      URL(string: "chromewidgetkit://lockscreen-launcher-widget/incognito")!
-    static let voiceSearchUrl =
-      URL(string: "chromewidgetkit://lockscreen-launcher-widget/voicesearch")!
-    static let gameUrl = URL(string: "chromewidgetkit://lockscreen-launcher-widget/game")!
+    static let searchUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostLockscreenLauncherWidget)\(kWidgetKitActionSearch)"
+    )!
+    static let incognitoUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostLockscreenLauncherWidget)\(kWidgetKitActionIncognito)"
+    )!
+    static let voiceSearchUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostLockscreenLauncherWidget)\(kWidgetKitActionVoiceSearch)"
+    )!
+    static let gameUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostLockscreenLauncherWidget)\(kWidgetKitActionGame)"
+    )!
   }
   struct ShortcutsWidget {
-    static let searchUrl =
-      URL(string: "chromewidgetkit://shortcuts-widget/search")!
-    static let open =
-      URL(string: "chromewidgetkit://shortcuts-widget/open")!
+    static let searchUrl = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostShortcutsWidget)\(kWidgetKitActionSearch)"
+    )!
+    static let open = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostShortcutsWidget)\(kWidgetKitActionOpenURL)"
+    )!
   }
   struct SearchPasswordsWidget {
-    static let url = URL(string: "chromewidgetkit://search-passwords-widget/search-passwords")!
+    static let url = URL(
+      string:
+        "\(kWidgetKitSchemeChrome)://\(kWidgetKitHostSearchPasswordsWidget)\(kWidgetKitActionSearchPasswords)"
+    )!
   }
 }
 
