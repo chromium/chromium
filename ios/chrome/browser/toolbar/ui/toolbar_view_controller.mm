@@ -54,6 +54,12 @@ namespace {
 // Spacing between buttons in the toolbar's horizontal stack view.
 constexpr CGFloat kStackViewSpacing = 9;
 
+// Spacing between buttons for the legacy toolbar button design.
+constexpr CGFloat kLegacyStackViewSpacing = 14;
+
+// Outside margin for the legacy toolbar layout.
+constexpr CGFloat kLegacyOutsideMargin = 10;
+
 // Duration of the banner promo slide animation.
 const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
 
@@ -496,6 +502,19 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 
 - (void)setCanGoForward:(BOOL)canGoForward animated:(BOOL)animated {
   if (_forwardButton.enabled == canGoForward) {
+    return;
+  }
+
+  if (IsNextOldDesignEnabled()) {
+    _forwardButton.enabled = canGoForward;
+    if (IsRegularXRegularSizeClass(self)) {
+      _forwardButton.hidden = NO;
+    } else {
+      _forwardButton.hidden = !canGoForward;
+    }
+    [self updateButtons:@[ _forwardButton ]
+        forFullscreenProgress:_fullscreenProgress];
+    [self.view layoutIfNeeded];
     return;
   }
 
@@ -1250,9 +1269,11 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
                     TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
                   }]
            forControlEvents:UIControlEventMenuActionTriggered];
-  _navigationButtonsContainer =
-      [self.buttonFactory makeConjoinedBackButton:_backButton
-                                    forwardButton:_forwardButton];
+  if (!IsNextOldDesignEnabled()) {
+    _navigationButtonsContainer =
+        [self.buttonFactory makeConjoinedBackButton:_backButton
+                                      forwardButton:_forwardButton];
+  }
   _reloadButton = [self.buttonFactory makeReloadButton];
   [_reloadButton addTarget:self
                     action:@selector(reloadButtonTapped)
@@ -1339,6 +1360,11 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   ]];
 }
 
+// Returns the stack view spacing depending on feature flags.
+- (CGFloat)stackViewSpacing {
+  return IsNextOldDesignEnabled() ? kLegacyStackViewSpacing : kStackViewSpacing;
+}
+
 - (UIStackView*)makeStackViewWithButtons:(NSArray<UIView*>*)buttons {
   UIStackView* stackView =
       [[UIStackView alloc] initWithArrangedSubviews:buttons];
@@ -1346,7 +1372,7 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.distribution = UIStackViewDistributionFill;
   stackView.alignment = UIStackViewAlignmentCenter;
-  stackView.spacing = kStackViewSpacing;
+  stackView.spacing = [self stackViewSpacing];
   return stackView;
 }
 
@@ -1420,11 +1446,20 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 
 // Sets up the hierarchy of the buttons.
 - (void)setUpHierarchy {
-  _leadingStackView = [self makeStackViewWithButtons:@[
-    _navigationButtonsContainer,
-    _reloadButton,
-    _stopButton,
-  ]];
+  if (IsNextOldDesignEnabled()) {
+    _leadingStackView = [self makeStackViewWithButtons:@[
+      _backButton,
+      _forwardButton,
+      _reloadButton,
+      _stopButton,
+    ]];
+  } else {
+    _leadingStackView = [self makeStackViewWithButtons:@[
+      _navigationButtonsContainer,
+      _reloadButton,
+      _stopButton,
+    ]];
+  }
   _trailingStackView = [self makeStackViewWithButtons:@[
     _shareButton, _assistantButton, _tabGridButton, _toolsMenuButton
   ]];
@@ -1536,11 +1571,19 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
       constraintLessThanOrEqualToConstant:kLocationBarMaxWidth]
       .active = YES;
 
-  _leadingStackLeadingConstraint = [_leadingStackView.leadingAnchor
-      constraintEqualToAnchor:self.view.leadingAnchor];
+  if (IsNextOldDesignEnabled()) {
+    _leadingStackLeadingConstraint = [_leadingStackView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor];
+    _trailingStackTrailingConstraint =
+        [self.view.safeAreaLayoutGuide.trailingAnchor
+            constraintEqualToAnchor:_trailingStackView.trailingAnchor];
+  } else {
+    _leadingStackLeadingConstraint = [_leadingStackView.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor];
+    _trailingStackTrailingConstraint = [self.view.trailingAnchor
+        constraintEqualToAnchor:_trailingStackView.trailingAnchor];
+  }
   _leadingStackLeadingConstraint.active = YES;
-  _trailingStackTrailingConstraint = [self.view.trailingAnchor
-      constraintEqualToAnchor:_trailingStackView.trailingAnchor];
   _trailingStackTrailingConstraint.active = YES;
 
   _portraitOrientationConstraints = @[
@@ -1572,8 +1615,8 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   // make sure the width of the leading stack view is enough to contain 3
   // buttons and one spacing.
   CGFloat minimalLeadingMargin = kLocationBarStackViewMarginLandscape +
-                                 2 * kToolbarButtonSize + kStackViewSpacing +
-                                 kToolbarButtonSize;
+                                 2 * kToolbarButtonSize +
+                                 [self stackViewSpacing] + kToolbarButtonSize;
   _landscapeOrientationConstraints = @[
     [_locationBarContainer.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:_leadingStackView.trailingAnchor
@@ -1605,7 +1648,20 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
   [NSLayoutConstraint deactivateConstraints:_regularRegularConstraints];
 
-  if (IsRegularXRegularSizeClass(self)) {
+  if (IsNextOldDesignEnabled()) {
+    _leadingStackLeadingConstraint.constant = kLegacyOutsideMargin;
+    _trailingStackTrailingConstraint.constant = kLegacyOutsideMargin;
+    if (IsRegularXRegularSizeClass(self)) {
+      _forwardButton.hidden = NO;
+      [NSLayoutConstraint activateConstraints:_regularRegularConstraints];
+    } else if (IsIPhoneLandscape(self)) {
+      _forwardButton.hidden = !_forwardButton.enabled;
+      [NSLayoutConstraint activateConstraints:_landscapeOrientationConstraints];
+    } else {
+      _forwardButton.hidden = !_forwardButton.enabled;
+      [NSLayoutConstraint activateConstraints:_portraitOrientationConstraints];
+    }
+  } else if (IsRegularXRegularSizeClass(self)) {
     _leadingStackLeadingConstraint.constant = kStackViewMarginRegularRegular;
     _trailingStackTrailingConstraint.constant = kStackViewMarginRegularRegular;
     [NSLayoutConstraint activateConstraints:_regularRegularConstraints];

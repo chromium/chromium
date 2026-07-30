@@ -279,6 +279,11 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)updateTrailingButtonState {
+  if (IsNextOldDesignEnabled()) {
+    self.trailingButtonState = kShareButton;
+    return;
+  }
+
   BOOL shouldShowVoiceSearch =
       self.traitCollection.horizontalSizeClass ==
           UIUserInterfaceSizeClassRegular ||

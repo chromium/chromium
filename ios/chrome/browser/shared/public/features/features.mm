@@ -1268,3 +1268,12 @@ bool IsGlassToolbarEnabled() {
   }
   return false;
 }
+
+BASE_FEATURE(kNextOldDesign, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNextOldDesignEnabled() {
+  if (!IsChromeNextIaEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kNextOldDesign);
+}
