@@ -1121,6 +1121,8 @@ const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum) {
       return "subgroup_id";
     case wgpu::WGSLLanguageFeatureName::SubgroupUniformity:
       return "subgroup_uniformity";
+    case wgpu::WGSLLanguageFeatureName::TextureFormatsTier1:
+      return "texture_formats_tier1";
     case wgpu::WGSLLanguageFeatureName::TextureAndSamplerLet:
       return "texture_and_sampler_let";
     case wgpu::WGSLLanguageFeatureName::SwizzleAssignment:
