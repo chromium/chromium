@@ -272,6 +272,25 @@ TEST_P(TabGroupHeaderViewTest, FocusModeVisibility) {
   EXPECT_FALSE(header->collapse_icon_for_testing()->GetVisible());
 }
 
+TEST_P(TabGroupHeaderViewTest, LeftClickInFocusModeDoesNotToggleCollapse) {
+  MockDelegate delegate;
+  ON_CALL(delegate, IsGroupFocused()).WillByDefault(testing::Return(true));
+  EXPECT_CALL(delegate, ToggleCollapsedState(testing::_)).Times(0);
+
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data));
+  widget->Show();
+
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  MoveMouseTo(generator, header, true);
+  generator.ClickLeftButton();
+}
+
 TEST_P(TabGroupHeaderViewTest, OnKeyPress_ShiftUp) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(

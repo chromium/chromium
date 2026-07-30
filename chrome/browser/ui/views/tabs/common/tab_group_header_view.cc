@@ -265,8 +265,9 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
 }
 
 bool TabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_SPACE ||
-      event.key_code() == ui::VKEY_RETURN) {
+  if ((event.key_code() == ui::VKEY_SPACE ||
+       event.key_code() == ui::VKEY_RETURN) &&
+      !delegate_->IsGroupFocused()) {
     delegate_->ToggleCollapsedState(
         ToggleTabGroupCollapsedStateOrigin::kKeyboard);
     views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
@@ -328,7 +329,8 @@ void TabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
 
   bool open_editor_bubble =
       event.IsRightMouseButton() && !editor_bubble_tracker_.is_open();
-  bool toggle_collapse = event.IsLeftMouseButton();
+  bool toggle_collapse =
+      event.IsLeftMouseButton() && !delegate_->IsGroupFocused();
   if (open_editor_bubble) {
     ShowEditorBubble();
   } else if (toggle_collapse) {
@@ -349,10 +351,12 @@ void TabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
       break;
 
     case ui::EventType::kGestureTap:
-      delegate_->ToggleCollapsedState(
-          ToggleTabGroupCollapsedStateOrigin::kGesture);
-      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
-          kTabGroupHeaderElementId, this);
+      if (!delegate_->IsGroupFocused()) {
+        delegate_->ToggleCollapsedState(
+            ToggleTabGroupCollapsedStateOrigin::kGesture);
+        views::ElementTrackerViews::GetInstance()->NotifyViewActivated(
+            kTabGroupHeaderElementId, this);
+      }
       event->SetHandled();
       break;
 
