@@ -2,6 +2,19 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Transforms .proto files by prepending or appending "fuzzable".
+
+For a proto to be usable by a fuzzer it needs to be compiled as a full proto,
+but production protos must be compiled as lite protos. To get around this
+limitation, we create "fuzzable" versions of protos.
+
+This script performs three transformations to create a fuzzable .proto:
+  1. Package Declaration: Prepends 'fuzzable.' to package names.
+  2. Imports: Appends '_fuzzable.proto' to imported protos.
+  3. Absolute Type References: Prepends '.fuzzable.' to absolute type
+     references.
+"""
+
 
 import argparse
 import re
@@ -9,6 +22,12 @@ import shlex
 import sys
 
 def process_file(infile, outfile):
+  """Reads a .proto file, namespaces it under 'fuzzable', and writes the result.
+
+  Args:
+    infile: Path to the input .proto file.
+    outfile: Path where the transformed .proto file will be written.
+  """
   with open(infile, "r", encoding="utf-8") as f:
     content = f.read()
 
@@ -28,7 +47,7 @@ def process_file(infile, outfile):
     syntax_regex = re.compile(
         r"""
         ^
-        (?P<syntax_line>
+        (?P<syntax_line>        # Captured syntax_line
             \s*                 # Leading whitespace
             (?:syntax|edition)  # 'syntax' or 'edition'
             \s*=\s*             # Equals sign with surrounding whitespace
@@ -55,6 +74,8 @@ def process_file(infile, outfile):
   )
 
   def import_replacement(match_obj):
+    """Rewrites import paths to '*_fuzzable.proto'. Standard imports are untouched."""
+
     path = match_obj.group("path")
     if path.startswith("google/protobuf/"):
       return match_obj.group(0)
@@ -78,6 +99,7 @@ def process_file(infile, outfile):
   ignored_packages = ("google.protobuf.", "google.rpc.", "google.type.")
 
   def abs_ref_replacement(match_obj):
+    """Prepends '.fuzzable.' to absolute type references. `ignored_packages` are untouched."""
     type_path = match_obj.group("type_path")
     if type_path.startswith(ignored_packages):
       return match_obj.group(0)
