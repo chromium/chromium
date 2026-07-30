@@ -948,6 +948,18 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       ShowEmojiPanelExitsFullscreen) {
+  ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
+  ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
+
+  ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = false});
+  BrowserWindow::FromBrowser(browser()->GetBrowserForMigrationOnly())
+      ->ShowEmojiPanel();
+  waiter.Wait();
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        CapturedContentEntersFullscreenWithinTab) {
   SetDisableFullscreenWithinTab(false);
   // Simulate tab capture, as used by getDisplayMedia() content sharing.

@@ -5792,6 +5792,15 @@ bool BrowserView::IsVisibleOnAllWorkspaces() const {
 }
 
 void BrowserView::ShowEmojiPanel() {
+  // Unlike modal dialogs (which drop fullscreen via SetWebContentsBlocked),
+  // the emoji panel is non-modal UI that can interfere with the fullscreen
+  // bubble. Drop fullscreen when showing the emoji panel to prevent UI
+  // spoofing.
+  if (content::WebContents* web_contents = GetActiveWebContents()) {
+    if (!web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId)) {
+      return;
+    }
+  }
   GetWidget()->ShowEmojiPanel();
 }
 
