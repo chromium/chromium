@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "components/permissions/permission_request_manager.h"
@@ -57,11 +58,15 @@ class OmniboxPopupAimPresenter
 
   // views::FocusChangeListener:
   // Intercepts focus shifts while `is_restoring_focus_after_file_selection_` is
-  // active. When the window focus is restored to the native Omnibox text field,
-  // this redirect focus back onto the popup WebUI and resets the restoration
-  // state.
+  // active. This prevents the omnibox popup from closing due to focus
+  // transitions and allows focus to be restored to the popup WebUI after the
+  // file picker closes.
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override;
+
+  // Finishing step for focus restoration after file picker selection. Restores
+  // focus to the popup WebUI and resets the focus restoration state.
+  void FinishFocusRestoration();
 
   // Resets focus restoration state and stops observing `FocusManager`.
   void ResetFocusRestorationState();

@@ -153,6 +153,29 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
               expected_state);
   }
 
+  void VerifyFocusRestoredToWebUIInput(OmniboxPopupAimPresenter* presenter,
+                                       OmniboxAimPopupWebUIContent* content) {
+    // Wait until focus is redirected from the location bar to the popup's
+    // WebUI content view in Views.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return presenter->GetWebUIContent()->HasFocus(); }));
+
+    // Wait until the Mojo IPC reaches the WebUI DOM and focuses the input
+    // element inside the shadow root.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 content->GetWebContents(),
+                 "(function() {"
+                 "  const app = document.querySelector('omnibox-aim-app');"
+                 "  const box = app && app.shadowRoot && "
+                 "              "
+                 "app.shadowRoot.querySelector('cr-omnibox-composebox');"
+                 "  return !!box && box.isFocusInInput();"
+                 "})()")
+          .ExtractBool();
+    }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
@@ -627,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
 // and that it is cleaned up when focus is restored to the Omnibox.
 IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileSelectionFocusRestorationPreventsPopupClose) {
-  ASSERT_TRUE(ShowPopupAndGetWebUIContent());
+  auto* content = ShowPopupAndGetWebUIContent();
+  ASSERT_TRUE(content);
   auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
   ASSERT_TRUE(presenter);
   EXPECT_EQ(location_bar()
@@ -660,6 +684,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
       return !presenter->is_restoring_focus_after_file_selection();
     }));
 
+    VerifyFocusRestoredToWebUIInput(presenter, content);
+
     // Deactivate the widget again. Because the restoration flag has been reset,
     // this deactivation should now close the popup.
     DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
@@ -676,7 +702,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     OmniboxAimPopupKeepOpenBrowserTest,
     ActivationChangedAfterFileSelectionClosedPreservesPopup) {
-  ASSERT_TRUE(ShowPopupAndGetWebUIContent());
+  auto* content = ShowPopupAndGetWebUIContent();
+  ASSERT_TRUE(content);
   auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
   ASSERT_TRUE(presenter);
   EXPECT_EQ(location_bar()
@@ -721,6 +748,8 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return !presenter->is_restoring_focus_after_file_selection();
     }));
+
+    VerifyFocusRestoredToWebUIInput(presenter, content);
   } else {
     // When feature is disabled, deactivation closes the popup.
     DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
