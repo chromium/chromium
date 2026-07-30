@@ -110,14 +110,11 @@ class DictationKeyedService : public KeyedService,
   OnboardingManager onboarding_manager_;
 
   struct SessionState {
-    SessionState(SessionControllerDelegate& delegate,
-                 const TargetDetails& target_details);
+    SessionState(SessionControllerDelegate& delegate, tabs::TabInterface& tab);
     ~SessionState();
 
     SessionController controller_;
-    // TODO(bokan): This is only ever used to get the Tab. Store a WeakPtr to
-    // the TabInterface instead.
-    TargetDetails target_details_;
+    base::WeakPtr<tabs::TabInterface> tab_;
   };
   std::optional<SessionState> session_;
 };

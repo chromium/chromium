@@ -84,8 +84,8 @@ DictationKeyedService* DictationKeyedService::Get(
 
 DictationKeyedService::SessionState::SessionState(
     SessionControllerDelegate& delegate,
-    const TargetDetails& target_details)
-    : controller_(delegate), target_details_(target_details) {}
+    tabs::TabInterface& tab)
+    : controller_(delegate), tab_(tab.GetWeakPtr()) {}
 
 DictationKeyedService::SessionState::~SessionState() = default;
 
@@ -121,8 +121,7 @@ std::unique_ptr<StreamProvider> DictationKeyedService::CreateStreamProvider(
 std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
     SessionController& controller) const {
   CHECK(session_);
-  tabs::TabInterface* tab =
-      GetTabFromTargetId(session_->target_details_.target_id);
+  tabs::TabInterface* tab = session_->tab_.get();
 
   // We must have a tab since this is called synchronously from session
   // creation.
@@ -146,7 +145,7 @@ void DictationKeyedService::StartSession(
 
   RecordDictationSessionStartSource(entry_point);
 
-  session_.emplace(*this, target_details);
+  session_.emplace(*this, tab);
 
   session_->controller_.ResetUi();
 
@@ -183,15 +182,13 @@ void DictationKeyedService::ContextMenuHandler(
       session_->controller_.EndDictationStream();
     }
 
-    tabs::TabInterface* old_tab =
-        GetTabFromTargetId(session_->target_details_.target_id);
-
-    session_->target_details_ = target_details;
+    tabs::TabInterface* old_tab = session_->tab_.get();
 
     // If the menu is triggered from a new tab, we need to re-create the UI in
     // that tab (removing it from the old tab).
     if (tab != old_tab) {
       VT_LOG() << "Moving session to new tab: " << tab;
+      session_->tab_ = tab->GetWeakPtr();
       session_->controller_.ResetUi();
     }
 
