@@ -2041,10 +2041,16 @@ chromium-metrics-reviews@google.com.
     failure reasons. The standard specification error names are in parenthesis.
     This is a V4 metric replacing the V3 metric to include the new
     DEVICE_REMOVED outcome.
+
+    Note that for GetDisplayMedia, the GetDisplayMedia.AudioCapture (requests
+    with audio) and GetDisplayMedia.VideoOnly (requests without audio) variants
+    are mutually exclusive subsets of the main GetDisplayMedia variant.
   </summary>
   <token key="RequestType">
     <variant name="GetAllScreensMedia"/>
     <variant name="GetDisplayMedia"/>
+    <variant name="GetDisplayMedia.AudioCapture"/>
+    <variant name="GetDisplayMedia.VideoOnly"/>
     <variant name="GetUserMedia.AudioCapture"/>
     <variant name="GetUserMedia.DeviceCapture"/>
     <variant name="GetUserMedia.Extension"/>

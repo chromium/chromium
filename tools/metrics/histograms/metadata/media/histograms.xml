@@ -7876,28 +7876,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.{Type}"
-    enum="GetDisplayMediaAudioToggleStatus" expires_after="2027-01-03">
-  <owner>eladalon@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>tovep@chromium.org</owner>
-  <summary>
-    Recorded after a Web application calls getDisplayMedia(), after the user
-    chooses to share a display surface of type {Type}. (Not recorded if the user
-    rejects the prompt.) Tracks the state of the audio toggle at the time when
-    the user approved the capture. If the audio toggle is not present, this
-    histogram distinguishes the reason for its absence. Note that
-    `WindowsAppAudio` is a subset of `Windows` where the option to share
-    application audio is provided instead of system audio.
-  </summary>
-  <token key="Type">
-    <variant name="Screens"/>
-    <variant name="Tabs"/>
-    <variant name="Windows"/>
-    <variant name="WindowsAppAudio"/>
-  </token>
-</histogram>
-
 <histogram
     name="Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus"
     enum="HighlightedTabDiscardStatus" expires_after="2025-08-24">
@@ -8001,6 +7979,37 @@ chromium-metrics-reviews@google.com.
     Records which controls are clicked in the TabSharingInfoBar. The histogram
     is recorded for each click on such a control.
   </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.{Flow}.AudioToggleState.{Type}"
+    enum="GetDisplayMediaAudioToggleStatus" expires_after="2027-07-24">
+  <owner>tovep@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Recorded after a Web application calls getDisplayMedia() {Flow}, after the
+    user chooses to share a display surface of type {Type}. (Not recorded if the
+    user rejects the prompt.) Tracks the state of the audio toggle at the time
+    when the user approved the capture. If the audio toggle is not present, this
+    histogram distinguishes the reason for its absence. Note that
+    `AudioSelectionPreferred` is a subset of `BasicFlow` (which is logged for
+    all requests). Also note that `WindowsAppAudio` and `WindowsSystemAudio` are
+    subsets of `Windows` where the option to share application audio or system
+    audio (respectively) is provided.
+  </summary>
+  <token key="Flow">
+    <variant name="AudioSelectionPreferred"
+        summary="with audioSelection='preferred'"/>
+    <variant name="BasicFlow" summary="in the basic flow"/>
+  </token>
+  <token key="Type">
+    <variant name="Screens"/>
+    <variant name="Tabs"/>
+    <variant name="Windows"/>
+    <variant name="WindowsAppAudio"/>
+    <variant name="WindowsSystemAudio"/>
+  </token>
 </histogram>
 
 <histogram name="Media.Ui.GetDisplayMedia.{Flow}.DialogDuration" units="ms"

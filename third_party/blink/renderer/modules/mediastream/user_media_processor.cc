@@ -113,6 +113,15 @@ void UpdateRequestResult(UserMediaRequest* request,
     case UserMediaRequestType::kDisplayMedia:
       base::UmaHistogramEnumeration(
           "WebRTC.UserMediaRequest.GetDisplayMedia.Result4", result);
+      if (request->Audio()) {
+        base::UmaHistogramEnumeration(
+            "WebRTC.UserMediaRequest.GetDisplayMedia.AudioCapture.Result4",
+            result);
+      } else {
+        base::UmaHistogramEnumeration(
+            "WebRTC.UserMediaRequest.GetDisplayMedia.VideoOnly.Result4",
+            result);
+      }
       return;
     case UserMediaRequestType::kAllScreensMedia:
       base::UmaHistogramEnumeration(

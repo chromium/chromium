@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -1089,10 +1090,6 @@ void DesktopMediaPickerDialogView::RecordAudioToggleUma(
       break;  // Should not happen - subsequent CHECK failure.
   }
   CHECK_NE(display_surface, nullptr);
-  const std::string name =
-      base::StrCat({"Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.",
-                    display_surface});
-
   const DesktopMediaList::Type type = AsDesktopMediaListType(source.type);
   AudioToggleStatus status;
   if (!AudioRequestedForType(type)) {
@@ -1105,13 +1102,29 @@ void DesktopMediaPickerDialogView::RecordAudioToggleUma(
                  : AudioToggleStatus::kAudioRequestedButUserDidNotApprove;
   }
 
-  base::UmaHistogramEnumeration(name, status);
+  auto log_uma = [&](std::string_view flow, std::string_view surface) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Media.Ui.GetDisplayMedia.", flow, ".AudioToggleState.", surface}),
+        status);
+  };
+
+  log_uma("BasicFlow", display_surface);
+  if (audio_selection_preferred_) {
+    log_uma("AudioSelectionPreferred", display_surface);
+  }
 
   if (source.type == DesktopMediaID::Type::TYPE_WINDOW &&
-      window_audio_type_offered_ == DesktopMediaID::AudioType::kApplication) {
-    base::UmaHistogramEnumeration(
-        "Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.WindowsAppAudio",
-        status);
+      window_audio_type_offered_ != DesktopMediaID::AudioType::kNone) {
+    const std::string subset_suffix =
+        (window_audio_type_offered_ == DesktopMediaID::AudioType::kSystem)
+            ? "WindowsSystemAudio"
+            : "WindowsAppAudio";
+
+    log_uma("BasicFlow", subset_suffix);
+    if (audio_selection_preferred_) {
+      log_uma("AudioSelectionPreferred", subset_suffix);
+    }
   }
 }
 
