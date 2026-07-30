@@ -5518,7 +5518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PartialTranslate.SelectionLength" units="characters"
-    expires_after="2026-06-01">
+    expires_after="2027-07-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>The length of the selection received from javascript.</summary>
@@ -6486,7 +6486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
-    expires_after="2026-06-01">
+    expires_after="2027-07-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -6496,7 +6496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReadingList.PageTooLargeFailure" units="KB"
-    expires_after="2026-06-01">
+    expires_after="2027-07-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -7449,7 +7449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntry"
-    enum="IOSShareExtensionReceivedEntryType" expires_after="2026-08-30">
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2027-07-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>Type of the item received from the iOS share extension.</summary>
@@ -7466,7 +7466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.Source"
-    enum="IOSShareExtensionReceivedEntrySource" expires_after="2026-08-30">
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2027-07-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
@@ -7632,7 +7632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Spotlight.DonatedIntentType"
-    enum="IOSSpotlightDonatedIntentType" expires_after="2026-06-01">
+    enum="IOSSpotlightDonatedIntentType" expires_after="2027-07-30">
   <owner>stkhapugin@chromium.org</owner>
   <owner>ameurhosni@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
