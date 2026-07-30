@@ -264,9 +264,6 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
     content::SimulateMouseEvent(
         source_wc, blink::WebInputEvent::Type::kMouseMove,
         blink::WebMouseEvent::Button::kLeft, drag_end_point);
-    content::SimulateMouseEvent(source_wc, blink::WebInputEvent::Type::kMouseUp,
-                                blink::WebMouseEvent::Button::kLeft,
-                                drag_end_point);
   }
 
  private:

@@ -28,6 +28,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/env.h"
+#include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/test/window_test_api.h"
 #include "ui/aura/window.h"
@@ -198,10 +199,20 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
          .window_type = aura::client::WINDOW_TYPE_NORMAL,
          .window_id = 0,
          .show = false});
+    // Force Env's IsMouseButtonDown to rely on mouse_button_flags_ instead of
+    // querying the native OS system (which would return false in headless/unit
+    // tests).
+    aura::test::EnvTestHelper(aura::Env::GetInstance())
+        .SetInputStateLookup(nullptr);
+    aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   }
 
   void TearDown() override {
     occluding_window_.reset();
+    aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point());
+    aura::test::EnvTestHelper(aura::Env::GetInstance())
+        .SetInputStateLookup(aura::InputStateLookup::Create());
+    aura::Env::GetInstance()->set_mouse_button_flags(0);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -220,7 +231,8 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
               drop_complete_data_->target_rwh.get());
     EXPECT_EQ(kClientPt, drop_complete_data_->client_pt);
     // Screen point of event is ignored, instead cursor position used.
-    EXPECT_EQ(gfx::PointF(), drop_complete_data_->screen_pt);
+    EXPECT_EQ(gfx::PointF(aura::Env::GetInstance()->last_mouse_location()),
+              drop_complete_data_->screen_pt);
     EXPECT_EQ(0, drop_complete_data_->key_modifiers);
   }
 
@@ -1075,6 +1087,8 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
   view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
@@ -1111,9 +1125,10 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromHiddenWebContents) {
   EXPECT_FALSE(exchange_data);
 }
 
-// If the event location is not in the WebContentsViewAura, the drag will not be
-// started.
-TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
+// For a mouse-initiated drag, the renderer-supplied screen location must
+// not flow through to DragDropClient::StartDragAndDrop. Instead the trusted
+// browser-observed last mouse location (aura::Env) must be used.
+TEST_F(WebContentsViewAuraTest, ClampMouseLocationToBrowserObservedPoint) {
   const char kGoogleUrl[] = "https://google.com/";
 
   std::u16string url_string = u"https://google.com/";
@@ -1132,6 +1147,15 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
   DropData drop_data;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  const gfx::Point trusted_location(view_bounds_on_screen.x() + 3,
+                                    view_bounds_on_screen.y() + 4);
+  aura::Env::GetInstance()->SetLastMouseLocation(trusted_location);
+
   view->StartDragging(
       *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
@@ -1141,7 +1165,11 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
           ui::mojom::DragEventSource::kMouse));
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
-  EXPECT_FALSE(exchange_data);
+  EXPECT_TRUE(exchange_data);
+  EXPECT_EQ(ui::mojom::DragEventSource::kMouse, drag_drop_client.last_source());
+  EXPECT_EQ(trusted_location, drag_drop_client.last_screen_location())
+      << "Renderer-supplied screen location must be clamped to the "
+         "browser-observed last mouse point.";
 }
 
 // For a touch-initiated drag, the renderer-supplied screen location must
@@ -1205,6 +1233,8 @@ TEST_F(WebContentsViewAuraTest, EmptyTextInDropDataIsNonNullInOSExchangeData) {
   DropData drop_data;
   drop_data.text = empty_string;
 
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
   view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
@@ -1238,6 +1268,8 @@ TEST_F(WebContentsViewAuraTest,
   drop_data.text = empty_string;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
   view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
@@ -1270,6 +1302,8 @@ TEST_F(WebContentsViewAuraTest,
   DropData drop_data;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
   view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
@@ -1305,6 +1339,8 @@ TEST_F(WebContentsViewAuraTest, EndDragIsCalledAfterAsyncDrop) {
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
 
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint());
   view->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
@@ -1369,6 +1405,7 @@ TEST_F(WebContentsViewAuraTest, StartDragBlockedByPolicy) {
 
   WebContentsView* view_interface = &mock_view;
   view_interface->CreateView(nullptr);
+  view_interface->GetNativeView()->SetBounds(kBounds);
   root_window()->AddChild(view_interface->GetNativeView());
   mock_view.set_allowed(false);
 
@@ -1396,12 +1433,15 @@ TEST_F(WebContentsViewAuraTest, StartDragAllowedByPolicy) {
 
   WebContentsView* view_interface = &mock_view;
   view_interface->CreateView(nullptr);
+  view_interface->GetNativeView()->SetBounds(kBounds);
   root_window()->AddChild(view_interface->GetNativeView());
   mock_view.set_allowed(true);
 
   DropData drop_data;
   drop_data.text = u"Allowed Data";
 
+  aura::Env::GetInstance()->SetLastMouseLocation(
+      view_interface->GetNativeView()->GetBoundsInScreen().CenterPoint());
   static_cast<RenderViewHostDelegateView*>(&mock_view)
       ->StartDragging(*main_rfh(), drop_data,
                       blink::DragOperationsMask::kDragOperationCopy,

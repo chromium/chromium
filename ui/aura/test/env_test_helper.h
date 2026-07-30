@@ -31,6 +31,10 @@ class EnvTestHelper {
     env_->input_state_lookup_ = std::move(input_state_lookup);
   }
 
+  std::unique_ptr<InputStateLookup> TakeInputStateLookup() {
+    return std::move(env_->input_state_lookup_);
+  }
+
   void ResetEventState() {
     env_->mouse_button_flags_ = 0;
     env_->is_touch_down_ = false;

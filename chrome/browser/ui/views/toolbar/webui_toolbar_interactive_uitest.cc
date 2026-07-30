@@ -61,10 +61,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
-#include "ui/base/clipboard//clipboard_monitor.h"
-#include "ui/base/clipboard//clipboard_observer.h"
+#include "ui/aura/env.h"
+#include "ui/aura/input_state_lookup.h"
+#include "ui/aura/test/env_test_helper.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -1088,18 +1092,32 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarGlassFrameInteractiveUiTest, ReloadButton) {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if defined(USE_AURA)
-class TestDragDropClient : public aura::client::DragDropClient {
+class TestDragDropClient : public aura::client::DragDropClient,
+                           public aura::WindowObserver {
  public:
   explicit TestDragDropClient(aura::Window* root_window)
       : root_window_(root_window) {
-    client_ = aura::client::GetDragDropClient(root_window_);
-    aura::client::SetDragDropClient(root_window_, this);
+    if (root_window_) {
+      root_window_->AddObserver(this);
+      client_ = aura::client::GetDragDropClient(root_window_);
+      aura::client::SetDragDropClient(root_window_, this);
+    }
   }
   ~TestDragDropClient() override {
-    for (auto& observer : observers_) {
-      observer.OnDragDropClientDestroying();
+    if (root_window_) {
+      root_window_->RemoveObserver(this);
+      for (auto& observer : observers_) {
+        observer.OnDragDropClientDestroying();
+      }
+      aura::client::SetDragDropClient(root_window_, client_);
     }
-    aura::client::SetDragDropClient(root_window_, client_);
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    if (window == root_window_) {
+      root_window_->RemoveObserver(this);
+      root_window_ = nullptr;
+    }
   }
 
   // aura::client::DragDropClient:
@@ -1233,12 +1251,17 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
                               ->GetNativeWindow()
                               ->GetRootWindow();
       drag_drop_client_ = std::make_unique<TestDragDropClient>(root_window);
+      aura::test::EnvTestHelper(aura::Env::GetInstance())
+          .SetInputStateLookup(nullptr);
     })));
   }
 
   MultiStep ResetDragDropClient() {
-    return Steps(Do(
-        base::BindLambdaForTesting([this]() { drag_drop_client_.reset(); })));
+    return Steps(Do(base::BindLambdaForTesting([this]() {
+      aura::test::EnvTestHelper(aura::Env::GetInstance())
+          .SetInputStateLookup(aura::InputStateLookup::Create());
+      drag_drop_client_.reset();
+    })));
   }
 
   std::unique_ptr<TestDragDropClient> drag_drop_client_;
@@ -1275,14 +1298,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                                 ->GetNativeWindow()
                                 ->GetRootWindow();
         drag_drop_client = std::make_unique<TestDragDropClient>(root_window);
+        aura::test::EnvTestHelper(aura::Env::GetInstance())
+            .SetInputStateLookup(nullptr);
       })),
 
       // Move to icon and perform drag gesture.
       MoveMouseTo(WebUIToolbarId(), kLocationIconDeepQuery),
       DragMouseTo(base::BindOnce([]() -> gfx::Point {
-        return display::Screen::Get()->GetCursorScreenPoint() +
-               gfx::Vector2d(0, 20);
-      })),
+                    return display::Screen::Get()->GetCursorScreenPoint() +
+                           gfx::Vector2d(0, 20);
+                  }),
+                  /*release=*/false),
 
       // Verify that drag was triggered with correct data.
       PollUntil(base::BindLambdaForTesting([&]() {
@@ -1291,8 +1317,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                 }),
                 "Drag was triggered with correct URL"),
 
+      ReleaseMouse(),
+
       // Cleanup.
-      Do(base::BindLambdaForTesting([&]() { drag_drop_client.reset(); })));
+      Do(base::BindLambdaForTesting([&]() {
+        aura::test::EnvTestHelper(aura::Env::GetInstance())
+            .SetInputStateLookup(aura::InputStateLookup::Create());
+        drag_drop_client.reset();
+      })));
 #endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -1349,7 +1381,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       MoveMouseTo(WebUIToolbarId(), kTextSpanDeepQuery),
 
       // Drag to a sibling Views-level element to trigger the move.
-      DragMouseTo(kReloadButtonElementId),
+      DragMouseTo(kReloadButtonElementId, CenterPoint(), /*release=*/false),
 
       PollUntil(base::BindLambdaForTesting([&]() {
                   return drag_drop_client_->drag_triggered() &&
@@ -1357,6 +1389,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                          drag_drop_client_->dragged_url().is_empty();
                 }),
                 "Drag was triggered with correct plain text"),
+
+      ReleaseMouse(),
 
       ResetDragDropClient());
 #endif
@@ -1402,7 +1436,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       MoveMouseTo(WebUIToolbarId(), kTextSpanDeepQuery),
 
       // Drag to a sibling Views-level element to trigger the move.
-      DragMouseTo(kReloadButtonElementId),
+      DragMouseTo(kReloadButtonElementId, CenterPoint(), /*release=*/false),
 
       PollUntil(base::BindLambdaForTesting([&]() {
                   return drag_drop_client_->drag_triggered() &&
@@ -1411,6 +1445,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                              base::UTF8ToUTF16(initial_url.spec());
                 }),
                 "Drag was triggered with correct URL and plain text"),
+
+      ReleaseMouse(),
 
       ResetDragDropClient());
 #endif
@@ -1450,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       MoveMouseTo(WebUIToolbarId(), kTextSpanDeepQuery),
 
       // Drag to a sibling Views-level element to trigger the move.
-      DragMouseTo(kReloadButtonElementId),
+      DragMouseTo(kReloadButtonElementId, CenterPoint(), /*release=*/false),
 
       PollUntil(base::BindLambdaForTesting([&]() {
                   return drag_drop_client_->drag_triggered() &&
@@ -1459,6 +1495,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                          drag_drop_client_->dragged_url().is_empty();
                 }),
                 "Drag was triggered with javascript as plain text only"),
+
+      ReleaseMouse(),
 
       ResetDragDropClient());
 #endif
@@ -1498,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       MoveMouseTo(WebUIToolbarId(), kTextSpanDeepQuery),
 
       // Drag to a sibling Views-level element to trigger the move.
-      DragMouseTo(kReloadButtonElementId),
+      DragMouseTo(kReloadButtonElementId, CenterPoint(), /*release=*/false),
 
       // Verify that chrome:// URL is dragged as a URL.
       PollUntil(base::BindLambdaForTesting([&]() {
@@ -1509,6 +1547,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                              GURL(chrome_url_to_drag);
                 }),
                 "Drag was triggered with chrome URL"),
+
+      ReleaseMouse(),
 
       ResetDragDropClient());
 #endif
@@ -1548,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       MoveMouseTo(WebUIToolbarId(), kTextSpanDeepQuery),
 
       // Drag to a sibling Views-level element to trigger the move.
-      DragMouseTo(kReloadButtonElementId),
+      DragMouseTo(kReloadButtonElementId, CenterPoint(), /*release=*/false),
 
       // Verify that the adjusted URL is dragged.
       PollUntil(
@@ -1566,6 +1606,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
           }),
           "Drag was triggered with partial selection adjusted to full GURL and "
           "plain text"),
+
+      ReleaseMouse(),
 
       ResetDragDropClient());
 #endif

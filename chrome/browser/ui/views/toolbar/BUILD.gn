@@ -465,6 +465,9 @@ if (!is_android && !is_chromeos_device) {
     if (toolkit_views) {
       deps += [ "//chrome/browser/ui:toolbar_controller_util" ]
     }
+    if (use_aura) {
+      deps += [ "//ui/aura:test_support" ]
+    }
   }
 }
 

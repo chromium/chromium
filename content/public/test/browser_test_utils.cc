@@ -182,6 +182,8 @@
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#include "ui/aura/env.h"
+#include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/test/window_event_dispatcher_test_api.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -1169,6 +1171,54 @@ void SimulateMouseEvent(WebContents* web_contents,
   gfx::Rect offset = web_contents->GetContainerBounds();
   mouse_event.SetPositionInScreen(point.x() + offset.x(),
                                   point.y() + offset.y());
+
+#if defined(USE_AURA)
+  // Because web contents drag drop requires the mouse button to be down,
+  // the Blink WebInputEvent button needs to be translated to its aura mouse
+  // button equivalent so aura::Env mouse_button_flags can be set correctly.
+  auto get_event_flags_for_button = [](blink::WebMouseEvent::Button button) {
+    switch (button) {
+      case blink::WebMouseEvent::Button::kLeft:
+        return ui::EF_LEFT_MOUSE_BUTTON;
+      case blink::WebMouseEvent::Button::kRight:
+        return ui::EF_RIGHT_MOUSE_BUTTON;
+      case blink::WebMouseEvent::Button::kMiddle:
+        return ui::EF_MIDDLE_MOUSE_BUTTON;
+      default:
+        return 0;
+    }
+  };
+  if (type == blink::WebInputEvent::Type::kMouseDown ||
+      type == blink::WebInputEvent::Type::kMouseMove) {
+    aura::Env::GetInstance()->SetLastMouseLocation(
+        gfx::Point(point.x() + offset.x(), point.y() + offset.y()));
+  }
+  // This function should not be used by unit tests, but if it somehow is, the
+  // global state below could be an issue when tests use the same process, if
+  // a test simulates a mouse down but not a mouse up, and the next test
+  // simulates a mouse up without a mouse down.
+  static base::NoDestructor<std::unique_ptr<aura::InputStateLookup>>
+      g_saved_input_state_lookup;
+
+  if (type == blink::WebInputEvent::Type::kMouseDown) {
+    if (aura::Env::GetInstance()->mouse_button_flags() == 0) {
+      *g_saved_input_state_lookup =
+          aura::test::EnvTestHelper(aura::Env::GetInstance())
+              .TakeInputStateLookup();
+    }
+    aura::Env::GetInstance()->set_mouse_button_flags(
+        aura::Env::GetInstance()->mouse_button_flags() |
+        get_event_flags_for_button(button));
+  } else if (type == blink::WebInputEvent::Type::kMouseUp) {
+    int flags = aura::Env::GetInstance()->mouse_button_flags() &
+                ~get_event_flags_for_button(button);
+    aura::Env::GetInstance()->set_mouse_button_flags(flags);
+    if (flags == 0) {
+      aura::test::EnvTestHelper(aura::Env::GetInstance())
+          .SetInputStateLookup(std::move(*g_saved_input_state_lookup));
+    }
+  }
+#endif
 
   web_contents_impl->GetInputEventRouter()->RouteMouseEvent(rwhvb, &mouse_event,
                                                             ui::LatencyInfo());
