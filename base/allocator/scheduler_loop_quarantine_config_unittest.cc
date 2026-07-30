@@ -67,6 +67,27 @@ constexpr char kValidTestingConfigJSON[] = R"({
       "branch-capacity-in-bytes": 600
     },
   },
+  // GPU process.
+  "gpu-process": {
+    "*": {
+      "enable-quarantine": true,
+      "enable-zapping": true,
+      "leak-on-destruction": false,
+      "branch-capacity-in-bytes": 900
+    },
+    "viz-compositor": {
+      "enable-quarantine": true,
+      "enable-zapping": true,
+      "leak-on-destruction": false,
+      "branch-capacity-in-bytes": 700
+    },
+    "compositor-gpu": {
+      "enable-quarantine": true,
+      "enable-zapping": true,
+      "leak-on-destruction": false,
+      "branch-capacity-in-bytes": 800
+    },
+  },
 })";
 
 TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
@@ -140,6 +161,59 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_TRUE(config.leak_on_destruction);
   EXPECT_EQ(600, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "utility.net..workService/global");
+
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "gpu-process", SchedulerLoopQuarantineBranchType::kVizCompositor);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_EQ(700, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "gpu-process/viz-compositor");
+
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "gpu-process", SchedulerLoopQuarantineBranchType::kCompositorGpu);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_EQ(800, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "gpu-process/compositor-gpu");
+
+  // 1. ThreadLocalDefault in gpu-process gets its own "*" entry.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "gpu-process", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_EQ(900, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "gpu-process/*");
+
+  // 2. Main in gpu-process falls back to gpu-process's "*" entry.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "gpu-process", SchedulerLoopQuarantineBranchType::kMain);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_EQ(900, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "gpu-process/main");
+
+  // 3. IO in gpu-process falls back to gpu-process's "*" entry.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "gpu-process", SchedulerLoopQuarantineBranchType::kIO);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_EQ(900, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "gpu-process/io");
+
+  // 4. Global in gpu-process falls back to "*" process wildcard's "global"
+  // entry!
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "gpu-process", SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_TRUE(config.enable_quarantine);
+  EXPECT_TRUE(config.enable_zapping);
+  EXPECT_TRUE(config.leak_on_destruction);
+  EXPECT_EQ(100, config.branch_capacity_in_bytes);
+  EXPECT_STREQ(config.branch_name, "gpu-process/global");
 }
 
 constexpr char kWildcardMatchingConfigJSON[] = R"({

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -227,6 +228,8 @@ bool CompositorGpuThread::Initialize() {
 }
 
 void CompositorGpuThread::Init() {
+  base::allocator::ReconfigureSchedulerLoopQuarantineBranch(
+      base::allocator::SchedulerLoopQuarantineBranchType::kCompositorGpu);
   const auto& gpu_preferences = gpu_channel_manager_->gpu_preferences();
   if (enable_watchdog_ && gpu_channel_manager_->watchdog()) {
     watchdog_thread_ = gpu::GpuWatchdogThread::Create(

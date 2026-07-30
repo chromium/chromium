@@ -28,6 +28,8 @@ enum class SchedulerLoopQuarantineBranchType {
   kAdvancedMemorySafetyChecks,
   // Specialized configuration for the VizCompositorThread.
   kVizCompositor,
+  // Specialized configuration for the CompositorGpuThread.
+  kCompositorGpu,
 };
 
 // Returns quarantine configuration for `process_type_identifier` and
