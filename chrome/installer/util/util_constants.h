@@ -156,53 +156,175 @@ enum InstallerStage {
 
 namespace switches {
 
-extern const char kAllowDowngrade[];
+// Allow an update of Chrome from a higher version to a lower version.
+// Ordinarily, such downgrades are disallowed. An administrator may wish to
+// allow them in circumstances where the potential loss of user data is
+// permissible.
+inline constexpr char kAllowDowngrade[] = "allow-downgrade";
+
 inline constexpr char kBrowserVersionSwitch[] = "browser-version";
-extern const char kChannel[];
-extern const char kConfigureUserSettings[];
-extern const char kCreateShortcuts[];
-extern const char kCriticalUpdateVersion[];
-extern const char kDeleteDMToken[];
-extern const char kDeleteOldVersions[];
-extern const char kDeleteProfile[];
-extern const char kDisableLogging[];
+
+// A channel name specified via administrative policy. This switch sets the
+// channel both of the installer and of the version of Chrome being installed.
+// This switch has no effect for secondary install modes (i.e., installs that
+// use --chrome-sxs or another mode switch).
+inline constexpr char kChannel[] = "channel";
+
+// Create shortcuts for this user to point to a system-level install (which
+// must already be installed on the machine). The shortcuts created will
+// match the preferences of the already present system-level install as such
+// this option is not compatible with any other installer options.
+inline constexpr char kConfigureUserSettings[] = "configure-user-settings";
+
+// Create shortcuts with the installer operation arg.
+inline constexpr char kCreateShortcuts[] = "create-shortcuts";
+
+// The version number of an update containing critical fixes, for which an
+// in-use Chrome should be restarted ASAP.
+inline constexpr char kCriticalUpdateVersion[] = "critical-update-version";
+
+// Deletes any existing DMToken from the registry.
+inline constexpr char kDeleteDMToken[] = "delete-dmtoken";
+
+// Delete files that belong to old versions of Chrome from the install
+// directory.
+inline constexpr char kDeleteOldVersions[] = "delete-old-versions";
+
+// Delete user profile data. This param is useful only when specified with
+// kUninstall, otherwise it is silently ignored.
+inline constexpr char kDeleteProfile[] = "delete-profile";
+
+// Disable logging.
+inline constexpr char kDisableLogging[] = "disable-logging";
+
+// Uninstalls the elevated tracing service; see kEnableSystemTracing.
 inline constexpr char kDisableSystemTracing[] = "disable-system-tracing";
-extern const char kDmServerUrl[];
-extern const char kDoNotLaunchChrome[];
-extern const char kDoNotRegisterForUpdateLaunch[];
-extern const char kDoNotRemoveSharedItems[];
-extern const char kEnableLogging[];
+
+// Specifies the DM server URL to use with the rotate device key command.
+inline constexpr char kDmServerUrl[] = "dm-server-url";
+
+// Prevent installer from launching Chrome after a successful first install.
+inline constexpr char kDoNotLaunchChrome[] = "do-not-launch-chrome";
+
+// Prevents installer from writing the Google Update key that causes Google
+// Update to launch Chrome after a first install.
+inline constexpr char kDoNotRegisterForUpdateLaunch[] =
+    "do-not-register-for-update-launch";
+
+// By default we remove all shared (between users) files, registry entries etc
+// during uninstall. If this option is specified together with kUninstall option
+// we do not clean up shared entries otherwise this option is ignored.
+inline constexpr char kDoNotRemoveSharedItems[] = "do-not-remove-shared-items";
+
+// Enable logging at the error level. This is the default behavior.
+inline constexpr char kEnableLogging[] = "enable-logging";
+
+// Installs the elevated tracing service to capture system-wide ETW events for
+// tracing.
 inline constexpr char kEnableSystemTracing[] = "enable-system-tracing";
-extern const char kForceConfigureUserSettings[];
-extern const char kForceUninstall[];
-extern const char kInstallArchive[];
-extern const char kInstallerData[];
-extern const char kInstallLevel[];
-extern const char kLogFile[];
-extern const char kMsi[];
-extern const char kNewSetupExe[];
-extern const char kNonce[];
-extern const char kOnOsUpgrade[];
-extern const char kOsUpgradeVersions[];
-extern const char kPreviousVersion[];
-extern const char kReenableAutoupdates[];
-extern const char kRegisterChromeBrowser[];
-extern const char kRegisterChromeBrowserSuffix[];
-extern const char kRegisterDevChrome[];
-extern const char kRegisterURLProtocol[];
-extern const char kRemoveChromeRegistration[];
-extern const char kRenameChromeExe[];
-extern const char kRotateDeviceTrustKey[];
-extern const char kRunAsAdmin[];
-extern const char kSelfDestruct[];
-extern const char kShowEula[];
-extern const char kStoreDMToken[];
-extern const char kSystemLevel[];
-extern const char kTriggerActiveSetup[];
-extern const char kUncompressedArchive[];
-extern const char kUninstall[];
-extern const char kUpdateSetupExe[];
-extern const char kVerboseLogging[];
+
+// Same as kConfigureUserSettings above; except the checks to know whether
+// first run already occurred are bypassed and shortcuts are created either way
+// (kConfigureUserSettings also needs to be on the command-line for this to have
+// any effect).
+inline constexpr char kForceConfigureUserSettings[] =
+    "force-configure-user-settings";
+
+// If present, setup will uninstall chrome without asking for any
+// confirmation from user.
+inline constexpr char kForceUninstall[] = "force-uninstall";
+
+// Specify the path to the Chrome archive for install. If not specified,
+// chrome.packed.7z or chrome.7z in the same directory as setup.exe
+// is used.
+inline constexpr char kInstallArchive[] = "install-archive";
+
+// Use the given uncompressed chrome.7z archive as the source of files to
+// install.
+inline constexpr char kUncompressedArchive[] = "uncompressed-archive";
+
+// Specify the file path of Chrome initial preference file.
+inline constexpr char kInstallerData[] = "installerdata";
+
+// What install level to create shortcuts for, if "create-shortcuts" is present.
+inline constexpr char kInstallLevel[] = "install-level";
+
+// If present, specify file path to write logging info.
+inline constexpr char kLogFile[] = "log-file";
+
+// Tells installer to expect to be run as a subsidiary to an MSI.
+inline constexpr char kMsi[] = "msi";
+
+// Specifies a nonce to use with the rotate device key command.
+inline constexpr char kNonce[] = "nonce";
+
+// Notify the installer that the OS has been upgraded.
+inline constexpr char kOnOsUpgrade[] = "on-os-upgrade";
+
+// Tells the updater the previous and new Windows versions.
+inline constexpr char kOsUpgradeVersions[] = "os-upgrade-versions";
+
+// Requests that setup attempt to reenable autoupdates for Chrome.
+inline constexpr char kReenableAutoupdates[] = "reenable-autoupdates";
+
+// Register Chrome as a valid browser on the current system. This option
+// requires that setup.exe is running as admin. If this option is specified,
+// options kInstallArchive and kUninstall are ignored.
+inline constexpr char kRegisterChromeBrowser[] = "register-chrome-browser";
+
+// Used by the installer to forward the registration suffix of the
+// (un)installation in progress when launching an elevated setup.exe to finish
+// registration work.
+inline constexpr char kRegisterChromeBrowserSuffix[] =
+    "register-chrome-browser-suffix";
+
+// Specify the path to the dev build of chrome.exe the user wants to install
+// (register and install Start menu shortcut for) on the system. This will
+// always result in a user-level install and will make this install default
+// browser.
+inline constexpr char kRegisterDevChrome[] = "register-dev-chrome";
+
+// Switch to allow an extra URL protocol to be registered. This option is used
+// in conjunction with kRegisterChromeBrowser to specify an extra protocol
+// in addition to the standard set of protocols.
+inline constexpr char kRegisterURLProtocol[] = "register-url-protocol";
+
+// Removes Chrome registration from current machine. Requires admin rights.
+inline constexpr char kRemoveChromeRegistration[] =
+    "remove-chrome-registration";
+
+// Renames chrome.exe to old_chrome.exe and renames new_chrome.exe to chrome.exe
+// to support in-use updates. Also deletes opv key.
+inline constexpr char kRenameChromeExe[] = "rename-chrome-exe";
+
+// Rotate the stored device trust signing key.
+inline constexpr char kRotateDeviceTrustKey[] = "rotate-dtkey";
+
+// When we try to relaunch setup.exe as admin on Vista, we append this command
+// line flag so that we try the launch only once.
+inline constexpr char kRunAsAdmin[] = "run-as-admin";
+
+// Combined with --uninstall, signals to setup.exe that this uninstall was
+// triggered by a self-destructing Chrome.
+inline constexpr char kSelfDestruct[] = "self-destruct";
+
+// Show the embedded EULA dialog.
+inline constexpr char kShowEula[] = "show-eula";
+
+// Saves the specified device management token to the registry.
+inline constexpr char kStoreDMToken[] = "store-dmtoken";
+
+// Install Chrome to system wise location. The default is per user install.
+inline constexpr char kSystemLevel[] = "system-level";
+
+// Signals to setup.exe that it should trigger the active setup command.
+inline constexpr char kTriggerActiveSetup[] = "trigger-active-setup";
+
+// If present, setup will uninstall chrome.
+inline constexpr char kUninstall[] = "uninstall";
+
+// Enable verbose logging (info level).
+inline constexpr char kVerboseLogging[] = "verbose-logging";
 
 }  // namespace switches
 
@@ -215,62 +337,86 @@ inline constexpr char kGoogleUpdateIsMachineEnvVar[] = "GoogleUpdateIsMachine";
 
 }  // namespace env_vars
 
-extern const wchar_t kActiveSetupExe[];
-extern const wchar_t kChromeDll[];
-extern const wchar_t kChromeExe[];
-extern const wchar_t kChromeNewExe[];
-extern const wchar_t kChromeOldExe[];
-extern const wchar_t kChromeProxyExe[];
-extern const wchar_t kChromeProxyNewExe[];
-extern const wchar_t kChromeProxyOldExe[];
-extern const wchar_t kCmdAlternateRenameChromeExe[];
-extern const wchar_t kCmdRenameChromeExe[];
-extern const wchar_t kCmdOnOsUpgrade[];
-extern const wchar_t kCmdRotateDeviceTrustKey[];
-extern const wchar_t kCmdStoreDMToken[];
-extern const wchar_t kCmdDeleteDMToken[];
-extern const wchar_t kCmdInstallPEH[];
-extern const wchar_t kEulaSentinelFile[];
-extern const wchar_t kInstallBinaryDir[];
-extern const wchar_t kInstallerDir[];
-extern const wchar_t kInstallTempDir[];
-extern const wchar_t kLnkExt[];
-extern const wchar_t kNotificationHelperExe[];
-extern const wchar_t kRegDowngradeVersion[];
-extern const wchar_t kSetupExe[];
-extern const wchar_t kUninstallArgumentsField[];
-extern const wchar_t kUninstallDisplayNameField[];
-extern const wchar_t kUninstallInstallationDate[];
-extern const wchar_t kUninstallStringField[];
-extern const wchar_t kWerDll[];
+// The Active Setup executable will be an identical copy of setup.exe; this is
+// necessary because Windows' installer detection heuristics (which include
+// things like process name being "setup.exe") will otherwise force elevation
+// for non-admin users when setup.exe is launched. This is mitigated by adding
+// requestedExecutionLevel="asInvoker" to setup.exe's manifest on Vista+, but
+// there is no such manifest entry on Windows XP (which results in
+// crbug.com/40296982).
+// TODO(gab): Rename setup.exe itself altogether and use the same binary for
+// Active Setup.
+inline constexpr wchar_t kActiveSetupExe[] = L"chrmstp.exe";
+inline constexpr wchar_t kChromeDll[] = L"chrome.dll";
+inline constexpr wchar_t kChromeExe[] = L"chrome.exe";
+inline constexpr wchar_t kChromeNewExe[] = L"new_chrome.exe";
+inline constexpr wchar_t kChromeOldExe[] = L"old_chrome.exe";
+inline constexpr wchar_t kChromeProxyExe[] = L"chrome_proxy.exe";
+inline constexpr wchar_t kChromeProxyNewExe[] = L"new_chrome_proxy.exe";
+inline constexpr wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
+inline constexpr wchar_t kCmdAlternateRenameChromeExe[] = L"rename-chrome-exe";
+inline constexpr wchar_t kCmdRenameChromeExe[] = L"cmd";
+inline constexpr wchar_t kCmdOnOsUpgrade[] = L"on-os-upgrade";
+inline constexpr wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
+inline constexpr wchar_t kCmdStoreDMToken[] = L"store-dmtoken";
+inline constexpr wchar_t kCmdDeleteDMToken[] = L"delete-dmtoken";
+inline constexpr wchar_t kCmdInstallPEH[] = L"install-peh";
+
+// LINT.IfChange(kEulaSentinelFile)
+inline constexpr wchar_t kEulaSentinelFile[] = L"EULA Accepted";
+// LINT.ThenChange(//chrome/browser/first_run/first_run_internal_linux.cc:kEulaSentinelFile,
+// //chrome/browser/ui/views/eula_dialog_linux_unittest.cc:kEulaSentinelFile)
+
+inline constexpr wchar_t kInstallBinaryDir[] = L"Application";
+inline constexpr wchar_t kInstallerDir[] = L"Installer";
+inline constexpr wchar_t kInstallTempDir[] = L"Temp";
+inline constexpr wchar_t kLnkExt[] = L".lnk";
+inline constexpr wchar_t kNotificationHelperExe[] = L"notification_helper.exe";
+inline constexpr wchar_t kWerDll[] = L"chrome_wer.dll";
+
+// DowngradeVersion holds the version from which Chrome was downgraded. In case
+// of multiple downgrades (e.g., 75->74->73), it retains the highest version
+// installed prior to any downgrades. DowngradeVersion is deleted on upgrade
+// once Chrome reaches the version from which it was downgraded.
+inline constexpr wchar_t kRegDowngradeVersion[] = L"DowngradeVersion";
+
+inline constexpr wchar_t kSetupExe[] = L"setup.exe";
+inline constexpr wchar_t kUninstallStringField[] = L"UninstallString";
+inline constexpr wchar_t kUninstallArgumentsField[] = L"UninstallArguments";
+inline constexpr wchar_t kUninstallDisplayNameField[] = L"DisplayName";
+inline constexpr wchar_t kUninstallInstallationDate[] = L"installation_date";
 
 // Elevation Service constants.
-extern const base::FilePath::CharType kElevationServiceExe[];
+inline constexpr base::FilePath::CharType kElevationServiceExe[] =
+    FILE_PATH_LITERAL("elevation_service.exe");
 
 // Google Update installer result API.
-extern const wchar_t kInstallerError[];
-extern const wchar_t kInstallerExtraCode1[];
-extern const wchar_t kInstallerResult[];
-extern const wchar_t kInstallerResultUIString[];
-extern const wchar_t kInstallerSuccessLaunchCmdLine[];
+inline constexpr wchar_t kInstallerError[] = L"InstallerError";
+inline constexpr wchar_t kInstallerExtraCode1[] = L"InstallerExtraCode1";
+inline constexpr wchar_t kInstallerResult[] = L"InstallerResult";
+inline constexpr wchar_t kInstallerResultUIString[] =
+    L"InstallerResultUIString";
+inline constexpr wchar_t kInstallerSuccessLaunchCmdLine[] =
+    L"InstallerSuccessLaunchCmdLine";
 
 // Chrome channel display names.
 // NOTE: Canary is not strictly a 'channel', but rather a separate product
 //     installed side-by-side. However, GoogleUpdateSettings::GetChromeChannel
 //     will return "canary" for that product.
-extern const wchar_t kChromeChannelUnknown[];
-extern const wchar_t kChromeChannelCanary[];
-extern const wchar_t kChromeChannelDev[];
-extern const wchar_t kChromeChannelBeta[];
-extern const wchar_t kChromeChannelStable[];
-extern const wchar_t kChromeChannelStableExplicit[];
+inline constexpr wchar_t kChromeChannelUnknown[] = L"unknown";
+inline constexpr wchar_t kChromeChannelCanary[] = L"canary";
+inline constexpr wchar_t kChromeChannelDev[] = L"dev";
+inline constexpr wchar_t kChromeChannelBeta[] = L"beta";
+inline constexpr wchar_t kChromeChannelStable[] = L"";
+inline constexpr wchar_t kChromeChannelStableExplicit[] = L"stable";
 
-extern const size_t kMaxAppModelIdLength;
+inline constexpr size_t kMaxAppModelIdLength = 64U;
+
 enum : size_t { kMaxDMTokenLength = 4096 };
 
 // Name of the allocator (and associated file) for storing histograms to be
 // reported by Chrome during its next upload.
-extern const char kSetupHistogramAllocatorName[];
+inline constexpr char kSetupHistogramAllocatorName[] = "SetupMetrics";
 
 }  // namespace installer
 

@@ -263,10 +263,7 @@ source_set("constants") {
       "util_constants.h",
     ]
 
-    sources += [
-      "google_update_constants.cc",
-      "util_constants.cc",
-    ]
+    sources += [ "google_update_constants.cc" ]
 
     public_deps = [ "//base" ]
   }
