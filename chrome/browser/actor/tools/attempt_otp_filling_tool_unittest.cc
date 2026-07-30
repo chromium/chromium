@@ -624,6 +624,30 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorRetrievingGmailOtp) {
       AttemptOtpFillingToolEvent::kOtpRetrievalError, 1);
 }
 
+// `Invoke()` fails with `kOtpRetrievalTimeout` when the OTP retrieval times
+// out.
+TEST_F(AttemptOtpFillingToolTest, Invoke_TimeoutRetrievingGmailOtp) {
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
+      .WillOnce(Return(CreateValidLoginContext()));
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
+      .WillOnce(RunOnceCallback<4>(base::unexpected(
+          one_time_tokens::OneTimeTokenRetrievalError::kSubscriptionExpired)));
+  PageTarget target(gfx::Point(10, 10));
+  AttemptOtpFillingTool tool = CreateTool({target});
+  SetAutofillGmailOtpFillingEnabled(prefs(), true);
+  SetupSuccessfulTimeOfUseValidation(tool, target);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+
+  ActionResultPtr action_result = future.Take();
+  EXPECT_EQ(mojom::ActionResultCode::kOtpRetrievalTimeout, action_result->code);
+  EXPECT_EQ("OTP retrieval timed out.", action_result->message);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kOtpRetrievalError, 1);
+}
+
 TEST_F(AttemptOtpFillingToolTest,
        Validate_OptInPermissionCallbackNullResponse) {
   EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog)

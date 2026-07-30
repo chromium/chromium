@@ -57,10 +57,60 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
+
+constexpr base::TimeDelta kSubscriptionTimeout = base::Minutes(1);
+
+// TODO(539917647): Move this logic to the affiliations::FakeAffiliationService,
+// the fake should be async and match the prod version and adapt all tests that
+// use this.
+class FakeAsyncAffiliationService
+    : public affiliations::FakeAffiliationService {
+ public:
+  FakeAsyncAffiliationService() = default;
+  ~FakeAsyncAffiliationService() override = default;
+
+  void GetAffiliationsAndBranding(
+      const affiliations::FacetURI& facet_uri,
+      affiliations::AffiliationService::ResultCallback callback) override {
+    saved_callbacks_.push_back(std::move(callback));
+    saved_uris_.push_back(facet_uri);
+  }
+
+  void ResolveFullDomainCheckAsFalse() {
+    // A single domain check internally involves two passes (a fast local DB
+    // check and a slow refetch). We must resolve both to fully fail a single
+    // check.
+    ResolveNextAsFalse();
+    ResolveNextAsFalse();
+  }
+
+  void ResolveNextAsFalse() {
+    CHECK(!saved_callbacks_.empty());
+    std::move(saved_callbacks_.front())
+        .Run(affiliations::AffiliatedFacets(), /*success=*/false);
+    saved_callbacks_.erase(saved_callbacks_.begin());
+    saved_uris_.erase(saved_uris_.begin());
+  }
+
+  void ResolveNextAsTrue(const std::string& url1, const std::string& url2) {
+    CHECK(!saved_callbacks_.empty());
+    std::move(saved_callbacks_.front())
+        .Run({affiliations::Facet{
+                  affiliations::FacetURI::FromPotentiallyInvalidSpec(url1)},
+              affiliations::Facet{
+                  affiliations::FacetURI::FromPotentiallyInvalidSpec(url2)}},
+             /*success=*/true);
+    saved_callbacks_.erase(saved_callbacks_.begin());
+    saved_uris_.erase(saved_uris_.begin());
+  }
+
+  std::vector<affiliations::AffiliationService::ResultCallback>
+      saved_callbacks_;
+  std::vector<affiliations::FacetURI> saved_uris_;
+};
 
 using ::one_time_tokens::OneTimeTokenRetrievalError;
-
-namespace {
 
 using ::affiliations::AffiliatedFacets;
 using ::affiliations::Facet;
@@ -382,6 +432,29 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_NoTokens) {
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kError, 1);
+}
+
+// Tests that `RetrieveOtp` correctly yields a timeout error if the underlying
+// subscription expires.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
+  NavigateAndCommit(GURL("https://example.com"));
+  otp_service().SetCachedTokens({});
+
+  base::test::TestFuture<
+      base::expected<std::string, OneTimeTokenRetrievalError>>
+      future;
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        future.GetCallback());
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kSubscriptionExpired);
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
 }
 
 // Tests that `RetrieveOtp` fails gracefully when the tab is null.
@@ -1121,6 +1194,162 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   EXPECT_EQ(future.Get().value(), kPslOtp);
 }
 
-}  // namespace
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_TimeoutWhileCheckPending_FiresOnlyAfterCheckCompletes) {
+  base::test::TestFuture<
+      base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>>
+      future;
+  NavigateAndCommit(GURL("https://example.com"));
+  // Reset the `service_` created in `SetUp()` before overriding the factory.
+  // Otherwise, its internal pointer to the initial `FakeAffiliationService`
+  // will dangle when `SetTestingFactoryAndUse` overwrites and destroys it.
+  service_.reset();
+  auto* async_affiliation_service = static_cast<FakeAsyncAffiliationService*>(
+      AffiliationServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<FakeAsyncAffiliationService>();
+              })));
+  service_ = std::make_unique<ActorOneTimeTokenFillingServiceImpl>(profile());
 
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        future.GetCallback());
+  otp_service().NotifySubscribers(
+      one_time_tokens::OneTimeTokenSource::kGmail,
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "111111", base::TimeTicks::Now(),
+                                    "sender@different.com"));
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+  EXPECT_FALSE(future.IsReady());
+  // Resolve the hanging domain check as a no-match.
+  async_affiliation_service->ResolveFullDomainCheckAsFalse();
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kSubscriptionExpired);
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_MultiplePendingChecks_TimeoutFiresOnlyAfterAllComplete) {
+  base::test::TestFuture<
+      base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>>
+      future;
+  NavigateAndCommit(GURL("https://example.com"));
+  // Reset the `service_` created in `SetUp()` before overriding the factory.
+  // Otherwise, its internal pointer to the initial `FakeAffiliationService`
+  // will dangle when `SetTestingFactoryAndUse` overwrites and destroys it.
+  service_.reset();
+  auto* async_affiliation_service = static_cast<FakeAsyncAffiliationService*>(
+      AffiliationServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<FakeAsyncAffiliationService>();
+              })));
+  service_ = std::make_unique<ActorOneTimeTokenFillingServiceImpl>(profile());
+
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        future.GetCallback());
+  otp_service().NotifySubscribers(
+      one_time_tokens::OneTimeTokenSource::kGmail,
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "111111", base::TimeTicks::Now(),
+                                    "sender@different.com"));
+  otp_service().NotifySubscribers(
+      one_time_tokens::OneTimeTokenSource::kGmail,
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "222222", base::TimeTicks::Now(),
+                                    "sender2@different.com"));
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+  EXPECT_FALSE(future.IsReady());
+  // Resolve the domain verifications for both pending OTPs as a no-match.
+  async_affiliation_service->ResolveFullDomainCheckAsFalse();
+  EXPECT_FALSE(future.IsReady());
+  async_affiliation_service->ResolveFullDomainCheckAsFalse();
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().error(),
+            OneTimeTokenRetrievalError::kSubscriptionExpired);
+}
+
+TEST_F(
+    ActorOneTimeTokenFillingServiceImplTest,
+    RetrieveOtp_CachedTokenCheckPendingDuringTimeout_ResolvesMatchCorrectly) {
+  base::test::TestFuture<
+      base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>>
+      future;
+  std::vector<one_time_tokens::OneTimeToken> items;
+  items.emplace_back(one_time_tokens::OneTimeTokenType::kGmail, "111111",
+                     base::TimeTicks::Now(), "sender@different.com");
+  otp_service().SetCachedTokens(items);
+  NavigateAndCommit(GURL("https://example.com"));
+  // Reset the `service_` created in `SetUp()` before overriding the factory.
+  // Otherwise, its internal pointer to the initial `FakeAffiliationService`
+  // will dangle when `SetTestingFactoryAndUse` overwrites and destroys it.
+  service_.reset();
+  auto* async_affiliation_service = static_cast<FakeAsyncAffiliationService*>(
+      AffiliationServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<FakeAsyncAffiliationService>();
+              })));
+  service_ = std::make_unique<ActorOneTimeTokenFillingServiceImpl>(profile());
+
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        future.GetCallback());
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+  EXPECT_FALSE(future.IsReady());
+  async_affiliation_service->ResolveNextAsTrue("https://different.com",
+                                               "https://example.com");
+
+  EXPECT_TRUE(future.IsReady());
+  // The match succeeded despite the timeout, we expect to get the token!
+  EXPECT_EQ(future.Get().value(), "111111");
+}
+
+TEST_F(ActorOneTimeTokenFillingServiceImplTest,
+       RetrieveOtp_TimeoutWhileCheckPending_ResolvesMatchCorrectly) {
+  base::test::TestFuture<
+      base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>>
+      future;
+  NavigateAndCommit(GURL("https://example.com"));
+  // Reset the `service_` created in `SetUp()` before overriding the factory.
+  // Otherwise, its internal pointer to the initial `FakeAffiliationService`
+  // will dangle when `SetTestingFactoryAndUse` overwrites and destroys it.
+  service_.reset();
+  auto* async_affiliation_service = static_cast<FakeAsyncAffiliationService*>(
+      AffiliationServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<FakeAsyncAffiliationService>();
+              })));
+  service_ = std::make_unique<ActorOneTimeTokenFillingServiceImpl>(profile());
+
+  service().RetrieveOtp(tab().GetHandle(), main_rfh_origin(),
+                        /*trigger_field_ids=*/{}, /*is_login_flow=*/false,
+                        future.GetCallback());
+  otp_service().NotifySubscribers(
+      one_time_tokens::OneTimeTokenSource::kGmail,
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "111111", base::TimeTicks::Now(),
+                                    "sender@different.com"));
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+  EXPECT_FALSE(future.IsReady());
+  // Pass success = true on the first resolution.
+  async_affiliation_service->ResolveNextAsTrue("https://different.com",
+                                               "https://example.com");
+
+  EXPECT_TRUE(future.IsReady());
+  // The match succeeded after the timeout fired, and it was picked up
+  // successfully.
+  EXPECT_EQ(future.Get().value(), "111111");
+}
+
+}  // namespace
 }  // namespace autofill

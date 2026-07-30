@@ -37,6 +37,7 @@ found in the LICENSE file.
   <int value="6" label="MockOtp"/>
   <int value="7" label="(Obsolete) NoCallback"/>
   <int value="8" label="SuccessReceivedMatchFound"/>
+  <int value="9" label="RetrievalTimeout"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->

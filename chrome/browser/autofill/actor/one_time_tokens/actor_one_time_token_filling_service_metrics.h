@@ -25,7 +25,8 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
   kMockOtp = 6,
   // kNoCallback = 7,  // Obsolete.
   kSuccessReceivedMatchFound = 8,
-  kMaxValue = kSuccessReceivedMatchFound,
+  kRetrievalTimeout = 9,
+  kMaxValue = kRetrievalTimeout,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceRetrieveOtpEvent)
 

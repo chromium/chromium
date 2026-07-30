@@ -36,7 +36,8 @@ enum class OneTimeTokenRetrievalError {
   kGmailOtpBackendOneTimeTokenExpired = 21,
   kGmailOtpBackendOtpAttributeNotFound = 22,
   kGmailOtpBackendServerError = 23,
-  kMaxValue = kGmailOtpBackendServerError,
+  kSubscriptionExpired = 24,
+  kMaxValue = kSubscriptionExpired,
 };
 
 }  // namespace one_time_tokens

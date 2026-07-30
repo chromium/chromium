@@ -433,6 +433,10 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
         code = mojom::ActionResultCode::kOtpServiceUnavailable;
         message = "OTP filling service is not available.";
         break;
+      case kSubscriptionExpired:
+        code = mojom::ActionResultCode::kOtpRetrievalTimeout;
+        message = "OTP retrieval timed out.";
+        break;
       default:
         break;
     }

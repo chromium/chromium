@@ -58,11 +58,12 @@
 
 namespace autofill {
 
+using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
+
 using ::one_time_tokens::OneTimeTokenRetrievalError;
 
 namespace {
 
-using one_time_tokens::OneTimeTokenRetrievalError;
 
 std::string ExtractEmailDomain(std::string_view email) {
   std::vector<std::string_view> parts = base::SplitStringPiece(
@@ -172,7 +173,6 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     bool is_login_flow,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
-  using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
   RecordActorOneTimeTokenFillingServiceRetrieveOtp(kStart);
   otp_frame_origin_ = otp_frame_origin;
   is_login_flow_ = is_login_flow;
@@ -240,6 +240,9 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
 
   retrieve_otp_weak_ptr_factory_.InvalidateWeakPtrs();
 
+  pending_sender_domain_checks_ = 0;
+  subscription_timed_out_ = false;
+
   retrieve_otp_callback_ = std::move(callback);
 
   // Note: OneTimeTokenService caches tokens for 3 minutes. It does not clear
@@ -283,12 +286,15 @@ void ActorOneTimeTokenFillingServiceImpl::SubscribeForOneTimeToken() {
       base::BindRepeating(
           &ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived,
           retrieve_otp_weak_ptr_factory_.GetWeakPtr()),
-      /*expiration_callback=*/base::DoNothing());
+      base::BindOnce(
+          &ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenTimeout,
+          retrieve_otp_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorOneTimeTokenFillingServiceImpl::CheckSenderDomainMatchesFrameToFill(
     std::string_view sender_address,
     base::OnceCallback<void(std::optional<affiliations::MatchType>)> callback) {
+  pending_sender_domain_checks_++;
   std::string sender_domain = ExtractEmailDomain(sender_address);
   domain_relation_checker_->Check(
       otp_frame_origin_.GetTupleOrPrecursorTupleIfOpaque(),
@@ -339,10 +345,14 @@ void ActorOneTimeTokenFillingServiceImpl::OnCachedTokenMatchChecked(
     std::vector<one_time_tokens::OneTimeToken> cached_tokens,
     size_t index,
     std::optional<affiliations::MatchType> match_type) {
-  using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
   // If a racing check found a match already it would have invalidated
   // all weak pointers for other checks so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
+
+  // Decrement early to ensure the counter stays reliably accurate regardless of
+  // whether the match succeeds or fails. If a match is found, weak pointers are
+  // synchronously invalidated below, preventing any artificial timeout races.
+  pending_sender_domain_checks_--;
 
   if (IsMatchTypeAllowed(match_type)) {
     subscription_ = {};
@@ -353,13 +363,13 @@ void ActorOneTimeTokenFillingServiceImpl::OnCachedTokenMatchChecked(
   }
 
   CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
+  MaybeFailWithTimeoutError();
 }
 
 void ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived(
     one_time_tokens::OneTimeTokenSource source,
     base::expected<one_time_tokens::OneTimeToken, OneTimeTokenRetrievalError>
         result) {
-  using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
   // If a racing check found a match already it would have invalidated
   // the weak pointer for the on-token-received callback and this wouldn't be
   // called.
@@ -383,10 +393,14 @@ void ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived(
 void ActorOneTimeTokenFillingServiceImpl::OnReceivedTokenMatchChecked(
     one_time_tokens::OneTimeToken token,
     std::optional<affiliations::MatchType> match_type) {
-  using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
   // If a previous check found a match already it would have invalidated
   // the weak pointer for this callback, so this wouldn't be called.
   CHECK(retrieve_otp_callback_);
+
+  // Decrement early to ensure the counter stays reliably accurate regardless of
+  // whether the match succeeds or fails. If a match is found, weak pointers are
+  // synchronously invalidated below, preventing any artificial timeout races.
+  pending_sender_domain_checks_--;
 
   if (IsMatchTypeAllowed(match_type)) {
     subscription_ = {};
@@ -394,6 +408,28 @@ void ActorOneTimeTokenFillingServiceImpl::OnReceivedTokenMatchChecked(
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(
         kSuccessReceivedMatchFound);
     std::move(retrieve_otp_callback_).Run(token.value());
+    return;
+  }
+
+  MaybeFailWithTimeoutError();
+}
+
+void ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenTimeout() {
+  subscription_timed_out_ = true;
+  MaybeFailWithTimeoutError();
+}
+
+// TODO(b:526619811): This returns an error from `OneTimeTokenRetrievalError`,
+// this will be fixed soon. We are planning on moving the whole retrieval out of
+// this class.
+void ActorOneTimeTokenFillingServiceImpl::MaybeFailWithTimeoutError() {
+  if (subscription_timed_out_ && pending_sender_domain_checks_ == 0) {
+    CHECK(retrieve_otp_callback_);
+    retrieve_otp_weak_ptr_factory_.InvalidateWeakPtrs();
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(kRetrievalTimeout);
+    std::move(retrieve_otp_callback_)
+        .Run(
+            base::unexpected(OneTimeTokenRetrievalError::kSubscriptionExpired));
   }
 }
 

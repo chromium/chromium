@@ -101,6 +101,8 @@ class ActorOneTimeTokenFillingServiceImpl
   void OnReceivedTokenMatchChecked(
       one_time_tokens::OneTimeToken token,
       std::optional<affiliations::MatchType> match_type);
+  void OnOneTimeTokenTimeout();
+  void MaybeFailWithTimeoutError();
 
   raw_ptr<Profile> profile_ = nullptr;
   std::optional<ActorLoginContext> active_login_context_;
@@ -108,6 +110,8 @@ class ActorOneTimeTokenFillingServiceImpl
   bool is_login_flow_ = false;
   std::unique_ptr<affiliations::DomainRelationChecker> domain_relation_checker_;
   one_time_tokens::ExpiringSubscription subscription_;
+  size_t pending_sender_domain_checks_ = 0;
+  bool subscription_timed_out_ = false;
   base::OnceCallback<void(
       base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>)>
       retrieve_otp_callback_;
