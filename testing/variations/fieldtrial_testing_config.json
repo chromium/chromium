@@ -17977,6 +17977,21 @@
             ]
         }
     ],
+    "OmniboxSearchPrefetchOnEnterKeyDown": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxSearchPrefetchOnEnterKeyDown"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxSiteSearchAndroid": [
         {
             "platforms": [
