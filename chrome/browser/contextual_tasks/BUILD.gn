@@ -206,6 +206,7 @@ source_set("ui") {
     "contextual_tasks_page_handler.h",
     "contextual_tasks_side_panel_coordinator.h",
     "contextual_tasks_ui.h",
+    "contextual_tasks_ui_base.h",
     "contextual_tasks_ui_service.h",
     "contextual_tasks_ui_service_factory.h",
     "contextual_tasks_window_tracker.h",
@@ -316,6 +317,7 @@ source_set("ui_impl") {
     "contextual_tasks_page_handler.cc",
     "contextual_tasks_side_panel_coordinator.cc",
     "contextual_tasks_ui.cc",
+    "contextual_tasks_ui_base.cc",
     "contextual_tasks_ui_service.cc",
     "contextual_tasks_ui_service_factory.cc",
     "contextual_tasks_url_loader_factory_interceptor.cc",
@@ -470,6 +472,7 @@ mojom("mojo_bindings") {
   sources = [
     "contextual_tasks.mojom",
     "contextual_tasks_internals.mojom",
+    "contextual_tasks_toolbar.mojom",
     "contextual_tasks_types.mojom",
   ]
   webui_module_path = "/"

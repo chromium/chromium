@@ -24,6 +24,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "chrome/common/webui_url_constants.h"
@@ -84,8 +85,8 @@ class ContextualTasksPageHandler;
 class Profile;
 
 class ContextualTasksUI
-    : public contextual_tasks::ContextualTasksUIInterface,
-      public ui::MojoWebUIController,
+    : public contextual_tasks::ContextualTasksUIBase,
+      public contextual_tasks::ContextualTasksUIInterface,
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       public guest_view::SlimWebViewPageHandlerFactory,
 #endif
@@ -97,6 +98,8 @@ class ContextualTasksUI
       public signin::IdentityManager::Observer,
       public contextual_tasks::ContextualTasksService::Observer {
  public:
+  using contextual_tasks::ContextualTasksUIBase::BindInterface;
+  using contextual_tasks::ContextualTasksUIBase::CreatePageHandler;
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSmartTabSharingMenuItemElementId);
 
   friend class ContextualTasksUIBrowserTest;

@@ -1398,4 +1398,42 @@ TEST_F(ContextualTasksUiTest, OnRestoredTabsFetched) {
   controller.SetComposeboxHandler(nullptr);
 }
 
+TEST_F(ContextualTasksUiTest, MultipleBindInterfaceToolbarPageHandlerFactory) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  for (int i = 0; i < 50; ++i) {
+    mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory> remote;
+    controller.BindInterface(remote.BindNewPipeAndPassReceiver());
+    EXPECT_TRUE(remote.is_bound());
+  }
+}
+
+TEST_F(ContextualTasksUiTest, CreateToolbarPageHandlerRebindTest) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  // First call to CreatePageHandler
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> page_remote1;
+  auto page_receiver1 = page_remote1.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::PageHandler>
+      handler_remote1;
+  auto handler_receiver1 = handler_remote1.InitWithNewPipeAndPassReceiver();
+
+  controller.CreatePageHandler(std::move(page_remote1),
+                               std::move(handler_receiver1));
+
+  // Second call to CreatePageHandler (simulating refresh/rebind)
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> page_remote2;
+  auto page_receiver2 = page_remote2.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::PageHandler>
+      handler_remote2;
+  auto handler_receiver2 = handler_remote2.InitWithNewPipeAndPassReceiver();
+
+  controller.CreatePageHandler(std::move(page_remote2),
+                               std::move(handler_receiver2));
+}
+
 }  // namespace contextual_tasks
