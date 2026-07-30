@@ -99,9 +99,11 @@ enum class MediaLogProperty {
   // A playback quality metric calculated by VideoPlaybackRoughnessReporter
   kVideoPlaybackRoughness,
 
-  // A playback quality metric that tries to account for large pauses and/or
-  // discontinuities during playback.
-  kVideoPlaybackFreezing,
+  // A playback quality metric measuring the ratio of excess on-screen duration
+  // to intended frame duration (e.g., 0.0 is normal display time / no freeze,
+  // 1.0 means a frame was displayed twice as long as intended / 1 dropped
+  // frame).
+  kVideoPlaybackFreezingRatio,
 
   // Triggered when buffered ranges are changed.
   kHlsBufferedRanges,
@@ -132,7 +134,7 @@ MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kAudioTracks, std::vector<AudioDecoderConfig>);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoTracks, std::vector<VideoDecoderConfig>);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFramerate, double);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoPlaybackRoughness, double);
-MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoPlaybackFreezing, base::TimeDelta);
+MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoPlaybackFreezingRatio, double);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kHlsBufferedRanges, Ranges<base::TimeDelta>);
 
 // Convert the enum to a string (used for the front-end enum matching).

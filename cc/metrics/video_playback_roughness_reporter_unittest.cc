@@ -135,7 +135,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, BestCase24fps) {
         ASSERT_EQ(measurement.refresh_rate_hz, 60);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 5.9, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.2, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -153,7 +153,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, BestCase24fpsOn120Hz) {
         ASSERT_EQ(measurement.refresh_rate_hz, 120);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 0.0, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.0, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -170,7 +170,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, BestCase30fps) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 0.0, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.0, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -193,7 +193,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, UserStudyOkay) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 4.3, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.5, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -216,7 +216,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, UserStudyBad) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 7.46, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.5, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -234,7 +234,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, Glitchy24fps) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 14.8, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.6, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -251,7 +251,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, BestCase60fps) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 0.0, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.0, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -268,7 +268,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, BestCase50fps) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 8.1, 01);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.67, 0.05);
         call_count++;
       });
   int frames_to_run =
@@ -294,7 +294,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, PredictableRoughnessValue) {
       [&](const VideoPlaybackRoughnessReporter::Measurement& measurement) {
         ASSERT_EQ(frames_in_window, measurement.frames);
         ASSERT_NEAR(measurement.roughness, intended_roughness, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.0, 0.1);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.17, 0.05);
         call_count++;
       };
   SetReportingCallabck(callback);
@@ -529,7 +529,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, BatchPresentation) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 5.9, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0, 0.01);
+        ASSERT_NEAR(measurement.freezing_ratio, 0.2, 0.05);
         call_count++;
       });
   fps = 24;
@@ -547,7 +547,7 @@ TEST_F(VideoPlaybackRoughnessReporterTest, Freezing30fps) {
         ASSERT_EQ(measurement.frames, fps);
         ASSERT_NEAR(measurement.duration.InMillisecondsF(), 1000.0, 1.0);
         ASSERT_NEAR(measurement.roughness, 0.0, 0.1);
-        ASSERT_NEAR(measurement.freezing.InSecondsF(), 0.25, 0.05);
+        ASSERT_NEAR(measurement.freezing_ratio, 9.0, 0.1);
         call_count++;
       });
   int frames_to_run =

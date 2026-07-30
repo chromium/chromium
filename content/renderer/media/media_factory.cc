@@ -203,8 +203,8 @@ void LogRoughness(
       std::round(measurement.frames / measurement.duration.InSecondsF());
   media_log->SetProperty<media::MediaLogProperty::kVideoPlaybackRoughness>(
       measurement.roughness);
-  media_log->SetProperty<media::MediaLogProperty::kVideoPlaybackFreezing>(
-      measurement.freezing);
+  media_log->SetProperty<media::MediaLogProperty::kVideoPlaybackFreezingRatio>(
+      measurement.freezing_ratio);
   media_log->SetProperty<media::MediaLogProperty::kFramerate>(fps);
 
   // TODO(eugene@chromium.org) All of this needs to be moved away from

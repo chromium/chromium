@@ -53,12 +53,11 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
     // |frame_size| - size of the video frames in the window
     gfx::Size frame_size;
 
-    // |freezing| maximum amount of time that any VideoFrame in measurement
-    // interval was on-screen beyond the amount of time it should have been.
-    //
-    // TODO(liberato): Should this be expressed in terms of the playback rate?
-    // As in, "twice as long as it should have been"?
-    base::TimeDelta freezing;
+    // |freezing_ratio| maximum ratio of excess on-screen duration to intended
+    // duration for any VideoFrame in the measurement interval (e.g., 0.0 is
+    // normal display time / no freeze, 1.0 means a frame froze for 1 extra
+    // frame duration beyond its intended time).
+    double freezing_ratio = 0.0;
 
     // |refresh_rate_hz| - display refresh rate, usually 60Hz
     int refresh_rate_hz = 0;
@@ -164,9 +163,9 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
   int windows_seen_ = 0;
   int frames_window_size_ = kMinWindowSize;
 
-  // Worst case difference between a frame's intended duration and
-  // actual duration, calculated for all frames in the reporting interval.
-  base::TimeDelta max_single_frame_error_;
+  // Worst case ratio between a frame's actual duration and intended duration,
+  // calculated for all frames in the reporting interval.
+  double max_freezing_ratio_ = 0.0;
 
   bool is_media_stream_ = false;
 };
