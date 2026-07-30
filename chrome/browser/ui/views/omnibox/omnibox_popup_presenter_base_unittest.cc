@@ -286,14 +286,9 @@ TEST_F(OmniboxPopupPresenterBaseTest,
       "TestPrefix.DeferredShowVisualStateReadyFromTimeout", true, 1);
   histogram_tester.ExpectBucketCount(
       "TestPrefix.DeferredShowVisualStateReadyFromTimeout", false, 0);
-  // Assert that we did not log an erroneous early exit metric for the
-  // telemetry. The `!from_fallback` gate protects the telemetry from the timer
-  // race.
-  histogram_tester.ExpectTotalCount(
-      "TestPrefix.ResultToContentReadyEarlyExitReason", 0);
-  // Assert that we did not log the telemetry latency.
+  // Assert that we logged the telemetry latency (as overflow).
   histogram_tester.ExpectTotalCount("TestPrefix.ResultToContentReadyPerShow",
-                                    0);
+                                    1);
 
   // 2) Later the real graphics pipeline finally finishes.
   CallOnVisualStateReady(deferred_presenter.get(), request_time, ready_time,
@@ -305,9 +300,7 @@ TEST_F(OmniboxPopupPresenterBaseTest,
       "TestPrefix.DeferredShowVisualStateReadyFromTimeout", true, 1);
   histogram_tester.ExpectBucketCount(
       "TestPrefix.DeferredShowVisualStateReadyFromTimeout", false, 0);
-  // Assert that we successfully logged the true telemetry latency.
-  histogram_tester.ExpectTotalCount(
-      "TestPrefix.ResultToContentReadyEarlyExitReason", 0);
+  // Assert that we did not log duplicate telemetry latency.
   histogram_tester.ExpectTotalCount("TestPrefix.ResultToContentReadyPerShow",
                                     1);
 }

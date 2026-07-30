@@ -198,8 +198,7 @@ class OmniboxPopupPresenterBase
 
   // Logs the ResultToContentReady metric. This is called synchronously when the
   // visual state is ready.
-  virtual void LogResultToContentReadyMetric(base::TimeTicks result_ready_time,
-                                             bool success);
+  virtual void LogResultToContentReadyMetric(base::TimeTicks result_ready_time);
 
   LocationBar* location_bar() const { return location_bar_.get(); }
 
