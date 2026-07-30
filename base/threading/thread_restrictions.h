@@ -160,7 +160,7 @@ StartupProfilePathInfo GetStartupProfilePath(
     bool ignore_profile_picker);
 
 #if BUILDFLAG(IS_IOS)
-class BrowserStateDirectoryBuilder;
+class ProfileIOSDirectoryBuilder;
 #endif
 
 Profile* GetLastProfileMac();
@@ -675,7 +675,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class gfx::WUCBackdrop;
 #endif
 #if BUILDFLAG(IS_IOS)
-  friend class ::BrowserStateDirectoryBuilder;
+  friend class ::ProfileIOSDirectoryBuilder;
 #endif
 
   // Sorted by function name (with namespace), ignoring the return type.
