@@ -112,6 +112,8 @@ class DownloadBubbleRowView : public views::View,
   bool IsQuickActionButtonVisibleForTesting(DownloadCommands::Command command);
   views::ImageButton* GetQuickActionButtonForTesting(
       DownloadCommands::Command command);
+  views::MdTextButton* GetMainPageButtonForTesting(
+      DownloadCommands::Command command);
   void SetInputProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector> input_protector);
 

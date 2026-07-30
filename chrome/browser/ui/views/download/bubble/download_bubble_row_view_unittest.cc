@@ -26,6 +26,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 
 namespace {
@@ -239,6 +240,30 @@ TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
   row_view()
       ->GetQuickActionButtonForTesting(DownloadCommands::OPEN_WHEN_COMPLETE)
       ->OnMousePressed(event);
+}
+
+// Test that all button controls on the row are disabled while the row is
+// occluded by a picture-in-picture window, and re-enabled when it is not.
+TEST_F(DownloadBubbleRowViewTest, OcclusionDisablesButtons) {
+  views::Button* transparent_button = row_view()->transparent_button();
+  views::ImageButton* quick_action =
+      row_view()->GetQuickActionButtonForTesting(DownloadCommands::CANCEL);
+  views::MdTextButton* main_page_button =
+      row_view()->GetMainPageButtonForTesting(DownloadCommands::KEEP);
+
+  ASSERT_TRUE(transparent_button->GetEnabled());
+  ASSERT_TRUE(quick_action->GetEnabled());
+  ASSERT_TRUE(main_page_button->GetEnabled());
+
+  row_view()->OnOcclusionStateChanged(/*occluded=*/true);
+  EXPECT_FALSE(transparent_button->GetEnabled());
+  EXPECT_FALSE(quick_action->GetEnabled());
+  EXPECT_FALSE(main_page_button->GetEnabled());
+
+  row_view()->OnOcclusionStateChanged(/*occluded=*/false);
+  EXPECT_TRUE(transparent_button->GetEnabled());
+  EXPECT_TRUE(quick_action->GetEnabled());
+  EXPECT_TRUE(main_page_button->GetEnabled());
 }
 
 }  // namespace
