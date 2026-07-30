@@ -731,6 +731,16 @@ TEST_F(ContextualTasksUiTest, AreUrlsEqual) {
       GURL("https://google.com/search?udm=50&q=test&extra=1")));
 }
 
+TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
+  base::DictValue load_time_data =
+      ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
+
+  std::optional<bool> is_system_voice_search_enabled =
+      load_time_data.FindBool("isSystemVoiceSearchEnabled");
+  ASSERT_TRUE(is_system_voice_search_enabled.has_value());
+  EXPECT_EQ(is_system_voice_search_enabled.value(), !!BUILDFLAG(IS_ANDROID));
+}
+
 TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
   struct TestCase {
     GURL url;
