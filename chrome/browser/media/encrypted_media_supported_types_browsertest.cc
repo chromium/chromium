@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -2084,5 +2085,29 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyTest,
   EXPECT_SUCCESS(
       IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
                                  kPlayReadyHardwareSecureRobustness));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesPlayReadyTest,
+                       PlayReadyUMA) {
+  SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE();
+
+  base::HistogramTester histogram_tester;
+
+  // PlayReady hardware secure key system request should log UMA correctly.
+  EXPECT_SUCCESS(IsVideoRobustnessSupported(
+      kPlayReadyKeySystemRecommendationHWSecure, nullptr));
+
+  // PlayReady default key system with hardware secure robustness should also
+  // log UMA correctly under the same base key system name.
+  EXPECT_SUCCESS(
+      IsVideoRobustnessSupported(kPlayReadyKeySystemRecommendationDefault,
+                                 kPlayReadyHardwareSecureRobustness));
+
+  histogram_tester.ExpectBucketCount(
+      "Media.EME.RequestMediaKeySystemAccess.PlayReady",
+      /*KEY_SYSTEM_REQUESTED*/ 0, 2);
+  histogram_tester.ExpectBucketCount(
+      "Media.EME.RequestMediaKeySystemAccess.PlayReady",
+      /*KEY_SYSTEM_SUPPORTED*/ 1, 2);
 }
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)

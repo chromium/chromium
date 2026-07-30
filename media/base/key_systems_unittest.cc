@@ -833,6 +833,20 @@ TEST_F(KeySystemsTest, KeySystemNameForUMA) {
             GetKeySystemNameForUMA(kExternalClearKeyKeySystem, false));
   EXPECT_EQ("Unknown",
             GetKeySystemNameForUMA(kExternalClearKeyKeySystem, true));
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ("PlayReady",
+            GetKeySystemNameForUMA("com.microsoft.playready.recommendation"));
+  EXPECT_EQ("PlayReady", GetKeySystemNameForUMA(
+                             "com.microsoft.playready.recommendation.3000"));
+  EXPECT_EQ("PlayReady.HardwareSecure",
+            GetKeySystemNameForUMA("com.microsoft.playready.recommendation",
+                                   /*use_hw_secure_codecs=*/true));
+  EXPECT_EQ(
+      "PlayReady.HardwareSecure",
+      GetKeySystemNameForUMA("com.microsoft.playready.recommendation.3000",
+                             /*use_hw_secure_codecs=*/true));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST_F(KeySystemsTest, KeySystemsUpdate) {

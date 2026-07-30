@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "media/base/key_system_names.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -41,7 +42,8 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
   // reporting. Mentioned key systems are not necessarily supported by
   // the current platform.
 
-  if (key_system == kWidevineKeySystem) {
+  if (key_system == kWidevineKeySystem ||
+      IsSubKeySystemOf(key_system, kWidevineKeySystem)) {
     std::string key_system_name = kWidevineKeySystemNameForUMA;
     if (use_hw_secure_codecs.has_value()) {
       key_system_name += ".";
@@ -52,7 +54,8 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (key_system == kPlayReadyKeySystemBase) {
+  if (key_system == kPlayReadyKeySystemBase ||
+      IsSubKeySystemOf(key_system, kPlayReadyKeySystemBase)) {
     std::string key_system_name = kPlayReadyKeySystemNameForUMA;
     if (use_hw_secure_codecs.has_value()) {
       key_system_name += ".";
@@ -77,12 +80,14 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
 // is not needed here because we can report CdmConfig fields in UKM directly.
 MEDIA_EXPORT int GetKeySystemIntForUKM(const std::string& key_system) {
 #if BUILDFLAG(IS_WIN)
-  if (key_system == kPlayReadyKeySystemBase) {
+  if (key_system == kPlayReadyKeySystemBase ||
+      IsSubKeySystemOf(key_system, kPlayReadyKeySystemBase)) {
     return KeySystemForUkm::kPlayReadyKeySystemForUkm;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (key_system == kWidevineKeySystem) {
+  if (key_system == kWidevineKeySystem ||
+      IsSubKeySystemOf(key_system, kWidevineKeySystem)) {
     return KeySystemForUkm::kWidevineKeySystemForUkm;
   }
 
