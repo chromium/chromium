@@ -4,10 +4,10 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/isolated_web_apps/types/isolated_web_app_policy_constants.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app::test {

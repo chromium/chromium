@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/values.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -85,6 +86,11 @@ class IsolatedWebAppExternalInstallOptions final {
   std::optional<IwaVersion> pinned_version_;
 };
 
+// Parses valid entries from the IsolatedWebAppInstallForceList policy in their
+// original order. Invalid entries are omitted and logged.
+std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaInstallForceList(
+    const base::ListValue& policy_entries);
+
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_TYPES_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_

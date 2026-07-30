@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -43,9 +42,6 @@ class IsolatedWebAppPolicyManager {
   // Fired every time policy is processed and does not need reprocessing.
   static void SetOnPolicyFullyProcessedCallbackForTesting(
       base::RepeatingClosure callback);
-
-  static std::vector<IsolatedWebAppExternalInstallOptions>
-  GetIwaInstallForceList(const Profile& profile);
 
   explicit IsolatedWebAppPolicyManager(Profile* profile);
 

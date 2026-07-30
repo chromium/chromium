@@ -20,8 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -32,6 +30,7 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/types/isolated_web_app_external_install_options.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 
 namespace web_app {
@@ -87,7 +86,8 @@ std::vector<web_package::SignedWebBundleId> GetPolicyInstalledIwasForKiosk() {
 std::vector<web_package::SignedWebBundleId>
 GetPolicyInstalledIwasForManagedGuestSession(const Profile& profile) {
   std::vector<IsolatedWebAppExternalInstallOptions> iwas_in_policy =
-      IsolatedWebAppPolicyManager::GetIwaInstallForceList(profile);
+      ParseIwaInstallForceList(
+          profile.GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList));
   return base::ToVector(iwas_in_policy,
                         &IsolatedWebAppExternalInstallOptions::web_bundle_id);
 }

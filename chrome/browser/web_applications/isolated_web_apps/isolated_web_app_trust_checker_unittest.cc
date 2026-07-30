@@ -36,9 +36,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/webapps/isolated_web_apps/types/isolated_web_app_policy_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {

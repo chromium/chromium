@@ -8,7 +8,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 #include <variant>
 
@@ -30,13 +29,11 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -50,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+#include "components/webapps/isolated_web_apps/types/isolated_web_app_external_install_options.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -212,27 +210,6 @@ void IsolatedWebAppPolicyManager::RemoveDelayForBundleCleanupForTesting() {
   g_run_bundle_cleanup_without_delay_for_testing = true;
 }
 
-// static
-std::vector<IsolatedWebAppExternalInstallOptions>
-IsolatedWebAppPolicyManager::GetIwaInstallForceList(const Profile& profile) {
-  std::vector<IsolatedWebAppExternalInstallOptions> iwas_in_policy;
-
-  for (const auto& policy_entry :
-       profile.GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList)) {
-    const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
-        options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-            policy_entry);
-    if (options.has_value()) {
-      iwas_in_policy.push_back(options.value());
-    } else {
-      LOG(ERROR) << "Could not interpret IWA force-install policy: "
-                 << options.error();
-    }
-  }
-
-  return iwas_in_policy;
-}
-
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
     : profile_(profile),
       install_retry_backoff_entry_(&kInstallRetryBackoffPolicy) {}
@@ -355,7 +332,8 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(AllAppsLock& lock,
   CHECK(install_tasks_.empty());
 
   std::vector<IsolatedWebAppExternalInstallOptions> apps_in_policy =
-      GetIwaInstallForceList(*profile_);
+      ParseIwaInstallForceList(profile_->GetPrefs()->GetList(
+          prefs::kIsolatedWebAppInstallForceList));
   debug_info.Set("apps_in_policy",
                  base::ToValueList(apps_in_policy, [](const auto& options) {
                    return base::ToString(options.web_bundle_id());
