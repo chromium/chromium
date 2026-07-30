@@ -428,6 +428,7 @@ class WaylandConnection {
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
   wl::Object<wp_fractional_scale_manager_v1> fractional_scale_manager_v1_;
   wl::Object<xdg_toplevel_icon_manager_v1> toplevel_icon_manager_v1_;
+  wl::Object<wl_fixes> fixes_;
 
   // Manages Wayland windows.
   WaylandWindowManager window_manager_{this};
