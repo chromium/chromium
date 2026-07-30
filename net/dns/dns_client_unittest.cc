@@ -189,6 +189,17 @@ TEST_F(DnsClientTest, RespectsAdditionalTypesDisabled) {
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 }
 
+TEST_F(DnsClientTest, InsecureEnabledPlatformNoSystem) {
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledPlatformNoSystem,
+                              /*additional_types_enabled=*/true);
+  client_->SetSystemConfig(BasicValidConfig());
+
+  EXPECT_EQ(client_->GetInsecureDnsMode(),
+            InsecureDnsMode::kEnabledPlatformNoSystem);
+  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+}
+
 TEST_F(DnsClientTest, UnhandledOptions) {
   client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);

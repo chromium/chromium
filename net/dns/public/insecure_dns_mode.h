@@ -16,6 +16,10 @@ enum class InsecureDnsMode {
   kEnabledBuiltIn,
   // Insecure DNS is enabled using the platform DNS APIs.
   kEnabledPlatform,
+  // Insecure DNS is enabled using platform DNS APIs, replacing
+  // TaskType::SYSTEM,
+  // with TaskType::DNS disabled and no fallback to TaskType::SYSTEM.
+  kEnabledPlatformNoSystem,
 };
 
 }  // namespace net
