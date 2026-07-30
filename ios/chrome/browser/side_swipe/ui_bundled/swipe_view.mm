@@ -15,20 +15,13 @@
 @property(nonatomic, strong) NSLayoutConstraint* toolbarTopConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* toolbarBottomConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* imageTopConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* imageBottomConstraint;
 
 @property(nonatomic, strong) TopAlignedImageView* imageView;
 
 @end
 
 @implementation SwipeView
-
-@synthesize topToolbarSnapshot = _topToolbarSnapshot;
-@synthesize bottomToolbarSnapshot = _bottomToolbarSnapshot;
-@synthesize topMargin = _topMargin;
-@synthesize bottomMargin = _bottomMargin;
-@synthesize toolbarTopConstraint = _toolbarTopConstraint;
-@synthesize imageTopConstraint = _imageTopConstraint;
-@synthesize imageView = _imageView;
 
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)topMargin
@@ -64,9 +57,12 @@
     _imageTopConstraint =
         [_imageView.topAnchor constraintEqualToAnchor:self.topAnchor
                                              constant:topMargin];
+    _imageBottomConstraint =
+        [_imageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
+                                                constant:-bottomMargin];
     [constraints addObjectsFromArray:@[
       _imageTopConstraint,
-      [[_imageView bottomAnchor] constraintEqualToAnchor:self.bottomAnchor],
+      _imageBottomConstraint,
       _toolbarTopConstraint,
       _toolbarBottomConstraint = [[_bottomToolbarSnapshot topAnchor]
           constraintEqualToAnchor:self.bottomAnchor
@@ -104,6 +100,7 @@
 - (void)setBottomMargin:(CGFloat)bottomMargin {
   _bottomMargin = bottomMargin;
   self.toolbarBottomConstraint.constant = -bottomMargin;
+  self.imageBottomConstraint.constant = -bottomMargin;
 }
 
 - (void)setImage:(UIImage*)image {

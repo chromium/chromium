@@ -5029,6 +5029,11 @@ const char kChromeAppStoreUrl[] =
     viewportInsets = _fullscreenController->GetCurrentViewportInsets();
   }
 
+  // The snapshot should always span the full width of the screen, so do not
+  // crop the side safe areas.
+  viewportInsets.left = 0;
+  viewportInsets.right = 0;
+
   if (IsVisibleURLNewTabPage(webState)) {
     const BOOL canShowTabStrip = CanShowTabStrip(self.viewController);
     const BOOL isSplitToolbarMode = IsSplitToolbarMode(self.viewController);
