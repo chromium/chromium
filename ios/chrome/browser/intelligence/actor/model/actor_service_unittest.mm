@@ -450,6 +450,22 @@ TEST_F(ActorServiceTest, GetWebStateForID_TaskNotFound) {
   EXPECT_EQ(nullptr, resolved_web_state);
 }
 
+// Tests that GetActiveTaskState returns the state of the active task, or
+// nullopt if there are no active tasks.
+TEST_F(ActorServiceTest, GetActiveTaskState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  // No active tasks returns nullopt.
+  EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
+
+  service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  EXPECT_EQ(ActorTaskState::kInit, service->GetActiveTaskState());
+}
+
 // Tests that PerformActions completes immediately when the WebState is not
 // loading.
 TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {

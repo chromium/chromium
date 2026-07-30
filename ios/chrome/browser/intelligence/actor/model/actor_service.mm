@@ -220,6 +220,13 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
   }
 }
 
+std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {
+  if (active_tasks_.empty()) {
+    return std::nullopt;
+  }
+  return active_tasks_.rbegin()->second->GetState();
+}
+
 web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
                                               ActorTaskId task_id) {
   auto it = active_tasks_.find(task_id);

@@ -7,6 +7,7 @@
 
 #import <map>
 #import <memory>
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -82,6 +83,10 @@ class ActorService : public KeyedService {
 
   // Returns the aggregated journal for this service.
   AggregatedJournal* GetJournal() { return journal_.get(); }
+
+  // Returns the execution state of the currently active task, or `std::nullopt`
+  // if there are no active tasks.
+  std::optional<ActorTaskState> GetActiveTaskState() const;
 
   // Returns the WebState associated with the given ActorTask by its ID, or
   // nullptr if not found or is not in the set of the task's controlled
