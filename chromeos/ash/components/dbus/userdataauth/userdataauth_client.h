@@ -137,9 +137,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using GetArcDiskFeaturesCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetArcDiskFeaturesReply>;
 
-  using GetRecoverableKeyStoresCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::GetRecoverableKeyStoresReply>;
-
   using SetUserDataStorageWriteEnabledCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::SetUserDataStorageWriteEnabledReply>;
 
