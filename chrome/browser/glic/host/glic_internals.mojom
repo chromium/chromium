@@ -134,6 +134,15 @@ interface InternalsPageHandler {
 
   // Shows the experimental opt-in dialog.
   ShowExperimentalOptIn();
+
+  // Revokes experimental triggering consent.
+  RevokeExperimentalTriggeringConsent();
+
+  // Revokes Glic FRE consent.
+  RevokeGlicConsent();
+
+  // Revokes Actuation consent.
+  RevokeActuationConsent();
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.

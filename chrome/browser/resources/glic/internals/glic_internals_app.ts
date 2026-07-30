@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -124,12 +125,16 @@ export class GlicInternalsAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.fetchInternalsData_();
+
+    this.refreshOpenTabs_();
+  }
+
+  private fetchInternalsData_() {
     this.browserProxy_.handler.getInternalsDataPayload().then(
         ({internalsData}: {internalsData: InternalsDataPayload}) => {
           this.data_ = internalsData;
         });
-
-    this.refreshOpenTabs_();
   }
 
   protected onShowErrorAllowedChange(e: Event) {
@@ -140,6 +145,37 @@ export class GlicInternalsAppElement extends CrLitElement {
 
   protected onExperimentalOptInClick_() {
     this.browserProxy_.handler.showExperimentalOptIn();
+  }
+
+  protected isAllConsentMet_(): boolean {
+    if (!this.data_?.enablement) {
+      return false;
+    }
+    return this.data_.enablement.glicExperimentalTriggeringState ===
+        GlicExperimentalTriggeringState.kReady &&
+        this.data_.enablement.freIsConsented &&
+        this.data_.enablement.actuationIsConsented;
+  }
+
+  protected onGlicConsentChange_(e: CustomEvent<{value: boolean}>) {
+    if (!(e.target as HTMLInputElement).checked) {
+       this.browserProxy_.handler.revokeGlicConsent();
+       this.fetchInternalsData_();
+    }
+  }
+
+  protected onActuationConsentChange_(e: CustomEvent<{value: boolean}>) {
+    if (!(e.target as HTMLInputElement).checked) {
+       this.browserProxy_.handler.revokeActuationConsent();
+       this.fetchInternalsData_();
+    }
+  }
+
+  protected onExperimentalConsentChange_(e: CustomEvent<{value: boolean}>) {
+    if (!(e.target as HTMLInputElement).checked) {
+       this.browserProxy_.handler.revokeExperimentalTriggeringConsent();
+       this.fetchInternalsData_();
+    }
   }
 
   protected onAutopushInputChange(e: Event) {
@@ -224,6 +260,11 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected getExperimentalTriggeringStateString_(
       state: GlicExperimentalTriggeringState): string {
     return GlicExperimentalTriggeringState[state] || 'Unknown';
+  }
+
+  protected isExperimentalOptInConsentMet_(): boolean {
+    return this.data_?.enablement?.glicExperimentalTriggeringState ===
+        GlicExperimentalTriggeringState.kReady;
   }
 
   protected getTableData_(): Array<{label: string, value: boolean}> {

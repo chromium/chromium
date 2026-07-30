@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "components/glic/glic_pref_names.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -998,8 +999,26 @@ void GlicInternalsPageHandler::ShowExperimentalOptIn() {
           ? service->opt_in_controller().GetOrCreateSuitableWebContents()
           : webui_contents_.get();
 
-  service->opt_in_controller().ShowDialog(target_contents, base::DoNothing());
+    service->opt_in_controller().ShowDialog(target_contents, base::DoNothing());
 #endif
+}
+
+void GlicInternalsPageHandler::RevokeExperimentalTriggeringConsent() {
+  if (auto* service = GetGlicService()) {
+    service->enabling().SetExperimentalTriggeringEnabled(false);
+  }
+}
+
+void GlicInternalsPageHandler::RevokeGlicConsent() {
+  if (auto* service = GetGlicService()) {
+    service->enabling().SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
+  }
+}
+
+void GlicInternalsPageHandler::RevokeActuationConsent() {
+  if (auto* service = GetGlicService()) {
+    service->enabling().SetUserEnabledActuationOnWeb(false);
+  }
 }
 
 }  // namespace glic
