@@ -35,7 +35,11 @@ AudioCapturer::AudioCapturer(
   audio_capturer_->Initialize(audio_params, /*callback=*/this);
 }
 
-AudioCapturer::~AudioCapturer() = default;
+AudioCapturer::~AudioCapturer() {
+  // Stop the underlying capturer source so that the realtime audio thread is
+  // joined before any of the members it accesses in `Capture()` are destroyed.
+  Stop();
+}
 
 void AudioCapturer::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
