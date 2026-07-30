@@ -175,6 +175,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/views/tabs/common",
     "//chrome/browser/ui/views/tabs/common:interactive_ui_tests",
+    "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",
     "//chrome/test:test_support",

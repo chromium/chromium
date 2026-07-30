@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -250,7 +251,7 @@ BrowserWindowInterface* TabSearchBubbleHost::GetBrowser() {
 }
 
 void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
-  if (tab_groups::IsOrganizerPanelFeatureEnabled()) {
+  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
     auto* controller =
         OrganizerPanelStateController::From(browser_window_interface_);
     if (controller) {

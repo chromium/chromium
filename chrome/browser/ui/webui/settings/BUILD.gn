@@ -265,6 +265,7 @@ source_set("impl") {
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/webui:extension_control_handler",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:managed_ui_handler",

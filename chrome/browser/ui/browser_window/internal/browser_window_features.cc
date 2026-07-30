@@ -576,7 +576,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               profile, browser->GetTabStripModel(), browser->GetSessionID());
     }
 
-    if (organizer_panel::IsOrganizerPanelVisibleForProfile(profile)) {
+    if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
       organizer_panel_state_controller_ =
           GetUserDataFactory().CreateInstance<OrganizerPanelStateController>(
               *browser, browser, browser_actions_->root_action_item());

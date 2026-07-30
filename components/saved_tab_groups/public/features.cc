@@ -44,9 +44,6 @@ BASE_FEATURE(kEnableUrlRestriction, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the organizer panel is enabled.
-BASE_FEATURE(kOrganizerPanel, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsTabGroupSyncDelegateAndroidEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncDelegateAndroid);
 }
@@ -94,10 +91,6 @@ base::TimeDelta GetOriginatingSavedGroupCleanUpTimeInterval() {
       kGroupCleanUpTimeIntervalInSecondsFinchKey,
       kDefaultGroupCleanUpTimeInternalInSeconds);
   return base::Seconds(time_in_seconds);
-}
-
-bool IsOrganizerPanelFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kOrganizerPanel);
 }
 
 }  // namespace tab_groups

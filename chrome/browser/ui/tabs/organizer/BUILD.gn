@@ -6,7 +6,6 @@ source_set("organizer") {
   sources = [
     "organizer_panel_state_controller.h",
     "organizer_prefs.h",
-    "organizer_utils.h",
   ]
 
   public_deps = [
@@ -19,7 +18,6 @@ source_set("impl") {
   sources = [
     "organizer_panel_state_controller.cc",
     "organizer_prefs.cc",
-    "organizer_utils.cc",
   ]
 
   public_deps = [ ":organizer" ]
@@ -34,10 +32,10 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/common:constants",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/saved_tab_groups/public:features",
     "//ui/views",
   ]
 }

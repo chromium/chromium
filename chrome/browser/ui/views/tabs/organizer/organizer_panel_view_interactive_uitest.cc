@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
@@ -22,8 +23,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -46,7 +45,7 @@ class OrganizerPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
   OrganizerPanelInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, tab_groups::kOrganizerPanel}, {});
+        {tabs::kVerticalTabs, organizer_panel::kOrganizerPanel}, {});
     OrganizerPanelView::disable_animations_for_testing();
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);

@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "components/saved_tab_groups/public/features.h"
-
 namespace organizer_panel {
 
-bool IsOrganizerPanelVisibleForProfile(Profile* profile) {
-  return tab_groups::IsOrganizerPanelFeatureEnabled() &&
-         tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile);
+BASE_FEATURE(kOrganizerPanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOrganizerPanelFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kOrganizerPanel);
 }
 
 }  // namespace organizer_panel

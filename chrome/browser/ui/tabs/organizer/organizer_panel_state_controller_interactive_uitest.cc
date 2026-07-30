@@ -9,11 +9,11 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -26,7 +26,7 @@ class OrganizerPanelStateControllerInteractiveUiTest
   OrganizerPanelStateControllerInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(/* enabled_features */
                                           {tabs::kVerticalTabs,
-                                           tab_groups::kOrganizerPanel},
+                                           organizer_panel::kOrganizerPanel},
                                           /* disabled_features */ {});
     OrganizerPanelView::disable_animations_for_testing();
   }

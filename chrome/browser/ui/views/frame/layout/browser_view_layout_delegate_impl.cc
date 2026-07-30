@@ -249,8 +249,7 @@ int BrowserViewLayoutDelegateImpl::GetExtraInfobarOffset() const {
 }
 
 bool BrowserViewLayoutDelegateImpl::IsOrganizerPanelVisible() const {
-  return organizer_panel::IsOrganizerPanelVisibleForProfile(
-      browser_view_->GetProfile());
+  return organizer_panel::IsOrganizerPanelFeatureEnabled();
 }
 
 const BrowserFrameView* BrowserViewLayoutDelegateImpl::GetFrameView() const {

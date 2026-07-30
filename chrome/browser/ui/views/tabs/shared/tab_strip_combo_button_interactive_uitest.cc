@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
+
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -9,7 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
@@ -17,7 +19,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -37,7 +38,7 @@ class TabStripComboButtonInteractiveUiTest
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{tabs::kVerticalTabs, {}}, {tab_groups::kOrganizerPanel, {}}};
+    return {{tabs::kVerticalTabs, {}}, {organizer_panel::kOrganizerPanel, {}}};
   }
 
   auto SetPinned(const char* pref, bool pinned) {
@@ -225,7 +226,7 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
   }
 
   const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {tab_groups::kOrganizerPanel};
+    return {organizer_panel::kOrganizerPanel};
   }
 
   auto SetPinned(const char* pref, bool pinned) {
@@ -289,7 +290,8 @@ class TabStripComboButtonHorizontalInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   TabStripComboButtonHorizontalInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures({tab_groups::kOrganizerPanel}, {});
+    scoped_feature_list_.InitWithFeatures({organizer_panel::kOrganizerPanel},
+                                          {});
   }
   ~TabStripComboButtonHorizontalInteractiveUiTest() override = default;
 

@@ -61,12 +61,9 @@ class SavedTabGroupBarComponentBrowserTest : public InProcessBrowserTest {
     if (init_features) {
       // TODO (crbug.com/406068322) the Messaging Service currently interferes
       // with this test harness, it needs to be cleaned up.
-      // NOTE: kOrganizerPanel is explicitly disabled so that saved tab group
-      // buttons are rendered on the bookmark bar instead of being diverted to
-      // the Organizer Panel.
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{data_sharing::features::kDataSharingFeature},
-          {collaboration::features::kCollaborationMessaging, kOrganizerPanel});
+          {collaboration::features::kCollaborationMessaging});
     }
   }
 
