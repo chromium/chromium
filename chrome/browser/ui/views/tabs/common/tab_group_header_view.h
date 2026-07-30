@@ -64,6 +64,8 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
     virtual void ShiftGroupUp() = 0;
     virtual void ShiftGroupDown() = 0;
+
+    virtual bool IsGroupFocused() const = 0;
   };
 
   TabGroupHeaderView(

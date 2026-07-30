@@ -28,14 +28,6 @@ constexpr int kGroupLineWidth = 2;
 constexpr int kGroupLineCollapsedLeadingPadding = 6;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kGroupHeaderVerticalMargin = 4;
-
-bool IsGroupFocused(const TabGroupView* tab_group_view) {
-  return tab_group_view && tab_group_view->collection_node() &&
-         tab_group_view->collection_node()->GetController() &&
-         tab_group_view->collection_node()
-                 ->GetController()
-                 ->GetFocusedGroup() == tab_group_view->GetTabGroup().id();
-}
 }  // namespace
 
 TabGroupViewLayout::TabGroupViewLayout(TabStripOrientation orientation)
@@ -161,7 +153,7 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
   // If the group is focused and we are handling a drag, we need to account for
   // the dragged views' bottom bound.
   int dragged_view_bottom = 0;
-  if (IsGroupFocused(tab_group_view) && tab_group_view->IsHandlingDrag()) {
+  if (tab_group_view->IsGroupFocused() && tab_group_view->IsHandlingDrag()) {
     dragged_view_bottom = tab_group_view->GetDraggingViewsBounds().bottom();
     if (size_bounds.height().is_bounded()) {
       dragged_view_bottom =

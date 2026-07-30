@@ -61,6 +61,7 @@ class TabGroupView : public views::View,
   std::unique_ptr<ExpandOnHoverLock> AcquireExpandOnHoverLock() override;
   void ShiftGroupUp() override;
   void ShiftGroupDown() override;
+  bool IsGroupFocused() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsDragging() const override;

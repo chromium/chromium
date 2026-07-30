@@ -448,5 +448,13 @@ void TabGroupView::ShiftGroupDown() {
   collection_node_->GetController()->ShiftGroupDown(group->id());
 }
 
+bool TabGroupView::IsGroupFocused() const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  return collection_node_->GetController()->GetFocusedGroup() ==
+         GetTabGroup().id();
+}
+
 BEGIN_METADATA(TabGroupView)
 END_METADATA
