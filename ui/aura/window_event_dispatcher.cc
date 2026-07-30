@@ -430,6 +430,12 @@ void WindowEventDispatcher::UpdateCapture(Window* old_capture,
   if (mouse_moved_handler_ && !window()->Contains(mouse_moved_handler_))
     mouse_moved_handler_ = nullptr;
 
+  std::unique_ptr<Window::ScopedDeleteBlocker> new_capture_blocker;
+  if (new_capture) {
+    new_capture_blocker =
+        std::make_unique<Window::ScopedDeleteBlocker>(new_capture);
+  }
+
   if (old_capture && old_capture->GetRootWindow() == window() &&
       old_capture->delegate()) {
     // Send a capture changed event with the most recent mouse screen location.

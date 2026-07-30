@@ -31,7 +31,7 @@ DesktopCaptureClient* active_client_ = nullptr;
 
 // static
 aura::Window* DesktopCaptureClient::GetCaptureWindowGlobal() {
-  return active_client_ ? active_client_->capture_window_ : nullptr;
+  return active_client_ ? active_client_->capture_window_.get() : nullptr;
 }
 
 DesktopCaptureClient::DesktopCaptureClient(aura::Window* root) : root_(root) {
@@ -48,7 +48,7 @@ DesktopCaptureClient::~DesktopCaptureClient() {
 }
 
 void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
-  if (capture_window_ == new_capture_window) {
+  if (capture_window_.get() == new_capture_window) {
     return;
   }
 
@@ -57,7 +57,9 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
   DCHECK(!new_capture_window || (new_capture_window->GetRootWindow() == root_));
   DCHECK(!capture_window_ || capture_window_->GetRootWindow());
 
-  aura::Window* old_capture_window = capture_window_;
+  auto old_capture_window_weak = capture_window_;
+  base::WeakPtr<aura::Window> new_capture_window_weak =
+      new_capture_window ? new_capture_window->GetWeakPtrAsWindow() : nullptr;
 
   // If we're starting a new capture, cancel all touches that aren't
   // targeted to the capturing window.
@@ -65,8 +67,6 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
     // Cancelling touches might cause |new_capture_window| to get deleted.
     // Track |new_capture_window| and check if it still exists before
     // committing |capture_window_|.
-    base::WeakPtr<aura::Window> new_capture_window_weak =
-        new_capture_window->GetWeakPtrAsWindow();
     aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(
         new_capture_window);
     if (!new_capture_window_weak) {
@@ -74,7 +74,7 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
     }
   }
 
-  capture_window_ = new_capture_window;
+  capture_window_ = new_capture_window_weak;
   if (capture_window_) {
     active_client_ = this;
   } else if (active_client_ == this) {
@@ -82,12 +82,12 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
   }
 
   aura::client::CaptureDelegate* delegate = root_->GetHost()->dispatcher();
-  delegate->UpdateCapture(old_capture_window, new_capture_window);
+  delegate->UpdateCapture(old_capture_window_weak.get(), new_capture_window);
 
   // Initiate native capture updating.
   if (!capture_window_) {
     delegate->ReleaseNativeCapture();
-  } else if (!old_capture_window) {
+  } else if (!old_capture_window_weak) {
     delegate->SetNativeCapture();
 
     // Notify the other roots that we got capture. This is important so that
@@ -96,17 +96,17 @@ void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {
   }  // else case is capture is remaining in our root, nothing to do.
 
   observers_.Notify(&aura::client::CaptureClientObserver::OnCaptureChanged,
-                    old_capture_window, capture_window_);
+                    old_capture_window_weak.get(), capture_window_.get());
 }
 
 void DesktopCaptureClient::ReleaseCapture(aura::Window* window) {
-  if (capture_window_ == window) {
+  if (capture_window_.get() == window) {
     SetCapture(nullptr);
   }
 }
 
 aura::Window* DesktopCaptureClient::GetCaptureWindow() {
-  return capture_window_;
+  return capture_window_.get();
 }
 
 aura::Window* DesktopCaptureClient::GetGlobalCaptureWindow() {
