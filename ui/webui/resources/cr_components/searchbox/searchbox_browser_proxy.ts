@@ -49,6 +49,7 @@ export function createAutocompleteMatch(
     hasInstantKeyword: false,
     keywordChipHint: '',
     keywordChipA11y: '',
+    keywordModel: null,
   };
 
   return Object.assign(base, modifiers);

@@ -38,6 +38,20 @@ struct SuggestionAnswer {
   mojo_base.mojom.String16 second_line;
 };
 
+enum KeywordType {
+  kChip,
+  kInKeyword,
+  kInstant,
+};
+
+struct KeywordModel {
+  KeywordType type;
+  string chip_hint;
+  string chip_a11y;
+  string placeholder;
+  string keyword;
+};
+
 struct AutocompleteMatch {
   // Whether match should be hidden from UI.
   bool is_hidden;
@@ -97,6 +111,8 @@ struct AutocompleteMatch {
   string keyword_chip_hint;
   // Similar to `keyword_chip_text`, but the a11y label for the chip.
   string keyword_chip_a11y;
+  // Keyword UI state for this match. Empty if not a keyword suggestion.
+  KeywordModel? keyword_model;
 };
 
 // Information about a suggested tab in the WebUI.

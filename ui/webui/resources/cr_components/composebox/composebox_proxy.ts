@@ -41,6 +41,7 @@ export function createAutocompleteMatch(
     hasInstantKeyword: false,
     keywordChipHint: '',
     keywordChipA11y: '',
+    keywordModel: null,
     ...config,
   };
 }
