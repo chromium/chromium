@@ -123,7 +123,6 @@ source_set("unit_tests") {
     "//components/browser_apis/browser_controls:mojom",
     "//components/browser_apis/browser_controls:mojom_data_model",
     "//components/browser_apis/ui_controllers/toolbar:mojom",
-    "//components/omnibox/browser:vector_icons",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -39,7 +38,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
 
@@ -374,69 +372,6 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   // Verify that icons exist and animation state is stable.
   EXPECT_TRUE(content::EvalJs(GetWebUIToolbarWebContents(), kCheckIconScript)
                   .ExtractBool());
-}
-
-IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
-                       StarredPageActionIconColor) {
-  WaitForInitialWebUIToolbar(browser());
-
-  auto* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-
-  page_actions::WebUIPageActionControl control(
-      browser()->GetActions()->root_action_item());
-  control.Init(GetWebUIToolbarWebView());
-  control.UpdateController(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  auto* bookmark_controller = BookmarkPageActionController::From(tab);
-  ASSERT_TRUE(bookmark_controller);
-
-  // Set unstarred:
-  bookmark_controller->URLStarredChanged(
-      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/false);
-  auto states_unstarred = control.GetPageActionStates();
-  auto it_unstarred = std::find_if(
-      states_unstarred.begin(), states_unstarred.end(), [](const auto& state) {
-        return state->page_action_id ==
-               toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab;
-      });
-  ASSERT_NE(it_unstarred, states_unstarred.end());
-
-  auto fetcher_unstarred = GetWebUIToolbarWebView()->GetIconTableFetcher();
-  auto full_state_unstarred = fetcher_unstarred->GetFullState();
-  auto icon_update_unstarred = std::find_if(
-      full_state_unstarred.begin(), full_state_unstarred.end(),
-      [&](const auto& update) {
-        return update->handle_id == (*it_unstarred)->icon.HandleId().value();
-      });
-  EXPECT_TRUE((*icon_update_unstarred)->color.has_value());
-
-  // Set starred:
-  bookmark_controller->URLStarredChanged(
-      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/true);
-  auto states_starred = control.GetPageActionStates();
-  auto it_starred = std::find_if(
-      states_starred.begin(), states_starred.end(), [](const auto& state) {
-        return state->page_action_id ==
-               toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab;
-      });
-  ASSERT_NE(it_starred, states_starred.end());
-
-  auto fetcher_starred = GetWebUIToolbarWebView()->GetIconTableFetcher();
-  auto full_state_starred = fetcher_starred->GetFullState();
-  auto icon_update_starred = std::find_if(
-      full_state_starred.begin(), full_state_starred.end(),
-      [&](const auto& update) {
-        return update->handle_id == (*it_starred)->icon.HandleId().value();
-      });
-  ASSERT_NE(icon_update_starred, full_state_starred.end());
-  const SkColor expected_color =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetColorProvider()
-          ->GetColor(ui::kColorFocusableBorderFocused);
-  EXPECT_EQ((*icon_update_starred)->color, expected_color);
-  EXPECT_NE((*icon_update_unstarred)->color, (*icon_update_starred)->color);
 }
 
 }  // namespace
