@@ -764,6 +764,11 @@ ci.thin_tester(
         short_name = "13",
     ),
     contact_team_email = "bling-engprod@google.com",
+    properties = {
+        "$build/test_utils": {
+            "min_failed_suites_to_skip_retry": 10,
+        },
+    },
 )
 
 ci.thin_tester(

@@ -82,6 +82,9 @@
       "targets_spec_directory": "infra/config/generated/builders/ci/Mac13 Tests/targets"
     }
   },
+  "$build/test_utils": {
+    "min_failed_suites_to_skip_retry": 10
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [

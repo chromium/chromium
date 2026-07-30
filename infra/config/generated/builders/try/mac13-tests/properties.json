@@ -92,6 +92,9 @@
     "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted"
   },
+  "$build/test_utils": {
+    "min_failed_suites_to_skip_retry": 10
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [

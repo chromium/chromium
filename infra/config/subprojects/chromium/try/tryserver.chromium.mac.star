@@ -427,6 +427,11 @@ try_.builder(
         ],
     ),
     cpu = cpu.ARM64,
+    properties = {
+        "$build/test_utils": {
+            "min_failed_suites_to_skip_retry": 10,
+        },
+    },
 )
 
 try_.builder(
