@@ -233,17 +233,17 @@
 - (void)signInStarted {
   if (_numberOfSigninInProgress == 0) {
     [_observers signinDidStart:self];
-    CHECK(!_signinUIBlocker, base::NotFatalUntil::M146);
+    CHECK(!_signinUIBlocker);
     _signinUIBlocker = ScopedUIBlocker::ProfileScoped(self);
   } else {
-    CHECK(_signinUIBlocker, base::NotFatalUntil::M146);
+    CHECK(_signinUIBlocker);
   }
   _numberOfSigninInProgress++;
 }
 
 - (void)signinFinished {
   _numberOfSigninInProgress--;
-  CHECK_GE(_numberOfSigninInProgress, 0, base::NotFatalUntil::M146);
+  CHECK_GE(_numberOfSigninInProgress, 0);
   if (_numberOfSigninInProgress < 0) {
     _numberOfSigninInProgress = 0;
   }

@@ -684,7 +684,7 @@ SystemIdentityManager::IteratorResult
 AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     std::set<GaiaId>& processed_gaia_ids,
     id<SystemIdentity> identity) {
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   processed_gaia_ids.insert(identity.gaiaId);
 
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
@@ -983,7 +983,7 @@ AccountProfileMapper::AccountProfileMapper(
       [](SystemIdentityManager* system_identity_manager,
          size_t& num_consumer_accounts, size_t& num_managed_accounts,
          size_t& num_unknown_accounts, id<SystemIdentity> identity) {
-        CHECK(identity, base::NotFatalUntil::M147);
+        CHECK(identity);
         NSString* hosted_domain =
             system_identity_manager->GetCachedHostedDomainForIdentity(identity);
         if (hosted_domain) {

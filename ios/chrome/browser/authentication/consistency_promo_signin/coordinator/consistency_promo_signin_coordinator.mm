@@ -157,13 +157,13 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.navigationController, base::NotFatalUntil::M142);
-  CHECK(!self.defaultAccountCoordinator, base::NotFatalUntil::M142);
-  CHECK(!self.alertCoordinator, base::NotFatalUntil::M142);
-  CHECK(!self.accountChooserCoordinator, base::NotFatalUntil::M142);
-  CHECK(!self.addAccountCoordinator, base::NotFatalUntil::M142);
-  CHECK(!self.reauthCoordinator, base::NotFatalUntil::M142);
-  CHECK(!self.consistencyPromoSigninMediator, base::NotFatalUntil::M142);
+  CHECK(!self.navigationController);
+  CHECK(!self.defaultAccountCoordinator);
+  CHECK(!self.alertCoordinator);
+  CHECK(!self.accountChooserCoordinator);
+  CHECK(!self.addAccountCoordinator);
+  CHECK(!self.reauthCoordinator);
+  CHECK(!self.consistencyPromoSigninMediator);
 }
 
 #pragma mark - ChromeCoordinator
@@ -180,8 +180,7 @@
       IdentityManagerFactory::GetForProfile(profile);
   // The sign-in bottom sheet should not be opened if the user is already signed
   // in.
-  CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M142);
+  CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   AccountReconcilor* accountReconcilor =
       ios::AccountReconcilorFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
@@ -472,8 +471,7 @@
 
 - (void)consistencyAccountChooserCoordinatorWantsToBeStopped:
     (ConsistencyAccountChooserCoordinator*)coordinator {
-  CHECK_EQ(coordinator, self.accountChooserCoordinator,
-           base::NotFatalUntil::M140);
+  CHECK_EQ(coordinator, self.accountChooserCoordinator);
   [self stopAccountChooserCoordinator];
   [self.navigationController popViewControllerAnimated:YES];
 }
@@ -482,8 +480,7 @@
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  CHECK(!self.alertCoordinator, base::NotFatalUntil::M142)
-      << base::SysNSStringToUTF8([self description]);
+  CHECK(!self.alertCoordinator) << base::SysNSStringToUTF8([self description]);
   PrefService* userPrefService = self.profile->GetPrefs();
   if (self.accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     const int skipCounter =
@@ -647,8 +644,7 @@
 
 - (void)consistencyPromoSigninMediatorSignInIsImpossible:
     (ConsistencyPromoSigninMediator*)mediator {
-  CHECK_EQ(self.consistencyPromoSigninMediator, mediator,
-           base::NotFatalUntil::M143);
+  CHECK_EQ(self.consistencyPromoSigninMediator, mediator);
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:YES
                            completion:^{

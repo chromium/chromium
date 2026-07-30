@@ -80,7 +80,7 @@
 #pragma mark - Properties
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   if ([_selectedIdentity isEqual:identity]) {
     return;
   }
@@ -128,7 +128,7 @@
 - (void)updateIdentityItemConfigurator:
             (AccountPickerSelectionScreenIdentityItemConfigurator*)configurator
                           withIdentity:(id<SystemIdentity>)identity {
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   configurator.gaiaID = identity.gaiaId;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
@@ -145,7 +145,7 @@
   configurator.managed = NO;
   __weak __typeof(self) weakSelf = self;
   FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
-                                  CHECK(identity, base::NotFatalUntil::M147);
+                                  CHECK(identity);
                                   if (managed) {
                                     [weakSelf handleIdentityUpdated:identity];
                                   }
@@ -153,7 +153,7 @@
 }
 
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   AccountPickerSelectionScreenIdentityItemConfigurator* configurator = nil;
   for (AccountPickerSelectionScreenIdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {
@@ -176,7 +176,7 @@
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   [self handleIdentityUpdated:identity];
 }
 

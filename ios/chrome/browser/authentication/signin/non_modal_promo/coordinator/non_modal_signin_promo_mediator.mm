@@ -65,9 +65,9 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
                         promoType:(NonModalSignInPromoType)promoType {
   self = [super init];
   if (self) {
-    CHECK(authService, base::NotFatalUntil::M145);
-    CHECK(identityManager, base::NotFatalUntil::M145);
-    CHECK(tracker, base::NotFatalUntil::M145);
+    CHECK(authService);
+    CHECK(identityManager);
+    CHECK(tracker);
     _authService = authService;
     _tracker = tracker;
     _promoType = promoType;
@@ -82,7 +82,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
 }
 
 - (void)dealloc {
-  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!_authServiceObserverBridge);
 }
 
 #pragma mark - Public

@@ -346,7 +346,7 @@ enum class AuthenticationFlowInProfileState {
     [self continueFlow];
     return;
   }
-  CHECK(_isManagedIdentity, base::NotFatalUntil::M140);
+  CHECK(_isManagedIdentity);
   ProfileIOS* profile = [self originalProfile];
   [_performer fetchUserPolicy:profile
                   withDmToken:_dmToken
@@ -417,7 +417,7 @@ enum class AuthenticationFlowInProfileState {
   // going away, which is more "abort" than "fail)"). If any failable steps
   // after the signin step get added in the future, then a call to
   // `[_performer signOutImmediatelyFromProfile:...]` should be added here.
-  CHECK(!_browser || !_didSignIn, base::NotFatalUntil::M140);
+  CHECK(!_browser || !_didSignIn);
   CHECK(_signInCompletion);
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;

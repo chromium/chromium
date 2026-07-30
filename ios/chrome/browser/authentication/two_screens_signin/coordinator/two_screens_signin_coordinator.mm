@@ -95,7 +95,7 @@ using base::UserMetricsAction;
 }
 
 - (void)dealloc {
-  CHECK(!_fullscreenSigninPromoLogger, base::NotFatalUntil::M146);
+  CHECK(!_fullscreenSigninPromoLogger);
 }
 
 #pragma mark - BuggyAuthenticationViewOwner

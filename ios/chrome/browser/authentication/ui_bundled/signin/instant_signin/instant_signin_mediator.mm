@@ -65,7 +65,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!_authServiceObserverBridge);
 }
 
 #pragma mark - Public

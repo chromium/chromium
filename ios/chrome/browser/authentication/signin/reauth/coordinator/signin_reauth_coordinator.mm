@@ -57,7 +57,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_identityInteractionManager, base::NotFatalUntil::M144);
+  CHECK(!_identityInteractionManager);
 }
 
 #pragma mark - BuggyAuthenticationViewOwner
@@ -69,7 +69,7 @@
   }
   // Once the authentication is done, the manager is set to nil and the view
   // can’t have disappeared.
-  CHECK(_identityInteractionManager, base::NotFatalUntil::M144);
+  CHECK(_identityInteractionManager);
   return _identityInteractionManager == nil;
 }
 

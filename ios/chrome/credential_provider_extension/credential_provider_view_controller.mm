@@ -1156,7 +1156,7 @@ enum class PasskeyCreationEligibility {
       _userVerificationStatus == PasskeyUserVerificationStatus::kCompleted;
 
   if (passkeyRequestDetails.userVerificationRequired) {
-    CHECK(didCompleteUserVerification, base::NotFatalUntil::M144);
+    CHECK(didCompleteUserVerification);
   }
 
   ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
@@ -1205,7 +1205,7 @@ enum class PasskeyCreationEligibility {
       _userVerificationStatus == PasskeyUserVerificationStatus::kCompleted;
 
   if (passkeyRequestDetails.userVerificationRequired) {
-    CHECK(didCompleteUserVerification, base::NotFatalUntil::M144);
+    CHECK(didCompleteUserVerification);
   }
 
   ASPasskeyAssertionCredential* passkeyCredential = [passkeyRequestDetails

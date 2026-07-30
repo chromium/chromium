@@ -47,8 +47,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.mediator, base::NotFatalUntil::M142);
-  CHECK(!self.defaultAccountViewController, base::NotFatalUntil::M142);
+  CHECK(!self.mediator);
+  CHECK(!self.defaultAccountViewController);
 }
 
 #pragma mark - ChromeCoordinator

@@ -2271,7 +2271,7 @@ inline LayoutStateScenePassKey PassKey() {
   SigninCoordinatorCompletionCallback signinCompletion =
       signinCoordinator.signinCompletion;
   signinCoordinator.signinCompletion = nil;
-  CHECK(signinCompletion, base::NotFatalUntil::M142);
+  CHECK(signinCompletion);
   // The `signinCoordinator` must be nil here, because `_signinCoordinator`
   // was set to `nil` above.
   signinCompletion(nil, SigninCoordinatorResultInterrupted, nil);

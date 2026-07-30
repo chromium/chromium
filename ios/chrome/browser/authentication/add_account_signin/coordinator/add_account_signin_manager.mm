@@ -87,10 +87,10 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
                 prefilledEmail:(NSString*)email {
   self = [super init];
   if (self) {
-    CHECK(baseViewController, base::NotFatalUntil::M140);
-    CHECK(prefService, base::NotFatalUntil::M140);
-    CHECK(identityManager, base::NotFatalUntil::M140);
-    CHECK(identityInteractionManager, base::NotFatalUntil::M140);
+    CHECK(baseViewController);
+    CHECK(prefService);
+    CHECK(identityManager);
+    CHECK(identityInteractionManager);
     _baseViewController = baseViewController;
     _prefService = prefService;
     _identityManager = identityManager;

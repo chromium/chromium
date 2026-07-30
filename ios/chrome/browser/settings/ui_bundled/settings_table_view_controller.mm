@@ -2503,8 +2503,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)addressBarPreferenceCoordinatorViewControllerWasRemoved:
     (AddressBarPreferenceCoordinator*)coordinator {
-  CHECK_EQ(_addressBarPreferenceCoordinator, coordinator,
-           base::NotFatalUntil::M139);
+  CHECK_EQ(_addressBarPreferenceCoordinator, coordinator);
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator.delegate = nil;
   _addressBarPreferenceCoordinator = nil;

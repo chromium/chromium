@@ -67,7 +67,7 @@
 
 - (void)addressBarPreferenceViewControllerWasRemoved:
     (AddressBarPreferenceViewController*)controller {
-  CHECK_EQ(self.viewController, controller, base::NotFatalUntil::M139);
+  CHECK_EQ(self.viewController, controller);
   [self.delegate addressBarPreferenceCoordinatorViewControllerWasRemoved:self];
 }
 

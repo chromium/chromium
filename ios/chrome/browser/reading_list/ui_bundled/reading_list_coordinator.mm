@@ -282,8 +282,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
-  CHECK(!self.mediator, base::NotFatalUntil::M145);
+  CHECK(!_authServiceObserverBridge);
+  CHECK(!self.mediator);
 }
 
 #pragma mark - ReadingListListViewControllerAudience
@@ -616,7 +616,7 @@
 #pragma mark - Private
 
 - (void)dismissReadingList {
-  CHECK([self canDismiss], base::NotFatalUntil::M145);
+  CHECK([self canDismiss]);
   [self.tableViewController willBeDismissed];
   [_delegate closeReadingList];
 }

@@ -1733,13 +1733,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
-  NOTREACHED(base::NotFatalUntil::M142);
+  NOTREACHED();
 }
 
 - (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifier {
-  NOTREACHED(base::NotFatalUntil::M142);
-  return nullptr;
+  NOTREACHED();
 }
 
 #pragma mark - SceneStateObserver

@@ -25,14 +25,14 @@
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(
             authenticationService, self);
-    CHECK(_authenticationService->SigninEnabled(), base::NotFatalUntil::M144);
+    CHECK(_authenticationService->SigninEnabled());
   }
   return self;
 }
 
 - (void)dealloc {
-  CHECK(!_authenticationService, base::NotFatalUntil::M145);
-  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!_authenticationService);
+  CHECK(!_authServiceObserverBridge);
 }
 
 #pragma mark - Public

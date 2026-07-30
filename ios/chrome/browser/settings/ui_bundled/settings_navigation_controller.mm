@@ -656,7 +656,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                           delegate {
   CHECK(browser);
   CHECK_EQ(browser->type(), Browser::Type::kRegular);
-  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M146);
   self = [super initWithRootViewController:rootViewController];
   if (self) {
     _browser = browser;
@@ -1494,8 +1493,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)syncEncryptionPassphraseTableViewControllerDidDisappear:
     (SyncEncryptionPassphraseTableViewController*)viewController {
-  CHECK_EQ(self.syncEncryptionPassphraseTableViewController, viewController,
-           base::NotFatalUntil::M142);
+  CHECK_EQ(self.syncEncryptionPassphraseTableViewController, viewController);
   self.syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
   [self.syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   self.syncEncryptionPassphraseTableViewController = nil;
@@ -1506,8 +1504,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Requests the delegate to stop the manage accounts coordinator.
 - (void)manageAccountsCoordinatorWantsToBeStopped:
     (ManageAccountsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, self.manageAccountsCoordinator,
-           base::NotFatalUntil::M144);
+  CHECK_EQ(coordinator, self.manageAccountsCoordinator);
   // If this navigation controller was opened directly with the account manager,
   // the navigation controller should be closed.
   BOOL stopNavigationController = [self viewControllers].count == 1;

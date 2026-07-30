@@ -187,8 +187,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!_authenticationServiceObserverBridge, base::NotFatalUntil::M145);
-  CHECK(!_identityObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!_authenticationServiceObserverBridge);
+  CHECK(!_identityObserverBridge);
 }
 
 - (void)tearDownObservers {

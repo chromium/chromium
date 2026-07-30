@@ -179,12 +179,12 @@ enum class SigninScreenState {
 }
 
 - (void)dealloc {
-  CHECK(!_accountManagerService, base::NotFatalUntil::M145);
-  CHECK(!_authenticationService, base::NotFatalUntil::M145);
-  CHECK(!_identityManager, base::NotFatalUntil::M145);
-  CHECK(!self.localPrefService, base::NotFatalUntil::M145);
-  CHECK(!self.prefService, base::NotFatalUntil::M145);
-  CHECK(!self.syncService, base::NotFatalUntil::M145);
+  CHECK(!_accountManagerService);
+  CHECK(!_authenticationService);
+  CHECK(!_identityManager);
+  CHECK(!self.localPrefService);
+  CHECK(!self.prefService);
+  CHECK(!self.syncService);
 }
 
 - (void)disconnect {
@@ -202,7 +202,7 @@ enum class SigninScreenState {
 
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow {
-  CHECK(!self.signinInProgress, base::NotFatalUntil::M145);
+  CHECK(!self.signinInProgress);
   self.signinInProgress = YES;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
@@ -210,8 +210,7 @@ enum class SigninScreenState {
   // The sign-in screen should not be displayed if the user is already
   // signed-in for non-deeplink flows.
   CHECK(_screenState == SigninScreenState::kDeeplink ||
-            !_authenticationService->HasPrimaryIdentity(),
-        base::NotFatalUntil::M145);
+        !_authenticationService->HasPrimaryIdentity());
   [self.consumer setUIEnabled:NO];
   authenticationFlow.delegate = self;
   [authenticationFlow startSignIn];
@@ -221,8 +220,7 @@ enum class SigninScreenState {
   // The sign-in screen should not be displayed if the user is already
   // signed-in for non-deeplink flows.
   CHECK(_screenState == SigninScreenState::kDeeplink ||
-            !_authenticationService->HasPrimaryIdentity(),
-        base::NotFatalUntil::M140);
+        !_authenticationService->HasPrimaryIdentity());
   if (completion) {
     completion();
   }
@@ -422,7 +420,7 @@ enum class SigninScreenState {
 // asynchronously when the management status if retrieved and the identity is
 // managed.
 - (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
     return managed.value();

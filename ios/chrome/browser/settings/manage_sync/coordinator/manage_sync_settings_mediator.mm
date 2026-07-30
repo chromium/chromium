@@ -141,7 +141,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (self) {
     CHECK(syncService, base::NotFatalUntil::M155);
     CHECK(authenticationService, base::NotFatalUntil::M155);
-    CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M144);
+    CHECK(authenticationService->SigninEnabled());
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _identityManager = identityManager;

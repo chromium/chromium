@@ -235,7 +235,7 @@
 - (void)presentSnackbar:(SnackbarMessage*)message
        withBottomOffset:(CGFloat)offset
              hideFloaty:(BOOL)hideFloaty {
-  CHECK(message, base::NotFatalUntil::M147);
+  CHECK(message);
   // TODO(crbug.com/512521102): Temporary check. Keeping the floaty visible is
   // strictly for the agent prototype and will be cleaned up.
   CHECK(hideFloaty || (IsActorEnabled() && IsGeminiActorEnabled()));

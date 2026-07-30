@@ -986,11 +986,9 @@ id<SystemIdentity> GetDisplayedIdentity(
   // a post task issue.
   self.initialSyncInProgress = (result == SigninCoordinatorResultSuccess) &&
                                [self shouldWaitForInitialSync];
-  CHECK_EQ(SigninPromoViewState::kUserInteracted, self.signinPromoViewState,
-           base::NotFatalUntil::M144)
+  CHECK_EQ(SigninPromoViewState::kUserInteracted, self.signinPromoViewState)
       << base::SysNSStringToUTF8([self description]);
-  CHECK_NE(self.signinInProgress, signin::Tribool::kFalse,
-           base::NotFatalUntil::M146)
+  CHECK_NE(self.signinInProgress, signin::Tribool::kFalse)
       << base::SysNSStringToUTF8([self description]);
   self.signinInProgress = signin::Tribool::kFalse;
 }

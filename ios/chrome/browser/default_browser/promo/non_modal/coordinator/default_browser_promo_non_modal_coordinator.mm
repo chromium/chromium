@@ -46,8 +46,8 @@
                                    browser:browser
                                       type:InfobarType::kInfobarTypeConfirm];
   if (self) {
-    CHECK(viewController, base::NotFatalUntil::M145);
-    CHECK(browser, base::NotFatalUntil::M145);
+    CHECK(viewController);
+    CHECK(browser);
     self.shouldUseDefaultDismissal = NO;
     _promoReason = promoReason;
   }

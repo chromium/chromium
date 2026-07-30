@@ -76,8 +76,8 @@ using l10n_util::GetNSStringF;
 }
 
 - (void)dealloc {
-  CHECK(!self.errorAlertCoordinator, base::NotFatalUntil::M140);
-  CHECK(!self.identity, base::NotFatalUntil::M140);
+  CHECK(!self.errorAlertCoordinator);
+  CHECK(!self.identity);
 }
 
 #pragma mark - ChromeCoordinator
@@ -90,7 +90,7 @@ using l10n_util::GetNSStringF;
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
   self.identity = _authService->GetPrimaryIdentity();
-  CHECK(self.identity, base::NotFatalUntil::M145);
+  CHECK(self.identity);
   __weak __typeof(self) weakSelf = self;
   void (^callback)(BOOL success, NSError* error) =
       ^(BOOL success, NSError* error) {

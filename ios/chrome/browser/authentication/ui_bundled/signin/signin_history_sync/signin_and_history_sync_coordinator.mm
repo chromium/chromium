@@ -116,9 +116,8 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 }
 
 - (void)dealloc {
-  CHECK(!_signinCoordinator, base::NotFatalUntil::M145)
-      << base::SysNSStringToUTF8([self description]);
-  CHECK(!_historySyncPopupCoordinator, base::NotFatalUntil::M145)
+  CHECK(!_signinCoordinator) << base::SysNSStringToUTF8([self description]);
+  CHECK(!_historySyncPopupCoordinator)
       << base::SysNSStringToUTF8([self description]);
 }
 
@@ -155,8 +154,7 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(HistorySyncResult)result {
-  CHECK_EQ(coordinator, _historySyncPopupCoordinator,
-           base::NotFatalUntil::M145);
+  CHECK_EQ(coordinator, _historySyncPopupCoordinator);
   [self stopHistorySyncPopupCoordinatorAnimated:YES];
   SigninCoordinatorResult signinResult =
       HistorySyncResultToSigninCoordinatorResult(result);
@@ -230,9 +228,9 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 
 // Creates the current step coordinator according to `_currentStep`.
 - (void)createAndPresentStepChildCoordinator {
-  CHECK(!_fullscreenSigninCoordinator, base::NotFatalUntil::M148);
-  CHECK(!_signinCoordinator, base::NotFatalUntil::M148);
-  CHECK(!_historySyncPopupCoordinator, base::NotFatalUntil::M148);
+  CHECK(!_fullscreenSigninCoordinator);
+  CHECK(!_signinCoordinator);
+  CHECK(!_historySyncPopupCoordinator);
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
       _fullscreenSigninCoordinator = [[FullscreenSigninCoordinator alloc]

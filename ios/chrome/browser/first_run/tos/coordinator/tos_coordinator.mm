@@ -145,7 +145,7 @@
 #pragma mark - TOSViewControllerPresentationDelegate
 
 - (void)TOSViewControllerWantsToBeClosed:(TOSViewController*)viewController {
-  CHECK_EQ(viewController, _viewController, base::NotFatalUntil::M144);
+  CHECK_EQ(viewController, _viewController);
   [self.delegate TOSCoordinatorWantsToBeStopped:self];
 }
 

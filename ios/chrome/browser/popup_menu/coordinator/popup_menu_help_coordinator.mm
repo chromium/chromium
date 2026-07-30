@@ -132,8 +132,7 @@ enum class PopupMenuIPHSessionType {
 #pragma mark - Getters
 
 - (feature_engagement::Tracker*)featureEngagementTracker {
-  CHECK(!_stopped, base::NotFatalUntil::M147)
-      << "PopupMenuHelpCoordinator used after -stop";
+  CHECK(!_stopped) << "PopupMenuHelpCoordinator used after -stop";
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   DCHECK(tracker);
@@ -368,8 +367,7 @@ enum class PopupMenuIPHSessionType {
 
 // Returns whether blue dot should be shown.
 - (BOOL)shouldShowBlueDot {
-  CHECK(!_stopped, base::NotFatalUntil::M147)
-      << "PopupMenuHelpCoordinator used after -stop";
+  CHECK(!_stopped) << "PopupMenuHelpCoordinator used after -stop";
 
   // As sync error takes precendence on blue dot for settings destination in the
   // overflow menu. In that case don't show blue dot as the full path from

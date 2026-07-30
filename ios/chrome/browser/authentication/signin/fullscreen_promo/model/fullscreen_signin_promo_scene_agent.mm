@@ -145,7 +145,7 @@
 }
 
 - (void)identityManagerDidShutdown:(signin::IdentityManager*)identityManager {
-  NOTREACHED(base::NotFatalUntil::M142);
+  NOTREACHED();
 }
 
 @end

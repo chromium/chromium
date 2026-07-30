@@ -66,8 +66,8 @@
                                       type:(InfobarType)infobarType {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    CHECK(browser, base::NotFatalUntil::M145);
-    CHECK(viewController, base::NotFatalUntil::M145);
+    CHECK(browser);
+    CHECK(viewController);
     _infobarType = infobarType;
     _shouldUseDefaultDismissal = YES;
   }

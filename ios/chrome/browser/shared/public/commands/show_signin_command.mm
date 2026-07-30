@@ -149,7 +149,7 @@
 }
 
 - (void)addSigninCompletion:(SigninCoordinatorCompletionCallback)completion {
-  CHECK(completion, base::NotFatalUntil::M145);
+  CHECK(completion);
   SigninCoordinatorCompletionCallback firstCompletion = self.completion;
   _completion = ^(SigninCoordinator* coordinator,
                   SigninCoordinatorResult result, id<SystemIdentity> identity) {

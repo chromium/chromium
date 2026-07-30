@@ -19,7 +19,7 @@
 
 - (instancetype)initWithAuthenticationService:
     (AuthenticationService*)authenticationService {
-  CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M144);
+  CHECK(authenticationService->SigninEnabled());
   self = [super init];
   if (self) {
     _authenticationService = authenticationService;

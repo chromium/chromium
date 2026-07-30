@@ -335,8 +335,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.started, base::NotFatalUntil::M145);
-  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+  CHECK(!self.started);
+  CHECK(!_authServiceObserverBridge);
 }
 
 - (void)start {
@@ -1134,7 +1134,7 @@
     _signinCoordinator.signinCompletion(
         _signinCoordinator, SigninCoordinatorResultInterrupted, nil);
     // The signin-completion should have unset the sign-in coordinator.
-    CHECK(!_signinCoordinator, base::NotFatalUntil::M146);
+    CHECK(!_signinCoordinator);
   }
   __weak __typeof(self) weakSelf = self;
   [command addSigninCompletion:^(SigninCoordinator* coordinator,
@@ -1327,8 +1327,7 @@
                                                DoNothingContinuationProvider()];
   } else {
     Browser* browser = self.browser;
-    CHECK_EQ(browser->type(), Browser::Type::kRegular,
-             base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     _signinCoordinator = [SigninCoordinator
         instantSigninCoordinatorWithBaseViewController:baseVC
                                                browser:browser
@@ -1715,7 +1714,7 @@
 // stopped.
 - (void)accountMenuCoordinatorWantsToBeStopped:
     (AccountMenuCoordinator*)coordinator {
-  CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
+  CHECK_EQ(_accountMenuCoordinator, coordinator);
   [self stopAccountMenuCoordinator];
 }
 

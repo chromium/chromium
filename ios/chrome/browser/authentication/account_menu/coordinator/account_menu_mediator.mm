@@ -209,7 +209,7 @@
 
 - (BOOL)isGaiaIDManaged:(const GaiaId&)gaiaID {
   id<SystemIdentity> identity = [self identityForGaiaID:gaiaID];
-  CHECK(identity, base::NotFatalUntil::M147);
+  CHECK(identity);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
     return managed.value();
@@ -510,10 +510,10 @@
     // The mediator was disconnected. No need to update it.
     return;
   }
-  CHECK(_primaryIdentityBeforeSignin, base::NotFatalUntil::M140);
+  CHECK(_primaryIdentityBeforeSignin);
   _authenticationFlow = nil;
   if (success) {
-    CHECK(identity, base::NotFatalUntil::M145);
+    CHECK(identity);
     [_delegate mediatorWantsToBeDismissed:self
                     withCancelationReason:cancelationReason
                            signedIdentity:identity

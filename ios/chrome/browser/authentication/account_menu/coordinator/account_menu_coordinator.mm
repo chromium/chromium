@@ -171,8 +171,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
   if (self) {
     // All authentication related work must be done in the regular profile, even
     // if started from incognito browser.
-    CHECK_EQ(browser->type(), Browser::Type::kRegular,
-             base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     _accessPoint = accessPoint;
     _anchorView = anchorView;
     _accessPoint = accessPoint;
@@ -436,7 +435,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
 }
 
 - (void)signinFinished {
-  CHECK(_signinInProgress, base::NotFatalUntil::M147);
+  CHECK(_signinInProgress);
   _signinInProgress.reset();
 }
 
@@ -489,7 +488,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
       trusted_vault::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentFetchKeys;
-  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  CHECK(!_trustedVaultReauthenticationCoordinator);
   _trustedVaultReauthenticationCoordinator =
       [[TrustedVaultReauthenticationCoordinator alloc]
           initWithBaseViewController:_navigationController
@@ -514,7 +513,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
       trusted_vault::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   SigninTrustedVaultDialogIntent intent =
       SigninTrustedVaultDialogIntentDegradedRecoverability;
-  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  CHECK(!_trustedVaultReauthenticationCoordinator);
   _trustedVaultReauthenticationCoordinator =
       [[TrustedVaultReauthenticationCoordinator alloc]
           initWithBaseViewController:_navigationController
@@ -704,8 +703,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
 
 - (void)syncEncryptionPassphraseTableViewControllerDidDisappear:
     (SyncEncryptionPassphraseTableViewController*)viewController {
-  CHECK_EQ(_syncEncryptionPassphraseTableViewController, viewController,
-           base::NotFatalUntil::M142);
+  CHECK_EQ(_syncEncryptionPassphraseTableViewController, viewController);
   _syncEncryptionPassphraseTableViewController.presentationDelegate = nil;
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
@@ -716,8 +714,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
 
 - (void)trustedVaultReauthenticationCoordinatorWantsToBeStopped:
     (TrustedVaultReauthenticationCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator,
-           base::NotFatalUntil::M145);
+  CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthenticationCoordinator];
 }
 

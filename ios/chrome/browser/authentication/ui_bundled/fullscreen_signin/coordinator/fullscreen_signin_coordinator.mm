@@ -54,8 +54,7 @@
   DCHECK_EQ(browser->type(), Browser::Type::kRegular);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    CHECK_EQ(browser->type(), Browser::Type::kRegular,
-             base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(changeProfileContinuationProvider);
     _screenProvider = screenProvider;
     _changeProfileContinuationProvider = changeProfileContinuationProvider;
@@ -66,7 +65,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_changeProfileContinuationProvider, base::NotFatalUntil::M146);
+  CHECK(!_changeProfileContinuationProvider);
 }
 
 #pragma mark - ChromeCoordinator
@@ -76,8 +75,7 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
   CHECK(self.canSwitchAccount ||
-            !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M142);
+        !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   _signinInProgress = [self.sceneState createSigninInProgress];
   self.navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil

@@ -100,8 +100,7 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    CHECK_EQ(browser->type(), Browser::Type::kRegular,
-             base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(changeProfileContinuationProvider);
     _baseNavigationController = navigationController;
     _delegate = delegate;
@@ -309,7 +308,7 @@
 
 // Shows the UMA dialog so the user can manage metric reporting.
 - (void)showUMADialog {
-  CHECK(!self.UMACoordinator, base::NotFatalUntil::M144);
+  CHECK(!self.UMACoordinator);
   self.UMACoordinator = [[UMACoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
@@ -319,7 +318,7 @@
 }
 
 - (void)showTOSPage {
-  CHECK(!self.TOSCoordinator, base::NotFatalUntil::M144);
+  CHECK(!self.TOSCoordinator);
   self.mediator.TOSLinkWasTapped = YES;
   self.TOSCoordinator =
       [[TOSCoordinator alloc] initWithBaseViewController:self.viewController
@@ -332,13 +331,13 @@
 
 - (void)fullscreenSigninScreenMediatorDidFinishSignin:
     (FullscreenSigninScreenMediator*)mediator {
-  CHECK_EQ(mediator, self.mediator, base::NotFatalUntil::M140);
+  CHECK_EQ(mediator, self.mediator);
   [self finishPresentingWithSignIn:YES];
 }
 
 - (void)fullscreenSigninScreenMediatorWantsToBeDismissed:
     (FullscreenSigninScreenMediator*)mediator {
-  CHECK_EQ(mediator, self.mediator, base::NotFatalUntil::M141);
+  CHECK_EQ(mediator, self.mediator);
   [self finishPresentingWithSignIn:NO];
 }
 
@@ -426,7 +425,7 @@
 #pragma mark - TOSCoordinatorDelegate
 
 - (void)TOSCoordinatorWantsToBeStopped:(TOSCoordinator*)coordinator {
-  CHECK_EQ(self.TOSCoordinator, coordinator, base::NotFatalUntil::M144);
+  CHECK_EQ(self.TOSCoordinator, coordinator);
   [self.TOSCoordinator stop];
   self.TOSCoordinator.delegate = nil;
   self.TOSCoordinator = nil;

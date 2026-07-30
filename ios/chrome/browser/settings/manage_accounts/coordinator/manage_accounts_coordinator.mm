@@ -87,9 +87,9 @@ using signin_metrics::PromoAction;
                                          browser:(Browser*)browser
                        closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
                                   showDoneButton:(BOOL)showDoneButton {
-  CHECK(browser, base::NotFatalUntil::M144);
+  CHECK(browser);
   DCHECK_EQ(browser->type(), Browser::Type::kRegular);
-  CHECK(navigationController, base::NotFatalUntil::M144);
+  CHECK(navigationController);
   if ((self = [self initWithBaseViewController:navigationController
                                        browser:browser])) {
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;

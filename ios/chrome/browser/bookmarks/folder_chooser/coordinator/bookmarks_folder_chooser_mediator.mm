@@ -54,9 +54,9 @@ using bookmarks::BookmarkNode;
                          movedNodeIds:(std::set<int64_t>)movedNodeIds
                 authenticationService:(AuthenticationService*)authService
                           syncService:(syncer::SyncService*)syncService {
-  CHECK(model, base::NotFatalUntil::M145);
-  CHECK(model->loaded(), base::NotFatalUntil::M145);
-  CHECK(authService->initialized(), base::NotFatalUntil::M145);
+  CHECK(model);
+  CHECK(model->loaded());
+  CHECK(authService->initialized());
 
   self = [super init];
   if (self) {

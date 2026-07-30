@@ -57,8 +57,8 @@
         (id<SigninPromoViewMediatorDelegate>)signinPromoViewMediatorDelegate
            accountSettingsPresenter:
                (id<AccountSettingsPresenter>)accountSettingsPresenter {
-  CHECK(browser, base::NotFatalUntil::M145);
-  CHECK(syncService, base::NotFatalUntil::M145);
+  CHECK(browser);
+  CHECK(syncService);
   self = [super init];
   if (self) {
     _delegate = delegate;

@@ -53,8 +53,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     // Sign-in related work should be done on regular browser.
-    CHECK_EQ(browser->type(), Browser::Type::kRegular,
-             base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(identity, base::NotFatalUntil::M155);
     _identity = identity;
     _hostedDomain = hostedDomain;

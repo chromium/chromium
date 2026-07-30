@@ -54,8 +54,7 @@ void TabGroupService::RegisterCollaborationControllerDelegate(
     tab_groups::LocalTabGroupID tab_group_id,
     base::WeakPtr<collaboration::IOSCollaborationControllerDelegate>
         controller_delegate) {
-  CHECK(!group_to_controller_delegate_.contains(tab_group_id),
-        base::NotFatalUntil::M142);
+  CHECK(!group_to_controller_delegate_.contains(tab_group_id));
   group_to_controller_delegate_[tab_group_id] = controller_delegate;
 }
 
