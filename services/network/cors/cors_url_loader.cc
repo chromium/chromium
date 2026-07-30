@@ -689,6 +689,7 @@ void CorsURLLoader::OnReceiveResponse(
     response_head->device_bound_session_usage =
         mojom::DeviceBoundSessionUsage::kUnknown;
     response_head->did_use_server_http_auth = false;
+    response_head->was_cookie_in_request = false;
   }
 
   forwarding_client_->OnReceiveResponse(
@@ -768,6 +769,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
     response_head->device_bound_session_usage =
         mojom::DeviceBoundSessionUsage::kUnknown;
     response_head->did_use_server_http_auth = false;
+    response_head->was_cookie_in_request = false;
     forwarding_client_->OnReceiveRedirect(censored_redirect_info,
                                           std::move(response_head));
     return;
@@ -847,6 +849,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
     response_head->device_bound_session_usage =
         mojom::DeviceBoundSessionUsage::kUnknown;
     response_head->did_use_server_http_auth = false;
+    response_head->was_cookie_in_request = false;
   }
   forwarding_client_->OnReceiveRedirect(redirect_info,
                                         std::move(response_head));
