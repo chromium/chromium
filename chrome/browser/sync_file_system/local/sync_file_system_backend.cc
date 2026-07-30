@@ -21,17 +21,25 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/constants.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 
 namespace sync_file_system {
 
 namespace {
+
+// The syncable filesystem is only exposed via the chrome.syncFileSystem
+// extension API, so only extension-scheme origins are permitted to use it.
+bool IsSyncFSAllowedOrigin(const url::Origin& origin) {
+  return origin.scheme() == extensions::kExtensionScheme;
+}
 
 bool CalledOnUIThread() {
   // Ensure that these methods are called on the UI thread, except for unittests
@@ -86,6 +94,12 @@ void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                        ResolveURLCallback callback) {
   DCHECK(CanHandleType(url.type()));
 
+  if (!IsSyncFSAllowedOrigin(url.origin())) {
+    std::move(callback).Run(GURL(), std::string(),
+                            base::File::FILE_ERROR_SECURITY);
+    return;
+  }
+
   if (skip_initialize_syncfs_service_for_testing_) {
     GetDelegate()->OpenFileSystem(
         url.GetBucket(), url.type(), mode, std::move(callback),
@@ -130,6 +144,11 @@ SyncFileSystemBackend::CreateFileSystemOperation(
   DCHECK(CanHandleType(url.type()));
   DCHECK(context);
   DCHECK(error_code);
+
+  if (!IsSyncFSAllowedOrigin(url.origin())) {
+    *error_code = base::File::FILE_ERROR_SECURITY;
+    return nullptr;
+  }
 
   std::unique_ptr<storage::FileSystemOperationContext> operation_context =
       GetDelegate()->CreateFileSystemOperationContext(url, context, error_code);

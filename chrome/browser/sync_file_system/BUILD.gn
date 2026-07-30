@@ -220,6 +220,7 @@ source_set("unit_tests") {
     "local/local_file_sync_status_unittest.cc",
     "local/mock_sync_status_observer.cc",
     "local/mock_sync_status_observer.h",
+    "local/sync_file_system_backend_unittest.cc",
     "local/syncable_file_operation_runner_unittest.cc",
     "local/syncable_file_system_unittest.cc",
     "logger_unittest.cc",

@@ -54,7 +54,7 @@ namespace sync_file_system {
 
 namespace {
 
-const char kOrigin[] = "http://example.com";
+const char kOrigin[] = "chrome-extension://example";
 
 void DidPrepareForProcessRemoteChange(const base::Location& where,
                                       base::OnceClosure oncompleted,
@@ -314,7 +314,7 @@ TEST_F(LocalFileSyncServiceTest, LocalChangeObserver) {
 #endif
 
 TEST_F(LocalFileSyncServiceTest, MAYBE_LocalChangeObserverMultipleContexts) {
-  const char kOrigin2[] = "http://foo";
+  const char kOrigin2[] = "chrome-extension://foo";
   CannedSyncableFileSystem file_system2(
       GURL(kOrigin2), in_memory_env_.get(), content::GetIOThreadTaskRunner({}),
       base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()}));

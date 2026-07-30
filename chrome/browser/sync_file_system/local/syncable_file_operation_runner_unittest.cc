@@ -59,7 +59,7 @@ class SyncableFileOperationRunnerTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         in_memory_env_(
             leveldb_chrome::NewMemEnv("SyncableFileOperationRunnerTest")),
-        file_system_(GURL("http://example.com"),
+        file_system_(GURL("chrome-extension://example"),
                      in_memory_env_.get(),
                      base::SingleThreadTaskRunner::GetCurrentDefault().get(),
                      base::SingleThreadTaskRunner::GetCurrentDefault().get()),
