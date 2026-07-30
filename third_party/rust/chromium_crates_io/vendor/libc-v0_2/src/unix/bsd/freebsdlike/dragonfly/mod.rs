@@ -30,26 +30,23 @@ pub type cpuset_t = cpumask_t;
 pub type cpu_set_t = cpumask_t;
 
 pub type register_t = c_long;
-pub type umtx_t = c_int;
-pub type pthread_barrierattr_t = c_int;
-pub type pthread_barrier_t = crate::uintptr_t;
+pub type pthread_barrierattr_t = *mut __c_anonymous_pthread_barrierattr;
+pub type pthread_barrier_t = *mut __c_anonymous_pthread_barrier;
 pub type pthread_spinlock_t = crate::uintptr_t;
 
-pub type segsz_t = usize;
+pub type segsz_t = isize;
 
 pub type vm_prot_t = u8;
 pub type vm_maptype_t = u8;
 pub type vm_inherit_t = i8;
-pub type vm_subsys_t = c_int;
-pub type vm_eflags_t = c_uint;
 
-pub type vm_map_t = *mut __c_anonymous_vm_map;
-pub type vm_map_entry_t = *mut vm_map_entry;
-
-pub type pmap = __c_anonymous_pmap;
+pub type vm_map_t = *mut c_void;
+pub type vm_map_entry_t = *mut c_void;
 
 extern_ty! {
-    pub enum sem {}
+    pub type sem;
+    pub type __c_anonymous_pthread_barrier;
+    pub type __c_anonymous_pthread_barrierattr;
 }
 
 e! {
@@ -191,9 +188,9 @@ s! {
         pub ifm_msglen: c_ushort,
         pub ifm_version: c_uchar,
         pub ifm_type: c_uchar,
-        pub ifm_addrs: c_int,
-        pub ifm_flags: c_int,
         pub ifm_index: c_ushort,
+        pub ifm_flags: c_int,
+        pub ifm_addrs: c_int,
         pub ifm_data: if_data,
     }
 
@@ -259,7 +256,7 @@ s! {
         pub cp_nice: u64,
         pub cp_sys: u64,
         pub cp_intr: u64,
-        pub cp_idel: u64,
+        pub cp_idle: u64,
         cp_unused01: Padding<u64>,
         cp_unused02: Padding<u64>,
         pub cp_sample_pc: u64,
@@ -343,50 +340,6 @@ s! {
         pub kp_lwp: crate::kinfo_lwp,
         pub kp_ktaddr: crate::uintptr_t,
         kp_spare: [c_int; 2],
-    }
-
-    pub struct __c_anonymous_vm_map {
-        _priv: [crate::uintptr_t; 36],
-    }
-
-    pub struct vm_map_entry {
-        _priv: [crate::uintptr_t; 15],
-        pub eflags: crate::vm_eflags_t,
-        pub maptype: crate::vm_maptype_t,
-        pub protection: crate::vm_prot_t,
-        pub max_protection: crate::vm_prot_t,
-        pub inheritance: crate::vm_inherit_t,
-        pub wired_count: c_int,
-        pub id: crate::vm_subsys_t,
-    }
-
-    pub struct __c_anonymous_pmap {
-        _priv1: [crate::uintptr_t; 32],
-        _priv2: [crate::uintptr_t; 32],
-        _priv3: [crate::uintptr_t; 32],
-        _priv4: [crate::uintptr_t; 32],
-        _priv5: [crate::uintptr_t; 8],
-    }
-
-    pub struct vmspace {
-        vm_map: __c_anonymous_vm_map,
-        vm_pmap: __c_anonymous_pmap,
-        pub vm_flags: c_int,
-        pub vm_shm: *mut c_char,
-        pub vm_rssize: crate::segsz_t,
-        pub vm_swrss: crate::segsz_t,
-        pub vm_tsize: crate::segsz_t,
-        pub vm_dsize: crate::segsz_t,
-        pub vm_ssize: crate::segsz_t,
-        pub vm_taddr: *mut c_char,
-        pub vm_daddr: *mut c_char,
-        pub vm_maxsaddr: *mut c_char,
-        pub vm_minsaddr: *mut c_char,
-        _unused1: Padding<c_int>,
-        _unused2: Padding<c_int>,
-        pub vm_pagesupply: c_int,
-        pub vm_holdcnt: c_uint,
-        pub vm_refcnt: c_uint,
     }
 
     pub struct cpuctl_msr_args_t {
@@ -481,6 +434,7 @@ s! {
         __unused3: Padding<*mut c_void>, //actually a function pointer
     }
 
+    #[repr(align(64))]
     pub struct mcontext_t {
         pub mc_onstack: register_t,
         pub mc_rdi: register_t,
@@ -540,15 +494,33 @@ pub const MADV_INVAL: c_int = 10;
 pub const MADV_SETMAP: c_int = 11;
 pub const O_CLOEXEC: c_int = 0x00020000;
 pub const O_DIRECTORY: c_int = 0x08000000;
+pub const O_FBLOCKING: c_int = 0x00040000;
+pub const O_FNONBLOCKING: c_int = 0x00080000;
+pub const O_FAPPEND: c_int = 0x00100000;
+pub const O_FOFFSET: c_int = 0x00200000;
+pub const O_FSYNCWRITE: c_int = 0x00400000;
+pub const O_FASYNCWRITE: c_int = 0x00800000;
+pub const O_FMASK: c_int =
+    O_FBLOCKING | O_FNONBLOCKING | O_FAPPEND | O_FOFFSET | O_FSYNCWRITE | O_FASYNCWRITE;
 pub const F_GETLK: c_int = 7;
 pub const F_SETLK: c_int = 8;
 pub const F_SETLKW: c_int = 9;
 pub const F_GETPATH: c_int = 19;
+pub const POSIX_FADV_NORMAL: c_int = 0;
+pub const POSIX_FADV_SEQUENTIAL: c_int = 1;
+pub const POSIX_FADV_RANDOM: c_int = 2;
+pub const POSIX_FADV_WILLNEED: c_int = 3;
+pub const POSIX_FADV_DONTNEED: c_int = 4;
+pub const POSIX_FADV_NOREUSE: c_int = 5;
 pub const ENOMEDIUM: c_int = 93;
 pub const ENOTRECOVERABLE: c_int = 94;
 pub const EOWNERDEAD: c_int = 95;
 pub const EASYNC: c_int = 99;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.and use.
 pub const ELAST: c_int = 99;
+
 pub const RLIMIT_POSIXLOCKS: c_int = 11;
 #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
 pub const RLIM_NLIMITS: crate::rlim_t = 12;
@@ -604,7 +576,8 @@ pub const KERN_USRSTACK: c_int = 33;
 pub const KERN_LOGSIGEXIT: c_int = 34;
 pub const KERN_IOV_MAX: c_int = 35;
 pub const KERN_MAXPOSIXLOCKSPERUID: c_int = 36;
-pub const KERN_MAXID: c_int = 37;
+pub const KERN_STATIC_TLS_EXTRA: c_int = 37;
+pub const KERN_MAXID: c_int = 38;
 pub const KERN_PROC_ALL: c_int = 0;
 pub const KERN_PROC_PID: c_int = 1;
 pub const KERN_PROC_PGRP: c_int = 2;
@@ -641,14 +614,39 @@ pub const HW_MACHINE_PLATFORM: c_int = 12;
 pub const HW_SENSORS: c_int = 13;
 pub const HW_MAXID: c_int = 14;
 pub const USER_CS_PATH: c_int = 1;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_BASE_MAX: c_int = 2;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_DIM_MAX: c_int = 3;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_SCALE_MAX: c_int = 4;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_STRING_MAX: c_int = 5;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_COLL_WEIGHTS_MAX: c_int = 6;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_EXPR_NEST_MAX: c_int = 7;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_LINE_MAX: c_int = 8;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_RE_DUP_MAX: c_int = 9;
+
 pub const USER_POSIX2_VERSION: c_int = 10;
 pub const USER_POSIX2_C_BIND: c_int = 11;
 pub const USER_POSIX2_C_DEV: c_int = 12;
@@ -688,15 +686,53 @@ pub const CTL_P1003_1B_SIGQUEUE_MAX: c_int = 24;
 pub const CTL_P1003_1B_TIMER_MAX: c_int = 25;
 pub const CTL_P1003_1B_MAXID: c_int = 26;
 
-pub const CPUCTL_RSMSR: c_int = 0xc0106301;
-pub const CPUCTL_WRMSR: c_int = 0xc0106302;
-pub const CPUCTL_CPUID: c_int = 0xc0106303;
-pub const CPUCTL_UPDATE: c_int = 0xc0106304;
-pub const CPUCTL_MSRSBIT: c_int = 0xc0106305;
-pub const CPUCTL_MSRCBIT: c_int = 0xc0106306;
-pub const CPUCTL_CPUID_COUNT: c_int = 0xc0106307;
+pub const CPUCTL_RDMSR: c_int = u32_cast_int(0xc0106301);
+#[deprecated(since = "0.2.187", note = "Replaced on DragonFly by CPUCTL_RDMSR")]
+pub const CPUCTL_RSMSR: c_int = CPUCTL_RDMSR;
+pub const CPUCTL_WRMSR: c_int = u32_cast_int(0xc0106302);
+pub const CPUCTL_CPUID: c_int = u32_cast_int(0xc0146303);
+pub const CPUCTL_UPDATE: c_int = u32_cast_int(0xc0106304);
+pub const CPUCTL_MSRSBIT: c_int = u32_cast_int(0xc0106305);
+pub const CPUCTL_MSRCBIT: c_int = u32_cast_int(0xc0106306);
+pub const CPUCTL_CPUID_COUNT: c_int = u32_cast_int(0xc0186307);
 
 pub const CPU_SETSIZE: size_t = size_of::<crate::cpumask_t>() * 8;
+
+pub const REG_BASIC: c_int = 0o0000;
+pub const REG_EXTENDED: c_int = 0o0001;
+pub const REG_ICASE: c_int = 0o0002;
+pub const REG_NOSUB: c_int = 0x8;
+pub const REG_NEWLINE: c_int = 0x4;
+pub const REG_NOSPEC: c_int = 0o0020;
+pub const REG_PEND: c_int = 0x80;
+pub const REG_DUMP: c_int = 0o0200;
+
+pub const REG_NOMATCH: c_int = 1;
+pub const REG_BADPAT: c_int = 2;
+pub const REG_ECOLLATE: c_int = 3;
+pub const REG_ECTYPE: c_int = 4;
+pub const REG_EESCAPE: c_int = 5;
+pub const REG_ESUBREG: c_int = 6;
+pub const REG_EBRACK: c_int = 7;
+pub const REG_EPAREN: c_int = 8;
+pub const REG_EBRACE: c_int = 9;
+pub const REG_BADBR: c_int = 10;
+pub const REG_ERANGE: c_int = 11;
+pub const REG_ESPACE: c_int = 12;
+pub const REG_BADRPT: c_int = 13;
+pub const REG_EMPTY: c_int = 14;
+pub const REG_ASSERT: c_int = 15;
+pub const REG_INVARG: c_int = 15;
+pub const REG_ILLSEQ: c_int = 16;
+pub const REG_ATOI: c_int = 255;
+pub const REG_ITOA: c_int = 0o0400;
+
+pub const REG_NOTBOL: c_int = 0o00001;
+pub const REG_NOTEOL: c_int = 0o00002;
+pub const REG_STARTEND: c_int = 0o00004;
+pub const REG_TRACE: c_int = 0o00400;
+pub const REG_LARGE: c_int = 0o01000;
+pub const REG_BACKR: c_int = 0x8;
 
 pub const EVFILT_READ: i16 = -1;
 pub const EVFILT_WRITE: i16 = -2;
@@ -721,8 +757,8 @@ pub const EV_NODATA: u16 = 0x1000;
 pub const EV_FLAG1: u16 = 0x2000;
 pub const EV_ERROR: u16 = 0x4000;
 pub const EV_EOF: u16 = 0x8000;
-pub const EV_HUP: u16 = 0x8000;
-pub const EV_SYSFLAGS: u16 = 0xf000;
+pub const EV_HUP: u16 = 0x0800;
+pub const EV_SYSFLAGS: u16 = 0xF800;
 
 pub const FIODNAME: c_ulong = 0x80106678;
 
@@ -775,6 +811,7 @@ pub const IFF_NOARP: c_int = 0x80; // no address resolution protocol
 pub const IFF_PROMISC: c_int = 0x100; // receive all packets
 pub const IFF_ALLMULTI: c_int = 0x200; // receive all multicast packets
 pub const IFF_OACTIVE_COMPAT: c_int = 0x400; // was transmission in progress
+pub const IFF_OACTIVE: c_int = IFF_OACTIVE_COMPAT;
 pub const IFF_SIMPLEX: c_int = 0x800; // can't hear own transmissions
 pub const IFF_LINK0: c_int = 0x1000; // per link layer defined bit
 pub const IFF_LINK1: c_int = 0x2000; // per link layer defined bit
@@ -1022,8 +1059,10 @@ pub const TCP_FASTKEEP: c_int = 128;
 pub const AF_BLUETOOTH: c_int = 33;
 pub const AF_MPLS: c_int = 34;
 pub const AF_IEEE80211: c_int = 35;
+pub const AF_ARP: c_int = 36;
 
 pub const PF_BLUETOOTH: c_int = AF_BLUETOOTH;
+pub const PF_ARP: c_int = AF_ARP;
 
 pub const NET_RT_DUMP: c_int = 1;
 pub const NET_RT_FLAGS: c_int = 2;
@@ -1038,7 +1077,7 @@ pub const MSG_SYNC: c_int = 0x00000800;
 pub const MSG_CMSG_CLOEXEC: c_int = 0x00001000;
 pub const MSG_FBLOCKING: c_int = 0x00010000;
 pub const MSG_FNONBLOCKING: c_int = 0x00020000;
-pub const MSG_FMASK: c_int = 0xFFFF0000;
+pub const MSG_FMASK: c_int = u32_cast_int(0xFFFF0000);
 
 // sys/mount.h
 pub const MNT_NODEV: c_int = 0x00000010;
@@ -1066,11 +1105,31 @@ pub const DOWNTIME: c_short = 11;
 // utmpx database types
 pub const UTX_DB_UTMPX: c_uint = 0;
 pub const UTX_DB_WTMPX: c_uint = 1;
-pub const UTX_DB_LASTLOG: c_uint = 2;
+pub const UTX_DB_LASTLOGX: c_uint = 2;
+#[deprecated(since = "0.2.187", note = "Replaced on DragonFly by UTX_DB_LASTLOGX")]
+pub const UTX_DB_LASTLOG: c_uint = UTX_DB_LASTLOGX;
 pub const _UTX_LINESIZE: usize = 32;
 pub const _UTX_USERSIZE: usize = 32;
 pub const _UTX_IDSIZE: usize = 4;
 pub const _UTX_HOSTSIZE: usize = 256;
+
+pub const EXTATTR_NAMESPACE_EMPTY: c_int = 0;
+pub const EXTATTR_NAMESPACE_USER: c_int = 1;
+pub const EXTATTR_NAMESPACE_SYSTEM: c_int = 2;
+
+pub const GRND_NONBLOCK: c_uint = 0x2;
+pub const GRND_RANDOM: c_uint = 0x1;
+pub const GRND_INSECURE: c_uint = 0x4;
+
+pub const NI_NOFQDN: c_int = 0x00000001;
+pub const NI_NUMERICHOST: c_int = 0x00000002;
+pub const NI_NAMEREQD: c_int = 0x00000004;
+pub const NI_NUMERICSERV: c_int = 0x00000008;
+pub const NI_DGRAM: c_int = 0x00000010;
+pub const NI_NUMERICSCOPE: c_int = 0x00000040;
+
+pub const B460800: crate::speed_t = 460800;
+pub const B921600: crate::speed_t = 921600;
 
 pub const LC_COLLATE_MASK: c_int = 1 << 0;
 pub const LC_CTYPE_MASK: c_int = 1 << 1;
@@ -1093,9 +1152,11 @@ pub const TIOCMODG: c_ulong = 0x40047403;
 pub const TIOCMODS: c_ulong = 0x80047404;
 pub const TIOCREMOTE: c_ulong = 0x80047469;
 pub const TIOCTIMESTAMP: c_ulong = 0x40107459;
+pub const BIOCSRTIMEOUT: c_ulong = 0x8010426d;
+pub const BIOCGRTIMEOUT: c_ulong = 0x4010426e;
 
 // Constants used by "at" family of system calls.
-pub const AT_FDCWD: c_int = 0xFFFAFDCD; // invalid file descriptor
+pub const AT_FDCWD: c_int = u32_cast_int(0xFFFAFDCD); // invalid file descriptor
 pub const AT_SYMLINK_NOFOLLOW: c_int = 1;
 pub const AT_REMOVEDIR: c_int = 2;
 pub const AT_EACCESS: c_int = 4;
@@ -1105,8 +1166,6 @@ pub const VCHECKPT: usize = 19;
 
 pub const _PC_2_SYMLINKS: c_int = 22;
 pub const _PC_TIMESTAMP_RESOLUTION: c_int = 23;
-
-pub const _CS_PATH: c_int = 1;
 
 pub const _SC_V7_ILP32_OFF32: c_int = 122;
 pub const _SC_V7_ILP32_OFFBIG: c_int = 123;
@@ -1166,6 +1225,9 @@ pub const RTM_VERSION: c_int = 7;
 pub const RTAX_MPLS1: c_int = 8;
 pub const RTAX_MPLS2: c_int = 9;
 pub const RTAX_MPLS3: c_int = 10;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const RTAX_MAX: c_int = 11;
 
 const fn _CMSG_ALIGN(n: usize) -> usize {
@@ -1173,15 +1235,15 @@ const fn _CMSG_ALIGN(n: usize) -> usize {
 }
 
 f! {
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         (cmsg as *mut c_uchar).offset(_CMSG_ALIGN(size_of::<cmsghdr>()) as isize)
     }
 
-    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_LEN(length: c_uint) -> c_uint {
         (_CMSG_ALIGN(size_of::<cmsghdr>()) + length as usize) as c_uint
     }
 
-    pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         let next = cmsg as usize
             + _CMSG_ALIGN((*cmsg).cmsg_len as usize)
             + _CMSG_ALIGN(size_of::<cmsghdr>());
@@ -1189,44 +1251,42 @@ f! {
         if next <= max {
             (cmsg as usize + _CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr
         } else {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         }
     }
 
-    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_SPACE(length: c_uint) -> c_uint {
         (_CMSG_ALIGN(size_of::<cmsghdr>()) + _CMSG_ALIGN(length as usize)) as c_uint
     }
 
-    pub fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
-        for slot in cpuset.ary.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
+        cpuset.ary.fill(0);
     }
 
-    pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let (idx, offset) = ((cpu >> 6) & 3, cpu & 63);
         cpuset.ary[idx] |= 1 << offset;
         ()
     }
 
-    pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let (idx, offset) = ((cpu >> 6) & 3, cpu & 63);
         cpuset.ary[idx] &= !(1 << offset);
         ()
     }
 
-    pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
         let (idx, offset) = ((cpu >> 6) & 3, cpu & 63);
         0 != cpuset.ary[idx] & (1 << offset)
     }
 }
 
 safe_f! {
-    pub const fn WIFSIGNALED(status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         (status & 0o177) != 0o177 && (status & 0o177) != 0
     }
 
-    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -1235,11 +1295,11 @@ safe_f! {
         dev
     }
 
-    pub const fn major(dev: crate::dev_t) -> c_int {
+    pub const safe fn major(dev: crate::dev_t) -> c_int {
         ((dev >> 8) & 0xff) as c_int
     }
 
-    pub const fn minor(dev: crate::dev_t) -> c_int {
+    pub const safe fn minor(dev: crate::dev_t) -> c_int {
         (dev & 0xffff00ff) as c_int
     }
 }
@@ -1278,6 +1338,7 @@ extern "C" {
 
     pub fn statfs(path: *const c_char, buf: *mut statfs) -> c_int;
     pub fn fstatfs(fd: c_int, buf: *mut statfs) -> c_int;
+    pub fn fdatasync(fd: c_int) -> c_int;
     pub fn uname(buf: *mut crate::utsname) -> c_int;
     pub fn memmem(
         haystack: *const c_void,
@@ -1285,11 +1346,35 @@ extern "C" {
         needle: *const c_void,
         needlelen: size_t,
     ) -> *mut c_void;
+    pub fn dlvsym(
+        handle: *mut c_void,
+        symbol: *const c_char,
+        version: *const c_char,
+    ) -> *mut c_void;
+    pub fn reallocarray(ptr: *mut c_void, nmemb: size_t, size: size_t) -> *mut c_void;
+    pub fn qsort_r(
+        base: *mut c_void,
+        num: size_t,
+        size: size_t,
+        arg: *mut c_void,
+        compar: Option<unsafe extern "C" fn(*mut c_void, *const c_void, *const c_void) -> c_int>,
+    );
     pub fn pthread_spin_init(lock: *mut pthread_spinlock_t, pshared: c_int) -> c_int;
     pub fn pthread_spin_destroy(lock: *mut pthread_spinlock_t) -> c_int;
     pub fn pthread_spin_lock(lock: *mut pthread_spinlock_t) -> c_int;
     pub fn pthread_spin_trylock(lock: *mut pthread_spinlock_t) -> c_int;
     pub fn pthread_spin_unlock(lock: *mut pthread_spinlock_t) -> c_int;
+
+    pub fn pthread_getaffinity_np(
+        td: crate::pthread_t,
+        cpusetsize: size_t,
+        cpusetp: *mut cpuset_t,
+    ) -> c_int;
+    pub fn pthread_setaffinity_np(
+        td: crate::pthread_t,
+        cpusetsize: size_t,
+        cpusetp: *const cpuset_t,
+    ) -> c_int;
 
     pub fn sched_getaffinity(pid: crate::pid_t, cpusetsize: size_t, mask: *mut cpu_set_t) -> c_int;
     pub fn sched_setaffinity(
@@ -1300,6 +1385,7 @@ extern "C" {
     pub fn sched_getcpu() -> c_int;
     pub fn setproctitle(fmt: *const c_char, ...);
 
+    pub fn ftok(path: *const c_char, id: c_int) -> crate::key_t;
     pub fn shmget(key: crate::key_t, size: size_t, shmflg: c_int) -> c_int;
     pub fn shmat(shmid: c_int, shmaddr: *const c_void, shmflg: c_int) -> *mut c_void;
     pub fn shmdt(shmaddr: *const c_void) -> c_int;
@@ -1332,6 +1418,27 @@ extern "C" {
         flags: c_int,
     ) -> c_int;
 
+    pub fn extattr_delete_file(
+        path: *const c_char,
+        attrnamespace: c_int,
+        attrname: *const c_char,
+    ) -> c_int;
+    pub fn extattr_get_file(
+        path: *const c_char,
+        attrnamespace: c_int,
+        attrname: *const c_char,
+        data: *mut c_void,
+        nbytes: size_t,
+    ) -> ssize_t;
+    pub fn extattr_set_file(
+        path: *const c_char,
+        attrnamespace: c_int,
+        attrname: *const c_char,
+        data: *const c_void,
+        nbytes: size_t,
+    ) -> c_int;
+
+    pub fn dup3(src: c_int, dst: c_int, flags: c_int) -> c_int;
     pub fn closefrom(lowfd: c_int) -> c_int;
 }
 

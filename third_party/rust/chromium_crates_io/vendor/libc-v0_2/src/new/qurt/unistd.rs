@@ -239,10 +239,26 @@ extern "C" {
 
     // Process operations
     pub fn getpid() -> pid_t;
+    pub fn getppid() -> pid_t;
+    pub fn getpgid(pid: pid_t) -> pid_t;
+    pub fn getpgrp() -> pid_t;
+    pub fn getuid() -> uid_t;
+    pub fn geteuid() -> uid_t;
+    pub fn getgid() -> gid_t;
+    pub fn getegid() -> gid_t;
+    pub fn seteuid(uid: uid_t) -> c_int;
+    pub fn setuid(uid: uid_t) -> c_int;
+    pub fn setpgid(pid: pid_t, pgid: pid_t) -> c_int;
+    pub fn setpgrp() -> pid_t;
+    pub fn setsid() -> pid_t;
 
     // Sleep functions
     pub fn sleep(seconds: c_uint) -> c_uint;
 
+    // Sync operations
+    pub fn fsync(fd: c_int) -> c_int;
+
     // System configuration
     pub fn sysconf(name: c_int) -> c_long;
+    pub fn pathconf(path: *const c_char, name: c_int) -> c_long;
 }

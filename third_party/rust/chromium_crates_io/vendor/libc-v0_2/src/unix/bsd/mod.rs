@@ -7,6 +7,9 @@ pub type socklen_t = u32;
 pub type sa_family_t = u8;
 pub type pthread_t = crate::uintptr_t;
 pub type nfds_t = c_uint;
+#[cfg(target_os = "dragonfly")]
+pub type regoff_t = c_int;
+#[cfg(not(target_os = "dragonfly"))]
 pub type regoff_t = off_t;
 
 s! {
@@ -57,7 +60,7 @@ s! {
         pub ifa_netmask: *mut crate::sockaddr,
         pub ifa_dstaddr: *mut crate::sockaddr,
         pub ifa_data: *mut c_void,
-        #[cfg(target_os = "netbsd")]
+        #[cfg(any(target_os = "dragonfly", target_os = "netbsd"))]
         pub ifa_addrflags: c_uint,
     }
 
@@ -163,7 +166,10 @@ pub const FIOASYNC: c_ulong = 0x8004667d;
 pub const FIOSETOWN: c_ulong = 0x8004667c;
 pub const FIOGETOWN: c_ulong = 0x4004667b;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PATH_MAX: c_int = 1024;
+
 pub const MAXPATHLEN: c_int = PATH_MAX;
 
 pub const IOV_MAX: c_int = 1024;
@@ -403,43 +409,13 @@ cfg_if! {
     }
 }
 
-pub const REG_BASIC: c_int = 0o0000;
-pub const REG_EXTENDED: c_int = 0o0001;
-pub const REG_ICASE: c_int = 0o0002;
-pub const REG_NOSUB: c_int = 0o0004;
-pub const REG_NEWLINE: c_int = 0o0010;
-pub const REG_NOSPEC: c_int = 0o0020;
-pub const REG_PEND: c_int = 0o0040;
-pub const REG_DUMP: c_int = 0o0200;
-
-pub const REG_NOMATCH: c_int = 1;
-pub const REG_BADPAT: c_int = 2;
-pub const REG_ECOLLATE: c_int = 3;
-pub const REG_ECTYPE: c_int = 4;
-pub const REG_EESCAPE: c_int = 5;
-pub const REG_ESUBREG: c_int = 6;
-pub const REG_EBRACK: c_int = 7;
-pub const REG_EPAREN: c_int = 8;
-pub const REG_EBRACE: c_int = 9;
-pub const REG_BADBR: c_int = 10;
-pub const REG_ERANGE: c_int = 11;
-pub const REG_ESPACE: c_int = 12;
-pub const REG_BADRPT: c_int = 13;
-pub const REG_EMPTY: c_int = 14;
-pub const REG_ASSERT: c_int = 15;
-pub const REG_INVARG: c_int = 16;
-pub const REG_ATOI: c_int = 255;
-pub const REG_ITOA: c_int = 0o0400;
-
-pub const REG_NOTBOL: c_int = 0o00001;
-pub const REG_NOTEOL: c_int = 0o00002;
-pub const REG_STARTEND: c_int = 0o00004;
-pub const REG_TRACE: c_int = 0o00400;
-pub const REG_LARGE: c_int = 0o01000;
-pub const REG_BACKR: c_int = 0o02000;
-
-pub const TIOCCBRK: c_uint = 0x2000747a;
-pub const TIOCSBRK: c_uint = 0x2000747b;
+cfg_if! {
+    // Redefined in `new/apple`
+    if #[cfg(not(target_vendor = "apple"))] {
+        pub const TIOCCBRK: c_uint = 0x2000747a;
+        pub const TIOCSBRK: c_uint = 0x2000747b;
+    }
+}
 
 pub const PRIO_PROCESS: c_int = 0;
 pub const PRIO_PGRP: c_int = 1;
@@ -493,59 +469,57 @@ pub const RTAX_AUTHOR: c_int = 6;
 pub const RTAX_BRD: c_int = 7;
 
 f! {
-    pub fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut cmsghdr {
         if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
-            (*mhdr).msg_control.cast::<cmsghdr>()
+            (*mhdr).msg_control.cast()
         } else {
-            core::ptr::null_mut()
+            ptr::null_mut()
         }
     }
 
-    pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
-    pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
+    pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
     }
 
-    pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;
     }
 
-    pub fn FD_ZERO(set: *mut fd_set) -> () {
-        for slot in &mut (*set).fds_bits {
-            *slot = 0;
-        }
+    pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
+        (*set).fds_bits.fill(0);
     }
 }
 
 safe_f! {
-    pub const fn WTERMSIG(status: c_int) -> c_int {
+    pub const safe fn WTERMSIG(status: c_int) -> c_int {
         status & 0o177
     }
 
-    pub const fn WIFEXITED(status: c_int) -> bool {
+    pub const safe fn WIFEXITED(status: c_int) -> bool {
         (status & 0o177) == 0
     }
 
-    pub const fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0x00ff
     }
 
-    pub const fn WCOREDUMP(status: c_int) -> bool {
+    pub const safe fn WCOREDUMP(status: c_int) -> bool {
         (status & 0o200) != 0
     }
 
-    pub const fn QCMD(cmd: c_int, type_: c_int) -> c_int {
+    pub const safe fn QCMD(cmd: c_int, type_: c_int) -> c_int {
         (cmd << 8) | (type_ & 0x00ff)
     }
 }

@@ -59,22 +59,6 @@ s! {
         pub st_ino: crate::ino64_t,
     }
 
-    pub struct shmid_ds {
-        pub shm_perm: crate::ipc_perm,
-        pub shm_segsz: crate::size_t,
-        pub shm_atime: crate::time_t,
-        __unused1: c_ulong,
-        pub shm_dtime: crate::time_t,
-        __unused2: c_ulong,
-        pub shm_ctime: crate::time_t,
-        __unused3: c_ulong,
-        pub shm_cpid: crate::pid_t,
-        pub shm_lpid: crate::pid_t,
-        pub shm_nattch: crate::shmatt_t,
-        __unused4: c_ulong,
-        __unused5: c_ulong,
-    }
-
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_handler: crate::sighandler_t,

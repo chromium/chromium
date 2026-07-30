@@ -1,7 +1,6 @@
 //! 32-bit specific definitions for linux-like values
 
 use crate::prelude::*;
-use crate::pthread_mutex_t;
 
 pub type clock_t = i32;
 
@@ -9,8 +8,6 @@ pub type shmatt_t = c_ulong;
 pub type msgqnum_t = c_ulong;
 pub type msglen_t = c_ulong;
 pub type nlink_t = u32;
-pub type __u64 = c_ulonglong;
-pub type __s64 = c_longlong;
 pub type __fsword_t = i32;
 pub type fsblkcnt64_t = u64;
 pub type fsfilcnt64_t = u64;
@@ -379,7 +376,7 @@ cfg_if! {
         pub const EDOTDOT: c_int = 73;
 
         pub const SA_NODEFER: c_int = 0x40000000;
-        pub const SA_RESETHAND: c_int = 0x80000000;
+        pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
         pub const SA_RESTART: c_int = 0x10000000;
         pub const SA_NOCLDSTOP: c_int = 0x00000001;
 
@@ -406,43 +403,6 @@ cfg_if! {
         pub const F_SETLKW: c_int = 7;
     }
 }
-
-#[cfg(target_endian = "little")]
-pub const PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-#[cfg(target_endian = "little")]
-pub const PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-#[cfg(target_endian = "little")]
-pub const PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-#[cfg(target_endian = "big")]
-pub const PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-#[cfg(target_endian = "big")]
-pub const PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-#[cfg(target_endian = "big")]
-pub const PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
 
 pub const PTRACE_GETFPREGS: c_uint = 14;
 pub const PTRACE_SETFPREGS: c_uint = 15;

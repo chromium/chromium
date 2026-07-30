@@ -31,4 +31,15 @@ extern "C" {
     pub fn strptime(s: *const c_char, format: *const c_char, tm: *mut tm) -> *mut c_char;
     pub fn clock_gettime(clk_id: clockid_t, tp: *mut timespec) -> c_int;
     pub fn nanosleep(req: *const timespec, rem: *mut timespec) -> c_int;
+
+    // POSIX timer functions (from QuRT time.h)
+    pub fn timer_create(clockid: clockid_t, evp: *mut sigevent, timerid: *mut timer_t) -> c_int;
+    pub fn timer_delete(timerid: timer_t) -> c_int;
+    pub fn timer_gettime(timerid: timer_t, value: *mut itimerspec) -> c_int;
+    pub fn timer_settime(
+        timerid: timer_t,
+        flags: c_int,
+        value: *const itimerspec,
+        ovalue: *mut itimerspec,
+    ) -> c_int;
 }

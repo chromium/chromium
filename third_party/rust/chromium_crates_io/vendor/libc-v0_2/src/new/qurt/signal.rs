@@ -3,13 +3,14 @@
 use super::*;
 use crate::prelude::*;
 
-// Standard signal numbers
+// Signal numbers from toolchain signal.h (non-_LINUX_C_LIB_H_ path)
 pub const SIGHUP: c_int = 1;
 pub const SIGINT: c_int = 2;
 pub const SIGQUIT: c_int = 3;
 pub const SIGILL: c_int = 4;
 pub const SIGTRAP: c_int = 5;
 pub const SIGABRT: c_int = 6;
+pub const SIGIOT: c_int = 6;
 pub const SIGBUS: c_int = 7;
 pub const SIGFPE: c_int = 8;
 pub const SIGKILL: c_int = 9;
@@ -29,9 +30,9 @@ pub const SIGTTOU: c_int = 22;
 pub const SIGURG: c_int = 23;
 pub const SIGXCPU: c_int = 24;
 pub const SIGXFSZ: c_int = 25;
-pub const SIGVTALRM: c_int = 26;
 pub const SIGPROF: c_int = 27;
 pub const SIGWINCH: c_int = 28;
+pub const SIGPOLL: c_int = 29;
 pub const SIGIO: c_int = 29;
 pub const SIGPWR: c_int = 30;
 pub const SIGSYS: c_int = 31;
@@ -50,6 +51,9 @@ pub const SIG_SETMASK: c_int = 3;
 pub const POSIX_MSG: c_int = 7;
 pub const POSIX_NOTIF: c_int = 8;
 pub const SIGRTMIN: c_int = 10;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const SIGRTMAX: c_int = 32;
 
 // Notification types (from QuRT signal.h)
@@ -61,12 +65,16 @@ pub const SA_SIGINFO: c_int = 1;
 pub type sighandler_t = size_t;
 
 // Signal structures based on QuRT SDK headers
-s! {
-    pub struct sigval {
+
+// sigval is a union in C (4 bytes on 32-bit hexagon)
+s_no_extra_traits! {
+    pub union sigval {
         pub sival_int: c_int,
         pub sival_ptr: *mut c_void,
     }
+}
 
+s! {
     pub struct sigevent {
         pub sigev_notify: c_int,
         pub sigev_signo: c_int,
@@ -90,23 +98,17 @@ s! {
 }
 
 extern "C" {
+    // From generic signal.h (toolchain)
     pub fn signal(sig: c_int, handler: sighandler_t) -> sighandler_t;
-    pub fn kill(pid: pid_t, sig: c_int) -> c_int;
     pub fn raise(sig: c_int) -> c_int;
-    pub fn alarm(seconds: c_uint) -> c_uint;
-    pub fn pause() -> c_int;
 
-    // Signal mask functions
+    // QuRT POSIX signal functions
     pub fn sigemptyset(set: *mut sigset_t) -> c_int;
     pub fn sigfillset(set: *mut sigset_t) -> c_int;
     pub fn sigaddset(set: *mut sigset_t, signum: c_int) -> c_int;
     pub fn sigdelset(set: *mut sigset_t, signum: c_int) -> c_int;
     pub fn sigismember(set: *const sigset_t, signum: c_int) -> c_int;
-    pub fn sigprocmask(how: c_int, set: *const sigset_t, oldset: *mut sigset_t) -> c_int;
-    pub fn sigpending(set: *mut sigset_t) -> c_int;
     pub fn sigsuspend(mask: *const sigset_t) -> c_int;
-
-    // QuRT-specific signal functions
     pub fn sigwait(set: *const sigset_t, sig: *mut c_int) -> c_int;
     pub fn _sigaction(sig: c_int, act: *const sigaction, oact: *mut sigaction) -> c_int;
     pub fn sigtimedwait(

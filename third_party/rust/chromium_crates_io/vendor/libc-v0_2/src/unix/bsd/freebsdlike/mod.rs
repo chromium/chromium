@@ -22,7 +22,6 @@ pub type key_t = c_long;
 
 pub type Elf32_Addr = u32;
 pub type Elf32_Half = u16;
-pub type Elf32_Lword = u64;
 pub type Elf32_Off = u32;
 pub type Elf32_Sword = i32;
 pub type Elf32_Word = u32;
@@ -60,7 +59,7 @@ cfg_if! {
 // link.h
 
 extern_ty! {
-    pub enum timezone {}
+    pub type timezone;
 }
 
 impl siginfo_t {
@@ -99,12 +98,6 @@ s! {
         pub imr_multiaddr: in_addr,
         pub imr_address: in_addr,
         pub imr_ifindex: c_int,
-    }
-
-    pub struct ip_mreq_source {
-        pub imr_multiaddr: in_addr,
-        pub imr_sourceaddr: in_addr,
-        pub imr_interface: in_addr,
     }
 
     pub struct glob_t {
@@ -408,10 +401,6 @@ s! {
 // Non-public helper constant
 const SIZEOF_LONG: usize = size_of::<c_long>();
 
-#[deprecated(
-    since = "0.2.64",
-    note = "Can vary at runtime.  Use sysconf(3) instead"
-)]
 pub const AIO_LISTIO_MAX: c_int = 16;
 pub const AIO_CANCELED: c_int = 1;
 pub const AIO_NOTCANCELED: c_int = 2;
@@ -596,7 +585,7 @@ pub const MCL_FUTURE: c_int = 0x0002;
 pub const MNT_EXPUBLIC: c_int = 0x20000000;
 pub const MNT_NOATIME: c_int = 0x10000000;
 pub const MNT_NOCLUSTERR: c_int = 0x40000000;
-pub const MNT_NOCLUSTERW: c_int = 0x80000000;
+pub const MNT_NOCLUSTERW: c_int = u32_cast_int(0x80000000);
 pub const MNT_NOSYMFOLLOW: c_int = 0x00400000;
 pub const MNT_SOFTDEP: c_int = 0x00200000;
 pub const MNT_SUIDDIR: c_int = 0x00100000;
@@ -945,10 +934,6 @@ pub const IPV6_PKTINFO: c_int = 46;
 pub const IPV6_HOPLIMIT: c_int = 47;
 pub const IPV6_RECVTCLASS: c_int = 57;
 pub const IPV6_TCLASS: c_int = 61;
-pub const IP_ADD_SOURCE_MEMBERSHIP: c_int = 70;
-pub const IP_DROP_SOURCE_MEMBERSHIP: c_int = 71;
-pub const IP_BLOCK_SOURCE: c_int = 72;
-pub const IP_UNBLOCK_SOURCE: c_int = 73;
 
 pub const TCP_NOPUSH: c_int = 4;
 pub const TCP_NOOPT: c_int = 8;
@@ -1412,7 +1397,6 @@ pub const TIME_WAIT: c_int = 4;
 pub const TIME_ERROR: c_int = 5;
 
 pub const REG_ENOSYS: c_int = -1;
-pub const REG_ILLSEQ: c_int = 17;
 
 pub const IPC_PRIVATE: crate::key_t = 0;
 pub const IPC_CREAT: c_int = 0o1000;
@@ -1455,11 +1439,6 @@ pub const RB_GDB: c_int = 0x8000;
 pub const RB_MUTE: c_int = 0x10000;
 pub const RB_SELFTEST: c_int = 0x20000;
 
-// For getrandom()
-pub const GRND_NONBLOCK: c_uint = 0x1;
-pub const GRND_RANDOM: c_uint = 0x2;
-pub const GRND_INSECURE: c_uint = 0x4;
-
 // DIFF(main): changed to `c_short` in f62eb023ab
 pub const POSIX_SPAWN_RESETIDS: c_int = 0x01;
 pub const POSIX_SPAWN_SETPGROUP: c_int = 0x02;
@@ -1469,15 +1448,15 @@ pub const POSIX_SPAWN_SETSIGDEF: c_int = 0x10;
 pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x20;
 
 safe_f! {
-    pub const fn WIFCONTINUED(status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         status == 0x13
     }
 
-    pub const fn WSTOPSIG(status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
         status >> 8
     }
 
-    pub const fn WIFSTOPPED(status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0o177) == 0o177
     }
 }

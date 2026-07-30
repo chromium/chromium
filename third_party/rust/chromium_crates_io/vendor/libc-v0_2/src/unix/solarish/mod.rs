@@ -56,8 +56,8 @@ pub type posix_spawnattr_t = *mut c_void;
 pub type posix_spawn_file_actions_t = *mut c_void;
 
 extern_ty! {
-    pub enum timezone {}
-    pub enum ucred_t {}
+    pub type timezone;
+    pub type ucred_t;
 }
 
 s! {
@@ -823,6 +823,8 @@ pub const NOEXPR: crate::nl_item = 57;
 pub const _DATE_FMT: crate::nl_item = 58;
 pub const MAXSTRMSG: crate::nl_item = 58;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PATH_MAX: c_int = 1024;
 
 pub const SA_ONSTACK: c_int = 0x00000001;
@@ -839,9 +841,9 @@ pub const SS_DISABLE: c_int = 2;
 pub const FIOCLEX: c_int = 0x20006601;
 pub const FIONCLEX: c_int = 0x20006602;
 pub const FIONREAD: c_int = 0x4004667f;
-pub const FIONBIO: c_int = 0x8004667e;
-pub const FIOASYNC: c_int = 0x8004667d;
-pub const FIOSETOWN: c_int = 0x8004667c;
+pub const FIONBIO: c_int = u32_cast_int(0x8004667e);
+pub const FIOASYNC: c_int = u32_cast_int(0x8004667d);
+pub const FIOSETOWN: c_int = u32_cast_int(0x8004667c);
 pub const FIOGETOWN: c_int = 0x4004667b;
 
 pub const SIGCHLD: c_int = 18;
@@ -882,6 +884,7 @@ pub const IPV6_MULTICAST_IF: c_int = 0x6;
 pub const IPV6_MULTICAST_HOPS: c_int = 0x7;
 pub const IPV6_MULTICAST_LOOP: c_int = 0x8;
 pub const IPV6_PKTINFO: c_int = 0xb;
+pub const IPV6_HOPLIMIT: c_int = 0xc;
 pub const IPV6_RECVPKTINFO: c_int = 0x12;
 pub const IPV6_RECVTCLASS: c_int = 0x19;
 pub const IPV6_DONTFRAG: c_int = 0x21;
@@ -1031,7 +1034,7 @@ pub const WSTOPPED: c_int = WUNTRACED;
 pub const WCONTINUED: c_int = 0x08;
 pub const WNOWAIT: c_int = 0x80;
 
-pub const AT_FDCWD: c_int = 0xffd19553;
+pub const AT_FDCWD: c_int = u32_cast_int(0xffd19553);
 pub const AT_SYMLINK_NOFOLLOW: c_int = 0x1000;
 pub const AT_SYMLINK_FOLLOW: c_int = 0x2000;
 pub const AT_REMOVEDIR: c_int = 0x1;
@@ -1234,6 +1237,8 @@ pub const EAI_SOCKTYPE: c_int = 10;
 pub const EAI_SYSTEM: c_int = 11;
 pub const EAI_OVERFLOW: c_int = 12;
 
+pub const AI_CANONNAME: c_int = 0x0010;
+
 pub const NI_NOFQDN: c_uint = 0x0001;
 pub const NI_NUMERICHOST: c_uint = 0x0002;
 pub const NI_NAMEREQD: c_uint = 0x0004;
@@ -1304,15 +1309,16 @@ pub const SIGSTKSZ: size_t = 8192;
 // https://illumos.org/man/3c/clock_gettime
 // https://github.com/illumos/illumos-gate/
 //   blob/HEAD/usr/src/lib/libc/amd64/sys/__clock_gettime.s
-// clock_gettime(3c) doesn't seem to accept anything other than CLOCK_REALTIME
-// or __CLOCK_REALTIME0
 //
 // https://github.com/illumos/illumos-gate/
 //   blob/HEAD/usr/src/uts/common/sys/time_impl.h
 // Confusing! CLOCK_HIGHRES==CLOCK_MONOTONIC==4
 // __CLOCK_REALTIME0==0 is an obsoleted version of CLOCK_REALTIME==3
+// CLOCK_PROF==CLOCK_THREAD_CPUTIME_ID==2 (distinct from CLOCK_VIRTUAL==1)
 pub const CLOCK_REALTIME: crate::clockid_t = 3;
 pub const CLOCK_MONOTONIC: crate::clockid_t = 4;
+pub const CLOCK_PROCESS_CPUTIME_ID: crate::clockid_t = 5;
+pub const CLOCK_THREAD_CPUTIME_ID: crate::clockid_t = 2;
 pub const TIMER_RELTIME: c_int = 0;
 pub const TIMER_ABSTIME: c_int = 1;
 
@@ -1533,8 +1539,8 @@ pub const IFF_NOFAILOVER: c_int = 0x0008000000; // in.mpathd test address
 pub const IFF_FAILED: c_int = 0x0010000000; // Interface has failed
 pub const IFF_STANDBY: c_int = 0x0020000000; // Interface is a hot-spare
 pub const IFF_INACTIVE: c_int = 0x0040000000; // Functioning but not used
-pub const IFF_OFFLINE: c_int = 0x0080000000; // Interface is offline
-                                             // If CoS marking is supported
+pub const IFF_OFFLINE: c_int = u32_cast_int(0x0080000000); // Interface is offline
+                                                           // If CoS marking is supported
 pub const IFF_COS_ENABLED: c_longlong = 0x0200000000;
 pub const IFF_PREFERRED: c_longlong = 0x0400000000; // Prefer as source addr.
 pub const IFF_TEMPORARY: c_longlong = 0x0800000000; // RFC3041
@@ -1819,6 +1825,10 @@ pub const PORT_SOURCE_FD: c_int = 4;
 pub const PORT_SOURCE_ALERT: c_int = 5;
 pub const PORT_SOURCE_MQ: c_int = 6;
 pub const PORT_SOURCE_FILE: c_int = 7;
+
+pub const PORT_ALERT_SET: c_int = 0x01;
+pub const PORT_ALERT_UPDATE: c_int = 0x02;
+pub const PORT_ALERT_INVALID: c_int = PORT_ALERT_SET | PORT_ALERT_UPDATE;
 
 pub const NONROOT_USR: c_short = 2;
 
@@ -2208,23 +2218,23 @@ const fn _CMSG_DATA_ALIGN(p: usize) -> usize {
 }
 
 f! {
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         _CMSG_DATA_ALIGN(cmsg.offset(1) as usize) as *mut c_uchar
     }
 
-    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_LEN(length: c_uint) -> c_uint {
         _CMSG_DATA_ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
-    pub fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut cmsghdr {
         if ((*mhdr).msg_controllen as usize) < size_of::<cmsghdr>() {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         } else {
-            (*mhdr).msg_control as *mut cmsghdr
+            (*mhdr).msg_control.cast::<cmsghdr>()
         }
     }
 
-    pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
         }
@@ -2232,85 +2242,83 @@ f! {
             _CMSG_HDR_ALIGN(cmsg as usize + (*cmsg).cmsg_len as usize + size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next > max {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         } else {
             _CMSG_HDR_ALIGN(cmsg as usize + (*cmsg).cmsg_len as usize) as *mut cmsghdr
         }
     }
 
-    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_SPACE(length: c_uint) -> c_uint {
         _CMSG_HDR_ALIGN(size_of::<cmsghdr>() as usize + length as usize) as c_uint
     }
 
-    pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
-    pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
+    pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
     }
 
-    pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;
     }
 
-    pub fn FD_ZERO(set: *mut fd_set) -> () {
-        for slot in (*set).fds_bits.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
+        (*set).fds_bits.fill(0);
     }
 }
 
 safe_f! {
-    pub fn SIGRTMAX() -> c_int {
+    pub safe fn SIGRTMAX() -> c_int {
         unsafe { crate::sysconf(_SC_SIGRT_MAX) as c_int }
     }
 
-    pub fn SIGRTMIN() -> c_int {
+    pub safe fn SIGRTMIN() -> c_int {
         unsafe { crate::sysconf(_SC_SIGRT_MIN) as c_int }
     }
 
-    pub const fn WIFEXITED(status: c_int) -> bool {
+    pub const safe fn WIFEXITED(status: c_int) -> bool {
         (status & 0xFF) == 0
     }
 
-    pub const fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0xFF
     }
 
-    pub const fn WTERMSIG(status: c_int) -> c_int {
+    pub const safe fn WTERMSIG(status: c_int) -> c_int {
         status & 0x7F
     }
 
-    pub const fn WIFCONTINUED(status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         (status & 0xffff) == 0xffff
     }
 
-    pub const fn WSTOPSIG(status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
         (status & 0xff00) >> 8
     }
 
-    pub const fn WIFSIGNALED(status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         ((status & 0xff) > 0) && (status & 0xff00 == 0)
     }
 
-    pub const fn WIFSTOPPED(status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         ((status & 0xff) == 0x7f) && ((status & 0xff00) != 0)
     }
 
-    pub const fn WCOREDUMP(status: c_int) -> bool {
+    pub const safe fn WCOREDUMP(status: c_int) -> bool {
         (status & 0x80) != 0
     }
 
-    pub const fn MR_GET_TYPE(flags: c_uint) -> c_uint {
+    pub const safe fn MR_GET_TYPE(flags: c_uint) -> c_uint {
         flags & 0x0000ffff
     }
 }
@@ -2656,6 +2664,7 @@ extern "C" {
         events: c_int,
         user: *mut c_void,
     ) -> c_int;
+    pub fn port_alert(port: c_int, flags: c_int, events: c_int, user: *mut c_void) -> c_int;
     #[cfg_attr(
         any(target_os = "solaris", target_os = "illumos"),
         link_name = "__posix_getgrgid_r"

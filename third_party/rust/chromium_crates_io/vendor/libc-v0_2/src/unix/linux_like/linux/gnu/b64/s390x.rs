@@ -4,7 +4,6 @@ use crate::prelude::*;
 use crate::{
     off64_t,
     off_t,
-    pthread_mutex_t,
 };
 
 pub type blksize_t = i64;
@@ -12,8 +11,6 @@ pub type nlink_t = u64;
 pub type suseconds_t = i64;
 pub type wchar_t = i32;
 pub type greg_t = u64;
-pub type __u64 = u64;
-pub type __s64 = i64;
 
 s! {
     // FIXME(1.0): This should not implement `PartialEq`
@@ -275,7 +272,7 @@ pub const EPROTO: c_int = 71;
 pub const EDOTDOT: c_int = 73;
 
 pub const SA_NODEFER: c_int = 0x40000000;
-pub const SA_RESETHAND: c_int = 0x80000000;
+pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
 pub const SA_RESTART: c_int = 0x10000000;
 pub const SA_NOCLDSTOP: c_int = 0x00000001;
 
@@ -289,25 +286,6 @@ pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
 pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
-
-pub const PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-pub const PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
-pub const PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP: crate::pthread_mutex_t = pthread_mutex_t {
-    size: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-};
 
 pub const EUCLEAN: c_int = 117;
 pub const ENOTNAM: c_int = 118;

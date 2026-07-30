@@ -39,15 +39,18 @@ pub type pthread_t = c_uint;
 pub type pthread_key_t = c_int;
 pub type pthread_once_t = c_int;
 pub type pthread_mutex_t = c_uint;
-pub type pthread_mutexattr_t = c_uint;
+// QuRT pthread_mutexattr_t is a struct with 4 ints (is_initialized, type, pshared, protocol)
+pub type pthread_mutexattr_t = [c_uint; 4];
 pub type pthread_cond_t = c_uint;
-pub type pthread_condattr_t = c_uint;
-pub type pthread_attr_t = c_uint;
-pub type pthread_rwlock_t = c_uint;
-pub type pthread_rwlockattr_t = c_uint;
+// QuRT pthread_condattr_t is a struct with 3 ints (is_initialized, pshared, clock_id)
+pub type pthread_condattr_t = [c_uint; 3];
+// pthread_attr_t is defined as a struct in the s! block below
+pub type pthread_rwlock_t = *mut c_void;
+pub type pthread_rwlockattr_t = *mut c_void;
 pub type pthread_spinlock_t = c_uint;
 pub type pthread_barrier_t = c_uint;
-pub type pthread_barrierattr_t = c_uint;
+// QuRT pthread_barrierattr_t is a struct with 2 ints (is_initialized, pshared)
+pub type pthread_barrierattr_t = [c_uint; 2];
 
 // Network types
 pub type socklen_t = c_uint;
@@ -55,18 +58,17 @@ pub type sa_family_t = c_ushort;
 pub type in_addr_t = c_uint;
 pub type in_port_t = c_ushort;
 
-// File descriptor types
-pub type fd_set = c_ulong;
+// File descriptor types - QuRT defines fd_set as a struct in mqueue.h
+// FD_SETSIZE = 256, NFDBITS = 32, so fds_bits has 8 elements
 
 // Standard C library types
 extern_ty! {
-    pub enum FILE {}
+    pub type FILE;
 }
 pub type fpos_t = c_long;
 pub type clock_t = c_long;
 
-// POSIX semaphore types
-pub type sem_t = c_uint;
+// POSIX semaphore types - QuRT sem_t is a struct with an opaque pointer
 
 // Message queue types
 pub type mqd_t = c_int;
@@ -80,21 +82,11 @@ pub type sigset_t = c_ulong;
 // Variadic argument list type
 pub type va_list = *mut c_char;
 
-// Additional missing types
-pub type c_schar = i8;
-
-// Wide character type (hexagon-specific)
-pub type wchar_t = u32;
+// Wide character type (hexagon uses signed wchar_t)
+pub type wchar_t = i32;
 
 // Error type (compatible with std expectations)
 pub type errno_t = c_int;
-
-// Resource limit type (for compatibility, not fully supported on QuRT)
-pub type rlim_t = c_ulong;
-
-// Terminal types (for compatibility, not fully supported on QuRT)
-pub type speed_t = c_uint;
-pub type tcflag_t = c_uint;
 
 // Division result types and structures
 s! {
@@ -164,49 +156,37 @@ s! {
         pub entry: dirent,
     }
 
-    // Terminal I/O structure (for compatibility, limited support on QuRT)
-    pub struct termios {
-        pub c_iflag: tcflag_t,
-        pub c_oflag: tcflag_t,
-        pub c_cflag: tcflag_t,
-        pub c_lflag: tcflag_t,
-        pub c_cc: [c_uchar; 32],
-        pub c_ispeed: speed_t,
-        pub c_ospeed: speed_t,
-    }
-
-    // Resource limit structures (for compatibility, limited support on QuRT)
-    pub struct rlimit {
-        pub rlim_cur: rlim_t,
-        pub rlim_max: rlim_t,
-    }
-
-    pub struct rusage {
-        pub ru_utime: timeval,
-        pub ru_stime: timeval,
-        pub ru_maxrss: c_long,
-        pub ru_ixrss: c_long,
-        pub ru_idrss: c_long,
-        pub ru_isrss: c_long,
-        pub ru_minflt: c_long,
-        pub ru_majflt: c_long,
-        pub ru_nswap: c_long,
-        pub ru_inblock: c_long,
-        pub ru_oublock: c_long,
-        pub ru_msgsnd: c_long,
-        pub ru_msgrcv: c_long,
-        pub ru_nsignals: c_long,
-        pub ru_nvcsw: c_long,
-        pub ru_nivcsw: c_long,
-    }
-
-    // File lock structure (for compatibility)
+    // File lock structure (from toolchain generic fcntl.h)
     pub struct flock {
         pub l_type: c_short,
         pub l_whence: c_short,
         pub l_start: off_t,
         pub l_len: off_t,
         pub l_pid: pid_t,
+    }
+
+    // QuRT fd_set from mqueue.h: FD_SETSIZE=256, NFDBITS=32 (sizeof(fd_mask)*8)
+    pub struct fd_set {
+        pub fds_bits: [c_ulong; 8],
+    }
+
+    // QuRT sem_t from semaphore.h: struct with opaque pointer
+    pub struct sem_t {
+        pub opaque: *mut c_uint,
+    }
+
+    // QuRT pthread_attr_t - matches pthread_types.h struct layout
+    pub struct pthread_attr_t {
+        pub stackaddr: *mut c_void,
+        pub internal_stack: c_int,
+        pub stacksize: size_t,
+        pub priority: c_int,
+        pub timetest_id: c_ushort,
+        __bitfield: c_ushort,
+        pub cpumask: cpu_set_t,
+        pub name: [c_char; 16],
+        pub ext_context: c_int,
+        pub detachstate: c_int,
     }
 }
 
@@ -236,7 +216,11 @@ pub const FOPEN_MAX: c_uint = 20;
 pub const EOK: c_int = 0;
 
 // Semaphore constants
-pub const SEM_FAILED: *mut sem_t = 0 as *mut sem_t;
+pub const SEM_FAILED: *mut sem_t = ptr::null_mut();
+
+// fd_set constants from mqueue.h
+pub const FD_SETSIZE: c_uint = 256;
+pub const NFDBITS: c_uint = 32;
 
 // Page size constants (hexagon-specific)
 pub const PAGESIZE: size_t = 4096;
@@ -256,22 +240,8 @@ pub const DT_SOCK: c_uchar = 12;
 extern "C" {
     pub fn opendir(name: *const c_char) -> *mut DIR;
     pub fn readdir(dirp: *mut DIR) -> *mut dirent;
-    pub fn closedir(dirp: *const DIR) -> c_int;
+    pub fn closedir(dirp: *mut DIR) -> c_int;
     pub fn mkdir(path: *const c_char, mode: mode_t) -> c_int;
-}
-
-// Additional pthread functions
-extern "C" {
-    pub fn pthread_attr_getstack(
-        attr: *const pthread_attr_t,
-        stackaddr: *mut *mut c_void,
-        stacksize: *mut size_t,
-    ) -> c_int;
-    pub fn pthread_attr_setstack(
-        attr: *mut pthread_attr_t,
-        stackaddr: *mut c_void,
-        stacksize: size_t,
-    ) -> c_int;
 }
 
 // Additional time functions
@@ -317,16 +287,6 @@ extern "C" {
     pub fn memset(s: *mut c_void, c: c_int, n: size_t) -> *mut c_void;
 }
 
-// Additional unistd functions
-extern "C" {
-    pub fn fork() -> pid_t;
-    pub fn execve(
-        filename: *const c_char,
-        argv: *const *const c_char,
-        envp: *const *const c_char,
-    ) -> c_int;
-}
-
 // Character classification functions (ctype.h)
 extern "C" {
     pub fn isalnum(c: c_int) -> c_int;
@@ -348,6 +308,7 @@ pub(crate) mod dlfcn;
 pub(crate) mod errno;
 pub(crate) mod fcntl;
 pub(crate) mod limits;
+pub(crate) mod mqueue;
 pub(crate) mod pthread;
 pub(crate) mod semaphore;
 pub(crate) mod signal;
@@ -362,6 +323,7 @@ pub use dlfcn::*;
 pub use errno::*;
 pub use fcntl::*;
 pub use limits::*;
+pub use mqueue::*;
 pub use pthread::*;
 pub use semaphore::*;
 pub use signal::*;

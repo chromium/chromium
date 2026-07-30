@@ -145,7 +145,7 @@ pub const SA_NOCLDSTOP: c_int = 0x00000001;
 pub const SA_NOCLDWAIT: c_int = 0x00000002;
 pub const SA_NODEFER: c_int = 0x40000000;
 pub const SA_ONSTACK: c_int = 0x08000000;
-pub const SA_RESETHAND: c_int = 0x80000000;
+pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
 pub const SA_RESTART: c_int = 0x10000000;
 pub const SA_SIGINFO: c_int = 0x00000004;
 
@@ -183,7 +183,7 @@ f! {
     // directly. This workaround can be removed if the minimum version of
     // Android is bumped. When the workaround is removed, `accept4` can be
     // moved back to `linux_like/mod.rs`
-    pub fn accept4(
+    pub unsafe fn accept4(
         fd: c_int,
         addr: *mut crate::sockaddr,
         len: *mut crate::socklen_t,

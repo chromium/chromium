@@ -32,14 +32,6 @@ cfg_if! {
 
 pub type iconv_t = *mut c_void;
 
-cfg_if! {
-    if #[cfg(not(target_env = "gnu"))] {
-        extern_ty! {
-            pub enum fpos64_t {} // FIXME(linux): fill this out with a struct
-        }
-    }
-}
-
 s! {
     pub struct glob_t {
         pub gl_pathc: size_t,
@@ -83,13 +75,6 @@ s! {
 
     pub struct fsid_t {
         __val: [c_int; 2],
-    }
-
-    pub struct packet_mreq {
-        pub mr_ifindex: c_int,
-        pub mr_type: c_ushort,
-        pub mr_alen: c_ushort,
-        pub mr_address: [c_uchar; 8],
     }
 
     pub struct cpu_set_t {
@@ -690,6 +675,9 @@ pub const EI_CLASS: usize = 4;
 pub const ELFCLASSNONE: u8 = 0;
 pub const ELFCLASS32: u8 = 1;
 pub const ELFCLASS64: u8 = 2;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const ELFCLASSNUM: usize = 3;
 
 pub const EI_DATA: usize = 5;
@@ -809,7 +797,6 @@ pub const EM_PJ: u16 = 91;
 pub const EM_OPENRISC: u16 = 92;
 #[cfg(target_env = "uclibc")]
 pub const EM_OR1K: u16 = 92;
-#[cfg(not(target_env = "uclibc"))]
 pub const EM_ARC_A5: u16 = 93;
 pub const EM_XTENSA: u16 = 94;
 pub const EM_AARCH64: u16 = 183;
@@ -821,6 +808,9 @@ pub const EM_ALPHA: u16 = 0x9026;
 // elf.h - Legal values for e_version (version).
 pub const EV_NONE: u32 = 0;
 pub const EV_CURRENT: u32 = 1;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const EV_NUM: u32 = 2;
 
 // elf.h - Legal values for p_type (segment type).
@@ -939,21 +929,18 @@ pub const PTHREAD_MUTEX_NORMAL: c_int = 0;
 pub const PTHREAD_MUTEX_RECURSIVE: c_int = 1;
 pub const PTHREAD_MUTEX_ERRORCHECK: c_int = 2;
 pub const PTHREAD_MUTEX_DEFAULT: c_int = PTHREAD_MUTEX_NORMAL;
-#[cfg(not(target_env = "uclibc"))]
+#[cfg(not(target_os = "l4re"))]
 pub const PTHREAD_MUTEX_STALLED: c_int = 0;
-#[cfg(not(target_env = "uclibc"))]
+#[cfg(not(target_os = "l4re"))]
 pub const PTHREAD_MUTEX_ROBUST: c_int = 1;
-#[cfg(not(target_env = "uclibc"))]
 pub const PTHREAD_PRIO_NONE: c_int = 0;
-#[cfg(not(target_env = "uclibc"))]
 pub const PTHREAD_PRIO_INHERIT: c_int = 1;
-#[cfg(not(target_env = "uclibc"))]
 pub const PTHREAD_PRIO_PROTECT: c_int = 2;
 pub const PTHREAD_PROCESS_PRIVATE: c_int = 0;
 pub const PTHREAD_PROCESS_SHARED: c_int = 1;
 pub const PTHREAD_INHERIT_SCHED: c_int = 0;
 pub const PTHREAD_EXPLICIT_SCHED: c_int = 1;
-#[cfg(not(all(target_os = "l4re", target_env = "uclibc")))]
+#[cfg(not(target_os = "l4re"))]
 pub const __SIZEOF_PTHREAD_COND_T: usize = 48;
 
 // netinet/in.h
@@ -1140,7 +1127,7 @@ pub const PR_SET_MM_MAP: c_int = 14;
 pub const PR_SET_MM_MAP_SIZE: c_int = 15;
 
 pub const PR_SET_PTRACER: c_int = 0x59616d61;
-pub const PR_SET_PTRACER_ANY: c_ulong = 0xffffffffffffffff;
+pub const PR_SET_PTRACER_ANY: c_ulong = (-1 as c_long) as c_ulong;
 
 pub const PR_SET_CHILD_SUBREAPER: c_int = 36;
 pub const PR_GET_CHILD_SUBREAPER: c_int = 37;
@@ -1175,7 +1162,11 @@ pub const PR_SCHED_CORE_GET: c_int = 0;
 pub const PR_SCHED_CORE_CREATE: c_int = 1;
 pub const PR_SCHED_CORE_SHARE_TO: c_int = 2;
 pub const PR_SCHED_CORE_SHARE_FROM: c_int = 3;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PR_SCHED_CORE_MAX: c_int = 4;
+
 pub const PR_SCHED_CORE_SCOPE_THREAD: c_int = 0;
 pub const PR_SCHED_CORE_SCOPE_THREAD_GROUP: c_int = 1;
 pub const PR_SCHED_CORE_SCOPE_PROCESS_GROUP: c_int = 2;
@@ -1193,11 +1184,11 @@ pub const IUTF8: crate::tcflag_t = 0x00004000;
 #[cfg(not(all(target_env = "uclibc", target_arch = "mips")))]
 pub const CMSPAR: crate::tcflag_t = 0o10000000000;
 
-pub const MFD_CLOEXEC: c_uint = 0x0001;
-pub const MFD_ALLOW_SEALING: c_uint = 0x0002;
-pub const MFD_HUGETLB: c_uint = 0x0004;
 cfg_if! {
-    if #[cfg(not(target_env = "uclibc"))] {
+    if #[cfg(not(target_os = "l4re"))] {
+        pub const MFD_CLOEXEC: c_uint = 0x0001;
+        pub const MFD_ALLOW_SEALING: c_uint = 0x0002;
+        pub const MFD_HUGETLB: c_uint = 0x0004;
         pub const MFD_NOEXEC_SEAL: c_uint = 0x0008;
         pub const MFD_EXEC: c_uint = 0x0010;
         pub const MFD_HUGE_64KB: c_uint = 0x40000000;
@@ -1216,43 +1207,6 @@ cfg_if! {
         pub const MFD_HUGE_SHIFT: c_uint = 26;
     }
 }
-
-// linux/if_packet.h
-pub const PACKET_HOST: c_uchar = 0;
-pub const PACKET_BROADCAST: c_uchar = 1;
-pub const PACKET_MULTICAST: c_uchar = 2;
-pub const PACKET_OTHERHOST: c_uchar = 3;
-pub const PACKET_OUTGOING: c_uchar = 4;
-pub const PACKET_LOOPBACK: c_uchar = 5;
-#[cfg(not(target_os = "l4re"))]
-pub const PACKET_USER: c_uchar = 6;
-#[cfg(not(target_os = "l4re"))]
-pub const PACKET_KERNEL: c_uchar = 7;
-
-pub const PACKET_ADD_MEMBERSHIP: c_int = 1;
-pub const PACKET_DROP_MEMBERSHIP: c_int = 2;
-pub const PACKET_RECV_OUTPUT: c_int = 3;
-pub const PACKET_RX_RING: c_int = 5;
-pub const PACKET_STATISTICS: c_int = 6;
-cfg_if! {
-    if #[cfg(not(target_os = "l4re"))] {
-        pub const PACKET_COPY_THRESH: c_int = 7;
-        pub const PACKET_AUXDATA: c_int = 8;
-        pub const PACKET_ORIGDEV: c_int = 9;
-        pub const PACKET_VERSION: c_int = 10;
-        pub const PACKET_HDRLEN: c_int = 11;
-        pub const PACKET_RESERVE: c_int = 12;
-        pub const PACKET_TX_RING: c_int = 13;
-        pub const PACKET_LOSS: c_int = 14;
-        pub const PACKET_VNET_HDR: c_int = 15;
-        pub const PACKET_TX_TIMESTAMP: c_int = 16;
-        pub const PACKET_TIMESTAMP: c_int = 17;
-    }
-}
-
-pub const PACKET_MR_MULTICAST: c_int = 0;
-pub const PACKET_MR_PROMISC: c_int = 1;
-pub const PACKET_MR_ALLMULTI: c_int = 2;
 
 pub const SIOCADDRT: c_ulong = 0x0000890B;
 pub const SIOCDELRT: c_ulong = 0x0000890C;
@@ -1365,6 +1319,9 @@ pub const RT_CLASS_UNSPEC: u8 = 0;
 pub const RT_CLASS_DEFAULT: u8 = 253;
 pub const RT_CLASS_MAIN: u8 = 254;
 pub const RT_CLASS_LOCAL: u8 = 255;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const RT_CLASS_MAX: u8 = 255;
 
 pub const MAX_ADDR_LEN: usize = 7;
@@ -1477,15 +1434,16 @@ pub const NT_LWPSTATUS: c_int = 16;
 pub const NT_LWPSINFO: c_int = 17;
 pub const NT_PRFPXREG: c_int = 20;
 
-pub const MS_NOUSER: c_ulong = 0xffffffff80000000;
+// FIXME(1.0): C uses an unsigned int here.
+pub const MS_NOUSER: c_ulong = 1 << 31;
 
 f! {
-    pub fn CMSG_NXTHDR(
+    pub unsafe fn CMSG_NXTHDR(
         mhdr: *const crate::msghdr,
         cmsg: *const crate::cmsghdr,
     ) -> *mut crate::cmsghdr {
         if ((*cmsg).cmsg_len as usize) < size_of::<crate::cmsghdr>() {
-            return core::ptr::null_mut::<crate::cmsghdr>();
+            return ptr::null_mut();
         }
 
         // FIXME(msrv): `.wrapping_byte_add()` stabilized in 1.75
@@ -1497,7 +1455,7 @@ f! {
         // In case the addition wrapped. `next_addr > max_addr`
         // would otherwise not work as intended.
         if (next_cmsg as usize) < (cmsg as usize) {
-            return core::ptr::null_mut();
+            return ptr::null_mut();
         }
 
         let mut max_addr = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
@@ -1510,43 +1468,41 @@ f! {
         }
 
         if next_cmsg as usize + size_of::<crate::cmsghdr>() > max_addr {
-            core::ptr::null_mut::<crate::cmsghdr>()
+            ptr::null_mut()
         } else {
             next_cmsg as *mut crate::cmsghdr
         }
     }
 
-    pub fn CPU_ALLOC_SIZE(count: c_int) -> size_t {
+    pub unsafe fn CPU_ALLOC_SIZE(count: c_int) -> size_t {
         let _dummy: cpu_set_t = mem::zeroed();
         let size_in_bits = 8 * size_of_val(&_dummy.bits[0]);
         ((count as size_t + size_in_bits - 1) / 8) as size_t
     }
 
-    pub fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
-        for slot in &mut cpuset.bits {
-            *slot = 0;
-        }
+    pub unsafe fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
+        cpuset.bits.fill(0);
     }
 
-    pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
     }
 
-    pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
     }
 
-    pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }
 
-    pub fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
+    pub unsafe fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
         let mut s: u32 = 0;
         let size_of_mask = size_of_val(&cpuset.bits[0]);
         for i in &cpuset.bits[..(size / size_of_mask)] {
@@ -1555,61 +1511,61 @@ f! {
         s as c_int
     }
 
-    pub fn CPU_COUNT(cpuset: &cpu_set_t) -> c_int {
+    pub unsafe fn CPU_COUNT(cpuset: &cpu_set_t) -> c_int {
         CPU_COUNT_S(size_of::<cpu_set_t>(), cpuset)
     }
 
-    pub fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
         set1.bits == set2.bits
     }
 
-    pub fn IPTOS_TOS(tos: u8) -> u8 {
+    pub unsafe fn IPTOS_TOS(tos: u8) -> u8 {
         tos & IPTOS_TOS_MASK
     }
 
-    pub fn IPTOS_PREC(tos: u8) -> u8 {
+    pub unsafe fn IPTOS_PREC(tos: u8) -> u8 {
         tos & IPTOS_PREC_MASK
     }
 
-    pub fn RT_TOS(tos: u8) -> u8 {
+    pub unsafe fn RT_TOS(tos: u8) -> u8 {
         tos & crate::IPTOS_TOS_MASK
     }
 
-    pub fn RT_ADDRCLASS(flags: u32) -> u32 {
+    pub unsafe fn RT_ADDRCLASS(flags: u32) -> u32 {
         flags >> 23
     }
 
-    pub fn RT_LOCALADDR(flags: u32) -> bool {
+    pub unsafe fn RT_LOCALADDR(flags: u32) -> bool {
         (flags & RTF_ADDRCLASSMASK) == (RTF_LOCAL | RTF_INTERFACE)
     }
 
-    pub fn ELF32_R_SYM(val: Elf32_Word) -> Elf32_Word {
+    pub unsafe fn ELF32_R_SYM(val: Elf32_Word) -> Elf32_Word {
         val >> 8
     }
 
-    pub fn ELF32_R_TYPE(val: Elf32_Word) -> Elf32_Word {
+    pub unsafe fn ELF32_R_TYPE(val: Elf32_Word) -> Elf32_Word {
         val & 0xff
     }
 
-    pub fn ELF32_R_INFO(sym: Elf32_Word, t: Elf32_Word) -> Elf32_Word {
+    pub unsafe fn ELF32_R_INFO(sym: Elf32_Word, t: Elf32_Word) -> Elf32_Word {
         sym << (8 + t) & 0xff
     }
 
-    pub fn ELF64_R_SYM(val: Elf64_Xword) -> Elf64_Xword {
+    pub unsafe fn ELF64_R_SYM(val: Elf64_Xword) -> Elf64_Xword {
         val >> 32
     }
 
-    pub fn ELF64_R_TYPE(val: Elf64_Xword) -> Elf64_Xword {
+    pub unsafe fn ELF64_R_TYPE(val: Elf64_Xword) -> Elf64_Xword {
         val & 0xffffffff
     }
 
-    pub fn ELF64_R_INFO(sym: Elf64_Xword, t: Elf64_Xword) -> Elf64_Xword {
+    pub unsafe fn ELF64_R_INFO(sym: Elf64_Xword, t: Elf64_Xword) -> Elf64_Xword {
         sym << (32 + t)
     }
 }
 
 safe_f! {
-    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -1620,14 +1576,14 @@ safe_f! {
         dev
     }
 
-    pub const fn major(dev: crate::dev_t) -> c_uint {
+    pub const safe fn major(dev: crate::dev_t) -> c_uint {
         let mut major = 0;
         major |= (dev & 0x00000000000fff00) >> 8;
         major |= (dev & 0xfffff00000000000) >> 32;
         major as c_uint
     }
 
-    pub const fn minor(dev: crate::dev_t) -> c_uint {
+    pub const safe fn minor(dev: crate::dev_t) -> c_uint {
         let mut minor = 0;
         minor |= (dev & 0x00000000000000ff) >> 0;
         minor |= (dev & 0x00000ffffff00000) >> 12;
@@ -1774,15 +1730,6 @@ extern "C" {
 
     pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
     pub fn __errno_location() -> *mut c_int;
-
-    // Not available now on Android
-    pub fn mremap(
-        addr: *mut c_void,
-        len: size_t,
-        new_len: size_t,
-        flags: c_int,
-        ...
-    ) -> *mut c_void;
 
     #[cfg_attr(gnu_time_bits64, link_name = "__glob64_time64")]
     #[cfg_attr(

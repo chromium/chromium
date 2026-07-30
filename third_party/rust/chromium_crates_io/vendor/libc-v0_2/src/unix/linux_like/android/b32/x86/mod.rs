@@ -554,7 +554,7 @@ f! {
     // This workaround can be removed if the minimum Android version is bumped.
     // When the workaround is removed, `accept4` can be moved back
     // to `linux_like/mod.rs`
-    pub fn accept4(
+    pub unsafe fn accept4(
         fd: c_int,
         addr: *mut crate::sockaddr,
         len: *mut crate::socklen_t,

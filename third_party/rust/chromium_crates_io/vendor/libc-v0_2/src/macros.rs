@@ -87,7 +87,9 @@ macro_rules! prelude {
             pub(crate) use core::prelude::v1::derive;
             #[allow(unused_imports)]
             pub(crate) use core::{
+                assert,
                 cfg,
+                debug_assert,
                 fmt,
                 hash,
                 iter,
@@ -106,7 +108,17 @@ macro_rules! prelude {
             };
 
             #[allow(unused_imports)]
+            #[cfg(any(target_os = "linux", target_os = "android", target_os = "l4re"))]
+            pub(crate) use crate::types::u32_cast_ioctl;
+            #[allow(unused_imports)]
             pub(crate) use crate::types::{
+                replace_array_items,
+                u16_cast_short,
+                u32_cast_int,
+                u32_cast_long,
+                u8_slice_cast_char_slice,
+                ulong_cast_int,
+                ulong_cast_uint,
                 CEnumRepr,
                 Padding,
             };
@@ -246,17 +258,36 @@ macro_rules! s_no_extra_traits {
 macro_rules! extern_ty {
     ($(
         $(#[$attr:meta])*
-        pub enum $i:ident {}
+        $vis:vis type $i:ident;
     )*) => ($(
         $(#[$attr])*
-        // FIXME(1.0): the type is uninhabited so these traits are unreachable and could be
-        // removed.
+        /// This is an extern type ("opaque" or "incomplete" type in C).
+        ///
+        /// <div class="warning">
+        /// This type's current representation allows inspecting some properties, such as via
+        /// <code>size_of</code>, and it is technically possible to construct the type within
+        /// <code>MaybeUninit</code>, However, this <strong>MUST NOT</strong> be relied upon
+        /// because a future version of <code>libc</code> may switch to a proper
+        /// <a href="https://rust-lang.github.io/rfcs/1861-extern-types.html">extern type</a>
+        /// representation when available.
+        /// </div>
+        // ^ unfortunately warning blocks currently don't render markdown so we need to
+        // use raw HTML.
+        //
+        // Representation based on the Nomicon:
+        // <https://doc.rust-lang.org/nomicon/ffi.html#representing-opaque-structs>.
+        //
+        // FIXME(1.0): These traits are unreachable and should be removed.
         #[::core::prelude::v1::derive(
             ::core::clone::Clone,
             ::core::marker::Copy,
             ::core::fmt::Debug,
         )]
-        pub enum $i { }
+        #[repr(C)]
+        $vis struct $i {
+            _data: (),
+            _marker: ::core::marker::PhantomData<(*mut u8, ::core::marker::PhantomPinned)>,
+        }
     )*);
 }
 
@@ -295,14 +326,14 @@ macro_rules! c_enum {
     // Matcher for multiple enums
     ($(
         $(#[repr($repr:ty)])?
-        pub enum $($ty_name:ident)? $(#$anon:ident)? {
-            $($vis:vis $variant:ident $(= $value:expr)?,)+
+        $vis:vis enum $($ty_name:ident)? $(#$anon:ident)? {
+            $($field_vis:vis $variant:ident $(= $value:expr)?,)+
         }
     )+) => {
         $(c_enum!(@single;
             $(#[repr($repr)])?
-            pub enum $($ty_name)? $(#$anon)? {
-                $($vis $variant $(= $value)?,)+
+            $vis enum $($ty_name)? $(#$anon)? {
+                $($field_vis $variant $(= $value)?,)+
             }
         );)+
     };
@@ -310,31 +341,31 @@ macro_rules! c_enum {
     // Matcher for a single enum
     (@single;
         $(#[repr($repr:ty)])?
-        pub enum $ty_name:ident {
-            $($vis:vis $variant:ident $(= $value:expr)?,)+
+        $vis:vis enum $ty_name:ident {
+            $($field_vis:vis $variant:ident $(= $value:expr)?,)+
         }
     ) => {
-        pub type $ty_name = c_enum!(@ty $($repr)?);
+        $vis type $ty_name = c_enum!(@ty $($repr)?);
         c_enum! {
             @variant;
             ty: $ty_name;
             default: 0;
-            variants: [$($vis $variant $(= $value)?,)+]
+            variants: [$($field_vis $variant $(= $value)?,)+]
         }
     };
 
     // Matcher for a single anonymous enum
     (@single;
         $(#[repr($repr:ty)])?
-        pub enum #anon {
-            $($vis:vis $variant:ident $(= $value:expr)?,)+
+        $vis:vis enum #anon {
+            $($field_vis:vis $variant:ident $(= $value:expr)?,)+
         }
     ) => {
         c_enum! {
             @variant;
             ty: c_enum!(@ty $($repr)?);
             default: 0;
-            variants: [$($vis $variant $(= $value)?,)+]
+            variants: [$($field_vis $variant $(= $value)?,)+]
         }
     };
 
@@ -345,11 +376,11 @@ macro_rules! c_enum {
         ty: $ty_name:ty;
         default: $default_val:expr;
         variants: [
-            $vis:vis $variant:ident $(= $value:expr)?,
+            $field_vis:vis $variant:ident $(= $value:expr)?,
             $($tail:tt)*
         ]
     ) => {
-        $vis const $variant: $ty_name = {
+        $field_vis const $variant: $ty_name = {
             #[allow(unused_variables)]
             let r = $default_val;
             $(let r = $value;)?
@@ -375,15 +406,14 @@ macro_rules! c_enum {
 macro_rules! f {
     ($(
         $(#[$attr:meta])*
-        // Less than ideal hack to match either `fn` or `const fn`.
-        pub $(fn $i:ident)? $(const fn $const_i:ident)?
-        ($($arg:ident: $argty:ty),* $(,)*) -> $ret:ty
+        pub $(const $($const_dummy:literal)?)? unsafe
+        fn $i:ident ($($arg:ident: $argty:ty),* $(,)?) -> $ret:ty
             $body:block
     )+) => {$(
         #[inline]
         $(#[$attr])*
-        pub $(unsafe extern "C" fn $i)? $(const unsafe extern "C" fn $const_i)?
-        ($($arg: $argty),*) -> $ret
+        pub $(const $($const_dummy)?)? unsafe extern "C"
+        fn $i ($($arg: $argty),*) -> $ret
             $body
     )+};
 }
@@ -392,15 +422,14 @@ macro_rules! f {
 macro_rules! safe_f {
     ($(
         $(#[$attr:meta])*
-        // Less than ideal hack to match either `fn` or `const fn`.
-        pub $(fn $i:ident)? $(const fn $const_i:ident)?
-        ($($arg:ident: $argty:ty),* $(,)*) -> $ret:ty
+        pub $(const $($const_dummy:literal)?)? safe
+        fn $i:ident ($($arg:ident: $argty:ty),* $(,)?) -> $ret:ty
             $body:block
     )+) => {$(
         #[inline]
         $(#[$attr])*
-        pub $(extern "C" fn $i)? $(const extern "C" fn $const_i)?
-        ($($arg: $argty),*) -> $ret
+        pub $(const $($const_dummy)?)? extern "C"
+        fn $i ($($arg: $argty),*) -> $ret
             $body
     )+};
 }
@@ -444,7 +473,7 @@ macro_rules! deprecated_mach {
 macro_rules! offset_of {
     ($Ty:path, $field:ident) => {{
         // Taken from bytemuck, avoids accidentally calling on deref
-        #[allow(clippy::unneeded_field_pattern)]
+        #[allow(clippy::unneeded_wildcard_pattern)]
         let $Ty { $field: _, .. };
         let data = core::mem::MaybeUninit::<$Ty>::uninit();
         let ptr = data.as_ptr();
@@ -480,6 +509,13 @@ mod tests {
                 ANON1,
                 ANON2,
             }
+
+            // No visibility required.
+            enum #anon {
+                ANON3,
+                ANON4,
+                ANON5,
+            }
         }
 
         assert_eq!(TypeId::of::<e>(), TypeId::of::<CEnumRepr>());
@@ -491,6 +527,11 @@ mod tests {
         assert_eq!(ANON0, 0 as CEnumRepr);
         assert_eq!(ANON1, 1 as CEnumRepr);
         assert_eq!(ANON2, 2 as CEnumRepr);
+
+        assert_eq!(type_id_of_val(&ANON3), TypeId::of::<CEnumRepr>());
+        assert_eq!(ANON3, 0 as CEnumRepr);
+        assert_eq!(ANON4, 1 as CEnumRepr);
+        assert_eq!(ANON5, 2 as CEnumRepr);
     }
 
     #[test]
@@ -650,5 +691,10 @@ mod macro_checks {
             pub a: u32,
             b: f32,
         }
+    }
+
+    extern_ty! {
+        type Foo;
+        pub type Bar;
     }
 }

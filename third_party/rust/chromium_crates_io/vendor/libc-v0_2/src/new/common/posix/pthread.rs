@@ -187,7 +187,12 @@ extern "C" {
 
     // FIXME(reorg): In recent POSIX versions, this is a signal.h function and not required
     // in pthread.
-    #[cfg(any(target_os = "android", target_os = "l4re", target_os = "linux"))]
+    #[cfg(any(
+        target_os = "android",
+        target_os = "emscripten",
+        target_os = "l4re",
+        target_os = "linux"
+    ))]
     pub fn pthread_kill(thread: crate::pthread_t, sig: c_int) -> c_int;
 
     #[cfg(all(target_os = "linux", not(target_env = "ohos")))]
@@ -298,7 +303,12 @@ extern "C" {
 
     // FIXME(reorg): In recent POSIX versions, this is a signal.h function and not required
     // in pthread.
-    #[cfg(any(target_os = "android", target_os = "l4re", target_os = "linux"))]
+    #[cfg(any(
+        target_os = "android",
+        target_os = "emscripten",
+        target_os = "l4re",
+        target_os = "linux"
+    ))]
     pub fn pthread_sigmask(
         how: c_int,
         set: *const crate::sigset_t,

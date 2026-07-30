@@ -10,7 +10,7 @@ pub unsafe extern "C" fn creat64(path: *const c_char, mode: crate::mode_t) -> c_
 
 #[inline]
 pub unsafe extern "C" fn fgetpos64(stream: *mut crate::FILE, pos: *mut crate::fpos64_t) -> c_int {
-    crate::fgetpos(stream, pos as *mut _)
+    crate::fgetpos(stream, pos.cast())
 }
 
 #[inline]
@@ -38,12 +38,12 @@ pub unsafe extern "C" fn fseeko64(
 
 #[inline]
 pub unsafe extern "C" fn fsetpos64(stream: *mut crate::FILE, pos: *const crate::fpos64_t) -> c_int {
-    crate::fsetpos(stream, pos as *mut _)
+    crate::fsetpos(stream, pos.cast())
 }
 
 #[inline]
 pub unsafe extern "C" fn fstat64(fildes: c_int, buf: *mut crate::stat64) -> c_int {
-    crate::fstat(fildes, buf as *mut _)
+    crate::fstat(fildes, buf.cast())
 }
 
 #[inline]
@@ -53,17 +53,17 @@ pub unsafe extern "C" fn fstatat64(
     buf: *mut crate::stat64,
     flag: c_int,
 ) -> c_int {
-    crate::fstatat(fd, path, buf as *mut _, flag)
+    crate::fstatat(fd, path, buf.cast(), flag)
 }
 
 #[inline]
 pub unsafe extern "C" fn fstatfs64(fd: c_int, buf: *mut crate::statfs64) -> c_int {
-    crate::fstatfs(fd, buf as *mut _)
+    crate::fstatfs(fd, buf.cast())
 }
 
 #[inline]
 pub unsafe extern "C" fn fstatvfs64(fd: c_int, buf: *mut crate::statvfs64) -> c_int {
-    crate::fstatvfs(fd, buf as *mut _)
+    crate::fstatvfs(fd, buf.cast())
 }
 
 #[inline]
@@ -78,7 +78,7 @@ pub unsafe extern "C" fn ftruncate64(fd: c_int, length: off64_t) -> c_int {
 
 #[inline]
 pub unsafe extern "C" fn getrlimit64(resource: c_int, rlim: *mut crate::rlimit64) -> c_int {
-    crate::getrlimit(resource, rlim as *mut _)
+    crate::getrlimit(resource, rlim.cast())
 }
 
 #[inline]
@@ -88,7 +88,7 @@ pub unsafe extern "C" fn lseek64(fd: c_int, offset: off64_t, whence: c_int) -> o
 
 #[inline]
 pub unsafe extern "C" fn lstat64(path: *const c_char, buf: *mut crate::stat64) -> c_int {
-    crate::lstat(path, buf as *mut _)
+    crate::lstat(path, buf.cast())
 }
 
 #[inline]
@@ -171,7 +171,7 @@ pub unsafe extern "C" fn pwritev64(
 
 #[inline]
 pub unsafe extern "C" fn readdir64(dirp: *mut crate::DIR) -> *mut crate::dirent64 {
-    crate::readdir(dirp) as *mut _
+    crate::readdir(dirp).cast()
 }
 
 #[inline]
@@ -180,27 +180,27 @@ pub unsafe extern "C" fn readdir64_r(
     entry: *mut crate::dirent64,
     result: *mut *mut crate::dirent64,
 ) -> c_int {
-    crate::readdir_r(dirp, entry as *mut _, result as *mut _)
+    crate::readdir_r(dirp, entry.cast(), result.cast())
 }
 
 #[inline]
 pub unsafe extern "C" fn setrlimit64(resource: c_int, rlim: *const crate::rlimit64) -> c_int {
-    crate::setrlimit(resource, rlim as *mut _)
+    crate::setrlimit(resource, rlim.cast())
 }
 
 #[inline]
 pub unsafe extern "C" fn stat64(pathname: *const c_char, statbuf: *mut crate::stat64) -> c_int {
-    crate::stat(pathname, statbuf as *mut _)
+    crate::stat(pathname, statbuf.cast())
 }
 
 #[inline]
 pub unsafe extern "C" fn statfs64(pathname: *const c_char, buf: *mut crate::statfs64) -> c_int {
-    crate::statfs(pathname, buf as *mut _)
+    crate::statfs(pathname, buf.cast())
 }
 
 #[inline]
 pub unsafe extern "C" fn statvfs64(path: *const c_char, buf: *mut crate::statvfs64) -> c_int {
-    crate::statvfs(path, buf as *mut _)
+    crate::statvfs(path, buf.cast())
 }
 
 #[inline]

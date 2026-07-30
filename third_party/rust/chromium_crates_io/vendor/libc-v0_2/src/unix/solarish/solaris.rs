@@ -132,6 +132,8 @@ pub const F_DUPFD_CLOFORK: c_int = 49;
 pub const F_DUP2FD_CLOEXEC: c_int = 48;
 pub const F_DUP2FD_CLOFORK: c_int = 50;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const _PC_LAST: c_int = 102;
 
 pub const PRIV_PROC_SENSITIVE: c_uint = 0x0008;

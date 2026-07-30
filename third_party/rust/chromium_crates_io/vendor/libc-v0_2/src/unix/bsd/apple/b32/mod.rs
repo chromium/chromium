@@ -60,9 +60,6 @@ s_no_extra_traits! {
 #[deprecated(since = "0.2.55")]
 pub const NET_RT_MAXID: c_int = 10;
 
-pub const TIOCTIMESTAMP: c_ulong = 0x40087459;
-pub const TIOCDCDTIMESTAMP: c_ulong = 0x40087458;
-
 pub const BIOCSETF: c_ulong = 0x80084267;
 pub const BIOCSRTIMEOUT: c_ulong = 0x8008426d;
 pub const BIOCGRTIMEOUT: c_ulong = 0x4008426e;

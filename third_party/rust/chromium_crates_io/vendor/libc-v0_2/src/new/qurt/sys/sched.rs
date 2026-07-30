@@ -18,6 +18,9 @@ s! {
 }
 
 extern "C" {
+    // Note: sched_yield is static inline in QuRT sys/sched.h, so there is no
+    // linkable symbol in the SDK libraries.  Programs must provide their own
+    // implementation or use --defsym=sched_yield=abort at link time.
     pub fn sched_yield() -> c_int;
     pub fn sched_get_priority_max(policy: c_int) -> c_int;
     pub fn sched_get_priority_min(policy: c_int) -> c_int;

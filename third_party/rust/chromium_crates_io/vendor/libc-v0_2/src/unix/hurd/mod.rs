@@ -226,8 +226,8 @@ pub type nl_item = c_int;
 pub type iconv_t = *mut c_void;
 
 extern_ty! {
-    pub enum fpos64_t {} // FIXME(hurd): fill this out with a struct
-    pub enum timezone {}
+    pub type fpos64_t; // FIXME(hurd): fill this out with a struct
+    pub type timezone;
 }
 
 // structs
@@ -1230,7 +1230,11 @@ pub const PF_IPX: c_int = 23;
 pub const PF_SIP: c_int = 24;
 pub const PF_PIP: c_int = 25;
 pub const PF_INET6: c_int = 26;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PF_MAX: c_int = 27;
+
 pub const AF_UNSPEC: c_int = 0;
 pub const AF_LOCAL: c_int = 1;
 pub const AF_UNIX: c_int = 1;
@@ -1260,7 +1264,11 @@ pub const AF_IPX: c_int = 23;
 pub const AF_SIP: c_int = 24;
 pub const pseudo_AF_PIP: c_int = 25;
 pub const AF_INET6: c_int = 26;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const AF_MAX: c_int = 27;
+
 pub const SOMAXCONN: c_int = 4096;
 pub const _SS_SIZE: usize = 128;
 pub const CMGROUP_MAX: usize = 16;
@@ -1526,8 +1534,15 @@ pub const _POSIX_QLIMIT: usize = 1;
 pub const _POSIX_HIWAT: usize = 512;
 pub const _POSIX_UIO_MAXIOV: usize = 16;
 pub const _POSIX_CLOCKRES_MIN: usize = 20000000;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const NAME_MAX: usize = 255;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const NGROUPS_MAX: usize = 256;
+
 pub const _POSIX_THREAD_KEYS_MAX: usize = 128;
 pub const _POSIX_THREAD_DESTRUCTOR_ITERATIONS: usize = 4;
 pub const _POSIX_THREAD_THREADS_MAX: usize = 64;
@@ -3207,6 +3222,9 @@ pub const RTLD_DI_PROFILEOUT: c_int = 8;
 pub const RTLD_DI_TLS_MODID: c_int = 9;
 pub const RTLD_DI_TLS_DATA: c_int = 10;
 pub const RTLD_DI_PHDR: c_int = 11;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const RTLD_DI_MAX: c_int = 11;
 
 pub const SI_ASYNCIO: c_int = -4;
@@ -3336,19 +3354,19 @@ pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
 };
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
     __lock: __PTHREAD_SPIN_LOCK_INITIALIZER,
-    __queue: 0i64 as *mut __pthread,
-    __attr: 0i64 as *mut __pthread_condattr,
+    __queue: ptr::null_mut(),
+    __attr: ptr::null_mut(),
     __wrefs: 0,
-    __data: 0i64 as *mut c_void,
+    __data: ptr::null_mut(),
 };
 pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
     __held: __PTHREAD_SPIN_LOCK_INITIALIZER,
     __lock: __PTHREAD_SPIN_LOCK_INITIALIZER,
     __readers: 0,
-    __readerqueue: 0i64 as *mut __pthread,
-    __writerqueue: 0i64 as *mut __pthread,
-    __attr: 0i64 as *mut __pthread_rwlockattr,
-    __data: 0i64 as *mut c_void,
+    __readerqueue: ptr::null_mut(),
+    __writerqueue: ptr::null_mut(),
+    __attr: ptr::null_mut(),
+    __data: ptr::null_mut(),
 };
 pub const PTHREAD_STACK_MIN: size_t = 0;
 
@@ -3361,72 +3379,70 @@ const fn CMSG_ALIGN(len: usize) -> usize {
 
 // functions
 f! {
-    pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
         if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
-            (*mhdr).msg_control.cast::<cmsghdr>()
+            (*mhdr).msg_control.cast()
         } else {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         }
     }
 
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         (cmsg as *mut c_uchar).offset(CMSG_ALIGN(size_of::<cmsghdr>()) as isize)
     }
 
-    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_SPACE(length: c_uint) -> c_uint {
         (CMSG_ALIGN(length as usize) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
-    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_LEN(length: c_uint) -> c_uint {
         CMSG_ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
-    pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if ((*cmsg).cmsg_len as usize) < size_of::<cmsghdr>() {
-            return core::ptr::null_mut::<cmsghdr>();
+            return ptr::null_mut();
         }
         let next = (cmsg as usize + CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr;
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if (next.offset(1)) as usize > max
             || next as usize + CMSG_ALIGN((*next).cmsg_len as usize) > max
         {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         } else {
-            next.cast::<cmsghdr>()
+            next.cast()
         }
     }
 
-    pub fn CPU_ALLOC_SIZE(count: c_int) -> size_t {
+    pub unsafe fn CPU_ALLOC_SIZE(count: c_int) -> size_t {
         let _dummy: cpu_set_t = mem::zeroed();
         let size_in_bits = 8 * size_of_val(&_dummy.bits[0]);
         ((count as size_t + size_in_bits - 1) / 8) as size_t
     }
 
-    pub fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
-        for slot in cpuset.bits.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
+        cpuset.bits.fill(0);
     }
 
-    pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
     }
 
-    pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
     }
 
-    pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }
 
-    pub fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
+    pub unsafe fn CPU_COUNT_S(size: usize, cpuset: &cpu_set_t) -> c_int {
         let mut s: u32 = 0;
         let size_of_mask = size_of_val(&cpuset.bits[0]);
         for i in cpuset.bits[..(size / size_of_mask)].iter() {
@@ -3435,46 +3451,44 @@ f! {
         s as c_int
     }
 
-    pub fn CPU_COUNT(cpuset: &cpu_set_t) -> c_int {
+    pub unsafe fn CPU_COUNT(cpuset: &cpu_set_t) -> c_int {
         CPU_COUNT_S(size_of::<cpu_set_t>(), cpuset)
     }
 
-    pub fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
         set1.bits == set2.bits
     }
 
-    pub fn IPTOS_TOS(tos: u8) -> u8 {
+    pub unsafe fn IPTOS_TOS(tos: u8) -> u8 {
         tos & IPTOS_TOS_MASK
     }
 
-    pub fn IPTOS_PREC(tos: u8) -> u8 {
+    pub unsafe fn IPTOS_PREC(tos: u8) -> u8 {
         tos & IPTOS_PREC_MASK
     }
 
-    pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
-    pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
+    pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
-    pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }
 
-    pub fn FD_ZERO(set: *mut fd_set) -> () {
-        for slot in (*set).fds_bits.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
+        (*set).fds_bits.fill(0);
     }
 }
 
@@ -4467,7 +4481,7 @@ extern "C" {
 }
 
 safe_f! {
-    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -4476,79 +4490,79 @@ safe_f! {
         dev
     }
 
-    pub const fn major(dev: crate::dev_t) -> c_uint {
+    pub const safe fn major(dev: crate::dev_t) -> c_uint {
         ((dev >> 8) & 0xff) as c_uint
     }
 
-    pub const fn minor(dev: crate::dev_t) -> c_uint {
+    pub const safe fn minor(dev: crate::dev_t) -> c_uint {
         (dev & 0xffff00ff) as c_uint
     }
 
-    pub fn SIGRTMAX() -> c_int {
+    pub safe fn SIGRTMAX() -> c_int {
         unsafe { __libc_current_sigrtmax() }
     }
 
-    pub fn SIGRTMIN() -> c_int {
+    pub safe fn SIGRTMIN() -> c_int {
         unsafe { __libc_current_sigrtmin() }
     }
 
-    pub const fn WIFSTOPPED(status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }
 
-    pub const fn WSTOPSIG(status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub const fn WIFCONTINUED(status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         status == 0xffff
     }
 
-    pub const fn WIFSIGNALED(status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         ((status & 0x7f) + 1) as i8 >= 2
     }
 
-    pub const fn WTERMSIG(status: c_int) -> c_int {
+    pub const safe fn WTERMSIG(status: c_int) -> c_int {
         status & 0x7f
     }
 
-    pub const fn WIFEXITED(status: c_int) -> bool {
+    pub const safe fn WIFEXITED(status: c_int) -> bool {
         (status & 0x7f) == 0
     }
 
-    pub const fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub const fn WCOREDUMP(status: c_int) -> bool {
+    pub const safe fn WCOREDUMP(status: c_int) -> bool {
         (status & 0x80) != 0
     }
 
-    pub const fn W_EXITCODE(ret: c_int, sig: c_int) -> c_int {
+    pub const safe fn W_EXITCODE(ret: c_int, sig: c_int) -> c_int {
         (ret << 8) | sig
     }
 
-    pub const fn W_STOPCODE(sig: c_int) -> c_int {
+    pub const safe fn W_STOPCODE(sig: c_int) -> c_int {
         (sig << 8) | 0x7f
     }
 
-    pub const fn QCMD(cmd: c_int, type_: c_int) -> c_int {
+    pub const safe fn QCMD(cmd: c_int, type_: c_int) -> c_int {
         (cmd << 8) | (type_ & 0x00ff)
     }
 
-    pub const fn IPOPT_COPIED(o: u8) -> u8 {
+    pub const safe fn IPOPT_COPIED(o: u8) -> u8 {
         o & IPOPT_COPY
     }
 
-    pub const fn IPOPT_CLASS(o: u8) -> u8 {
+    pub const safe fn IPOPT_CLASS(o: u8) -> u8 {
         o & IPOPT_CLASS_MASK
     }
 
-    pub const fn IPOPT_NUMBER(o: u8) -> u8 {
+    pub const safe fn IPOPT_NUMBER(o: u8) -> u8 {
         o & IPOPT_NUMBER_MASK
     }
 
-    pub const fn IPTOS_ECN(x: u8) -> u8 {
+    pub const safe fn IPTOS_ECN(x: u8) -> u8 {
         x & crate::IPTOS_ECN_MASK
     }
 }

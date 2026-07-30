@@ -152,12 +152,14 @@ pub const WNOHANG: c_int = 1;
 
 pub const POLLIN: c_int = 0x0001;
 pub const POLLPRI: c_int = 0x0002;
-pub const POLLOUT: c_int = 0x0004;
+pub const POLLOUT: c_int = 0x0008;
 pub const POLLRDNORM: c_int = 0x0040;
 pub const POLLWRNORM: c_int = POLLOUT;
 pub const POLLRDBAND: c_int = 0x0080;
 pub const POLLWRBAND: c_int = 0x0100;
+/// POLLERR behavior on 3DS+HorizonOS is unclear, and it may be unsupported.
 pub const POLLERR: c_int = 0x0008;
+/// POLLHUP behavior on 3DS+HorizonOS is unclear, and it may be unsupported.
 pub const POLLHUP: c_int = 0x0010;
 pub const POLLNVAL: c_int = 0x0020;
 
@@ -169,6 +171,9 @@ pub const EAI_SYSTEM: c_int = 11;
 pub const EAI_BADHINTS: c_int = 12;
 pub const EAI_PROTOCOL: c_int = 13;
 pub const EAI_OVERFLOW: c_int = 14;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const EAI_MAX: c_int = 15;
 
 pub const AF_UNIX: c_int = 1;
@@ -188,35 +193,35 @@ pub const GRND_RANDOM: c_uint = 0x2;
 
 // Horizon OS works doesn't or can't hold any of this information
 safe_f! {
-    pub const fn WIFSTOPPED(_status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(_status: c_int) -> bool {
         false
     }
 
-    pub const fn WSTOPSIG(_status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(_status: c_int) -> c_int {
         0
     }
 
-    pub const fn WIFCONTINUED(_status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(_status: c_int) -> bool {
         true
     }
 
-    pub const fn WIFSIGNALED(_status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(_status: c_int) -> bool {
         false
     }
 
-    pub const fn WTERMSIG(_status: c_int) -> c_int {
+    pub const safe fn WTERMSIG(_status: c_int) -> c_int {
         0
     }
 
-    pub const fn WIFEXITED(_status: c_int) -> bool {
+    pub const safe fn WIFEXITED(_status: c_int) -> bool {
         true
     }
 
-    pub const fn WEXITSTATUS(_status: c_int) -> c_int {
+    pub const safe fn WEXITSTATUS(_status: c_int) -> c_int {
         0
     }
 
-    pub const fn WCOREDUMP(_status: c_int) -> bool {
+    pub const safe fn WCOREDUMP(_status: c_int) -> bool {
         false
     }
 }

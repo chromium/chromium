@@ -1,11 +1,10 @@
 [package]
 name = "libc"
-version = "0.2.186"
+version = "0.2.189"
 keywords = ["libc", "ffi", "bindings", "operating", "system"]
 categories = ["external-ffi-bindings", "no-std", "os"]
 exclude = ["/ci/*", "/.github/*", "/triagebot.toml", "cherry-pick-stable.sh"]
 description = "Raw FFI bindings to platform libraries like libc."
-authors = ["The Rust Project Developers"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang/libc"
@@ -40,6 +39,7 @@ targets = [
     "loongarch64-unknown-linux-musl",
     "powerpc-unknown-linux-gnu",
     "powerpc64-unknown-linux-gnu",
+    "powerpc64-unknown-linux-musl",
     "powerpc64le-unknown-linux-gnu",
     "powerpc64le-unknown-linux-musl",
     "riscv64gc-unknown-linux-gnu",
@@ -95,7 +95,7 @@ targets = [
     "aarch64-unknown-hermit",
     "aarch64-unknown-illumos",
     "aarch64-unknown-netbsd",
-    "aarch64-unknown-nto-qnx800",
+    "aarch64-unknown-qnx",
     "aarch64-unknown-openbsd",
     "aarch64-unknown-redox",
     "aarch64-wrs-vxworks",
@@ -128,7 +128,6 @@ targets = [
     "powerpc64-ibm-aix",
     "powerpc64-unknown-freebsd",
     "powerpc64-unknown-linux-gnu",
-    "powerpc64-unknown-linux-musl",
     "powerpc64-wrs-vxworks",
     "riscv32-wrs-vxworks",
     "riscv32gc-unknown-linux-musl",
@@ -184,14 +183,11 @@ members = [
     "libc-test",
 ]
 
-# FIXME(msrv): These should be renamed as `[workspace.lints.*]` once MSRV is above 1.64
-#       This way all crates can use it with `[lints] workspace=true` section
-
-[lints.rust]
+[workspace.lints.rust]
 # FIXME(cleanup): make ident usage consistent in each file
 unused_qualifications = "allow"
 
-[lints.clippy]
+[workspace.lints.clippy]
 # Enable pedantic lints - use this manually once in a while, but don't enable by default
 # pedantic = { level = "warn", priority = -1 }
 
@@ -206,10 +202,10 @@ ptr_as_ptr = "warn"
 unnecessary_semicolon = "warn"
 
 # FIXME(clippy): these should be fixed if possible
-expl_impl_clone_on_copy = "allow"
-uninlined_format_args = "allow"
 unnecessary_cast = "allow"  # some casts like `as usize` are only needed for some targets
-used_underscore_binding = "allow"
+
+[lints]
+workspace = true
 
 [package.metadata.cargo-semver-checks.lints]
 # Alignment is an internal detail that users must not rely upon

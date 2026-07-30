@@ -61,7 +61,7 @@ impl siginfo_t {
             _si_code: c_int,
             si_addr: *mut c_void,
         }
-        (*(self as *const siginfo_t as *const siginfo_sigfault)).si_addr
+        (*(self as *const siginfo_t).cast::<siginfo_sigfault>()).si_addr
     }
 
     pub unsafe fn si_value(&self) -> crate::sigval {
@@ -74,7 +74,7 @@ impl siginfo_t {
             _si_overrun: c_int,
             si_value: crate::sigval,
         }
-        (*(self as *const siginfo_t as *const siginfo_si_value)).si_value
+        (*(self as *const siginfo_t).cast::<siginfo_si_value>()).si_value
     }
 }
 
@@ -105,7 +105,7 @@ s_no_extra_traits! {
 
 impl siginfo_t {
     unsafe fn sifields(&self) -> &sifields {
-        &(*(self as *const siginfo_t as *const siginfo_f)).sifields
+        &(*(self as *const siginfo_t).cast::<siginfo_f>()).sifields
     }
 
     pub unsafe fn si_pid(&self) -> crate::pid_t {
@@ -507,8 +507,6 @@ pub const MAP_HUGE_1GB: c_int = 30 << MAP_HUGE_SHIFT;
 pub const MAP_HUGE_2GB: c_int = 31 << MAP_HUGE_SHIFT;
 pub const MAP_HUGE_16GB: c_int = 34 << MAP_HUGE_SHIFT;
 
-pub const MS_RMT_MASK: c_ulong = 0x02800051;
-
 // include/utmpx.h
 pub const EMPTY: c_short = 0;
 pub const RUN_LVL: c_short = 1;
@@ -557,7 +555,7 @@ pub const F_WRLCK: c_int = 1;
 pub const F_UNLCK: c_int = 2;
 
 pub const SA_NODEFER: c_int = 0x40000000;
-pub const SA_RESETHAND: c_int = 0x80000000;
+pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
 pub const SA_RESTART: c_int = 0x10000000;
 pub const SA_NOCLDSTOP: c_int = 0x00000001;
 
@@ -795,6 +793,13 @@ extern "C" {
         flags: c_int,
     ) -> ssize_t;
     pub fn getauxval(type_: c_ulong) -> c_ulong;
+    pub fn renameat2(
+        olddirfd: c_int,
+        oldpath: *const c_char,
+        newdirfd: c_int,
+        newpath: *const c_char,
+        flags: c_uint,
+    ) -> c_int;
 
     // Added in `musl` 1.1.20
     pub fn explicit_bzero(s: *mut c_void, len: size_t);

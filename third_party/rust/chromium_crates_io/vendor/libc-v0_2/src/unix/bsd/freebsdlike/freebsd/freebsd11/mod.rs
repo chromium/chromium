@@ -258,25 +258,31 @@ s! {
     }
 }
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const ELAST: c_int = 96;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const RAND_MAX: c_int = 0x7fff_fffd;
+
 pub const KI_NSPARE_PTR: usize = 6;
 pub const MINCORE_SUPER: c_int = 0x20;
 /// max length of devicename
 pub const SPECNAMELEN: c_int = 63;
 
 safe_f! {
-    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         (major << 8) | minor
     }
 
-    pub const fn major(dev: crate::dev_t) -> c_int {
+    pub const safe fn major(dev: crate::dev_t) -> c_int {
         ((dev >> 8) & 0xff) as c_int
     }
 
-    pub const fn minor(dev: crate::dev_t) -> c_int {
+    pub const safe fn minor(dev: crate::dev_t) -> c_int {
         (dev & 0xffff00ff) as c_int
     }
 }

@@ -93,7 +93,7 @@ cfg_if! {
     } else if #[cfg(target_os = "netbsd")] {
         mod netbsd;
         pub(crate) use netbsd::*;
-    } else if #[cfg(target_os = "nto")] {
+    } else if #[cfg(any(target_os = "nto", target_os = "qnx"))] {
         mod nto;
         pub(crate) use nto::*;
     } else if #[cfg(target_os = "nuttx")] {
@@ -104,7 +104,6 @@ cfg_if! {
         pub(crate) use openbsd::*;
     } else if #[cfg(target_os = "qurt")] {
         pub mod qurt;
-        pub use qurt::*;
     } else if #[cfg(target_os = "redox")] {
         mod redox;
         // pub(crate) use redox::*;
@@ -174,6 +173,8 @@ cfg_if! {
 // Per-OS headers we export
 cfg_if! {
     if #[cfg(target_os = "android")] {
+        use bionic_libc::kernel_uapi::linux;
+        pub use linux::types::*;
         pub use sys::socket::*;
     } else if #[cfg(target_os = "linux")] {
         pub use linux::can::bcm::*;
@@ -181,20 +182,33 @@ cfg_if! {
         pub use linux::can::j1939::*;
         pub use linux::can::netlink::*;
         pub use linux::can::raw::*;
-        pub use linux::can::*;
+        pub use linux::futex::*;
+        pub use linux::if_addr::*;
+        pub use linux::if_link::*;
+        pub use linux::if_packet::*;
         pub use linux::keyctl::*;
         pub use linux::membarrier::*;
+        pub use linux::mount::*;
         pub use linux::netlink::*;
         pub use linux::pidfd::*;
+        pub use linux::sctp::*;
+        pub use linux::tls::*;
+        pub use linux::types::*;
         #[cfg(target_env = "gnu")]
         pub use net::route::*;
     } else if #[cfg(target_vendor = "apple")] {
-        pub use pthread::*;
+        pub use net::bpf::*;
+        pub use netinet6::in6_var::*;
         pub use pthread_::introspection::*;
         pub use pthread_::pthread_spis::*;
         pub use pthread_::spawn::*;
         pub use pthread_::stack_np::*;
         pub use signal::*;
+        pub use sys::ioccom::*;
+        pub use sys::sockio::*;
+        pub use sys::ttycom::*;
+    } else if #[cfg(target_os = "l4re")] {
+        pub use l4re::packet::*;
     } else if #[cfg(target_os = "netbsd")] {
         pub use net::if_::*;
         pub use sys::file::*;
@@ -208,11 +222,15 @@ cfg_if! {
         pub use utmpx_::*;
     } else if #[cfg(target_os = "openbsd")] {
         pub use sys::ipc::*;
-    } else if #[cfg(target_os = "nto")] {
+    } else if #[cfg(any(target_os = "nto", target_os = "qnx"))] {
         pub use net::bpf::*;
         pub use net::if_::*;
     } else if #[cfg(target_os = "freebsd")] {
+        pub use net::dlt::*;
+        pub use netinet6::in6_var::*;
         pub use sys::file::*;
+        pub use sys::ioccom::*;
+        pub use sys::socket::*;
     }
 }
 

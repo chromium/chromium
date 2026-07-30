@@ -130,7 +130,7 @@ pub const NLA_TYPE_MASK: c_int = !(NLA_F_NESTED | NLA_F_NET_BYTEORDER);
 pub const NLA_ALIGNTO: c_int = 4;
 
 f! {
-    pub fn NLA_ALIGN(len: c_int) -> c_int {
+    pub unsafe fn NLA_ALIGN(len: c_int) -> c_int {
         return ((len) + NLA_ALIGNTO - 1) & !(NLA_ALIGNTO - 1);
     }
 }

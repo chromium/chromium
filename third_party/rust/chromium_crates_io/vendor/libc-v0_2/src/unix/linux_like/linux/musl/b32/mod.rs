@@ -2,8 +2,6 @@ use crate::prelude::*;
 
 pub type nlink_t = u32;
 pub type blksize_t = c_long;
-pub type __u64 = c_ulonglong;
-pub type __s64 = c_longlong;
 pub type regoff_t = c_int;
 
 s! {

@@ -157,7 +157,7 @@ pub const F_SETFL: i32 = 4;
 
 pub const FD_CLOEXEC: i32 = 1;
 
-pub const FIONBIO: i32 = 0x8008667e;
+pub const FIONBIO: i32 = u32_cast_int(0x8008667e);
 
 pub const FUTEX_RELATIVE_TIMEOUT: u32 = 1;
 

@@ -13,8 +13,7 @@
 edition = "2021"
 rust-version = "1.65"
 name = "libc"
-version = "0.2.186"
-authors = ["The Rust Project Developers"]
+version = "0.2.189"
 build = "build.rs"
 exclude = [
     "/ci/*",
@@ -68,6 +67,7 @@ targets = [
     "loongarch64-unknown-linux-musl",
     "powerpc-unknown-linux-gnu",
     "powerpc64-unknown-linux-gnu",
+    "powerpc64-unknown-linux-musl",
     "powerpc64le-unknown-linux-gnu",
     "powerpc64le-unknown-linux-musl",
     "riscv64gc-unknown-linux-gnu",
@@ -118,7 +118,7 @@ targets = [
     "aarch64-unknown-hermit",
     "aarch64-unknown-illumos",
     "aarch64-unknown-netbsd",
-    "aarch64-unknown-nto-qnx800",
+    "aarch64-unknown-qnx",
     "aarch64-unknown-openbsd",
     "aarch64-unknown-redox",
     "aarch64-wrs-vxworks",
@@ -151,7 +151,6 @@ targets = [
     "powerpc64-ibm-aix",
     "powerpc64-unknown-freebsd",
     "powerpc64-unknown-linux-gnu",
-    "powerpc64-unknown-linux-musl",
     "powerpc64-wrs-vxworks",
     "riscv32-wrs-vxworks",
     "riscv32gc-unknown-linux-musl",
@@ -212,7 +211,6 @@ version = "1.0.1"
 optional = true
 
 [lints.clippy]
-expl_impl_clone_on_copy = "allow"
 explicit_iter_loop = "warn"
 identity_op = "allow"
 manual_assert = "warn"
@@ -220,10 +218,8 @@ map_unwrap_or = "warn"
 missing_safety_doc = "allow"
 non_minimal_cfg = "allow"
 ptr_as_ptr = "warn"
-uninlined_format_args = "allow"
 unnecessary_cast = "allow"
 unnecessary_semicolon = "warn"
-used_underscore_binding = "allow"
 
 [lints.rust]
 unused_qualifications = "allow"

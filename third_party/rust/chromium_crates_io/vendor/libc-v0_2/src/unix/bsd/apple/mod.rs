@@ -180,7 +180,7 @@ deprecated_mach! {
 }
 
 extern_ty! {
-    pub enum timezone {}
+    pub type timezone;
 }
 
 #[derive(Debug)]
@@ -626,6 +626,35 @@ s! {
         pub pbi_nice: i32,
         pub pbi_start_tvsec: u64,
         pub pbi_start_tvusec: u64,
+    }
+
+    pub struct proc_bsdshortinfo {
+        /// Process ID.
+        pub pbsi_pid: u32,
+        /// Process parent ID.
+        pub pbsi_ppid: u32,
+        /// Process perp ID.
+        pub pbsi_pgid: u32,
+        /// `p_stat` value: `SZOMB`, `SRUN`, etc.
+        pub pbsi_status: u32,
+        /// Up to 16 characters of process name.
+        pub pbsi_comm: [c_char; MAXCOMLEN],
+        /// 64bit, emulated, etc.
+        pub pbsi_flags: u32,
+        /// Current UID on process.
+        pub pbsi_uid: crate::uid_t,
+        /// Current GID on process.
+        pub pbsi_gid: crate::gid_t,
+        /// Current RUID on process.
+        pub pbsi_ruid: crate::uid_t,
+        /// Current RGID on process.
+        pub pbsi_rgid: crate::gid_t,
+        /// Current SVUID on process.
+        pub pbsi_svuid: crate::uid_t,
+        /// Current SVGID on process.
+        pub pbsi_svgid: crate::gid_t,
+        /// Reserved for future use.
+        pbsi_rfu: u32,
     }
 
     pub struct proc_taskallinfo {
@@ -1521,6 +1550,39 @@ s! {
         pub external_page_count: natural_t,
         pub internal_page_count: natural_t,
         pub total_uncompressed_pages_in_compressor: u64,
+        pub swapped_count: u64,
+        pub total_tag_storage_pages: u64,
+        pub nontag_pageable_tag_storage_pages: u64,
+        pub nontag_wired_tag_storage_pages: u64,
+        pub free_tag_storage_pages: u64,
+        pub tag_storing_tag_storage_pages: u64,
+        pub total_tagged_pages: u64,
+        pub resident_tagged_pages: u64,
+        pub compressed_tagged_pages: u64,
+        pub tagged_compressions: u64,
+        pub tagged_decompressions: u64,
+        pub compressed_tag_storage_bytes: u64,
+        pub speculative_pages_created: u64,
+        pub speculative_pages_activated: u64,
+        pub swap_count: u64,
+        pub empty_tag_storing_tag_storage_pages: u64,
+        pub executable_count: u64,
+        pub shared_region_count: u64,
+        pub boot_stolen_count: u64,
+        pub secluded_count: u64,
+        pub active_internal_count: u64,
+        pub inactive_internal_count: u64,
+        pub active_external_count: u64,
+        pub inactive_external_count: u64,
+        pub purgeable_pageable_count: u64,
+        pub purgeable_wired_count: u64,
+        pub background_internal_count: u64,
+        pub background_external_count: u64,
+        pub donated_count: u64,
+        pub realtime_count: u64,
+        pub max_mem_count: u64,
+        pub phantom_ghosts_found: u64,
+        pub phantom_ghosts_added: u64,
     }
 
     #[repr(packed(4))]
@@ -1911,6 +1973,41 @@ pub const ABMON_10: crate::nl_item = 42;
 pub const ABMON_11: crate::nl_item = 43;
 pub const ABMON_12: crate::nl_item = 44;
 
+pub const REG_BASIC: c_int = 0o0000;
+pub const REG_EXTENDED: c_int = 0o0001;
+pub const REG_ICASE: c_int = 0o0002;
+pub const REG_NOSUB: c_int = 0o0004;
+pub const REG_NEWLINE: c_int = 0o0010;
+pub const REG_NOSPEC: c_int = 0o0020;
+pub const REG_PEND: c_int = 0o0040;
+pub const REG_DUMP: c_int = 0o0200;
+
+pub const REG_NOMATCH: c_int = 1;
+pub const REG_BADPAT: c_int = 2;
+pub const REG_ECOLLATE: c_int = 3;
+pub const REG_ECTYPE: c_int = 4;
+pub const REG_EESCAPE: c_int = 5;
+pub const REG_ESUBREG: c_int = 6;
+pub const REG_EBRACK: c_int = 7;
+pub const REG_EPAREN: c_int = 8;
+pub const REG_EBRACE: c_int = 9;
+pub const REG_BADBR: c_int = 10;
+pub const REG_ERANGE: c_int = 11;
+pub const REG_ESPACE: c_int = 12;
+pub const REG_BADRPT: c_int = 13;
+pub const REG_EMPTY: c_int = 14;
+pub const REG_ASSERT: c_int = 15;
+pub const REG_INVARG: c_int = 16;
+pub const REG_ATOI: c_int = 255;
+pub const REG_ITOA: c_int = 0o0400;
+
+pub const REG_NOTBOL: c_int = 0o00001;
+pub const REG_NOTEOL: c_int = 0o00002;
+pub const REG_STARTEND: c_int = 0o00004;
+pub const REG_TRACE: c_int = 0o00400;
+pub const REG_LARGE: c_int = 0o01000;
+pub const REG_BACKR: c_int = 0o02000;
+
 pub const CLOCK_REALTIME: crate::clockid_t = 0;
 pub const CLOCK_MONOTONIC_RAW: crate::clockid_t = 4;
 pub const CLOCK_MONOTONIC_RAW_APPROX: crate::clockid_t = 5;
@@ -2075,6 +2172,9 @@ pub const CPU_STATE_USER: c_int = 0;
 pub const CPU_STATE_SYSTEM: c_int = 1;
 pub const CPU_STATE_IDLE: c_int = 2;
 pub const CPU_STATE_NICE: c_int = 3;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const CPU_STATE_MAX: c_int = 4;
 
 pub const PROCESSOR_BASIC_INFO: c_int = 1;
@@ -2096,9 +2196,9 @@ deprecated_mach! {
     pub const VM_FLAGS_SUPERPAGE_MASK: c_int = 0x70000;
     pub const VM_FLAGS_RETURN_DATA_ADDR: c_int = 0x100000;
     pub const VM_FLAGS_RETURN_4K_DATA_ADDR: c_int = 0x800000;
-    pub const VM_FLAGS_ALIAS_MASK: c_int = 0xFF000000;
-    pub const VM_FLAGS_USER_ALLOCATE: c_int = 0xff07401f;
-    pub const VM_FLAGS_USER_MAP: c_int = 0xff97401f;
+    pub const VM_FLAGS_ALIAS_MASK: c_int = u32_cast_int(0xFF000000);
+    pub const VM_FLAGS_USER_ALLOCATE: c_int = u32_cast_int(0xff07401f);
+    pub const VM_FLAGS_USER_MAP: c_int = u32_cast_int(0xff97401f);
     pub const VM_FLAGS_USER_REMAP: c_int = VM_FLAGS_FIXED
         | VM_FLAGS_ANYWHERE
         | VM_FLAGS_RANDOM_ADDR
@@ -2301,7 +2401,11 @@ pub const ENOPOLICY: c_int = 103;
 pub const ENOTRECOVERABLE: c_int = 104;
 pub const EOWNERDEAD: c_int = 105;
 pub const EQFULL: c_int = 106;
-pub const ELAST: c_int = 106;
+pub const ENOTCAPABLE: c_int = 107;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.and use.
+pub const ELAST: c_int = 107;
 
 pub const EAI_AGAIN: c_int = 2;
 pub const EAI_BADFLAGS: c_int = 3;
@@ -2356,80 +2460,6 @@ pub const AT_EACCESS: c_int = 0x0010;
 pub const AT_SYMLINK_NOFOLLOW: c_int = 0x0020;
 pub const AT_SYMLINK_FOLLOW: c_int = 0x0040;
 pub const AT_REMOVEDIR: c_int = 0x0080;
-
-pub const TIOCMODG: c_ulong = 0x40047403;
-pub const TIOCMODS: c_ulong = 0x80047404;
-pub const TIOCM_LE: c_int = 0x1;
-pub const TIOCM_DTR: c_int = 0x2;
-pub const TIOCM_RTS: c_int = 0x4;
-pub const TIOCM_ST: c_int = 0x8;
-pub const TIOCM_SR: c_int = 0x10;
-pub const TIOCM_CTS: c_int = 0x20;
-pub const TIOCM_CAR: c_int = 0x40;
-pub const TIOCM_CD: c_int = 0x40;
-pub const TIOCM_RNG: c_int = 0x80;
-pub const TIOCM_RI: c_int = 0x80;
-pub const TIOCM_DSR: c_int = 0x100;
-pub const TIOCEXCL: c_int = 0x2000740d;
-pub const TIOCNXCL: c_int = 0x2000740e;
-pub const TIOCFLUSH: c_ulong = 0x80047410;
-pub const TIOCGETD: c_ulong = 0x4004741a;
-pub const TIOCSETD: c_ulong = 0x8004741b;
-pub const TIOCIXON: c_uint = 0x20007481;
-pub const TIOCIXOFF: c_uint = 0x20007480;
-pub const TIOCSDTR: c_uint = 0x20007479;
-pub const TIOCCDTR: c_uint = 0x20007478;
-pub const TIOCGPGRP: c_ulong = 0x40047477;
-pub const TIOCSPGRP: c_ulong = 0x80047476;
-pub const TIOCOUTQ: c_ulong = 0x40047473;
-pub const TIOCSTI: c_ulong = 0x80017472;
-pub const TIOCNOTTY: c_uint = 0x20007471;
-pub const TIOCPKT: c_ulong = 0x80047470;
-pub const TIOCPKT_DATA: c_int = 0x0;
-pub const TIOCPKT_FLUSHREAD: c_int = 0x1;
-pub const TIOCPKT_FLUSHWRITE: c_int = 0x2;
-pub const TIOCPKT_STOP: c_int = 0x4;
-pub const TIOCPKT_START: c_int = 0x8;
-pub const TIOCPKT_NOSTOP: c_int = 0x10;
-pub const TIOCPKT_DOSTOP: c_int = 0x20;
-pub const TIOCPKT_IOCTL: c_int = 0x40;
-pub const TIOCSTOP: c_uint = 0x2000746f;
-pub const TIOCSTART: c_uint = 0x2000746e;
-pub const TIOCMSET: c_ulong = 0x8004746d;
-pub const TIOCMBIS: c_ulong = 0x8004746c;
-pub const TIOCMBIC: c_ulong = 0x8004746b;
-pub const TIOCMGET: c_ulong = 0x4004746a;
-#[deprecated(since = "0.2.178", note = "Removed in MacOSX 12.0.1")]
-pub const TIOCREMOTE: c_ulong = 0x80047469;
-pub const TIOCGWINSZ: c_ulong = 0x40087468;
-pub const TIOCSWINSZ: c_ulong = 0x80087467;
-pub const TIOCUCNTL: c_ulong = 0x80047466;
-pub const TIOCSTAT: c_uint = 0x20007465;
-pub const TIOCSCONS: c_uint = 0x20007463;
-pub const TIOCCONS: c_ulong = 0x80047462;
-pub const TIOCSCTTY: c_uint = 0x20007461;
-pub const TIOCEXT: c_ulong = 0x80047460;
-pub const TIOCSIG: c_uint = 0x2000745f;
-pub const TIOCDRAIN: c_uint = 0x2000745e;
-pub const TIOCMSDTRWAIT: c_ulong = 0x8004745b;
-pub const TIOCMGDTRWAIT: c_ulong = 0x4004745a;
-pub const TIOCSDRAINWAIT: c_ulong = 0x80047457;
-pub const TIOCGDRAINWAIT: c_ulong = 0x40047456;
-pub const TIOCDSIMICROCODE: c_uint = 0x20007455;
-pub const TIOCPTYGRANT: c_uint = 0x20007454;
-pub const TIOCPTYGNAME: c_uint = 0x40807453;
-pub const TIOCPTYUNLK: c_uint = 0x20007452;
-pub const TIOCGETA: c_ulong = 0x40487413;
-pub const TIOCSETA: c_ulong = 0x80487414;
-pub const TIOCSETAW: c_ulong = 0x80487415;
-pub const TIOCSETAF: c_ulong = 0x80487416;
-
-pub const BIOCGRSIG: c_ulong = 0x40044272;
-pub const BIOCSRSIG: c_ulong = 0x80044273;
-pub const BIOCSDLT: c_ulong = 0x80044278;
-pub const BIOCGSEESENT: c_ulong = 0x40044276;
-pub const BIOCSSEESENT: c_ulong = 0x80044277;
-pub const BIOCGDLTLIST: c_ulong = 0xc00c4279;
 
 pub const FIODTYPE: c_ulong = 0x4004667a;
 
@@ -3168,6 +3198,7 @@ pub const EVFILT_MACHPORT: i16 = -8;
 pub const EVFILT_FS: i16 = -9;
 pub const EVFILT_USER: i16 = -10;
 pub const EVFILT_VM: i16 = -12;
+pub const EVFILT_EXCEPT: i16 = -15;
 
 pub const EV_ADD: u16 = 0x1;
 pub const EV_DELETE: u16 = 0x2;
@@ -3177,6 +3208,9 @@ pub const EV_ONESHOT: u16 = 0x10;
 pub const EV_CLEAR: u16 = 0x20;
 pub const EV_RECEIPT: u16 = 0x40;
 pub const EV_DISPATCH: u16 = 0x80;
+pub const EV_UDATA_SPECIFIC: u16 = 0x0100;
+pub const EV_DISPATCH2: u16 = EV_DISPATCH | EV_UDATA_SPECIFIC;
+pub const EV_VANISHED: u16 = 0x0200;
 pub const EV_FLAG0: u16 = 0x1000;
 pub const EV_POLL: u16 = 0x1000;
 pub const EV_FLAG1: u16 = 0x2000;
@@ -3197,6 +3231,7 @@ pub const NOTE_FFCOPY: u32 = 0xc0000000;
 pub const NOTE_FFCTRLMASK: u32 = 0xc0000000;
 pub const NOTE_FFLAGSMASK: u32 = 0x00ffffff;
 pub const NOTE_LOWAT: u32 = 0x00000001;
+pub const NOTE_OOB: u32 = 0x00000002;
 pub const NOTE_DELETE: u32 = 0x00000001;
 pub const NOTE_WRITE: u32 = 0x00000002;
 pub const NOTE_EXTEND: u32 = 0x00000004;
@@ -3205,6 +3240,9 @@ pub const NOTE_LINK: u32 = 0x00000010;
 pub const NOTE_RENAME: u32 = 0x00000020;
 pub const NOTE_REVOKE: u32 = 0x00000040;
 pub const NOTE_NONE: u32 = 0x00000080;
+pub const NOTE_FUNLOCK: u32 = 0x00000100;
+pub const NOTE_LEASE_DOWNGRADE: u32 = 0x00000200;
+pub const NOTE_LEASE_RELEASE: u32 = 0x00000400;
 pub const NOTE_EXIT: u32 = 0x80000000;
 pub const NOTE_FORK: u32 = 0x40000000;
 pub const NOTE_EXEC: u32 = 0x20000000;
@@ -3309,7 +3347,7 @@ pub const CTLTYPE_STRING: c_int = 3;
 pub const CTLTYPE_QUAD: c_int = 4;
 pub const CTLTYPE_OPAQUE: c_int = 5;
 pub const CTLTYPE_STRUCT: c_int = CTLTYPE_OPAQUE;
-pub const CTLFLAG_RD: c_int = 0x80000000;
+pub const CTLFLAG_RD: c_int = u32_cast_int(0x80000000);
 pub const CTLFLAG_WR: c_int = 0x40000000;
 pub const CTLFLAG_RW: c_int = CTLFLAG_RD | CTLFLAG_WR;
 pub const CTLFLAG_NOLOCK: c_int = 0x20000000;
@@ -3546,14 +3584,39 @@ pub const HW_TARGET: c_int = 26;
 pub const HW_PRODUCT: c_int = 27;
 pub const HW_MAXID: c_int = 28;
 pub const USER_CS_PATH: c_int = 1;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_BASE_MAX: c_int = 2;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_DIM_MAX: c_int = 3;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_SCALE_MAX: c_int = 4;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_BC_STRING_MAX: c_int = 5;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_COLL_WEIGHTS_MAX: c_int = 6;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_EXPR_NEST_MAX: c_int = 7;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_LINE_MAX: c_int = 8;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const USER_RE_DUP_MAX: c_int = 9;
+
 pub const USER_POSIX2_VERSION: c_int = 10;
 pub const USER_POSIX2_C_BIND: c_int = 11;
 pub const USER_POSIX2_C_DEV: c_int = 12;
@@ -3597,11 +3660,7 @@ pub const SIGEV_THREAD: c_int = 3;
 pub const AIO_CANCELED: c_int = 2;
 pub const AIO_NOTCANCELED: c_int = 4;
 pub const AIO_ALLDONE: c_int = 1;
-#[deprecated(
-    since = "0.2.64",
-    note = "Can vary at runtime.  Use sysconf(3) instead"
-)]
-pub const AIO_LISTIO_MAX: c_int = 16;
+pub const AIO_LISTIO_MAX: c_int = 32;
 pub const LIO_NOP: c_int = 0;
 pub const LIO_WRITE: c_int = 2;
 pub const LIO_READ: c_int = 1;
@@ -3676,6 +3735,8 @@ pub const RTV_SSTHRESH: c_int = 0x20;
 pub const RTV_RTT: c_int = 0x40;
 pub const RTV_RTTVAR: c_int = 0x80;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const RTAX_MAX: c_int = 8;
 
 pub const KERN_PROCARGS2: c_int = 49;
@@ -3685,6 +3746,7 @@ pub const PROC_PIDTBSDINFO: c_int = 3;
 pub const PROC_PIDTASKINFO: c_int = 4;
 pub const PROC_PIDTHREADINFO: c_int = 5;
 pub const PROC_PIDVNODEPATHINFO: c_int = 9;
+pub const PROC_PIDT_SHORTBSDINFO: c_int = 13;
 pub const PROC_PIDPATHINFO_MAXSIZE: c_int = 4096;
 
 pub const PROC_PIDLISTFDS: c_int = 1;
@@ -3718,26 +3780,6 @@ pub const MH_MAGIC_64: u32 = 0xfeedfacf;
 // net/if_utun.h
 pub const UTUN_OPT_FLAGS: c_int = 1;
 pub const UTUN_OPT_IFNAME: c_int = 2;
-
-// net/bpf.h
-pub const DLT_NULL: c_uint = 0; // no link-layer encapsulation
-pub const DLT_EN10MB: c_uint = 1; // Ethernet (10Mb)
-pub const DLT_EN3MB: c_uint = 2; // Experimental Ethernet (3Mb)
-pub const DLT_AX25: c_uint = 3; // Amateur Radio AX.25
-pub const DLT_PRONET: c_uint = 4; // Proteon ProNET Token Ring
-pub const DLT_CHAOS: c_uint = 5; // Chaos
-pub const DLT_IEEE802: c_uint = 6; // IEEE 802 Networks
-pub const DLT_ARCNET: c_uint = 7; // ARCNET
-pub const DLT_SLIP: c_uint = 8; // Serial Line IP
-pub const DLT_PPP: c_uint = 9; // Point-to-point Protocol
-pub const DLT_FDDI: c_uint = 10; // FDDI
-pub const DLT_ATM_RFC1483: c_uint = 11; // LLC/SNAP encapsulated atm
-pub const DLT_RAW: c_uint = 12; // raw IP
-pub const DLT_LOOP: c_uint = 108;
-
-// https://github.com/apple/darwin-xnu/blob/HEAD/bsd/net/bpf.h#L100
-// sizeof(i32)
-pub const BPF_ALIGNMENT: c_int = 4;
 
 // sys/mount.h
 pub const MNT_NODEV: c_int = 0x00000010;
@@ -3883,7 +3925,11 @@ pub const MNT_NOWAIT: c_int = 2;
 
 // <mach/thread_policy.h>
 pub const THREAD_STANDARD_POLICY: c_int = 1;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_STANDARD_POLICY_COUNT: c_int = 0;
+
 pub const THREAD_EXTENDED_POLICY: c_int = 1;
 pub const THREAD_TIME_CONSTRAINT_POLICY: c_int = 2;
 pub const THREAD_PRECEDENCE_POLICY: c_int = 3;
@@ -3945,7 +3991,11 @@ pub const VM_PAGE_QUERY_PAGE_CS_NX: i32 = 0x400;
 
 // mach/task_info.h
 pub const TASK_THREAD_TIMES_INFO: u32 = 3;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const HOST_CPU_LOAD_INFO_COUNT: u32 = 4;
+
 pub const MACH_TASK_BASIC_INFO: u32 = 20;
 
 pub const MACH_PORT_NULL: i32 = 0;
@@ -4008,7 +4058,10 @@ pub const COPYFILE_STATE_DST_BSIZE: c_int = 12;
 pub const COPYFILE_STATE_BSIZE: c_int = 13;
 
 // <sys/attr.h>
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const ATTR_BIT_MAP_COUNT: c_ushort = 5;
+
 pub const FSOPT_NOFOLLOW: u32 = 0x1;
 pub const FSOPT_NOFOLLOW_ANY: u32 = 0x800;
 pub const FSOPT_REPORT_FULLSIZE: u32 = 0x4;
@@ -4179,36 +4232,73 @@ const fn __DARWIN_ALIGN32(p: usize) -> usize {
     (p + __DARWIN_ALIGNBYTES32) & !__DARWIN_ALIGNBYTES32
 }
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_EXTENDED_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_extended_policy_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_TIME_CONSTRAINT_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_time_constraint_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_PRECEDENCE_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_precedence_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_AFFINITY_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_affinity_policy_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_BACKGROUND_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_background_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_LATENCY_QOS_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_latency_qos_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_THROUGHPUT_QOS_POLICY_COUNT: mach_msg_type_number_t =
     (size_of::<thread_throughput_qos_policy_data_t>() / size_of::<integer_t>())
         as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_BASIC_INFO_COUNT: mach_msg_type_number_t =
     (size_of::<thread_basic_info_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_IDENTIFIER_INFO_COUNT: mach_msg_type_number_t =
     (size_of::<thread_identifier_info_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const THREAD_EXTENDED_INFO_COUNT: mach_msg_type_number_t =
     (size_of::<thread_extended_info_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const TASK_THREAD_TIMES_INFO_COUNT: u32 =
     (size_of::<task_thread_times_info_data_t>() / size_of::<natural_t>()) as u32;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const MACH_TASK_BASIC_INFO_COUNT: u32 =
     (size_of::<mach_task_basic_info_data_t>() / size_of::<natural_t>()) as u32;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const HOST_VM_INFO64_COUNT: mach_msg_type_number_t =
     (size_of::<vm_statistics64_data_t>() / size_of::<integer_t>()) as mach_msg_type_number_t;
 
@@ -4242,7 +4332,7 @@ pub const DOT3COMPLIANCE_COLLS: c_int = 2;
 pub const MAX_KCTL_NAME: usize = 96;
 
 f! {
-    pub fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_NXTHDR(mhdr: *const crate::msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             return crate::CMSG_FIRSTHDR(mhdr);
         }
@@ -4250,59 +4340,59 @@ f! {
         let next = cmsg as usize + __DARWIN_ALIGN32(cmsg_len);
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next + __DARWIN_ALIGN32(size_of::<cmsghdr>()) > max {
-            core::ptr::null_mut()
+            ptr::null_mut()
         } else {
             next as *mut cmsghdr
         }
     }
 
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         (cmsg as *mut c_uchar).add(__DARWIN_ALIGN32(size_of::<cmsghdr>()))
     }
 
-    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_SPACE(length: c_uint) -> c_uint {
         (__DARWIN_ALIGN32(size_of::<cmsghdr>()) + __DARWIN_ALIGN32(length as usize)) as c_uint
     }
 
-    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_LEN(length: c_uint) -> c_uint {
         (__DARWIN_ALIGN32(size_of::<cmsghdr>()) + length as usize) as c_uint
     }
 
-    pub const fn VM_MAKE_TAG(id: u8) -> u32 {
+    pub const unsafe fn VM_MAKE_TAG(id: u8) -> u32 {
         (id as u32) << 24u32
     }
 }
 
 safe_f! {
-    pub const fn WSTOPSIG(status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
         status >> 8
     }
 
-    pub const fn _WSTATUS(status: c_int) -> c_int {
+    pub const safe fn _WSTATUS(status: c_int) -> c_int {
         status & 0x7f
     }
 
-    pub const fn WIFCONTINUED(status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         _WSTATUS(status) == _WSTOPPED && WSTOPSIG(status) == 0x13
     }
 
-    pub const fn WIFSIGNALED(status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         _WSTATUS(status) != _WSTOPPED && _WSTATUS(status) != 0
     }
 
-    pub const fn WIFSTOPPED(status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         _WSTATUS(status) == _WSTOPPED && WSTOPSIG(status) != 0x13
     }
 
-    pub const fn makedev(major: i32, minor: i32) -> dev_t {
+    pub const safe fn makedev(major: i32, minor: i32) -> dev_t {
         (major << 24) | minor
     }
 
-    pub const fn major(dev: dev_t) -> i32 {
+    pub const safe fn major(dev: dev_t) -> i32 {
         (dev >> 24) & 0xff
     }
 
-    pub const fn minor(dev: dev_t) -> i32 {
+    pub const safe fn minor(dev: dev_t) -> i32 {
         dev & 0xffffff
     }
 }

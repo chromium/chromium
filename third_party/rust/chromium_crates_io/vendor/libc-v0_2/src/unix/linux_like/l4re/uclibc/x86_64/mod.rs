@@ -62,19 +62,6 @@ s! {
         st_pad4: [c_long; 3],
     }
 
-    pub struct shmid_ds {
-        pub shm_perm: crate::ipc_perm,
-        pub shm_segsz: crate::size_t,
-        pub shm_atime: crate::time_t,
-        pub shm_dtime: crate::time_t,
-        pub shm_ctime: crate::time_t,
-        pub shm_cpid: crate::pid_t,
-        pub shm_lpid: crate::pid_t,
-        pub shm_nattch: crate::shmatt_t,
-        __unused4: c_ulong,
-        __unused5: c_ulong,
-    }
-
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_handler: crate::sighandler_t,

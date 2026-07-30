@@ -774,7 +774,7 @@ pub const IPV6_FLOWINFO_FLOWLABEL: c_int = 0x00ffffff;
 pub const IPV6_FLOWINFO_PRIORITY: c_int = 0x0f000000;
 pub const IPV6_FLOWINFO_PRIFLOW: c_int = 0x0fffffff;
 pub const IPV6_FLOWINFO_SRFLAG: c_int = 0x10000000;
-pub const IPV6_FLOWINFO_VERSION: c_int = 0xf0000000;
+pub const IPV6_FLOWINFO_VERSION: c_int = u32_cast_int(0xf0000000);
 pub const IPV6_HOPLIMIT: c_int = 40;
 pub const IPV6_HOPOPTS: c_int = 52;
 pub const IPV6_NEXTHOP: c_int = 48;
@@ -809,20 +809,20 @@ pub const DLT_PPP: c_int = 0x17;
 pub const DLT_FDDI: c_int = 0xf;
 pub const DLT_ATM: c_int = 0x25;
 pub const DLT_IPOIB: c_int = 0xc7;
-pub const BIOCSETF: c_int = 0x80104267;
+pub const BIOCSETF: c_int = u32_cast_int(0x80104267);
 pub const BIOCGRTIMEOUT: c_int = 0x4010426e;
 pub const BIOCGBLEN: c_int = 0x40044266;
-pub const BIOCSBLEN: c_int = 0xc0044266;
+pub const BIOCSBLEN: c_int = u32_cast_int(0xc0044266);
 pub const BIOCFLUSH: c_int = 0x20004268;
 pub const BIOCPROMISC: c_int = 0x20004269;
 pub const BIOCGDLT: c_int = 0x4004426a;
-pub const BIOCSRTIMEOUT: c_int = 0x8010426d;
+pub const BIOCSRTIMEOUT: c_int = u32_cast_int(0x8010426d);
 pub const BIOCGSTATS: c_int = 0x4008426f;
-pub const BIOCIMMEDIATE: c_int = 0x80044270;
+pub const BIOCIMMEDIATE: c_int = u32_cast_int(0x80044270);
 pub const BIOCVERSION: c_int = 0x40044271;
 pub const BIOCSDEVNO: c_int = 0x20004272;
 pub const BIOCGETIF: c_int = 0x4020426b;
-pub const BIOCSETIF: c_int = 0x8020426c;
+pub const BIOCSETIF: c_int = u32_cast_int(0x8020426c);
 pub const BPF_ABS: c_int = 32;
 pub const BPF_ADD: c_int = 0;
 pub const BPF_ALIGNMENT: c_ulong = 4;
@@ -931,7 +931,11 @@ pub const RTAX_IFP: c_int = 4;
 pub const RTAX_IFA: c_int = 5;
 pub const RTAX_AUTHOR: c_int = 6;
 pub const RTAX_BRD: c_int = 7;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const RTAX_MAX: c_int = 8;
+
 pub const RTF_UP: c_int = 0x1;
 pub const RTF_GATEWAY: c_int = 0x2;
 pub const RTF_HOST: c_int = 0x4;
@@ -1350,15 +1354,15 @@ pub const IOC_INOUT: c_int = IOC_IN | IOC_OUT;
 pub const FIOCLEX: c_int = 0x20006601;
 pub const FIONCLEX: c_int = 0x20006602;
 pub const FIONREAD: c_int = 0x4004667f;
-pub const FIONBIO: c_int = 0x8004667e;
-pub const FIOASYNC: c_int = 0x8004667d;
-pub const FIOSETOWN: c_int = 0x8004667c;
+pub const FIONBIO: c_int = u32_cast_int(0x8004667e);
+pub const FIOASYNC: c_int = u32_cast_int(0x8004667d);
+pub const FIOSETOWN: c_int = u32_cast_int(0x8004667c);
 pub const FIOGETOWN: c_int = 0x4004667b;
 pub const TIOCGETD: c_int = 0x40047400;
-pub const TIOCSETD: c_int = 0x80047401;
+pub const TIOCSETD: c_int = u32_cast_int(0x80047401);
 pub const TIOCHPCL: c_int = 0x20007402;
 pub const TIOCMODG: c_int = 0x40047403;
-pub const TIOCMODS: c_int = 0x80047404;
+pub const TIOCMODS: c_int = u32_cast_int(0x80047404);
 pub const TIOCM_LE: c_int = 0x1;
 pub const TIOCM_DTR: c_int = 0x2;
 pub const TIOCM_RTS: c_int = 0x4;
@@ -1371,45 +1375,45 @@ pub const TIOCM_RNG: c_int = 0x80;
 pub const TIOCM_RI: c_int = 0x80;
 pub const TIOCM_DSR: c_int = 0x100;
 pub const TIOCGETP: c_int = 0x40067408;
-pub const TIOCSETP: c_int = 0x80067409;
-pub const TIOCSETN: c_int = 0x8006740a;
+pub const TIOCSETP: c_int = u32_cast_int(0x80067409);
+pub const TIOCSETN: c_int = u32_cast_int(0x8006740a);
 pub const TIOCEXCL: c_int = 0x2000740d;
 pub const TIOCNXCL: c_int = 0x2000740e;
-pub const TIOCFLUSH: c_int = 0x80047410;
-pub const TIOCSETC: c_int = 0x80067411;
+pub const TIOCFLUSH: c_int = u32_cast_int(0x80047410);
+pub const TIOCSETC: c_int = u32_cast_int(0x80067411);
 pub const TIOCGETC: c_int = 0x40067412;
 pub const TANDEM: c_int = 0x1;
 pub const CBREAK: c_int = 0x2;
 pub const LCASE: c_int = 0x4;
 pub const MDMBUF: c_int = 0x800000;
 pub const XTABS: c_int = 0xc00;
-pub const SIOCADDMULTI: c_int = 0x80206931;
-pub const SIOCADDRT: c_int = 0x8038720a;
-pub const SIOCDARP: c_int = 0x804c6920;
-pub const SIOCDELMULTI: c_int = 0x80206932;
-pub const SIOCDELRT: c_int = 0x8038720b;
-pub const SIOCDIFADDR: c_int = 0x80286919;
-pub const SIOCGARP: c_int = 0xc04c6926;
-pub const SIOCGIFADDR: c_int = 0xc0286921;
-pub const SIOCGIFBRDADDR: c_int = 0xc0286923;
-pub const SIOCGIFCONF: c_int = 0xc0106945;
-pub const SIOCGIFDSTADDR: c_int = 0xc0286922;
-pub const SIOCGIFFLAGS: c_int = 0xc0286911;
-pub const SIOCGIFHWADDR: c_int = 0xc0546995;
-pub const SIOCGIFMETRIC: c_int = 0xc0286917;
-pub const SIOCGIFMTU: c_int = 0xc0286956;
-pub const SIOCGIFNETMASK: c_int = 0xc0286925;
-pub const SIOCSARP: c_int = 0x804c691e;
-pub const SIOCSIFADDR: c_int = 0x8028690c;
-pub const SIOCSIFBRDADDR: c_int = 0x80286913;
-pub const SIOCSIFDSTADDR: c_int = 0x8028690e;
-pub const SIOCSIFFLAGS: c_int = 0x80286910;
-pub const SIOCSIFMETRIC: c_int = 0x80286918;
-pub const SIOCSIFMTU: c_int = 0x80286958;
-pub const SIOCSIFNETMASK: c_int = 0x80286916;
-pub const TIOCUCNTL: c_int = 0x80047466;
-pub const TIOCCONS: c_int = 0x80047462;
-pub const TIOCPKT: c_int = 0x80047470;
+pub const SIOCADDMULTI: c_int = u32_cast_int(0x80206931);
+pub const SIOCADDRT: c_int = u32_cast_int(0x8038720a);
+pub const SIOCDARP: c_int = u32_cast_int(0x804c6920);
+pub const SIOCDELMULTI: c_int = u32_cast_int(0x80206932);
+pub const SIOCDELRT: c_int = u32_cast_int(0x8038720b);
+pub const SIOCDIFADDR: c_int = u32_cast_int(0x80286919);
+pub const SIOCGARP: c_int = u32_cast_int(0xc04c6926);
+pub const SIOCGIFADDR: c_int = u32_cast_int(0xc0286921);
+pub const SIOCGIFBRDADDR: c_int = u32_cast_int(0xc0286923);
+pub const SIOCGIFCONF: c_int = u32_cast_int(0xc0106945);
+pub const SIOCGIFDSTADDR: c_int = u32_cast_int(0xc0286922);
+pub const SIOCGIFFLAGS: c_int = u32_cast_int(0xc0286911);
+pub const SIOCGIFHWADDR: c_int = u32_cast_int(0xc0546995);
+pub const SIOCGIFMETRIC: c_int = u32_cast_int(0xc0286917);
+pub const SIOCGIFMTU: c_int = u32_cast_int(0xc0286956);
+pub const SIOCGIFNETMASK: c_int = u32_cast_int(0xc0286925);
+pub const SIOCSARP: c_int = u32_cast_int(0x804c691e);
+pub const SIOCSIFADDR: c_int = u32_cast_int(0x8028690c);
+pub const SIOCSIFBRDADDR: c_int = u32_cast_int(0x80286913);
+pub const SIOCSIFDSTADDR: c_int = u32_cast_int(0x8028690e);
+pub const SIOCSIFFLAGS: c_int = u32_cast_int(0x80286910);
+pub const SIOCSIFMETRIC: c_int = u32_cast_int(0x80286918);
+pub const SIOCSIFMTU: c_int = u32_cast_int(0x80286958);
+pub const SIOCSIFNETMASK: c_int = u32_cast_int(0x80286916);
+pub const TIOCUCNTL: c_int = u32_cast_int(0x80047466);
+pub const TIOCCONS: c_int = u32_cast_int(0x80047462);
+pub const TIOCPKT: c_int = u32_cast_int(0x80047470);
 pub const TIOCPKT_DATA: c_int = 0;
 pub const TIOCPKT_FLUSHREAD: c_int = 1;
 pub const TIOCPKT_FLUSHWRITE: c_int = 2;
@@ -1445,7 +1449,11 @@ pub const L_GETPROCINFO: c_int = 7;
 pub const L_GETXINFO: c_int = 8;
 
 // sys/limits.h
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PATH_MAX: c_int = 1023;
+
 pub const PAGESIZE: c_int = 4096;
 pub const IOV_MAX: c_int = 16;
 pub const AIO_LISTIO_MAX: c_int = 4096;
@@ -1454,14 +1462,37 @@ pub const OPEN_MAX: c_int = 65534;
 pub const MAX_INPUT: c_int = 512;
 pub const MAX_CANON: c_int = 256;
 pub const ARG_MAX: c_int = 1048576;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const BC_BASE_MAX: c_int = 99;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const BC_DIM_MAX: c_int = 0x800;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const BC_SCALE_MAX: c_int = 99;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const BC_STRING_MAX: c_int = 0x800;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const CHARCLASS_NAME_MAX: c_int = 14;
+
 pub const CHILD_MAX: c_int = 128;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const COLL_WEIGHTS_MAX: c_int = 4;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const EXPR_NEST_MAX: c_int = 32;
+
 pub const NZERO: c_int = 20;
 
 // sys/lockf.h
@@ -1541,7 +1572,11 @@ pub const MAXPATHLEN: c_int = PATH_MAX + 1;
 pub const MAXSYMLINKS: c_int = 20;
 pub const MAXHOSTNAMELEN: c_int = 256;
 pub const MAXUPRC: c_int = 128;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const NGROUPS_MAX: c_ulong = 2048;
+
 pub const NGROUPS: c_ulong = NGROUPS_MAX;
 pub const NOFILE: c_int = OPEN_MAX;
 
@@ -1552,7 +1587,7 @@ pub const POLLOUT: c_short = 0x0002;
 pub const POLLERR: c_short = 0x4000;
 pub const POLLHUP: c_short = 0x2000;
 pub const POLLMSG: c_short = 0x0080;
-pub const POLLSYNC: c_short = 0x8000;
+pub const POLLSYNC: c_short = u16_cast_short(0x8000);
 pub const POLLNVAL: c_short = POLLSYNC;
 pub const POLLNORM: c_short = POLLIN;
 pub const POLLRDNORM: c_short = 0x0010;
@@ -1676,11 +1711,11 @@ pub const SETALL: c_int = 9;
 // sys/shm.h
 pub const SHMLBA: c_int = 0x10000000;
 pub const SHMLBA_EXTSHM: c_int = 0x1000;
-pub const SHM_SHMAT: c_int = 0x80000000;
+pub const SHM_SHMAT: c_int = u32_cast_int(0x80000000);
 pub const SHM_RDONLY: c_int = 0o10000;
 pub const SHM_RND: c_int = 0o20000;
 pub const SHM_PIN: c_int = 0o4000;
-pub const SHM_LGPAGE: c_int = 0o20000000000;
+pub const SHM_LGPAGE: c_int = u32_cast_int(0o20000000000);
 pub const SHM_MAP: c_int = 0o4000;
 pub const SHM_FMAP: c_int = 0o2000;
 pub const SHM_COPY: c_int = 0o40000;
@@ -1739,7 +1774,11 @@ pub const SIGXCPU: c_int = 24;
 pub const SIGXFSZ: c_int = 25;
 pub const SIGTRAP: c_int = 5;
 pub const SIGCLD: c_int = 20;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const SIGRTMAX: c_int = 57;
+
 pub const SIGRTMIN: c_int = 50;
 pub const SI_USER: c_int = 0;
 pub const SI_UNDEFINED: c_int = 8;
@@ -1817,7 +1856,11 @@ pub const AF_INET6: c_int = 24;
 pub const AF_INTF: c_int = 20;
 pub const AF_RIF: c_int = 21;
 pub const AF_NDD: c_int = 23;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const AF_MAX: c_int = 30;
+
 pub const PF_UNSPEC: c_int = AF_UNSPEC;
 pub const PF_UNIX: c_int = AF_UNIX;
 pub const PF_INET: c_int = AF_INET;
@@ -1843,7 +1886,11 @@ pub const PF_RIF: c_int = AF_RIF;
 pub const PF_INTF: c_int = AF_INTF;
 pub const PF_NDD: c_int = AF_NDD;
 pub const PF_INET6: c_int = AF_INET6;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PF_MAX: c_int = AF_MAX;
+
 pub const SF_CLOSE: c_int = 1;
 pub const SF_REUSE: c_int = 2;
 pub const SF_DONT_CACHE: c_int = 4;
@@ -2074,30 +2121,30 @@ pub const TCIOFF: c_int = 2;
 pub const TCION: c_int = 3;
 pub const TIOC: c_int = 0x5400;
 pub const TIOCGWINSZ: c_int = 0x40087468;
-pub const TIOCSWINSZ: c_int = 0x80087467;
-pub const TIOCLBIS: c_int = 0x8004747f;
-pub const TIOCLBIC: c_int = 0x8004747e;
-pub const TIOCLSET: c_int = 0x8004747d;
+pub const TIOCSWINSZ: c_int = u32_cast_int(0x80087467);
+pub const TIOCLBIS: c_int = u32_cast_int(0x8004747f);
+pub const TIOCLBIC: c_int = u32_cast_int(0x8004747e);
+pub const TIOCLSET: c_int = u32_cast_int(0x8004747d);
 pub const TIOCLGET: c_int = 0x4004747c;
 pub const TIOCSBRK: c_int = 0x2000747b;
 pub const TIOCCBRK: c_int = 0x2000747a;
 pub const TIOCSDTR: c_int = 0x20007479;
 pub const TIOCCDTR: c_int = 0x20007478;
-pub const TIOCSLTC: c_int = 0x80067475;
+pub const TIOCSLTC: c_int = u32_cast_int(0x80067475);
 pub const TIOCGLTC: c_int = 0x40067474;
 pub const TIOCOUTQ: c_int = 0x40047473;
 pub const TIOCNOTTY: c_int = 0x20007471;
 pub const TIOCSTOP: c_int = 0x2000746f;
 pub const TIOCSTART: c_int = 0x2000746e;
 pub const TIOCGPGRP: c_int = 0x40047477;
-pub const TIOCSPGRP: c_int = 0x80047476;
+pub const TIOCSPGRP: c_int = u32_cast_int(0x80047476);
 pub const TIOCGSID: c_int = 0x40047448;
-pub const TIOCSTI: c_int = 0x80017472;
-pub const TIOCMSET: c_int = 0x8004746d;
-pub const TIOCMBIS: c_int = 0x8004746c;
-pub const TIOCMBIC: c_int = 0x8004746b;
+pub const TIOCSTI: c_int = u32_cast_int(0x80017472);
+pub const TIOCMSET: c_int = u32_cast_int(0x8004746d);
+pub const TIOCMBIS: c_int = u32_cast_int(0x8004746c);
+pub const TIOCMBIC: c_int = u32_cast_int(0x8004746b);
 pub const TIOCMGET: c_int = 0x4004746a;
-pub const TIOCREMOTE: c_int = 0x80047469;
+pub const TIOCREMOTE: c_int = u32_cast_int(0x80047469);
 
 // sys/user.h
 pub const MAXCOMLEN: c_int = 32;
@@ -2411,22 +2458,22 @@ pub const DEAD_PROCESS: c_short = 8;
 pub const ACCOUNTING: c_short = 9;
 
 f! {
-    pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
         if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
             (*mhdr).msg_control as *mut cmsghdr
         } else {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         }
     }
 
-    pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if cmsg.is_null() {
             CMSG_FIRSTHDR(mhdr)
         } else {
             if (cmsg as usize + (*cmsg).cmsg_len as usize + size_of::<cmsghdr>())
                 > ((*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize)
             {
-                core::ptr::null_mut::<cmsghdr>()
+                ptr::null_mut()
             } else {
                 // AIX does not have any alignment/padding for ancillary data, so we don't need _CMSG_ALIGN here.
                 (cmsg as usize + (*cmsg).cmsg_len as usize) as *mut cmsghdr
@@ -2434,39 +2481,37 @@ f! {
         }
     }
 
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         (cmsg as *mut c_uchar).offset(size_of::<cmsghdr>() as isize)
     }
 
-    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_LEN(length: c_uint) -> c_uint {
         size_of::<cmsghdr>() as c_uint + length
     }
 
-    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_SPACE(length: c_uint) -> c_uint {
         size_of::<cmsghdr>() as c_uint + length
     }
 
-    pub fn FD_ZERO(set: *mut fd_set) -> () {
-        for slot in (*set).fds_bits.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
+        (*set).fds_bits.fill(0);
     }
 
-    pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let bits = size_of::<c_long>() * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;
     }
 
-    pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let bits = size_of::<c_long>() * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
-    pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
+    pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let bits = size_of::<c_long>() * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
@@ -2474,11 +2519,11 @@ f! {
 }
 
 safe_f! {
-    pub const fn WIFSTOPPED(status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & _W_STOPPED) != 0
     }
 
-    pub const fn WSTOPSIG(status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
         if WIFSTOPPED(status) {
             (((status as c_uint) >> 8) & 0xff) as c_int
         } else {
@@ -2486,11 +2531,11 @@ safe_f! {
         }
     }
 
-    pub const fn WIFEXITED(status: c_int) -> bool {
+    pub const safe fn WIFEXITED(status: c_int) -> bool {
         (status & 0xFF) == 0
     }
 
-    pub const fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
         if WIFEXITED(status) {
             (((status as c_uint) >> 8) & 0xff) as c_int
         } else {
@@ -2498,11 +2543,11 @@ safe_f! {
         }
     }
 
-    pub const fn WIFSIGNALED(status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         !WIFEXITED(status) && !WIFSTOPPED(status)
     }
 
-    pub const fn WTERMSIG(status: c_int) -> c_int {
+    pub const safe fn WTERMSIG(status: c_int) -> c_int {
         if WIFSIGNALED(status) {
             (((status as c_uint) >> 16) & 0xff) as c_int
         } else {
@@ -2510,26 +2555,26 @@ safe_f! {
         }
     }
 
-    pub const fn WIFCONTINUED(status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         (status & WCONTINUED) != 0
     }
 
     // AIX doesn't have native WCOREDUMP.
-    pub const fn WCOREDUMP(_status: c_int) -> bool {
+    pub const safe fn WCOREDUMP(_status: c_int) -> bool {
         false
     }
 
-    pub const fn major(dev: crate::dev_t) -> c_uint {
+    pub const safe fn major(dev: crate::dev_t) -> c_uint {
         let x = dev >> 16;
         x as c_uint
     }
 
-    pub const fn minor(dev: crate::dev_t) -> c_uint {
+    pub const safe fn minor(dev: crate::dev_t) -> c_uint {
         let y = dev & 0xFFFF;
         y as c_uint
     }
 
-    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -2648,12 +2693,12 @@ extern "C" {
 
     pub fn pthread_cancel(thread: crate::pthread_t) -> c_int;
 
-    pub fn pthread_cleanup_pop(execute: c_int) -> c_void;
+    pub fn pthread_cleanup_pop(execute: c_int);
 
     pub fn pthread_cleanup_push(
         routine: Option<unsafe extern "C" fn(*mut c_void)>,
         arg: *mut c_void,
-    ) -> c_void;
+    );
 
     pub fn pthread_condattr_getclock(
         attr: *const pthread_condattr_t,
@@ -2794,7 +2839,7 @@ extern "C" {
     pub fn pthread_spin_trylock(lock: *mut pthread_spinlock_t) -> c_int;
     pub fn pthread_spin_unlock(lock: *mut pthread_spinlock_t) -> c_int;
 
-    pub fn pthread_testcancel() -> c_void;
+    pub fn pthread_testcancel();
 }
 
 #[link(name = "iconv")]

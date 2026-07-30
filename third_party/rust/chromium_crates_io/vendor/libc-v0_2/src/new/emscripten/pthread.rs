@@ -8,7 +8,9 @@ pub use crate::new::common::posix::pthread::{
     pthread_condattr_setclock,
     pthread_condattr_setpshared,
     pthread_create,
+    pthread_kill,
     pthread_mutexattr_setpshared,
     pthread_rwlockattr_getpshared,
     pthread_rwlockattr_setpshared,
+    pthread_sigmask,
 };

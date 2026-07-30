@@ -109,7 +109,11 @@ pub const FD_CLOFORK: c_int = 2;
 pub const FIL_ATTACH: c_int = 0x1;
 pub const FIL_DETACH: c_int = 0x2;
 pub const FIL_LIST: c_int = 0x3;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const FILNAME_MAX: c_int = 32;
+
 pub const FILF_PROG: c_int = 0x1;
 pub const FILF_AUTO: c_int = 0x2;
 pub const FILF_BYPASS: c_int = 0x4;
@@ -152,6 +156,8 @@ pub const LOCK_EX: c_int = 2;
 pub const LOCK_NB: c_int = 4;
 pub const LOCK_UN: c_int = 8;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const _PC_LAST: c_int = 101;
 
 pub const _CS_PATH: c_int = 65;
@@ -169,7 +175,7 @@ pub const EPOLLWRBAND: c_int = 0x200;
 pub const EPOLLMSG: c_int = 0x400;
 pub const EPOLLERR: c_int = 0x8;
 pub const EPOLLHUP: c_int = 0x10;
-pub const EPOLLET: c_int = 0x80000000;
+pub const EPOLLET: c_int = u32_cast_int(0x80000000);
 pub const EPOLLRDHUP: c_int = 0x2000;
 pub const EPOLLONESHOT: c_int = 0x40000000;
 pub const EPOLLWAKEUP: c_int = 0x20000000;
@@ -186,7 +192,10 @@ pub const PRIV_USER: c_uint = PRIV_DEBUG
     | PRIV_AWARE_RESET
     | PRIV_PFEXEC;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const LGRP_RSRC_COUNT: crate::lgrp_rsrc_t = 2;
+
 pub const LGRP_RSRC_CPU: crate::lgrp_rsrc_t = 0;
 pub const LGRP_RSRC_MEM: crate::lgrp_rsrc_t = 1;
 
@@ -206,6 +215,10 @@ pub const B4000000: crate::speed_t = 31;
 
 // sys/systeminfo.h
 pub const SI_ADDRESS_WIDTH: c_int = 520;
+
+// netinet/in.h
+pub const IP_MINTTL: c_int = 0x1c;
+pub const IPV6_MINHOPCOUNT: c_int = 0x2f;
 
 // sys/timerfd.h
 pub const TFD_CLOEXEC: i32 = 0o2000000;

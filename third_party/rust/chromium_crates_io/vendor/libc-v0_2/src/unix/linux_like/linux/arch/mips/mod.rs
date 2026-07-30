@@ -117,7 +117,7 @@ cfg_if! {
     }
 }
 
-// pub const SO_DETACH_REUSEPORT_BPF: c_int = 68;
+pub const SO_DETACH_REUSEPORT_BPF: c_int = 68;
 pub const SO_PREFER_BUSY_POLL: c_int = 69;
 pub const SO_BUSY_POLL_BUDGET: c_int = 70;
 pub const SO_NETNS_COOKIE: c_int = 71;
@@ -156,11 +156,11 @@ pub const TIOCEXCL: Ioctl = 0x740d;
 pub const TIOCNXCL: Ioctl = 0x740e;
 pub const TIOCSCTTY: Ioctl = 0x5480;
 pub const TIOCGPGRP: Ioctl = 0x40047477;
-pub const TIOCSPGRP: Ioctl = 0x80047476;
+pub const TIOCSPGRP: Ioctl = u32_cast_ioctl(0x80047476);
 pub const TIOCOUTQ: Ioctl = 0x7472;
 pub const TIOCSTI: Ioctl = 0x5472;
 pub const TIOCGWINSZ: Ioctl = 0x40087468;
-pub const TIOCSWINSZ: Ioctl = 0x80087467;
+pub const TIOCSWINSZ: Ioctl = u32_cast_ioctl(0x80087467);
 pub const TIOCMGET: Ioctl = 0x741d;
 pub const TIOCMBIS: Ioctl = 0x741b;
 pub const TIOCMBIC: Ioctl = 0x741c;
@@ -170,7 +170,7 @@ pub const TIOCSSOFTCAR: Ioctl = 0x5482;
 pub const FIONREAD: Ioctl = 0x467f;
 pub const TIOCINQ: Ioctl = FIONREAD;
 pub const TIOCLINUX: Ioctl = 0x5483;
-pub const TIOCCONS: Ioctl = 0x80047478;
+pub const TIOCCONS: Ioctl = u32_cast_ioctl(0x80047478);
 pub const TIOCGSERIAL: Ioctl = 0x5484;
 pub const TIOCSSERIAL: Ioctl = 0x5485;
 pub const TIOCPKT: Ioctl = 0x5470;
@@ -182,14 +182,14 @@ pub const TCSBRKP: Ioctl = 0x5486;
 pub const TIOCSBRK: Ioctl = 0x5427;
 pub const TIOCCBRK: Ioctl = 0x5428;
 pub const TIOCGSID: Ioctl = 0x7416;
-pub const TCGETS2: Ioctl = 0x4030542a;
-pub const TCSETS2: Ioctl = 0x8030542b;
-pub const TCSETSW2: Ioctl = 0x8030542c;
-pub const TCSETSF2: Ioctl = 0x8030542d;
+pub const TCGETS2: Ioctl = u32_cast_ioctl(0x4030542a);
+pub const TCSETS2: Ioctl = u32_cast_ioctl(0x8030542b);
+pub const TCSETSW2: Ioctl = u32_cast_ioctl(0x8030542c);
+pub const TCSETSF2: Ioctl = u32_cast_ioctl(0x8030542d);
 pub const TIOCGPTN: Ioctl = 0x40045430;
-pub const TIOCSPTLCK: Ioctl = 0x80045431;
+pub const TIOCSPTLCK: Ioctl = u32_cast_ioctl(0x80045431);
 pub const TIOCGDEV: Ioctl = 0x40045432;
-pub const TIOCSIG: Ioctl = 0x80045436;
+pub const TIOCSIG: Ioctl = u32_cast_ioctl(0x80045436);
 pub const TIOCVHANGUP: Ioctl = 0x5437;
 pub const TIOCGPKT: Ioctl = 0x40045438;
 pub const TIOCGPTLCK: Ioctl = 0x40045439;
@@ -224,7 +224,7 @@ pub const BLKPBSZGET: Ioctl = 0x2000127B;
 cfg_if! {
     if #[cfg(target_env = "musl")] {
         pub const TIOCGRS485: Ioctl = 0x4020542e;
-        pub const TIOCSRS485: Ioctl = 0xc020542f;
+        pub const TIOCSRS485: Ioctl = u32_cast_ioctl(0xc020542f);
     }
 }
 

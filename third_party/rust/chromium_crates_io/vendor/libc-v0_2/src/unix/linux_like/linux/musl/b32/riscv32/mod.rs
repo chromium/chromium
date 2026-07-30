@@ -16,10 +16,10 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        pub __pad1: crate::dev_t,
+        __st_rdev_padding: Padding<crate::dev_t>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
-        pub __pad2: c_int,
+        __st_blksize_padding: Padding<c_int>,
         pub st_blocks: crate::blkcnt_t,
         pub st_atime: crate::time_t,
         #[cfg(all(musl32_time64, target_endian = "big"))]

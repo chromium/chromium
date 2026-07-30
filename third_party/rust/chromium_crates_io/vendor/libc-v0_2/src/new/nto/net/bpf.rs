@@ -40,35 +40,35 @@ pub const BPF_TAX: u16 = 0x00;
 pub const BPF_TXA: u16 = 0x80;
 
 f! {
-    pub fn BPF_CLASS(code: u32) -> u32 {
+    pub unsafe fn BPF_CLASS(code: u32) -> u32 {
         code & 0x07
     }
 
-    pub fn BPF_SIZE(code: u32) -> u32 {
+    pub unsafe fn BPF_SIZE(code: u32) -> u32 {
         code & 0x18
     }
 
-    pub fn BPF_MODE(code: u32) -> u32 {
+    pub unsafe fn BPF_MODE(code: u32) -> u32 {
         code & 0xe0
     }
 
-    pub fn BPF_OP(code: u32) -> u32 {
+    pub unsafe fn BPF_OP(code: u32) -> u32 {
         code & 0xf0
     }
 
-    pub fn BPF_SRC(code: u32) -> u32 {
+    pub unsafe fn BPF_SRC(code: u32) -> u32 {
         code & 0x08
     }
 
-    pub fn BPF_RVAL(code: u32) -> u32 {
+    pub unsafe fn BPF_RVAL(code: u32) -> u32 {
         code & 0x18
     }
 
-    pub fn BPF_MISCOP(code: u32) -> u32 {
+    pub unsafe fn BPF_MISCOP(code: u32) -> u32 {
         code & 0xf8
     }
 
-    pub fn BPF_STMT(code: u16, k: u32) -> bpf_insn {
+    pub unsafe fn BPF_STMT(code: u16, k: u32) -> bpf_insn {
         bpf_insn {
             code,
             jt: 0,
@@ -77,7 +77,7 @@ f! {
         }
     }
 
-    pub fn BPF_JUMP(code: u16, k: u32, jt: u8, jf: u8) -> bpf_insn {
+    pub unsafe fn BPF_JUMP(code: u16, k: u32, jt: u8, jf: u8) -> bpf_insn {
         bpf_insn { code, jt, jf, k }
     }
 }

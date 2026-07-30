@@ -16,5 +16,4 @@ mod xnu;
 
 pub(crate) use libc::*;
 pub(crate) use libpthread::pthread_;
-pub(crate) use pthread_::pthread;
 pub(crate) use xnu::*;

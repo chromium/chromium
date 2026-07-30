@@ -849,7 +849,6 @@ pub const SYS_fsconfig: c_long = 431;
 pub const SYS_fsmount: c_long = 432;
 pub const SYS_fspick: c_long = 433;
 pub const SYS_pidfd_open: c_long = 434;
-// Reserved in the kernel, but not actually implemented yet
 pub const SYS_clone3: c_long = 435;
 pub const SYS_close_range: c_long = 436;
 pub const SYS_openat2: c_long = 437;

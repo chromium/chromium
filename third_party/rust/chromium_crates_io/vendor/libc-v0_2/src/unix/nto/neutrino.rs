@@ -1,3 +1,5 @@
+//! APIs that are specific to QNX Neutrino and not found in other operating systems
+
 use crate::prelude::*;
 
 pub type nto_job_t = crate::sync_t;

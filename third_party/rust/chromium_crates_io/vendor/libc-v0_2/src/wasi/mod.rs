@@ -14,7 +14,7 @@ pub type ssize_t = isize;
 pub type ptrdiff_t = isize;
 pub type intptr_t = isize;
 pub type uintptr_t = usize;
-pub type off_t = i64;
+pub type off_t = c_longlong;
 pub type pid_t = i32;
 pub type clock_t = c_longlong;
 pub type time_t = c_longlong;
@@ -45,15 +45,15 @@ s_no_extra_traits! {
     }
 }
 
-#[allow(missing_copy_implementations)]
-#[derive(Debug)]
-pub enum FILE {}
-#[allow(missing_copy_implementations)]
-#[derive(Debug)]
-pub enum DIR {}
-#[allow(missing_copy_implementations)]
-#[derive(Debug)]
-pub enum __locale_struct {}
+extern_ty! {
+    pub type FILE;
+    pub type DIR;
+    pub type __locale_struct;
+}
+
+// Deprecated impls: see #5296
+unsafe impl Send for DIR {}
+unsafe impl Sync for DIR {}
 
 s_paren! {
     // in wasi-libc clockid_t is const struct __clockid* (where __clockid is an opaque struct),
@@ -274,8 +274,8 @@ pub const AT_EACCESS: c_int = 0x0;
 pub const AT_SYMLINK_NOFOLLOW: c_int = 0x1;
 pub const AT_SYMLINK_FOLLOW: c_int = 0x2;
 pub const AT_REMOVEDIR: c_int = 0x4;
-pub const UTIME_OMIT: c_long = 0xfffffffe;
-pub const UTIME_NOW: c_long = 0xffffffff;
+pub const UTIME_OMIT: c_long = u32_cast_long(0xfffffffe);
+pub const UTIME_NOW: c_long = u32_cast_long(0xffffffff);
 pub const S_IFIFO: mode_t = 0o1_0000;
 pub const S_IFCHR: mode_t = 0o2_0000;
 pub const S_IFBLK: mode_t = 0o6_0000;
@@ -619,13 +619,13 @@ pub const PTHREAD_STACK_MIN: usize = 2048;
 pub const TIMER_ABSTIME: c_int = 1;
 
 f! {
-    pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
+    pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let set = &*set;
         let n = set.__nfds;
         return set.__fds[..n].iter().any(|p| *p == fd);
     }
 
-    pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let set = &mut *set;
         let n = set.__nfds;
         if !set.__fds[..n].iter().any(|p| *p == fd) {
@@ -634,7 +634,7 @@ f! {
         }
     }
 
-    pub fn FD_ZERO(set: *mut fd_set) -> () {
+    pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
         (*set).__nfds = 0;
         return;
     }

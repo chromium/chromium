@@ -19,7 +19,13 @@ pub type clock_t = i32;
 pub type errno_t = c_int;
 
 cfg_if! {
-    if #[cfg(all(target_arch = "x86", target_env = "gnu"))] {
+    // FIXME(1.0): Windows GNU has 64-bit `time_t` by default. In x86 this is
+    // wrongly bound.
+    if #[cfg(all(
+        target_arch = "x86",
+        target_env = "gnu",
+        not(gnu_time_bits64)
+    ))] {
         pub type time_t = i32;
     } else {
         pub type time_t = i64;
@@ -31,7 +37,7 @@ pub type dev_t = u32;
 pub type ino_t = u16;
 
 extern_ty! {
-    pub enum timezone {}
+    pub type timezone;
 }
 
 pub type time64_t = i64;
@@ -254,8 +260,8 @@ pub const TMP_MAX: c_uint = 0x7fff_ffff;
 extern "C" {}
 
 extern_ty! {
-    pub enum FILE {}
-    pub enum fpos_t {} // FIXME(windows): fill this out with a struct
+    pub type FILE;
+    pub type fpos_t; // FIXME(windows): fill this out with a struct
 }
 
 // Special handling for all print and scan type functions because of https://github.com/rust-lang/libc/issues/2860
@@ -397,11 +403,40 @@ extern "C" {
     pub fn signal(signum: c_int, handler: sighandler_t) -> sighandler_t;
     pub fn raise(signum: c_int) -> c_int;
 
+    // By default, the following link to 64-bit variants where the expected
+    // `time_t` is also 64-bits.
+    //
+    // Under Windows x86 with GNU, `time_t` is still 32-bit wide on stable, so
+    // these routines have to link with their 32-bit variants.
+    cfg_if! {
+        if #[cfg(all(
+            target_arch = "x86",
+            target_env = "gnu",
+            not(gnu_time_bits64),
+        ))] {
+            #[link_name = "_ctime32"]
+            pub fn ctime(sourceTime: *const time_t) -> *mut c_char;
+            #[link_name = "_difftime32"]
+            pub fn difftime(timeEnd: time_t, timeStart: time_t) -> c_double;
+            #[link_name = "_gmtime32_s"]
+            pub fn gmtime_s(destTime: *mut tm, srcTime: *const time_t) -> c_int;
+            #[link_name = "_localtime32_s"]
+            pub fn localtime_s(tmDest: *mut tm, sourceTime: *const time_t) -> crate::errno_t;
+            #[link_name = "_time32"]
+            pub fn time(destTime: *mut time_t) -> time_t;
+        } else {
+            pub fn ctime(sourceTime: *const time_t) -> *mut c_char;
+            pub fn difftime(timeEnd: time_t, timeStart: time_t) -> c_double;
+            #[link_name = "_gmtime64_s"]
+            pub fn gmtime_s(destTime: *mut tm, srcTime: *const time_t) -> c_int;
+            #[link_name = "_localtime64_s"]
+            pub fn localtime_s(tmDest: *mut tm, sourceTime: *const time_t) -> crate::errno_t;
+            #[link_name = "_time64"]
+            pub fn time(destTime: *mut time_t) -> time_t;
+        }
+    }
+
     pub fn clock() -> clock_t;
-    pub fn ctime(sourceTime: *const time_t) -> *mut c_char;
-    pub fn difftime(timeEnd: time_t, timeStart: time_t) -> c_double;
-    #[link_name = "_gmtime64_s"]
-    pub fn gmtime_s(destTime: *mut tm, srcTime: *const time_t) -> c_int;
     #[link_name = "_get_daylight"]
     pub fn get_daylight(hours: *mut c_int) -> errno_t;
     #[link_name = "_get_dstbias"]
@@ -415,10 +450,6 @@ extern "C" {
         size_in_bytes: size_t,
         index: c_int,
     ) -> errno_t;
-    #[link_name = "_localtime64_s"]
-    pub fn localtime_s(tmDest: *mut tm, sourceTime: *const time_t) -> crate::errno_t;
-    #[link_name = "_time64"]
-    pub fn time(destTime: *mut time_t) -> time_t;
     #[link_name = "_tzset"]
     pub fn tzset();
     #[link_name = "_chmod"]

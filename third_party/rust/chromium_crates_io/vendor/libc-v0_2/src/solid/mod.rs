@@ -207,10 +207,10 @@ pub const S_IWRITE: c_short = 0o0200;
 pub const S_IREAD: c_short = 0o0400;
 pub const S_IFCHR: c_short = 0o2_0000;
 pub const S_IFDIR: c_short = 0o4_0000;
-pub const S_IFMT: c_short = 0o16_0000;
+pub const S_IFMT: c_short = u16_cast_short(0o16_0000);
 pub const S_IFIFO: c_short = 0o1_0000;
 pub const S_IFBLK: c_short = 0o6_0000;
-pub const S_IFREG: c_short = 0o10_0000;
+pub const S_IFREG: c_short = u16_cast_short(0o10_0000);
 
 pub const LC_ALL: c_int = 0;
 pub const LC_COLLATE: c_int = 1;
@@ -219,6 +219,9 @@ pub const LC_MONETARY: c_int = 3;
 pub const LC_NUMERIC: c_int = 4;
 pub const LC_TIME: c_int = 5;
 pub const LC_MESSAGES: c_int = 6;
+
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const _LC_LAST: c_int = 7;
 
 pub const EPERM: c_int = 1;
@@ -397,8 +400,8 @@ pub const SIGUSR2: c_int = 31;
 pub const SIGPWR: c_int = 32;
 
 extern_ty! {
-    pub enum FILE {}
-    pub enum fpos_t {}
+    pub type FILE;
+    pub type fpos_t;
 }
 
 extern "C" {

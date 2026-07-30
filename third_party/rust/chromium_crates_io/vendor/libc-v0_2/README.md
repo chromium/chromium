@@ -41,20 +41,6 @@ Add the following to your `Cargo.toml`:
 libc = "0.2"
 ```
 
-## Features
-
-* `std`: by default `libc` links to the standard library. Disable this feature
-  to remove this dependency and be able to use `libc` in `#![no_std]` crates.
-
-* `extra_traits`: all `struct`s implemented in `libc` are `Copy` and `Clone`.
-  This feature derives `Debug`, `Eq`, `Hash`, and `PartialEq`.
-
-The following features are deprecated:
-
-* `use_std`: this is equivalent to `std`
-* `const-extern-fn`: this is now enabled by default
-* `align`: this is now enabled by default
-
 ## Rust version support
 
 The minimum supported Rust toolchain version is currently **Rust 1.65**.

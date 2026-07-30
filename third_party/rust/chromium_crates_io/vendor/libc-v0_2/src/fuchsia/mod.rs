@@ -79,10 +79,14 @@ pub type fsfilcnt_t = c_ulonglong;
 pub type rlim_t = c_ulonglong;
 
 extern_ty! {
-    pub enum timezone {}
-    pub enum DIR {}
-    pub enum fpos64_t {} // FIXME(fuchsia): fill this out with a struct
+    pub type timezone;
+    pub type DIR;
+    pub type fpos64_t; // FIXME(fuchsia): fill this out with a struct
 }
+
+// Deprecated impls: see #5296
+unsafe impl Send for DIR {}
+unsafe impl Sync for DIR {}
 
 // PUB_STRUCT
 
@@ -1538,6 +1542,8 @@ pub const LOCK_UN: c_int = 8;
 pub const SS_ONSTACK: c_int = 1;
 pub const SS_DISABLE: c_int = 2;
 
+/// Constants may change across releases. See the [usage guidelines](crate#usage-guidelines)
+/// for details.
 pub const PATH_MAX: c_int = 4096;
 
 pub const FD_SETSIZE: usize = 1024;
@@ -1552,7 +1558,7 @@ pub const EPOLLWRBAND: c_int = 0x200;
 pub const EPOLLMSG: c_int = 0x400;
 pub const EPOLLERR: c_int = 0x8;
 pub const EPOLLHUP: c_int = 0x10;
-pub const EPOLLET: c_int = 0x80000000;
+pub const EPOLLET: c_int = u32_cast_int(0x80000000);
 
 pub const EPOLL_CTL_ADD: c_int = 1;
 pub const EPOLL_CTL_MOD: c_int = 3;
@@ -1644,7 +1650,7 @@ pub const CLONE_NEWIPC: c_int = 0x08000000;
 pub const CLONE_NEWUSER: c_int = 0x10000000;
 pub const CLONE_NEWPID: c_int = 0x20000000;
 pub const CLONE_NEWNET: c_int = 0x40000000;
-pub const CLONE_IO: c_int = 0x80000000;
+pub const CLONE_IO: c_int = u32_cast_int(0x80000000);
 pub const CLONE_NEWCGROUP: c_int = 0x02000000;
 
 pub const WNOHANG: c_int = 0x00000001;
@@ -1680,7 +1686,7 @@ pub const PTRACE_EVENT_SECCOMP: c_int = 7;
 
 pub const __WNOTHREAD: c_int = 0x20000000;
 pub const __WALL: c_int = 0x40000000;
-pub const __WCLONE: c_int = 0x80000000;
+pub const __WCLONE: c_int = u32_cast_int(0x80000000);
 
 pub const SPLICE_F_MOVE: c_uint = 0x01;
 pub const SPLICE_F_NONBLOCK: c_uint = 0x02;
@@ -2497,7 +2503,7 @@ pub const EPROTO: c_int = 71;
 pub const EDOTDOT: c_int = 73;
 
 pub const SA_NODEFER: c_int = 0x40000000;
-pub const SA_RESETHAND: c_int = 0x80000000;
+pub const SA_RESETHAND: c_int = u32_cast_int(0x80000000);
 pub const SA_RESTART: c_int = 0x10000000;
 pub const SA_NOCLDSTOP: c_int = 0x00000001;
 
@@ -2964,135 +2970,131 @@ cfg_if! {
 // END_PUB_CONST
 
 f! {
-    pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
-    pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
+    pub unsafe fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
-    pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
+    pub unsafe fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
         let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }
 
-    pub fn FD_ZERO(set: *mut fd_set) -> () {
-        for slot in (*set).fds_bits.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn FD_ZERO(set: *mut fd_set) -> () {
+        (*set).fds_bits.fill(0);
     }
 
-    pub fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
-        for slot in cpuset.bits.iter_mut() {
-            *slot = 0;
-        }
+    pub unsafe fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
+        cpuset.bits.fill(0);
     }
 
-    pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
         ()
     }
 
-    pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
+    pub unsafe fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
         ()
     }
 
-    pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
         let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }
 
-    pub fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
+    pub unsafe fn CPU_EQUAL(set1: &cpu_set_t, set2: &cpu_set_t) -> bool {
         set1.bits == set2.bits
     }
 
-    pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
+    pub unsafe fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
         cmsg.offset(1) as *mut c_uchar
     }
 
-    pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
         if ((*cmsg).cmsg_len as size_t) < size_of::<cmsghdr>() {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         } else if __CMSG_NEXT(cmsg).add(size_of::<cmsghdr>()) >= __MHDR_END(mhdr) {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         } else {
             __CMSG_NEXT(cmsg).cast()
         }
     }
 
-    pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
+    pub unsafe fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
         if (*mhdr).msg_controllen as size_t >= size_of::<cmsghdr>() {
             (*mhdr).msg_control.cast()
         } else {
-            core::ptr::null_mut::<cmsghdr>()
+            ptr::null_mut()
         }
     }
 
-    pub const fn CMSG_ALIGN(len: size_t) -> size_t {
+    pub const unsafe fn CMSG_ALIGN(len: size_t) -> size_t {
         (len + size_of::<size_t>() - 1) & !(size_of::<size_t>() - 1)
     }
 
-    pub const fn CMSG_SPACE(len: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_SPACE(len: c_uint) -> c_uint {
         (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
-    pub const fn CMSG_LEN(len: c_uint) -> c_uint {
+    pub const unsafe fn CMSG_LEN(len: c_uint) -> c_uint {
         (CMSG_ALIGN(size_of::<cmsghdr>()) + len as size_t) as c_uint
     }
 }
 
 safe_f! {
-    pub const fn WIFSTOPPED(status: c_int) -> bool {
+    pub const safe fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }
 
-    pub const fn WSTOPSIG(status: c_int) -> c_int {
+    pub const safe fn WSTOPSIG(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub const fn WIFCONTINUED(status: c_int) -> bool {
+    pub const safe fn WIFCONTINUED(status: c_int) -> bool {
         status == 0xffff
     }
 
-    pub const fn WIFSIGNALED(status: c_int) -> bool {
+    pub const safe fn WIFSIGNALED(status: c_int) -> bool {
         ((status & 0x7f) + 1) as i8 >= 2
     }
 
-    pub const fn WTERMSIG(status: c_int) -> c_int {
+    pub const safe fn WTERMSIG(status: c_int) -> c_int {
         status & 0x7f
     }
 
-    pub const fn WIFEXITED(status: c_int) -> bool {
+    pub const safe fn WIFEXITED(status: c_int) -> bool {
         (status & 0x7f) == 0
     }
 
-    pub const fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const safe fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub const fn WCOREDUMP(status: c_int) -> bool {
+    pub const safe fn WCOREDUMP(status: c_int) -> bool {
         (status & 0x80) != 0
     }
 
-    pub const fn QCMD(cmd: c_int, type_: c_int) -> c_int {
+    pub const safe fn QCMD(cmd: c_int, type_: c_int) -> c_int {
         (cmd << 8) | (type_ & 0x00ff)
     }
 
-    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const safe fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -3103,14 +3105,14 @@ safe_f! {
         dev
     }
 
-    pub const fn major(dev: crate::dev_t) -> c_uint {
+    pub const safe fn major(dev: crate::dev_t) -> c_uint {
         let mut major = 0;
         major |= (dev & 0x00000000000fff00) >> 8;
         major |= (dev & 0xfffff00000000000) >> 32;
         major as c_uint
     }
 
-    pub const fn minor(dev: crate::dev_t) -> c_uint {
+    pub const safe fn minor(dev: crate::dev_t) -> c_uint {
         let mut minor = 0;
         minor |= (dev & 0x00000000000000ff) >> 0;
         minor |= (dev & 0x00000ffffff00000) >> 12;
@@ -3138,8 +3140,8 @@ fn __MHDR_END(mhdr: *const msghdr) -> *mut c_uchar {
 extern "C" {}
 
 extern_ty! {
-    pub enum FILE {}
-    pub enum fpos_t {} // FIXME(fuchsia): fill this out with a struct
+    pub type FILE;
+    pub type fpos_t; // FIXME(fuchsia): fill this out with a struct
 }
 
 extern "C" {
