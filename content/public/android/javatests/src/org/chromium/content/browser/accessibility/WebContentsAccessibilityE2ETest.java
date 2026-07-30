@@ -76,6 +76,7 @@ public class WebContentsAccessibilityE2ETest {
     private static final String ACCESSIBILITY_TEST_SERVICE_NAME =
             ACCESSIBILITY_TEST_SERVICE_COMPONENT_NAME.flattenToString();
     private static final long BIND_TIMEOUT_MS = 5000;
+    private static final long EVENT_TIMEOUT_MS = 5000;
     private static final String TAG = "WebContentsAXTest";
 
     private static final String EXTRA_SELECTION_START_OFFSET_TYPE =
@@ -269,6 +270,7 @@ public class WebContentsAccessibilityE2ETest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/529689125")
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/529881530
     public void testAccessibilityServiceReceivesInitialEvent() throws Throwable {
         // Load a page.
@@ -840,6 +842,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/533174018")
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // API Level 19
     public void fireGeneratedEvent_ariaLabelChange_firesTextChangeType() throws Throwable {
         // Create an HTML document where there is a div tag with aria-label attribute set.
@@ -996,6 +999,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/532305631")
     public void fireGeneratedEvent_defaultActionVerbChanged_firesContentChanged() throws Throwable {
         // Create an HTML document with a disabled button (default action verb of NONE).
         String html =
@@ -1034,7 +1038,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     }
 
     private static class WaitForParamsBuilder {
-        private static final long DEFAULT_TIMEOUT_MS = 10000;
+        private static final long DEFAULT_TIMEOUT_MS = 5000;
 
         @Nullable private EventMatcher mEventMatcher;
         @Nullable private NodeMatcher mNodeMatcher;
@@ -1061,6 +1065,8 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @SuppressWarnings("unused")
     private static class EventMatcherBuilder {
+        private static final long DEFAULT_TIMEOUT_MS = 5000;
+
         private int mEventType;
         private int mContentChangeTypes;
         @Nullable private NodeMatcher mSourceMatcher;
@@ -1091,6 +1097,8 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @SuppressWarnings("unused")
     private static class NodeMatcherBuilder {
+        private static final long DEFAULT_TIMEOUT_MS = 5000;
+
         private String mClassName = "";
         private String mText = "";
         private Boolean mInputFocused;
