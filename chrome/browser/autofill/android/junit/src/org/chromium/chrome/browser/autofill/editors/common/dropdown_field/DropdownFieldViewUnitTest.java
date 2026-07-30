@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
@@ -20,8 +21,10 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -193,5 +196,33 @@ public final class DropdownFieldViewUnitTest {
         assertFalse(field.getLabel().isImportantForAccessibility());
 
         assertEquals("label", field.getDropdown().getContentDescription());
+    }
+
+    /** Test that the error message is correctly set and cleared. */
+    @Test
+    public void testSetErrorMessage() {
+        PropertyModel model = buildDefaultPropertyModel();
+        DropdownFieldView field = attachDropdownFieldView(model);
+
+        TextView errorLabel = field.getErrorLabelForTests();
+        assertEquals(View.GONE, errorLabel.getVisibility());
+
+        model.set(ERROR_MESSAGE, "Error message");
+        assertEquals(View.VISIBLE, errorLabel.getVisibility());
+        assertEquals("Error message", errorLabel.getText().toString());
+
+        model.set(ERROR_MESSAGE, null);
+        assertEquals(View.GONE, errorLabel.getVisibility());
+        assertTrue(TextUtils.isEmpty(errorLabel.getText()));
+
+        // Show the error message again and make sure that an empty string hides the error message
+        // as well.
+        model.set(ERROR_MESSAGE, "Error message");
+        assertEquals(View.VISIBLE, errorLabel.getVisibility());
+        assertEquals("Error message", errorLabel.getText().toString());
+
+        model.set(ERROR_MESSAGE, "");
+        assertEquals(View.GONE, errorLabel.getVisibility());
+        assertTrue(TextUtils.isEmpty(errorLabel.getText()));
     }
 }
