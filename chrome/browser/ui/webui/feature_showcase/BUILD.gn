@@ -82,3 +82,39 @@ source_set("feature_showcase") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "default_browser_handler_unittest.cc",
+    "feature_showcase_handler_unittest.cc",
+    "gemini_disclosure_unittest.cc",
+    "gemini_handler_unittest.cc",
+    "google_lens_handler_unittest.cc",
+    "password_manager_handler_unittest.cc",
+    "themes_and_customization_handler_unittest.cc",
+  ]
+  deps = [
+    ":feature_showcase",
+    ":mojo_bindings",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/signin",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:feature_showcase_metrics",
+    "//chrome/browser/ui/actions",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/webui/intro",
+    "//chrome/test:test_support",
+    "//components/glic:glic_pref_names",
+    "//components/lens",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/actions",
+  ]
+}

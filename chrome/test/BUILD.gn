@@ -6085,19 +6085,13 @@ test("unit_tests") {
       "../browser/ui/views/profiles/feature_showcase/google_lens_step_eligibility_checker_unittest.cc",
       "../browser/ui/views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker_unittest.cc",
       "../browser/ui/views/profiles/feature_showcase/themes_and_customization_step_eligibility_checker_unittest.cc",
-      "../browser/ui/webui/feature_showcase/default_browser_handler_unittest.cc",
-      "../browser/ui/webui/feature_showcase/feature_showcase_handler_unittest.cc",
-      "../browser/ui/webui/feature_showcase/gemini_disclosure_unittest.cc",
-      "../browser/ui/webui/feature_showcase/gemini_handler_unittest.cc",
-      "../browser/ui/webui/feature_showcase/google_lens_handler_unittest.cc",
-      "../browser/ui/webui/feature_showcase/password_manager_handler_unittest.cc",
-      "../browser/ui/webui/feature_showcase/themes_and_customization_handler_unittest.cc",
     ]
     deps += [
       "//chrome/browser/ui:feature_showcase_metrics",
       "//chrome/browser/ui/signin:unit_tests",
       "//chrome/browser/ui/webui/cr_components/signin:unit_tests",
       "//chrome/browser/ui/webui/feature_showcase",
+      "//chrome/browser/ui/webui/feature_showcase:unit_tests",
       "//chrome/browser/ui/webui/intro",
       "//components/lens:enterprise_policy",
     ]
