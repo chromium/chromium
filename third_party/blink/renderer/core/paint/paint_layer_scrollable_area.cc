@@ -3523,7 +3523,7 @@ Node* PaintLayerScrollableArea::GetSnapTargetAlongAxis(
   using cc::SnapAxis::kInline;
   using cc::SnapAxis::kX;
   using cc::SnapAxis::kY;
-  if (!GetLayoutBox() || !GetLayoutBox()->Style()) {
+  if (!GetLayoutBox()) {
     return nullptr;
   }
   bool horiz = GetLayoutBox()->StyleRef().GetWritingDirection().IsHorizontal();

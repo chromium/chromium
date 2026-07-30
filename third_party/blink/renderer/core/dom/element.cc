@@ -6880,33 +6880,32 @@ void Element::SetTargetedSnapAreaIdsForSnapContainers() {
   std::optional<cc::ElementId> targeted_area_id = std::nullopt;
   const LayoutBox* box = GetLayoutBox();
   while (box) {
-    if (const ComputedStyle* style = box->Style()) {
-      // If this is a snap area, associate it with the first snap area we
-      // encountered, if any, since the previous snap container.
-      if (box->IsScrollContainer() && !style->GetScrollSnapType().is_none) {
-        if (auto* scrollable_area = box->GetScrollableArea()) {
-          scrollable_area->SetTargetedSnapAreaId(targeted_area_id);
-          GetDocument().View()->AddPendingSnapUpdate(scrollable_area);
-        }
-        targeted_area_id.reset();
+    const ComputedStyle& style = box->StyleRef();
+    // If this is a snap area, associate it with the first snap area we
+    // encountered, if any, since the previous snap container.
+    if (box->IsScrollContainer() && !style.GetScrollSnapType().is_none) {
+      if (auto* scrollable_area = box->GetScrollableArea()) {
+        scrollable_area->SetTargetedSnapAreaId(targeted_area_id);
+        GetDocument().View()->AddPendingSnapUpdate(scrollable_area);
       }
-      // Only update |targeted_area_id| if we don't already have one so that we
-      // prefer associating snap containers with their innermost snap targets.
-      const auto& snap_align = style->GetScrollSnapAlign();
-      if (!targeted_area_id &&
-          (snap_align.alignment_block != cc::SnapAlignment::kNone ||
-           snap_align.alignment_inline != cc::SnapAlignment::kNone)) {
-        if (Node* node = box->GetNode()) {
-          targeted_area_id =
-              CompositorElementIdFromDOMNodeId(node->GetDomNodeId());
-        }
-        // Though not spec'd, we should prefer associating snap containers with
-        // their innermost (in DOM hierarchy) snap areas.
-        // This means we can skip any snap areas between this area and its snap
-        // container.
-        box = box->ContainingScrollContainer();
-        continue;
+      targeted_area_id.reset();
+    }
+    // Only update |targeted_area_id| if we don't already have one so that we
+    // prefer associating snap containers with their innermost snap targets.
+    const auto& snap_align = style.GetScrollSnapAlign();
+    if (!targeted_area_id &&
+        (snap_align.alignment_block != cc::SnapAlignment::kNone ||
+         snap_align.alignment_inline != cc::SnapAlignment::kNone)) {
+      if (Node* node = box->GetNode()) {
+        targeted_area_id =
+            CompositorElementIdFromDOMNodeId(node->GetDomNodeId());
       }
+      // Though not spec'd, we should prefer associating snap containers with
+      // their innermost (in DOM hierarchy) snap areas.
+      // This means we can skip any snap areas between this area and its snap
+      // container.
+      box = box->ContainingScrollContainer();
+      continue;
     }
     box = box->ContainingBlock();
   }
@@ -6915,11 +6914,10 @@ void Element::SetTargetedSnapAreaIdsForSnapContainers() {
 void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
   const LayoutBox* box = GetLayoutBox();
   while (box) {
-    if (const ComputedStyle* style = box->Style()) {
-      if (box->IsScrollContainer() && !style->GetScrollSnapType().is_none) {
-        if (auto* scrollable_area = box->GetScrollableArea()) {
-          scrollable_area->SetTargetedSnapAreaId(std::nullopt);
-        }
+    if (box->IsScrollContainer() &&
+        !box->StyleRef().GetScrollSnapType().is_none) {
+      if (auto* scrollable_area = box->GetScrollableArea()) {
+        scrollable_area->SetTargetedSnapAreaId(std::nullopt);
       }
     }
     box = box->ContainingBlock();
@@ -9042,7 +9040,7 @@ void Element::SetHasFocusWithinUpToAncestor(bool has_focus_within,
     // focus even if its own HasFocusWithin state has not changed.
     if (element != this && need_snap_container_search) {
       if (const LayoutBox* box = element->GetLayoutBoxForScrolling()) {
-        if (box->Style() && !box->StyleRef().GetScrollSnapType().is_none) {
+        if (!box->StyleRef().GetScrollSnapType().is_none) {
           // TODO(crbug.com/340983092): We should be able to just call
           // LocalFrameView::AddPendingSnapUpdate, but that results in a snap
           // which cancels ongoing scroll animations.
