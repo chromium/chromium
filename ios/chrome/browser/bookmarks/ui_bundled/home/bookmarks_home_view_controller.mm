@@ -288,7 +288,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   return self;
 }
 
+- (void)dealloc {
+  [self shutdown];
+}
+
 - (void)shutdown {
+  if (_isShutDown) {
+    return;
+  }
   _isShutDown = YES;
   [self stopSigninCoordinator];
   [self.editingFolderCell stopEdit];

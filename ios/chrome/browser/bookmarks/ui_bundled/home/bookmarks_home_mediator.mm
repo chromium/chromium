@@ -153,6 +153,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
   // List of nodes selected by the user when being in the edit mode.
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
+  BOOL _isDisconnected;
 }
 
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -209,6 +210,10 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)disconnect {
+  if (_isDisconnected) {
+    return;
+  }
+  _isDisconnected = YES;
   [_bookmarkPromoController shutdown];
   _bookmarkPromoController.delegate = nil;
   _bookmarkPromoController = nil;
@@ -223,7 +228,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)dealloc {
-  CHECK(!_bookmarkPromoController, base::NotFatalUntil::M152);
+  [self disconnect];
 }
 
 - (BOOL)canDismiss {
