@@ -651,6 +651,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch"
+    enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This records causes that did not result in any actual network fetches
+    because the accounts were the ones already used for the last preference
+    computation.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountPreview.TriggerCauseWithAllCachesAvailable"
     enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
   <owner>rsult@google.com</owner>
