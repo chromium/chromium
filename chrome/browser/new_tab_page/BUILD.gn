@@ -58,7 +58,6 @@ source_set("new_tab_page") {
     "//google_apis/calendar",
     "//google_apis/common",
     "//mojo/public/mojom/base",
-    "//services/data_decoder/public/cpp",
     "//skia",
   ]
 
