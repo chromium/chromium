@@ -31,31 +31,6 @@ DeviceDelegateAndroid::DeviceDelegateAndroid(content::WebContents* web_contents)
 
 DeviceDelegateAndroid::~DeviceDelegateAndroid() = default;
 
-WalletEligibilityForPixAccountLinking
-DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  int32_t eligibility =
-      Java_DeviceDelegate_getWalletEligibilityForPixAccountLinking(env);
-  CHECK(eligibility >= static_cast<int32_t>(
-                           WalletEligibilityForPixAccountLinking::kEligible) &&
-        eligibility <=
-            static_cast<int32_t>(WalletEligibilityForPixAccountLinking::
-                                     kWalletVersionNotSupported));
-  return static_cast<WalletEligibilityForPixAccountLinking>(eligibility);
-}
-
-void DeviceDelegateAndroid::LaunchPixAccountLinkingPage(std::string email) {
-  if (!web_contents_ || !web_contents_->GetNativeView() ||
-      !web_contents_->GetNativeView()->GetWindowAndroid()) {
-    // TODO(crbug.com/419108993): Log metrics.
-    return;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DeviceDelegate_openPixAccountLinkingPageInWallet(
-      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, email));
-}
-
 void DeviceDelegateAndroid::SetOnReturnToChromeCallbackAndObserveAppState(
     base::OnceClosure callback) {
   on_return_to_chrome_callback_ = std::move(callback);

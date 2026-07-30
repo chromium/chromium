@@ -19,11 +19,6 @@ class MockDeviceDelegate : public DeviceDelegate {
   MockDeviceDelegate();
   ~MockDeviceDelegate() override;
 
-  MOCK_METHOD(WalletEligibilityForPixAccountLinking,
-              IsPixAccountLinkingSupported,
-              (),
-              (const, override));
-  MOCK_METHOD(void, LaunchPixAccountLinkingPage, (std::string), (override));
   MOCK_METHOD(void,
               SetOnReturnToChromeCallbackAndObserveAppState,
               (base::OnceClosure),

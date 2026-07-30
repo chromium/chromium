@@ -5,11 +5,9 @@
 package org.chromium.components.facilitated_payments;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -24,7 +22,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.PackageUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -50,58 +47,9 @@ public class DeviceDelegate {
     private static final String FAILED = "Failed";
     private static final String A2A_INTENT_ACTION_NAME =
             "org.chromium.intent.action.FACILITATED_PAYMENT";
-    private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
-    // Deeplink to the Pix account linking page on Google Wallet.
-    private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
-            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome&email=%s";
-    // Minimum Google Wallet version that supports Pix account linking.
-    private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 932848136;
     private static final String GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin";
 
     private DeviceDelegate() {}
-
-    /**
-     * The Pix account linking prompt redirects to the Google Wallet app on acceptance. Checks if
-     * Wallet is eligible for Pix account linking.
-     *
-     * @return An {@link WalletEligibilityForPixAccountLinking} indicating eligibility.
-     */
-    @CalledByNative
-    private static @WalletEligibilityForPixAccountLinking int
-            getWalletEligibilityForPixAccountLinking() {
-        PackageInfo walletPackageInfo =
-                PackageUtils.getPackageInfo(GOOGLE_WALLET_PACKAGE_NAME, /* flags= */ 0);
-
-        // {@link PackageInfo} is null if the package is not installed.
-        if (walletPackageInfo == null) {
-            return WalletEligibilityForPixAccountLinking.WALLET_NOT_INSTALLED;
-        }
-        // Verify Google Wallet version supports Pix account linking.
-        if (PackageUtils.packageVersionCode(walletPackageInfo) < PIX_MIN_SUPPORTED_WALLET_VERSION) {
-            return WalletEligibilityForPixAccountLinking.WALLET_VERSION_NOT_SUPPORTED;
-        }
-        return WalletEligibilityForPixAccountLinking.ELIGIBLE;
-    }
-
-    @CalledByNative
-    @VisibleForTesting
-    static void openPixAccountLinkingPageInWallet(WindowAndroid windowAndroid, String email) {
-        if (windowAndroid == null) {
-            return;
-        }
-        Context context = windowAndroid.getContext().get();
-        if (context == null) {
-            return;
-        }
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(String.format(GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK, email)));
-        intent.setPackage(GOOGLE_WALLET_PACKAGE_NAME);
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            // TODO(crbug.com/419108993): Log metrics.
-        }
-    }
 
     @CalledByNative
     static ResolveInfo[] getSupportedPaymentApps(GURL paymentLinkUrl, WindowAndroid windowAndroid) {

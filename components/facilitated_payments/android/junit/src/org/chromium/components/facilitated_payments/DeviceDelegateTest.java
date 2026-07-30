@@ -8,13 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -65,11 +62,8 @@ public class DeviceDelegateTest {
     private static final String A2A_TRANSACTION_OUTCOME = "A2A_TRANSACTION_OUTCOME";
     private static final String A2A_INTENT_ACTION_NAME =
             "org.chromium.intent.action.FACILITATED_PAYMENT";
-    private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
     private static final String GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin";
     private static final String NON_GBOARD_PACKAGE_NAME = "com.other.ime";
-    private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 932848136L;
-    private static final String EMAIL = "user@example.com";
     private static final GURL PAYMENT_LINK =
             new GURL("https://www.itmx.co.th/facilitated-payment/prompt-pay");
     private static final String PAYMENT_LINK_SCHEME = "PromptPay";
@@ -152,55 +146,6 @@ public class DeviceDelegateTest {
         when(mMockInputMethodInfo.getPackageName()).thenReturn(NON_GBOARD_PACKAGE_NAME);
 
         assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
-    }
-
-    @Test
-    public void testOpenPixAccountLinkingPageInWallet_Success() {
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
-
-        // Capture the Intent passed to startActivity
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mMockContext).startActivity(intentCaptor.capture());
-
-        // Assert the properties of the captured Intent
-        Intent capturedIntent = intentCaptor.getValue();
-        assertEquals(Intent.ACTION_VIEW, capturedIntent.getAction());
-        assertEquals(
-                Uri.parse(
-                        "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome&email=user@example.com"),
-                capturedIntent.getData());
-        assertEquals(GOOGLE_WALLET_PACKAGE_NAME, capturedIntent.getPackage());
-    }
-
-    @Test
-    public void testOpenPixAccountLinkingPageInWallet_NullWindowAndroid() {
-        DeviceDelegate.openPixAccountLinkingPageInWallet(null, EMAIL);
-
-        // Verify that startActivity() was never called if WindowAndroid is null.
-        verify(mMockContext, never()).startActivity(any(Intent.class));
-    }
-
-    @Test
-    public void testOpenPixAccountLinkingPageInWallet_NullContext() {
-        when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
-
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
-
-        verify(mMockContext, never()).startActivity(any(Intent.class));
-    }
-
-    @Test
-    public void testOpenPixAccountLinkingPageInWallet_ActivityNotFound() {
-        // Simulate ActivityNotFoundException
-        doThrow(new ActivityNotFoundException())
-                .when(mMockContext)
-                .startActivity(any(Intent.class));
-
-        // Call the method, expecting it to catch the exception
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
-
-        // Verify startActivity was called (even though it threw).
-        verify(mMockContext).startActivity(any(Intent.class));
     }
 
     @Test

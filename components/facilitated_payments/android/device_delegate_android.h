@@ -27,15 +27,6 @@ class DeviceDelegateAndroid : public DeviceDelegate {
   DeviceDelegateAndroid& operator=(const DeviceDelegateAndroid&) = delete;
   ~DeviceDelegateAndroid() override;
 
-  // Returns eligible if Google Wallet is installed, and its version supports
-  // Pix account linking.
-  WalletEligibilityForPixAccountLinking IsPixAccountLinkingSupported()
-      const override;
-
-  // Opens the Pix account linking page in Google Wallet. The `email` is set to
-  // the gaia account that the user logged into.
-  void LaunchPixAccountLinkingPage(std::string email) override;
-
   // Starts observing the Chrome app status. Runs the `callback` if the Chrome
   // app is moved to the background and then to the foreground. Stops observing
   // after running the `callback`. The `callback` is not called if the active
