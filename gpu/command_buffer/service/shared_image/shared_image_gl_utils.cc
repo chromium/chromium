@@ -27,7 +27,7 @@ ScopedPackState::ScopedPackState(int pack_row_length, int pack_alignment)
 
   pack_alignment_.emplace(GL_PACK_ALIGNMENT, pack_alignment);
 
-  if (is_es3) {
+  if (is_es3 || gl::g_current_gl_driver->ext.b_GL_NV_pack_subimage) {
     pack_row_length_.emplace(GL_PACK_ROW_LENGTH, pack_row_length);
     pack_skip_rows_.emplace(GL_PACK_SKIP_ROWS, 0);
     pack_skip_pixels_.emplace(GL_PACK_SKIP_PIXELS, 0);

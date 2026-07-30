@@ -1565,6 +1565,7 @@ struct ExtensionsGL {
   bool b_GL_NV_fence;
   bool b_GL_NV_framebuffer_blit;
   bool b_GL_NV_internalformat_sample_query;
+  bool b_GL_NV_pack_subimage;
   bool b_GL_OES_EGL_image;
   bool b_GL_OES_draw_buffers_indexed;
   bool b_GL_OES_get_program_binary;

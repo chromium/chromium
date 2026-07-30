@@ -2290,6 +2290,7 @@ FUNCTION_SETS = [
       "GL_EXT_texture_swizzle",
       "GL_EXT_texture_format_BGRA8888",
       "GL_EXT_unpack_subimage",
+      "GL_NV_pack_subimage",
     ]
   ],
   [EGL_FUNCTIONS, 'egl', [
