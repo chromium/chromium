@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
   TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel actually opens.
-  EXPECT_TRUE(WaitForGlicOpen().has_value());
+  ASSERT_OK(WaitForGlicOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
   TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel actually opens.
-  EXPECT_TRUE(WaitForGlicOpen().has_value());
+  ASSERT_OK(WaitForGlicOpen());
 }
 
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
@@ -105,6 +105,7 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
   TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel is not showing.
+  WaitForDuration(base::Milliseconds(300));
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
 }
 
@@ -152,6 +153,7 @@ IN_PROC_BROWSER_TEST_F(
   TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel is not showing.
+  WaitForDuration(base::Milliseconds(300));
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
 }
 

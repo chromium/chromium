@@ -85,6 +85,11 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 }
 
 GlicSidePanelUi::~GlicSidePanelUi() {
+  // Explicitly reset the hotkey managers to destroy their registrations and
+  // unregister from the WindowAndroid while `weak_ptr_factory_` (and any
+  // `panel_` weak pointers) is still valid.
+  panel_focus_dependent_hotkey_manager_.reset();
+  panel_visibility_dependent_hotkey_manager_.reset();
   content::WebContents* web_contents = delegate_->host().webui_contents();
   if (web_contents && web_contents->GetDelegate() == this) {
     web_contents->SetDelegate(nullptr);
