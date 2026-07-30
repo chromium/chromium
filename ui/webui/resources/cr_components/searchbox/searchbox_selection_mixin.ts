@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {Action, AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType, SelectionDirection, SelectionLineState, SelectionStep} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {kDefaultSelection} from './searchbox_match.js';
 
@@ -40,7 +40,7 @@ function getSelectionsForMatch(
     state: SelectionLineState.kNormal,
     actionIndex: 0,
   }];
-  if (match.keywordChipHint && match.keywordChipHint.length > 0) {
+  if (match.keywordModel?.type === KeywordType.kChip) {
     selections.push({
       line: matchIndex,
       state: SelectionLineState.kKeywordMode,
