@@ -938,4 +938,22 @@ INSTANTIATE_TEST_SUITE_P(All,
                          OidcAuthenticationSigninInterceptorIdFailureTest,
                          /*is_3p_identity_synced=*/testing::Bool());
 
+IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
+                       InterceptionAlreadyInProgress) {
+  base::HistogramTester histogram_tester;
+  AddTabToCurrentBrowser(GURL("about:blank"));
+
+  EXPECT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(), base::DoNothing()));
+
+  EXPECT_FALSE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(), base::DoNothing()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.OidcEnrollment.Interception.Result",
+      OidcInterceptionResult::kInterceptionInProgress, 1);
+}
+
 }  // namespace policy
