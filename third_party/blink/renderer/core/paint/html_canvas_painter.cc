@@ -50,17 +50,17 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
         .MarkFirstContentfulPaint();
   }
 
-  if (canvas->IsInCanvasSubtree() && canvas->layoutSubtree()) {
+  if (canvas->IsInCanvasSubtree()) {
     if (DrawingRecorder::UseCachedDrawingIfPossible(
             context, layout_html_canvas_, paint_info.phase)) {
       return;
     }
     BoxDrawingRecorder recorder(context, layout_html_canvas_, paint_info.phase,
                                 paint_offset);
-    // For nested layoutsubtree canvases, record a placeholder CustomDataOp
-    // with the DOMNodeId. When GetCanvasChildPaintRecord() is called, this
-    // placeholder is replaced with the nested canvas's actual unaccelerated
-    // snapshot.
+    // For nested canvases in a canvas subtree, record a placeholder
+    // CustomDataOp with the DOMNodeId. When GetCanvasChildPaintRecord() is
+    // called, this placeholder is replaced with the nested canvas's actual
+    // unaccelerated snapshot.
     context.Canvas()->recordCustomData(
         static_cast<uint32_t>(canvas->GetDomNodeId()));
     return;
