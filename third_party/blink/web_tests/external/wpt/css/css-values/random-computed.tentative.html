@@ -423,8 +423,8 @@ test_random_computed_value('filter', 'drop-shadow(random(3px, 1px) random(6px, 1
 test_random_computed_value('font-variation-settings', '"wght" random(300, 100)', '"wght" 300');
 test_random_computed_value('font-feature-settings', '"liga" random(3, 1)', '"liga" 3');
 test_random_computed_value('font-style', 'oblique random(90deg, 10deg)', 'oblique 90deg');
-test_random_computed_value('font-palette', 'palette-mix(in lch, --blue calc(90% * random(1, 0)), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow)');
-test_random_computed_value('font-palette', 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow)');
+test_random_computed_value('font-palette', 'palette-mix(in lch, --blue calc(90% * random(1, 0)), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow 10%)');
+test_random_computed_value('font-palette', 'palette-mix(in lch, --blue random(90%, 10%), --yellow 10%)', 'palette-mix(in lch, --blue 90%, --yellow 10%)');
 test_random_computed_value('animation-timeline', 'view(random(10px, 10px) random(30px, 10px))', 'view(10px 30px)');
 test_random_computed_value('color', 'light-dark(rgb(random(30, 10) random(60, 10) random(90, 10)),  rgb(random(30, 10) random(60, 10) random(90, 10)))',
                                     'rgb(30, 60, 90)');

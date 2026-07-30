@@ -243,7 +243,7 @@ TEST_F(StyleColorTest, UnresolvedColorMix_ToCSSValue) {
   CSSValue* value = mix->ToCSSValue();
   EXPECT_TRUE(value->IsColorMixValue());
   EXPECT_EQ(value->CssText(),
-            "color-mix(in srgb, currentcolor 75%, rgb(255, 0, 0))");
+            "color-mix(in srgb, currentcolor 75%, rgb(255, 0, 0) 25%)");
 }
 
 TEST_F(StyleColorTest, UnresolvedRelativeColor_ToCSSValue) {

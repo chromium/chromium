@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['background-color'] = "color-mix(contrast-color(blue) 100%, purple 0%)" should set the property value
-  assert_equals: serialization should be canonical expected "color-mix(contrast-color(blue) 100%, purple 0%)" but got "color-mix(contrast-color(blue) 100%, purple)"
-Harness: the test ran to completion.
-
