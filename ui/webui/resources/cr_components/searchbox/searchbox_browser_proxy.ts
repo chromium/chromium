@@ -46,9 +46,6 @@ export function createAutocompleteMatch(
     isWeatherAnswerSuggestion: null,
     answer: null,
     tailSuggestCommonPrefix: null,
-    hasInstantKeyword: false,
-    keywordChipHint: '',
-    keywordChipA11y: '',
     keywordModel: null,
   };
 
