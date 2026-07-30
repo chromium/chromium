@@ -48,7 +48,7 @@ found in the LICENSE file.
     <macro name="bookmark_desktop_navigation_pane_bg"
         >?attr/colorSurfaceContainer</macro>
     <macro name="bookmark_desktop_content_pane_bg"
-        >?attr/colorSurfaceContainerLowest</macro>
+        >?attr/colorSurfaceContainer</macro>
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>

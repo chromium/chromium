@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 
 import org.chromium.base.supplier.OneshotSupplier;
@@ -58,6 +59,7 @@ public class BookmarkToolbarCoordinator {
                                 R.id.selection_mode_menu_group,
                                 null,
                                 isDialogUi);
+        mToolbar.setNormalBackgroundColor(Color.TRANSPARENT);
         mToolbar.initializeSearchView(
                 searchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
 

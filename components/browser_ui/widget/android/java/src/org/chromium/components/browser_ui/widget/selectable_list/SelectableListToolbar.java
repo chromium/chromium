@@ -882,6 +882,19 @@ public class SelectableListToolbar<E> extends Toolbar
         updateStatusBarColor(color);
     }
 
+    /**
+     * Sets the background color to use when the toolbar is in normal mode (not searching, not in
+     * selection mode).
+     *
+     * @param color The normal background color specified by the caller.
+     */
+    public void setNormalBackgroundColor(@ColorInt int color) {
+        mNormalBackgroundColor = color;
+        if (!mIsSelectionEnabled && !isSearching()) {
+            setBackgroundColor(mNormalBackgroundColor);
+        }
+    }
+
     private void updateStatusBarColor(@ColorInt int color) {
         if (!mUpdateStatusBarColor) return;
 

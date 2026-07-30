@@ -14,7 +14,7 @@ found in the LICENSE file.
         android:id="@+id/action_bar_bg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/selectable_list_toolbar_height"
-        android:background="@macro/toolbar_background_primary" />
+        android:background="@android:color/transparent" />
 
     <ViewStub
         android:id="@+id/action_bar_stub"
