@@ -313,6 +313,11 @@ TEST_P(AzureActiveDirectoryManagementServiceTests,
 TEST_P(AzureActiveDirectoryManagementServiceTests,
        PlatformManagementServicePolicyLoadingTrust) {
   base::test::TaskEnvironment task_environment;
+  // Ensure actual host AD domain join state does not affect test results, so
+  // this test works on developer machines. If join state is true,
+  // GetManagementAuthorityTrustworthinessForPolicyLoading will be TRUSTED,
+  // which breaks the kWorkplace case, which expects it to be NONE.
+  base::win::ScopedDomainStateForTesting scoped_domain_state(false);
   base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
       GetParam());
   base::win::ScopedDeviceRegisteredWithManagementForTesting
