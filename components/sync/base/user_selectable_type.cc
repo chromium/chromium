@@ -57,9 +57,6 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
   // TODO(crbug.com/476335087): In CL #3, map GEMINI_THREAD to an existing
   // selectable type or to a new one. The first option should be trivial, the
   // second requires touching UI code across platforms.
-  // TODO(crbug.com/526686844): In CL #3, map JOURNEY to an existing selectable
-  // type or to a new one. The first option should be trivial, the second
-  // requires touching UI code across platforms.
   static_assert(67 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
@@ -94,7 +91,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES, THEMES_IOS, THEMES_ANDROID}};
     case UserSelectableType::kHistory: {
-      DataTypeSet types = {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS};
+      DataTypeSet types = {HISTORY, HISTORY_DELETE_DIRECTIVES, USER_EVENTS,
+                           JOURNEY};
       // With `kSpellcheckSeparateLocalAndAccountDictionaries` enabled,
       // `DICTIONARY` is controlled by the History opt-in.
       if ((!skip_feature_checks_if_early || base::FeatureList::GetInstance()) &&
