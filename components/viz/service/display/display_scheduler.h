@@ -71,6 +71,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
       base::TimeTicks frame_time,
       base::TimeDelta interval,
       std::optional<PossibleDeadline> selected_deadline) override;
+  void NotifyMinSupportedVsyncInterval(
+      base::TimeDelta min_vsync_interval) override;
 
   // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(SurfaceId surface_id, BeginFrameId frame_id) override;

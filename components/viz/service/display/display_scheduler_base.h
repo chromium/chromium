@@ -80,6 +80,8 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
       base::TimeTicks frame_time,
       base::TimeDelta interval,
       std::optional<PossibleDeadline> selected_deadline) = 0;
+  virtual void NotifyMinSupportedVsyncInterval(
+      base::TimeDelta min_vsync_interval) {}
 
  protected:
   raw_ptr<DisplaySchedulerClient> client_ = nullptr;

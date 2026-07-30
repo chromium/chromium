@@ -505,6 +505,13 @@ void Display::SetOutputIsSecure(bool secure) {
   }
 }
 
+void Display::NotifyMinSupportedVsyncInterval(
+    base::TimeDelta min_vsync_interval) {
+  if (scheduler_) {
+    scheduler_->NotifyMinSupportedVsyncInterval(min_vsync_interval);
+  }
+}
+
 void Display::InitializeRenderer() {
   if (skia_output_surface_) {
     auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();

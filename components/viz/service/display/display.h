@@ -147,6 +147,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
   void SetOutputIsSecure(bool secure);
+  void NotifyMinSupportedVsyncInterval(base::TimeDelta min_vsync_interval);
 
   const SurfaceId& CurrentSurfaceId() const;
 
