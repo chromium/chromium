@@ -2802,7 +2802,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, CopyUrl) {
           testing::ResultOf(
               [](const std::u16string& s) { return base::UTF16ToUTF8(s); },
               testing::StartsWith(
-                  "https://www.google.com/search?udm=50&q=test"))),
+                  "https://www.google.com/search?udm=50&q=test&cru=1"))),
       StopObservingState(kClipboardText),
       UninstrumentWebContents(kInnerWebContentsId,
                               /*fail_if_not_instrumented=*/false));
