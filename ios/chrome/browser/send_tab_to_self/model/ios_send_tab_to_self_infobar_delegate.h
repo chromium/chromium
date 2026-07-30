@@ -26,11 +26,13 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   static std::unique_ptr<IOSSendTabToSelfInfoBarDelegate> Create(
       const SendTabToSelfEntry* entry,
+      size_t opened_tab_count,
       SendTabToSelfModel* model,
       id<SceneCommands> scene_handler,
       WebStateList* web_state_list);
 
   IOSSendTabToSelfInfoBarDelegate(const SendTabToSelfEntry* entry,
+                                  size_t opened_tab_count,
                                   SendTabToSelfModel* model,
                                   id<SceneCommands> scene_handler,
                                   WebStateList* web_state_list);
@@ -62,6 +64,9 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // The SendTabToSelfModel. Must outlive this instance.
   raw_ptr<SendTabToSelfModel> model_ = nullptr;
+
+  // The number of tabs opened in the received batch.
+  size_t opened_tab_count_ = 0;
 
   // Registration with NSNotificationCenter for this window.
   __strong id<NSObject> registration_ = nil;

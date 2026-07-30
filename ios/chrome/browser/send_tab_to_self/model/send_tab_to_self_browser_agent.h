@@ -91,7 +91,8 @@ class SendTabToSelfBrowserAgent
 
   // Display an infobar for `entry` on the specified `web_state`.
   void DisplayInfoBar(web::WebState* web_state,
-                      const send_tab_to_self::SendTabToSelfEntry* entry);
+                      const send_tab_to_self::SendTabToSelfEntry* entry,
+                      size_t opened_tab_count);
 
   // Stop observing the WebState and WebStateList and reset associated
   // variables.

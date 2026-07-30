@@ -149,7 +149,7 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
       // Only display the infobar banner if the active WebState is currently
       // visible (i.e., user is not in the Tab Grid screen or a Settings page).
       if (web_state->IsVisible()) {
-        DisplayInfoBar(web_state, new_entries.back());
+        DisplayInfoBar(web_state, new_entries.back(), new_entries.size());
       }
     } else {
       for (size_t ii = 0; ii < new_entries.size(); ++ii) {
@@ -184,7 +184,7 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
   // Since we can only show one infobar at the time, pick the most recent entry.
   // TODO(crbug.com/40619532): Create a function that returns the most recently
   // shared entry.
-  DisplayInfoBar(web_state, new_entries.back());
+  DisplayInfoBar(web_state, new_entries.back(), new_entries.size());
 }
 
 void SendTabToSelfBrowserAgent::DismissEntries(
@@ -243,7 +243,7 @@ void SendTabToSelfBrowserAgent::OnActiveWebStateChanged(
   }
 
   if (pending_entry_) {
-    DisplayInfoBar(new_active, pending_entry_);
+    DisplayInfoBar(new_active, pending_entry_, /*opened_tab_count=*/1);
     CleanUpObserversAndVariables();
   }
 }
@@ -260,7 +260,7 @@ void SendTabToSelfBrowserAgent::WasShown(web::WebState* web_state) {
   DCHECK(pending_entry_);
   DCHECK(pending_web_state_);
 
-  DisplayInfoBar(pending_web_state_, pending_entry_);
+  DisplayInfoBar(pending_web_state_, pending_entry_, /*opened_tab_count=*/1);
 
   CleanUpObserversAndVariables();
 }
@@ -280,7 +280,8 @@ void SendTabToSelfBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
 void SendTabToSelfBrowserAgent::DisplayInfoBar(
     web::WebState* web_state,
-    const send_tab_to_self::SendTabToSelfEntry* entry) {
+    const send_tab_to_self::SendTabToSelfEntry* entry,
+    size_t opened_tab_count) {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
 
@@ -292,7 +293,7 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
 
   infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       send_tab_to_self::IOSSendTabToSelfInfoBarDelegate::Create(
-          entry, model_,
+          entry, opened_tab_count, model_,
           HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands),
           browser_->GetWebStateList())));
 }
@@ -362,7 +363,7 @@ void SendTabToSelfBrowserAgent::CheckAndOpenPendingEntriesIfBrowserVisible() {
             kTabsOpenedInBackgroundUponActivation);
   }
   if (web_state->IsVisible()) {
-    DisplayInfoBar(web_state, pending_entries.back());
+    DisplayInfoBar(web_state, pending_entries.back(), pending_entries.size());
   }
 }
 

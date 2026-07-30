@@ -9194,7 +9194,9 @@ Handoff must also be enabled in the General section of Settings, and your device
         From <ph name="DEVICE_NAME">$1<ex>My iPhone</ex></ph>
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE" desc="The title text for the infobar when a user receives shared links from another device that open automatically.">
-        Links received
+        {count, plural,
+        =1 {Link received}
+        other {{count} links received}}
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE" desc="The message text for the infobar when a user receives a shared tab from another device.">
         Tab received.
