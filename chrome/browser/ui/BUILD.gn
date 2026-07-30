@@ -4921,14 +4921,7 @@ static_library("ui") {
         "//ui/ozone",
       ]
       if (use_dbus) {
-        sources += [
-          "views/dark_mode_manager_linux.cc",
-          "views/dark_mode_manager_linux.h",
-        ]
-        deps += [
-          "//components/dbus",
-          "//dbus",
-        ]
+        deps += [ "//ui/linux:dark_mode_manager" ]
       }
     }
 

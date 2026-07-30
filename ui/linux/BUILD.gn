@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//ui/qt/qt.gni")
 
@@ -100,4 +101,43 @@ source_set("test_support") {
     "//ui/native_theme",
     "//ui/shell_dialogs",
   ]
+}
+
+if (use_dbus) {
+  # Observes the system color scheme and accent color via the
+  # org.freedesktop.portal.Settings D-Bus interface, applying them to
+  # NativeTheme.
+  source_set("dark_mode_manager") {
+    sources = [
+      "dark_mode_manager_linux.cc",
+      "dark_mode_manager_linux.h",
+    ]
+    deps = [
+      ":linux_ui",
+      ":linux_ui_factory",
+      "//base",
+      "//components/dbus",
+      "//dbus",
+      "//ui/base:features",
+      "//ui/native_theme",
+    ]
+  }
+
+  source_set("dark_mode_manager_unittests") {
+    testonly = true
+    sources = [ "dark_mode_manager_linux_unittest.cc" ]
+    deps = [
+      ":dark_mode_manager",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//components/dbus",
+      "//dbus:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base:features",
+      "//ui/native_theme",
+      "//ui/native_theme:test_support",
+    ]
+  }
 }

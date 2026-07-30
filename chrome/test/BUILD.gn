@@ -7327,14 +7327,11 @@ test("unit_tests") {
     deps += [ "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests" ]
 
     if (use_dbus) {
-      sources += [
-        "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc",
-        "../browser/ui/views/dark_mode_manager_linux_unittest.cc",
-      ]
+      sources +=
+          [ "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc" ]
       deps += [
         "//components/dbus",
         "//dbus:test_support",
-        "//ui/linux:test_support",
       ]
     }
 

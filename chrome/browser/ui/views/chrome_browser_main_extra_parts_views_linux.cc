@@ -17,7 +17,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(USE_DBUS)
-#include "chrome/browser/ui/views/dark_mode_manager_linux.h"
+#include "ui/linux/dark_mode_manager_linux.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
