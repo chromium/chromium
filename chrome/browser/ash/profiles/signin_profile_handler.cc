@@ -14,12 +14,10 @@
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/crx_file/id_util.h"
@@ -101,11 +99,6 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
   // Profile is already clearing.
   if (on_clear_callbacks_.size() > 1)
     return;
-
-  if (!g_browser_process->profile_manager()) {
-    OnSigninProfileCleared();
-    return;
-  }
 
   auto* signin_profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetSigninBrowserContext());
