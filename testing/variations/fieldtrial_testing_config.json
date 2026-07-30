@@ -11014,6 +11014,21 @@
             ]
         }
     ],
+    "EnterpriseReleaseNotes": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseReleaseNotes"
+                    ]
+                }
+            ]
+        }
+    ],
     "EstimateNewSignInUsersWithFinchAvailablePopulation": [
         {
             "platforms": [
