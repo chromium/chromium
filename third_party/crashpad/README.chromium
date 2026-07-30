@@ -60,3 +60,7 @@ Local Modifications:
    "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
    https://crbug.com/1467773
  - CPEPrefix for third_party/zlib is added to README.chromium
+ - 526fd4a0352b Clamp aligned_offset in MemorySnapshotSanitized
+ - ece2fa50a313 Fix MemorySnapshotSanitized for 32-bit builds, where size_t
+             ≠ VMAddress
+ - ad1827ddbc03 Update cpp-httplib to d66d9a95997d (0.51.0)
