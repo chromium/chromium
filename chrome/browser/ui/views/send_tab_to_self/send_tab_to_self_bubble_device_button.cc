@@ -15,6 +15,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync_device_info/device_info.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -94,10 +95,11 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
   device_guid_ = device_info.cache_guid;
   device_form_factor_ = device_info.form_factor;
   SetEnabled(true);
-  SetSelected(false);
   if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
     ApplyDeviceSelectionStyling();
   }
+  SetSelected(false);
 }
 
 void SendTabToSelfBubbleDeviceButton::ApplyDeviceSelectionStyling() {
