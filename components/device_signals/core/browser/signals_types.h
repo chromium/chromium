@@ -261,6 +261,9 @@ struct OsSignalsResponse : BaseSignalResponse {
   // The date when the device most recently applied a security patch, in ms
   // since epoch.
   std::optional<int64_t> security_patch_ms;
+
+  // iOS specific
+  std::optional<std::string> vendor_id = std::nullopt;
 };
 
 struct ProfileSignalsResponse : BaseSignalResponse {

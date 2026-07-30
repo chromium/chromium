@@ -135,6 +135,9 @@ const char kTrigger[] = "trigger";
 // enrollment domain.
 const char kUserEnrollmentDomain[] = "userEnrollmentDomain";
 
+// Name of the signal for getting information about the iOS vendor ID.
+const char kVendorId[] = "vendorId";
+
 // Name of the signal for getting information about the windows domain
 // the device has joined.
 const char kWindowsMachineDomain[] = "windowsMachineDomain";
