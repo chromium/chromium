@@ -75,6 +75,20 @@ let formControlCollections: Array<HTMLCollectionOf<Element>> = [];
 const FORM_TAGS = new Set(['FORM', 'INPUT', 'SELECT', 'OPTION', 'TEXTAREA']);
 
 /**
+ * Tag names used to compute live HTMLCollection form control counts.
+ *
+ * Unlike `FORM_TAGS`, 'OPTION' can be safely excluded because:
+ * 1. <option> elements are only child items of <select> controls and are not
+ *    independent autofillable form controls themselves. Any addition or
+ *    removal of a select control is already captured by tracking <select>.
+ * 2. Forms (e.g., country or date-of-birth dropdowns) can contain hundreds or
+ *    thousands of <option> elements. Excluding them avoids expensive DOM
+ *    subtree scanning and live HTMLCollection maintenance for large option
+ *    lists.
+ */
+const FORM_CONTROL_TAGS = ['FORM', 'INPUT', 'SELECT', 'TEXTAREA'];
+
+/**
  * A message scheduled to be sent to host on the next runloop.
  */
 let messageToSend: object|null = null;
@@ -596,7 +610,7 @@ function processFormMutationsStandard(
 function initializeFormControlCollections(): void {
   if (formControlCollections.length === 0) {
     formControlCollections =
-        [...FORM_TAGS].map(tag => document.getElementsByTagName(tag));
+        FORM_CONTROL_TAGS.map(tag => document.getElementsByTagName(tag));
   }
 }
 
@@ -666,7 +680,7 @@ function processFormMutationsOptimized(): void {
     }
 
     // Mathematically align removedFormControlCount with getFormControlCount()
-    if (FORM_TAGS.has(element.tagName)) {
+    if (FORM_CONTROL_TAGS.includes(element.tagName)) {
       removedFormControlCount++;
     }
 
