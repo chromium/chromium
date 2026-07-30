@@ -7,10 +7,17 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#lensSearch {
+/* Styling for the icon-only button version */
+#lensIcon {
+  --cr-icon-button-fill-color: var(--color-composebox-font-light);
+  --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 36px;
+}
+
+#lensSearchPill {
   align-items: center;
-  background-color:
-    var(--color-composebox-context-entrypoint-hover-background);
+  background-color: var(--color-composebox-context-entrypoint-hover-background);
   border: none;
   color: var(--color-searchbox-results-foreground);
   display: flex;

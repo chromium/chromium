@@ -105,6 +105,9 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
       isLensChipShown_: {type: Boolean},
       isAimButtonVisible_: {type: Boolean},
       isCurrentTabChipEnabled_: {type: Boolean},
+      isLensIconEnabled_: {type: Boolean},
+      isLensIconEligible_: {type: Boolean},
+      isLensIconShown_: {type: Boolean},
       currentTabForChip_: {type: Object},
       isCurrentTabChipShown_: {type: Boolean},
       webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
@@ -135,6 +138,10 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   protected accessor isAimButtonVisible_: boolean = false;
   protected accessor isCurrentTabChipEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowCurrentTabChip');
+  protected accessor isLensIconEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxShowLensIcon');
+  protected accessor isLensIconEligible_: boolean = false;
+  protected accessor isLensIconShown_: boolean = false;
   protected accessor currentTabForChip_: TabInfo|null = null;
   protected accessor isCurrentTabChipShown_: boolean = false;
   protected accessor inputState_: InputState|null = null;
@@ -193,6 +200,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
       this.searchboxBrowserProxy_.callbackRouter.updateLensSearchEligibility
           .addListener((eligible: boolean) => {
             this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
+            this.isLensIconEligible_ = this.isLensIconEnabled_ && eligible;
           }),
       this.searchboxBrowserProxy_.callbackRouter.updateContentSharingPolicy
           .addListener((enabled: boolean) => {
@@ -271,10 +279,13 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
     if (changedPrivateProperties.has('isContentSharingEnabled_') ||
         changedPrivateProperties.has('isLensSearchEligible_') ||
+        changedPrivateProperties.has('isLensIconEligible_') ||
         changedPrivateProperties.has('currentTabForChip_') ||
         changedPrivateProperties.has('inputState_')) {
       this.isCurrentTabChipShown_ = this.isContentSharingEnabled_ &&
           this.isLensSearchEligible_ && this.computeShowCurrentTabChip_();
+      this.isLensIconShown_ = this.isContentSharingEnabled_ &&
+          this.isLensIconEligible_;
       this.isLensChipShown_ = this.isContentSharingEnabled_ &&
           this.isLensSearchEligible_ && !this.isCurrentTabChipShown_;
       this.applyContextButtonBackground_ =

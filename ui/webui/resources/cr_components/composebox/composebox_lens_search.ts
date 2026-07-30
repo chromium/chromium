@@ -6,6 +6,7 @@ import './composebox_tab_favicon.js';
 import './icons.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -26,6 +27,18 @@ export class ComposeboxLensSearchElement extends I18nMixinLit
   override render() {
     return getHtml.bind(this)();
   }
+
+  static override get properties() {
+    return {
+      isIcon: {
+        type: Boolean,
+        attribute: 'is-icon',
+        reflect: true,
+      },
+    };
+  }
+
+  accessor isIcon: boolean = false;
 
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();
