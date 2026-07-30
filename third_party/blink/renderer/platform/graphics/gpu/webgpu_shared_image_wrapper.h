@@ -74,18 +74,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
   void DrawToBackingSharedImage(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
-  // Copies the contents of the passed-in SharedImage at `copy_rect` into this
-  // instance's SharedImage. Waits on `ready_sync_token` before copying; pass
-  // SyncToken() if no sync is required. Synthesizes a new sync token in
-  // `completion_sync_token` which will satisfy after the image copy completes.
-  // NOTE: Can only be used if this instance is accelerated.
-  bool CopyToBackingSharedImage(
-      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-      uint32_t src_x,
-      uint32_t src_y,
-      const gpu::SyncToken& ready_sync_token,
-      gpu::SyncToken& completion_sync_token);
-
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
   gpu::raster::RasterInterface* RasterInterface() const;
