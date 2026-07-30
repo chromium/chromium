@@ -373,6 +373,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-no-capture-when-scrolling-disabled-on-desktop",
+    "owners": [ "peilinwang@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-open-incognito-as-window",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 156

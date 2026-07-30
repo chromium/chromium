@@ -62,6 +62,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -146,6 +147,7 @@ public class ToolbarControlContainerTest {
     @Mock private ViewTreeObserver mViewTreeObserver;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private TopControlsStacker mTopControlsStacker;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
     @Captor private ArgumentCaptor<ViewTreeObserver.OnPreDrawListener> mOnPreDrawCaptor;
@@ -201,7 +203,8 @@ public class ToolbarControlContainerTest {
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
                 mToolbarDataProvider,
-                mBrowserControlsStateProvider);
+                mBrowserControlsStateProvider,
+                mTopControlsStacker);
         // The adapter may observe some of these already, which will post events.
         RobolectricUtil.runAllBackgroundAndUi();
         // The initial addObserver triggers an event that we don't care about. Reset counts.
@@ -232,7 +235,8 @@ public class ToolbarControlContainerTest {
                 mFullscreenManager,
                 mToolbarDataProvider,
                 mBrowserControlsStateProvider,
-                mDesktopWindowStateManager);
+                mDesktopWindowStateManager,
+                mTopControlsStacker);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 mControlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
@@ -895,7 +899,8 @@ public class ToolbarControlContainerTest {
                 mFullscreenManager,
                 mToolbarDataProvider,
                 mBrowserControlsStateProvider,
-                null);
+                null,
+                mTopControlsStacker);
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
@@ -966,7 +971,8 @@ public class ToolbarControlContainerTest {
                 mFullscreenManager,
                 mToolbarDataProvider,
                 mBrowserControlsStateProvider,
-                null);
+                null,
+                mTopControlsStacker);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);

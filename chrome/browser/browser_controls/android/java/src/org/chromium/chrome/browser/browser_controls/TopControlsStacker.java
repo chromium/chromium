@@ -214,6 +214,11 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         return true;
     }
 
+    /** Returns whether scrolling is disabled for top controls. */
+    public boolean isScrollingDisabled() {
+        return mScrollingDisabled;
+    }
+
     /**
      * Returns the total height of all currently visible {@link TopControlLayer} controls of this
      * instance that also contribute to the total height of the controls.
