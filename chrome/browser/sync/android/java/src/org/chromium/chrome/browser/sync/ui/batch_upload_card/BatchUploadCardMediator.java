@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -58,6 +59,7 @@ class BatchUploadCardMediator
                 }
             };
 
+    private final Lifecycle mLifecycle;
     private final Context mContext;
     private final Profile mProfile;
     private final PropertyModel mModel;
@@ -116,12 +118,14 @@ class BatchUploadCardMediator
                                 : DeviceAuthSource.SETTINGS_BATCH_UPLOAD);
         mDialogManager = modalDialogManager;
 
-        lifecycleOwner.getLifecycle().addObserver(mLifeCycleObserver);
+        mLifecycle = lifecycleOwner.getLifecycle();
+        mLifecycle.addObserver(mLifeCycleObserver);
 
         updateBatchUploadCard();
     }
 
     public void destroy() {
+        mLifecycle.removeObserver(mLifeCycleObserver);
         if (mSyncService != null) {
             mSyncService.removeSyncStateChangedListener(this);
         }
