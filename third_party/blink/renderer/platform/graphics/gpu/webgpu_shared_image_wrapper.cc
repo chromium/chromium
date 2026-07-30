@@ -43,6 +43,17 @@ namespace blink {
 
 namespace {
 
+bool IsGpuContextLost(
+    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
+  if (!context_provider_wrapper) {
+    return true;
+  }
+  auto* raster_interface =
+      context_provider_wrapper->ContextProvider().RasterInterface();
+  return !raster_interface ||
+         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
+
 scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
     viz::SharedImageFormat format,
     gfx::Size size,
@@ -120,7 +131,7 @@ std::unique_ptr<WebGpuSharedImageWrapper> WebGpuSharedImageWrapper::Create(
       new WebGpuSharedImageWrapper(size, format, alpha_type, color_space,
                                    hdr_metadata, context_provider_wrapper));
 
-  if (provider->IsGpuContextLost()) {
+  if (IsGpuContextLost(context_provider_wrapper.get())) {
     return nullptr;
   }
   return provider;
@@ -168,19 +179,6 @@ void WebGpuSharedImageWrapper::WaitSyncToken(const gpu::SyncToken& sync_token) {
   }
 }
 
-gpu::raster::RasterInterface* WebGpuSharedImageWrapper::RasterInterface()
-    const {
-  if (!context_provider_wrapper_) {
-    return nullptr;
-  }
-  return context_provider_wrapper_->ContextProvider().RasterInterface();
-}
-
-bool WebGpuSharedImageWrapper::IsGpuContextLost() const {
-  auto* raster_interface = RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
 
 
 

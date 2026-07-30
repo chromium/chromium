@@ -26,6 +26,12 @@ namespace cc {
 class PaintCanvas;
 }  // namespace cc
 
+namespace gpu {
+namespace raster {
+class RasterInterface;
+}  // namespace raster
+}  // namespace gpu
+
 namespace blink {
 
 class WebGpuSharedImageWrapper;
@@ -79,6 +85,8 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
   }
 
  private:
+  gpu::raster::RasterInterface* RasterInterface() const;
+  bool IsGpuContextLost() const;
   std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
   base::WeakPtr<WebGpuSharedImageWrapperCache> cache_;
   gpu::SyncToken completion_sync_token_;

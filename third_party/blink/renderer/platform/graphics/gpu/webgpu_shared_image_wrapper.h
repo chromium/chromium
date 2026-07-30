@@ -36,12 +36,6 @@ struct HDRMetadata;
 class Size;
 }  // namespace gfx
 
-namespace gpu {
-namespace raster {
-class RasterInterface;
-}  // namespace raster
-}  // namespace gpu
-
 namespace blink {
 
 class PLATFORM_EXPORT WebGpuSharedImageWrapper final
@@ -65,9 +59,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
   SkAlphaType GetAlphaType() const { return shared_image_->alpha_type(); }
 
   void WaitSyncToken(const gpu::SyncToken& sync_token);
-
-  gpu::raster::RasterInterface* RasterInterface() const;
-  bool IsGpuContextLost() const;
 
   // Temporarily public for WebGpuSharedImageWrapperLease migration.
   const gfx::HDRMetadata hdr_metadata_;
