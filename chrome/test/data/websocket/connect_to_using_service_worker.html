@@ -13,19 +13,20 @@ if (queryBegin == -1) {
 }
 const url = href.slice(queryBegin + 5);
 
-const workerConnection = new Promise((resolve, reject) => {
-  const worker = new Worker('./connect_to_using_worker_as_public_address.js');
-  worker.onmessage = event => {
+const workerConnection = new Promise(async (resolve, reject) => {
+  await navigator.serviceWorker.register('connect_to_using_service_worker.js');
+  await navigator.serviceWorker.ready;
+  const registration = await navigator.serviceWorker.ready;
+  const channel = new MessageChannel();
+  channel.port1.onmessage = event => {
     if (event.data === 'PASS') {
       resolve();
     } else if (event.data === 'FAIL') {
       reject();
     }
   };
-  worker.onerror = reject;
 
-  // Start the worker.
-  worker.postMessage({url});
+  registration.active.postMessage({url}, [channel.port2]);
 });
 
 workerConnection.then(() => {
