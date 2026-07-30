@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -91,7 +92,8 @@ static unsigned ComputePresentationAttributeCacheHash(
   DCHECK(key.attributes_and_values.size());
   unsigned attribute_hash =
       StringHasher::HashMemory32(base::as_byte_span(key.attributes_and_values));
-  return HashInts(key.tag_name->ExistingHash(), attribute_hash);
+  return EnsureValidHash(
+      HashInts(key.tag_name->ExistingHash(), attribute_hash));
 }
 
 static unsigned MakePresentationAttributeCacheKey(
