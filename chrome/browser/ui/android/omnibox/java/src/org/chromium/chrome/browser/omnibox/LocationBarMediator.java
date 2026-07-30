@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
@@ -170,6 +171,7 @@ class LocationBarMediator
                 BackPressHandler,
                 PauseResumeWithNativeObserver,
                 AppBannerManager.Observer,
+                WindowFocusChangedObserver,
                 OmniboxSuggestionsDropdownScrollListener {
 
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
@@ -287,7 +289,8 @@ class LocationBarMediator
     // buttons are hidden if the window size is < 600dp.
     private boolean mShouldShowButtonsWhenUnfocused;
     private float mUrlFocusChangeFraction;
-    private boolean mUrlHasFocus;
+    private @Deprecated boolean mUrlHasFocus; // Please check mCurrentInput instead.
+    private boolean mWindowHasFocus;
     private @Nullable Boolean mPreviousDeleteButtonVisible;
     private @Nullable Boolean mPreviousInstallButtonVisible;
     private @Nullable Boolean mPreviousMicButtonVisible;
@@ -360,6 +363,8 @@ class LocationBarMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPageZoomIndicatorCoordinator = pageZoomIndicatorCoordinator;
+        var activity = mWindowAndroid.getActivity().get();
+        mWindowHasFocus = activity != null && activity.getWindow().isActive();
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(
                     () -> updateZoomButtonVisibility(/* notifyEmbedder= */ true));
@@ -2672,11 +2677,18 @@ class LocationBarMediator
         return true;
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean windowHasFocus) {
+        mWindowHasFocus = windowHasFocus;
+        updateShowStandbyRing();
+    }
+
     private void updateShowStandbyRing() {
         boolean showStandbyRing =
                 mCurrentInput != null
                         && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY
-                        && mSelectionController.getSelectedView() == mUrlBarSelectableView;
+                        && mSelectionController.getSelectedView() == mUrlBarSelectableView
+                        && mWindowHasFocus;
         mLocationBarLayout.setShowStandbyRing(showStandbyRing);
     }
 

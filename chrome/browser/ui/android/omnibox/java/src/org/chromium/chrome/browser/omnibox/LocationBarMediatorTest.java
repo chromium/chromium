@@ -44,6 +44,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.Window;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -349,7 +350,11 @@ public class LocationBarMediatorTest {
         lenient().doReturn(mRootView).when(mLocationBarLayout).getRootView();
         lenient().doReturn(true).when(mLocationBarLayout).shouldClearTextOnFocus();
         lenient().doReturn(mRootView).when(mLocationBarTablet).getRootView();
-        lenient().doReturn(new WeakReference<>(null)).when(mWindowAndroid).getActivity();
+        Activity activity = mock(Activity.class);
+        Window window = mock(Window.class);
+        lenient().doReturn(window).when(activity).getWindow();
+        lenient().doReturn(true).when(window).isActive();
+        lenient().doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
         OmniboxPrerenderJni.setInstanceForTesting(mPrerenderJni);
         PreloadPagesSettingsBridgeJni.setInstanceForTesting(mPreloadPagesSettingsJni);
         ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
@@ -4261,5 +4266,28 @@ public class LocationBarMediatorTest {
         assertEquals("w", mSessionState.getAutocompleteInput().getUserText());
         assertEquals("wikipedia.org", mSessionState.getAutocompleteInput().getPreviewText());
         assertTrue(mSessionState.getAutocompleteInput().hasPreviewText());
+    }
+
+    @Test
+    public void testOnWindowFocusChanged_updatesStandbyRing() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.beginInput(input);
+
+        // By default, window is focused (mocked in setUp) and we are in STANDBY.
+        // So standby ring should be shown.
+        verify(mLocationBarLayout).setShowStandbyRing(true);
+
+        // Lose window focus -> standby ring should be hidden.
+        mMediator.onWindowFocusChanged(false);
+        verify(mLocationBarLayout).setShowStandbyRing(false);
+
+        // Regain window focus -> standby ring should be shown again.
+        mMediator.onWindowFocusChanged(true);
+        verify(mLocationBarLayout, times(2)).setShowStandbyRing(true);
     }
 }
