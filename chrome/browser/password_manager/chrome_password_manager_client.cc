@@ -653,7 +653,7 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
   // without being called.
   auto split_delay_callback =
       base::SplitOnceCallback(std::move(delay_callback));
-  if (!weak_driver) {
+  if (!weak_driver || !weak_driver->CanShowAutofillUi()) {
     return;
   }
   password_manager::ContentPasswordManagerDriver* driver =

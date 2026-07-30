@@ -92,6 +92,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -2588,6 +2589,56 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   // be called.
   AdvanceClock(base::Seconds(5));
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       DoNotShowKeyboardReplacingSurfaceForInactiveFrame) {
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+  CreateManualFillingController(web_contents());
+
+  auto* ttf_controller = MakeMockTouchToFillPasswordManagerController();
+  EXPECT_CALL(*ttf_controller, InitData).Times(0);
+  EXPECT_CALL(*ttf_controller, Show).Times(0);
+
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+  NavigateAndCommit(GURL(kUrl));
+
+  content::RenderFrameHostWrapper old_rfh(main_rfh());
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(old_rfh.get());
+  ASSERT_TRUE(autofill_driver);
+
+  std::vector<FormFieldData> fields = {CreateTestFormField(
+      "Username:", "username", "", FormControlType::kInputText, "webauthn")};
+  FormData form =
+      CreateFormDataForRenderFrameHost(*old_rfh.get(), std::move(fields));
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
+  }
+
+  auto* old_driver =
+      ContentPasswordManagerDriver::GetForRenderFrameHost(old_rfh.get());
+
+  GetClient()->ShowKeyboardReplacingSurface(
+      old_driver, GetFocusedFieldSuggestionRequest(form));
+
+  // Navigate to another site so old_rfh becomes inactive.
+  NavigateAndCommit(GURL("https://www.bar.com/page2.html"));
+  ASSERT_FALSE(old_rfh.get()->IsActive());
+
+  // Passkeys arrive for the old driver/frame after page navigation.
+  ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+      ->GetDelegateForFrame(old_rfh.get())
+      ->OnCredentialsReceived(
+          std::vector<password_manager::PasskeyCredential>(),
+          ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+              true));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
