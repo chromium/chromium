@@ -9,11 +9,8 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
-import androidx.annotation.Px;
 
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -157,34 +154,6 @@ public class ChromeColors {
             return context.getColor(R.color.default_bg_color_light);
         }
         return SemanticColorUtils.getColorSurfaceInverse(context);
-    }
-
-    /**
-     * Calculates the surface color using theme colors.
-     *
-     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
-     * @param elevationDimen The dimen to look up the elevation level with.
-     * @return the {@link ColorInt} for the background of a surface view.
-     * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
-     */
-    @Deprecated
-    public static @ColorInt int getSurfaceColor(Context context, @DimenRes int elevationDimen) {
-        float elevation = context.getResources().getDimension(elevationDimen);
-        return getSurfaceColor(context, elevation);
-    }
-
-    /**
-     * Calculates the surface color using theme colors.
-     *
-     * @param context The {@link Context} used to retrieve attrs and colors.
-     * @param elevation The elevation in px.
-     * @return the {@link ColorInt} for the background of a surface view.
-     * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
-     */
-    @Deprecated
-    private static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
-        ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
-        return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
 
     /** {@return The {@link ColorInt} keyboard focus ring color} */

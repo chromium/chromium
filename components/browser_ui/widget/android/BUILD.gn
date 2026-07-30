@@ -52,7 +52,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGenerator.java",
     "java/src/org/chromium/components/browser_ui/widget/SpinnerButtonWrapper.java",
     "java/src/org/chromium/components/browser_ui/widget/StrictButtonPressController.java",
-    "java/src/org/chromium/components/browser_ui/widget/SurfaceColorDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/TintedDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/TouchEventObserver.java",
     "java/src/org/chromium/components/browser_ui/widget/TouchEventProvider.java",

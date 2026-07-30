@@ -18,9 +18,9 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Extension of {@link FrameLayout} that sets background resource to a rounded corner rectangle,
- * with dynamic background color from ElevationOverlayProvider based on card elevation. Reuse the
- * name of MaterialCardViewNoShadow to keep the same usage. But this class is no longer an extension
- * of MaterialCardView.
+ * with a styleable color that defaults to colorSurfaceContainer. Reuse the name of
+ * MaterialCardViewNoShadow to keep the same usage. But this class is no longer an extension of
+ * MaterialCardView.
  */
 @NullMarked
 public class MaterialCardViewNoShadow extends FrameLayout {
