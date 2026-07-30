@@ -3378,14 +3378,23 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID_MID_SENTENCE},
       {"siteSettingsProtectedContentIdentifiers",
        IDS_SITE_SETTINGS_TYPE_PROTECTED_MEDIA_ID},
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      {"siteSettingsProtectedContentDescription",
+       IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION_WITH_BROWSER_CHECK},
+#else
       {"siteSettingsProtectedContentDescription",
        IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION},
+#endif
       {"siteSettingsProtectedContentAllowed",
        IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED},
       {"siteSettingsProtectedContentBlocked",
        IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED},
       {"siteSettingsProtectedContentBlockedSubLabel",
        IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL},
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      {"siteSettingsProtectedContentAllowedSubLabel",
+       IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED_SUB_LABEL},
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
       {"siteSettingsProtectedContentIdentifiersExplanation",
        IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION},
