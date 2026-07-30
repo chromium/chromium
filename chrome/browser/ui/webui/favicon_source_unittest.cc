@@ -74,7 +74,9 @@ class TestFaviconSource : public FaviconSource {
  public:
   using FaviconSource::FaviconSource;
 
-  MOCK_METHOD(base::RefCountedMemory*, LoadIconBytes, (float, int));
+  MOCK_METHOD(scoped_refptr<base::RefCountedMemory>,
+              LoadIconBytes,
+              (float, int));
 };
 
 class FaviconSourceTestBase : public testing::Test {
