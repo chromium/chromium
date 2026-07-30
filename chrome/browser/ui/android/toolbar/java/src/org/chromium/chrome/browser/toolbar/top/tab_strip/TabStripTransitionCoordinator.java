@@ -76,7 +76,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * @param newHeight The expected height tab strip will be changed into.
          * @param topPadding The top padding to be added to the tab strip.
          * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
-         * @param isTabStripSuppressed Whether the tab strip is suppressed (e.g. by Vertical Tabs).
          * @param transitionStartedCallback The callback to trigger when transition has started.
          *     This is not guaranteed to be called.
          */
@@ -84,7 +83,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                 int newHeight,
                 int topPadding,
                 boolean applyScrimOverlay,
-                boolean isTabStripSuppressed,
                 Runnable transitionStartedCallback) {}
 
         /**

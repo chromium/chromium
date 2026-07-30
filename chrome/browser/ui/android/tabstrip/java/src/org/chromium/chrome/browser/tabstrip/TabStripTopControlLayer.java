@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.tabstrip;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -38,20 +35,14 @@ import org.chromium.ui.util.TokenHolder;
 @NullMarked
 public class TabStripTopControlLayer implements TopControlLayer, TabStripTransitionHandler {
     private static final String TAG = "TabStripLayer";
-    // A 500ms fallback delay provides a safety margin to ensure any slow or laggy animation
-    // completes before the fallback guard fires.
-    private static final long TRANSITION_FALLBACK_DELAY_MS = 500L;
     private final TopControlsStacker mTopControlsStacker;
     private final BrowserControlsStateProvider mBrowserControls;
     private final ControlContainer mControlContainer;
     private final SettableNonNullObservableSupplier<Integer> mSupplier;
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final @Nullable TokenHolder mLockTopControlsTokenJar;
+    private @Nullable Callback<Boolean> mTransitionFinishedCallback;
 
     private int mLockTopControlsToken = TokenHolder.INVALID_TOKEN;
-    private boolean mIsTabStripSuppressed;
-    private @Nullable Callback<Boolean> mTransitionFinishedCallback;
-    private @Nullable Runnable mTransitionFallbackTask;
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
     // Not null after #initializeWithNative.
@@ -66,7 +57,6 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         public final int targetHeight;
         public final int topPadding;
         public final boolean applyScrimOverlay;
-        public final boolean isVerticalTabToggle;
         public final Runnable transitionStartedCallback;
         public final boolean hasAnimation;
         public final @TopControlVisibility int visibility;
@@ -78,13 +68,11 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
                 int targetHeight,
                 int topPadding,
                 boolean applyScrimOverlay,
-                boolean isVerticalTabToggle,
                 Runnable transitionStartedCallback) {
             this.startHeight = startHeight;
             this.targetHeight = targetHeight;
             this.topPadding = topPadding;
             this.applyScrimOverlay = applyScrimOverlay;
-            this.isVerticalTabToggle = isVerticalTabToggle;
             this.transitionStartedCallback = transitionStartedCallback;
 
             hasAnimation = calculateHasAnimation(startHeight, targetHeight, applyScrimOverlay);
@@ -148,7 +136,6 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
     /** Destroy the instance and remove all dependencies. */
     public void destroy() {
-        cancelTransitionFallbackTask();
         mTopControlsStacker.removeControl(this);
         mSupplier.destroy();
         mTransitionFinishedCallback = null;
@@ -256,38 +243,15 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             int newHeight,
             int topPadding,
             boolean applyScrimOverlay,
-            boolean isTabStripSuppressed,
             Runnable transitionStartedCallback) {
         prepForTransitionRequested(
-                newHeight,
-                topPadding,
-                applyScrimOverlay,
-                isTabStripSuppressed,
-                transitionStartedCallback);
+                newHeight, topPadding, applyScrimOverlay, transitionStartedCallback);
         // TODO(crbug.com/41481630): Supplier can have an inconsistent value with
         //  mToolbar.getTabStripHeight().
         mSupplier.set(newHeight);
 
         if (isInTransition() && mTransitionState.targetHeight != mTransitionState.startHeight) {
             mTopControlsStacker.requestLayerUpdateSync(mTransitionState.hasAnimation);
-            // When toggling between Vertical Tabs and Horizontal Tabs (V <-> H),
-            // onBrowserControlsOffsetUpdate() can be frozen if a tab is actively loading
-            // (!tab.isUserInteractable()). To prevent the transition from hanging indefinitely and
-            // blocking V <-> H slide animations, schedule a fallback task to complete the
-            // transition if C++ callbacks do not arrive within the timeout.
-            if (mTransitionState.isVerticalTabToggle) {
-                mTransitionFallbackTask =
-                        () -> {
-                            mTransitionFallbackTask = null;
-                            if (isInTransition()) {
-                                if (mTransitionState.checkIsFirstUpdate()) {
-                                    handleTransitionStart();
-                                }
-                                handleTransitionFinished();
-                            }
-                        };
-                mHandler.postDelayed(mTransitionFallbackTask, TRANSITION_FALLBACK_DELAY_MS);
-            }
         }
     }
 
@@ -300,15 +264,10 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
             int newHeight,
             int topPadding,
             boolean applyScrimOverlay,
-            boolean isTabStripSuppressed,
             Runnable onHeightTransitionStartCallback) {
         if (mTabStrip == null && !canTransitionWithoutTabStrip()) return;
 
-        boolean isVerticalTabToggle = (isTabStripSuppressed != mIsTabStripSuppressed);
-        mIsTabStripSuppressed = isTabStripSuppressed;
-
         if (mTransitionState != null) {
-            cancelTransitionFallbackTask();
             notifyTransitionFinished(false);
         }
 
@@ -326,7 +285,6 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
                         newHeight,
                         topPadding,
                         applyScrimOverlay,
-                        isVerticalTabToggle,
                         onHeightTransitionStartCallback);
     }
 
@@ -342,7 +300,6 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
     private void handleTransitionFinished() {
         if (!isInTransition()) return;
-        cancelTransitionFallbackTask();
 
         // Once transition is finished, put the offset tags back so layers can scroll as intended.
         if (mTabStrip != null) {
@@ -428,12 +385,5 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
     private boolean canTransitionWithoutTabStrip() {
         return BrowserControlsUtils.isForceTopChromeHeightAdjustmentOnStartupEnabled(
                 mControlContainer.getView().getContext());
-    }
-
-    private void cancelTransitionFallbackTask() {
-        if (mTransitionFallbackTask != null) {
-            mHandler.removeCallbacks(mTransitionFallbackTask);
-            mTransitionFallbackTask = null;
-        }
     }
 }
