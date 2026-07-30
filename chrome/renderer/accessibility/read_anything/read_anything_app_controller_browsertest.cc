@@ -18,6 +18,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -48,9 +49,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
@@ -1878,8 +1877,6 @@ TEST_F(ReadAnythingAppControllerTest, IsLeafNode) {
   EXPECT_EQ(true, controller().IsLeafNode(4));
 }
 
-
-
 TEST_F(ReadAnythingAppControllerTest,
        DisplayNodeIdsContains_NoSelectionOrContentNodes) {
   OnAXTreeDistilled(tree_id_, {});
@@ -2330,8 +2327,6 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
-
-
 
 TEST_F(ReadAnythingAppControllerTest,
        ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs) {
@@ -2790,30 +2785,34 @@ TEST_F(
 
 TEST_F(ReadAnythingAppControllerTest,
        GetDependencyParserModel_UnavailableWithoutModelFile) {
-  DependencyParserModel& model =
-      controller().GetDependencyParserModelForTesting();
-  EXPECT_FALSE(model.IsAvailable());
+  auto& model = controller().GetDependencyParserModelForTesting();
+  base::test::TestFuture<bool> future;
+  model.AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetDependencyParserModel_AvailableWithValidModelFile) {
   controller().UpdateDependencyParserModel(test::GetValidModelFile());
-  DependencyParserModel& model =
-      controller().GetDependencyParserModelForTesting();
+  auto& model = controller().GetDependencyParserModelForTesting();
 
-  EXPECT_TRUE(model.IsAvailable());
+  base::test::TestFuture<bool> future;
+  model.AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetDependencyParserModel_UnavailableWithInvalidModelFile) {
   controller().UpdateDependencyParserModel(test::GetInvalidModelFile());
-  DependencyParserModel& model =
-      controller().GetDependencyParserModelForTesting();
+  auto& model = controller().GetDependencyParserModelForTesting();
 
-  EXPECT_FALSE(model.IsAvailable());
+  base::test::TestFuture<bool> future;
+  model.AsyncCall(&DependencyParserModel::IsAvailable)
+      .Then(future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
-
-
 
 TEST_F(ReadAnythingAppControllerTest,
        OnStringAttributeChanged_NonImageNode_DoesNothing) {
@@ -2956,8 +2955,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_EQ(0, model().words_heard());
 }
-
-
 
 TEST_F(ReadAnythingAppControllerTest,
        ProcessPendingUpdatesIfAllowed_ExitsIfNoTree) {
@@ -6027,8 +6024,6 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
   RecordScreen2xDistillationStatus(/*just_hidden=*/false);
 }
-
-
 
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_DoesNotRelogOnReopenWithoutRedistillation) {
