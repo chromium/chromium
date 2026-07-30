@@ -23,9 +23,6 @@ NSSet<NSString*>* ConvertClearBrowsingDataMask(ClearBrowsingDataMask types) {
     [result addObject:WKWebsiteDataTypeMemoryCache];
     [result addObject:WKWebsiteDataTypeFetchCache];
   }
-  if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveAppCache)) {
-    [result addObject:WKWebsiteDataTypeOfflineWebApplicationCache];
-  }
   if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveLocalStorage)) {
     [result addObject:WKWebsiteDataTypeSessionStorage];
     [result addObject:WKWebsiteDataTypeLocalStorage];

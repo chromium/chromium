@@ -21,7 +21,6 @@ class BrowserState;
 enum class ClearBrowsingDataMask {
   kRemoveNothing = 0,
 
-  kRemoveAppCache = 1 << 0,
   kRemoveCookies = 1 << 1,
   kRemoveIndexedDB = 1 << 2,
   kRemoveLocalStorage = 1 << 3,

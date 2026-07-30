@@ -157,15 +157,15 @@ TEST_F(ClearBrowsingDataTest, RemoveCookie) {
   EXPECT_TRUE(HasCookies(false, data_store_));
 }
 
-// Tests that removing the anything but cookies leave the cookies in the store.
+// Tests that removing anything but cookies leave the cookies in the store.
 TEST_F(ClearBrowsingDataTest, RemoveNothing) {
   ASSERT_TRUE(AddCookie(data_store_));
   ASSERT_TRUE(HasCookies(true, data_store_));
 
   // Remove other things than cookies.
   EXPECT_TRUE(RemoveCookies(&browser_state_,
-                            ClearBrowsingDataMask::kRemoveAppCache |
-                                ClearBrowsingDataMask::kRemoveIndexedDB));
+                            ClearBrowsingDataMask::kRemoveIndexedDB |
+                                ClearBrowsingDataMask::kRemoveLocalStorage));
 
   EXPECT_TRUE(HasCookies(true, data_store_));
 }

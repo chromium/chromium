@@ -29,7 +29,6 @@ namespace {
 // Flags passed when calling Remove(). Clear as much data as possible, avoiding
 // using services that are not created for TestProfileIOS.
 constexpr BrowsingDataRemoveMask kRemoveMask =
-    BrowsingDataRemoveMask::REMOVE_APPCACHE |
     BrowsingDataRemoveMask::REMOVE_CACHE |
     BrowsingDataRemoveMask::REMOVE_COOKIES |
     BrowsingDataRemoveMask::REMOVE_FORM_DATA |
