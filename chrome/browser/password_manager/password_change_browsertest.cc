@@ -272,7 +272,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
         .ExtractInt();
   }
 
-  void MockLoginOutcome(LoginCheckResult outcome) {
+  void MockLoginOutcome(LoginCheckResult::Status outcome) {
     base::RunLoop run_loop;
     MockOptimizationGuideKeyedService* optimization_service =
         mock_optimization_guide_keyed_service();
@@ -286,13 +286,13 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
             WithArg<3>([&](auto callback) {
               optimization_guide::proto::PasswordChangeResponse response;
               switch (outcome) {
-                case LoginCheckResult::kLoggedIn:
+                case LoginCheckResult::Status::kLoggedIn:
                   response.mutable_is_logged_in_data()->set_is_logged_in(true);
                   break;
-                case LoginCheckResult::kLoggedOut:
+                case LoginCheckResult::Status::kLoggedOut:
                   response.mutable_is_logged_in_data()->set_is_logged_in(false);
                   break;
-                case LoginCheckResult::kError:
+                case LoginCheckResult::Status::kError:
                   response.mutable_is_logged_in_data()->set_is_logged_in(false);
                   response.mutable_is_logged_in_data()->set_error_case(
                       optimization_guide::proto::IsLoggedInResponseData::
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   content::WebContents* web_contents =
       static_cast<PasswordChangeDelegateImpl*>(delegate)->executor();
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   // Start observing web_contents where password change happens.
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_EQ(tab_strip->count(), 1);
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, FailureDialogDisplayed) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
           PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_TRUE(delegate);
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   PasswordChangeUIController* ui_controller =
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewPasswordBubbleFromToast) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   // Verify delegate is waiting for change password form when password change
   // starts.
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   PasswordChangeUIController* ui_controller =
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
 
   EXPECT_TRUE(base::test::RunUntil([delegate]() {
     return delegate->GetCurrentState() ==
@@ -1086,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangingPassword,
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWhenLoggedOut) {
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  MockLoginOutcome(LoginCheckResult::kLoggedOut);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedOut);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
   delegate->Stop();
@@ -1163,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedOut);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedOut);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
 
@@ -1172,7 +1172,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       FROM_HERE, base::BindOnce(&NavigateToURL, WebContents(),
                                 embedded_test_server()->GetURL(
                                     kMainHost, "/password/done.html")));
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
   // Stop the flow to check the correct state of the quality log.
@@ -1210,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   delegate->StartPasswordChangeFlow();
 
   // Verify that password change fails if login check ends with an error.
-  MockLoginOutcome(LoginCheckResult::kError);
+  MockLoginOutcome(LoginCheckResult::Status::kError);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kChangePasswordFormNotFound);
   // Stop the flow to check the correct state of the quality log.
@@ -1301,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   // Start the password change flow.
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -1367,7 +1367,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
 
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StandardFailure) {
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  MockLoginOutcome(LoginCheckResult::Status::kLoggedIn);
   MockSuccessfulSubmitButtonClick(delegate);
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::

@@ -234,7 +234,7 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     // different site during login check.
     ObserveCrossOriginNavigationInOriginator();
     login_state_checker_ = std::make_unique<LoginStateChecker>(
-        originator_.get(), /*logs_uploader=*/nullptr,
+        originator_.get(),
         ChromePasswordManagerClient::FromWebContents(originator_),
         optimization_guide::ModelExecutionServiceType::kPrivateAi,
         base::BindRepeating(
@@ -356,12 +356,20 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   if (base::FeatureList::IsEnabled(
           password_change::features::
               kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    CHECK(login_check_result_);
+    logs_uploader_->SetLoggedInCheckQuality(
+        login_check_result_->state_checks_count,
+        std::move(login_check_result_->logging_data));
+    logs_uploader_->SetStepDuration(
+        FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+        login_check_result_->duration);
+    login_check_result_.reset();
     ProceedToChangePassword();
     return;
   }
 
   login_state_checker_ = std::make_unique<LoginStateChecker>(
-      originator_.get(), logs_uploader_.get(),
+      originator_.get(),
       ChromePasswordManagerClient::FromWebContents(originator_),
       optimization_guide::ModelExecutionServiceType::kDefault,
       base::BindRepeating(
@@ -381,16 +389,23 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 }
 
 void PasswordChangeDelegateImpl::OnLoginStateCheckedWithoutPIResult(
-    LoginCheckResult login_status) {
-  switch (login_status) {
-    case LoginCheckResult::kLoggedIn:
+    LoginCheckResult result) {
+  CHECK(logs_uploader_);
+  logs_uploader_->SetLoggedInCheckQuality(result.state_checks_count,
+                                          std::move(result.logging_data));
+  logs_uploader_->SetStepDuration(
+      FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+      result.duration);
+
+  switch (result.status) {
+    case LoginCheckResult::Status::kLoggedIn:
       // User is logged in, start password change process.
       ProceedToChangePassword();
       return;
-    case LoginCheckResult::kLoggedOut:
+    case LoginCheckResult::Status::kLoggedOut:
       UpdateState(State::kLoginFormDetected);
       return;
-    case LoginCheckResult::kError:
+    case LoginCheckResult::Status::kError:
       UpdateState(State::kChangePasswordFormNotFound);
       login_state_checker_.reset();
       return;
@@ -398,19 +413,23 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckedWithoutPIResult(
 }
 
 void PasswordChangeDelegateImpl::OnLoginStateCheckedWithPIResult(
-    LoginCheckResult login_status) {
-  switch (login_status) {
-    case LoginCheckResult::kLoggedIn:
+    LoginCheckResult result) {
+  switch (result.status) {
+    case LoginCheckResult::Status::kLoggedIn:
       // Offer the feature.
+      login_check_result_ =
+          std::make_unique<LoginCheckResult>(std::move(result));
       login_state_checker_.reset();
       UpdateState(IsPrivacyNoticeAcknowledged() ? State::kOfferingPasswordChange
                                                 : State::kWaitingForAgreement);
       return;
-    case LoginCheckResult::kLoggedOut:
-      // No-op. Login check will be silently rechecked.
-      return;
-    case LoginCheckResult::kError:
-      // Silently stop execution.
+    case LoginCheckResult::Status::kLoggedOut:
+      if (!login_state_checker_->ReachedAttemptsLimit()) {
+        return;
+      }
+      // Reached max attempt, treat as an error.
+      [[fallthrough]];
+    case LoginCheckResult::Status::kError:
       Stop();
       ResetInternalState();
       return;
@@ -807,6 +826,7 @@ base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {
 void PasswordChangeDelegateImpl::ResetInternalState() {
   navigation_observer_.reset();
   login_state_checker_.reset();
+  login_check_result_.reset();
   form_finder_.reset();
   form_submission_helper_.reset();
   submission_verifier_.reset();

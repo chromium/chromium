@@ -37,7 +37,7 @@ class PasswordFormManager;
 
 class CrossOriginNavigationObserver;
 class DetachedWebContents;
-enum class LoginCheckResult;
+struct LoginCheckResult;
 class LoginStateChecker;
 class Profile;
 
@@ -170,6 +170,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   // Helper class for checking the login state in the main tab.
   std::unique_ptr<LoginStateChecker> login_state_checker_;
+
+  // Stores the login state check result when check is performed via Private
+  // Inference before the user accepts the feature.
+  std::unique_ptr<LoginCheckResult> login_check_result_;
 
   base::ObserverList<PasswordChangeDelegate::Observer, /*check_empty=*/true>
       observers_;
