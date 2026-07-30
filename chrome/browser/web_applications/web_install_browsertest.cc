@@ -1104,18 +1104,24 @@ IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
   }
 }
 
-// Test that spam-calling navigator.install() while dynamically adding/removing
-// the manifest link tag doesn't cause crashes or unexpected behavior.
-// TODO(crbug.com/479729304): disabled due to flakiness.
+// Spam-calling navigator.install() while dynamically adding/removing the
+// manifest link tag must not crash or hang: every call settles cleanly with a
+// well-defined outcome.
 IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
-                       DISABLED_SpamInstallWithDynamicManifest) {
+                       SpamInstallWithDynamicManifest) {
   // Start on a page without a manifest.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  // Shorten the manifest wait timeout to avoid waiting the full 30 seconds for
+  // calls made when no manifest is present, which would time out the test under
+  // parallel test-launcher runs.
+  base::AutoReset<int> manifest_wait_timeout =
+      web_app::WebAppDataRetriever::SetManifestWaitTimeoutForTesting(3);
+
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
       web_app::SetPwaInstallationAutoRespondForTesting(
-          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+          web_app::InstallDialogTestResponse::kAcceptNoLaunch);
 
   const int kTotalInstallCalls = 15;
   const int kAddManifestAfterCalls = 5;
@@ -1144,21 +1150,33 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
           "if (link) link.remove();"));
     }
 
-    // Add install call to array. Each promise is caught to prevent
-    // Promise.all from rejecting early.
+    // Record each call's settled outcome. Resolving (instead of rethrowing)
+    // keeps Promise.all from rejecting early so we can inspect every result.
     ASSERT_TRUE(content::ExecJs(
         web_contents(),
-        "all_install_calls.push(navigator.install().then(result => {"
-        "console.log('Install succeeded');"
-        "}).catch(error => {"
-        "console.log('Install failed');"
-        "}));"));
+        "all_install_calls.push(navigator.install().then("
+        "() => ({status: 'fulfilled', name: ''}),"
+        "error => ({status: 'rejected', name: error.name})));"));
   }
 
-  // Wait for all promises to settle.
-  EXPECT_TRUE(content::EvalJs(web_contents(),
-                              "Promise.all(all_install_calls).then(() => true)")
-                  .ExtractBool());
+  // Every call must settle (no hang) with a well-defined outcome: a success or
+  // a recognized DOMException. The check runs in JS so any unexpected outcome
+  // (signaling a crash or unhandled path) surfaces in the message.
+  EXPECT_EQ(
+      "ok",
+      content::EvalJs(
+          web_contents(),
+          "Promise.all(all_install_calls).then(results => {"
+          "  if (results.length !== 15)"
+          "    return 'wrong count: ' + results.length;"
+          "  const known = new Set(['AbortError', 'DataError']);"
+          "  for (const r of results) {"
+          "    if (r.status === 'fulfilled') continue;"
+          "    if (r.status === 'rejected' && known.has(r.name)) continue;"
+          "    return 'unexpected: ' + JSON.stringify(r);"
+          "  }"
+          "  return 'ok';"
+          "})"));
 }
 
 // Test that spam-calling navigator.install() while navigating between pages
@@ -1255,11 +1273,8 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
 }
 
 // Verifies the install_in_progress_ guard resets after install #1 finishes,
-// allowing a second install on the same document to proceed past the guard.
-// Both installs are declined so their callbacks fire, exercising the
-// ScopedClosureRunner reset path. If the guard reset, install #2 should be
-// counted as kCanceledByUser; a kInstallInProgress count would indicate the
-// flag was not reset.
+// letting a second install on the same document proceed past the guard. A
+// kInstallInProgress count on install #2 would mean the flag never reset.
 IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
                        InstallInProgressResets) {
   GURL current_doc_url = embedded_https_test_server().GetURL(

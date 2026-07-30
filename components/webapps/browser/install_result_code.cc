@@ -45,6 +45,7 @@ bool IsSuccess(InstallResultCode code) {
     case InstallResultCode::kFallbackInstallUsingTrustedIcons:
     case InstallResultCode::kNoValidMigrationSource:
     case InstallResultCode::kInvalidManifestId:
+    case InstallResultCode::kInstallAlreadyInProgress:
       return false;
   }
 }
@@ -123,6 +124,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kNoValidMigrationSource";
     case InstallResultCode::kInvalidManifestId:
       return os << "kInvalidManifestId";
+    case InstallResultCode::kInstallAlreadyInProgress:
+      return os << "kInstallAlreadyInProgress";
   }
 }
 

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -24,14 +25,18 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -43,6 +48,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -767,6 +773,67 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestControlledIconBrowserTest,
   EXPECT_FALSE(dialog_watcher.shown());
   EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+// Verifies the command-in-progress guard (IsInstallingForWebContents()).
+// Uses the scheduler directly to skip the earlier HasCurrentInstall() guard,
+// then pins the command at the dialog by not invoking acceptance.
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       CreateWebAppFromManifest_CommandInProgress_Rejects) {
+  const GURL test_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  // Hold the command open at the dialog stage by capturing (and not running)
+  // its acceptance callback.
+  base::RunLoop dialog_reached;
+  std::unique_ptr<WebAppInstallInfo> held_info;
+  WebAppInstallationAcceptanceCallback held_acceptance;
+  auto dialog_callback = base::BindLambdaForTesting(
+      [&](base::WeakPtr<WebAppScreenshotFetcher>, content::WebContents*,
+          std::unique_ptr<WebAppInstallInfo> web_app_info,
+          WebAppInstallationAcceptanceCallback acceptance_callback) {
+        held_info = std::move(web_app_info);
+        held_acceptance = std::move(acceptance_callback);
+        dialog_reached.Quit();
+      });
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      web_contents()->GetWeakPtr(), std::move(dialog_callback),
+      install_future.GetCallback(), FallbackBehavior::kCraftedManifestOnly);
+
+  // Wait until the command reaches the dialog stage; it is now in progress for
+  // this WebContents.
+  dialog_reached.Run();
+  ASSERT_TRUE(
+      provider().command_manager().IsInstallingForWebContents(web_contents()));
+
+  // The earlier HasCurrentInstall() guard must NOT be the one that fires: a
+  // directly-scheduled command does not register a current ML install.
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents());
+  ASSERT_TRUE(promoter);
+  ASSERT_FALSE(promoter->HasCurrentInstall());
+
+  // A direct CreateWebAppFromManifest() call must now short-circuit on the
+  // command-in-progress guard, running its callback exactly once.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      guard_future;
+  EXPECT_FALSE(CreateWebAppFromManifest(
+      web_contents(), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      guard_future.GetCallback()));
+  EXPECT_TRUE(guard_future.Get<webapps::AppId>().empty());
+  EXPECT_EQ(guard_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kInstallAlreadyInProgress);
+
+  // Release the held command so it completes, for clean teardown.
+  AdaptToLaunchOnInstallSuccess(std::move(held_acceptance))
+      .Run(/*accept=*/true, std::move(held_info));
+  ASSERT_TRUE(install_future.Wait());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
 // Navigating the initiating page cross-origin *after* the

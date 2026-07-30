@@ -1103,29 +1103,6 @@ void WebInstallServiceImpl::OnGotManifestForCurrentDocumentInstall(
     return;
   }
 
-  // Check if the current web contents already has an install in progress.
-  // This protects against spam-calling navigator.install() and triggering
-  // multiple install dialogs.
-  // TODO(crbug.com/478893336): Remove these checks once
-  // CreateWebAppFromManifest is updated to always run its callback.
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
-  webapps::MLInstallabilityPromoter* promoter =
-      webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
-  if (promoter && promoter->HasCurrentInstall()) {
-    std::move(callback_with_metrics)
-        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
-    return;
-  }
-
-  if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
-    std::move(callback_with_metrics)
-        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
-             blink::mojom::WebInstallServiceResult::kAbortError, std::nullopt);
-    return;
-  }
-
   provider->ui_manager().TriggerInstallDialog(
       content::WebContents::FromRenderFrameHost(&render_frame_host()),
       webapps::WebappInstallSource::WEB_INSTALL,
@@ -1417,6 +1394,18 @@ void WebInstallServiceImpl::OnAppInstalled(
       case webapps::InstallResultCode::kNotInstallable:
         install_result = blink::mojom::WebInstallServiceResult::kDataError;
         uma_result = web_app::WebInstallServiceResult::kInstallCommandFailed;
+        break;
+      // Cases where the install could not proceed due to missing
+      // infrastructure.
+      case webapps::InstallResultCode::kWebAppProviderNotReady:
+      case webapps::InstallResultCode::kInstallTaskDestroyed:
+        install_result = blink::mojom::WebInstallServiceResult::kAbortError;
+        uma_result = web_app::WebInstallServiceResult::kUnexpectedFailure;
+        break;
+      // An install for the same document was already in progress.
+      case webapps::InstallResultCode::kInstallAlreadyInProgress:
+        install_result = blink::mojom::WebInstallServiceResult::kAbortError;
+        uma_result = web_app::WebInstallServiceResult::kInstallInProgress;
         break;
       default:
         install_result = blink::mojom::WebInstallServiceResult::kAbortError;

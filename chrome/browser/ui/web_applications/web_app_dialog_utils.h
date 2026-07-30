@@ -45,9 +45,12 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
                                         WebAppInstallFlow flow);
 
 // Starts install of a WebApp for a given |web_contents|, initiated from
-// a promotional banner or omnibox install icon.
-// Returns false if WebApps are disabled for the profile behind |web_contents|.
-// |iph_state| indicates whether or not in-product-help prompted this call.
+// a promotional banner or omnibox install icon. Returns false without starting
+// an install on any early-return path (no WebAppProvider, an install already in
+// progress, an install command already running, or no AppBannerManager). If
+// this function returns false, |installed_callback| runs synchronously before
+// returning. |iph_state| indicates whether or not in-product-help prompted this
+// call.
 bool CreateWebAppFromManifest(
     content::WebContents* web_contents,
     webapps::WebappInstallSource install_source,

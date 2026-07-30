@@ -115,7 +115,10 @@ enum class InstallResultCode {
   // The manifest id is invalid.
   kInvalidManifestId = 37,
 
-  kMaxValue = kInvalidManifestId,
+  // The current WebContents is already involved in an install.
+  kInstallAlreadyInProgress = 38,
+
+  kMaxValue = kInstallAlreadyInProgress,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebAppInstallResultCode)
 

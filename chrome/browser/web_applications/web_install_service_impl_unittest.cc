@@ -11,15 +11,20 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -333,7 +338,7 @@ TEST_F(WebInstallServiceImplTest, UmaInstallType_CurrentDocument) {
   auto [result, manifest_id] = InstallFromApiCurrentDocument();
 
   // FakeWebAppUiManager::TriggerInstallDialog returns kWebAppProviderNotReady,
-  // which maps to kAbortError (default case).
+  // which maps to kAbortError and kUnexpectedFailure.
   EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
   EXPECT_TRUE(manifest_id.is_empty());
 
@@ -343,8 +348,8 @@ TEST_F(WebInstallServiceImplTest, UmaInstallType_CurrentDocument) {
   histograms.ExpectBucketCount(kVariantedInstallTypeUma,
                                WebInstallServiceType::kCurrentDocument, 1);
   // Verify result code mapping.
-  histograms.ExpectBucketCount(
-      kInstallApiResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kUnexpectedFailure, 1);
 }
 
 // InstallFromElement records UMA to element-specific histograms.
@@ -413,17 +418,15 @@ TEST_F(WebInstallServiceImplTest, CreateIfAllowed_NonHttpsScheme) {
   EXPECT_FALSE(remote.is_connected());
 }
 
-// If MLInstallabilityPromoter already has an install in progress, reject new
-// installs via the current document flow.
-TEST_F(WebInstallServiceImplTest, CurrentDocument_InstallAlreadyInProgress) {
-  base::HistogramTester histograms;
+// Direct coverage for the CreateWebAppFromManifest() early-return guards in
+// web_app_dialog_utils.cc (the mojo service path bypasses this helper). Each
+// test arms one guard and asserts the callback runs exactly once (TestFuture's
+// OnceCallback CHECK-fails on a second Run()).
 
-  // Set up a valid manifest so we get past manifest validation.
-  GURL custom_id("https://requesting-app.com/my_app_id");
-  auto manifest = CreateManifest(GURL(kDocumentUrl), custom_id);
-  SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
-
-  // Register an install in progress before calling Install().
+// Install already in progress (HasCurrentInstall() true) ->
+// kInstallAlreadyInProgress.
+TEST_F(WebInstallServiceImplTest,
+       CreateWebAppFromManifest_HasCurrentInstall_Rejects) {
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents());
   ASSERT_TRUE(promoter);
@@ -431,21 +434,46 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_InstallAlreadyInProgress) {
       promoter->RegisterCurrentInstallForWebContents(
           webapps::WebappInstallSource::WEB_INSTALL);
   ASSERT_TRUE(tracker);
+  ASSERT_TRUE(promoter->HasCurrentInstall());
 
-  BindService();
-  auto [result, manifest_id] = InstallFromApiCurrentDocument();
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
+  EXPECT_FALSE(CreateWebAppFromManifest(
+      web_contents(), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      future.GetCallback()));
 
-  EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kAbortError);
-  EXPECT_TRUE(manifest_id.is_empty());
+  EXPECT_TRUE(future.Get<webapps::AppId>().empty());
+  EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kInstallAlreadyInProgress);
+}
 
-  histograms.ExpectBucketCount(kInstallApiResultUma,
-                               WebInstallServiceResult::kUnexpectedFailure, 1);
-  histograms.ExpectBucketCount(kInstallApiTypeUma,
-                               WebInstallServiceType::kCurrentDocument, 1);
-  histograms.ExpectBucketCount(kVariantedInstallResultUma,
-                               WebInstallServiceResult::kUnexpectedFailure, 1);
-  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
-                               WebInstallServiceType::kCurrentDocument, 1);
+// No AppBannerManager attached (the unit harness default) ->
+// kWebAppProviderNotReady.
+TEST_F(WebInstallServiceImplTest,
+       CreateWebAppFromManifest_NoAppBannerManager_Rejects) {
+  // The provider is up.
+  WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents());
+  ASSERT_TRUE(provider);
+  // No install is registered.
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents());
+  ASSERT_TRUE(promoter);
+  ASSERT_FALSE(promoter->HasCurrentInstall());
+  // No install command is running.
+  ASSERT_FALSE(
+      provider->command_manager().IsInstallingForWebContents(web_contents()));
+  // No AppBannerManager is attached.
+  ASSERT_FALSE(webapps::AppBannerManager::FromWebContents(web_contents()));
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
+  EXPECT_FALSE(CreateWebAppFromManifest(
+      web_contents(), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      future.GetCallback()));
+
+  EXPECT_TRUE(future.Get<webapps::AppId>().empty());
+  EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kWebAppProviderNotReady);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

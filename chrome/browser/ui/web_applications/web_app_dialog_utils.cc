@@ -343,22 +343,34 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
                               PwaInProductHelpState iph_state) {
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   if (!provider) {
+    std::move(installed_callback)
+        .Run(/*app_id=*/"",
+             webapps::InstallResultCode::kWebAppProviderNotReady);
     return false;
   }
 
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
   if (promoter->HasCurrentInstall()) {
+    std::move(installed_callback)
+        .Run(/*app_id=*/"",
+             webapps::InstallResultCode::kInstallAlreadyInProgress);
     return false;
   }
 
   if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
+    std::move(installed_callback)
+        .Run(/*app_id=*/"",
+             webapps::InstallResultCode::kInstallAlreadyInProgress);
     return false;
   }
 
   webapps::AppBannerManager* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(web_contents);
   if (!app_banner_manager) {
+    std::move(installed_callback)
+        .Run(/*app_id=*/"",
+             webapps::InstallResultCode::kWebAppProviderNotReady);
     return false;
   }
 
