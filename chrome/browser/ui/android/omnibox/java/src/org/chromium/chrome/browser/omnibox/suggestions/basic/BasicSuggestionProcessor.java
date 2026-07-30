@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -288,16 +286,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         setRemoveOrRefineAction(model, input, suggestion, position);
-    }
-
-    private void applyTextColor(@Nullable Spannable text, @ColorInt int color) {
-        if (TextUtils.isEmpty(text)) return;
-
-        text.setSpan(
-                new ForegroundColorSpan(color),
-                /* start= */ 0,
-                /* end= */ text.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     private int getSuggestionKindString(AutocompleteMatch suggestion) {

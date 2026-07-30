@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -74,10 +75,14 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
                         /* useRoundedCorners= */ false,
                         /* isLarge= */ false,
                         /* allowTint= */ true);
+        OmniboxResourceProvider resourceProvider = mUiContext.resourceProvider;
         model.set(BaseSuggestionViewProperties.ICON, state);
-        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, getTitleSpannable(suggestion));
+        SuggestionSpannable titleSpannable = getTitleSpannable(suggestion);
+        applyTextColor(titleSpannable, resourceProvider.getSuggestionPrimaryTextColor());
+        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, titleSpannable);
         SuggestionSpannable descriptionText = new SuggestionSpannable(suggestion.getDescription());
         applyHighlightToMatchRegions(descriptionText, suggestion.getDescriptionClassifications());
+        applyTextColor(descriptionText, resourceProvider.getSuggestionUrlTextColor());
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, descriptionText);
         model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, getContentDescription(suggestion));
     }

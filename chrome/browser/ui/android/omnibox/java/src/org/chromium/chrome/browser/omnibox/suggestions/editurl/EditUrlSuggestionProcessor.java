@@ -109,11 +109,17 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         boolean isSearch = suggestion.isSearchSuggestion();
-        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable(title));
+        OmniboxResourceProvider resourceProvider = mUiContext.resourceProvider;
+        SuggestionSpannable textLine1 = new SuggestionSpannable(title);
+        applyTextColor(textLine1, resourceProvider.getSuggestionPrimaryTextColor());
+        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);
 
-        model.set(
-                SuggestionViewProperties.TEXT_LINE_2_TEXT,
-                isSearch ? null : new SuggestionSpannable(suggestion.getDisplayText()));
+        SuggestionSpannable textLine2 = null;
+        if (!isSearch) {
+            textLine2 = new SuggestionSpannable(suggestion.getDisplayText());
+            applyTextColor(textLine2, resourceProvider.getSuggestionUrlTextColor());
+        }
+        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, textLine2);
 
         String pageTitle = isSearch ? suggestion.getDisplayText() : suggestion.getDescription();
         String pageDomain = suggestion.getUrl().getHost();
