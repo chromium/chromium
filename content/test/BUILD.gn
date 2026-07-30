@@ -2344,6 +2344,7 @@ test("content_browsertests") {
       "../browser/pointer_lock_browsertest_mac.mm",
       "../browser/renderer_host/render_frame_host_impl_mac_browsertest.mm",
       "../browser/renderer_host/render_widget_host_view_mac_browsertest.mm",
+      "../browser/renderer_host/unbounded_element_mac_browsertest.mm",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest.mm",
       "../browser/site_per_process_mac_browsertest.mm",
       "../renderer/render_view_browsertest_mac.mm",

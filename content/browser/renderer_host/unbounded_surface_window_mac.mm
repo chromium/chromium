@@ -243,6 +243,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
   if (parent_view_ && parent_view_->GetInProcessNSView()) {
     if (NSWindow* parent_window = [parent_view_->GetInProcessNSView() window]) {
       [parent_window addChildWindow:window_ ordered:NSWindowAbove];
+      [window_ setLevel:[parent_window level] + 1];
     }
   }
   [window_ orderFront:nil];
