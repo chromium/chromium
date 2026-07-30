@@ -1,7 +1,7 @@
 Name: memchr
 URL: https://crates.io/crates/memchr
-Version: 2.8.2
-Revision: a61ac1a3638e8b6bdc42226ad38431e626a02c72
+Version: 2.8.3
+Revision: 5fdb40c054e1fff359a2f7bdf7f87a13b34b465d
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/memchr-v2/LICENSE-MIT

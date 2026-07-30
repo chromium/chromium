@@ -171,7 +171,7 @@ macro_rules! unsafe_ifunc {
 ///
 /// Pointers must be valid. See `One::find_raw`.
 #[inline(always)]
-pub(crate) fn memchr_raw(
+pub(crate) unsafe fn memchr_raw(
     n1: u8,
     start: *const u8,
     end: *const u8,
@@ -194,7 +194,7 @@ pub(crate) fn memchr_raw(
 ///
 /// Pointers must be valid. See `One::rfind_raw`.
 #[inline(always)]
-pub(crate) fn memrchr_raw(
+pub(crate) unsafe fn memrchr_raw(
     n1: u8,
     start: *const u8,
     end: *const u8,
@@ -217,7 +217,7 @@ pub(crate) fn memrchr_raw(
 ///
 /// Pointers must be valid. See `Two::find_raw`.
 #[inline(always)]
-pub(crate) fn memchr2_raw(
+pub(crate) unsafe fn memchr2_raw(
     n1: u8,
     n2: u8,
     start: *const u8,
@@ -242,7 +242,7 @@ pub(crate) fn memchr2_raw(
 ///
 /// Pointers must be valid. See `Two::rfind_raw`.
 #[inline(always)]
-pub(crate) fn memrchr2_raw(
+pub(crate) unsafe fn memrchr2_raw(
     n1: u8,
     n2: u8,
     start: *const u8,
@@ -267,7 +267,7 @@ pub(crate) fn memrchr2_raw(
 ///
 /// Pointers must be valid. See `Three::find_raw`.
 #[inline(always)]
-pub(crate) fn memchr3_raw(
+pub(crate) unsafe fn memchr3_raw(
     n1: u8,
     n2: u8,
     n3: u8,
@@ -294,7 +294,7 @@ pub(crate) fn memchr3_raw(
 ///
 /// Pointers must be valid. See `Three::rfind_raw`.
 #[inline(always)]
-pub(crate) fn memrchr3_raw(
+pub(crate) unsafe fn memrchr3_raw(
     n1: u8,
     n2: u8,
     n3: u8,
@@ -321,7 +321,11 @@ pub(crate) fn memrchr3_raw(
 ///
 /// Pointers must be valid. See `One::count_raw`.
 #[inline(always)]
-pub(crate) fn count_raw(n1: u8, start: *const u8, end: *const u8) -> usize {
+pub(crate) unsafe fn count_raw(
+    n1: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
     // SAFETY: We provide a valid function pointer type.
     unsafe_ifunc!(
         One,
