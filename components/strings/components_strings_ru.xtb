@@ -599,6 +599,7 @@
 <translation id="192095259937375524">Кнопка "Поделиться вкладкой". Нажмите ее, чтобы поделиться этой вкладкой с помощью ссылки, QR-кода, трансляции и т. д.</translation>
 <translation id="1924727005275031552">Новый</translation>
 <translation id="1927439846988093361">Уход за волосами</translation>
+<translation id="1927930548546198515">Chrome регистрирует, как вы используете эту функцию, например ваши запросы и действия при принятии или отклонении рекомендаций.</translation>
 <translation id="1932098463447129402">Не ранее</translation>
 <translation id="1935353813610900265">Напишите отзыв о функции поиска в истории браузера, которая использует ИИ</translation>
 <translation id="1935995810530254458">Все равно скопировать</translation>
@@ -985,6 +986,7 @@
 <translation id="2491120439723279231">Сертификат сервера содержит ошибки.</translation>
 <translation id="2491414235131909199">Эта страница была заблокирована расширением.</translation>
 <translation id="2493122313108999546">Размер изменен</translation>
+<translation id="249376477913017009">Уведомление об автозаполнении информации из Gmail и других сервисов открыто</translation>
 <translation id="2495083838625180221">Синтаксический анализатор JSON</translation>
 <translation id="2496402116964818747">Чтобы изменить это поведение, перейдите в <ph name="SETTINGS" />.</translation>
 <translation id="2498091847651709837">Сканировать новую карту</translation>
@@ -1079,6 +1081,7 @@
 <translation id="2631387782019878060">Код подтверждения: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Не удалось найти IP-адрес сервера <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">Подпись</translation>
+<translation id="2638070510549214427">Отметить как безопасный</translation>
 <translation id="2638567100095052009">Введите @ для поиска в <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Состояние:</translation>
 <translation id="2644219706149911059">Загрузка на Google Диск…</translation>
@@ -1153,6 +1156,7 @@
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2742128390261873684">Автоматизация дома</translation>
 <translation id="2743512410823092182">Оборудование для диджеев</translation>
+<translation id="275259155159336003">На основе персонального ИИ в Gemini. Мы можем проверять ваши запросы, заголовки страниц и URL, чтобы совершенствовать улучшенное автозаполнение. <ph name="BEGIN_LINK" />Управление настройками<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Загрузка файлов (<ph name="COUNT" />) на Google Диск…</translation>
 <translation id="2759299890026163685">Убедитесь, что подключение к интернету стабильно, и повторите попытку.</translation>
 <translation id="2759825833388495838">ввести ваш пароль на сайте <ph name="APP_NAME" /></translation>
@@ -1381,6 +1385,7 @@
 <translation id="3121994479408824897">Перейти на страницу <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Показать результаты за последние 30 дней</translation>
 <translation id="3126023634486644099">Этикетки (самоклеящиеся)</translation>
+<translation id="3131746543143948171">Сайт похож на другие, связанные с фишингом, вредоносным ПО и мошенничеством. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Сохранить уникальный номер пассажира (Redress Number)?</translation>
 <translation id="3133565499688974786">Теперь поисковая система по умолчанию – <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="3134859781443140237">Локальная сеть</translation>
@@ -1435,6 +1440,7 @@
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208701679386778924">Отправьте отчет, чтобы мы могли улучшать последующие обновления ChromeOS.</translation>
 <translation id="3209034400446768650">На этой странице может взиматься плата</translation>
+<translation id="3209071504641569648">Ваши запросы, заголовки страниц и URL отправляются в Google. Мы можем проверять их, чтобы совершенствовать улучшенное автозаполнение.</translation>
 <translation id="3212468046572043669">Скачивание началось. Чтобы посмотреть, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="3212581601480735796">Ваши действия на сайте <ph name="HOSTNAME" /> отслеживаются</translation>
 <translation id="3215092763954878852">Не удалось использовать WebAuthn</translation>
@@ -1472,6 +1478,7 @@
 <translation id="3254301855501243548">18 x 22 дюйма</translation>
 <translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать мероприятие в Google Календаре, нажмите Tab, а затем Ввод.</translation>
+<translation id="3261180263071638338">Уведомление об автозаполнении информации из Gmail и других сервисов закрыто</translation>
 <translation id="3261488570342242926">Подробнее…</translation>
 <translation id="3262698603497362968">Предложения</translation>
 <translation id="3264637689694266148">Если отключить подсказки, то заголовки и URL вкладок по-прежнему могут обрабатываться для других функций Chrome. Управляйте доступом браузера к этим данным в</translation>
@@ -2334,6 +2341,7 @@
 <translation id="4602465984861132303">Боулинг</translation>
 <translation id="4603727370377253901">Забронированные авиабилеты</translation>
 <translation id="4607608436550361748">Посмотреть советы по работе с Chrome</translation>
+<translation id="4607879293515681409">Улучшенное автозаполнение теперь может находить и подставлять данные, например номера рейсов и время встреч, из таких приложений, как Gmail и Фото.</translation>
 <translation id="460848736049414407">Заблокировано администратором</translation>
 <translation id="4610279718074907952">Этот сайт входит в группу <ph name="SET_OWNER" /> и может отслеживать ваши действия</translation>
 <translation id="4612631413844865947">При обработке вашего заказа на сайте <ph name="MERCHANT_ORIGIN" /> через <ph name="PAYMENT_APP_ORIGIN" /> произошла ошибка.</translation>
@@ -2519,6 +2527,7 @@
 <translation id="4885256590493466218">Оплатите с помощью <ph name="CARD_DETAIL" /></translation>
 <translation id="4886565443854420066">Чтобы изменить настройки, подтвердите свою личность.</translation>
 <translation id="4887406273302438710">Защитите пароли с помощью Windows Hello</translation>
+<translation id="4887785555357166111">Сохранить кадр видео</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть настройки Chrome и удалить историю браузера, файлы cookie, кеш и другие данные</translation>
 <translation id="4892518386797173871">Задняя сторона</translation>
 <translation id="4894390983254799375">Например, идентификатор устройства, название, версия ОС и имя пользователя ОС</translation>
@@ -2850,6 +2859,7 @@
 <translation id="5400836586163650660">Серый</translation>
 <translation id="5401344472773249513">Новости о знаменитостях и развлечениях</translation>
 <translation id="5401674281624189321">Горнолыжные курорты</translation>
+<translation id="5402715318763077894">Разрешить доступ к локальной сети?</translation>
 <translation id="540949333488055151">Пластик (цветной)</translation>
 <translation id="540969355065856584">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть недействителен в настоящее время. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="5411462078004183575">Недорогой вариант</translation>
@@ -3100,6 +3110,7 @@
 <translation id="5764725887548570807">Недействительный формат источника.</translation>
 <translation id="5764920692828389743">Отправлять на адрес <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
+<translation id="5768323954710688012">Уведомление об автозаполнении информации из Gmail и других сервисов открыто полностью</translation>
 <translation id="57689295674415555">Номер виртуальной карты не указан?</translation>
 <translation id="5773286975255318081">Например, версии браузера и имена пользователей в профилях</translation>
 <translation id="5774897849666641211">Задайте вопрос об этой вкладке</translation>
@@ -4542,7 +4553,6 @@
 <translation id="7967973398323409409">Информация, которую вы вводите с помощью автозаполнения, никому не видна.</translation>
 <translation id="79682505114836835">Недопустимый шестнадцатеричный код цвета (<ph name="VALUE" />).</translation>
 <translation id="7968982339740310781">Просмотреть сведения</translation>
-<translation id="7971403153351954587">Ваша организация отслеживает копирование.</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 с шифрованием RSA</translation>
 <translation id="7976053965094442846">Доступны сервисы рассрочки. Клавиатура скрыта.</translation>
 <translation id="7976214039405368314">слишком много запросов</translation>
@@ -4552,6 +4562,7 @@
 <translation id="7979595116210197019">Общественное питание</translation>
 <translation id="798134797138789862">Разрешено отправлять запрос на использование устройств и данных виртуальной реальности</translation>
 <translation id="7983008347525536475">Внедорожники</translation>
+<translation id="7983569303268727247">Заполнение информации</translation>
 <translation id="7984945080620862648">Перейти на сайт <ph name="SITE" /> невозможно, так как его идентификационные данные зашифрованы, и Chrome не может их обработать. Это могло произойти из-за ошибки сети или атаки на сайт. Скорее всего, он заработает через некоторое время.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Экран со списком сервисов рассрочки открыт полностью.</translation>
@@ -5010,6 +5021,7 @@
 <translation id="8738058698779197622">Для создания безопасного подключения необходимо, чтобы показания системных часов были верны. Причина в том, что сертификаты для идентификации сайтов имеют ограниченный срок действия. Если часы на устройстве неточны, Chromium не может проверить актуальность этих сертификатов.</translation>
 <translation id="8740359287975076522">Не удается найти &lt;abbr id="dnsDefinition"&gt;DNS-адрес&lt;/abbr&gt; сайта <ph name="HOST_NAME" />. Выполняется диагностика.</translation>
 <translation id="874918643257405732">Добавить страницу в закладки</translation>
+<translation id="8749274696886550762">Сайт выглядит подозрительно</translation>
 <translation id="8751426954251315517">Повторите попытку позже</translation>
 <translation id="8753913772043329557">Журналы правила</translation>
 <translation id="8754546574216727970">Сапоги</translation>
@@ -5297,6 +5309,7 @@
 <translation id="9192361865877479444">Металл (матовый)</translation>
 <translation id="9192947025498305328">Экологически чистая косметика</translation>
 <translation id="9193018794001479794">Дополнить</translation>
+<translation id="9194783551575429711">Спросите <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="9195969368671142407">Это значит, что вы не можете делиться группами вкладок и присоединяться к ним.</translation>
 <translation id="9198613052465150219">В вашем аккаунте Google также могут храниться другие данные истории браузера. Вы найдете их на странице <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>

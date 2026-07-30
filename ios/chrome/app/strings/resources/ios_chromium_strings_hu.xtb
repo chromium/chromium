@@ -228,6 +228,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5731004036450828399">Az azonosítókulcsok biztonsága érdekében először létre kell hoznia egy helyreállítási PIN-kódot.
 
         Az azonosítókulcsokat a Jelszókezelő tárolja, így bármely eszközön használhatja őket a Chromiumban.</translation>
+<translation id="575593940213760950">A következő fiókhoz tartozó Jelszókezelőbe: <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Bejelentkezve a Chromiumba</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5889847953983052353">Amikor be van kapcsolva:

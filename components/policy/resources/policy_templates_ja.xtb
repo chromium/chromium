@@ -270,6 +270,7 @@ URL パターンは、<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" /
 <translation id="117059611145966538">外部プリント サーバー</translation>
 <translation id="117080706484659953"><ph name="MAC_OS_NAME" /> でポリシー スコープの検出を許可します</translation>
 <translation id="1171106901454883937">デバイスのバージョン情報の報告を有効にする</translation>
+<translation id="1171286631068003605">スキル定義を指す URLです。一意にする必要があります。</translation>
 <translation id="1173493742686115032">すべてのウェブページで <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> を有効にする</translation>
 <translation id="1176740714945046981">独立したウェブアプリ（IWA）のダウングレード機能を有効にします。デフォルトでは、IWA の新しいバージョンのみがインストールされます。<ph name="TRUE" /> に設定すると、古いバージョンもインストールできるようになります。ダウングレードを有効にするには、「pinned_version」フィールドを使用して目的のバージョン値を指定する必要があります。「allow_downgrades」が指定されていないか <ph name="FALSE" /> に設定されている場合、該当の IWA ではダウングレードが無効になります。</translation>
 <translation id="1177624681620856105"> このポリシーでは、外部プロトコルの呼び出しに関する確認メッセージに [常に開く] チェックボックスを表示するかどうかを管理します。
@@ -431,6 +432,13 @@ URL パターンは、<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" /
 このポリシーを無効に設定するか未設定のままにした場合、ログイン時に起動する項目は完全復元の設定によって決まります。</translation>
 <translation id="1327466551276625742">オフライン時のネットワーク設定メッセージの表示を有効にする</translation>
 <translation id="13356285923490863">ポリシー名</translation>
+<translation id="1336231837510847759"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する <ph name="PRODUCT_NAME" /> Enterprise Connectors サービス設定のリストです。<ph name="PRODUCT_NAME" /> からネットワーク リクエストが行われた場合に呼び出されます。このポリシーで評価されるのは HTTP POST リクエストのみです。
+
+<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> フィールドは、監査対象のリクエストの決定に使用されます。リクエストとそのコンテンツによって分析リクエストが作成されますが、リクエスト自体がブロックされることはありません。監査分析リクエストが作成されるには、ネットワーク リクエストがポリシー内のリストエントリの少なくとも 1 つに一致する必要があります。<ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> リスト フィールドはリクエストの URL と照合され、<ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> リスト フィールドはリクエストが発生したメインタブの URL と照合されます。いずれかのフィールドが設定されていない場合は、暗黙的に一致したものと見なされます。
+
+<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> フィールドが一致した場合、どのタグを分析リクエストに含めるかは <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> フィールドで決定されます。
+
+このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="1338603603553894503">ブラウザ起動時のプロフィール選択画面の状態（有効、無効、強制）を指定します。
 
       デフォルトでは、次の場合、プロフィール選択画面は表示されません。ブラウザがゲストモードまたはシークレット モードで起動された、プロフィール ディレクトリまたは URL がコマンドラインで指定されている、アプリを開くよう明示的にリクエストされている、ブラウザがネイティブ通知によって起動された、プロフィールが 1 つしかない、ForceBrowserSignin ポリシーが true に設定されている。
@@ -885,6 +893,7 @@ URL は「http://example.com」、「https://example.com」のような標準的
 <translation id="1625700732886306811">すべての IP アドレスのデバイスに接続することを <ph name="PRODUCT_NAME" /> に許可する</translation>
 <translation id="1626379196197114720">バックフォワード キャッシュの使用を許可する</translation>
 <translation id="1628974048137236820">新しいタブページにカードを表示しない</translation>
+<translation id="1628984674324273832">Gemini による検索と自動入力を許可しない。</translation>
 <translation id="163200210584085447">このリストに指定されているパターンと、リクエスト元 URL の
       セキュリティ オリジンが照合されます。一致するものが見つかった場合は、
       動画キャプチャ デバイスへのアクセスが SAML ログインページで許可されます。
@@ -928,6 +937,17 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 <translation id="1654087023995670109">ブラウザのゲストモードを強制的に適用する</translation>
 <translation id="1655229863189977773">ディスク キャッシュ サイズをバイト単位で設定する</translation>
 <translation id="1655518801232583832">システムの DNS 解決をネットワーク サービス外で実行できるようにする</translation>
+<translation id="1656749771365000307">このポリシーでは、対象となるすべての生成 AI 機能のデフォルト設定を定義します。たとえば、このポリシーを値 1 に設定した場合、対象となるすべての生成 AI 機能のデフォルト設定は 1 になります。この設定は、手動で設定したポリシー値には影響しません。この設定は、Chrome で対象となる生成 AI 機能でデフォルトとして定義されます。対象となる機能の一覧については、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。
+
+一部のポリシー（<ph name="GEMINI_SETTINGS_POLICY_NAME" /> など）では、「許可する」と「許可しない」の状態のみがサポートされます。この場合、<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> を 0 または 1 に設定すると、この機能が有効になります。<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> を 2 に設定した場合、この機能は無効になります。各機能のドキュメントには、このポリシーの値で各機能がどのように動作するかについて、より詳しい情報が記載されています（例: Gemini in Chrome - https://support.google.com/chrome/a/answer/16291696）。このポリシーは、<ph name="GEMINI_IN_CHROME_NAME" />、Google レンズ、AI モードに適用されます。これらの機能には、それぞれ独自の保証と利用規約が適用されます（https://support.google.com/chrome/a/?p=genai_features_chrome）。
+
+0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。AI モデルを改善するため、人間のレビュアーが確認する場合もあります。以下に記載している場合を除き、0 がデフォルト値です。
+
+1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+2 = この機能を許可しません。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="165769015320654523">特定のベンダー ID と製品 ID を持つ HID デバイスへの接続を自動的にこれらのサイトに許可します。</translation>
 <translation id="1659406551862245683">仮想キーボードのデフォルトのサイズ変更動作が変えられ、レイアウト ビューポートのサイズ変更が行われる</translation>
 <translation id="166427968280387991">プロキシ サーバー</translation>
@@ -1614,6 +1634,7 @@ accounts.google.com など一部の URL は認証に必要です。オンライ�
 <translation id="2107601598727098402">
         このポリシーは M72 でサポート終了となりました。代わりに CloudManagementEnrollmentToken を使用してください。
         </translation>
+<translation id="2111355600078097861">Gemini による検索と自動入力を許可し、AI モデルの改善は許可しない。</translation>
 <translation id="2112656109118682849">ログイン画面でのシステム情報の表示の切り替えをユーザーに許可する</translation>
 <translation id="2113068765175018713">自動再起動を行ってデバイスの稼働時間を制限する</translation>
 <translation id="211386002920955760">企業ユーザーが Chrome のタブグループ共有機能にアクセスできるかどうかを制御します。
@@ -2245,6 +2266,7 @@ URL スタイルの指定子:
 
           このポリシーを未設定のままにした場合、テキストカーソルによるハイライト表示が無効（初期設定）になりますが、ユーザーはいつでも有効にできます。</translation>
 <translation id="2506865562891982662"><ph name="PRODUCT_NAME" />メニュー内からアクセスコードまたは QR コードでキャスト デバイスを選択することをユーザーに許可します。</translation>
+<translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise コネクタの設定ポリシー</translation>
 <translation id="2509748672176727116">ネットワーク パケット キャプチャの実行をユーザーに許可する</translation>
 <translation id="2509919237512982967">M84 まで従来のフォーム コントロールを使用する</translation>
 <translation id="2512531606818417084">このポリシーは一時的なもので、M137 以降は機能しなくなります。
@@ -3757,6 +3779,18 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 <translation id="3518293344797498431">バッテリー寿命を最大限に延ばすため、バッテリーを約 80% まで充電する。</translation>
 <translation id="3518512927469906365">特定の最上位のオリジンに対してサードパーティのストレージ パーティションを無効にする</translation>
 <translation id="3519035925054387801">アイドル状態の検出を許可するサイト</translation>
+<translation id="3522162663567623647">このポリシーでは、ユーザーが Google 管理コンソールに <ph name="PRODUCT_NAME" /> 拡張機能のインストールの承認リクエストを送信できるようにするかどうかを管理します。
+
+ポリシー <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> を未設定のままにするか無効にすると、このポリシーは無視され、拡張機能のインストールのリクエストは作成およびアップロードされません。
+このポリシーを未設定のままにするか無効にすると、拡張機能のインストールのリクエストは作成およびアップロードされません。
+このポリシーを有効にすると、拡張機能のインストールのリクエストが作成され、Google 管理コンソールにアップロードされます。
+
+拡張機能のインストールのリクエストは、<ph name="EXTENSION_INSTALL_ALLOWLIST" /> または <ph name="EXTENSION_SETTINGS" /> で許可されていない拡張機能をユーザーがインストールしようとしたときに作成されます。
+
+<ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
+<ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。
+
+注: このポリシーは、拡張機能がサポートされているプラットフォームにのみ適用されます。</translation>
 <translation id="3522257170445891912">このポリシーが設定されている場合、ログイン認証フローは設定の値に応じて次のいずれかになります。
 
       GAIA に設定されている場合、ログインは通常の GAIA 認証フローで行われます。
@@ -4840,6 +4874,11 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
           このポリシーを未設定のままにした場合、自動クリックが無効（初期設定）になりますが、ユーザーはいつでも有効にできます。</translation>
 <translation id="4212181786686887763">壁紙画像をダウンロードすることのできる URL です。</translation>
+<translation id="4224566202253696739">この設定では、<ph name="GEMINI_IN_CHROME_NAME" /> 内でファイルのアップロードを許可するかどうかを制御します（https://support.google.com/chrome/a/answer/16291696 を参照）。
+
+0 または未設定 = ユーザーは <ph name="GEMINI_IN_CHROME_NAME" /> にファイルをアップロードできます。
+
+1 = ユーザーは <ph name="GEMINI_IN_CHROME_NAME" /> にファイルをアップロードできません。</translation>
 <translation id="4224610387358583899">画面ロック遅延時間</translation>
 <translation id="42267415200641481">このポリシーを true に設定した場合は、システム設定と機能フラグに応じて、システムの DNS 解決（getaddrinfo()）をネットワーク プロセス外で実行できるようになります。
 
@@ -5206,19 +5245,6 @@ WebSQL は M112 で削除されました。</translation>
 <translation id="4501388411278568771">機能のリリース状況に応じて、HTTPS のアップグレードを適用する。</translation>
 <translation id="45036050223225148">TLS 暗号化 ClientHello テストを無効にする</translation>
 <translation id="4503935079903510542">x86_64 デバイスへの VM のインストールに使用される UEFI 起動可能ディスク イメージ。</translation>
-<translation id="4505299160236615603">このポリシーでは、シークレット モードでの表示を許可する URL のリストを指定できます。このポリシーは、<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> で定義した URL パターンに例外を設定する場合に使用します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。
-
-このポリシーと <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> の両方を設定した場合、許可リストが優先されます。URL が許可リストのパターンと一致する場合、その URL は許可されます。URL がブロックリストのパターンと一致する（ただし許可リストと一致しない）場合、その URL はブロックされます。URL がどちらにも一致しない場合は、フォールバックとして全般的な <ph name="URL_BLOCKLIST_POLICY_NAME" /> / <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーが使用されます。
-
-このポリシーを設定し、<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> を未設定のままにした場合、許可リストで指定されていない URL はシークレット モードでブロックされます。
-
-<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> を不許可（値 1）に設定し、このポリシーを設定した場合は、許可リストに一致する URL に対してのみシークレット モードを使用できます。
-
-このポリシーを未設定のままにした場合、<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> と <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> に例外は設定されません。
-
-このポリシーはシークレット モードにのみ適用されます。すべてのユーザー プロファイルで URL を許可するには、<ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
-
-このポリシーで指定できる URL は最大 1,000 件です。</translation>
 <translation id="4508728400492074981">First-Party Sets 機能に関するポリシーを管理します。</translation>
 <translation id="4510131075424939993">ID 情報を評価するときに <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> で使用するソルト値を指定する</translation>
 <translation id="4510923771103268849">Crostini コンテナへのルートアクセスをユーザーに許可する</translation>
@@ -5879,19 +5905,6 @@ URL パターンは、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> 
       ポリシーが未設定の場合、<ph name="PRODUCT_NAME" /> M76 まではデフォルトの設定によりログの収集とアップロードは行えません。<ph name="PRODUCT_NAME" /> M77 以降では、クラウドベースのユーザーレベル エンタープライズ ポリシーの対象となるほとんどのプロファイルから、ログの収集とアップロードをデフォルトで行うことができます。<ph name="PRODUCT_NAME" /> M77 から M80 までは、<ph name="PRODUCT_NAME" /> オンプレミス管理の対象となるプロファイルからも、ログの収集とアップロードをデフォルトで行うことができます。</translation>
 <translation id="4911334289324462969">ポート 989（ブロックの解除は 2022 年 2 年 1 日まで可能）</translation>
 <translation id="4917385247580444890">強い</translation>
-<translation id="4917925819533520480">このポリシーでは、<ph name="CHROME_DEVTOOLS_NAME" /> を許可する URL を指定できます。
-
-検証するページのすべてのフレームの URL をこのポリシーの URL パターンと照合し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーが設定されているかどうかも考慮して、動作が決まります。
-
-このポリシーを設定し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> を未設定のままにした場合、すべてのフレームの URL がこの許可リストのパターンと一致するときは、<ph name="CHROME_DEVTOOLS_NAME" /> が許可されます。いずれかのフレームの URL が一致しない場合は、ページ全体で DevTools がブロックされます。URL の形式について詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。
-
-このポリシーと <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーの両方を設定した場合、この許可リストが優先されます。フレームの URL がこの許可リストのパターンと一致する場合は、ブロックリストのパターンと一致していても許可されます。URL がブロックリストのパターンと一致する（ただし許可リストとは一致しない）場合はブロックされます。URL がどちらにも一致しない場合は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーが代わりに使用されます。
-
-このポリシーを設定しない場合、<ph name="CHROME_DEVTOOLS_NAME" /> の使用の可否は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーと <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーによって決まります。
-
-このポリシーは、拡張機能やウェブ アプリケーションで開かれた <ph name="CHROME_DEVTOOLS_NAME" /> にも適用されます。
-
-このポリシーで指定できる URL は最大 1,000 件です。</translation>
 <translation id="4918150584200819898">オンライン再認証の自動開始を有効にします。</translation>
 <translation id="4918261735182294270">ユーザーが <ph name="CHROME_SYNC_NAME" /> を有効にするかどうかを選択できるようにする</translation>
 <translation id="4918485681633125382">PDF ドキュメントで XFA フォームのサポートを有効にする</translation>
@@ -6133,6 +6146,7 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
 
 生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
+<translation id="5070539335358964387">Gemini による検索と自動入力、および AI モデルの改善を許可する。</translation>
 <translation id="5071303485174858500">制限付き管理対象ゲスト セッションを無効にする</translation>
 <translation id="5073609397321802133">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
 
@@ -7238,6 +7252,7 @@ URL がリスト内の複数のパターンに一致する場合は、一致す�
 このポリシーを有効に設定した場合、常にアダプティブ バッファリングが使用されます。
 
 このポリシーを無効に設定するか未設定のままにした場合、ブラウザ機能の起動プロセスで、アダプティブ バッファリングを使用するかどうかが決められます。</translation>
+<translation id="579556027056000499">URL のコンテンツの SHA-256 ハッシュです。</translation>
 <translation id="5800329278018669527">オフライン時のネットワーク設定メッセージの表示を無効にする</translation>
 <translation id="5800627752428920394">このポリシーでは、ページがバックフォワード キャッシュに保存されたときにアクティブな WebSocket 接続を切断するかどうかを制御します。以前は、アクティブな WebSocket 接続があるとページをバックフォワード キャッシュに保存できませんでしたが、<ph name="PRODUCT_NAME" /> では代わりに WebSocket を切断するように動作が変更されました。これにより、ページをキャッシュに保存して、切断された状態で復元することが可能になります。
 
@@ -9230,6 +9245,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 
       このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="7032323070729112362">Translator API の使用を許可しない</translation>
+<translation id="7032734784894075746">Chrome でスキルを設定する</translation>
 <translation id="7032813174556919004">DNS-over-HTTPS を無効にする</translation>
 <translation id="703672323011778742">このポリシーは M88 でサポートが終了しています。Flash は Chrome でご利用いただけなくなりました。このポリシーを 1 に設定すると、<ph name="FLASH_PLUGIN_NAME" /> プラグインをすべてのウェブサイトで自動実行できるかどうかを設定できます。このポリシーを 2 に設定した場合、このプラグインはすべてのウェブサイトで拒否されます。「クリックして再生」の場合、<ph name="FLASH_PLUGIN_NAME" /> プラグインは実行できますが、ユーザーがプレースホルダをクリックしないと開始されません。
 
@@ -9453,6 +9469,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <translation id="7136237405361383549">フィールド トライアルの設定に基づくデフォルトのレンダラを使用する。</translation>
 <translation id="7138762292550697459">JavaScript setTimeout() 関数の最小タイムアウトを管理します。</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API の通常のサポート終了タイムラインに従います</translation>
+<translation id="7140755255968613921">Gemini による検索と自動入力の設定</translation>
 <translation id="7140760943584613237">Microsoft® のクラウド ID プロバイダ</translation>
 <translation id="714219487865269980">キーボード フォーカスによるハイライト表示を有効にする</translation>
 <translation id="7144022711746703451">
@@ -9810,6 +9827,19 @@ URL パターンは、<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> �
 <translation id="7402257017733669351">ブラウザ プロセスで動的コードが作成されないようにする</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7406276857470642718">外部 IdP を使用して SAML で認証されたユーザーの設定を管理する</translation>
+<translation id="7407431811343706437">ユーザーが <ph name="PRODUCT_NAME" /> で「Gemini で検索して自動入力する」機能を使用できるかどうかを制御します。
+
+0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。以下に記載している場合を除き、0 がデフォルト値です。
+
+1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+2 = この機能を許可しません。
+
+Gemini アプリが無効になっている場合、このポリシーは無視されます。たとえば、Gemini アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -11355,6 +11385,15 @@ false に設定した場合、管理対象のネットワークに接続され�
 <translation id="8471860377920321311">生成 AI 機能と AI モデルの改善を許可する</translation>
 <translation id="8473107305327396242">プラットフォームのトラストストアからユーザーが追加した TLS サーバー証明書をインポートする。</translation>
 <translation id="8473841363404590708">ローカル ファイルを Microsoft OneDrive に移行してローカル フォルダを非表示にする</translation>
+<translation id="8476434719168701332">このポリシーを設定すると、<ph name="PRODUCT_NAME" /> のユーザーに生成 AI スキルが公開されます。
+
+このポリシーを設定した場合、ユーザー独自のスキルに加えて、ポリシーで設定されたスキルがデフォルトで chrome://skills ページに表示されます。ユーザーは、これらのスキルを表示、変更、保存して、個人的な用途で使用できます。
+
+リスト内の各スキルはオブジェクトである必要があり、スキル コンテンツをダウンロードするための <ph name="URL_NAME" /> と、適用前に整合性を検証するための <ph name="HASH_NAME" />（SHA-256）を含む必要があります。各スキルの URL は固定でなければなりません。スキルファイルを更新するには、新しい URL とハッシュが必要です。
+
+指定されたスキルの数が 10 個を超える場合は警告が表示され、最初の 10 個のスキルのみが公開されます。
+
+このポリシーを未設定のままにするか空のリストを設定した場合、Enterprise スキルはユーザーに公開されません。</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC は最適なパスを検索する際、すべての利用可能なインターフェースを使用できる。</translation>
 <translation id="8479496880635054740">ログイン画面でユーザー補助仮想キーボードを無効にする</translation>
@@ -12091,6 +12130,15 @@ M119 よりデフォルトで無効になります）。
 このポリシーを無効に設定した場合は、従来の動作が使用されます。
 
 このポリシーを未設定のままにした場合は、他の Chromium ユーザーと同じように新しい動作が使用されます。</translation>
+<translation id="8954797065581717017">警告: このポリシーを設定すると、VPN 接続前に常時接続 VPN のロックダウンが緩和されます。URL レベルのフィルタリングは Chrome ブラウザのトラフィックに対してのみ保証され、内部システム アプリケーションや他のトラフィック タイプには適用されません。このポリシーを適用した場合、システム トラフィックは常時接続 VPN をバイパスして、ポリシーの取得やシステム クロックの同期などのタスクを実行することもできます。
+
+このポリシーは、特定のスキームや、他のドメインのサブドメイン、ポート、特定のパスに例外を設定する場合に使用します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> を設定した場合、常時接続 VPN が設定済みで、接続されていないときは、すべてのホストへのナビゲーションがブロックされます（ただし、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーで許可されているホストを除きます）。このデバイス状態では、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> は無視されます。常時接続 VPN に接続されているときは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーが適用され、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーは無視されます。
+
+このポリシーで指定できる URL は最大 1,000 件です。
+
+このポリシーを未設定のままにした場合、厳格モードの常時接続 VPN が有効で接続されていないとき、ブラウザ ナビゲーションはブロックされます。</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>
 <translation id="8963464192296208229">F11 の設定で Alt 修飾キーを含むショートカットを使用する</translation>
@@ -12297,6 +12345,15 @@ M119 よりデフォルトで無効になります）。
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスのログイン / ログアウト イベントが報告されます。</translation>
+<translation id="9087577919890548366">このポリシーを有効に設定した場合、<ph name="LOCAL_NETWORK_ACCESS" /> リクエストでは、<ph name="LOCAL_NETWORK_ACCESS" /> チェックが失敗となり、<ph name="CHROME_DEVTOOLS_NAME" /> に警告のみが表示されます。
+
+このポリシーを無効に設定するか未設定のままにした場合、<ph name="LOCAL_NETWORK_ACCESS" /> リクエストでは、これらのリクエストのデフォルトの処理を使用します。
+
+<ph name="LOCAL_NETWORK_ACCESS" /> の制限については、https://wicg.github.io/local-network-access/ をご覧ください。
+
+このエンタープライズ ポリシーは一時的なものであり、M156 以降で削除される予定です。
+
+長期的には、ポリシー <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> を使用して、<ph name="LOCAL_NETWORK_ACCESS" /> 権限を自動的に付与する URL パターンの許可リストを指定するという方法があります。</translation>
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="9088433379343318874">監視対象ユーザーのコンテンツ プロバイダを有効にする</translation>
 <translation id="9088444059179765143">タイムゾーン自動検出の方法を設定する</translation>

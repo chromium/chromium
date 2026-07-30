@@ -267,6 +267,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2145315049852051678">Chrome では、ブラウザが安全な設定になっているかどうかを定期的に確認しています。注意が必要な項目がありましたらお知らせします。</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
+<translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
 <translation id="2163089732491971196">Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="2164015935042801524">ここを右クリックするとタブを縦方向に表示できます</translation>
 <translation id="2166228530126694506">バージョン <ph name="VERSION_NUMBER" /></translation>
@@ -459,7 +460,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2900528713135656174">予定を作成</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> の候補を表示しています</translation>
 <translation id="2904300462646366554">ダウンロードした PDF は、デバイス上のいずれかの PDF ビューアで自動的に開きます</translation>
-<translation id="2904414404539560095">タブを共有するデバイスのリストが画面全体に表示されました。</translation>
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
 <translation id="2912247081180973411">ウィンドウを閉じる</translation>
 <translation id="2912345083818861431">画面ロックを使用して、開いているシークレット タブを表示します</translation>
@@ -747,7 +747,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4116038641877404294">ページをダウンロードするとオフラインで使用できるようになります</translation>
 <translation id="4121654769234887259">このパスワードを覚えておく必要はありません。パスワードは、<ph name="USERNAME" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="4132137475637520539">リンクを使って他のユーザーが参加できるようにする</translation>
-<translation id="4135200667068010335">タブを共有するデバイスのリストが閉じられました。</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />、複数選択された録画中の固定のタブ</translation>
 <translation id="4137746084635924146">現在のデバイスの言語</translation>
 <translation id="414128724510021958">PC 版サイトをデフォルトでリクエスト</translation>
@@ -1406,7 +1405,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6762511428368667596"><ph name="NAME" />、<ph name="EMAIL" />。</translation>
 <translation id="676305334223455055">ログインすると、興味や関心に基づくコンテンツが表示されるようになります</translation>
 <translation id="6764137532716892442">新しいアクティビティがある共有の <ph name="GROUP_TITLE" /> タブグループ</translation>
-<translation id="6767294960381293877">タブを共有するデバイスのリストが画面の下半分に表示されました。</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと、その他 <ph name="TAB_COUNT_ONE" /> 個のタブを閉じます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと、その他 <ph name="TAB_COUNT_MANY" /> 個のタブを閉じます}}</translation>
 <translation id="6785476624617658922">Chrome および ChromeOS 追加利用規約</translation>
 <translation id="6786747875388722282">拡張機能</translation>
@@ -1448,7 +1446,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6880903702195291049">権限に問題は見受けられません</translation>
 <translation id="6883204995689174413">共有</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{# 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
-<translation id="6883606786470492001">広告トピックやその他の設定を管理して、パーソナライズド広告を表示するサイトがユーザーについて把握できる情報を制限します</translation>
 <translation id="6883906387682976294">このサイトからの通知をブロックする</translation>
 <translation id="688398477366397178">お使いの言語を指定すると、可能な場合はウェブサイトのコンテンツが指定した言語で表示されます。</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 件のサイトの登録を解除しました}other{# 件のサイトの登録を解除しました}}</translation>
@@ -1513,7 +1510,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />、複数選択されたミュート中のシークレット タブ</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
-<translation id="7111394291981742152">Chrome では、表示される広告を細かく管理でき、サイトがパーソナライズド広告を表示する際にユーザーについて把握できる情報も制限されます。</translation>
 <translation id="7111822978084196600">このウィンドウに名前を付ける</translation>
 <translation id="7115358764509798967">システムのデフォルト</translation>
 <translation id="7117485132243600300">フォローしているコンテンツ、おすすめのトピックと検索候補を管理します</translation>
@@ -2034,7 +2030,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="9101137867221042551">管理</translation>
 <translation id="9102803872260866941">[プレビュー] タブが開いています</translation>
 <translation id="9102864637938129124">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は有効になっています。</translation>
-<translation id="9104217018994036254">タブを共有するデバイスのリストです。</translation>
 <translation id="9106148373857059373">ブックマーク保存フローは閉じています</translation>
 <translation id="9108808586816295166">セキュア DNS は使用できない場合があります</translation>
 <translation id="9112483451228487295">閲覧データをすばやく削除</translation>

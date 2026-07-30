@@ -200,6 +200,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk - Chrome</translation>
 <translation id="2970681950995291301">Als je je Google-account uit Chrome wilt verwijderen, log je uit bij Chrome via de pagina Instellingen</translation>
 <translation id="2976869732253036751">Krijg meldingen voor het volgen van prijzen met Chrome op je telefoon</translation>
+<translation id="2985091279808606502">Chrome heeft rechten voor het lokale netwerk nodig voor deze site</translation>
 <translation id="2991167882679440829">Je wachtwoorden en andere Chrome-gegevens die je hebt opgeslagen in je Google-account, worden verwijderd van dit apparaat. Log opnieuw in om ze weer te gebruiken in Chrome.</translation>
 <translation id="2994465299455873643">Biedt versleutelingsservices en een beveiligde manier om <ph name="BROWSER_NAME" /> te herstellen als deze verouderd raakt. Als deze service wordt uitgezet, raakt <ph name="BROWSER_NAME" /> misschien de toegang tot versleutelde gegevens kwijt en kan <ph name="BROWSER_NAME" /> zichzelf mogelijk niet herstellen.</translation>
 <translation id="3003694935412297923">Alle taken</translation>
@@ -317,7 +318,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4149882025268051530">Het installatieprogramma kan het archief niet uitpakken. Download Google Chrome opnieuw.</translation>
 <translation id="415112847282352845">Log in bij Chrome om onder andere je adressen te gebruiken op al je apparaten. Dit adres wordt opgeslagen in je Google-account nadat je bent ingelogd.</translation>
 <translation id="4153934450158521343">Chrome wordt zo meteen gesloten en de gegevens worden verwijderd</translation>
-<translation id="4159985264221160808">Je organisatie kan bepaalde informatie bekijken of beheren om je werk in Chrome te beveiligen</translation>
 <translation id="4173512894976930765">Sites werken waarschijnlijk zoals verwacht. Je wordt uitgelogd van de meeste sites als je alle Chrome-vensters sluit, behalve van je Google-account als je bent ingelogd bij Chrome.</translation>
 <translation id="4175922240926474352">Chrome heeft deze download geblokkeerd, omdat de site geen beveiligde verbinding gebruikt en het bestand kan zijn gemanipuleerd</translation>
 <translation id="4191857738314598978">{0,plural, =1{Start Chrome binnen een dag opnieuw}other{Start Chrome binnen # dagen opnieuw}}</translation>
@@ -721,6 +721,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8113883687556086139">Bevestig dat jij het bent om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="8115695070094288807">Chrome personaliseren...</translation>
 <translation id="8118331347066725040">Stuur feedback voor zoeken met Lens</translation>
+<translation id="812930250799242837">Ingelogd als <ph name="USER_NAME" />, Google-lidmaatschap. Het accountmenu openen</translation>
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8162006532256575008">Chrome gebruiken zonder account</translation>
@@ -754,6 +755,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 
 Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
 <translation id="8458117863387545390">Download Chrome op je telefoon</translation>
+<translation id="848851325211467878">Ingelogd als <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-lidmaatschap. Het accountmenu openen</translation>
 <translation id="8496177819998570653">Google W&amp;achtwoordmanager</translation>
 <translation id="8498858610309223613">Er is zojuist een speciale beveiligingsupdate voor Google Chrome toegepast. Start nu opnieuw op. Je tabbladen worden hersteld.</translation>
 <translation id="8521348052903287641">Inkomende regel zodat Google Chrome Dev mDNS-verkeer toestaat.</translation>

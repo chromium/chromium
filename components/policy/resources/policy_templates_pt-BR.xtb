@@ -281,6 +281,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="117059611145966538">Servidores de impressão externos</translation>
 <translation id="117080706484659953">Permitir a detecção do escopo da política em <ph name="MAC_OS_NAME" />.</translation>
 <translation id="1171106901454883937">Ativar relatórios com informações sobre a versão do dispositivo</translation>
+<translation id="1171286631068003605">O URL que indica a definição do recurso. Precisa ser exclusivo.</translation>
 <translation id="1173493742686115032">Ativar o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> em todas as páginas da Web</translation>
 <translation id="1176740714945046981">Ativa o recurso de downgrade para AIWs. Por padrão, apenas as versões mais recentes de AIWs são instaladas. Quando definido como <ph name="TRUE" />, isso permite que você instale versões mais antigas também. Para ativar o downgrade, o valor da versão preferida precisa ser especificado usando o campo "pinned_version". Se a propriedade "allow_downgrades" não for informada ou for definida como <ph name="FALSE" />, o downgrade será desativado para esse AIW.</translation>
 <translation id="1177624681620856105"> Esta política controla se a caixa de seleção "Sempre aberto" é exibida ou não em prompts de confirmação para inicialização de protocolo externo.
@@ -444,6 +445,15 @@ Se a política for ativada, as janelas do navegador e de apps do último disposi
 Se a política for definida como "Desativada" ou não for definida, as configurações de restauração completa vão determinar o que será iniciado no login.</translation>
 <translation id="1327466551276625742">Ativar prompt de configuração de rede quando estiver off-line</translation>
 <translation id="13356285923490863">Nome da política</translation>
+<translation id="1336231837510847759">Lista de configurações dos serviços do <ph name="PRODUCT_NAME" /> Enterprise Connectors a serem aplicadas ao <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise Connector, que é acionado quando uma solicitação de rede é feita no <ph name="PRODUCT_NAME" />. Apenas as solicitações HTTP POST são avaliadas por esta política.
+
+O campo <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> é usado para determinar quais solicitações devem ser auditadas. A solicitação e seu conteúdo criarão uma solicitação de análise, mas ela não será bloqueada. Apenas uma entrada de lista na política precisa ser correspondida por uma solicitação de rede para que uma solicitação de análise de auditoria seja criada.
+
+Os campos <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> da lista são comparados com o URL da solicitação e com o URL da guia principal na qual a solicitação se originou, respectivamente. Se um dos campos estiver ausente, será implicitamente considerado como correspondente.
+
+O campo <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> é usado para determinar quais tags devem ser incluídas na solicitação de análise caso o campo <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> seja correspondente.
+
+Configurações extras são necessárias para que essa política seja aplicada. Para mais informações, acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="1338603603553894503">Especifica se o seletor de perfil será ativado, desativado ou forçado na inicialização do navegador.
 
       Por padrão, o seletor de perfil não é exibido quando o navegador é inicializado nos modos de navegação anônima ou visitante, quando um diretório e/ou URLs de perfil são especificados por linha de comando, quando a abertura de um app é explicitamente solicitada, quando o navegador é aberto por uma notificação nativa, quando há apenas um perfil disponível ou quando a política ForceBrowserSignin é definida como verdadeira.
@@ -2434,8 +2444,24 @@ A aplicação desta política em dispositivos gerenciados é influenciada pela p
 
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="2506865562891982662">Permitir que os usuários selecionem dispositivos de transmissão com um código de acesso ou QR no menu do <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2508800409212941632">Política de configuração do <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Connector</translation>
 <translation id="2509748672176727116">O usuário poderá capturar pacotes de rede</translation>
 <translation id="2509919237512982967">Usar controles de formulários legados até a M84.</translation>
+<translation id="2509947330677441695">Definir esta política concede acesso aos URLs listados no modo de navegação anônima. Ela pode abrir exceções para alguns padrões de URL definidos em <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, usando o formato especificado em (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Se esta política e <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> forem definidas, a lista de permissões terá precedência. Se um URL corresponder a um padrão na lista de permissões, ele será permitido. Se corresponder a um padrão na lista de bloqueio (mas não na lista de permissões), será bloqueado. Se um URL não corresponder a nenhuma delas, as políticas gerais <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> serão usadas como substitutas.
+
+Se esta política estiver definida e a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> não, qualquer URL que não estiver na lista de permissões será bloqueado no modo de navegação anônima.
+
+Se a política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> estiver definida como não permitida (valor 1), mas esta política estiver configurada, o modo de navegação anônima só vai estar disponível para URLs que corresponderem à lista de permissões.
+
+Se a política não for definida, nenhuma exceção a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> e <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> será permitida.
+
+A política afeta apenas o modo de navegação anônima. Se quiser permitir URLs para todos os perfis de usuário, use a política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Curingas genéricos para hosts (ou seja, "*" ou "[*]") não são permitidos. Use a política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> para ativar o recurso globalmente.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="2512531606818417084">Esta política é temporária e não vai mais funcionar a partir da versão M137.
 
 O recurso permite usar "zstd" no cabeçalho da solicitação Accept-Encoding
@@ -5535,19 +5561,6 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="4501388411278568771">Os upgrades do HTTPS podem ser aplicados dependendo do status de lançamento do recurso.</translation>
 <translation id="45036050223225148">Desativar o experimento Encrypted ClientHello do TLS</translation>
 <translation id="4503935079903510542">A imagem de disco inicializável pelo UEFI usada para instalar a VM em dispositivos x86_64.</translation>
-<translation id="4505299160236615603">Definir a política concede acesso aos URLs listados no modo de navegação anônima. Ela pode abrir exceções para alguns padrões de URL definidos em <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, usando o formato especificado em ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Se esta política e <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> forem definidas, a lista de permissões terá precedência. Se um URL corresponder a um padrão na lista de permissões, ele será permitido. Se corresponder a um padrão na lista de bloqueio (mas não na lista de permissões), será bloqueado. Se um URL não corresponder a nenhuma delas, as políticas gerais <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> serão usadas como substitutas.
-
-Se esta política estiver definida e a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> não, qualquer URL que não estiver na lista de permissões será bloqueado no modo de navegação anônima.
-
-Se a política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> estiver definida como não permitida (valor 1), mas esta política estiver configurada, o modo de navegação anônima só vai estar disponível para URLs que corresponderem à lista de permissões.
-
-Se a política não for definida, nenhuma exceção a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> e <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> será permitida.
-
-A política afeta apenas o modo de navegação anônima. Se quiser permitir URLs para todos os perfis de usuário, use a política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="4508728400492074981">Controla as políticas do recurso First-Party Sets.</translation>
 <translation id="4510131075424939993">Especificar o valor de um sal a ser usado na política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> ao avaliar as informações de identidade</translation>
 <translation id="4510923771103268849">O usuário tem permissão de acesso root aos contêineres do Crostini</translation>
@@ -6264,19 +6277,6 @@ Se a política for definida como <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHO
       Se a política não for definida em versões até a M76, o <ph name="PRODUCT_NAME" /> terá como padrão não coletar esses registros nem fazer upload deles. A partir da versão M77, o <ph name="PRODUCT_NAME" /> terá como padrão coletar os registros e fazer upload deles da maioria dos perfis afetados por políticas de empresas no nível de usuário baseadas em nuvem. A partir da versão M77 até a M80, o <ph name="PRODUCT_NAME" /> também pode coletar esses registros e, por padrão, fazer upload deles tomando perfis afetados pelo gerenciamento local do <ph name="PRODUCT_NAME" /> como base.</translation>
 <translation id="4911334289324462969">porta 989 (pode ser desbloqueada até 01/02/2022)</translation>
 <translation id="4917385247580444890">Forte</translation>
-<translation id="4917925819533520480">Esta política pode ser usada para permitir o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos.
-
-Os padrões de URL são comparados com o URL de cada frame na página que está sendo inspecionada. O comportamento resultante depende de a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> também estar definida.
-
-Se esta política estiver definida e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> não, o URL de cada frame precisará corresponder a um padrão nesta lista de permissões para que o <ph name="CHROME_DEVTOOLS_NAME" /> seja permitido. Se o URL de algum frame não corresponder, o DevTools será bloqueado para toda a página. Para informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Se esta política e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se o URL de um frame corresponder a um padrão nesta lista de permissões, ele será permitido, mesmo que também corresponda a um padrão na lista de bloqueio. Se um URL corresponder a um padrão na lista de bloqueio (mas não na lista de permissões), ele será bloqueado. Se um URL não corresponder a nenhuma delas, a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> será usada como substituta.
-
-Se esta política não for definida, a disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> será determinada pelas políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Esta política também se aplica ao <ph name="CHROME_DEVTOOLS_NAME" /> aberto para extensões e aplicativos da web.
-
-Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="4918150584200819898">Ativar o início automático da reautenticação on-line.</translation>
 <translation id="4918261735182294270">Permitir que os usuários escolham quando ativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">Ativar o suporte para formulários XFA em documentos PDF</translation>
@@ -7764,6 +7764,7 @@ Se a política for ativada, o armazenamento em buffer adaptável será usado sem
 
 Se for desativada ou deixada sem definição, o processo de inicialização do navegador
 vai decidir se o armazenamento em buffer adaptável será usado.</translation>
+<translation id="579556027056000499">O hash SHA-256 do conteúdo no URL.</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5800627752428920394">Esta política controla se as conexões WebSocket ativas são desconectadas quando uma página entra no cache de avanço e retorno. As conexões WebSocket ativas impediam que uma página fosse armazenada no cache de avanço e retorno, mas o <ph name="PRODUCT_NAME" /> mudou esse comportamento para desconectar as WebSockets, permitindo que a página seja armazenada em cache e restaurada em um estado desconectado.
 
@@ -9955,6 +9956,7 @@ a otimização do JavaScript será ativada.</translation>
 
       Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="7032323070729112362">Não permitir o uso da API Translator</translation>
+<translation id="7032734784894075746">Configurar recursos no Chrome</translation>
 <translation id="7032813174556919004">Desativar DNS sobre HTTPS</translation>
 <translation id="703672323011778742">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida como 1, você poderá definir se todos os sites poderão executar automaticamente o plug-in <ph name="FLASH_PLUGIN_NAME" />. Se ela for definida como 2, esse plug-in será negado em todos os sites. O "Clique para ver" permite que o plug-in <ph name="FLASH_PLUGIN_NAME" /> seja executado, mas os usuários precisam clicar no marcador para iniciar a execução.
 
@@ -10885,6 +10887,21 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 <translation id="759957074386651883">Configurações da política Safe Browsing</translation>
 <translation id="7602621823177962064">Desativar relatórios de informações da memória do dispositivo</translation>
 <translation id="7604169113182304895">Os apps Android podem optar voluntariamente por respeitar essa lista. Não é possível forçá-los a respeitá-la.</translation>
+<translation id="7604302274842086162">Esta política pode ser usada para permitir o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos.
+
+Os padrões de URL são comparados com o URL de cada frame na página que está sendo inspecionada. O comportamento resultante depende de a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> também estar definida.
+
+Se esta política estiver definida e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> não, o URL de cada frame precisará corresponder a um padrão nesta lista de permissões para que o <ph name="CHROME_DEVTOOLS_NAME" /> seja permitido. Se o URL de algum frame não corresponder, o DevTools será bloqueado em toda a página. Para informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Se esta política e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se o URL de um frame corresponder a um padrão nesta lista de permissões, ele será permitido, mesmo que também corresponda a um padrão na lista de bloqueio. Se um URL corresponder a um padrão na lista de bloqueio (mas não na lista de permissões), ele será bloqueado. Se um URL não corresponder a nenhuma delas, a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> será usada como substituta.
+
+Se esta política não for definida, a disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> será determinada pelas políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política também se aplica ao <ph name="CHROME_DEVTOOLS_NAME" /> aberto para extensões e aplicativos da web.
+
+Curingas genéricos para hosts (ou seja, "*" ou "[*]") não são permitidos. Use a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> para ativar o recurso globalmente.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="7607831126797434329">Bloquear downloads automáticos nesses sites</translation>
 <translation id="7608186022704392724">O recurso de envio automático do PIN muda a forma como ele é inserido no <ph name="PRODUCT_OS_NAME" />.
           Em vez de mostrar o mesmo campo de texto usado na entrada de senha, esse
@@ -12267,6 +12284,15 @@ O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade míni
 <translation id="8471860377920321311">Permitir recursos de IA generativa e melhorar modelos de IA</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS adicionados pelo usuário de repositórios de confiança da plataforma.</translation>
 <translation id="8473841363404590708">Migrar arquivos locais para o Microsoft OneDrive e ocultar pastas locais</translation>
+<translation id="8476434719168701332">A definição da política publica recursos de IA generativa para o usuário no <ph name="PRODUCT_NAME" />.
+
+Se definida, os usuários verão esses recursos configurados por padrão na página chrome://skills, além dos recursos pessoais. Os usuários podem visualizar, modificar e salvar os recursos para uso pessoal.
+
+Cada recurso da lista deve ser um objeto que contenha um <ph name="URL_NAME" /> onde o conteúdo do recurso possa ser baixado, além de um <ph name="HASH_NAME" /> (SHA-256) desse conteúdo para verificar sua integridade antes de ser aplicado. Cada URL de recurso deve ser imutável. Para atualizar um arquivo de recurso, é necessário um novo URL e hash.
+
+Se forem fornecidos mais de 10 recursos, será exibido um aviso e apenas os primeiros 10 serão publicados.
+
+Se a política não for definida ou for definida como uma lista vazia, nenhum recurso corporativo será publicado para o usuário.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">O WebRTC usará todas as interfaces disponíveis ao procurar o melhor caminho.</translation>
 <translation id="8479496880635054740">Desativar o teclado virtual de acessibilidade na tela de login</translation>

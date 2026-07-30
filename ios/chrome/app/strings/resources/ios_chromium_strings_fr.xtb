@@ -228,6 +228,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="5731004036450828399">Pour protéger vos clés d'accès, vous devez d'abord créer un code de récupération.
 
         Les clés d'accès sont enregistrées dans le Gestionnaire de mots de passe, ce qui vous permet de les utiliser dans Chromium sur n'importe quel appareil.</translation>
+<translation id="575593940213760950">Dans le Gestionnaire de mots de passe pour <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Connecté à Chromium</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5889847953983052353">Lorsque cette option est activée :

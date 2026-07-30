@@ -600,6 +600,7 @@
 <translation id="192095259937375524">'इस टैब को शेयर करें' बटन, लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करने के लिए इसे चालू करें</translation>
 <translation id="1924727005275031552">नया</translation>
 <translation id="1927439846988093361">बालों की देखभाल</translation>
+<translation id="1927930548546198515">Chrome इस सुविधा को इस्तेमाल करने के आपके तरीके का रिकॉर्ड रखता है. जैसे, सुझावों को स्वीकार या अनदेखा करते समय आपके अनुरोध और आपका व्यवहार</translation>
 <translation id="1932098463447129402">पहले नहीं</translation>
 <translation id="1935353813610900265">एआई की मदद से, ब्राउज़िंग इतिहास खोजने के बारे में सुझाव/राय दें या शिकायत करें</translation>
 <translation id="1935995810530254458">फिर भी कॉपी करें</translation>
@@ -985,6 +986,8 @@
 <translation id="2485243023686553468">स्मार्टफ़ोन</translation>
 <translation id="2491120439723279231">सर्वर के प्रमाणपत्र में त्रुटियां हैं.</translation>
 <translation id="2491414235131909199">इस पेज को किसी एक्सटेंशन ने ब्लॉक कर दिया है</translation>
+<translation id="2493122313108999546">साइज़ बदला गया</translation>
+<translation id="249376477913017009">Gmail और अन्य ऐप्लिकेशन से जानकारी ऑटोमैटिक तरीके से भरने के बारे में सूचना वाला मैसेज खोला गया</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" /> में पासवर्ड डालने के लिए, फ़िंगरप्रिंट का इस्तेमाल करने या न करने का विकल्प चुना जा सकता है</translation>
 <translation id="2498091847651709837">नया कार्ड स्‍कैन करें</translation>
@@ -1079,6 +1082,7 @@
 <translation id="2631387782019878060">पुष्टि करने के लिए कोड: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> का सर्वर आईपी पता नहीं मिल सका.</translation>
 <translation id="2635276683026132559">हस्ताक्षर</translation>
+<translation id="2638070510549214427">'सुरक्षित' के तौर पर मार्क करें</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> में खोजने के लिए @ टाइप करें</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
 <translation id="2644219706149911059">Google Drive पर अपलोड किया जा रहा है...</translation>
@@ -1153,6 +1157,7 @@
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2742128390261873684">होम ऑटोमेशन</translation>
 <translation id="2743512410823092182">डीजे रिसॉर्स और इक्विपमेंट</translation>
+<translation id="275259155159336003">यह सुविधा Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. बेहतर ऑटोफ़िल की सुविधा को और बेहतर बनाने के लिए, आपके अनुरोधों, पेज के टाइटल, और यूआरएल की समीक्षा की जा सकती है. <ph name="BEGIN_LINK" />सेटिंग मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652">Google Drive में <ph name="COUNT" /> फ़ाइलें अपलोड की जा रही हैं</translation>
 <translation id="2759299890026163685">फिर से कोशिश करने से पहले, पक्का करें कि आपके पास बेहतर इंटरनेट कनेक्शन हो</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> पर अपना पासवर्ड भरने की अनुमति दें</translation>
@@ -1381,6 +1386,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" /> पर जाएं</translation>
 <translation id="3122696783148405307">पिछले 30 दिनों में की गई खोजों की जानकारी दिखाएं</translation>
 <translation id="3126023634486644099">लेबल (पर्मानेंट)</translation>
+<translation id="3131746543143948171">यह साइट, फ़िशिंग, मैलवेयर, और धोखाधड़ी से जुड़ी अन्य साइटों से मिलती-जुलती है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">रिड्रेस नंबर सेव करें</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> अब आपका डिफ़ॉल्ट सर्च इंजन है</translation>
 <translation id="3134859781443140237">लोकल नेटवर्क</translation>
@@ -1435,6 +1441,7 @@
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208701679386778924">कृपया एक रिपोर्ट भेजें, ताकि हम ChromeOS के आने वाले अपडेट में सुधार कर सकें.</translation>
 <translation id="3209034400446768650">पेज पर शुल्क लिया जा सकता है</translation>
+<translation id="3209071504641569648">आपके अनुरोध, पेज के टाइटल, और यूआरएल, Google को भेजे जाते हैं. बेहतर ऑटोफ़िल की सुविधा को और बेहतर बनाने के लिए, इनकी समीक्षा की जा सकती है</translation>
 <translation id="3212468046572043669">डाउनलोड शुरू हो गया है. इसे देखने के लिए, विंडो को स्क्रीन के सबसे ऊपरी हिस्से से खींचकर नीचे की ओर छोड़ें और 'वापस जाएं' बटन पर टैप करें</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> पर की जा रही आपकी गतिविधि पर नज़र रखी जा रही है</translation>
 <translation id="3215092763954878852">WebAuthn का इस्तेमाल नहीं किया जा सका</translation>
@@ -1472,6 +1479,7 @@
 <translation id="3254301855501243548">18 x 22 इंच</translation>
 <translation id="3255926992597692024">Chromium, पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar में जल्दी से नया इवेंट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
+<translation id="3261180263071638338">Gmail और अन्य ऐप्लिकेशन से जानकारी ऑटोमैटिक तरीके से भरने के बारे में सूचना वाला मैसेज बंद किया गया</translation>
 <translation id="3261488570342242926">वर्चुअल कार्ड के बारे में जानें</translation>
 <translation id="3262698603497362968">खरीदने के विकल्प</translation>
 <translation id="3264637689694266148">अगर आपने सुझाव पाने की सुविधा बंद की हुई है, तब भी Chrome की अन्य सुविधाओं के लिए, आपके टैब के पेज टाइटल और यूआरएल प्रोसेस किए जा सकते हैं. इस डेटा के लिए ब्राउज़र का ऐक्सेस, यहां जाकर मैनेज किया जा सकता है:</translation>
@@ -2334,6 +2342,7 @@
 <translation id="4602465984861132303">बॉलिंग</translation>
 <translation id="4603727370377253901">फ़्लाइट की बुकिंग</translation>
 <translation id="4607608436550361748">Chrome की सलाह देखें</translation>
+<translation id="4607879293515681409">बेहतर ऑटोफ़िल की सुविधा, अब Gmail और Photos जैसे ऐप्लिकेशन से आपकी जानकारी ढूंढकर उसे ऑटोमैटिक तरीके से भर सकती है. जैसे, फ़्लाइट नंबर और अपॉइंटमेंट का समय</translation>
 <translation id="460848736049414407">एडमिन ने ब्लॉक किया है</translation>
 <translation id="4610279718074907952">यह साइट, <ph name="SET_OWNER" /> के तय किए गए ग्रुप में है. यह आपकी गतिविधि देख सकती है</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> के ज़रिए <ph name="MERCHANT_ORIGIN" /> पर आपका ऑर्डर प्रोसेस करने में कोई गड़बड़ी हुई.</translation>
@@ -2557,6 +2566,7 @@
 <translation id="4936134414789135531">डाला गया <ph name="VALUE_NAME" /> नहीं मिला.</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> पर फ़ाइल अपलोड करने की प्रोसेस, एक घंटे में शुरू होगी</translation>
 <translation id="4936675324097895694">फ़ाइनेंस</translation>
+<translation id="4939748144644852809">दाईं ओर ले जाया गया</translation>
 <translation id="4941627891654116707">फ़ॉन्ट साइज़</translation>
 <translation id="4943620199112228840">आपके माइक्रोफ़ोन का ऐक्सेस</translation>
 <translation id="4943872375798546930">कोई परिणाम नहीं</translation>
@@ -2850,6 +2860,7 @@
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="5401344472773249513">मशहूर हस्तियों और मनोरंजन से जुड़ी खबरें</translation>
 <translation id="5401674281624189321">माउंटेन और स्की रिज़ॉर्ट</translation>
+<translation id="5402715318763077894">क्या आपको लोकल नेटवर्क को ऐक्सेस करने की अनुमति देनी है?</translation>
 <translation id="540949333488055151">प्लास्टिक (कलर्ड)</translation>
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="5411462078004183575">कम कीमत वाला विकल्प</translation>
@@ -3100,6 +3111,7 @@
 <translation id="5764725887548570807">मूल फ़ॉर्मैट अमान्य है.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> पर भेजें</translation>
 <translation id="5765072501007116331">वितरण के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
+<translation id="5768323954710688012">Gmail और अन्य ऐप्लिकेशन से जानकारी ऑटोमैटिक तरीके से भरने की सुविधा के बारे में सूचना, पूरी स्क्रीन पर दिख रही है</translation>
 <translation id="57689295674415555">वर्चुअल कार्ड नंबर नहीं भरा गया?</translation>
 <translation id="5773286975255318081">जैसे, प्रोफ़ाइल के उपयोगकर्ता नाम और ब्राउज़र के वर्शन</translation>
 <translation id="5774897849666641211">इस टैब के बारे में सवाल पूछें</translation>
@@ -3213,6 +3225,7 @@
 <translation id="5953516610448771166">इस मीडिया फ़ाइल के लिए, लाइव कैप्शन की सुविधा उपलब्ध नहीं है. यह सुविधा पाने के लिए, <ph name="CONTENT_SETTINGS" /> को इस साइट के लिए ब्लॉक करें.</translation>
 <translation id="5960795367348889467">वेरिफ़िकेशन</translation>
 <translation id="5963413905009737549">अनुभाग</translation>
+<translation id="5963685100480647029">बाईं ओर ले जाया गया</translation>
 <translation id="5964247741333118902">एम्बेड किया गया कॉन्टेंट</translation>
 <translation id="5967260682280773804">36 x 48 इंच</translation>
 <translation id="5967592137238574583">संपर्क जानकारी में बदलाव करें</translation>
@@ -3719,6 +3732,7 @@
 <translation id="671076103358959139">नाम दर्ज करने का टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्वर के साथ कुछ गलत है या पता गलत है.</translation>
 <translation id="6711700233707023861">अलग-अलग वैरिएशन वाली स्ट्रिंग को क्लिपबोर्ड पर कॉपी किया गया</translation>
+<translation id="6712343563085762261">ऊपर की ओर ले जाया गया</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> की तुलना करें · <ph name="ITEMS" /> आइटम</translation>
 <translation id="6716672519412350405"><ph name="URL" /> आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> से टैब भेजा गया है</translation>
@@ -4540,7 +4554,6 @@
 <translation id="7967973398323409409">ऑटोमैटिक तरीके से भरी जाने वाली आपकी जानकारी, कोई और नहीं देख सकता</translation>
 <translation id="79682505114836835">वैल्यू "<ph name="VALUE" />" मान्य हेक्स रंग नहीं है.</translation>
 <translation id="7968982339740310781">विवरण दिखाएं</translation>
-<translation id="7971403153351954587">आपका संगठन कॉपी किए जाने वाले कॉन्टेंट की निगरानी करता है</translation>
 <translation id="7972714317346275248">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
 <translation id="7976053965094442846">'अभी खरीदें, बाद में पेमेंट करें' सुविधा देने वाली कंपनियां, जो किस्तों में पेमेंट करने की सुविधा देती हैं. कीबोर्ड छिपा हुआ है.</translation>
 <translation id="7976214039405368314">बहुत सारे अनुरोध</translation>
@@ -4550,6 +4563,7 @@
 <translation id="7979595116210197019">खान-पान से जुड़ी सेवा</translation>
 <translation id="798134797138789862">साइट, वर्चुअल रिएलिटी डिवाइस और डेटा का इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="7983008347525536475">एसयूवी</translation>
+<translation id="7983569303268727247">आपकी जानकारी भरी जा रही है</translation>
 <translation id="7984945080620862648">आप इस समय <ph name="SITE" /> पर विज़िट नहीं कर सकते हैं क्योंकि वेबसाइट ने ऐसे अव्यवस्थित प्रमाणिकता भेजे हैं जिन्हें Chrome संसाधित नहीं कर सकता. नेटवर्क की त्रुटियां और हमले आमतौर पर अस्थायी होते हैं, इसलिए संभवत: यह पेज बाद में काम करेगा.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">'अभी खरीदें, बाद में पेमेंट करें' सुविधा देने वाली कंपनियों की सूची, पूरी स्क्रीन पर खुली है. ये कंपनियां, किस्तों में पेमेंट करने की सुविधा देती हैं.</translation>
@@ -4613,6 +4627,7 @@
 <translation id="8081087320434522107">सिडान</translation>
 <translation id="8086429410809447605">महिलाओं के कपड़े</translation>
 <translation id="8086971161893892807">ड्राफ़्ट</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> पर पेमेंट करने के लिए, <ph name="APP_ORIGIN" /> लोड किया जा रहा है.</translation>
 <translation id="8088680233425245692">लेख देखा नहीं जा सका.</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8091372947890762290">सर्वर पर सक्रियण लंबित है</translation>
@@ -4808,6 +4823,7 @@
 <translation id="8400929824946688748">नौकरी और शिक्षा</translation>
 <translation id="8402442052798347631">आपने जिस साइट पर जाने की कोशिश की है उससे जुड़े हमलावर, धोखे से आपके डिवाइस में नुकसान पहुंचाने वाला सॉफ़्टवेयर इंस्टॉल करवा सकते हैं. ये सॉफ़्टवेयर, आपके ब्राउज़ करने के तरीके पर असर डाल सकते हैं. जैसे, वे आपकी विज़िट की जाने वाली साइटों के होम पेज में बदलाव कर सकते हैं या उन साइटों पर आपको ज़्यादा विज्ञापन दिखा सकते हैं. किसी भी तरह के नुकसान से बचने के लिए, Chrome का सुझाव है कि आप इस साइट पर न जाएं. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">फ़ैन फ़िक्शन</translation>
+<translation id="8404028426624581035">नीचे की ओर ले जाया गया</translation>
 <translation id="8405579342203358118">Chrome की सेटिंग में आप जो जानकारी सिंक करते हैं उसे मैनेज करें</translation>
 <translation id="8405621913275228683">किसी गड़बड़ी की वजह से स्कैन नहीं किया जा सका</translation>
 <translation id="8406071103346257942">पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करना बंद करें</translation>
@@ -5007,6 +5023,7 @@
 <translation id="8738058698779197622">सुरक्षित कनेक्‍शन स्‍थापित करने के लिए, आपकी घड़ी को ठीक से सेट किए जाने की आवश्‍यकता है. ऐसा इसलिए क्‍योंकि वेबसाइटों द्वारा स्‍वयं की पहचान करने के लिए उपयोग किए जाने वाले प्रमाण पत्र केवल विशिष्‍ट समयावधियों के लिए ही मान्‍य होते हैं. चूंकि आपके डिवाइस की घड़ी गलत है, इसलिए क्रोमियम इन प्रमाणपत्रों को सत्‍यापित नहीं कर सकता.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> का &lt;abbr id="dnsDefinition"&gt;DNS पता&lt;/abbr&gt; नहीं पाया जा सका. समस्या का निदान किया जा रहा है.</translation>
 <translation id="874918643257405732">इस टैब को बुकमार्क करें</translation>
+<translation id="8749274696886550762">यह साइट सही नहीं लग रही है</translation>
 <translation id="8751426954251315517">कृपया बाद में कोशिश करें</translation>
 <translation id="8753913772043329557">नीति के लॉग</translation>
 <translation id="8754546574216727970">बूट</translation>
@@ -5294,6 +5311,7 @@
 <translation id="9192361865877479444">मेटल (मैट)</translation>
 <translation id="9192947025498305328">पर्यावरण और स्वास्थ्य को ध्यान में रखकर बनाए गए प्रॉडक्ट</translation>
 <translation id="9193018794001479794">ज़्यादा शब्दों में लिखो</translation>
+<translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" /> से पूछें</translation>
 <translation id="9195969368671142407">जब आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तब आपके पास टैब ग्रुप शेयर करने या उनमें शामिल होने का विकल्प नहीं होता</translation>
 <translation id="9198613052465150219">आपके Google खाते में <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> पर कुछ तरह का ब्राउज़िंग इतिहास अब भी सेव हो सकता है</translation>
 <translation id="9199905725844810519">प्रिंट करने की सुविधा को ब्लॉक किया गया है</translation>

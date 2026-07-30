@@ -2173,7 +2173,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8209237163365258530">Models de Gemini <ph name="VERSION_NUMBER" /></translation>
 <translation id="8211030355252954494">Has rebut contrasenyes per a <ph name="WEBSITE" /></translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
-<translation id="8213190397436801658">Inici</translation>
+<translation id="8213190397436801658">Casa</translation>
 <translation id="8214293972734702249">Fixada, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Mostra la versió sense connexió en una pestanya nova</translation>
 <translation id="8221665793629393739">Recordatori per tornar a visitar</translation>
@@ -2311,6 +2311,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8643403533759285912">Suprimeix el grup</translation>
 <translation id="8647280737650867362">No s'ha pogut deixar de fer el seguiment del preu.</translation>
 <translation id="8654802032646794042">Cancel·la</translation>
+<translation id="8655861111558401309">Selecciona Suprimeix les dades de navegació</translation>
 <translation id="8659875081143553823">Un moment</translation>
 <translation id="8660600697590740984">Imatge de Lens copiada</translation>
 <translation id="866266761389616183">Vaja!</translation>

@@ -278,6 +278,7 @@
 <translation id="117059611145966538">外部印表機伺服器</translation>
 <translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
 <translation id="1171106901454883937">啟用裝置版本資訊回報功能</translation>
+<translation id="1171286631068003605">指向技能定義的網址。項目名稱不得重複。</translation>
 <translation id="1173493742686115032">在所有網頁上啟用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="1176740714945046981">啟用隔離網頁應用程式 (IWA) 降級功能。根據預設，系統只會安裝較新版本的 IWA。如果設為 <ph name="TRUE" />，則使用者也能安裝較舊版本的 IWA。如要啟用降級功能，必須使用「pinned_version」欄位指定所需的版本值。如果未提供「allow_downgrades」或已設為 <ph name="FALSE" />，則系統會停用該 IWA 的降級功能。</translation>
 <translation id="1177624681620856105"> 這項政策可控管系統是否要在外部通訊協定的啟動確認提示中顯示「一律開啟」核取方塊。
@@ -430,6 +431,15 @@
 如果將這項政策設為停用或不設定，登入時啟動的項目便取決於完整還原設定。</translation>
 <translation id="1327466551276625742">離線時啟用網路設定提示</translation>
 <translation id="13356285923490863">政策名稱</translation>
+<translation id="1336231837510847759">這是 <ph name="PRODUCT_NAME" /> Enterprise 連接器服務設定清單，會套用到 <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> Enterprise 連接器；透過 <ph name="PRODUCT_NAME" /> 發出網路要求時，就會觸發此連接器。這項政策只會評估 HTTP POST 要求。
+
+「<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" />」欄位用於判斷要稽核哪些要求。系統會根據要求及其內容建立分析要求，但不會封鎖要求。只要網路要求符合政策中的任一清單項目，系統就會建立稽核分析要求。
+
+系統會將 <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> 清單欄位，分別與要求網址和發出要求的主要分頁網址進行比對。如果缺少其中一個欄位，系統會預設視為相符。
+
+如果「<ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" />」欄位符合條件，系統會使用「<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />」欄位判斷要在分析要求中加入哪些標記。
+
+這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="1338603603553894503">指定在瀏覽器啟動時要啟用、停用或強制顯示設定檔選擇畫面。
 
       根據預設，瀏覽器在以下情況不會顯示設定檔選擇畫面：瀏覽器於啟動時採用訪客或無痕模式、已透過指令列指定設定檔目錄和/或網址、使用者明確要求開啟某個應用程式、瀏覽器由原生通知啟動、目前只有一個設定檔，或是 ForceBrowserSignin 的設定為 True。
@@ -902,6 +912,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1625700732886306811">允許 <ph name="PRODUCT_NAME" /> 透過所有 IP 位址連線到裝置</translation>
 <translation id="1626379196197114720">允許使用往返快取</translation>
 <translation id="1628974048137236820">新分頁不會顯示卡片</translation>
+<translation id="1628984674324273832">不允許使用「透過 Gemini 尋找並填入資訊」功能。</translation>
 <translation id="163200210584085447">系統會比對這份清單中的模式與要求網址的
       安全性來源。如果找到相符的結果，系統就會
       在 SAML 登入網頁授權存取錄影裝置。如果找不到
@@ -941,6 +952,17 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1654087023995670109">強制執行瀏覽器訪客模式</translation>
 <translation id="1655229863189977773">設定磁碟快取大小 (以位元組為單位)</translation>
 <translation id="1655518801232583832">在網路服務外部啟用系統 DNS 解析</translation>
+<translation id="1656749771365000307">這項政策會定義所有相關生成式 AI 功能的預設設定。舉例來說，如果將這項政策的值設為 1，1 就會是所有相關生成式 AI 功能的預設設定值。這不會影響任何手動設定的政策值。這項設定會定義 Chrome 中涵蓋的生成式 AI 功能預設值。如要查看相關功能的完整清單，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。
+
+「<ph name="GEMINI_SETTINGS_POLICY_NAME" />」等部分政策，只會有「允許」和「不允許」兩種狀態。在此情況下，如果將「<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />」設為 0 或 1，系統就會啟用這項功能。如果將「<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />」設為 2，系統會停用這項功能。各項功能的說明文件詳細說明這項政策中的值如何影響該功能，例如 Chrome 內建 Gemini：https://support.google.com/chrome/a/answer/16291696。<ph name="GEMINI_IN_CHROME_NAME" />、Google 智慧鏡頭和 AI 模式等功能，皆有專屬的保證和/或服務條款 (https://support.google.com/chrome/a/?p=genai_features_chrome)，因此均適用此規定。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。這些資料也可能會送交專人審查，以提升 AI 模型。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示、輸入內容、輸出內容、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="165769015320654523">自動授權網站連結至指定廠商和產品 ID 的 HID 裝置。</translation>
 <translation id="1659406551862245683">預設的虛擬鍵盤調整大小行為已變更為調整版面配置可視區域的大小</translation>
 <translation id="166427968280387991">Proxy 伺服器：</translation>
@@ -1608,6 +1630,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="2107601598727098402">
         這項政策已於 M72 淘汰。請改用 CloudManagementEnrollmentToken。
         </translation>
+<translation id="2111355600078097861">允許使用「透過 Gemini 尋找並填入資訊」功能，但不協助改良 AI 模型。</translation>
 <translation id="2112656109118682849">允許使用者選擇是否讓登入畫面顯示系統資訊</translation>
 <translation id="2113068765175018713">透過自動重新啟動的方式限制裝置的正常運作時間</translation>
 <translation id="211386002920955760">控管企業版使用者能否使用 Chrome 的分頁群組共用功能。
@@ -2267,6 +2290,7 @@ PAC 樣式的字串：
 
           如果未設定這項政策，系統預設會停用插入點醒目顯示功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="2506865562891982662">允許使用者透過 <ph name="PRODUCT_NAME" /> 選單中的存取碼或 QR 圖碼選取投放裝置。</translation>
+<translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise 連接器的設定政策</translation>
 <translation id="2509748672176727116">使用者將可以執行網路封包擷取作業</translation>
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
 <translation id="2512531606818417084">這項政策只是臨時解決方案，並將於 M137 起將停用。
@@ -3783,6 +3807,18 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 <translation id="3518293344797498431">將電池充到約 80% 能盡量延長電池壽命。</translation>
 <translation id="3518512927469906365">停用特定頂層來源的第三方儲存空間分區</translation>
 <translation id="3519035925054387801">允許網站偵測閒置狀態</translation>
+<translation id="3522162663567623647">這項政策可控管 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求，決定使用者能否將要求送交 Google 管理控制台審核。
+
+如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策，且不會建立或上傳擴充功能安裝要求。
+如果不設定這項政策或設為停用，系統不會建立或上傳擴充功能安裝要求。
+如果啟用這項政策，系統就會建立擴充功能安裝要求，並上傳到 Google 管理控制台。
+
+如果使用者嘗試安裝 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 不允許的擴充功能，系統就會建立擴充功能安裝要求。
+
+如果是 <ph name="PRODUCT_NAME" />，裝置必須使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊，這項政策才會生效。
+如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。
+
+注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="3522257170445891912">如果設定這項政策，系統會根據設定值，採用下列其中一種登入驗證流程：如果設為 GAIA，系統會透過一般的 GAIA 驗證流程完成登入程序。如果設為 SAML_INTERSTITIAL，系統預設會自動重新導向至 SAML IdP。使用者仍可返回一般的 GAIA 登入流程。注意：系統不會再顯示 <ph name="PRODUCT_NAME" /> 版本 99 之前的額外使用者確認畫面。如果未設定 SAML IdP，且這項政策已設為 SAML_INTERSTITIAL，系統重新導向將會失敗，並傳回錯誤 400。</translation>
 <translation id="3523630512885826906">使用者螢幕保護程式鎖定畫面圖片顯示間隔。</translation>
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
@@ -4835,6 +4871,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
           如果不設定這項政策，系統預設會停用自動點擊功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="4212181786686887763">可下載桌布圖片的網址。</translation>
+<translation id="4224566202253696739">這項設定可控管是否允許在 <ph name="GEMINI_IN_CHROME_NAME" /> 中上傳檔案 (請參閱 https://support.google.com/chrome/a/answer/16291696)。
+
+0/未設定 = 允許使用者將檔案上傳至 <ph name="GEMINI_IN_CHROME_NAME" />。
+
+1 = 禁止使用者將檔案上傳至 <ph name="GEMINI_IN_CHROME_NAME" />。</translation>
 <translation id="4224610387358583899">螢幕鎖定延遲</translation>
 <translation id="42267415200641481">如果將這項政策設為 True，系統 DNS 解析 (getaddrinfo()) 可能會在網路程序外執行。實際情況取決於系統設定和功能旗標。
 
@@ -5202,17 +5243,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="4501388411278568771">視功能啟動狀態套用 HTTPS 升級功能。</translation>
 <translation id="45036050223225148">停用經過 TLS 加密的 ClientHello 實驗</translation>
 <translation id="4503935079903510542">用於在 x86_64 裝置上安裝 VM 的 UEFI 開機磁碟映像檔。</translation>
-<translation id="4505299160236615603">如果設定這項政策，使用者可在無痕模式下存取許可清單中的網址。你可以使用這項政策，將 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 中定義的特定網址模式設為例外，格式請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-
-如果同時設定這項政策和 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />，系統會優先採用許可清單。如果網址符合許可清單中的模式，系統就會允許存取。如果網址符合封鎖清單的模式 (但不符合許可清單)，系統就會封鎖該網址。如果網址都不符合，系統會自動改用一般 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。
-
-如果設定這項政策，而未設定 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />，在無痕模式下，未列入許可清單的網址一律會被封鎖。
-
-如果 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 設為禁止 (值 1)，但已設定這項政策，只有符合許可清單的網址才能使用無痕模式。
-
-如果未設定這項政策，<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 就不會有任何例外。
-
-這項政策只會影響無痕模式。如要允許所有使用者設定檔存取這些網址，請使用 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="4508728400492074981">控管 First-Party Sets 功能的相關政策。</translation>
 <translation id="4510131075424939993">指定評估身分資訊時要在 <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> 中使用的鹽值</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
@@ -5882,19 +5912,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> M76 以下版本預設將無法收集與上傳這類記錄。自 M77 版起，針對大多數適用雲端式使用者層級企業政策的設定檔，<ph name="PRODUCT_NAME" /> 預設可收集與上傳這類記錄。從 M77 版到 M80 版，針對適用 <ph name="PRODUCT_NAME" /> 內部部署管理設定的設定檔，<ph name="PRODUCT_NAME" /> 預設也可收集與上傳這類記錄。</translation>
 <translation id="4911334289324462969">通訊埠 989 (2022 年 2 月 1 日前可解除封鎖)</translation>
 <translation id="4917385247580444890">強</translation>
-<translation id="4917925819533520480">這項政策可用於允許 <ph name="CHROME_DEVTOOLS_NAME" /> 存取特定網址。
-
-系統會比對網址模式和要檢查的網頁中每個框架的網址。最終行為取決於是否也設定了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
-
-如果已設定這項政策，但未設定 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，則每個框架的網址都必須符合這份許可清單中的模式，才能允許 <ph name="CHROME_DEVTOOLS_NAME" />。如果任何框架的網址不相符，系統就會封鎖整頁的開發人員工具。如要瞭解網址格式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-
-如果同時設定這項政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，系統會優先採用這個許可清單。如果框架的網址符合這份許可清單中的模式，系統就會允許存取，即使該網址也與封鎖清單中的模式相符。如果網址符合封鎖清單的模式 (但不符合許可清單)，系統就會封鎖該網址。如果網址都不符合，系統會自動改用「<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />」政策。
-
-如果未設定這項政策，<ph name="CHROME_DEVTOOLS_NAME" /> 是否可用會取決於 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
-
-這項政策也適用於開放給擴充功能和網頁應用程式使用的 <ph name="CHROME_DEVTOOLS_NAME" />。
-
-這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="4918150584200819898">允許自動啟動線上重新驗證。</translation>
 <translation id="4918261735182294270">允許使用者選擇是否要啟用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4918485681633125382">啟用 PDF 文件 XFA 表單支援功能</translation>
@@ -6176,6 +6193,7 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果不設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
 
 如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
+<translation id="5070539335358964387">允許使用「透過 Gemini 尋找並填入資訊」功能，並協助改良 AI 模型。</translation>
 <translation id="5071303485174858500">停用有限制的受管理訪客工作階段。</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
@@ -7293,6 +7311,7 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 如果將這項政策設為啟用，系統一律會使用自動調節緩衝功能。
 
 如果設為停用或不設定，系統將根據瀏覽器功能推出程序，決定是否要使用自動調節緩衝功能。</translation>
+<translation id="579556027056000499">網址內容的 SHA-256 雜湊。</translation>
 <translation id="5800329278018669527">停用離線時的網路設定提示</translation>
 <translation id="5800627752428920394">這項政策控管網頁進入往返快取時，是否要中斷運作中的 WebSocket 連線。在以往，運作中的 WebSocket 連線會導致網頁無法存入往返快取。不過，<ph name="PRODUCT_NAME" /> 調整了這項機制，改為直接中斷 WebSocket 連線，讓網頁能順利快取，並在使用者回到該頁時維持斷線狀態。
 
@@ -9309,6 +9328,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
       這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="7032323070729112362">禁止使用 Translator API</translation>
+<translation id="7032734784894075746">設定 Chrome 中的「技能」</translation>
 <translation id="7032813174556919004">停用 DNS-over-HTTPS</translation>
 <translation id="703672323011778742">這項政策已在 M88 版遭到淘汰，Chrome 已不再支援 Flash。如果將這項政策設為 1，你將可設定是否允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式。如果將這項政策設為 2，所有網站都無法自動執行這個外掛程式。啟用「隨點即播」功能時，使用者必須手動點選預留位置，<ph name="FLASH_PLUGIN_NAME" /> 外掛程式才會開始執行。
 
@@ -9529,6 +9549,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7136237405361383549">依據實際測試設定使用預設轉譯器。</translation>
 <translation id="7138762292550697459">控制 JavaScript setTimeout() 函式的最低逾時時間。</translation>
 <translation id="7138792262152376158">依循 PrefixedVideoFullscreen API 的定期淘汰時間表</translation>
+<translation id="7140755255968613921">「透過 Gemini 尋找並填入資訊」設定</translation>
 <translation id="7140760943584613237">Microsoft® 雲端識別資訊提供者</translation>
 <translation id="714219487865269980">啟用鍵盤焦點醒目顯示功能</translation>
 <translation id="7144022711746703451">
@@ -9908,6 +9929,19 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7402257017733669351">防止瀏覽器程序建立動態程式碼</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7406276857470642718">控制透過外部 IdP (使用 SAML) 進行驗證的使用者設定</translation>
+<translation id="7407431811343706437">控管使用者是否能在 <ph name="PRODUCT_NAME" /> 中使用「透過 Gemini 尋找並填入資訊」功能。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示、輸入內容、輸出內容、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如果停用 Gemini 應用程式，這項政策就沒有任何作用。例如，<ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策可能會停用 Gemini 應用程式。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
@@ -11460,6 +11494,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8471860377920321311">允許使用生成式 AI 功能並改善 AI 模型</translation>
 <translation id="8473107305327396242">從平台信任存放區匯入使用者新增的 TLS 伺服器憑證。</translation>
 <translation id="8473841363404590708">將本機檔案遷移至 Microsoft OneDrive 並隱藏本機資料夾</translation>
+<translation id="8476434719168701332">設定這項政策後，系統會將生成式 AI 技能發布給 <ph name="PRODUCT_NAME" /> 中的使用者。
+
+根據預設，設定後使用者會在 chrome://skills 頁面看到這些已設定的技能和個人技能。使用者可以查看、修改及儲存這些技能，供個人使用。
+
+清單中的每項技能都必須是物件，其中包含可下載技能內容的 <ph name="URL_NAME" />，以及該內容的 <ph name="HASH_NAME" /> (SHA-256)，以便在套用前驗證完整性。每個技能網址都不得變更。如要更新技能檔案，必須提供新的網址和雜湊。
+
+如果提供的技能超過 10 項，系統會顯示警告，且只會發布前 10 項技能。
+
+如果不設定這項政策或設為空白清單，系統就不會向使用者發布任何企業技能。</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC 會使用所有可用介面來搜尋最佳路徑。</translation>
 <translation id="8479496880635054740">停用登入畫面上的無障礙虛擬鍵盤</translation>
@@ -12193,6 +12236,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 如果停用這項政策，系統將使用舊行為。
 
 如果不設定這項政策，系統將如同其他 Chromium 使用者一樣使用新行為。</translation>
+<translation id="8954797065581717017">警告：設定這項政策會放寬 VPN 連線前的「永久連線 VPN」鎖定狀態。網址層級篩選功能僅適用於 Chrome 瀏覽器流量，不適用於內部系統應用程式或其他流量類型。這項政策強制執行時，系統流量也可以略過「永久連線的 VPN」，執行擷取政策和同步處理系統時鐘等工作。
+
+請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。
+
+設定 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 後，如果「永久連線的 VPN」已完成設定但未連線，系統將封鎖與所有主機的連線 (<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允許的連線除外)。在這個裝置狀態中，系統會忽略 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" />。「永久連線的 VPN」連線時，系統會套用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策並忽略 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策。
+
+這項政策最多只能輸入 1,000 個項目。
+
+如果不設定這項政策，只要「永久連線的 VPN」處於嚴格模式，但裝置未連上該 VPN，系統將禁止瀏覽器開啟網頁。</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
 <translation id="8963464192296208229">F11 設定採用含有 Alt 輔助鍵的快速鍵</translation>
@@ -12398,6 +12450,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 
       如果將這項政策設為 False 或未設定，系統不會回報這項資訊。
       如果設為 True，則系統會回報裝置的登入/登出事件。</translation>
+<translation id="9087577919890548366">如果將這項政策設為啟用，<ph name="LOCAL_NETWORK_ACCESS" />要求只會因<ph name="LOCAL_NETWORK_ACCESS" />檢查失敗而在 <ph name="CHROME_DEVTOOLS_NAME" />中顯示警告。
+
+如果設為停用或未設定，系統會使用預設方式處理<ph name="LOCAL_NETWORK_ACCESS" />要求。
+
+如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
+
+這項企業政策只是臨時措施，將於 M156 之後移除。
+
+長期來看，使用 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策將網址模式加入許可清單，就能自動授予<ph name="LOCAL_NETWORK_ACCESS" />權限。</translation>
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 連接器的設定政策</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>

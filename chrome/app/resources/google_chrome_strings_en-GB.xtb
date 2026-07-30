@@ -200,6 +200,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
 <translation id="2976869732253036751">Get price tracking alerts with Chrome on your phone</translation>
+<translation id="2985091279808606502">Chrome needs local network permission for this site</translation>
 <translation id="2991167882679440829">Your passwords and other Chrome data that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
 <translation id="2994465299455873643">Provides encryption services and a secure way for recovering <ph name="BROWSER_NAME" /> if it gets out of date. If this service is disabled, <ph name="BROWSER_NAME" /> may lose access to encrypted data, and <ph name="BROWSER_NAME" /> may not be able to recover itself.</translation>
 <translation id="3003694935412297923">All tasks</translation>
@@ -262,6 +263,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3595784445906693824">Sign in to Chrome in a new profile?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Your administrator requires that you relaunch Chrome to apply an update}=1{Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3598673391539778844">Show Gemini in Chrome in system tray</translation>
 <translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
@@ -317,7 +319,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4149882025268051530">The installer failed to uncompress archive. Please download Google Chrome again.</translation>
 <translation id="415112847282352845">To get your addresses and more on all your devices, sign in to Chrome. This address will be saved in your Google Account after you sign in.</translation>
 <translation id="4153934450158521343">Chrome will soon close and delete data</translation>
-<translation id="4159985264221160808">To secure your work on Chrome, your organisation will be able to view or manage certain information</translation>
 <translation id="4173512894976930765">Sites will probably work as expected. You'll be signed out of most sites when you close all Chrome windows, except your Google Account if you're signed in to Chrome.</translation>
 <translation id="4175922240926474352">Chrome blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relaunch Chrome within a day}other{Relaunch Chrome within # days}}</translation>
@@ -723,6 +724,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Making Chrome yours…</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
+<translation id="812930250799242837">Signed in as <ph name="USER_NAME" />, Google membership. Open the account menu</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8162006532256575008">Use Chrome without an account</translation>
@@ -756,6 +758,7 @@ Google Chrome is unable to recover your settings.</translation>
 
 New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>
 <translation id="8458117863387545390">Get Chrome on your phone</translation>
+<translation id="848851325211467878">Signed in as <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google membership. Open the account menu</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
@@ -791,6 +794,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8821043148920470810">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 7.</translation>
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>
+<translation id="8841151363570555833">Show Gemini in Chrome in Mac menu bar</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it}other{Chrome recommends that you remove them}}</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>

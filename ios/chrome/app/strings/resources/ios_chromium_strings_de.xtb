@@ -227,6 +227,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5731004036450828399">Damit deine Passkeys geschützt sind, musst du zuerst eine PIN zur Wiederherstellung erstellen.
 
         Passkeys werden im Passwortmanager gespeichert, sodass du sie auf beliebigen Geräten in Chromium verwenden kannst.</translation>
+<translation id="575593940213760950">Im Passwortmanager für <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">In Chromium angemeldet</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5889847953983052353">Wenn aktiviert:

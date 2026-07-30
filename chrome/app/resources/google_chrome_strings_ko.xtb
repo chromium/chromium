@@ -200,6 +200,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
 <translation id="2970681950995291301">Chrome에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chrome에서 로그아웃하세요</translation>
 <translation id="2976869732253036751">휴대전화에서 Chrome으로 가격 추적 알림을 받으세요</translation>
+<translation id="2985091279808606502">Chrome에 사이트에 대한 로컬 네트워크 권한이 필요합니다.</translation>
 <translation id="2991167882679440829">Google 계정에 저장된 비밀번호 및 기타 Chrome 데이터가 이 기기에서 삭제됩니다. Chrome에서 다시 사용하려면 다시 로그인하세요</translation>
 <translation id="2994465299455873643">암호화 서비스 및 <ph name="BROWSER_NAME" /> 브라우저가 최신 상태가 아닌 경우 이를 복구하는 안전한 방법을 제공합니다. 이 서비스를 사용 중지하면 <ph name="BROWSER_NAME" />에서 암호화된 데이터에 액세스할 수 없거나 <ph name="BROWSER_NAME" />에서 자체적으로 복구할 수 없을 수도 있습니다.</translation>
 <translation id="3003694935412297923">모든 작업</translation>
@@ -262,6 +263,7 @@
 <translation id="3595784445906693824">새 프로필로 Chrome에 로그인하시겠습니까?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3597003331831379823">승격된 권한으로 설정을 실행할 수 없습니다. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3598673391539778844">작업 표시줄에 Chrome의 Gemini 표시</translation>
 <translation id="3622716124581627104">사물 또는 장소를 식별하고 텍스트를 복사하거나 번역합니다. Google 렌즈를 사용하면 페이지의 스크린샷이 Google에 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
 <translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
@@ -316,7 +318,6 @@
 <translation id="4149882025268051530">설치 프로그램이 보관 파일 압축 풀기에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
 <translation id="415112847282352845">모든 기기에서 내 주소 등을 가져오려면 Chrome에 로그인하세요. 로그인하면 이 주소가 Google 계정에 저장됩니다</translation>
 <translation id="4153934450158521343">Chrome이 곧 종료되고 데이터가 삭제됩니다</translation>
-<translation id="4159985264221160808">Chrome에서 업무를 보호하기 위해 조직에서 특정 정보를 보거나 관리할 수 있습니다</translation>
 <translation id="4173512894976930765">사이트가 정상적으로 작동할 것입니다. Chrome에 로그인한 경우 Google 계정을 제외한 모든 Chrome 창을 닫으면 대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="4175922240926474352">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 가능성이 있기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="4191857738314598978">{0,plural, =1{1일 이내로 Chrome을 다시 시작해 주세요}other{#일 이내로 Chrome을 다시 시작해 주세요}}</translation>
@@ -722,6 +723,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8113883687556086139"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8115695070094288807">나만의 Chrome 만들기...</translation>
 <translation id="8118331347066725040">렌즈로 검색에 관한 의견 보내기</translation>
+<translation id="812930250799242837"><ph name="USER_NAME" /> Google 멤버십으로 로그인되었습니다. 계정 메뉴 열기</translation>
 <translation id="8129812357326543296">Chrome 정보(&amp;G)</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8162006532256575008">계정 없이 Chrome 사용</translation>
@@ -755,6 +757,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 
 일부 북마크를 삭제할 때까지 계정에 새 북마크를 저장할 수 없습니다. 지금 로그아웃하면 저장되지 않은 북마크가 삭제됩니다.</translation>
 <translation id="8458117863387545390">휴대전화에 Chrome을 다운로드하세요</translation>
+<translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google 멤버십으로 로그인되었습니다. 계정 메뉴 열기</translation>
 <translation id="8496177819998570653">Google 비밀번호 관리자(&amp;A)</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
 <translation id="8521348052903287641">Chrome 개발자에서 mDNS 트래픽을 허용할 때 사용되는 인바운드 규칙입니다.</translation>
@@ -790,6 +793,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8821043148920470810">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 7을 사용 중입니다.</translation>
 <translation id="8823341990149967727">Chrome이 이전 버전임</translation>
 <translation id="8834965163890861871">Chrome에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
+<translation id="8841151363570555833">Mac 메뉴 바에 Chrome의 Gemini 표시</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome에서 삭제할 것을 권장합니다.}other{Chrome에서 삭제할 것을 권장합니다.}}</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>

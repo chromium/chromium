@@ -228,6 +228,7 @@
 <translation id="5731004036450828399">为确保通行密钥安全，您首先需要创建辅助 PIN 码。
 
         通行密钥会保存在密码管理工具中，可在任何安装了 Chromium 的设备上使用。</translation>
+<translation id="575593940213760950">已保存到 <ph name="EMAIL" /> 的密码管理工具</translation>
 <translation id="584550191241316896">已登录 Chromium</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5889847953983052353">处于开启状态时：

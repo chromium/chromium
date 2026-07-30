@@ -275,6 +275,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 <translation id="117059611145966538">Máy chủ máy in bên ngoài</translation>
 <translation id="117080706484659953">Cho phép phát hiện phạm vi chính sách trên <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Bật tính năng báo cáo thông tin phiên bản thiết bị</translation>
+<translation id="1171286631068003605">URL trỏ đến định nghĩa kỹ năng. Phải là duy nhất.</translation>
 <translation id="1173493742686115032">Bật <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> trên mọi trang web</translation>
 <translation id="1176740714945046981">Bật tính năng hạ cấp cho IWA (Ứng dụng web tách biệt). Theo mặc định, chỉ các phiên bản mới hơn của IWA mới được cài đặt. Khi bạn đặt giá trị này thành <ph name="TRUE" />, thì bạn cũng có thể cài đặt các phiên bản cũ hơn. Để cho phép hạ cấp, bạn phải chỉ định giá trị phiên bản mong muốn bằng cách sử dụng trường "pinned_version". Nếu bạn không cung cấp giá trị cho trường "allow_downgrades" hoặc đặt giá trị này thành <ph name="FALSE" />, thì tính năng hạ cấp sẽ bị vô hiệu hoá đối với IWA đó.</translation>
 <translation id="1177624681620856105"> Chính sách này kiểm soát việc hộp đánh dấu "Luôn mở" có hiển thị trên lời nhắc xác nhận chạy giao thức bên ngoài hay không.
@@ -437,6 +438,15 @@ Nếu bạn đặt chính sách này thành Bật thì sau khi người dùng h
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, chế độ cài đặt khôi phục hoàn toàn sẽ xác định những nội dung mở ra khi người dùng đăng nhập.</translation>
 <translation id="1327466551276625742">Bật lời nhắc về cấu hình mạng khi ngoại tuyến</translation>
 <translation id="13356285923490863">Tên chính sách</translation>
+<translation id="1336231837510847759">Danh sách các chế độ cài đặt dịch vụ Trình kết nối doanh nghiệp <ph name="PRODUCT_NAME" /> sẽ được áp dụng cho Trình kết nối doanh nghiệp <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" />. Trình kết nối này sẽ kích hoạt khi có yêu cầu mạng được thực hiện từ <ph name="PRODUCT_NAME" />. Chính sách này chỉ đánh giá các yêu cầu HTTP POST.
+
+Trường <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> được dùng để xác định những yêu cầu cần được kiểm tra. Yêu cầu và nội dung trong đó sẽ tạo ra một yêu cầu phân tích, nhưng sẽ không bị chặn. Chỉ cần một mục trong danh sách của chính sách khớp với yêu cầu mạng là có thể tạo yêu cầu phân tích kiểm tra.
+
+Các trường danh sách <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD" /> được so khớp với URL của yêu cầu và URL của thẻ chính khởi tạo yêu cầu tương ứng. Nếu thiếu một trong các trường, thì trường đó sẽ được mặc định là khớp.
+
+Trường <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" /> được dùng để xác định (những) thẻ cần đưa vào yêu cầu phân tích nếu trường <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD" /> khớp.
+
+Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="1338603603553894503">Chỉ định việc bật, tắt hay buộc hiển thị bộ chọn hồ sơ khi khởi động trình duyệt.
 
       Theo mặc định, bộ chọn hồ sơ sẽ không hiển thị nếu người dùng khởi động trình duyệt ở chế độ khách hoặc ẩn danh, chỉ định một thư mục hồ sơ và/hoặc URL bằng dòng lệnh, yêu cầu rõ là mở một ứng dụng, khởi động trình duyệt bằng một thông báo gốc, chỉ có một hồ sơ hoặc chính sách ForceBrowserSignin được đặt thành bật.
@@ -919,6 +929,7 @@ Ngưỡng tối thiểu là 1 phút.
 <translation id="1625700732886306811">Cho phép <ph name="PRODUCT_NAME" /> kết nối với các thiết bị trên mọi địa chỉ IP</translation>
 <translation id="1626379196197114720">Cho phép sử dụng bộ nhớ đệm cho thao tác tiến/lùi</translation>
 <translation id="1628974048137236820">Trang thẻ mới sẽ không hiển thị thẻ</translation>
+<translation id="1628984674324273832">Không cho phép tính năng Tìm và điền bằng Gemini.</translation>
 <translation id="163200210584085447">Các mẫu trong danh sách này sẽ được đối sánh dựa trên nguồn gốc
       bảo mật của URL yêu cầu.  Nếu tìm thấy mẫu phù hợp, quyền
       truy cập thiết bị quay video sẽ được cấp trên
@@ -958,6 +969,17 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> có t
 <translation id="1654087023995670109">Thực thi chế độ khách trên trình duyệt</translation>
 <translation id="1655229863189977773">Đặt kích thước bộ nhớ đệm của đĩa theo byte</translation>
 <translation id="1655518801232583832">Cho phép quá trình phân giải DNS của hệ thống chạy bên ngoài dịch vụ mạng</translation>
+<translation id="1656749771365000307">Chính sách này xác định chế độ cài đặt mặc định cho tất cả các tính năng AI tạo sinh được đề cập đến trong chính sách. Ví dụ: Nếu bạn đặt chính sách này thành giá trị 1, thì 1 sẽ là chế độ cài đặt mặc định cho tất cả các tính năng AI tạo sinh được đề cập. Các giá trị chính sách được đặt thủ công sẽ không bị ảnh hưởng. Chế độ cài đặt này sẽ xác định chế độ mặc định cho các tính năng AI tạo sinh được đề cập trong Chrome. Hãy truy cập https://support.google.com/chrome/a?p=generative_ai_settings để xem danh sách các tính năng được đề cập.
+
+Một số chính sách, chẳng hạn như <ph name="GEMINI_SETTINGS_POLICY_NAME" />, chỉ hỗ trợ các trạng thái Được phép và Không cho phép. Trong trường hợp này, nếu bạn đặt <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> thành 0 hoặc 1 thì tính năng này sẽ bật. Nếu bạn đặt <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> thành 2 thì tính năng này sẽ tắt. Tài liệu hướng dẫn cho từng tính năng bao gồm nhiều thông tin chi tiết hơn về cách tính năng tương tác với các giá trị trong chính sách này (ví dụ: Gemini trong Chrome – https://support.google.com/chrome/a/answer/16291696). Nội dung này áp dụng cho các tính năng sau: <ph name="GEMINI_IN_CHROME_NAME" />, Google Ống kính và Chế độ AI, do các tính năng này tuân theo những đảm bảo và/hoặc điều khoản dịch vụ riêng (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. Dữ liệu này cũng có thể được nhân viên xem xét để cải tiến các mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="165769015320654523">Tự động cấp quyền cho những trang web này để kết nối với các thiết bị HID bằng mã nhà cung cấp và mã sản phẩm cụ thể.</translation>
 <translation id="1659406551862245683">Thao tác đổi kích thước bàn phím ảo mặc định được thay đổi thành đổi kích thước khung nhìn bố cục</translation>
 <translation id="166427968280387991">Máy chủ proxy</translation>
@@ -1672,6 +1694,7 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="2107601598727098402">
         Chính sách này không còn dùng trong M72 nữa. Thay vào đó, hãy sử dụng CloudManagementEnrollmentToken.
         </translation>
+<translation id="2111355600078097861">Cho phép tính năng Tìm và điền bằng Gemini nhưng không cải tiến các mô hình AI.</translation>
 <translation id="2112656109118682849">Cho phép người dùng bật/tắt chế độ hiển thị thông tin hệ thống trên màn hình đăng nhập</translation>
 <translation id="2113068765175018713">Giới hạn thời gian hoạt động của thiết bị bằng cách tự động khởi động lại</translation>
 <translation id="211386002920955760">Kiểm soát việc người dùng doanh nghiệp có thể sử dụng tính năng chia sẻ nhóm thẻ trong Chrome hay không.
@@ -2341,6 +2364,7 @@ Việc áp dụng chính sách này trên các thiết bị được quản lý 
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật dấu chèn sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="2506865562891982662">Cho phép người dùng chọn thiết bị truyền có mã truy cập hoặc mã QR từ trong trình đơn của <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2508800409212941632">Chính sách cấu hình cho Trình kết nối doanh nghiệp <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">Người dùng sẽ có thể chặn bắt gói tin qua mạng</translation>
 <translation id="2509919237512982967">Dùng các thành phần điều khiển biểu mẫu cũ cho đến M84.</translation>
 <translation id="2512531606818417084">Đây là chính sách tạm thời và sẽ không còn hoạt động kể từ phiên bản M137.
@@ -3901,6 +3925,18 @@ Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> thành tru
 <translation id="3518293344797498431">Sạc pin đến khoảng 80% để kéo dài thời lượng pin.</translation>
 <translation id="3518512927469906365">Vô hiệu hoá tính năng phân vùng bộ nhớ của bên thứ ba cho những nguồn gốc cấp cao nhất cụ thể.</translation>
 <translation id="3519035925054387801">Các trang web được phép phát hiện trạng thái không hoạt động</translation>
+<translation id="3522162663567623647">Chính sách này kiểm soát việc người dùng có thể gửi yêu cầu cài đặt tiện ích của <ph name="PRODUCT_NAME" /> đến Bảng điều khiển dành cho quản trị viên của Google để xin phê duyệt hay không.
+
+Khi bạn không đặt chính sách <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> hoặc đặt thành Disabled (Tắt), thì chính sách này sẽ bị bỏ qua, đồng thời các yêu cầu cài đặt tiện ích sẽ không được tạo hoặc tải lên.
+Khi bạn không đặt chính sách này hoặc đặt thành Disabled (Tắt), thì các yêu cầu cài đặt tiện ích sẽ không được tạo hoặc tải lên.
+Khi bạn đặt chính sách này thành Enabled (Bật), thì các yêu cầu cài đặt tiện ích sẽ được tạo và tải lên Bảng điều khiển dành cho quản trị viên của Google.
+
+Các yêu cầu cài đặt tiện ích sẽ được tạo khi người dùng cố gắng cài đặt một tiện ích mà <ph name="EXTENSION_INSTALL_ALLOWLIST" /> hoặc <ph name="EXTENSION_SETTINGS" /> không cho phép.
+
+Chính sách này chỉ có hiệu lực khi máy đã đăng ký chính sách <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> đối với <ph name="PRODUCT_NAME" />.
+Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME" />.
+
+Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ tiện ích.</translation>
 <translation id="3522257170445891912">Khi bạn đặt chính sách này, thì quy trình xác thực thông tin đăng nhập sẽ nằm trong một trong các cách sau đây, tuỳ thuộc vào giá trị của chế độ cài đặt:
 
       Nếu bạn đặt chính sách này thành GAIA, thì quá trình đăng nhập sẽ được thực hiện thông qua quy trình xác thực GAIA thông thường.
@@ -4998,6 +5034,11 @@ Các mẫu URL không được xung đột với <ph name="DIRECT_SOCKETS_ALLOWE
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng tự động nhấp sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="4212181786686887763">URL mà từ đó có thể tải hình nền xuống.</translation>
+<translation id="4224566202253696739">Chế độ cài đặt này kiểm soát việc có cho phép tải tệp lên trong <ph name="GEMINI_IN_CHROME_NAME" /> hay không (xem https://support.google.com/chrome/a/answer/16291696).
+
+0/không đặt = Người dùng sẽ được phép tải tệp lên <ph name="GEMINI_IN_CHROME_NAME" />.
+
+1 = Người dùng sẽ không được phép tải tệp lên <ph name="GEMINI_IN_CHROME_NAME" />.</translation>
 <translation id="4224610387358583899">Độ trễ khóa màn hình</translation>
 <translation id="42267415200641481">Nếu bạn đặt chính sách này thành true (đúng), thì quá trình phân giải DNS của hệ thống (getaddrinfo()) có thể sẽ chạy ngoài quy trình mạng, tuỳ vào cấu hình hệ thống và cờ tính năng.
 
@@ -5385,19 +5426,6 @@ Chính sách này không có hiệu lực nếu bạn bật, để trống hoặ
 <translation id="4501388411278568771">Các bản nâng cấp HTTPS có thể được áp dụng tuỳ thuộc vào trạng thái khởi chạy tính năng.</translation>
 <translation id="45036050223225148">Tắt thử nghiệm ClientHello được mã hoá của TLS (Bảo mật tầng truyền tải)</translation>
 <translation id="4503935079903510542">Hình ảnh đĩa có thể khởi động theo chuẩn UEFI được dùng để cài đặt máy ảo trên thiết bị x86_64.</translation>
-<translation id="4505299160236615603">Việc đặt chính sách này sẽ cho phép bạn truy cập vào các URL có trong danh sách ở chế độ ẩn danh. Hãy dùng chính sách này để mở các trường hợp ngoại lệ đối với một số mẫu URL được xác định trong <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> theo định dạng được nêu tại ( https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, thì danh sách cho phép sẽ được ưu tiên. Nếu một URL khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép. Còn nếu URL đó khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì các chính sách chung về <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách cho phép sẽ bị chặn ở chế độ ẩn danh.
-
-Nếu bạn đặt <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> thành không cho phép (giá trị 1) nhưng định cấu hình chính sách này, thì chế độ ẩn danh sẽ chỉ hoạt động đối với những URL khớp với danh sách cho phép.
-
-Nếu bạn không đặt chính sách này, thì <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> và <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> sẽ không có trường hợp ngoại lệ.
-
-Chính sách này chỉ ảnh hưởng đến chế độ ẩn danh. Để cho phép URL cho tất cả hồ sơ người dùng, vui lòng sử dụng chính sách <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-Chính sách này chỉ áp dụng cho 1000 mục.</translation>
 <translation id="4508728400492074981">Kiểm soát chính sách cho tính năng First-Party Sets.</translation>
 <translation id="4510131075424939993">Chỉ định một giá trị dữ liệu ngẫu nhiên sẽ dùng trong <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> khi đánh giá thông tin nhận dạng</translation>
 <translation id="4510923771103268849">Người dùng được phép truy cập gốc vào vùng chứa Crostini</translation>
@@ -6094,19 +6122,6 @@ Nếu bạn đặt chính sách này thành <ph name="ALLOW_PASSTHROUGH_OF_SEARC
       Nếu bạn không đặt chính sách này trên các phiên bản M76 trở xuống, thì <ph name="PRODUCT_NAME" /> sẽ không thể thu thập và tải các nhật ký này lên theo mặc định. Kể từ phiên bản M77, theo mặc định, <ph name="PRODUCT_NAME" /> sẽ có thể thu thập và tải các nhật ký này lên từ hầu hết các hồ sơ chịu ảnh hưởng của chính sách doanh nghiệp dựa trên đám mây ở cấp người dùng. Kể từ phiên bản M77 đến M80, theo mặc định, <ph name="PRODUCT_NAME" /> cũng có thể thu thập và tải các nhật ký này lên từ các hồ sơ chịu ảnh hưởng của tính năng quản lý tại chỗ của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4911334289324462969">cổng 989 (có thể được bỏ chặn cho đến ngày 1/2/2022)</translation>
 <translation id="4917385247580444890">Mạnh</translation>
-<translation id="4917925819533520480">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
-
-Các mẫu URL sẽ được so khớp với URL của mọi khung trên trang đang được kiểm tra. Hành vi kết quả phụ thuộc vào việc chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> có được đặt hay không.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mọi khung phải khớp với một mẫu trong danh sách cho phép này thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép. Nếu URL của bất kỳ khung nào không khớp, thì DevTools sẽ bị chặn đối với toàn bộ trang. Để biết thông tin về định dạng URL, hãy truy cập vào trang https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép này sẽ được ưu tiên áp dụng. Nếu URL của một khung khớp với một mẫu trong danh sách cho phép này, URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu một URL khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn không đặt chính sách này, thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="4918150584200819898">Bật tính năng tự động bắt đầu xác thực lại trực tuyến.</translation>
 <translation id="4918261735182294270">Cho phép người dùng chọn có bật <ph name="CHROME_SYNC_NAME" /> hay không</translation>
 <translation id="4918485681633125382">Bật tính năng hỗ trợ cho biểu mẫu XFA trong tài liệu PDF</translation>
@@ -6408,6 +6423,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
 
 Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="5070539335358964387">Cho phép tính năng Tìm và điền bằng Gemini và cải tiến các mô hình AI.</translation>
 <translation id="5071303485174858500">Tắt phiên khách được quản lý và bị hạn chế.</translation>
 <translation id="5073609397321802133">Nếu bạn đặt chính sách này thành false, thì trang Thẻ mới sẽ không cho phép người dùng tùy chỉnh nền. Các nền tùy chỉnh hiện có sẽ bị xóa vĩnh viễn ngay cả khi sau này, bạn đặt chính sách này thành true.
 
@@ -7587,6 +7603,7 @@ Nếu bạn đặt chính sách này thành Bật, thì trình duyệt sẽ luô
 
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này,
 thì quy trình khởi chạy tính năng của trình duyệt sẽ được phép lựa chọn có sử dụng vùng đệm thích ứng hay không.</translation>
+<translation id="579556027056000499">Hàm băm SHA-256 của nội dung tại URL.</translation>
 <translation id="5800329278018669527">Tắt lời nhắc định cấu hình mạng khi không có kết nối mạng</translation>
 <translation id="5800627752428920394">Chính sách này kiểm soát việc có ngắt các kết nối WebSocket đang hoạt động khi trang được lưu vào bộ nhớ đệm cho thao tác tiến/lùi hay không. Trước đây, các kết nối WebSocket đang hoạt động ngăn việc lưu trữ trang vào bộ nhớ đệm cho thao tác tiến/lùi. Tuy nhiên, <ph name="PRODUCT_NAME" /> đã thay đổi hành vi này thành ngắt kết nối WebSocket, cho phép trang được lưu vào bộ nhớ đệm và khôi phục trang ở trạng thái đã ngắt kết nối.
 
@@ -9717,6 +9734,7 @@ Nếu bạn không đặt chính sách này cho một trang web thì hệ thốn
 
       Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="7032323070729112362">Không cho phép sử dụng Translator API</translation>
+<translation id="7032734784894075746">Định cấu hình Kỹ năng trong Chrome</translation>
 <translation id="7032813174556919004">Tắt chế độ DNS qua HTTPS</translation>
 <translation id="703672323011778742">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này thành 1, bạn có thể thiết lập để tất cả trang web có thể tự động chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" /> hay không. Nếu bạn đặt chính sách thành 2, trình bổ trợ này sẽ không được tự động chạy trên tất cả trang web. Tùy chọn Nhấp để phát cho phép chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />. Tuy nhiên, người dùng phải nhấp vào trình giữ chỗ để bắt đầu phát.
 
@@ -9942,6 +9960,7 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 <translation id="7136237405361383549">Sử dụng trình kết xuất đồ hoạ mặc định dựa trên cấu hình thực nghiệm.</translation>
 <translation id="7138762292550697459">Kiểm soát thời gian chờ tối thiểu trong hàm JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Tuân theo tiến trình ngừng sử dụng thông thường đối với PrefixedVideoFullscreen API</translation>
+<translation id="7140755255968613921">Chế độ cài đặt cho tính năng Tìm và điền bằng Gemini</translation>
 <translation id="7140760943584613237">Nhà cung cấp dịch vụ danh tính trên đám mây của Microsoft®</translation>
 <translation id="714219487865269980">Bật tính năng làm nổi bật tiêu điểm bằng bàn phím</translation>
 <translation id="7144022711746703451">
@@ -10343,6 +10362,19 @@ Giá trị thực tế của dữ liệu nhạy cảm (như cookie hoặc giá t
 <translation id="7402257017733669351">Ngăn quy trình của trình duyệt tạo mã động</translation>
 <translation id="7406039009275722824">Việc tắt <ph name="CHROME_SYNC_NAME" /> sẽ khiến tính năng Sao lưu và khôi phục trên Android hoạt động không bình thường.</translation>
 <translation id="7406276857470642718">Kiểm soát các chế độ cài đặt của người dùng được xác thực qua SAML bằng IdP bên ngoài</translation>
+<translation id="7407431811343706437">Kiểm soát việc người dùng có thể sử dụng tính năng "Tìm và điền bằng Gemini" trong <ph name="PRODUCT_NAME" /> hay không.
+
+0 = Cho phép sử dụng tính năng này và cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép sử dụng tính năng nhưng không cho phép Google sử dụng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép sử dụng tính năng này.
+
+Chính sách này không có hiệu lực khi ứng dụng Gemini bị tắt. Ví dụ: Ứng dụng Gemini có thể bị tắt theo chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Nếu bạn không đặt chính sách này thì hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Chính sách này kiểm soát tính năng gợi ý mạng trong <ph name="PRODUCT_NAME" />. Chính sách này còn kiểm soát tính năng tìm nạp trước DNS, kết nối trước TCP và SSL, cũng như tính năng hiển thị trước trang web.
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, tính năng gợi ý mạng sẽ bật nhưng người dùng có thể thay đổi tùy chọn này.</translation>
@@ -11961,6 +11993,15 @@ Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượ
 <translation id="8471860377920321311">Cho phép các tính năng AI tạo sinh và tham gia cải tiến mô hình AI</translation>
 <translation id="8473107305327396242">Nhập chứng chỉ máy chủ TLS do người dùng thêm từ các kho lưu trữ uy tín trên nền tảng.</translation>
 <translation id="8473841363404590708">Di chuyển tệp trên máy sang Microsoft OneDrive và ẩn thư mục trên máy</translation>
+<translation id="8476434719168701332">Nếu bạn đặt chính sách này, các kỹ năng AI tạo sinh sẽ được xuất bản cho người dùng trong <ph name="PRODUCT_NAME" />.
+
+Nếu bạn đặt chính sách này, người dùng sẽ thấy các kỹ năng đã định cấu hình này theo mặc định trên trang chrome://skills, ngoài các kỹ năng cá nhân của họ. Người dùng có thể xem, sửa đổi và lưu các kỹ năng này để sử dụng cho mục đích cá nhân.
+
+Mỗi kỹ năng trong danh sách phải là một đối tượng chứa <ph name="URL_NAME" /> để có thể tải nội dung kỹ năng xuống và <ph name="HASH_NAME" /> (SHA-256) của nội dung đó nhằm xác minh tính toàn vẹn trước khi áp dụng. Mỗi URL kỹ năng phải là URL không thể thay đổi. Để cập nhật tệp kỹ năng, bạn cần có URL và hàm băm mới.
+
+Nếu bạn cung cấp hơn 10 kỹ năng, hệ thống sẽ hiển thị cảnh báo và chỉ xuất bản 10 kỹ năng đầu tiên.
+
+Nếu bạn không đặt chính sách này hoặc đặt thành danh sách trống, thì không có kỹ năng doanh nghiệp nào được xuất bản cho người dùng.</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC sẽ dùng mọi giao diện hiện có khi tìm kiếm đường dẫn phù hợp nhất.</translation>
 <translation id="8479496880635054740">Tắt bàn phím ảo hỗ trợ tiếp cận trên màn hình đăng nhập</translation>
@@ -12716,6 +12757,15 @@ Nếu chính sách này đang bật thì thao tác mới sẽ được sử dụ
 Nếu chính sách này đang tắt thì thao tác cũ sẽ được sử dụng.
 
 Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được sử dụng giống như thao tác của những người dùng Chromium còn lại.</translation>
+<translation id="8954797065581717017">Cảnh báo: Nếu bạn định cấu hình chính sách này, thì chế độ khoá VPN luôn bật sẽ được nới lỏng trước khi VPN kết nối. Tính năng lọc ở cấp URL chỉ được đảm bảo đối với lưu lượng truy cập từ trình duyệt Chrome và không áp dụng cho các ứng dụng hệ thống nội bộ hoặc các loại lưu lượng truy cập khác. Khi chính sách này thực thi, lưu lượng truy cập hệ thống cũng có thể bỏ qua VPN luôn bật để thực hiện các nhiệm vụ như tìm nạp chính sách và đồng bộ hoá đồng hồ hệ thống.
+
+Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số tên giao thức, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại https://support.google.com/chrome/a?p=url_blocklist_filter_format. Bộ lọc cụ thể nhất sẽ quyết định liệu một URL bị chặn hay được cho phép.
+
+Nếu bạn đặt <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />, chính sách này sẽ định cấu hình một VPN luôn bật. Khi không kết nối VPN luôn bật, thì việc điều hướng đến tất cả máy chủ lưu trữ sẽ bị chặn, ngoại trừ những máy chủ được chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> cho phép. Ở trạng thái này của thiết bị, <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua. Khi kết nối VPN luôn bật, các chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được áp dụng và chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.
+
+Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi thao tác trên trình duyệt trong khi VPN luôn bật đang hoạt động ở chế độ nghiêm ngặt và không kết nối VPN.</translation>
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8956312248048980644">Cho phép phân nhóm tác nhân theo khoá nguồn gốc theo mặc định.</translation>
 <translation id="8963464192296208229">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ alt</translation>
@@ -12924,6 +12974,18 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 
       Nếu bạn tắt hoặc không đặt chính sách này thì thông tin nêu trên sẽ không được báo cáo.
       Nếu bạn bật chính sách này thì các lần đăng nhập/đăng xuất của thiết bị sẽ được báo cáo.</translation>
+<translation id="9087577919890548366">Nếu bạn đặt chính sách này thành Enabled (Bật), các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ chỉ hiển thị cảnh báo trong <ph name="CHROME_DEVTOOLS_NAME" /> do không kiểm tra được <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặt, các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ sử dụng
+chế độ xử lý mặc định cho các yêu cầu này.
+
+Hãy truy cập vào trang https://wicg.github.io/local-network-access/ để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Chính sách doanh nghiệp này chỉ có hiệu lực tạm thời và sẽ bị xoá sau phiên bản M156.
+
+Về lâu dài, bạn có thể sử dụng chính sách <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+để đưa các mẫu URL vào danh sách cho phép. Các mẫu URL này sẽ tự động được cấp
+quyền <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9087652369391570821">Chính sách cấu hình dành cho Trình kết nối OnFileTransfer của Chrome Enterprise</translation>
 <translation id="9088433379343318874">Cho phép nhà cung cấp nội dung của người dùng được giám sát</translation>
 <translation id="9088444059179765143">Định cấu hình phương thức phát hiện múi giờ tự động</translation>

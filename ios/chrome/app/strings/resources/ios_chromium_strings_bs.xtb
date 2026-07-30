@@ -228,6 +228,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5731004036450828399">Da zaštitite pristupne ključeve, prvo morate kreirati PIN za oporavak.
 
         Pristupni ključevi se pohranjuju na Upravitelju lozinki, što vam omogućava da ih koristite u Chromiumu na bilo kojem uređaju.</translation>
+<translation id="575593940213760950">U Upravitelj lozinki za <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Prijavljeni ste u Chromium</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5889847953983052353">Kada je uključeno:

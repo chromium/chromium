@@ -228,6 +228,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="5731004036450828399">To keep your passkeys safe, you'll first need to create a recovery PIN.
 
         Passkeys are saved in Password Manager, which lets you use them in Chromium on any device.</translation>
+<translation id="575593940213760950">To Password Manager for <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Signed in to Chromium</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5889847953983052353">When on:
