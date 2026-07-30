@@ -109,6 +109,25 @@ const run_parent = () => {
 };
 
 const run_iframe_child = () => {
+  // Our standard webxr-test.js test hook bypasses our browser-side state
+  // manager, VRServiceImpl. Part of VRServiceImpl's responsibility is ensuring
+  // that the browser process knows that the impending fullscreen request from
+  // blink is expected and approved/permitted, since otherwise we've already
+  // consumed the transient activation that would allow it. This test hook
+  // replicates informing the browser process that the pending fullscreen
+  // request from this renderer is expected.
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.textContent = `
+    import {NonAssociatedWebTestControlHostRemote} from '/gen/content/web_test/common/web_test.mojom.m.js';
+    if (typeof Mojo !== 'undefined') {
+      const host = new NonAssociatedWebTestControlHostRemote();
+      host.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+      host.setIsXrOverlaySetup();
+    }
+  `;
+  document.head.appendChild(script);
+
   xr_session_promise_test(
     "DOM Overlay in iframe",
     testBasicProperties.bind(this, document.body),

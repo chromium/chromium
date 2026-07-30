@@ -1894,6 +1894,13 @@ void WebTestControlHost::ResetClipboardReadTracking() {
   }
 }
 
+void WebTestControlHost::SetIsXrOverlaySetup() {
+  if (main_window_ && main_window_->web_contents()) {
+    main_window_->web_contents()->ForEachRenderFrameHost(
+        [](RenderFrameHost* rfh) { rfh->SetIsXrOverlaySetup(); });
+  }
+}
+
 void WebTestControlHost::SetLCPPNavigationHint(
     blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint) {
   lcpp_hint_ = *hint.get();

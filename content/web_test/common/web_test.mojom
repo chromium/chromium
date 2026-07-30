@@ -394,4 +394,10 @@ interface NonAssociatedWebTestControlHost {
   // Provide the specified LCPP navigation time hint to next navigation.
   SetLCPPNavigationHint(
       blink.mojom.LCPCriticalPathPredictorNavigationTimeHint hint);
+
+  // Tells WebTestControlHost that a WebXR DOM Overlay session was
+  // configured for testing. Normally, this would be handled by VRServiceImpl,
+  // but the WebXR WPT implementation intercepts the VRService mojom and thus
+  // bypasses VRServiceImpl.
+  SetIsXrOverlaySetup();
 };
