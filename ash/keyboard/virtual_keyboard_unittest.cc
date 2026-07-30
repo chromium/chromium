@@ -10,6 +10,8 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -123,6 +125,41 @@ TEST_F(VirtualKeyboardTest, HitTestBoundsAreResetWhenContainerTypeChanges) {
   generator.MoveMouseTo(keyboard_window->bounds().origin());
   generator.ClickLeftButton();
   EXPECT_EQ("0 0", delegate.GetMouseButtonCountsAndReset());
+
+  // The layer's alpha shape should have been cleared along with the hit test
+  // bounds so the whole keyboard window is painted.
+  EXPECT_FALSE(keyboard_window->layer()->alpha_shape());
+}
+
+// Verifies that setting hit-test bounds on the keyboard controller updates
+// the keyboard window layer's alpha shape to match.
+TEST_F(VirtualKeyboardTest, HitTestBoundsAlsoClipKeyboardWindowLayer) {
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(false);
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
+
+  aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
+  ASSERT_TRUE(keyboard_window);
+  EXPECT_FALSE(keyboard_window->layer()->alpha_shape());
+
+  // Setting hit test bounds should clip the keyboard window's layer to the
+  // same rects so that regions which do not receive events are also not
+  // painted over the windows underneath.
+  std::vector<gfx::Rect> hit_test_bounds;
+  hit_test_bounds.emplace_back(0, 0, 10, 10);
+  hit_test_bounds.emplace_back(20, 20, 10, 10);
+  keyboard_controller->SetHitTestBounds(hit_test_bounds);
+
+  const ui::Layer::ShapeRects* shape = keyboard_window->layer()->alpha_shape();
+  ASSERT_TRUE(shape);
+  EXPECT_EQ(hit_test_bounds, *shape);
+
+  // Setting empty hit test bounds makes all events pass through, so the
+  // keyboard window should not paint anywhere either.
+  keyboard_controller->SetHitTestBounds(std::vector<gfx::Rect>());
+  shape = keyboard_window->layer()->alpha_shape();
+  ASSERT_TRUE(shape);
+  EXPECT_TRUE(shape->empty());
 }
 
 }  // namespace ash
