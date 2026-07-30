@@ -5,7 +5,6 @@ static_library("first_run") {
     "personal_context_first_run_service.h",
     "personal_context_first_run_service_impl.cc",
     "personal_context_first_run_service_impl.h",
-    "personal_context_first_run_types.h",
   ]
 
   deps = [

@@ -66,19 +66,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/autofill/internal/java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java:NoticeInteraction) -->
 
-<!-- LINT.IfChange(PersonalContextNoticeInteractions) -->
-
-<enum name="PersonalContextNoticeInteractions">
-  <summary>
-    The outcomes of interaction with the Personal Context notice.
-  </summary>
-  <int value="0" label="Shown"/>
-  <int value="1" label="Accepted"/>
-  <int value="2" label="Dismissed"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/personal_context/first_run/personal_context_first_run_types.h:NoticeShowRequestResult) -->
-
 </enums>
 
 </histogram-configuration>

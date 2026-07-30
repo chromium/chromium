@@ -44,7 +44,6 @@ source_set("configs") {
       "//chrome/browser/ui/tabs/tab_group_home",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/drive_picker_host",
-      "//chrome/browser/ui/webui/personal_context",
     ]
   }
 
@@ -139,7 +138,6 @@ source_set("configs") {
       "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
       "//chrome/browser/ui/webui/omnibox_everywhere",
       "//chrome/browser/ui/webui/omnibox_popup",
-      "//chrome/browser/ui/webui/personal_context",
       "//chrome/browser/ui/webui/profile_internals",
       "//chrome/browser/ui/webui/tab_search",
       "//chrome/browser/ui/webui/web_app_internals",
