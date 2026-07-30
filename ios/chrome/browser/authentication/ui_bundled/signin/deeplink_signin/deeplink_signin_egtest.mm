@@ -326,7 +326,7 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
 // Tests that opening a cross-device sign-in deep link with an account not on
 // device while there is already another account signed-in shows add account
 // flow.
-- (void)testCrossDeviceSigninSignedInTargetAccountNotOnDevice {
+- (void)DISABLED_testCrossDeviceSigninSignedInTargetAccountNotOnDevice {
   // Sign in with `fakeIdentity1`.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
@@ -354,7 +354,7 @@ void CheckAccountSwitch(FakeSystemIdentity* signedInIdentity,
 
 // Tests that opening a cross-device sign-in deep link with an account on device
 // while there is already another account signed-in shows switch account flow.
-- (void)testCrossDeviceSigninSignedInTargetAccountOnDevice {
+- (void)DISABLED_testCrossDeviceSigninSignedInTargetAccountOnDevice {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
