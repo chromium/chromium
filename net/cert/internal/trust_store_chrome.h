@@ -508,6 +508,23 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
     return mtc_metadata_update_time_;
   }
 
+  // Returns the public key and signature algorithm of the MTC mirror with id
+  // `cosigner_id`, if any.
+  std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
+  GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const;
+
+  // Returns true if the MTC cosigner policy, when evaluated at `current_time`,
+  // is satisfied for `target_cert`, which has a valid CA signature from
+  // `mtc_anchor` and valid co-signatures from the mirrors with cosigner IDs
+  // specified in `valid_additional_cosigners`.
+  // This method only evaluates the policy, the signatures must have been
+  // checked already by the caller.
+  bool IsMtcCosignerPolicySatisfied(
+      const bssl::ParsedCertificate& target_cert,
+      base::Time current_time,
+      const bssl::MTCAnchor* mtc_anchor,
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners) const;
+
   // Parses a string specifying constraint overrides, in the format expected by
   // the `kTestCrsConstraintsSwitch` command line switch.
   static ConstraintOverrideMap ParseCrsConstraintsSwitch(
