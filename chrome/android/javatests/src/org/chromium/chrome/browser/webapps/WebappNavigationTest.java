@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowInsets;
@@ -43,7 +44,10 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -203,6 +207,9 @@ public class WebappNavigationTest {
     @SmallTest
     @Feature({"Webapps"})
     @Restriction(DeviceFormFactor.PHONE)
+    // Keep testing this flow without E2E everywhere after its feature flag is cleaned up.
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testRegularLinkOffOriginShortEdgesCutoutMode() throws Exception {
         runOffOriginShortEdgesCutoutModeTest(DisplayMode.STANDALONE);
@@ -279,6 +286,67 @@ public class WebappNavigationTest {
                     int[] location = new int[2];
                     controlContainer.getLocationOnScreen(location);
                     Criteria.checkThat(location[1], Matchers.greaterThanOrEqualTo(statusBarInset));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    @Restriction(DeviceFormFactor.PHONE)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @EnableFeatures({
+        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE,
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
+    })
+    public void testRegularLinkOffOriginShortEdgesCutoutMode_EdgeToEdgeEverywhere()
+            throws Exception {
+        WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
+        assertEquals(
+                BrowserControlsState.HIDDEN, WebappActivityTestRule.getToolbarShowState(activity));
+
+        mActivityTestRule.runJavaScriptCodeInCurrentTab(
+                "var meta = document.createElement('meta');"
+                        + "meta.setAttribute('name', 'viewport');"
+                        + "meta.setAttribute('content', 'viewport-fit=cover');"
+                        + "document.head.appendChild(meta);");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getWindow().getAttributes().layoutInDisplayCutoutMode,
+                            Matchers.is(
+                                    WindowManager.LayoutParams
+                                            .LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES));
+                });
+
+        // Navigate off-origin via JS; clicking an anchor is unreliable while the page draws
+        // edge-to-edge because the click coordinates are offset.
+        mActivityTestRule.runJavaScriptCodeInCurrentTab(
+                String.format("location.assign('%s');", offOriginUrl()));
+        ChromeTabUtils.waitForTabPageLoaded(
+                ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab()), offOriginUrl());
+        WebappActivityTestRule.assertToolbarShownMaybeHideable(activity);
+
+        // The new page never declared viewport-fit=cover; the cutout mode should be restored.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getWindow().getAttributes().layoutInDisplayCutoutMode,
+                            Matchers.is(
+                                    WindowManager.LayoutParams
+                                            .LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT));
+                });
+
+        // The page-driven edge-to-edge state should be released and the toolbar laid out normally.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getEdgeToEdgeManager().shouldContentFitsWindowInsets(),
+                            Matchers.is(false));
+
+                    View controlContainer = activity.findViewById(R.id.control_container);
+                    Criteria.checkThat(controlContainer, Matchers.notNullValue());
+                    Criteria.checkThat(controlContainer.getVisibility(), Matchers.is(View.VISIBLE));
+                    Criteria.checkThat(controlContainer.getHeight(), Matchers.greaterThan(0));
                 });
     }
 
