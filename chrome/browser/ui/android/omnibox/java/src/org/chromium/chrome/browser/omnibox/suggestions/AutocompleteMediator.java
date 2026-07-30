@@ -1027,6 +1027,10 @@ class AutocompleteMediator
      */
     @Override
     public void setOmniboxEditingText(String text) {
+        setOmniboxEditingText(text, /* suggestion= */ null);
+    }
+
+    private void setOmniboxEditingText(String text, @Nullable AutocompleteMatch suggestion) {
         if (!isInInputSession()) return;
         if (mIgnoreOmniboxItemSelection) return;
         mIgnoreOmniboxItemSelection = true;
@@ -1039,6 +1043,9 @@ class AutocompleteMediator
         // - the user accepts the input (by pressing Enter).
         // for that reason this logic should not apply UserText.
         mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
+        if (suggestion != null) {
+            mAutocompleteInput.setPreviewMatchUrl(getPreviewMatchUrl(suggestion));
+        }
     }
 
     @Override
@@ -1053,7 +1060,7 @@ class AutocompleteMediator
                     && mAutocompleteInput.hasPreviewText()) {
                 onKeywordModeEntered(null);
             }
-            setOmniboxEditingText(suggestion.getFillIntoEdit());
+            setOmniboxEditingText(suggestion.getFillIntoEdit(), suggestion);
         }
     }
 

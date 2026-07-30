@@ -1137,6 +1137,33 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void onSuggestionFocused_urlMatch_setsPreviewMatchUrl() {
+        var session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+        mMediator.allowPendingItemSelection();
+        AutocompleteMatch match = createExactUrlMatch(JUnitTestGURLs.RED_1);
+
+        mMediator.onSuggestionFocused(match);
+
+        assertEquals(JUnitTestGURLs.RED_1, session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionFocused_searchMatch_clearsPreviewMatchUrl() {
+        var session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        session.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
+        mMediator.beginInput(session);
+        mMediator.allowPendingItemSelection();
+        AutocompleteMatch match = createSearchSuggestMatch();
+
+        mMediator.onSuggestionFocused(match);
+
+        assertNull(session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
     public void onSuggestionClicked_TabsStarterPack() {
         mMediator.onNativeInitialized();
         mMediator.beginInput(createEmptySession());
