@@ -2737,45 +2737,6 @@ Canvas2DRecorderContext::UsageCounters::UsageCounters()
       num_draw_focus_calls(0),
       num_frames_since_reset(0) {}
 
-namespace {
-
-void CanvasOverdrawHistogram(Canvas2DRecorderContext::OverdrawOp op) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp", op);
-}
-
-}  // unnamed namespace
-
-void Canvas2DRecorderContext::WillOverwriteCanvas(
-    Canvas2DRecorderContext::OverdrawOp op) {
-  auto* host = GetCanvasRenderingContextHost();
-  if (host) {  // CSS paint use cases not counted.
-    UseCounter::Count(GetTopExecutionContext(),
-                      WebFeature::kCanvasRenderingContext2DHasOverdraw);
-    CanvasOverdrawHistogram(op);
-    CanvasOverdrawHistogram(OverdrawOp::kTotal);
-  }
-
-  // We only hit the kHasTransform bucket if the op is affected by transforms.
-  if (op == OverdrawOp::kClearRect || op == OverdrawOp::kDrawImage) {
-    const CanvasRenderingContext2DState& state = GetState();
-    bool has_clip = state.HasClip();
-    bool has_transform = !state.GetTransform().IsIdentity();
-    if (has_clip && has_transform) {
-      CanvasOverdrawHistogram(OverdrawOp::kHasClipAndTransform);
-    }
-    if (has_clip) {
-      CanvasOverdrawHistogram(OverdrawOp::kHasClip);
-    }
-    if (has_transform) {
-      CanvasOverdrawHistogram(OverdrawOp::kHasTransform);
-    }
-  }
-
-  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
-    recorder->RestartCurrentLayer();
-  }
-}
-
 HTMLCanvasElement* Canvas2DRecorderContext::HostAsHTMLCanvasElement() const {
   return nullptr;
 }

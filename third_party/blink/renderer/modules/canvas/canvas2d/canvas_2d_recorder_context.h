@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -40,6 +42,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -470,7 +473,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   virtual void DisableAcceleration() {}
 
   virtual bool IsPaint2D() const { return false; }
-  void WillOverwriteCanvas(OverdrawOp);
 
   void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
     if (color_scheme == color_scheme_) {
@@ -799,7 +801,37 @@ ALWAYS_INLINE void Canvas2DRecorderContext::CheckOverdraw(
     }
   }
 
-  WillOverwriteCanvas(overdraw_op);
+  auto* host = GetCanvasRenderingContextHost();
+  if (host) {  // CSS paint use cases not counted.
+    UseCounter::Count(GetTopExecutionContext(),
+                      WebFeature::kCanvasRenderingContext2DHasOverdraw);
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp", overdraw_op);
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp", OverdrawOp::kTotal);
+  }
+
+  // We only hit the kHasTransform bucket if the op is affected by transforms.
+  if (overdraw_op == OverdrawOp::kClearRect ||
+      overdraw_op == OverdrawOp::kDrawImage) {
+    const CanvasRenderingContext2DState& state = GetState();
+    bool has_clip = state.HasClip();
+    bool has_transform = !state.GetTransform().IsIdentity();
+    if (has_clip && has_transform) {
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp",
+                                OverdrawOp::kHasClipAndTransform);
+    }
+    if (has_clip) {
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp",
+                                OverdrawOp::kHasClip);
+    }
+    if (has_transform) {
+      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp",
+                                OverdrawOp::kHasTransform);
+    }
+  }
+
+  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
+    recorder->RestartCurrentLayer();
+  }
 }
 
 template <Canvas2DRecorderContext::OverdrawOp CurrentOverdrawOp,
