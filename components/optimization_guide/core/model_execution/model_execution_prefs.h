@@ -55,6 +55,8 @@ extern const char kOnDevicePerformanceClassVersion[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceVramMb[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDevicePerformanceClassGPUId[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastUsageByFeature[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeEligibleForOnDeviceModelDownload[];

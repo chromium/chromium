@@ -5,6 +5,8 @@
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -34,6 +36,7 @@
 #endif
 #include "services/on_device_model/public/cpp/cpu.h"
 #include "services/on_device_model/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace optimization_guide {
 
@@ -115,6 +118,40 @@ OnDeviceModelPerformanceClass GetPerformanceClassSwitch() {
     return OnDeviceModelPerformanceClass::kUnknown;
   }
   return AsPerformanceClass(value);
+}
+
+bool IsSignificantPerformanceChange(
+    PrefService* local_state,
+    OnDeviceModelPerformanceClass performance_class) {
+  OnDeviceModelPerformanceClass current_class =
+      PerformanceClassFromPref(*local_state);
+  // For performance class change between VeryLow and VeryHigh, there can be
+  // run to run variability depending on whether the device is plugged in or is
+  // on battery power. Consider these changes alone as insignificant.
+  // Windows Copilot+ laptops with Qualcomm GPUs exhibit this behavior.
+  if (performance_class >= OnDeviceModelPerformanceClass::kVeryLow &&
+      performance_class <= OnDeviceModelPerformanceClass::kVeryHigh &&
+      current_class >= OnDeviceModelPerformanceClass::kVeryLow &&
+      current_class <= OnDeviceModelPerformanceClass::kVeryHigh &&
+      performance_class <= current_class) {
+    return false;
+  }
+  return true;
+}
+
+std::string GetPerformanceClassGPUId(uint32_t vendor_id,
+                                     uint32_t device_id,
+                                     const std::string& driver_version) {
+  return absl::StrFormat("%x:%x:%s", vendor_id, device_id, driver_version);
+}
+
+bool HasDeviceInfoChanged(
+    PrefService* local_state,
+    const on_device_model::mojom::DeviceInfo& device_info) {
+  std::string gpu_id = GetPerformanceClassGPUId(
+      device_info.vendor_id, device_info.device_id, device_info.driver_version);
+  return local_state->GetString(model_execution::prefs::localstate::
+                                    kOnDevicePerformanceClassGPUId) != gpu_id;
 }
 
 }  // namespace
@@ -231,16 +268,19 @@ OnDeviceModelPerformanceClass PerformanceClassFromPref(
   return static_cast<OnDeviceModelPerformanceClass>(value);
 }
 
-void UpdatePerformanceClassPref(
-    PrefService* local_state,
-    OnDeviceModelPerformanceClass performance_class) {
-  // TODO(crbug.com/437807121): Check performance info before setting prefs.
-  local_state->SetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass,
-      std::to_underlying(performance_class));
+void UpdatePerformanceClassVersionPref(PrefService* local_state) {
   local_state->SetString(
       model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
       version_info::GetVersionNumber());
+}
+
+void UpdatePerformanceClassPref(
+    PrefService* local_state,
+    OnDeviceModelPerformanceClass performance_class) {
+  local_state->SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass,
+      std::to_underlying(performance_class));
+  UpdatePerformanceClassVersionPref(local_state);
 }
 
 void UpdateVramPref(PrefService* local_state, uint64_t vram_mb) {
@@ -248,12 +288,14 @@ void UpdateVramPref(PrefService* local_state, uint64_t vram_mb) {
                          vram_mb);
 }
 
-void UpdateDeviceInfoPrefs(PrefService* local_state,
-                           uint32_t vendor_id,
-                           uint32_t device_id,
-                           std::string driver_version,
-                           bool supports_fp16) {
-  // TODO(crbug.com/437807121): Implement prefs for device info.
+void UpdateDeviceInfoPrefs(
+    PrefService* local_state,
+    const on_device_model::mojom::DeviceInfo& device_info) {
+  std::string gpu_id = GetPerformanceClassGPUId(
+      device_info.vendor_id, device_info.device_id, device_info.driver_version);
+  local_state->SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassGPUId,
+      gpu_id);
 }
 
 PerformanceClassifier::PerformanceClassifier(
@@ -271,6 +313,7 @@ PerformanceClassifier::PerformanceClassifier(
 #endif
   if (override_class != OnDeviceModelPerformanceClass::kUnknown) {
     UpdatePerformanceClassPref(local_state_, override_class);
+    UpdateDeviceInfoPrefs(local_state_, on_device_model::mojom::DeviceInfo());
     performance_class_state_ = PerformanceClassState::kComplete;
     return;
   }
@@ -466,11 +509,18 @@ void PerformanceClassifier::OnDeviceAndPerformanceInfo(
         performance_class);
     base::UmaHistogramMemoryLargeMB(
         "OptimizationGuide.OnDeviceModel.DetectedVram", perf_info->vram_mb);
-    UpdatePerformanceClassPref(local_state_, performance_class);
     UpdateVramPref(local_state_, perf_info->vram_mb);
-    UpdateDeviceInfoPrefs(local_state_, device_info->vendor_id,
-                          device_info->device_id, device_info->driver_version,
-                          device_info->supports_fp16);
+
+    if (HasDeviceInfoChanged(local_state_, *device_info) ||
+        IsSignificantPerformanceChange(local_state_, performance_class)) {
+      UpdatePerformanceClassPref(local_state_, performance_class);
+      UpdateDeviceInfoPrefs(local_state_, *device_info);
+    } else {
+      // Even when suppressing a run-to-run downgrade, record the browser
+      // version we classified for so classification isn't re-run on every
+      // startup.
+      UpdatePerformanceClassVersionPref(local_state_);
+    }
   }
   performance_class_state_ = PerformanceClassState::kComplete;
   performance_class_callbacks_.Notify();
