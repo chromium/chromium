@@ -2944,13 +2944,18 @@ public class ChromeContextMenuPopulatorTest {
                                 .build()));
         when(mMenuModelBridge.populateModelList()).thenReturn(modelListFromBridge);
         ContextMenuParams params = getHttpLinkParams();
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                params,
+                /* shouldShowDeveloperMenu= */ true,
+                /* shouldShowViewPageSourceMenu= */ false,
+                /* supportPrint= */ true);
         List<ModelList> result = mPopulator.buildContextMenu();
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
         assertEquals(
-                "Expected the group of extension-injected items to be the last group",
+                "Expected the group of extension-injected items to come before developer group",
                 modelListFromBridge,
-                result.get(result.size() - 1));
+                result.get(result.size() - 2));
     }
 
     @Test

@@ -986,6 +986,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
+        if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
+            ModelList modelList = mParams.getMenuModelBridge().populateModelList();
+            if (!modelList.isEmpty()) groupedItems.add(modelList);
+        }
+
         if (shouldShowDeveloperMenu() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList developerGroup = new ModelList();
             if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
@@ -1001,11 +1006,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (!developerGroup.isEmpty()) {
                 groupedItems.add(developerGroup);
             }
-        }
-
-        if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
-            ModelList modelList = mParams.getMenuModelBridge().populateModelList();
-            if (!modelList.isEmpty()) groupedItems.add(modelList);
         }
 
         return groupedItems;
