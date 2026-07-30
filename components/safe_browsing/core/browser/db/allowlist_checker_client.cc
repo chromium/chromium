@@ -65,12 +65,10 @@ void AllowlistCheckerClient::InvokeCallbackOrRelease(
     std::unique_ptr<AllowlistCheckerClient> client) {
   switch (match) {
     case AsyncMatch::MATCH:
-      std::move(client->callback_for_result_)
-          .Run(true /* did_match_allowlist */);
+      client->OnCheckCompleted(true /* did_match_allowlist */);
       break;
     case AsyncMatch::NO_MATCH:
-      std::move(client->callback_for_result_)
-          .Run(false /* did_match_allowlist */);
+      client->OnCheckCompleted(false /* did_match_allowlist */);
       break;
     case AsyncMatch::ASYNC:
       // Client is now self-owned. When it gets called back with the result,
@@ -87,7 +85,8 @@ AllowlistCheckerClient::AllowlistCheckerClient(
     : SafeBrowsingDatabaseManager::Client(GetPassKey()),
       callback_for_result_(std::move(callback_for_result)),
       database_manager_(database_manager),
-      default_does_match_allowlist_(default_does_match_allowlist) {
+      default_does_match_allowlist_(default_does_match_allowlist),
+      start_time_(base::TimeTicks::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Set a timer to fail open, i.e. call it "allowlisted", if the full
@@ -120,17 +119,31 @@ void AllowlistCheckerClient::OnCheckUrlResult(bool did_match_allowlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();
 
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ClientSidePhishingDetection.AllowlistAsyncMatchResult",
+      timed_out_ ? AllowlistAsyncMatchResult::kTimeout
+                 : (did_match_allowlist ? AllowlistAsyncMatchResult::kMatch
+                                        : AllowlistAsyncMatchResult::kNoMatch));
+
   // The callback can only be invoked by other code paths if this object is not
   // self-owned. Because this method is only invoked when we're self-owned, we
   // know the callback must still be valid, and it must be safe to delete
   // |this|.
   DCHECK(callback_for_result_);
-  std::move(callback_for_result_).Run(did_match_allowlist);
+  OnCheckCompleted(did_match_allowlist);
   delete this;
+}
+
+void AllowlistCheckerClient::OnCheckCompleted(bool did_match_allowlist) {
+  base::UmaHistogramTimes(
+      "SafeBrowsing.ClientSidePhishingDetection.AllowlistCheckDuration",
+      base::TimeTicks::Now() - start_time_);
+  std::move(callback_for_result_).Run(did_match_allowlist);
 }
 
 void AllowlistCheckerClient::OnTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timed_out_ = true;
   database_manager_->CancelCheck(this);
   OnCheckUrlResult(default_does_match_allowlist_);
 }
