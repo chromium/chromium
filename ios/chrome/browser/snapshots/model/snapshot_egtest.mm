@@ -229,7 +229,7 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionDown,
-                                                            0.5, 0.8)];
+                                                            0.5, 0.6)];
 
   // Go back to the tab grid.
   [ChromeEarlGreyUI openTabGrid];
