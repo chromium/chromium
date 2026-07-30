@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -71,6 +70,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/data_type_store_service.h"
+#include "components/webapps/browser/navigation_capturing_log.h"
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -448,7 +448,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
   visited_manifest_manager_ = std::make_unique<VisitedManifestManager>();
-  navigation_capturing_log_ = std::make_unique<NavigationCapturingLog>();
+  navigation_capturing_log_ = std::make_unique<NavigationCapturingLog>(
+      base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
+                                                                     : 20);
   profile_deletion_manager_ =
       std::make_unique<WebAppProfileDeletionManager>(profile);
 }

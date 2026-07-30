@@ -240,8 +240,6 @@ source_set("web_applications") {
     "model/web_app_icon_types.cc",
     "model/web_app_icon_types.h",
     "model/web_install_manifest_fetch_error.h",
-    "navigation_capturing_log.cc",
-    "navigation_capturing_log.h",
     "navigation_capturing_metrics.cc",
     "navigation_capturing_metrics.h",
     "navigation_capturing_settings.cc",

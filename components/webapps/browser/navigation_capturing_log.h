@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_LOG_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_LOG_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_NAVIGATION_CAPTURING_LOG_H_
+#define COMPONENTS_WEBAPPS_BROWSER_NAVIGATION_CAPTURING_LOG_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <list>
 #include <optional>
@@ -20,7 +21,7 @@ namespace web_app {
 // in failing tests.
 class NavigationCapturingLog {
  public:
-  NavigationCapturingLog();
+  explicit NavigationCapturingLog(size_t max_log_entries);
   ~NavigationCapturingLog();
 
   void LogData(std::string_view source,
@@ -31,9 +32,10 @@ class NavigationCapturingLog {
   base::Value GetLog() const;
 
  private:
+  const size_t max_log_entries_;
   std::list<base::Value> debug_log_;
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_LOG_H_
+#endif  // COMPONENTS_WEBAPPS_BROWSER_NAVIGATION_CAPTURING_LOG_H_

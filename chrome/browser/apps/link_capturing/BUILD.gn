@@ -58,6 +58,7 @@ source_set("link_capturing") {
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service",
       "//chromeos/ash/experiences/arc",
+      "//components/webapps/browser",
     ]
 
     # Needed only to allow circular includes.
