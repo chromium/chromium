@@ -13,7 +13,9 @@
 #include <wrl/implements.h>
 
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "base/win/scoped_com_initializer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -181,6 +183,7 @@ TEST_F(NativeThemeWinCaptionTest, EventFiresObserverCallback) {
 
   // Simulate a caption style change from the OS.
   EXPECT_HRESULT_SUCCEEDED(fake_statics().SimulatePropertiesChanged());
+  base::RunLoop().RunUntilIdle();
 }
 
 // Verifies that multiple PropertiesChanged events each trigger
@@ -199,6 +202,43 @@ TEST_F(NativeThemeWinCaptionTest, MultipleEventsFireMultipleCallbacks) {
   EXPECT_HRESULT_SUCCEEDED(fake_statics().SimulatePropertiesChanged());
   EXPECT_HRESULT_SUCCEEDED(fake_statics().SimulatePropertiesChanged());
   EXPECT_HRESULT_SUCCEEDED(fake_statics().SimulatePropertiesChanged());
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verifies that when the WinRT PropertiesChanged event is delivered on a
+// different thread, OnCaptionStyleUpdated is still dispatched to observers on
+// the sequence that registered the listener.
+TEST_F(NativeThemeWinCaptionTest,
+       EventOnOtherThreadNotifiesOnRegisteringSequence) {
+  TestNativeThemeWin theme;
+  ASSERT_TRUE(fake_statics().has_handler());
+
+  const base::PlatformThreadId main_thread_id =
+      base::PlatformThread::CurrentId();
+  base::PlatformThreadId notify_thread_id;
+
+  MockCaptionObserver observer;
+  EXPECT_CALL(observer, OnCaptionStyleUpdated()).WillOnce([&] {
+    notify_thread_id = base::PlatformThread::CurrentId();
+  });
+  base::ScopedObservation<NativeTheme, NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(NativeTheme::GetInstanceForWeb());
+
+  // Invoke the registered handler from a different thread, as the system may
+  // do for WinRT events.
+  base::Thread other_thread("CaptionEventThread");
+  ASSERT_TRUE(other_thread.Start());
+  base::RunLoop run_loop;
+  other_thread.task_runner()->PostTaskAndReply(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        EXPECT_HRESULT_SUCCEEDED(fake_statics().SimulatePropertiesChanged());
+      }),
+      run_loop.QuitClosure());
+  run_loop.Run();
+  other_thread.Stop();
+
+  EXPECT_EQ(main_thread_id, notify_thread_id);
 }
 
 }  // namespace
