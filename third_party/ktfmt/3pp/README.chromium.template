@@ -1,0 +1,17 @@
+Name: ktfmt
+URL: https://github.com/Kotlin/ktfmt
+Version: N/A
+Revision: $_3PP_VERSION
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+CPEPrefix: unknown
+
+Description:
+ktfmt is a program that reformats Kotlin source code to comply with Google Kotlin Style.
+
+Local Modifications:
+None
