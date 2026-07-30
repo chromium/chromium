@@ -170,6 +170,10 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   }
 }
 
+- (void)viewportInsetsDidChangeWithMinInset:(UIEdgeInsets)minInset
+                                   maxInset:(UIEdgeInsets)maxInset {
+}
+
 #pragma mark Layout
 
 - (void)setContentOffset:(CGPoint)contentOffset {
@@ -293,8 +297,9 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
       if (_webView.window && isFrameLargeEnough) {
         [_webView setMinimumViewportInset:minInset
                      maximumViewportInset:maxInset];
-        [_webView setNeedsLayout];
         _hasPendingViewportInsets = NO;
+        [self viewportInsetsDidChangeWithMinInset:minInset maxInset:maxInset];
+        [_webView setNeedsLayout];
       } else {
         _pendingMinInset = minInset;
         _pendingMaxInset = maxInset;
