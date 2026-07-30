@@ -478,9 +478,13 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
   aura::Env::GetInstance()->AddPreTargetHandler(
       top_row_key_usage_recorder_.get(),
       ui::EventTarget::Priority::kAccessibility);
+
+  ui::GlobalAcceleratorListenerChromeOS::SetDelegate(this);
 }
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
+  ui::GlobalAcceleratorListenerChromeOS::SetDelegate(nullptr);
+
   // |AcceleratorControllerImpl| is owned by the shell which always is
   // deconstructed before |InputMethodManager| and |AcceleratorPref|.
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {

@@ -30,71 +30,11 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/shell.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
 namespace glic {
-
-#if BUILDFLAG(IS_CHROMEOS)
-class GlicBackgroundModeManager::AcceleratorRegistrar
-    : public ui::AcceleratorTarget {
- public:
-  AcceleratorRegistrar(GlicBackgroundModeManager* manager,
-                       const std::vector<ui::Accelerator>& accelerators)
-      : manager_(CHECK_DEREF(manager)) {
-    if (ash::Shell::HasInstance()) {
-      manager->actual_registered_hotkeys_.clear();
-      // TODO(crbug.com/461584318): Handle overwriting browser and system
-      // shortcuts.
-      auto* accel_controller = ash::Shell::Get()->accelerator_controller();
-      for (auto accelerator : accelerators) {
-        if (!accelerator.IsEmpty() &&
-            (!accel_controller->IsReserved(accelerator) ||
-             !accel_controller->IsRegistered(accelerator))) {
-          accel_controller->Register({accelerator}, this);
-        } else {
-          accelerator = ui::Accelerator();
-        }
-        manager->actual_registered_hotkeys_.push_back(accelerator);
-      }
-    }
-  }
-
-  ~AcceleratorRegistrar() override {
-    if (ash::Shell::HasInstance() &&
-        !manager_->actual_registered_hotkeys_.empty()) {
-      auto* accel_controller = ash::Shell::Get()->accelerator_controller();
-      accel_controller->UnregisterAll(this);
-    }
-    manager_->actual_registered_hotkeys_.clear();
-  }
-
-  // ui::AcceleratorTarget:
-  bool CanHandleAccelerators() const override { return true; }
-
-  // ui::AcceleratorTarget:
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
-    auto it =
-        std::find(manager_->actual_registered_hotkeys_.begin(),
-                  manager_->actual_registered_hotkeys_.end(), accelerator);
-    if (it != manager_->actual_registered_hotkeys_.end()) {
-      manager_->HandleHotkey(accelerator);
-      return true;
-    }
-    return false;
-  }
-
- private:
-  const raw_ref<GlicBackgroundModeManager> manager_;
-};
-
-#else
 
 class GlicBackgroundModeManager::AcceleratorRegistrar
     : public ui::GlobalAcceleratorListener::Observer {
@@ -117,7 +57,7 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
                                                               this)) {
           accelerator = ui::Accelerator();
         }
-        manager_->actual_registered_hotkeys_.push_back(accelerator);
+        manager->actual_registered_hotkeys_.push_back(accelerator);
       }
       global_accelerator_listener->SetShortcutHandlingSuspended(
           shortcut_handling_suspended);
@@ -147,7 +87,6 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
  private:
   const raw_ref<GlicBackgroundModeManager> manager_;
 };
-#endif
 
 GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
     : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),

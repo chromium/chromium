@@ -1097,6 +1097,10 @@ test("ui_base_unittests") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_chromeos_unittest.cc" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos || is_android) {
     deps += [ "//ui/base/unowned_user_data:unit_tests" ]
   }

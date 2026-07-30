@@ -3525,6 +3525,7 @@ component("ash") {
     "//ui/accessibility:ax_enums_mojo",
     "//ui/accessibility/mojom",
     "//ui/base",
+    "//ui/base/accelerators/global_accelerator_listener",
     "//ui/base/ime/ash",
     "//ui/base/ime/init",
     "//ui/base/interaction",

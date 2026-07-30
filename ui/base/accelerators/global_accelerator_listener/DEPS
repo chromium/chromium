@@ -1,6 +1,14 @@
 include_rules = [
   "+components/dbus",
-  "+content/public",
   "+crypto",
   "+dbus",
 ]
+
+specific_include_rules = {
+  "global_accelerator_listener_(mac|win|android)\\.(cc|mm)": [
+    "+content/public",
+  ],
+  ".*_unittest\\.cc": [
+    "+content/public/test",
+  ],
+}

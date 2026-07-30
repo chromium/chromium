@@ -81,9 +81,6 @@ source_set("impl") {
       "//components/keep_alive_registry",
     ]
   }
-  if (is_chromeos) {
-    deps += [ "//ash" ]
-  }
 
   if (is_win) {
     deps += [ "//chrome/browser/startup" ]

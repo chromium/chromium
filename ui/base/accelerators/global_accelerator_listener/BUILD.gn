@@ -16,12 +16,15 @@ source_set("global_accelerator_listener") {
 
   deps = [
     "//base",
-    "//content/public/browser",
     "//ui/base",
     "//ui/events:event_constants",
     "//ui/events:events_base",
     "//ui/gfx",
   ]
+
+  if (is_android || is_mac || is_win) {
+    deps += [ "//content/public/browser" ]
+  }
 
   if (is_android) {
     sources += [
@@ -64,5 +67,12 @@ source_set("global_accelerator_listener") {
       ]
       deps += [ "//components/dbus" ]
     }
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "global_accelerator_listener_chromeos.cc",
+      "global_accelerator_listener_chromeos.h",
+    ]
   }
 }

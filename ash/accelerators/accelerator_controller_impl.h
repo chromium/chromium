@@ -34,6 +34,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_chromeos.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ui {
@@ -53,7 +54,8 @@ class ASH_EXPORT AcceleratorControllerImpl
       public AcceleratorController,
       public input_method::InputMethodManager::Observer,
       public AshAcceleratorConfiguration::Observer,
-      public AcceleratorPrefs::Observer {
+      public AcceleratorPrefs::Observer,
+      public ui::GlobalAcceleratorListenerChromeOS::Delegate {
  public:
   // Used to record the keyboard type which triggers a screenshot action via the
   // overview key. Do not reorder values of this enum.
@@ -148,16 +150,20 @@ class ASH_EXPORT AcceleratorControllerImpl
   // multiple targets are registered for any given accelerator, a target
   // registered later has higher priority.
   void Register(const std::vector<ui::Accelerator>& accelerators,
-                ui::AcceleratorTarget* target);
+                ui::AcceleratorTarget* target) override;
 
   // Unregisters the specified keyboard accelerator for the specified target.
   void Unregister(const ui::Accelerator& accelerator,
-                  ui::AcceleratorTarget* target);
+                  ui::AcceleratorTarget* target) override;
 
   // Unregisters all keyboard accelerators for the specified target.
-  void UnregisterAll(ui::AcceleratorTarget* target);
+  void UnregisterAll(ui::AcceleratorTarget* target) override;
 
-  // AcceleratorControllerImpl:
+  // Returns true if the |accelerator| is reserved. A reserved accelerator
+  // is always handled and will never be passed to an window/web contents.
+  bool IsReserved(const ui::Accelerator& accelerator) const override;
+
+  // AcceleratorController:
   bool Process(const ui::Accelerator& accelerator) override;
   bool IsDeprecated(const ui::Accelerator& accelerator) const override;
   bool PerformActionIfEnabled(AcceleratorAction action,
@@ -173,10 +179,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   // is handled before being passed to an window/web contents, unless
   // the window is in fullscreen state.
   bool IsPreferred(const ui::Accelerator& accelerator) const;
-
-  // Returns true if the |accelerator| is reserved. A reserved accelerator
-  // is always handled and will never be passed to an window/web contents.
-  bool IsReserved(const ui::Accelerator& accelerator) const;
 
   // Provides access to the ExitWarningHandler for testing.
   ExitWarningHandler* GetExitWarningHandlerForTest() {
