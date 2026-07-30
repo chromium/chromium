@@ -25,6 +25,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderMac
   NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
+  bool PrefersOverlayScrollbars() const override;
   base::TimeDelta CaretBlinkInterval() const override;
 
  private:

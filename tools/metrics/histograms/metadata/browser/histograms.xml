@@ -934,6 +934,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.OverlayScrollbarsEnabled" enum="BooleanEnabled"
+    expires_after="2027-08-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether overlay scrollbars are enabled by the operating system settings on
+    desktop platforms (Mac, Linux, Windows, ChromeOS). Updated every UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
     expires_after="2027-02-09">
   <owner>ckitagawa@chromium.org</owner>

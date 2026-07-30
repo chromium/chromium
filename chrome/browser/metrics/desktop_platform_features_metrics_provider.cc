@@ -60,6 +60,10 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
   }
   base::UmaHistogramEnumeration("Browser.DarkModeStatus", status);
 
+  base::UmaHistogramBoolean(
+      "Browser.OverlayScrollbarsEnabled",
+      ui::OsSettingsProvider::Get().PrefersOverlayScrollbars());
+
   // Record how many items are in the reading list.
   std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();

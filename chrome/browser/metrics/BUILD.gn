@@ -615,6 +615,7 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [
+      "desktop_platform_features_metrics_provider_unittest.cc",
       "desktop_session_duration/desktop_session_duration_tracker_unittest.cc",
       "desktop_session_duration/touch_ui_controller_stats_tracker_unittest.cc",
       "power/battery_discharge_reporter_unittest.cc",
