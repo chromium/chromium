@@ -732,24 +732,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 // Starts a fetch of the Segmentation module ranking.
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
-  if (!base::FeatureList::IsEnabled(segmentation_platform::features::
-                                        kSegmentationPlatformIosModuleRanker)) {
-    segmentation_platform::ClassificationResult result(
-        segmentation_platform::PredictionStatus::kNotReady);
-    self.hasReceivedMagicStackResponse = YES;
-    [self didReceiveSegmentationServiceResult:result];
-    return;
-  }
   auto inputContext =
       base::MakeRefCounted<segmentation_platform::InputContext>();
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::
-              kSegmentationPlatformIosModuleRankerSplitBySurface)) {
-    inputContext->metadata_args.emplace(
-        segmentation_platform::kIsShowingStartSurface,
-        segmentation_platform::processing::ProcessedValue::FromFloat(
-            [self.homeStartDataSource isStartSurface]));
-  }
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsShowingStartSurface,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          [self.homeStartDataSource isStartSurface]));
   int mvtFreshnessImpressionCount = _prefService->GetInteger(
       prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(

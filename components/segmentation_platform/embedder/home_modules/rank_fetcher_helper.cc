@@ -31,8 +31,6 @@ std::vector<std::string> GetFixedModuleList() {
 }
 
 #if BUILDFLAG(IS_IOS)
-constexpr auto* kModuleFeatureFlag =
-    &features::kSegmentationPlatformIosModuleRanker;
 const char* kModuleRankerKey = kIosModuleRankerKey;
 #else
 constexpr auto* kModuleFeatureFlag =
@@ -56,10 +54,12 @@ void RankFetcherHelper::GetHomeModulesRank(
     const PredictionOptions& module_prediction_options,
     scoped_refptr<InputContext> input_context,
     ClassificationResultCallback callback) {
+#if !BUILDFLAG(IS_IOS)
   if (!base::FeatureList::IsEnabled(*kModuleFeatureFlag)) {
     RunFixedRankingResult(std::move(callback));
     return;
   }
+#endif
 
   segmentation_service->GetInputKeysForModel(
       kModuleRankerKey,

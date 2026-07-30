@@ -292,15 +292,6 @@ const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
     {"Set up list Registeration Only",
      kContentPushNotificationsSetUpListRegistrationOnly, nullptr}};
 
-const FeatureEntry::FeatureParam kEnableDefaultModel[] = {
-    {segmentation_platform::kDefaultModelEnabledParam, "true"}};
-
-const FeatureEntry::FeatureVariation
-    kSegmentationPlatformIosModuleRankerVariations[]{
-        {"Enabled With Default Model Parameter (Must Set this!)",
-         kEnableDefaultModel, nullptr},
-    };
-
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params.
 const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
@@ -1539,27 +1530,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSKeyboardAccessoryDefaultViewName,
      flag_descriptions::kIOSKeyboardAccessoryDefaultViewDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryDefaultView)},
-    {"ios-magic-stack-segmentation-ranking",
-     flag_descriptions::kSegmentationPlatformIosModuleRankerName,
-     flag_descriptions::kSegmentationPlatformIosModuleRankerDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
-         kSegmentationPlatformIosModuleRankerVariations,
-         flag_descriptions::kSegmentationPlatformIosModuleRankerName)},
     {"ios-magic-stack-segmentation-ranking-caching",
      flag_descriptions::kSegmentationPlatformIosModuleRankerCachingName,
      flag_descriptions::kSegmentationPlatformIosModuleRankerCachingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSegmentationPlatformIosModuleRankerCaching)},
-    {"ios-magic-stack-segmentation-ranking-split-by-surface",
-     flag_descriptions::kSegmentationPlatformIosModuleRankerSplitBySurfaceName,
-     flag_descriptions::
-         kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::
-             kSegmentationPlatformIosModuleRankerSplitBySurface)},
     {"ios-proactive-password-generation-bottom-sheet",
      flag_descriptions::kIOSProactivePasswordGenerationBottomSheetName,
      flag_descriptions::kIOSProactivePasswordGenerationBottomSheetDescription,

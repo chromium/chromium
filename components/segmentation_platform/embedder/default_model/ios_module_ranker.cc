@@ -44,19 +44,6 @@ constexpr LabelPair<IosModuleRanker::Label> kIosModuleLabels[] = {
     {IosModuleRanker::kLabelShopCard, kShopCard},
     {IosModuleRanker::kLabelLevelUp, kLevelUp}};
 
-// Output features:
-
-constexpr char kClickHistogram[] = "IOS.MagicStack.Module.Click";
-
-constexpr std::array<float, 1> kOutputFeatureDefaultValue{100};
-constexpr std::array<MetadataWriter::UMAFeature, 1> kOutputFeatures = {
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        kClickHistogram,
-        1,
-        proto::Aggregation::LATEST_OR_DEFAULT,
-        kOutputFeatureDefaultValue.size(),
-        kOutputFeatureDefaultValue.data())};
-
 // InputFeatures.
 
 // Enum values for the IOS.MagicStack.Module.Click and
@@ -251,10 +238,6 @@ float TransformFreshness(float freshness_score, float freshness_threshold) {
 
 // static
 std::unique_ptr<Config> IosModuleRanker::GetConfig() {
-  if (!base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformIosModuleRanker)) {
-    return nullptr;
-  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kIosModuleRankerKey;
   config->segmentation_uma_name = kIosModuleRankerUmaName;
@@ -282,24 +265,6 @@ IosModuleRanker::GetModelConfig() {
 
   // Set features.
   writer.AddFeatures<Feature>(kIosModuleRankerFeatures);
-
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kSegmentationPlatformIosModuleRanker, "add-trigger-config",
-          false)) {
-    writer.AddUmaFeatures(kOutputFeatures.data(), kOutputFeatures.size(),
-                          /*is_output=*/true);
-
-    auto* outputs = metadata.mutable_training_outputs();
-    auto* uma_trigger =
-        outputs->mutable_trigger_config()->add_observation_trigger();
-    auto* uma_feature =
-        uma_trigger->mutable_uma_trigger()->mutable_uma_feature();
-    uma_feature->set_name(kClickHistogram);
-    uma_feature->set_name_hash(base::HashMetricName(kClickHistogram));
-    uma_feature->set_type(proto::SignalType::HISTOGRAM_ENUM);
-    outputs->mutable_trigger_config()->set_decision_type(
-        proto::TrainingOutputs::TriggerConfig::ONDEMAND);
-  }
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }

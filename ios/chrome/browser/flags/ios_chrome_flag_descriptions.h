@@ -1839,18 +1839,6 @@ inline constexpr char kSegmentationPlatformIosModuleRankerCachingDescription[] =
     "Enables the Segmentation platform to cache the Magic Stack module rank "
     "for Start";
 
-inline constexpr char kSegmentationPlatformIosModuleRankerName[] =
-    "Enable Magic Stack Segmentation Ranking";
-inline constexpr char kSegmentationPlatformIosModuleRankerDescription[] =
-    "Enables the Segmentation platform to rank Magic Stack modules";
-
-inline constexpr char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[] =
-    "Enable Magic Stack Segmentation Ranking split by surface";
-inline constexpr char
-    kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
-        "Enables the Magic Stack module ranking to be split by surface for "
-        "engagement";
-
 inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
     "Send Tab To Self enhanced handoff";
 inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =

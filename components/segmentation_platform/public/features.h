@@ -84,9 +84,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformPasswordManagerUser);
 // Feature flag for enabling tab resumption ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformTabResumptionRanker);
 
-// Feature flag for enabling ios module ranker.
-BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRanker);
-
 // Feature flag for enabling android home module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker);
 
@@ -105,9 +102,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformComposePromotion);
 
 // Feature flag for using SQL database for UMA signals.
 BASE_DECLARE_FEATURE(kSegmentationPlatformUmaFromSqlDb);
-
-// Feature flag for having separate models for the Start and NTP surface.
-BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface);
 
 // Feature flag for enabling the URL visit resumption ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker);

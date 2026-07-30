@@ -42,9 +42,7 @@ class RankFetcherHelperTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kSegmentationPlatformAndroidHomeModuleRanker,
-         features::kSegmentationPlatformIosModuleRanker,
-         features::kSegmentationPlatformEphemeralCardRanker,
-         features::kSegmentationPlatformIosModuleRanker},
+         features::kSegmentationPlatformEphemeralCardRanker},
         {});
   }
 
@@ -128,27 +126,23 @@ class RankFetcherHelperTest : public testing::Test {
   MockSegmentationPlatformService segmentation_service_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(RankFetcherHelperTest, GetHomeModulesRankDisabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {}, {features::kSegmentationPlatformAndroidHomeModuleRanker,
-           features::kSegmentationPlatformIosModuleRanker,
-           features::kSegmentationPlatformIosModuleRanker});
+      {}, {features::kSegmentationPlatformAndroidHomeModuleRanker});
   RankFetcherHelper rank_fetcher_helper;
 
   ClassificationResult result = FetchRank(rank_fetcher_helper);
 
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(result.ordered_labels, SizeIs(4));  // Fixed modules size.
-#endif
 }
+#endif
 
 TEST_F(RankFetcherHelperTest, GetHomeModulesRankEnabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {features::kSegmentationPlatformAndroidHomeModuleRanker,
-       features::kSegmentationPlatformIosModuleRanker,
-       features::kSegmentationPlatformIosModuleRanker},
+      {features::kSegmentationPlatformAndroidHomeModuleRanker},
       {features::kSegmentationPlatformEphemeralCardRanker});
   std::vector<std::string> module_ranks = {"module1", "module3", "module2"};
   RankFetcherHelper rank_fetcher_helper;

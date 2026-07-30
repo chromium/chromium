@@ -21893,21 +21893,6 @@
             ]
         }
     ],
-    "SafetyCheckMagicStackWithCaching": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SegmentationPlatformIosModuleRankerSplitBySurface"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafetyCheckUnusedSitePermissions": [
         {
             "platforms": [

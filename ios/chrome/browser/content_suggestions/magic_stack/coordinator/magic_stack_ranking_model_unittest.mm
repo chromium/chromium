@@ -659,23 +659,6 @@ TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
-// Test that disabling the Magic Stack ranking model doesn't crash and doesn't
-// perform a valid fetch.
-TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {}, {{segmentation_platform::features::
-                kSegmentationPlatformIosModuleRanker}});
-  id mockDelegate =
-      OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
-  _magicStackRankingModel.delegate = mockDelegate;
-  OCMReject([mockDelegate magicStackRankingModel:[OCMArg any]
-                        didGetLatestRankingOrder:[OCMArg any]]);
-  [_magicStackRankingModel fetchLatestMagicStackRanking];
-  base::RunLoop().RunUntilIdle();
-  EXPECT_OCMOCK_VERIFY(mockDelegate);
-}
-
 // Test that fetching the ephemeral card to show in the Magic Stack returns the
 // correct card.
 TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
