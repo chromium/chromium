@@ -106,6 +106,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class VerticalTabListCoordinator {
     static final int DEFAULT_GRID_SPAN_COUNT = 4;
+    static final int COLLAPSED_GRID_SPAN_COUNT = 1;
     private static @Nullable Supplier<TabSwitcherDragHandler>
             sTabSwitcherDragHandlerSupplierForTesting;
     private final VerticalTabRailLayout mContainerView;
@@ -395,6 +396,9 @@ public class VerticalTabListCoordinator {
                     int width = right - left;
                     boolean isVisible = mContainerView.getVisibility() == View.VISIBLE;
                     verticalTabsWidthSupplier.set(isVisible ? width : 0);
+                    if (isVisible && width > 0 && width != (oldRight - oldLeft)) {
+                        updatePinnedLayoutSpanCount();
+                    }
                 };
         mContainerView.addOnLayoutChangeListener(mContainerLayoutChangeListener);
 
@@ -691,8 +695,7 @@ public class VerticalTabListCoordinator {
      */
     void setRailCollapseState(@RailCollapseState int railCollapseState) {
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
-        mPinnedLayoutManager.setSpanCount(
-                railCollapseState == RailCollapseState.COLLAPSED ? 1 : getSpanCount());
+        updatePinnedLayoutSpanCount();
         mCollapseController.setRailCollapseState(railCollapseState);
     }
 
@@ -1043,11 +1046,36 @@ public class VerticalTabListCoordinator {
         };
     }
 
-    /** Returns the default grid column span count for the Left Rail. */
+    /** Returns the grid column span count for the Left Rail based on measured width. */
     private int getSpanCount() {
-        // TODO(crbug.com/509226293): When the Left Rail becomes collapsible or resizable, the span
-        // count must be calculated dynamically based on the measured width of the container.
-        return DEFAULT_GRID_SPAN_COUNT;
+        int containerWidth = mContainerView.getWidth();
+        if (containerWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
+
+        int paddingStart = mContainerView.getPaddingStart();
+        int paddingEnd = mContainerView.getPaddingEnd();
+        int availableWidth = containerWidth - paddingStart - paddingEnd;
+
+        Resources res = mContainerView.getContext().getResources();
+        int itemWidth = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int minHorizontalGap = res.getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+        if (itemWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
+
+        int calculatedSpans =
+                Math.max(
+                        COLLAPSED_GRID_SPAN_COUNT,
+                        (availableWidth + minHorizontalGap) / (itemWidth + minHorizontalGap));
+        return Math.min(DEFAULT_GRID_SPAN_COUNT, calculatedSpans);
+    }
+
+    private void updatePinnedLayoutSpanCount() {
+        if (mPinnedLayoutManager == null || mContainerModel == null) return;
+        @RailCollapseState
+        int collapseState = mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE);
+        if (collapseState == RailCollapseState.COLLAPSED) {
+            mPinnedLayoutManager.setSpanCount(COLLAPSED_GRID_SPAN_COUNT);
+        } else {
+            mPinnedLayoutManager.setSpanCount(getSpanCount());
+        }
     }
 
     /**

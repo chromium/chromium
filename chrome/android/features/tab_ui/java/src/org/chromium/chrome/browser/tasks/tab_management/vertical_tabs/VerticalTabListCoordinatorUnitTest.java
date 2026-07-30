@@ -286,7 +286,9 @@ public class VerticalTabListCoordinatorUnitTest {
 
         GridLayoutManager pinnedLayoutManager =
                 (GridLayoutManager) pinnedRecyclerView.getLayoutManager();
-        assertEquals(4, pinnedLayoutManager.getSpanCount());
+        assertEquals(
+                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                pinnedLayoutManager.getSpanCount());
 
         assertNotNull(mSelectorObserverCaptor.getValue());
         verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.getValue());
@@ -1108,7 +1110,9 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
-        assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+        assertEquals(
+                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Android.VerticalTabs.RailCollapsed", true);
@@ -1135,7 +1139,9 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
-        assertEquals(1, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+        assertEquals(
+                VerticalTabListCoordinator.COLLAPSED_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1163,7 +1169,9 @@ public class VerticalTabListCoordinatorUnitTest {
                 mCoordinator
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
-        assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+        assertEquals(
+                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 
     @Test
@@ -1265,6 +1273,81 @@ public class VerticalTabListCoordinatorUnitTest {
 
         verify(mTabHoverCardViewStub, never()).inflate();
         verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @SmallTest
+    public void testDynamicSpanCountOnWidthChange() {
+        createCoordinator();
+        int defaultSpanCount = mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount();
+        assertEquals(VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
+
+        // Simulate measuring container with a width that fits exactly 2 columns.
+        View containerView = mCoordinator.getView();
+        int itemWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int itemMarginPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+        int testWidthPx =
+                itemWidthPx * 2
+                        + itemMarginPx
+                        + containerView.getPaddingStart()
+                        + containerView.getPaddingEnd();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(testWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, testWidthPx, 1000);
+
+        assertEquals(2, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Verify collapse reduces span count to 1 even when dynamically measured.
+        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(
+                VerticalTabListCoordinator.COLLAPSED_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Verify expand restores dynamically calculated span count (2).
+        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(2, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testDynamicSpanCountIgnoredWhenHidden() {
+        createCoordinator();
+        int defaultSpanCount = mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount();
+        assertEquals(VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
+
+        View containerView = mCoordinator.getView();
+        containerView.setVisibility(View.GONE);
+
+        // Simulate layout change while hidden with a width that would fit 2 columns.
+        int itemWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int itemMarginPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
+        int testWidthPx =
+                itemWidthPx * 2
+                        + itemMarginPx
+                        + containerView.getPaddingStart()
+                        + containerView.getPaddingEnd();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(testWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, testWidthPx, 1000);
+
+        // Should remain at default span count because the container is hidden.
+        assertEquals(
+                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 
     // =============================================================================================
