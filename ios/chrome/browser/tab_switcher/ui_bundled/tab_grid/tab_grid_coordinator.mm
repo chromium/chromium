@@ -1399,8 +1399,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (BOOL)tabGridIsUserEligibleForSwipeToIncognitoIPH {
-  return _pageConfiguration == TabGridPageConfiguration::kAllPagesEnabled &&
-         IsFirstRunRecent(base::Days(60)) &&
+  if (_pageConfiguration != TabGridPageConfiguration::kAllPagesEnabled) {
+    return NO;
+  }
+  if (IsLevelUpEnabled() && _viewController.shouldShowSwipeToIncognitoIPH) {
+    return YES;
+  }
+  return IsFirstRunRecent(base::Days(60)) &&
          feature_engagement::TrackerFactory::GetForProfile(
              self.regularBrowser->GetProfile())
              ->WouldTriggerHelpUI(
@@ -1408,6 +1413,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (BOOL)tabGridShouldPresentSwipeToIncognitoIPH {
+  if (IsLevelUpEnabled() && _viewController.shouldShowSwipeToIncognitoIPH) {
+    return YES;
+  }
   return feature_engagement::TrackerFactory::GetForProfile(
              self.regularBrowser->GetProfile())
       ->ShouldTriggerHelpUI(
@@ -2010,6 +2018,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
   [presenter presentInViewController:_viewController anchorPoint:anchorPoint];
   _createTabGroupBubblePresenter = presenter;
+}
+
+- (void)showSwipeToIncognitoIPH {
+  if (!IsLevelUpEnabled()) {
+    return;
+  }
+  _viewController.shouldShowSwipeToIncognitoIPH = YES;
+  [_viewController maybeShowSwipeToIncognitoIPH];
 }
 
 - (void)showPageActionMenuFromTabGrid {

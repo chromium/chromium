@@ -85,6 +85,8 @@
 }
 - (void)presentCreateTabGroupBubble {
 }
+- (void)showSwipeToIncognitoIPH {
+}
 - (void)showPageActionMenuFromTabGrid {
 }
 - (void)activateGridContainerConstraints {

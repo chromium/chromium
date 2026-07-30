@@ -219,6 +219,92 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _bottomToolbar = bottomToolbar;
   _bottomToolbar.layoutState = self.layoutState;
 }
+
+- (void)maybeShowSwipeToIncognitoIPH {
+  // Return if the regular tabs are visible.
+  if (!self.viewVisible || self.currentPage != TabGridPageRegularTabs) {
+    return;
+  }
+  // Check whether the user should see the IPH.
+  if (![self.delegate tabGridIsUserEligibleForSwipeToIncognitoIPH]) {
+    return;
+  }
+  // Return if the IPH has already been presented.
+  if (self.swipeToIncognitoIPH) {
+    return;
+  }
+
+  // Create the view.
+  UIView* regularGridView = self.regularTabsViewController.view;
+  CGSize expectedSize = CGSize();
+  CGFloat expectedHeight =
+      regularGridView.frame.size.height - self.topToolbar.bounds.size.height;
+  expectedHeight -=
+      self.view.window.windowScene.statusBarManager.statusBarFrame.size.height;
+  if ([self shouldUseCompactLayout]) {
+    expectedHeight -= self.bottomToolbar.bounds.size.height;
+  }
+  expectedSize.height = expectedHeight;
+  CGFloat safeAreaInsetForArrowDirection =
+      UseRTLLayout() ? regularGridView.safeAreaInsets.right
+                     : regularGridView.safeAreaInsets.left;
+  expectedSize.width =
+      regularGridView.frame.size.width - safeAreaInsetForArrowDirection;
+
+  int stringID = IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH;
+  int voiceOverAnnouncementStringID =
+      IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH_VOICEOVER;
+  UISwipeGestureRecognizerDirection swipeDirection =
+      UISwipeGestureRecognizerDirectionRight;
+  if (UseRTLLayout()) {
+    stringID = IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH;
+    voiceOverAnnouncementStringID =
+        IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH_VOICEOVER;
+    swipeDirection = UISwipeGestureRecognizerDirectionLeft;
+  }
+  GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
+               initWithText:l10n_util::GetNSString(stringID)
+         bubbleBoundingSize:expectedSize
+             swipeDirection:swipeDirection
+      voiceOverAnnouncement:l10n_util::GetNSString(
+                                voiceOverAnnouncementStringID)];
+  [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+  // Return if the view does NOT fit in the regular tab grid.
+  CGSize smallestPossibleSizeOfIPH = [gestureIPHView
+      systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  if (smallestPossibleSizeOfIPH.width > expectedSize.width ||
+      smallestPossibleSizeOfIPH.height > expectedSize.height) {
+    return;
+  }
+  if (![self.delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
+    return;
+  }
+  gestureIPHView.delegate = self;
+  self.swipeToIncognitoIPH = gestureIPHView;
+  self.shouldShowSwipeToIncognitoIPH = NO;
+  [self.view addSubview:self.swipeToIncognitoIPH];
+  self.swipeToIncognitoIPHBottomConstraint = [gestureIPHView.bottomAnchor
+      constraintEqualToAnchor:[self shouldUseCompactLayout]
+                                  ? self.bottomToolbar.topAnchor
+                                  : regularGridView.bottomAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    [gestureIPHView.leadingAnchor
+        constraintEqualToAnchor:regularGridView.leadingAnchor],
+    [gestureIPHView.trailingAnchor
+        constraintEqualToAnchor:regularGridView.trailingAnchor],
+    [gestureIPHView.topAnchor
+        constraintEqualToAnchor:self.topToolbar.bottomAnchor],
+    self.swipeToIncognitoIPHBottomConstraint
+  ]];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        hideFloatyIfInvokedAnimated:NO
+                         fromSource:gemini::FloatyUpdateSource::GestureIph];
+  }
+  [self.swipeToIncognitoIPH startAnimation];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -1202,96 +1288,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Quit search mode.
 - (void)quitSearchMode {
   [self.mutator quitSearchMode];
-}
-
-// Optionally presents a full screen IPH that instructs the user to right swipe
-// to view the incognito tab grid. If the delegate determines that the user
-// supposed to see this tip, and the IPH fits on the current screen both
-// contextually and visually, then it initializes `swipeToIncognitoIPH` and
-// presents a GestureInProductHelpView. Otherwise, it keeps
-// `swipeToIncognitoIPH` to `nil` and no gestural tip is shown.
-- (void)maybeShowSwipeToIncognitoIPH {
-  // Return if the regular tabs are visible.
-  if (!self.viewVisible || self.currentPage != TabGridPageRegularTabs) {
-    return;
-  }
-  // Check whether the user should see the IPH.
-  if (![self.delegate tabGridIsUserEligibleForSwipeToIncognitoIPH]) {
-    return;
-  }
-  // Return if the IPH has already been presented.
-  if (self.swipeToIncognitoIPH) {
-    return;
-  }
-
-  // Create the view.
-  UIView* regularGridView = self.regularTabsViewController.view;
-  CGSize expectedSize = CGSize();
-  CGFloat expectedHeight =
-      regularGridView.frame.size.height - self.topToolbar.bounds.size.height;
-  expectedHeight -=
-      self.view.window.windowScene.statusBarManager.statusBarFrame.size.height;
-  if ([self shouldUseCompactLayout]) {
-    expectedHeight -= self.bottomToolbar.bounds.size.height;
-  }
-  expectedSize.height = expectedHeight;
-  CGFloat safeAreaInsetForArrowDirection =
-      UseRTLLayout() ? regularGridView.safeAreaInsets.right
-                     : regularGridView.safeAreaInsets.left;
-  expectedSize.width =
-      regularGridView.frame.size.width - safeAreaInsetForArrowDirection;
-
-  int stringID = IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH;
-  int voiceOverAnnouncementStringID =
-      IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH_VOICEOVER;
-  UISwipeGestureRecognizerDirection swipeDirection =
-      UISwipeGestureRecognizerDirectionRight;
-  if (UseRTLLayout()) {
-    stringID = IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH;
-    voiceOverAnnouncementStringID =
-        IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH_VOICEOVER;
-    swipeDirection = UISwipeGestureRecognizerDirectionLeft;
-  }
-  GestureInProductHelpView* gestureIPHView = [[GestureInProductHelpView alloc]
-               initWithText:l10n_util::GetNSString(stringID)
-         bubbleBoundingSize:expectedSize
-             swipeDirection:swipeDirection
-      voiceOverAnnouncement:l10n_util::GetNSString(
-                                voiceOverAnnouncementStringID)];
-  [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-  // Return if the view does NOT fit in the regular tab grid.
-  CGSize smallestPossibleSizeOfIPH = [gestureIPHView
-      systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-  if (smallestPossibleSizeOfIPH.width > expectedSize.width ||
-      smallestPossibleSizeOfIPH.height > expectedSize.height) {
-    return;
-  }
-  if (![self.delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
-    return;
-  }
-  gestureIPHView.delegate = self;
-  self.swipeToIncognitoIPH = gestureIPHView;
-  [self.view addSubview:self.swipeToIncognitoIPH];
-  self.swipeToIncognitoIPHBottomConstraint = [gestureIPHView.bottomAnchor
-      constraintEqualToAnchor:[self shouldUseCompactLayout]
-                                  ? self.bottomToolbar.topAnchor
-                                  : regularGridView.bottomAnchor];
-  [NSLayoutConstraint activateConstraints:@[
-    [gestureIPHView.leadingAnchor
-        constraintEqualToAnchor:regularGridView.leadingAnchor],
-    [gestureIPHView.trailingAnchor
-        constraintEqualToAnchor:regularGridView.trailingAnchor],
-    [gestureIPHView.topAnchor
-        constraintEqualToAnchor:self.topToolbar.bottomAnchor],
-    self.swipeToIncognitoIPHBottomConstraint
-  ]];
-  if (IsPageActionMenuEnabled()) {
-    [self.geminiHandler
-        hideFloatyIfInvokedAnimated:NO
-                         fromSource:gemini::FloatyUpdateSource::GestureIph];
-  }
-  [self.swipeToIncognitoIPH startAnimation];
 }
 
 // Called when a drag will begin.
