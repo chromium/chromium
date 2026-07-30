@@ -283,7 +283,7 @@ android_resources("java_resources") {
     "java/res/drawable/rich_radio_button_background.xml",
     "java/res/drawable/rich_radio_button_selector.xml",
     "java/res/drawable/rounded_corner_card.xml",
-    "java/res/drawable/rounded_rectangle_surface_0.xml",
+    "java/res/drawable/rounded_rectangle_surface.xml",
     "java/res/drawable/rounded_rectangle_surface_container_low.xml",
     "java/res/drawable/search_box_icon_background.xml",
     "java/res/drawable/search_box_icon_background_baseline.xml",

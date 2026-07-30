@@ -48,7 +48,7 @@ found in the LICENSE file.
           app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
           app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
           app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
-          android:background="@drawable/rounded_rectangle_surface_0"
+          android:background="@drawable/rounded_rectangle_surface"
           android:importantForAccessibility="no"
           android:focusable="false"
           android:clickable="false" />
