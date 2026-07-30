@@ -23833,6 +23833,26 @@
             ]
         }
     ],
+    "StructuredHeadersInRust": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260730",
+                    "enable_features": [
+                        "StructuredHeadersInRust"
+                    ]
+                }
+            ]
+        }
+    ],
     "SubmenusInAppMenuLff": [
         {
             "platforms": [
