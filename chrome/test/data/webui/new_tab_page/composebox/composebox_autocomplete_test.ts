@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxElement, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import {InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -1244,8 +1244,16 @@ enum Attributes {
 suite('NewTabPageComposeboxAutocompleteContextTest', () => {
   const testProxy = setupComposeboxTest();
 
+  // TODO(crbug.com/535685540): Remove this suite and its tests from here once
+  // `cr-composebox` element is no longer used. AutoChip is not used in
+  // `ntp-composebox`, it could be related to contextual_tasks.
+  function createCrComposeboxElement() {
+    testProxy.element = new ComposeboxElement();
+    document.body.appendChild(testProxy.element);
+  }
+
   test('autocomplete queried when autochip removed', async () => {
-    createComposeboxElement(testProxy);
+    createCrComposeboxElement();
     await microtasksFinished();
 
     // Autocomplete queried once on load.
@@ -1300,7 +1308,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           composeboxShowZps: true,
           tabFaviconChipsToCoinsEnabled: false,
         });
-        createComposeboxElement(testProxy);
+        createCrComposeboxElement();
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
             testInputState);
         await microtasksFinished();
@@ -1374,7 +1382,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
       });
 
   test('matches cleared when new autochip added', async () => {
-    createComposeboxElement(testProxy);
+    createCrComposeboxElement();
     await microtasksFinished();
 
     testProxy.searchboxHandler.reset();
@@ -1403,7 +1411,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
   test(
       'autocomplete not requeried if no autochip to start and updated with null',
       async () => {
-        createComposeboxElement(testProxy);
+        createCrComposeboxElement();
         await microtasksFinished();
 
         // Autocomplete queried once on load.
@@ -1430,7 +1438,7 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           composeboxShowZps: true,
           tabFaviconChipsToCoinsEnabled: false,
         });
-        createComposeboxElement(testProxy);
+        createCrComposeboxElement();
         await microtasksFinished();
 
         const tab1 = {
