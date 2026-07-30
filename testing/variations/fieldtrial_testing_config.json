@@ -9138,6 +9138,24 @@
             ]
         }
     ],
+    "Dictation": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Dictation"
+                    ]
+                }
+            ]
+        }
+    ],
     "DipsForWebView": [
         {
             "platforms": [
