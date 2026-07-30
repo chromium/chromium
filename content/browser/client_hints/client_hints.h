@@ -138,9 +138,13 @@ CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
 // processes, but here, we just pass the HttpRequestHeaders to the
 // TrialTokenValidator library.  There is precedent for calling the
 // TrialTokenValidator from the browser process, see crrev.com/c/2142580.
+//
+// `ssl_info` is used to check for certificate errors. If there are any errors,
+// hints are not written or read.
 CONTENT_EXPORT std::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseAndPersistAcceptCHForNavigation(
     const url::Origin& origin,
+    const std::optional<net::SSLInfo> ssl_info,
     const network::mojom::ParsedHeadersPtr& parsed_headers,
     const net::HttpResponseHeaders* response_headers,
     BrowserContext* context,

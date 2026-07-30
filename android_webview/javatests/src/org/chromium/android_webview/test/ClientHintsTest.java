@@ -96,7 +96,10 @@ public class ClientHintsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    @CommandLineFlags.Add({
+        "enable-features=BypassClientHintsSSLCertStatusForTest",
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+    })
     public void testClientHintsDefault() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
