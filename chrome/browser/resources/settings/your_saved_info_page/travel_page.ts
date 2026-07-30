@@ -282,6 +282,16 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   }
 
   // SettingsViewMixin implementation.
+  override getFocusConfig() {
+    const map = new Map();
+    if (routes.SUGGESTIONS_FROM_GEMINI) {
+      map.set(
+          routes.SUGGESTIONS_FROM_GEMINI.path, '#suggestionsFromGeminiLinkRow');
+    }
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
