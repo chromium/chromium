@@ -360,13 +360,35 @@ TEST_F(VisualGuidedSetterControllerWinTest, TopmostPolicyRequiresFocus) {
 
 TEST_F(VisualGuidedSetterControllerWinTest,
        RepeatedStartWithoutAnchorDoesNotCrash) {
+  // Starting without an anchor rect is now supported; it should start running.
   controller_->SetAnchorRectInWebUi(gfx::Rect());
   controller_->Start();
-  EXPECT_FALSE(controller_->is_running());
-  // Second Start() call should early return and not crash on
-  // CHECK(IsValidTransition).
+  EXPECT_TRUE(controller_->is_running());
+
+  // A duplicate Start() call should return early without starting the window
+  // finder again.
   controller_->Start();
-  EXPECT_FALSE(controller_->is_running());
+  EXPECT_TRUE(controller_->is_running());
+  EXPECT_EQ(controller_->test_finder()->start_called_count(), 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, StartWithEmptyAnchorRectDegrades) {
+  base::HistogramTester histograms;
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+
+  controller_->SetAnchorRectInWebUi(gfx::Rect());
+  controller_->SetAnchorRect(std::nullopt);
+  controller_->Start();
+
+  EXPECT_TRUE(controller_->is_running());
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // The visual guide should have entered degraded floating mode.
+  controller_->Stop();
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kStageTooSmall, 1);
 }
 
 TEST_F(VisualGuidedSetterControllerWinTest, SettingsWindowClosedRecordsError) {

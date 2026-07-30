@@ -65,9 +65,6 @@ void VisualGuidedSetterControllerWin::Start() {
   }
 
   CHECK(parent_widget_ && chrome_hwnd_);
-  if (!has_anchor_rect_) {
-    return;
-  }
 
   is_running_ = true;
   is_degraded_ = false;
