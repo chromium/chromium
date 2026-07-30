@@ -113,6 +113,7 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   PersonalizeGoogleServicesItemType,
   // SyncErrorsSectionIdentifier section.
   // Sync errors.
+  PrimaryAccountMdmErrorItemType,
   PrimaryAccountReauthErrorItemType,
   ShowPassphraseDialogErrorItemType,
   SyncNeedsTrustedVaultKeyErrorItemType,

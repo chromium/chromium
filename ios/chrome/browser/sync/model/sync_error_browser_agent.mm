@@ -70,6 +70,7 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
         kNeedsTrustedVaultKeyForPasswords:
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::kDeviceManagementError:
       return true;
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::

@@ -917,6 +917,14 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   if (GetAuthError().state() != GoogleServiceAuthError::NONE) {
+#if BUILDFLAG(IS_IOS)
+    if (GetAuthError().state() ==
+            GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR &&
+        base::FeatureList::IsEnabled(
+            switches::kHandleMdmErrorsForDasherAccounts)) {
+      return UserActionableError::kDeviceManagementError;
+    }
+#endif  // BUILDFLAG(IS_IOS)
     return UserActionableError::kSignInNeedsUpdate;
   }
   if (last_actionable_error_.action == UPGRADE_CLIENT) {

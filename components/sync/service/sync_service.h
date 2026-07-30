@@ -244,7 +244,16 @@ class SyncService : public KeyedService {
     kNeedsClientUpgrade = 10,
     // The number of bookmarks has exceeded the limit.
     kBookmarksLimitExceeded = 11,
+
+#if BUILDFLAG(IS_IOS)
+    // Sync has encountered a Device Management error. The user should be
+    // notified and depending on the type of error, may need to take action to
+    // resolve it.
+    kDeviceManagementError = 12,
+    kMaxValue = kDeviceManagementError,
+#else
     kMaxValue = kBookmarksLimitExceeded,
+#endif  // BUILDFLAG(IS_IOS)
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:UserActionableError)
 

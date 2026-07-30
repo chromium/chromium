@@ -13,6 +13,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
@@ -376,18 +377,30 @@
   }
   switch (_error.errorType) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
-      if (_authenticationService->HasCachedMDMErrorForIdentity(
-              _primaryIdentityBeforeSignin)) {
-        base::RecordAction(
-            base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
-        [self.syncErrorSettingsCommandHandler
-            openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
-      } else {
+      BOOL isMDMError = NO;
+      if (!base::FeatureList::IsEnabled(
+              switches::kHandleMdmErrorsForDasherAccounts)) {
+        isMDMError = _authenticationService->HasCachedMDMErrorForIdentity(
+            _primaryIdentityBeforeSignin);
+      }
+      if (!isMDMError) {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Reauth"));
         self.userInteractionsBlocked = YES;
         [self.syncErrorSettingsCommandHandler openPrimaryAccountReauthDialog];
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
+        [self.syncErrorSettingsCommandHandler
+            openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
       }
+      break;
+    }
+    case syncer::SyncService::UserActionableError::kDeviceManagementError: {
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
+      [self.syncErrorSettingsCommandHandler
+          openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:

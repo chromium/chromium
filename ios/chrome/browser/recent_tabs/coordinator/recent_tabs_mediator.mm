@@ -59,6 +59,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
     // These errors effectively amount to disabled sync or effectively paused.
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::kDeviceManagementError:
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:

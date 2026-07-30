@@ -145,6 +145,16 @@ bool SyncErrorInfoBarDelegate::Accept() {
       [sync_presenter_handler_ showPrimaryAccountReauth];
       break;
 
+    case syncer::SyncService::UserActionableError::kDeviceManagementError: {
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForProfile(profile_);
+      id<SystemIdentity> identity = authService->GetPrimaryIdentity();
+      if (identity) {
+        authService->ShowMDMErrorDialogForIdentity(identity);
+      }
+      break;
+    }
+
     case syncer::SyncService::UserActionableError::kNone: {
       CHECK(ShouldShowSyncSettings(error_state_), base::NotFatalUntil::M151);
       AuthenticationService* authService =
@@ -282,6 +292,7 @@ bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+    case syncer::SyncService::UserActionableError::kDeviceManagementError:
       return false;
   }
   NOTREACHED();

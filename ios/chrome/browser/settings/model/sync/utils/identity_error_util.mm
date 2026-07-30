@@ -7,6 +7,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -112,6 +113,26 @@ AccountErrorUIInfo* GetUIInfoForBookmarksLimitExceededError() {
   return error_info;
 }
 
+// Gets the AccountErrorUIInfo data representing the DEVICE_MANAGEMENT_ERROR.
+AccountErrorUIInfo* GetUIInfoForDeviceManagementError(
+    const syncer::SyncService* sync_service) {
+  GoogleServiceAuthError error = sync_service->GetAuthError();
+  CHECK_EQ(error.state(),
+           GoogleServiceAuthError::State::DEVICE_MANAGEMENT_ERROR);
+  int buttonLabelID =
+      error.IsDeviceManagementErrorUserActionable()
+          ? IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_FIX_NOW_BUTTON
+          : IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_LEARN_MORE_BUTTON;
+  AccountErrorUIInfo* error_info = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kDeviceManagementError
+      userActionableType:AccountErrorUserActionableType::kResolveMdmError
+               messageID:
+                   IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_SERVICES_UNAVAILABLE_MESSAGE
+           buttonLabelID:buttonLabelID];
+  return error_info;
+}
+
 }  // namespace
 
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
@@ -136,6 +157,8 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
       return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything();
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
       return GetUIInfoForBookmarksLimitExceededError();
+    case syncer::SyncService::UserActionableError::kDeviceManagementError:
+      return GetUIInfoForDeviceManagementError(sync_service);
     case syncer::SyncService::UserActionableError::kNone:
       break;
 
