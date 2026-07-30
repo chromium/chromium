@@ -111,4 +111,114 @@ TEST_F(TextChunkerTest, CustomLocaleExplicitTagSpeedMode) {
   EXPECT_EQ(chunks[1].text, u"元気ですか？");
 }
 
+TEST_F(TextChunkerTest, QualityEmptyStringReturnsEmpty) {
+  std::vector<TextChunk> chunks = ChunkText(
+      u"", ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+  EXPECT_TRUE(chunks.empty());
+}
+
+TEST_F(TextChunkerTest, QualityWhitespaceOnlyReturnsEmpty) {
+  std::vector<TextChunk> chunks =
+      ChunkText(u"   \n\t  ", ChunkingMode::kQuality,
+                base::i18n::GetKnownLanguageTag("en-US"));
+  EXPECT_TRUE(chunks.empty());
+}
+
+TEST_F(TextChunkerTest, QualitySmallSentencesGrouped) {
+  std::u16string input = u"First sentence. Second sentence! Third sentence?";
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 1u);
+  EXPECT_EQ(chunks[0].text,
+            u"First sentence. Second sentence! Third sentence?");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+}
+
+TEST_F(TextChunkerTest, QualityParagraphBoundaryRespect) {
+  std::u16string input = u"First paragraph sentence.\nSecond paragraph sentence.";
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, u"First paragraph sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Second paragraph sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 26u);
+}
+
+TEST_F(TextChunkerTest, QualitySingleSentenceExceedsThreshold) {
+  std::u16string long_sentence(500, u'A');
+  long_sentence += u".";
+  std::u16string input = long_sentence + u" Short sentence.";
+
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, long_sentence);
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Short sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 502u);
+}
+
+TEST_F(TextChunkerTest, QualityLeadingAndTrailingNewlines) {
+  std::u16string input = u"\n\n  First paragraph.  \n\n  Second paragraph.  \n\n";
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, u"First paragraph.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 4u);
+
+  EXPECT_EQ(chunks[1].text, u"Second paragraph.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 26u);
+}
+
+TEST_F(TextChunkerTest, QualityUnicodeAndSurrogatePairs) {
+  std::u16string input = u"Hello 𐐏 world. Next 𐐏 sentence.\nNew 𐐏 paragraph.";
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, u"Hello 𐐏 world. Next 𐐏 sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"New 𐐏 paragraph.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 34u);
+}
+
+TEST_F(TextChunkerTest, QualityWindowsCRLFParagraphBoundary) {
+  std::u16string input = u"First paragraph sentence.\r\nSecond paragraph sentence.";
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, u"First paragraph sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, u"Second paragraph sentence.");
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 27u);
+}
+
+TEST_F(TextChunkerTest, QualityMultipleSentencesAccumulateExceedingThreshold) {
+  std::u16string s1(249, u'A');
+  s1 += u".";
+  std::u16string s2(249, u'B');
+  s2 += u".";
+  std::u16string input = s1 + u" " + s2;
+
+  std::vector<TextChunk> chunks = ChunkText(
+      input, ChunkingMode::kQuality, base::i18n::GetKnownLanguageTag("en-US"));
+
+  ASSERT_EQ(chunks.size(), 2u);
+  EXPECT_EQ(chunks[0].text, s1);
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+
+  EXPECT_EQ(chunks[1].text, s2);
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 251u);
+}
+
 }  // namespace readaloud

@@ -18,8 +18,7 @@ namespace readaloud {
 enum class ChunkingMode {
   // Fast sentence-based chunking using ICU sentence break iteration.
   kSpeed,
-  // High-quality chunking optimized for natural prosody.
-  // TODO(b/527525619): Unimplemented.
+  // High-quality chunking optimized for natural prosody and paragraph grouping.
   kQuality,
 };
 
