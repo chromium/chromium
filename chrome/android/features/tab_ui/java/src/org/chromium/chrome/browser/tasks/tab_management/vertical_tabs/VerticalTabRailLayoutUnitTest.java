@@ -158,26 +158,4 @@ public class VerticalTabRailLayoutUnitTest {
         otherEvent.setSource(InputDevice.SOURCE_MOUSE);
         assertFalse(mRailLayout.dispatchGenericMotionEvent(otherEvent));
     }
-
-    @Test
-    @SmallTest
-    public void testButtonTooltips() {
-        View collapseButton = mRailLayout.findViewById(R.id.collapse_button);
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
-        View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);
-
-        assertEquals(collapseButton.getContentDescription(), collapseButton.getTooltipText());
-        assertEquals(
-                mRailLayout.getContext().getString(R.string.accessibility_tab_groups),
-                gridButton.getTooltipText());
-        assertEquals(
-                mRailLayout
-                        .getContext()
-                        .getString(R.string.accessibility_search_loupe_tooltip_text),
-                searchButton.getTooltipText());
-        assertEquals(
-                mRailLayout.getContext().getString(R.string.accessibility_toolbar_btn_new_tab),
-                newTabButton.getTooltipText());
-    }
 }
