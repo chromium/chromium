@@ -6732,6 +6732,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8HTMLImageElement_ReplacedByUserAgent_AttributeGetter"/>
   <int value="5979" label="UAReplaceStartAddListener"/>
   <int value="5980" label="UAReplaceEndAddListener"/>
+  <int value="5981" label="AdImageHDR"/>
+  <int value="5982" label="AdVideoHDR"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -2284,6 +2284,255 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(main_url));
 }
 
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, AdImageHDRUseCounter) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Create an ad subframe.
+  GURL ad_url = GetURL("frame_factory.html?ad=true");
+  RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
+
+  // Load an UltraHDR gainmap image in the ad subframe.
+  GURL image_url = GetURL("gainmap-trattore0.jpg");
+  EXPECT_TRUE(ExecJs(ad_frame, content::JsReplace(R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);
+  )",
+                                                  image_url)));
+
+  // Wait for the image to finish loading.
+  EXPECT_TRUE(ExecJs(ad_frame, R"(
+    new Promise(resolve => {
+      let img = document.querySelector('img');
+      if (img.complete) resolve();
+      else img.onload = () => resolve();
+    });
+  )"));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       AdImageHDRUseCounter_NormalBrightness) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Create an ad subframe.
+  GURL ad_url = GetURL("frame_factory.html?ad=true");
+  RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
+
+  // Load a standard SDR image (no gainmap, normal brightness).
+  GURL image_url = GetURL("pixel.png");
+  EXPECT_TRUE(ExecJs(ad_frame, content::JsReplace(R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);
+  )",
+                                                  image_url)));
+
+  // Wait for image to load.
+  EXPECT_TRUE(ExecJs(ad_frame, R"(
+    new Promise(resolve => {
+      let img = document.querySelector('img');
+      if (img.complete) resolve();
+      else img.onload = () => resolve();
+    });
+  )"));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, AdImageHDRUseCounter_NonAdFrame) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Create a non-ad subframe.
+  GURL non_ad_url = GetURL("frame_factory.html?allowed=true");
+  RenderFrameHost* non_ad_frame = CreateSrcFrame(GetWebContents(), non_ad_url);
+
+  // Load an UltraHDR gainmap image in the non-ad subframe.
+  GURL image_url = GetURL("gainmap-trattore0.jpg");
+  EXPECT_TRUE(ExecJs(non_ad_frame, content::JsReplace(R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);
+  )",
+                                                      image_url)));
+
+  // Wait for image to load.
+  EXPECT_TRUE(ExecJs(non_ad_frame, R"(
+    new Promise(resolve => {
+      let img = document.querySelector('img');
+      if (img.complete) resolve();
+      else img.onload = () => resolve();
+    });
+  )"));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       AdCSSBackgroundImageHDRUseCounter) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Create an ad subframe.
+  GURL ad_url = GetURL("frame_factory.html?ad=true");
+  RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
+
+  // Set a CSS background image with an UltraHDR gainmap in the ad subframe.
+  GURL image_url = GetURL("gainmap-trattore0.jpg");
+  EXPECT_TRUE(ExecJs(ad_frame, content::JsReplace(R"(
+    let div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '100px';
+    div.style.backgroundImage = 'url("' + $1 + '")';
+    document.body.appendChild(div);
+  )",
+                                                  image_url)));
+
+  // Wait for background image to load.
+  EXPECT_TRUE(ExecJs(ad_frame, content::JsReplace(R"(
+    new Promise(resolve => {
+      let img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = $1;
+    });
+  )",
+                                                  image_url)));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       AdCSSBackgroundImageHDRUseCounter_AdScript) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Create an ad subframe created by ad script.
+  RenderFrameHost* ad_frame = CreateSrcFrameFromAdScript(
+      GetWebContents(), GetURL("frame_factory.html"));
+
+  // Set a CSS background image with an UltraHDR gainmap in the ad subframe.
+  GURL image_url = GetURL("gainmap-trattore0.jpg");
+  EXPECT_TRUE(ExecJs(ad_frame, content::JsReplace(R"(
+    let div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '100px';
+    div.style.backgroundImage = 'url("' + $1 + '")';
+    document.body.appendChild(div);
+  )",
+                                                  image_url)));
+
+  // Wait for background image to load.
+  EXPECT_TRUE(ExecJs(ad_frame, content::JsReplace(R"(
+    new Promise(resolve => {
+      let img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = $1;
+    });
+  )",
+                                                  image_url)));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       AdCSSBackgroundImageHDRUseCounter_MainFrameAdScript) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // In the main frame (not an ad frame), load an ad image matching the ad rule
+  // as a CSS background image on a <div> element.
+  GURL image_url = GetURL("gainmap-trattore0.jpg?ad=true");
+  EXPECT_TRUE(ExecJs(GetWebContents(), content::JsReplace(R"(
+    createCSSBackgroundImageFromAdScript($1);
+  )",
+                                                          image_url)));
+
+  // Wait for the background image to load.
+  EXPECT_TRUE(ExecJs(GetWebContents(), content::JsReplace(R"(
+    new Promise(resolve => {
+      let img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = $1;
+    });
+  )",
+                                                          image_url)));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       AdCSSBackgroundImageHDRUseCounter_AdUrlOnly) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // In the main frame (not an ad frame), load an ad image matching the ad rule
+  // as a CSS background image from a non-ad script.
+  GURL image_url = GetURL("gainmap-trattore0.jpg?ad=true");
+  EXPECT_TRUE(ExecJs(GetWebContents(), content::JsReplace(R"(
+    let div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '100px';
+    div.style.backgroundImage = 'url("' + $1 + '")';
+    document.body.appendChild(div);
+  )",
+                                                          image_url)));
+
+  // Wait for the background image to load.
+  EXPECT_TRUE(ExecJs(GetWebContents(), content::JsReplace(R"(
+    new Promise(resolve => {
+      let img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = $1;
+    });
+  )",
+                                                          image_url)));
+
+  NavigateAwayToFlushUseCounterUKM(web_contents());
+
+  histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                     blink::mojom::WebFeature::kAdImageHDR, 1);
+}
+
 }  // namespace
 
 }  // namespace subresource_filter

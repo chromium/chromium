@@ -785,6 +785,12 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
 
   MaybeEnterImmersivePictureInPicture();
   UpdateVideoFrameAvailability();
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  bool is_ad = IsAdRelated() || (frame && frame->IsAdFrame());
+  if (is_ad && GetWebMediaPlayer() && GetWebMediaPlayer()->IsHDR()) {
+    UseCounter::Count(GetDocument(), WebFeature::kAdVideoHDR);
+  }
 }
 
 void HTMLVideoElement::EnterFullscreen() {

@@ -4,6 +4,8 @@
 
 #include "cc/paint/paint_image.h"
 
+#include <algorithm>
+#include <cmath>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -27,7 +29,10 @@
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
 namespace {
@@ -505,6 +510,20 @@ std::string PaintImage::FrameKey::ToString() const {
   str << "content_id: " << content_id_ << ","
       << "frame_index: " << frame_index_;
   return str.str();
+}
+
+float PaintImage::GetMaximumRenderedHdrHeadroom() const {
+  if (HasGainmapInfo()) {
+    const SkGainmapInfo& gainmap_info = GetGainmapInfo();
+    float max_ratio = std::max({gainmap_info.fGainmapRatioMax[0],
+                                gainmap_info.fGainmapRatioMax[1],
+                                gainmap_info.fGainmapRatioMax[2]});
+    return std::log2(max_ratio);
+  }
+  if (color_space() && gfx::ColorSpace(*color_space()).IsHDR()) {
+    return std::log2(gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom);
+  }
+  return 0.0f;
 }
 
 }  // namespace cc

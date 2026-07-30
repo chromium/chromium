@@ -142,3 +142,11 @@ function createAdFrameWithWindowStopAbortedLoad(name) {
   };
   frame.contentDocument.head.appendChild(script3);
 }
+
+function createCSSBackgroundImageFromAdScript(url) {
+  const div = document.createElement('div');
+  div.style.width = '100px';
+  div.style.height = '100px';
+  div.style.backgroundImage = 'url("' + url + '")';
+  document.body.appendChild(div);
+}

@@ -4566,10 +4566,27 @@ void LayoutObject::ImageNotifyFinished(ImageResourceContent* image) {
   }
 
   if (!image->ErrorOccurred()) {
+    Element* element = DynamicTo<Element>(GetNode());
     if (const std::optional<AdProvenance>& ad_provenance =
             image->GetAdProvenance()) {
-      if (auto* element = DynamicTo<Element>(GetNode())) {
+      if (element) {
         element->SetIsAdRelated(*ad_provenance);
+      }
+    }
+
+    LocalFrame* frame = GetDocument().GetFrame();
+    bool is_ad = image->GetAdProvenance().has_value() ||
+                 (element && element->IsAdRelated()) ||
+                 (frame && frame->IsAdFrame());
+
+    if (is_ad) {
+      if (Image* img = image->GetImage()) {
+        // Headroom is on a log2 scale. 0.5f corresponds to 2^0.5 ~= 1.41x SDR
+        // white.
+        if (img->PaintImageForCurrentFrame().GetMaximumRenderedHdrHeadroom() >=
+            0.5f) {
+          UseCounter::Count(GetDocument(), WebFeature::kAdImageHDR);
+        }
       }
     }
   }

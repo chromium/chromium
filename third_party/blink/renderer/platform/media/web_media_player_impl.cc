@@ -1345,6 +1345,12 @@ bool WebMediaPlayerImpl::HasAudio() const {
   return pipeline_metadata_.has_audio;
 }
 
+bool WebMediaPlayerImpl::IsHDR() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  return pipeline_metadata_.video_decoder_config.color_space_info().IsHDR();
+}
+
 void WebMediaPlayerImpl::EnabledAudioTracksChanged(
     std::optional<WebMediaPlayer::TrackId> enabled_track_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
