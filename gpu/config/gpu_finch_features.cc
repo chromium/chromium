@@ -711,10 +711,6 @@ bool ShouldEnableDrDc() {
 
 bool IsSkiaGraphitePrecompilationEnabled(
     const base::CommandLine* command_line) {
-  if (!IsSkiaGraphiteEnabled(command_line)) {
-    return false;
-  }
-
   // Force disabling Graphite Precompilation if
   // --disable-skia-graphite-precompilation flag is specified.
   if (command_line->HasSwitch(switches::kDisableSkiaGraphitePrecompilation)) {
