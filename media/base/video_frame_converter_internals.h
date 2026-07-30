@@ -50,6 +50,9 @@ void I4xxxScale_16(const VideoFrame& src_frame, VideoFrame& dst_frame);
 void Convert16To8Plane(const VideoFrame& src_frame, VideoFrame& dst_frame);
 void Convert8To16Plane(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
+// Converts a 12-bit frame in place to 10-bit.
+void Shift12To10(VideoFrame& frame);
+
 // Scaling not supported.
 bool I420xToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 

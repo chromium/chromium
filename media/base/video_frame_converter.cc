@@ -232,6 +232,30 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
     }
 
+    case PIXEL_FORMAT_YUV420P10: {
+      auto tmp_i420_frame =
+          CreateTempFrame(PIXEL_FORMAT_I420, dest_frame.coded_size(),
+                          dest_frame.visible_rect(), dest_frame.natural_size());
+      if (!tmp_i420_frame ||
+          !internals::ARGBToI420x(*src_frame, *tmp_i420_frame, matrix)) {
+        return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+      }
+      internals::Convert8To16Plane(*tmp_i420_frame, dest_frame);
+      return OkStatus();
+    }
+
+    case PIXEL_FORMAT_YUV444P10: {
+      auto tmp_i444_frame =
+          CreateTempFrame(PIXEL_FORMAT_I444, dest_frame.coded_size(),
+                          dest_frame.visible_rect(), dest_frame.natural_size());
+      if (!tmp_i444_frame ||
+          !internals::ARGBToI444x(*src_frame, *tmp_i444_frame, matrix)) {
+        return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
+      }
+      internals::Convert8To16Plane(*tmp_i444_frame, dest_frame);
+      return OkStatus();
+    }
+
     default:
       return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
           .WithData("src", src_frame->AsHumanReadableString())
@@ -315,6 +339,28 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
     }
 
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV444P10: {
+      auto tmp_format = dest_frame.format() == PIXEL_FORMAT_YUV420P10
+                            ? PIXEL_FORMAT_I420
+                            : PIXEL_FORMAT_I444;
+      if (src_frame->format() == tmp_format &&
+          src_frame->visible_rect().size() ==
+              dest_frame.visible_rect().size()) {
+        internals::Convert8To16Plane(*src_frame, dest_frame);
+        return OkStatus();
+      }
+      auto tmp_frame =
+          CreateTempFrame(tmp_format, dest_frame.coded_size(),
+                          dest_frame.visible_rect(), dest_frame.natural_size());
+      if (!tmp_frame) {
+        return EncoderStatus::Codes::kScalingError;
+      }
+      internals::I4xxxScale(*src_frame, *tmp_frame);
+      internals::Convert8To16Plane(*tmp_frame, dest_frame);
+      return OkStatus();
+    }
+
     default:
       return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
           .WithData("src", src_frame->AsHumanReadableString())
@@ -344,7 +390,7 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleNV12x(
                          EncoderStatus::Codes::kFormatConversionError);
       }
 
-      // Create a temporary frame wrapping the source frames's Y, A planes
+      // Create a temporary frame wrapping the source frame's Y, A planes
       // to avoid unnecessary copies and allocations during the NV12 conversion.
       auto tmp_frame = WrapBiplanarFrameInTriplanarFrame(*src_frame);
       if (!tmp_frame) {
@@ -384,6 +430,25 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleNV12x(
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
     }
 
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV444P10: {
+      auto tmp_format = dest_frame.format() == PIXEL_FORMAT_YUV420P10
+                            ? PIXEL_FORMAT_I420
+                            : PIXEL_FORMAT_I444;
+      auto tmp_frame =
+          CreateTempFrame(tmp_format, dest_frame.coded_size(),
+                          dest_frame.visible_rect(), dest_frame.natural_size());
+      if (!tmp_frame) {
+        return EncoderStatus::Codes::kScalingError;
+      }
+      auto status = ConvertAndScaleNV12x(src_frame, *tmp_frame);
+      if (!status.is_ok()) {
+        return status;
+      }
+      internals::Convert8To16Plane(*tmp_frame, dest_frame);
+      return OkStatus();
+    }
+
     default:
       return EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat)
           .WithData("src", src_frame->AsHumanReadableString())
@@ -402,6 +467,16 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleHBD(
                   src_frame->format() == PIXEL_FORMAT_YUV444P12;
   bool has_alpha = !IsOpaque(src_frame->format());
 
+  // If destination is already an HBD planar format, scale and convert directly.
+  if (dest_frame.format() == PIXEL_FORMAT_YUV420P10 ||
+      dest_frame.format() == PIXEL_FORMAT_YUV444P10) {
+    internals::I4xxxScale_16(*src_frame, dest_frame);
+    if (is_12bit) {
+      internals::Shift12To10(dest_frame);
+    }
+    return OkStatus();
+  }
+
   // Map the 8-bit destination format to a matching 16-bit high bit depth layout
   // (matching subsampling and alpha channel) for processing.
   switch (dest_frame.format()) {
@@ -410,18 +485,14 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleHBD(
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_YUV420P10:
       target_hbd_format = has_alpha ? PIXEL_FORMAT_YUV420AP10
                                     : (is_12bit ? PIXEL_FORMAT_YUV420P12
                                                 : PIXEL_FORMAT_YUV420P10);
       break;
-    case PIXEL_FORMAT_I422:
-    case PIXEL_FORMAT_I422A:
-      target_hbd_format = has_alpha ? PIXEL_FORMAT_YUV422AP10
-                                    : (is_12bit ? PIXEL_FORMAT_YUV422P12
-                                                : PIXEL_FORMAT_YUV422P10);
-      break;
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV444P10:
       target_hbd_format = has_alpha ? PIXEL_FORMAT_YUV444AP10
                                     : (is_12bit ? PIXEL_FORMAT_YUV444P12
                                                 : PIXEL_FORMAT_YUV444P10);

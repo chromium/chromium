@@ -4,6 +4,9 @@
 
 #include "media/base/video_frame_converter.h"
 
+#include <algorithm>
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/base/test_helpers.h"
@@ -110,6 +113,8 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV444P10:
       break;
 
     default:
@@ -117,6 +122,17 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
   }
 
   return true;
+}
+
+template <typename T>
+void FillPlane(base::span<T> data,
+               size_t stride_elements,
+               size_t width,
+               size_t height,
+               T value) {
+  for (size_t r = 0; r < height; ++r) {
+    std::ranges::fill(data.subspan(r * stride_elements, width), value);
+  }
 }
 
 // SSIM/PSNR mismatch debugging function. Writes a VideoFrame into a packed
@@ -248,6 +264,141 @@ TEST(VideoFrameConverterRegressionTest, WeirdScaling) {
   ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
 }
 
+TEST(VideoFrameConverterUnsupportedTest, UnsupportedConversions) {
+  constexpr gfx::Size kSize(64, 64);
+  VideoFrameConverter converter;
+
+  auto is_convertible_format = [](VideoPixelFormat format) {
+    if (!IsValidVideoPixelFormat(format)) {
+      return false;
+    }
+    if (format == PIXEL_FORMAT_UNKNOWN || format == PIXEL_FORMAT_MJPEG ||
+        format == PIXEL_FORMAT_Y16) {
+      return false;
+    }
+    return true;
+  };
+
+  for (int i = 0; i <= PIXEL_FORMAT_MAX; ++i) {
+    auto src_format = static_cast<VideoPixelFormat>(i);
+    if (!is_convertible_format(src_format)) {
+      continue;
+    }
+    auto src_frame = VideoFrame::CreateZeroInitializedFrame(
+        src_format, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+    for (int j = 0; j <= PIXEL_FORMAT_MAX; ++j) {
+      auto dest_format = static_cast<VideoPixelFormat>(j);
+      if (!is_convertible_format(dest_format)) {
+        continue;
+      }
+      if (IsConversionSupported(src_format, dest_format)) {
+        continue;
+      }
+      SCOPED_TRACE(base::StringPrintf(
+          "%s -> %s", VideoPixelFormatToString(src_format).c_str(),
+          VideoPixelFormatToString(dest_format).c_str()));
+      auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
+          dest_format, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+      if (src_frame && dest_frame) {
+        EXPECT_FALSE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok())
+            << VideoPixelFormatToString(src_format) << " -> "
+            << VideoPixelFormatToString(dest_format);
+      }
+    }
+  }
+}
+
+class VideoFrameConverterExtentsTest : public VideoFrameConverterTest {};
+
+TEST_P(VideoFrameConverterExtentsTest, ConvertAndScaleExtents) {
+  // Extents (0 to max) are preserved directly across YUV-to-YUV planar
+  // conversions without color space matrix scaling.
+  if (!IsYuvPlanar(src_format_) || !IsYuvPlanar(dest_format_)) {
+    return;
+  }
+
+  if (!IsOpaque(dest_format_) && IsOpaque(src_format_)) {
+    return;
+  }
+
+  ASSERT_TRUE(IsConversionSupported(src_format_, dest_format_));
+
+  constexpr gfx::Size kSize(64, 64);
+  auto src_frame = VideoFrame::CreateZeroInitializedFrame(
+      src_format_, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+  auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
+      dest_format_, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+
+  auto get_max_sample_value = [](VideoPixelFormat format) -> uint16_t {
+    switch (format) {
+      case PIXEL_FORMAT_YUV420P10:
+      case PIXEL_FORMAT_YUV422P10:
+      case PIXEL_FORMAT_YUV444P10:
+      case PIXEL_FORMAT_YUV420AP10:
+      case PIXEL_FORMAT_YUV422AP10:
+      case PIXEL_FORMAT_YUV444AP10:
+        return 1023;
+      case PIXEL_FORMAT_P010LE:
+        return 1023 << 6;  // MSB aligned in 16-bit
+      case PIXEL_FORMAT_YUV420P12:
+      case PIXEL_FORMAT_YUV422P12:
+      case PIXEL_FORMAT_YUV444P12:
+        return 4095;
+      default:
+        return 255;
+    }
+  };
+
+  uint16_t src_max = get_max_sample_value(src_format_);
+  uint16_t dest_max = get_max_sample_value(dest_format_);
+
+  // Fill Y plane with 0 in top-left quadrant and src_max in bottom-right
+  // quadrant.
+  const auto vis_size = src_frame->visible_rect().size();
+  const size_t pw = vis_size.width();
+  const size_t ph = vis_size.height();
+  const size_t hpw = pw / 2;
+  const size_t hph = ph / 2;
+
+  if (BitDepth(src_format_) > 8) {
+    auto data = base::subtle::reinterpret_span<uint16_t>(
+        src_frame->GetWritableVisiblePlaneData(0));
+    size_t stride_el = src_frame->stride(0) / sizeof(uint16_t);
+    FillPlane(data, stride_el, pw, ph, static_cast<uint16_t>(0));
+    FillPlane(data.subspan(hph * stride_el + hpw), stride_el, pw - hpw,
+              ph - hph, src_max);
+  } else {
+    auto data = src_frame->GetWritableVisiblePlaneData(0);
+    size_t stride = src_frame->stride(0);
+    FillPlane(data, stride, pw, ph, static_cast<uint8_t>(0));
+    FillPlane(data.subspan(hph * stride + hpw), stride, pw - hpw, ph - hph,
+              static_cast<uint8_t>(src_max));
+  }
+
+  ASSERT_TRUE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
+
+  // Verify min value at (0, 0) and max value at (pw - 1, ph - 1) in dest_frame
+  // Y plane.
+  int dest_w = dest_frame->visible_rect().width();
+  int dest_h = dest_frame->visible_rect().height();
+
+  if (BitDepth(dest_format_) > 8) {
+    auto dest_y = base::subtle::reinterpret_span<const uint16_t>(
+        dest_frame->GetVisiblePlaneData(0));
+    int stride_el = dest_frame->stride(0) / sizeof(uint16_t);
+
+    EXPECT_EQ(dest_y[0], 0);
+    EXPECT_EQ(dest_y[(dest_h - 1) * stride_el + (dest_w - 1)], dest_max);
+  } else {
+    auto dest_y = dest_frame->GetVisiblePlaneData(0);
+    int stride = dest_frame->stride(0);
+
+    EXPECT_EQ(dest_y[0], 0);
+    EXPECT_EQ(dest_y[(dest_h - 1) * stride + (dest_w - 1)],
+              static_cast<uint8_t>(dest_max));
+  }
+}
+
 std::string PrintTestParams(const testing::TestParamInfo<TestParams>& info) {
   auto format_to_string = [](VideoPixelFormat format) {
     std::string name = VideoPixelFormatToString(format);
@@ -274,42 +425,44 @@ std::string PrintTestParams(const testing::TestParamInfo<TestParams>& info) {
   return result;
 }
 
+constexpr auto kInputFormats = std::to_array<VideoPixelFormat>({
+    PIXEL_FORMAT_XBGR,       PIXEL_FORMAT_XRGB,       PIXEL_FORMAT_ABGR,
+    PIXEL_FORMAT_ARGB,       PIXEL_FORMAT_I420,       PIXEL_FORMAT_I420A,
+    PIXEL_FORMAT_I444,       PIXEL_FORMAT_I444A,      PIXEL_FORMAT_NV12,
+    PIXEL_FORMAT_NV12A,      PIXEL_FORMAT_YUV420P10,  PIXEL_FORMAT_YUV422P10,
+    PIXEL_FORMAT_YUV444P10,  PIXEL_FORMAT_YUV420P12,  PIXEL_FORMAT_YUV422P12,
+    PIXEL_FORMAT_YUV444P12,  PIXEL_FORMAT_YUV420AP10, PIXEL_FORMAT_YUV422AP10,
+    PIXEL_FORMAT_YUV444AP10,
+});
+
+constexpr auto kOutputFormats = std::to_array<VideoPixelFormat>({
+    PIXEL_FORMAT_I420,
+    PIXEL_FORMAT_I420A,
+    PIXEL_FORMAT_I444,
+    PIXEL_FORMAT_I444A,
+    PIXEL_FORMAT_NV12,
+    PIXEL_FORMAT_NV12A,
+    PIXEL_FORMAT_P010LE,
+    PIXEL_FORMAT_YUV420P10,
+    PIXEL_FORMAT_YUV444P10,
+});
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     VideoFrameConverterTest,
-    testing::Combine(testing::Values(PIXEL_FORMAT_XBGR,
-                                     PIXEL_FORMAT_XRGB,
-                                     PIXEL_FORMAT_ABGR,
-                                     PIXEL_FORMAT_ARGB,
-                                     PIXEL_FORMAT_I420,
-                                     PIXEL_FORMAT_I420A,
-                                     PIXEL_FORMAT_I444,
-                                     PIXEL_FORMAT_I444A,
-                                     PIXEL_FORMAT_NV12,
-                                     PIXEL_FORMAT_NV12A,
-                                     PIXEL_FORMAT_YUV420P10,
-                                     PIXEL_FORMAT_YUV422P10,
-                                     PIXEL_FORMAT_YUV444P10,
-                                     PIXEL_FORMAT_YUV420P12,
-                                     PIXEL_FORMAT_YUV422P12,
-                                     PIXEL_FORMAT_YUV444P12,
-                                     PIXEL_FORMAT_YUV420AP10,
-                                     PIXEL_FORMAT_YUV422AP10,
-                                     PIXEL_FORMAT_YUV444AP10),
-                     testing::Values(PIXEL_FORMAT_XBGR,
-                                     PIXEL_FORMAT_XRGB,
-                                     PIXEL_FORMAT_ABGR,
-                                     PIXEL_FORMAT_ARGB,
-                                     PIXEL_FORMAT_I420,
-                                     PIXEL_FORMAT_I420A,
-                                     PIXEL_FORMAT_I444,
-                                     PIXEL_FORMAT_I444A,
-                                     PIXEL_FORMAT_NV12,
-                                     PIXEL_FORMAT_NV12A,
-                                     PIXEL_FORMAT_P010LE),
+    testing::Combine(testing::ValuesIn(kInputFormats),
+                     testing::ValuesIn(kOutputFormats),
                      testing::Values(TestConversionType::kNormal,
                                      TestConversionType::kScaled,
                                      TestConversionType::kOdd)),
+    PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(
+    Extents,
+    VideoFrameConverterExtentsTest,
+    testing::Combine(testing::ValuesIn(kInputFormats),
+                     testing::ValuesIn(kOutputFormats),
+                     testing::Values(TestConversionType::kNormal)),
     PrintTestParams);
 
 }  // namespace media

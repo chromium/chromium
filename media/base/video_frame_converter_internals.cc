@@ -26,6 +26,17 @@ void Mask12BitMSBPlane(base::span<uint16_t> data,
   }
 }
 
+void Shift12To10Plane(base::span<uint16_t> data,
+                      int stride_elements,
+                      int width,
+                      int height) {
+  for (int r = 0; r < height; ++r) {
+    for (int c = 0; c < width; ++c) {
+      data[r * stride_elements + c] >>= 2;
+    }
+  }
+}
+
 }  // namespace
 
 namespace media::internals {
@@ -260,8 +271,12 @@ void Convert16To8Plane(const VideoFrame& src_frame, VideoFrame& dest_frame) {
 
 void Convert8To16Plane(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_I420 ||
-         src_frame.format() == PIXEL_FORMAT_I420A);
-  DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV420P10);
+         src_frame.format() == PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_I444 ||
+         src_frame.format() == PIXEL_FORMAT_I444A);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_YUV420P10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV422P10 ||
+         dest_frame.format() == PIXEL_FORMAT_YUV444P10);
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
 
   for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
@@ -272,6 +287,22 @@ void Convert8To16Plane(const VideoFrame& src_frame, VideoFrame& dest_frame) {
                               dest_frame.stride(i) / sizeof(uint16_t), 1024,
                               dest_frame.GetVisibleColumns(i),
                               dest_frame.GetVisibleRows(i));
+  }
+}
+
+void Shift12To10(VideoFrame& frame) {
+  DCHECK(frame.format() == PIXEL_FORMAT_YUV420P10 ||
+         frame.format() == PIXEL_FORMAT_YUV422P10 ||
+         frame.format() == PIXEL_FORMAT_YUV444P10 ||
+         frame.format() == PIXEL_FORMAT_YUV420AP10 ||
+         frame.format() == PIXEL_FORMAT_YUV422AP10 ||
+         frame.format() == PIXEL_FORMAT_YUV444AP10);
+
+  for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
+    Shift12To10Plane(base::subtle::reinterpret_span<uint16_t>(
+                         frame.GetWritableVisiblePlaneData(i)),
+                     frame.stride(i) / sizeof(uint16_t),
+                     frame.GetVisibleColumns(i), frame.GetVisibleRows(i));
   }
 }
 
