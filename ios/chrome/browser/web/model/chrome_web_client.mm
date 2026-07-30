@@ -456,8 +456,10 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());
 
-  features.push_back(ReaderModeJavaScriptFeature::GetInstance());
-  features.push_back(ReaderModeScrollAnchorJavaScriptFeature::GetInstance());
+  if (IsReaderModeAvailable()) {
+    features.push_back(ReaderModeJavaScriptFeature::GetInstance());
+    features.push_back(ReaderModeScrollAnchorJavaScriptFeature::GetInstance());
+  }
 
   if (base::FeatureList::IsEnabled(
           kJavaScriptPermissionBasedAPIMetricsEnabled)) {

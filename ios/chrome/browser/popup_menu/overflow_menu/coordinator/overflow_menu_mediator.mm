@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_utils.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
@@ -921,7 +920,9 @@ void GetPresetNTPBackgroundPreview(
     self.askBWGAction = [self openAskBWGAction];
   }
 
-  self.readerModeAction = [self toggleReaderModeAction];
+  if (IsReaderModeAvailable()) {
+    self.readerModeAction = [self toggleReaderModeAction];
+  }
 
   if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
     self.setTabReminderAction = [self newSetTabReminderAction];
@@ -1895,7 +1896,9 @@ void GetPresetNTPBackgroundPreview(
     self.lensOverlayAction.enabled = [self isLensOverlayEnabled];
   }
 
-  self.readerModeAction.enabled = [self isReaderModeEnabled];
+  if (IsReaderModeAvailable()) {
+    self.readerModeAction.enabled = [self isReaderModeEnabled];
+  }
 
   self.askBWGAction.enabled = [self isGeminiAvailable];
 
@@ -2168,7 +2171,12 @@ void GetPresetNTPBackgroundPreview(
 
 // Whether Reader mode is active.
 - (BOOL)isReaderModeActive {
-  return IsReaderModeActiveInWebState(self.webState);
+  if (!self.webState) {
+    return NO;
+  }
+  ReaderModeTabHelper* helper =
+      ReaderModeTabHelper::FromWebState(self.webState);
+  return helper && helper->IsActive();
 }
 
 // Whether or not text zoom is enabled for this page.
@@ -2634,7 +2642,9 @@ void GetPresetNTPBackgroundPreview(
     actions.push_back(overflow_menu::ActionType::AskBWG);
   }
 
-  actions.push_back(overflow_menu::ActionType::ReaderMode);
+  if (IsReaderModeAvailable()) {
+    actions.push_back(overflow_menu::ActionType::ReaderMode);
+  }
   if (IsHideToolbarEnabled()) {
     actions.push_back(overflow_menu::ActionType::HideToolbars);
   }

@@ -2323,6 +2323,40 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
       clearDataAction);
 }
 
+// Tests that if prefs contain a stale Reading mode state, the state is
+// discarded when loaded.
+TEST_F(OverflowMenuOrdererTest,
+       LoadActionsFromPrefsWithInvalidReadingModeState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableReaderModeInUS);
+  CreatePrefs();
+
+  // Add Reading mode to the previous list of shown and hidden actions.
+  base::ListValue shown_actions_list =
+      base::ListValue().Append(overflow_menu::StringNameForActionType(
+          overflow_menu::ActionType::ReaderMode));
+
+  base::ListValue hidden_actions_list =
+      base::ListValue().Append(overflow_menu::StringNameForActionType(
+          overflow_menu::ActionType::ReaderMode));
+
+  base::DictValue actions_order_dict;
+  actions_order_dict.Set("shown", std::move(shown_actions_list));
+  actions_order_dict.Set("hidden", std::move(hidden_actions_list));
+
+  prefs_->SetDict(prefs::kOverflowMenuActionsOrder,
+                  std::move(actions_order_dict));
+
+  InitializeOverflowMenuOrderer(NO);
+
+  ActionCustomizationModel* model =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  // Reading mode should be filtered since the feature is disabled.
+  ASSERT_EQ(model.shownActions.count, 0u);
+  ASSERT_EQ(model.hiddenActions.count, 0u);
+}
+
 // Tests that if `basePageActions` from the provider is not sorted by
 // ActionType integral values, updating page actions e.g. by accessing
 // `actionCustomizationModel` correctly preserves the order of actions from

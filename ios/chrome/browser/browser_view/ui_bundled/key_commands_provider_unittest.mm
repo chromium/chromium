@@ -1022,6 +1022,8 @@ TEST_F(KeyCommandsProviderTest, ClearingBrowserDoesntCrash) {
 
 // Checks that some commands are not available in ReadingMode.
 TEST_F(KeyCommandsProviderTest, TestReadingMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableReaderModeInUS);
   // Open a tab with a URL.
   GURL url = GURL("https://test/url");
   auto web_state_unique = CreateFakeWebStateWithURL(url);

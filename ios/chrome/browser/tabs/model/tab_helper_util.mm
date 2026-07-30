@@ -209,7 +209,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
             [&]() { return attacher.IsOffTheRecord(); });
   attacher
       .CreateDeferredWhen<ReaderModeTabHelper>(
-          attacher.IsNotInTabHelperFilter())
+          attacher.IsNotInTabHelperFilter() && IsReaderModeAvailable())
       .WithFactory<DistillerServiceFactory>(profile);
 
   attacher.Create<security_interstitials::IOSBlockingPageTabHelper>();

@@ -96,6 +96,12 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
+  if ([self isRunningTest:@selector(testCopyBlockedOnReaderMode)] ||
+      [self isRunningTest:@selector(testCopyLinkWarnProceedOnReaderMode)] ||
+      [self isRunningTest:@selector(testCopyLinkWarnCancelOnReaderMode)]) {
+    config.features_enabled.push_back(kEnableReaderModeInUS);
+  }
+
   if ([self isRunningTest:@selector(testSearchWithBlocked)] ||
       [self isRunningTest:@selector(testSearchWithWarnProceed)] ||
       [self isRunningTest:@selector(testSearchWithWarnCancel)] ||

@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -214,10 +213,16 @@ using base::UserMetricsAction;
 
   web::WebState* currentWebState =
       _browser->GetWebStateList()->GetActiveWebState();
-  if (IsReaderModeActiveInWebState(currentWebState) &&
-      (sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
-       sel_isEqual(action, @selector(keyCommand_addToReadingList)))) {
-    return NO;
+  if (currentWebState) {
+    auto* readerModeTabHelper =
+        ReaderModeTabHelper::FromWebState(currentWebState);
+    bool readerModeActive = IsReaderModeAvailable() && readerModeTabHelper &&
+                            readerModeTabHelper->IsActive();
+    if (readerModeActive &&
+        (sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
+         sel_isEqual(action, @selector(keyCommand_addToReadingList)))) {
+      return NO;
+    }
   }
 
   if (sel_isEqual(action, @selector(keyCommand_find))) {

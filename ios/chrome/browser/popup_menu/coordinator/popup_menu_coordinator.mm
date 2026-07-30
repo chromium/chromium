@@ -303,8 +303,10 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   mediator.findInPageHandler =
       HandlerForProtocol(dispatcher, FindInPageCommands);
-  mediator.readerModeHandler =
-      HandlerForProtocol(dispatcher, ReaderModeCommands);
+  if (IsReaderModeAvailable()) {
+    mediator.readerModeHandler =
+        HandlerForProtocol(dispatcher, ReaderModeCommands);
+  }
   mediator.helpHandler = HandlerForProtocol(dispatcher, HelpCommands);
   mediator.overflowMenuCustomizationHandler =
       HandlerForProtocol(dispatcher, OverflowMenuCustomizationCommands);

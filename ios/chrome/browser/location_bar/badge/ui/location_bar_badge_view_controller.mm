@@ -983,7 +983,10 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 // Helper to refresh entrypoint visual elements for the single badge container.
 - (void)refreshBadgeForSingleBadgeContainer {
-  BOOL shouldShowMutedColors = _badgeTapped;
+  BOOL shouldAccountForVisibleInfobarBadges =
+      _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
+  BOOL shouldShowMutedColors =
+      shouldAccountForVisibleInfobarBadges || _badgeTapped;
 
   _badgeIcon.tintColor = shouldShowMutedColors
                              ? [UIColor colorNamed:kGrey600Color]
@@ -992,7 +995,10 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   _buttonContainer.layer.shadowOpacity =
       shouldShowMutedColors ? 0 : kBadgeContainerShadowOpacity;
 
-  UIColor* untappedBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  UIColor* untappedBackgroundColor =
+      shouldAccountForVisibleInfobarBadges
+          ? nil
+          : [UIColor colorNamed:kBackgroundColor];
   UIColor* buttonContainerBackgroundColor =
       _badgeTapped ? [UIColor colorNamed:kGrey100Color]
                    : untappedBackgroundColor;

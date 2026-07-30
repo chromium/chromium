@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    prefName:prefs::kDetectUnitsEnabled];
     [_detectUnitsEnabled setObserver:self];
 
-    if (IsReaderModeOmniboxEntryPointEnabled() &&
+    if (IsReaderModeAvailable() && IsReaderModeOmniboxEntryPointEnabled() &&
         !IsReaderModeContentSettingsForLinkEnabled()) {
       _showReadingModeAvailableEnabled = [[PrefBackedBoolean alloc]
           initWithPrefService:prefService
@@ -330,10 +330,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (IsReaderModeContentSettingsForLinkEnabled()) {
     // Add a new content setting section for Reading Mode that holds multiple
     // feature options.
-    self.readerModeItem = [self readerModeSectionItem];
-    [model addSectionWithIdentifier:SectionIdentifierReaderMode];
-    [model addItem:self.readerModeItem
-        toSectionWithIdentifier:SectionIdentifierReaderMode];
+    if (IsReaderModeAvailable()) {
+      self.readerModeItem = [self readerModeSectionItem];
+      [model addSectionWithIdentifier:SectionIdentifierReaderMode];
+      [model addItem:self.readerModeItem
+          toSectionWithIdentifier:SectionIdentifierReaderMode];
+    }
   }
 }
 

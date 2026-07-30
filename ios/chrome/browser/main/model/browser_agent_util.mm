@@ -141,7 +141,9 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
       FullscreenBrowserAgent::CreateForBrowser(browser);
     }
     FullscreenController::CreateForBrowser(browser);
-    ReaderModeBrowserAgent::CreateForBrowser(browser);
+    if (IsReaderModeAvailable()) {
+      ReaderModeBrowserAgent::CreateForBrowser(browser);
+    }
   }
 
   WebNavigationBrowserAgent::CreateForBrowser(browser);

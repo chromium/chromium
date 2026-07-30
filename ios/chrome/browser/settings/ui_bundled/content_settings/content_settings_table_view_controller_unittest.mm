@@ -59,14 +59,16 @@ TEST_F(ContentSettingsTableViewControllerTest,
   CheckTitleWithId(IDS_IOS_CONTENT_SETTINGS_TITLE);
 
   if (web::features::IsWebInspectorSupportEnabled()) {
-    if (IsReaderModeContentSettingsForLinkEnabled()) {
+    if (IsReaderModeContentSettingsForLinkEnabled() &&
+        IsReaderModeAvailable()) {
       ASSERT_EQ(3, NumberOfSections());
     } else {
       ASSERT_EQ(2, NumberOfSections());
     }
     ASSERT_EQ(1, NumberOfItemsInSection(1));
   } else {
-    if (IsReaderModeContentSettingsForLinkEnabled()) {
+    if (IsReaderModeContentSettingsForLinkEnabled() &&
+        IsReaderModeAvailable()) {
       ASSERT_EQ(2, NumberOfSections());
     } else {
       ASSERT_EQ(1, NumberOfSections());

@@ -199,6 +199,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name;
+  config.features_enabled.push_back(kEnableReaderModeInUS);
 
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)] ||

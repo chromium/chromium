@@ -74,11 +74,14 @@
         completionHandler(pdfDoumentData, 0, webViewFrame);
       });
 
-  ReaderModeTabHelper* tabHelper = ReaderModeTabHelper::FromWebState(webState);
-  if (tabHelper) {
-    web::WebState* readerModeWebState = tabHelper->GetReaderModeWebState();
-    if (readerModeWebState) {
-      webState = readerModeWebState;
+  if (IsReaderModeAvailable()) {
+    ReaderModeTabHelper* tabHelper =
+        ReaderModeTabHelper::FromWebState(webState);
+    if (tabHelper) {
+      web::WebState* readerModeWebState = tabHelper->GetReaderModeWebState();
+      if (readerModeWebState) {
+        webState = readerModeWebState;
+      }
     }
   }
 

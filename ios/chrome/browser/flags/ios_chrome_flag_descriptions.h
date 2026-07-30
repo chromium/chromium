@@ -1768,6 +1768,10 @@ inline constexpr char kReaderModeSupportNewFontsName[] =
 inline constexpr char kReaderModeSupportNewFontsDescription[] =
     "Enables new accessible font options in Reader Mode.";
 
+inline constexpr char kReaderModeUSEnabledName[] = "Enables Reader Mode in US";
+inline constexpr char kReaderModeUSEnabledDescription[] =
+    "Enables Reader Mode for users in the US. Requires reader-mode-enabled.";
+
 inline constexpr char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 inline constexpr char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";

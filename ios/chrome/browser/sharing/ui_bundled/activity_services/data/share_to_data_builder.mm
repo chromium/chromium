@@ -12,7 +12,6 @@
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -65,7 +64,9 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
     user_agent = visible_item->GetUserAgentType();
   }
 
-  BOOL in_reader_mode = IsReaderModeActiveInWebState(web_state);
+  BOOL in_reader_mode = YES;
+  auto* reader_mode_tab_helper = ReaderModeTabHelper::FromWebState(web_state);
+  in_reader_mode = reader_mode_tab_helper && reader_mode_tab_helper->IsActive();
   FindTabHelper* find_tab_helper = FindTabHelper::FromWebState(web_state);
   BOOL is_page_searchable =
       !in_reader_mode &&

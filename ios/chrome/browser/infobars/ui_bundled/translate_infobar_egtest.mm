@@ -302,6 +302,7 @@ class TestResponseProvider {
             (testTranslateBadgeWithReaderModeBadgeSupport)] ||
       [self
           isRunningTest:@selector(testTranslateInReaderModeAndNavigatesBack)]) {
+    config.features_enabled.push_back(kEnableReaderModeInUS);
     config.features_enabled.push_back(kProactiveSuggestionsFramework);
     config.features_enabled.push_back(kPageActionMenu);
   }

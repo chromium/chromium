@@ -79,6 +79,9 @@ void ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult(
 }
 
 void ReaderModeEligibilityDecider::StartDecision(const GURL& url) {
+  if (!IsReaderModeAvailable()) {
+    return;
+  }
   // Guarantee that there is only one trigger heuristic running at a time.
   ResetDecision(url);
 
@@ -153,6 +156,9 @@ void ReaderModeEligibilityDecider::SetLastCommittedUrl(const GURL& url) {
 }
 
 void ReaderModeEligibilityDecider::TriggerReaderModeHeuristic(const GURL& url) {
+  if (!IsReaderModeAvailable()) {
+    return;
+  }
   if (!CurrentPageIsEligibleForReaderMode()) {
     // If the current page does not support running the heuristic, then the
     // eligibility of the current page is already known.
