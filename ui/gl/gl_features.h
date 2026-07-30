@@ -96,6 +96,7 @@ GL_EXPORT bool IsSoftwareGLFallbackDueToCrashesAllowed(
 
 #if BUILDFLAG(IS_ANDROID)
 GL_EXPORT BASE_DECLARE_FEATURE(kAndroidLimitRgb565DisplayToApi32);
+GL_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControlPartialDamage);
 
 GL_EXPORT bool PreferRGB565ResourcesForDisplay();
 #endif

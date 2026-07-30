@@ -100,6 +100,8 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
     bool opaque = true;
     gfx::ColorSpace color_space;
     gfx::HDRMetadata hdr_metadata;
+    gfx::Rect damage_rect;
+    bool is_root_overlay = false;
 
     // Indicates whether the |surface| will be visible or hidden.
     bool visibility = true;

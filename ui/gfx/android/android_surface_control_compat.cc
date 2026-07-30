@@ -866,6 +866,8 @@ void SurfaceControl::Transaction::SetOpaque(const Surface& surface,
 
 void SurfaceControl::Transaction::SetDamageRect(const Surface& surface,
                                                 const gfx::Rect& rect) {
+  // SF will reject the transaction if the damage rect is empty.
+  CHECK(!rect.IsEmpty());
   auto a_rect = RectToARect(rect);
   SurfaceControlMethods::Get().ASurfaceTransaction_setDamageRegionFn(
       transaction_, surface.surface(), &a_rect, 1u);

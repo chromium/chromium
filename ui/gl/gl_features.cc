@@ -385,6 +385,9 @@ bool IsSoftwareGLFallbackDueToCrashesAllowed(
 BASE_FEATURE(kAndroidLimitRgb565DisplayToApi32,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidSurfaceControlPartialDamage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool PreferRGB565ResourcesForDisplay() {
   return base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() <= 512 &&
          (base::android::android_info::sdk_int() <=

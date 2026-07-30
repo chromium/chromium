@@ -165,16 +165,39 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
     return;
   }
 
-  // This is to workaround an Android bug where not specifying a damage region
-  // is assumed to mean nothing is damaged. See crbug.com/993977.
   for (size_t i = 0; i < pending_surfaces_count_; ++i) {
     const auto& surface_state = surface_list_[i];
     if (!surface_state.hardware_buffer)
       continue;
 
-    pending_transaction_->SetDamageRect(
-        *surface_state.surface,
-        gfx::Rect(GetBufferSize(surface_state.hardware_buffer)));
+    gfx::Rect damage_rect;
+
+    // TODO(crbug.com/539440611): for now, skip non-root overlays as their
+    // damage rect is in viz::Display space. It needs to be transformed to
+    // buffer coordinates.
+    const bool use_partial_damage =
+        base::FeatureList::IsEnabled(
+            features::kAndroidSurfaceControlPartialDamage) &&
+        surface_state.is_root_overlay;
+
+    if (use_partial_damage) {
+      // When partial damage is enabled, the damage rect set should use
+      // damage_rect, which has the rotation pre-transform applied. See
+      // crbug.com/988857, crbug.com/539440611, and
+      // surface_aggregator_unittest.cc, DisplayTransformDamageCallback.
+      if (!surface_state.damage_rect.IsEmpty()) {
+        damage_rect = surface_state.damage_rect;
+      } else {
+        // Assume empty damage is full damage.
+        damage_rect = gfx::Rect(GetBufferSize(surface_state.hardware_buffer));
+      }
+    } else {
+      // Otherwise, use the buffer's dimension as the damage rect to workaround
+      // an Android bug where not specifying a damage region is assumed to mean
+      // nothing is damaged. See crbug.com/993977.
+      damage_rect = gfx::Rect(GetBufferSize(surface_state.hardware_buffer));
+    }
+    pending_transaction_->SetDamageRect(*surface_state.surface, damage_rect);
   }
 
   // Surfaces which are present in the current frame but not in the next frame
@@ -193,11 +216,6 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
       surface_state.visibility = false;
     }
   }
-
-  // TODO(khushalsagar): Consider using the SetDamageRect API for partial
-  // invalidations. Note that the damage rect set should be in the space in
-  // which the content is rendered (including the pre-transform). See
-  // crbug.com/988857 for details.
 
   // Release resources for the current frame once the next frame is acked.
   ResourceRefs resources_to_release;
@@ -327,6 +345,8 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   }
   pending_surfaces_count_++;
   auto& surface_state = surface_list_.at(pending_surfaces_count_ - 1);
+  surface_state.damage_rect = overlay_plane_data.damage_rect;
+  surface_state.is_root_overlay = overlay_plane_data.is_root_overlay;
 
   // Make the surface visible if its hidden or uninitialized..
   if (uninitialized || !surface_state.visibility) {
