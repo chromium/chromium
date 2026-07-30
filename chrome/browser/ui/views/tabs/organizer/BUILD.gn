@@ -49,6 +49,8 @@ source_set("impl") {
     "//components/saved_tab_groups/public",
     "//ui/actions",
     "//ui/compositor_extra",
+    "//ui/views/controls/webview",
+    "//url",
   ]
 }
 
@@ -68,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/prefs:test_support",
+    "//content/test:test_support",
     "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",

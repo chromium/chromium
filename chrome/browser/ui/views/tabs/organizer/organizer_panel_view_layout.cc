@@ -34,8 +34,35 @@ views::ProposedLayout OrganizerPanelViewLayout::CalculateProposedLayout(
                                       gfx::Rect(x, y, width, controls_height));
   }
 
+  int current_y = y + controls_height;
+
+  if (host_view()) {
+    for (views::View* child : host_view()->children()) {
+      if (child == controls_view_) {
+        continue;
+      }
+      if (!child->GetVisible()) {
+        continue;
+      }
+      int child_height =
+          child->GetPreferredSize(views::SizeBounds(width, {})).height();
+      if (size_bounds.height().is_bounded()) {
+        int remaining =
+            size_bounds.height().value() - current_y -
+            organizer_panel::kOrganizerPanelRegionInteriorMargins.bottom();
+        if (remaining > 0) {
+          child_height = remaining;
+        }
+      }
+      layout.child_layouts.emplace_back(
+          child, child->GetVisible(),
+          gfx::Rect(x, current_y, width, child_height));
+      current_y += child_height;
+    }
+  }
+
   int total_height =
-      y + controls_height +
+      current_y +
       organizer_panel::kOrganizerPanelRegionInteriorMargins.bottom();
 
   int host_height = size_bounds.height().value_or(total_height);

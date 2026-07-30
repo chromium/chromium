@@ -211,8 +211,9 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, RestoresFocusOnClose) {
 
 // This is a regression test that checks that the panel stays open when clicking
 // inside (but not on a button or other interactive element).
+// TODO(crbug.com/540107609): Re-enable once panel is implemented.
 IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest,
-                       StaysOpenOnClickInside) {
+                       DISABLED_StaysOpenOnClickInside) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),

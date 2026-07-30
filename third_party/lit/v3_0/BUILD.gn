@@ -84,6 +84,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
     "//chrome/browser/resources/on_device_translation_internals:build_ts",
+    "//chrome/browser/resources/organizer_panel:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/personal_context_internals:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",

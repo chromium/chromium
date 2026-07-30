@@ -285,6 +285,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       ash::kChromeUIDlpInternalsHost,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
+      kChromeUIOrganizerPanelHost,
       kChromeUIWebuiBrowserHost,
 #endif  // !BUILDFLAG(IS_ANDROID)
   });

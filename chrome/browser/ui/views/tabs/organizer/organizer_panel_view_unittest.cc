@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -90,6 +91,7 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
 
  private:
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<actions::ActionItem> root_action_item_;

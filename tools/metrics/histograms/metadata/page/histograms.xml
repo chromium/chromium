@@ -520,6 +520,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".omnibox-popup.top-chrome"/>
   <variant name=".on-device-translation-internals"/>
   <variant name=".oobe"/>
+  <variant name=".organizer-panel.top-chrome"/>
   <variant name=".os-credits"/>
   <variant name=".os-feedback"/>
   <variant name=".os-print"/>
