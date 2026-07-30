@@ -230,6 +230,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisabledTest(message = "https://crbug.com/540904292")
     public void testWebPageIncognitoAppMenuItems_withHomeButtonRemovalKeepOnNtp()
             throws IOException {
         String appMenuGoldenId =
