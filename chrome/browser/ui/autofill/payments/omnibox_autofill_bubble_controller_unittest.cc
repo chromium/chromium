@@ -117,6 +117,33 @@ TEST_F(OmniboxAutofillBubbleControllerTest,
   EXPECT_TRUE(controller_->ShouldShowGooglePayLogo());
 }
 
+// `ShouldShowGooglePayLogo()` remains `true` once shown, even if the card GUID
+// is no longer found in PaymentsDataManager (e.g. after a card fill).
+TEST_F(OmniboxAutofillBubbleControllerTest,
+       ShouldShowGooglePayLogo_RemainsTrueAfterCardFillOrRemoval) {
+  std::string guid = "server_card_guid";
+  CreditCard server_card = test::GetMaskedServerCard();
+  server_card.set_guid(guid);
+  personal_data_manager()->test_payments_data_manager().AddCreditCard(
+      server_card);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Card", SuggestionType::kCreditCardEntry)};
+  suggestions[0].payload = Suggestion::Guid(guid);
+
+  controller_->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
+                          base::DoNothing(), base::DoNothing(),
+                          base::DoNothing());
+
+  EXPECT_TRUE(controller_->ShouldShowGooglePayLogo());
+
+  // Simulate card GUID refresh.
+  personal_data_manager()->test_payments_data_manager().ClearCreditCards();
+
+  // Logo visibility should remain true once set for the flow.
+  EXPECT_TRUE(controller_->ShouldShowGooglePayLogo());
+}
+
 TEST_F(OmniboxAutofillBubbleControllerTest, OnSuggestionsShown) {
   std::vector<Suggestion> suggestions = {
       Suggestion(u"Card", SuggestionType::kCreditCardEntry)};
