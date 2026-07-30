@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentDialog;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -215,6 +216,14 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void removeDialogView(@Nullable PropertyModel model) {
+        if (model != null) {
+            OnBackPressedCallback callback =
+                    model.get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER);
+            if (callback != null) {
+                callback.remove();
+            }
+        }
+
         if (mModelChangeProcessor != null) {
             mModelChangeProcessor.destroy();
             mModelChangeProcessor = null;
