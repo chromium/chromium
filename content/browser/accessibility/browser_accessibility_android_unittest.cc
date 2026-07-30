@@ -405,6 +405,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   text3.role = ax::mojom::Role::kStaticText;
   text3.SetName("3Baz");
 
+  ui::AXNodeData empty_container;
+  empty_container.id = 12;
+  empty_container.role = ax::mojom::Role::kGenericContainer;
+
   ui::AXNodeData container_para;
   container_para.id = 11;
   container_para.role = ax::mojom::Role::kGenericContainer;
@@ -413,18 +417,28 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
   ui::AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids = {container_para.id};
+  root.child_ids = {container_para.id, empty_container.id};
 
   std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       BrowserAccessibilityManagerAndroid::Create(
-          MakeAXTreeUpdateForTesting(root, container_para, text1, text2, text3),
+          MakeAXTreeUpdateForTesting(root, container_para, empty_container,
+                                     text1, text2, text3),
           node_id_delegate_, test_browser_accessibility_delegate_.get()));
   ui::BrowserAccessibility* container_obj = manager->GetFromID(11);
+  ui::BrowserAccessibility* empty_obj = manager->GetFromID(12);
+
   // Default caller gets full text.
   EXPECT_EQ(u"1Foo2Bar3Baz", container_obj->GetTextContentUTF16());
 
   BrowserAccessibilityAndroid* node =
       static_cast<BrowserAccessibilityAndroid*>(container_obj);
+  BrowserAccessibilityAndroid* empty_node =
+      static_cast<BrowserAccessibilityAndroid*>(empty_obj);
+
+  // HasTextContent returns true when text is present, false when empty.
+  EXPECT_TRUE(node->HasTextContent());
+  EXPECT_FALSE(empty_node->HasTextContent());
+
   // No predicate returns all text.
   EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(std::nullopt));
   // Non-empty predicate terminates after one text node.

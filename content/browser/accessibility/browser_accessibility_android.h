@@ -137,6 +137,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // tree tests as "name" in the ...-android.txt files, but as "text" in the
   // ...-android-external.txt files. On other platforms this may be ::GetName().
   std::u16string GetTextContentUTF16() const override;
+
+  // Returns true if this node or its subtree has text content.
+  // Fast because passing min_length=1 allows GetSubstringTextContentUTF16 to
+  // short-circuit as soon as the first character of text is found, avoiding
+  // full subtree traversal and string allocations.
+  bool HasTextContent() const;
   std::u16string GetValueForControl() const override;
   int GetTextContentLengthUTF16() const override;
 

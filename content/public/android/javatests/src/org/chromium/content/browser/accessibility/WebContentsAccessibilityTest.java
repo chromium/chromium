@@ -3278,7 +3278,13 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_CHILD,
                 rootVvid,
                 imageIndex + 1,
-                OFFSET_TYPE_CHILD);
+                OFFSET_TYPE_CHILD,
+                rootVvid,
+                imageIndex,
+                OFFSET_TYPE_CHILD,
+                buttonVvid,
+                0,
+                OFFSET_TYPE_TEXT);
 
         // Image, using text offset. Text offset 0 points to the beginning of the non-text nodes.
         setAndAssertExtendedSelection(
@@ -3354,7 +3360,13 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_CHILD,
                 rootVvid,
                 input2Index + 1,
-                OFFSET_TYPE_CHILD);
+                OFFSET_TYPE_CHILD,
+                input1Vvid,
+                0,
+                OFFSET_TYPE_TEXT,
+                paragraph2Vvid,
+                0,
+                OFFSET_TYPE_TEXT);
 
         // Selection from non-editable to the beginning of the editable.
         setAndAssertExtendedSelection(
@@ -3364,7 +3376,13 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_TEXT,
                 rootVvid,
                 input1Index,
-                OFFSET_TYPE_CHILD);
+                OFFSET_TYPE_CHILD,
+                paragraph1Vvid,
+                1,
+                OFFSET_TYPE_TEXT,
+                input1Vvid,
+                0,
+                OFFSET_TYPE_TEXT);
 
         // Selection from non-editable to the end of the editable.
         setAndAssertExtendedSelection(
@@ -3374,7 +3392,13 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_TEXT,
                 rootVvid,
                 input2Index + 1,
-                OFFSET_TYPE_CHILD);
+                OFFSET_TYPE_CHILD,
+                paragraph1Vvid,
+                1,
+                OFFSET_TYPE_TEXT,
+                paragraph2Vvid,
+                0,
+                OFFSET_TYPE_TEXT);
 
         // Selection from the beginning of the editable to to a non-editable.
         setAndAssertExtendedSelection(
@@ -3382,6 +3406,12 @@ public class WebContentsAccessibilityTest {
                 rootVvid,
                 input1Index,
                 OFFSET_TYPE_CHILD,
+                paragraph2Vvid,
+                10,
+                OFFSET_TYPE_TEXT,
+                input1Vvid,
+                0,
+                OFFSET_TYPE_TEXT,
                 paragraph2Vvid,
                 10,
                 OFFSET_TYPE_TEXT);
@@ -3524,7 +3554,13 @@ public class WebContentsAccessibilityTest {
                 OFFSET_TYPE_TEXT,
                 rootVvid,
                 contenteditable1Index,
-                OFFSET_TYPE_CHILD);
+                OFFSET_TYPE_CHILD,
+                p1Vvid,
+                1,
+                OFFSET_TYPE_TEXT,
+                contenteditable1Vvid,
+                0,
+                OFFSET_TYPE_TEXT);
 
         // From the end of a contenteditable to outside it.
         setAndAssertExtendedSelection(
@@ -3532,6 +3568,12 @@ public class WebContentsAccessibilityTest {
                 rootVvid,
                 contenteditable1Index + 1,
                 OFFSET_TYPE_CHILD,
+                p2Vvid,
+                5,
+                OFFSET_TYPE_TEXT,
+                p2Vvid,
+                0,
+                OFFSET_TYPE_TEXT,
                 p2Vvid,
                 5,
                 OFFSET_TYPE_TEXT);
@@ -3709,6 +3751,24 @@ public class WebContentsAccessibilityTest {
                         videoVvid,
                         3,
                         OFFSET_TYPE_TEXT));
+    }
+
+    /** Test extended selection when inline text boxes. */
+    @Test
+    @LargeTest
+    public void testPerformAction_setExtendedSelection_inlineTextBoxes() throws Throwable {
+        setupTestWithHTML("<p>Line one<br /><br />Line two</p>");
+
+        // Find HTML nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int pVvid = waitForNodeMatching(sTextMatcher, "Line one\n\nLine two");
+
+        // To optimize memory and performance, inline text boxes (Role::kInlineTextBox) are loaded
+        // asynchronously only for the node that currently has accessibility focus.
+        focusNode(pVvid);
+
+        setAndAssertExtendedSelection(
+                rootVvid, pVvid, 0, OFFSET_TYPE_TEXT, pVvid, 8, OFFSET_TYPE_TEXT);
     }
 
     /** Test extended selection with a leaf node at the end of root to trigger at_end_of_anchor. */

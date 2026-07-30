@@ -585,8 +585,7 @@ bool BrowserAccessibilityAndroid::ShouldUsePaneTitle() const {
 bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // The root is not interesting if it doesn't have a title, even
   // though it's focusable.
-  if (ui::IsPlatformDocument(GetRole()) &&
-      GetSubstringTextContentUTF16(1).empty()) {
+  if (ui::IsPlatformDocument(GetRole()) && !HasTextContent()) {
     return false;
   }
 
@@ -959,8 +958,7 @@ bool BrowserAccessibilityAndroid::ComputeIsLeaf() const {
   // are some exceptions where we want nodes to be navigatable despite the
   // screen reader reading the contents twice such as a heading which contains a
   // grid.
-  std::u16string name = GetSubstringTextContentUTF16(1);
-  if (!name.empty() && GetNameFrom() == ax::mojom::NameFrom::kContents &&
+  if (HasTextContent() && GetNameFrom() == ax::mojom::NameFrom::kContents &&
       (HasState(ax::mojom::State::kFocusable) ||
        GetRole() == ax::mojom::Role::kHeading)) {
     return IsLeafConsideringChildren();
@@ -1043,6 +1041,10 @@ std::u16string BrowserAccessibilityAndroid::GetBrailleRoleDescription() const {
 
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
   return GetSubstringTextContentUTF16(std::nullopt);
+}
+
+bool BrowserAccessibilityAndroid::HasTextContent() const {
+  return !GetSubstringTextContentUTF16(/*min_length=*/1).empty();
 }
 
 int BrowserAccessibilityAndroid::GetTextContentLengthUTF16() const {
@@ -2342,7 +2344,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
     std::vector<int32_t>* line_ends,
     int offset) {
   // If this node has no children, treat it as all one line.
-  if (GetSubstringTextContentUTF16(1).size() > 0 && !InternalChildCount()) {
+  if (HasTextContent() && !InternalChildCount()) {
     line_starts->push_back(offset);
     line_ends->push_back(offset + GetTextContentLengthUTF16());
   }

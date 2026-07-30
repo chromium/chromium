@@ -1020,19 +1020,33 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     return std::nullopt;
   }
 
+  BrowserAccessibilityAndroid* platform_ancestor =
+      static_cast<BrowserAccessibilityAndroid*>(
+          android_node->PlatformGetLowestPlatformAncestor());
+  if (!platform_ancestor) {
+    return std::nullopt;
+  }
+
+  // If the platform ancestor is a leaf exposing text, convert tree positions to
+  // text positions to preserve character-level selection accuracy.
+  // This assumes that if a lowest platform leaf has non-empty text content
+  // (`HasTextContent()`), that text represents the rendered text of its
+  // descendants, allowing tree positions within those descendants to be
+  // converted to text positions relative to the platform ancestor.
+  if (position->IsTreePosition() && platform_ancestor->IsLeaf() &&
+      platform_ancestor->HasTextContent()) {
+    position = position->AsTextPosition();
+  }
+
   if (position->IsTextPosition()) {
-    ui::BrowserAccessibility* platform_ancestor =
-        android_node->PlatformGetLowestPlatformAncestor();
-    CHECK(platform_ancestor);
     // Move Chrome position up to the lowest leaf in Android and perform the
     // right adjustments for offset and affinity.
     while (position->GetAnchor()->id() != platform_ancestor->GetId()) {
       position = position->CreateParentPosition();
     }
     CHECK(position->IsTextPosition());
-    return AndroidPosition{
-        static_cast<BrowserAccessibilityAndroid*>(platform_ancestor),
-        position->text_offset(), ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT};
+    return AndroidPosition{platform_ancestor, position->text_offset(),
+                           ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT};
   }
 
   // Since the parent of the target node may be ignored, find the target node in
