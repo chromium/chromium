@@ -10631,6 +10631,25 @@
             ]
         }
     ],
+    "EnableQuicReadMultipleAndUdpGRO": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledQuicUseReadMultipleAndUdpGro_20260729",
+                    "enable_features": [
+                        "EnableUdpGro",
+                        "QuicUseReadMultiple"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSearchAIModeSigninPromo": [
         {
             "platforms": [
@@ -10716,24 +10735,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableTLS13EarlyData"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableUdpGro": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableUdpGro"
                     ]
                 }
             ]
@@ -21030,27 +21031,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "QuicLongerIdleConnectionTimeout"
-                    ]
-                }
-            ]
-        }
-    ],
-    "QuicUseReadMultipleV2": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "QuicUseReadMultiple"
                     ]
                 }
             ]
