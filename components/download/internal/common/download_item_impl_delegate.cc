@@ -48,7 +48,17 @@ void DownloadItemImplDelegate::DetermineDownloadTarget(
 bool DownloadItemImplDelegate::ShouldCompleteDownload(
     DownloadItemImpl* download,
     base::OnceClosure complete_callback) {
-  return true;
+  // The default delegate has no way to run a content check, so defer
+  // completion of downloads whose danger type still indicates a pending
+  // verdict until a delegate that can resolve it takes over.
+  switch (download->GetDangerType()) {
+    case DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+    case DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return false;
+    default:
+      return true;
+  }
 }
 
 bool DownloadItemImplDelegate::ShouldOpenDownload(

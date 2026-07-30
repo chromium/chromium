@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -2013,6 +2014,37 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
   EXPECT_CALL(*download_file, Detach());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+}
+
+// The default DownloadItemImplDelegate (used when no embedder-level delegate
+// is attached, e.g. by InProgressDownloadManager) must defer completion of a
+// download whose content check is still pending so the file is not renamed to
+// its final path before the check resolves.
+TEST_F(DownloadItemTest,
+       DefaultDelegateDefersCompletionForPendingContentCheck) {
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
+  EXPECT_FALSE(item->IsDangerous());
+  EXPECT_EQ(DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+            item->GetDangerType());
+
+  EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
+      .WillRepeatedly([&](DownloadItemImpl* download, base::OnceClosure& cb) {
+        return mock_delegate()
+            ->DownloadItemImplDelegate::ShouldCompleteDownload(download,
+                                                               std::move(cb));
+      });
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _, _)).Times(0);
+  item->DestinationObserverAsWeakPtr()->DestinationCompleted(
+      0, std::unique_ptr<crypto::SecureHash>());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return item->AllDataSaved(); }));
+
+  EXPECT_TRUE(item->AllDataSaved());
+  EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+  EXPECT_EQ(DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+            item->GetDangerType());
+  CleanupItem(item, download_file, DownloadItem::IN_PROGRESS);
 }
 
 TEST_F(DownloadItemTest, CopyDownload) {
