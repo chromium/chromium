@@ -4,6 +4,8 @@
 
 source_set("signals") {
   sources = [
+    "ios_system_signals_collector.h",
+    "ios_system_signals_collector.mm",
     "profile_signals_collector_ios.h",
     "profile_signals_collector_ios.mm",
   ]
@@ -20,6 +22,7 @@ source_set("signals") {
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/common/ui/reauthentication",
   ]
 
   frameworks = [ "LocalAuthentication.framework" ]
@@ -27,7 +30,10 @@ source_set("signals") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "profile_signals_collector_ios_unittest.mm" ]
+  sources = [
+    "ios_system_signals_collector_unittest.mm",
+    "profile_signals_collector_ios_unittest.mm",
+  ]
   deps = [
     ":signals",
     "//base",
@@ -45,7 +51,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/common/ui/reauthentication",
     "//services/network:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
