@@ -12,9 +12,9 @@
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/public/glic_actuation_tracker.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -249,10 +249,10 @@ void WebUIContentsContainerImpl::UpdateActuationTracker() {
                 ? GlicActuationState::kActuatingOnVisibleTab
                 : GlicActuationState::kActuatingOnBackgroundTab;
   }
-  glic::GlicActuationTracker::GetInstance()->NotifyActuatingChanged(
+  glic::GlicPerfTraitsTracker::GetInstance()->NotifyActuationStateChanged(
       web_contents(), state);
-  glic::GlicActuationTracker::GetInstance()->NotifyActuatingChanged(guest,
-                                                                    state);
+  glic::GlicPerfTraitsTracker::GetInstance()->NotifyActuationStateChanged(
+      guest, state);
 }
 
 std::unique_ptr<content::WebContents>

@@ -243,6 +243,11 @@ tabs::TabInterface* GlicInstanceImpl::GetTabFromEmbedderKey(
 
 void GlicInstanceImpl::NotifyVisibilityChange() {
   instance_metrics_.OnVisibilityChanged(HasActiveEmbedder());
+  for (tabs::TabInterface* tab : GetSharingManagerInternal().GetPinnedTabs()) {
+    if (auto* helper = GlicInstanceHelper::From(tab)) {
+      helper->OnPinnedInstanceVisibilityChanged(this);
+    }
+  }
   if (coordinator_delegate_) {
     coordinator_delegate_->OnInstanceVisibilityChanged(this, IsShowing());
   }

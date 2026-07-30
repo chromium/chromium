@@ -328,23 +328,10 @@ DiscardEligibilityPolicy::CanDiscardWithCustomRecentVisibilityWindow(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  {
-    content::WebContents* web_contents = page_node->GetWebContents().get();
-    // Do not discard pages that are pin-shared with Glic.
-    if (web_contents && is_proactive_or_suggested) {
-      auto* tab_interface =
-          tabs::TabInterface::MaybeGetFromContents(web_contents);
-      if (tab_interface) {
-        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-            web_contents->GetBrowserContext());
-        if (glic_service &&
-            glic_service->instance_coordinator().IsTabPinnedToAnyInstance(
-                tab_interface->GetHandle())) {
-          add_reason_and_update_result(CannotDiscardReason::kGlicShared,
-                                       CanDiscardResult::kProtected);
-        }
-      }
-    }
+  if (live_state_data && is_proactive_or_suggested &&
+      live_state_data->IsGlicPinnedToVisibleInstance()) {
+    add_reason_and_update_result(CannotDiscardReason::kGlicShared,
+                                 CanDiscardResult::kProtected);
   }
 
   // Only discard http(s) pages and internal pages to make sure that we don't

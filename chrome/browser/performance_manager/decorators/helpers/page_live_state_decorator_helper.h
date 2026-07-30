@@ -7,7 +7,9 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "components/performance_manager/public/performance_manager_observer.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -18,12 +20,11 @@ namespace {
 class ActiveTabObserver;
 }
 
-enum class GlicActuationState;
-
 class PageLiveStateDecoratorHelper
     : public MediaStreamCaptureIndicator::Observer,
       public PerformanceManagerObserver,
-      public content::DevToolsAgentHostObserver {
+      public content::DevToolsAgentHostObserver,
+      public glic::GlicPerfTraitsTracker::Observer {
  public:
   PageLiveStateDecoratorHelper();
   ~PageLiveStateDecoratorHelper() override;
@@ -56,11 +57,15 @@ class PageLiveStateDecoratorHelper
   void OnPageNodeCreatedForWebContents(
       content::WebContents* web_contents) override;
 
+  // glic::GlicPerfTraitsTracker::Observer:
+  void OnGlicActuationStateChanged(content::WebContents* web_contents,
+                                   GlicActuationState state) override;
+  void OnIsGlicPinnedToVisibleInstanceChanged(
+      content::WebContents* web_contents,
+      bool is_pinned_to_visible) override;
+
  private:
   class WebContentsObserver;
-
-  void OnGlicActuatingChanged(content::WebContents* web_contents,
-                              GlicActuationState state);
 
   // Linked list of WebContentsObservers created by this
   // PageLiveStateDecoratorHelper. Each WebContentsObservers removes itself from
@@ -71,7 +76,9 @@ class PageLiveStateDecoratorHelper
 
   std::unique_ptr<ActiveTabObserver> active_tab_observer_;
 
-  base::CallbackListSubscription actuating_changed_callback_subscription_;
+  base::ScopedObservation<glic::GlicPerfTraitsTracker,
+                          glic::GlicPerfTraitsTracker::Observer>
+      glic_perf_traits_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

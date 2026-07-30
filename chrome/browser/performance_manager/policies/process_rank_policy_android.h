@@ -107,6 +107,8 @@ class ProcessRankPolicyAndroid
   // callbacks are never triggered.
   void OnIsPinnedTabChanged(const PageNode* page_node) override;
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override;
+  void OnIsGlicPinnedToVisibleInstanceChanged(
+      const PageNode* page_node) override;
   void OnUpdatedTitleOrFaviconInBackgroundChanged(
       const PageNode* page_node) override;
 

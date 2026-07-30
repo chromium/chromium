@@ -24,7 +24,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
-#include "chrome/browser/glic/public/glic_actuation_tracker.h"
+#include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -890,7 +890,7 @@ void ActorTask::DidContentsEnterActorControl(
   // prioritization of the renderer process. This will prevent the priority of
   // the tab from dropping to BestEffort when it's not visible. When it is
   // visible, the tab's priority is already boosted.
-  glic::GlicActuationTracker::GetInstance()->NotifyActuatingChanged(
+  glic::GlicPerfTraitsTracker::GetInstance()->NotifyActuationStateChanged(
       contents, glic::GlicActuationState::kActuatingOnBackgroundTab);
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   if (base::FeatureList::IsEnabled(features::kGlicActorInternalPopups)) {
@@ -924,7 +924,7 @@ void ActorTask::DidTabExitActorControl(tabs::TabHandle handle) {
 void ActorTask::DidContentsExitActorControl(
     ActorTask::ActorControlledTabState* state,
     content::WebContents* contents) {
-  glic::GlicActuationTracker::GetInstance()->NotifyActuatingChanged(
+  glic::GlicPerfTraitsTracker::GetInstance()->NotifyActuationStateChanged(
       contents, glic::GlicActuationState::kNone);
   SetFocusState(contents, std::nullopt);
   state->SetContents(nullptr);
