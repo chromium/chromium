@@ -43,6 +43,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
@@ -73,6 +74,7 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -320,7 +322,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   [self removeInfoBarOfType:PasswordInfoBarType::UPDATE manual:manual];
 }
 
-- (void)showPasswordSavedInfoBar {
+- (void)showPasswordSavedInfoBar:
+    (std::unique_ptr<password_manager::PasswordFormManagerForUI>)formToSave {
   if (!_webState) {
     return;
   }
@@ -337,8 +340,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     return;
   }
 
+  id<SettingsCommands> settingsCommands =
+      HandlerForProtocol(self.dispatcher, SettingsCommands);
   auto delegate = std::make_unique<IOSChromePasswordSavedInfoBarDelegate>(
-      base::UTF8ToUTF16(*accountToStorePassword));
+      base::UTF8ToUTF16(*accountToStorePassword), settingsCommands,
+      password_manager::CredentialUIEntry(formToSave->GetPendingCredentials()));
   auto infobar = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeConfirm,
                                               std::move(delegate));
   InfoBarManagerImpl::FromWebState(_webState)->AddInfoBar(std::move(infobar));
@@ -480,6 +486,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       SyncServiceFactory::GetForProfile(self.profile);
   id<SyncPresenterCommands> syncPresenterHandler =
       HandlerForProtocol(self.dispatcher, SyncPresenterCommands);
+  id<SettingsCommands> settingsCommands =
+      HandlerForProtocol(self.dispatcher, SettingsCommands);
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);
 
@@ -494,8 +502,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
           /*password_update=*/false, std::move(form), self.ukmSourceId,
-          /*is_replacement=*/false, syncPresenterHandler, profileStore.get(),
-          accountStore.get(), syncService);
+          /*is_replacement=*/false, syncPresenterHandler, settingsCommands,
+          profileStore.get(), accountStore.get(), syncService);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordSave, std::move(delegate),
           /*skip_banner=*/manual);
@@ -513,8 +521,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
           /*password_update=*/true, std::move(form), self.ukmSourceId,
-          /*is_replacement=*/false, syncPresenterHandler, profileStore.get(),
-          accountStore.get(), syncService);
+          /*is_replacement=*/false, syncPresenterHandler, settingsCommands,
+          profileStore.get(), accountStore.get(), syncService);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordUpdate, std::move(delegate),
           /*skip_banner=*/manual);

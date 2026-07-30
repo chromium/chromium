@@ -1241,7 +1241,8 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                     }];
 }
 
-- (void)showPasswordSavedInfoBar {
+- (void)showPasswordSavedInfoBar:
+    (std::unique_ptr<password_manager::PasswordFormManagerForUI>)formToSave {
   // No op.
 }
 

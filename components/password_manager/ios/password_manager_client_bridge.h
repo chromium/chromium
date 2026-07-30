@@ -53,7 +53,8 @@ using password_manager::CredentialLeakType;
                            manual:(BOOL)manual;
 
 // Shows UI confirming to the user that the password was saved.
-- (void)showPasswordSavedInfoBar;
+- (void)showPasswordSavedInfoBar:
+    (std::unique_ptr<password_manager::PasswordFormManagerForUI>)formToSave;
 
 // Removes the saving/updating password Infobar from the InfobarManager.
 // This also causes the UI to be dismissed.

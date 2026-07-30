@@ -170,7 +170,7 @@ void IOSChromePasswordManagerClient::AutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> saved_form_manager,
     bool is_update_confirmation) {
   if (base::FeatureList::IsEnabled(kPasswordSavedInfobar)) {
-    [bridge_ showPasswordSavedInfoBar];
+    [bridge_ showPasswordSavedInfoBar:std::move(saved_form_manager)];
   }
 }
 

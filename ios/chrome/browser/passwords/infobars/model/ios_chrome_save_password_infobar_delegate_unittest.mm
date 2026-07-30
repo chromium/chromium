@@ -144,7 +144,8 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
 
     delegate_ = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
         password_update, std::move(form_manager), ukm_source_id_,
-        /*is_replacement=*/false, mock_sync_presenter_, profile_store_.get(),
+        /*is_replacement=*/false, mock_sync_presenter_,
+        /*settings_commands_handler=*/nil, profile_store_.get(),
         account_store_.get(), &sync_service_);
     const int different_nav_entry_id = kNavEntryId - 1;
     delegate_->set_nav_entry_id(different_nav_entry_id);
