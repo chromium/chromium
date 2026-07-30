@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/sync/extension_sync_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/extension_prefs.h"
@@ -46,6 +47,7 @@ ToolbarActionsModelFactory::ToolbarActionsModelFactory()
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(extensions::PermissionsManager::GetFactory());
+  DependsOn(ExtensionSyncServiceFactory::GetInstance());
 }
 
 ToolbarActionsModelFactory::~ToolbarActionsModelFactory() = default;

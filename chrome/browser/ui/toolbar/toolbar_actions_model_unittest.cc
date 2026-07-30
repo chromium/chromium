@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
@@ -38,6 +39,10 @@
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/model/sync_change.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -558,6 +563,134 @@ TEST_F(ToolbarActionsModelUnitTest, NewExtensionsAreUnpinnedWhenNoAction) {
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       4 /* kNotPinnedNoAction */, 1);
+}
+
+// Test that enterprise installed extensions are NOT pinned on installation when
+// default-pinning is enabled.
+TEST_F(ToolbarActionsModelUnitTest,
+       EnterpriseExtensionsAreUnpinnedWhenPinnedByDefaultEnabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+  Init();
+
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault, true);
+
+  std::string extension_id = crx_file::id_util::GenerateId("enterprise");
+  std::string json = base::StringPrintf(
+      R"({
+        "%s": {
+          "installation_mode": "force_installed",
+          "update_url": "https://clients2.google.com/service/update2/crx"
+        }
+      })",
+      extension_id.c_str());
+  auto parsed =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(parsed);
+  policy::PolicyMap map;
+  map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+          std::move(*parsed), nullptr);
+  policy_provider()->UpdateChromePolicy(map);
+
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return extension_management->GetInstallationMode(
+               extension_id,
+               "https://clients2.google.com/service/update2/crx") ==
+           extensions::ManagedInstallationMode::kForced;
+  }));
+
+  scoped_refptr<const extensions::Extension> enterprise_extension =
+      extensions::ExtensionBuilder()
+          .SetManifest(base::DictValue()
+                           .Set("name", "enterprise extension")
+                           .Set("manifest_version", 3)
+                           .Set("version", "1.0")
+                           .Set("action", base::DictValue()))
+          .SetID(extension_id)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .Build();
+  EXPECT_TRUE(AddExtension(enterprise_extension.get()));
+
+  // Simulate installation to trigger metrics.
+  static_cast<extensions::ExtensionRegistryObserver*>(toolbar_model())
+      ->OnExtensionInstalled(profile(), enterprise_extension.get(),
+                             /*is_update=*/false);
+
+  EXPECT_EQ(1u, num_actions());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Install.PinReason",
+      ToolbarActionsModel::ExtensionPinReason::kNotPinnedEnterpriseExtension,
+      1);
+  EXPECT_EQ(std::make_optional(false),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                enterprise_extension->id()));
+}
+
+// Test that installed via sync extensions are NOT pinned on installation when
+// default-pinning is enabled.
+TEST_F(ToolbarActionsModelUnitTest,
+       SyncedExtensionsAreUnpinnedWhenPinnedByDefaultEnabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+  Init();
+
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault, true);
+
+  const std::string extension_id = crx_file::id_util::GenerateId("synced");
+
+  // Simulate incoming sync data for an extension that is pending installation.
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(extension_id);
+  ext_specifics->set_enabled(true);
+  ext_specifics->set_update_url(
+      "https://clients2.google.com/service/update2/crx");
+  ext_specifics->set_version("1.0");
+
+  syncer::SyncData sync_data = syncer::SyncData::CreateLocalData(
+      extension_id, "synced extension", specifics);
+
+  ExtensionSyncService* sync_service = ExtensionSyncService::Get(profile());
+  sync_service->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList{sync_data},
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  EXPECT_TRUE(sync_service->IsPendingSyncInstall(extension_id));
+
+  scoped_refptr<const extensions::Extension> synced_extension =
+      extensions::ExtensionBuilder()
+          .SetManifest(base::DictValue()
+                           .Set("name", "synced extension")
+                           .Set("manifest_version", 3)
+                           .Set("version", "1.0")
+                           .Set("action", base::DictValue()))
+          .SetID(extension_id)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+          .Build();
+
+  EXPECT_TRUE(AddExtension(synced_extension.get()));
+
+  // Simulate installation to trigger metrics.
+  static_cast<extensions::ExtensionRegistryObserver*>(toolbar_model())
+      ->OnExtensionInstalled(profile(), synced_extension.get(),
+                             /*is_update=*/false);
+
+  EXPECT_EQ(1u, num_actions());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Install.PinReason",
+      ToolbarActionsModel::ExtensionPinReason::kNotPinnedInstalledFromSync, 1);
+  EXPECT_EQ(std::make_optional(false),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                synced_extension->id()));
 }
 
 // Test that Extensions.Startup.DefaultPinnedExtensionState histogram is

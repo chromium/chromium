@@ -14,6 +14,7 @@
 #include "base/one_shot_event.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -690,11 +691,34 @@ void ExtensionSyncService::DeleteThemeDoNotUse(const Extension& theme) {
       ->PushSyncDeletion(theme.id(), CreateSyncData(theme).GetSyncData());
 }
 
+bool ExtensionSyncService::IsPendingSyncInstall(
+    const std::string& extension_id) const {
+  return app_sync_bundle_.HasPendingExtensionData(extension_id) ||
+         extension_sync_bundle_.HasPendingExtensionData(extension_id) ||
+         sync_installs_in_progress_.contains(extension_id);
+}
+
 void ExtensionSyncService::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
   DCHECK_EQ(profile_, browser_context);
+
+  if (!is_update && IsPendingSyncInstall(extension->id())) {
+    sync_installs_in_progress_.insert(extension->id());
+    // Defer removal to a posted task so that it runs after all
+    // OnExtensionInstalled observers (e.g., ToolbarActionsModel) have finished.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<ExtensionSyncService> self,
+                          const std::string& id) {
+                         if (self) {
+                           self->sync_installs_in_progress_.erase(id);
+                         }
+                       },
+                       weak_ptr_factory_.GetWeakPtr(), extension->id()));
+  }
+
   // Clear pending version if the installed one has caught up.
   auto it = pending_updates_.find(extension->id());
   if (it != pending_updates_.end()) {

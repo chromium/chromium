@@ -3342,6 +3342,14 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Not pinned (No action)">
     The extension does not have a toolbar action, so pinning is not applicable.
   </int>
+  <int value="5" label="Not pinned (Enterprise extension)">
+    The extension was not pinned by default because it is an
+    enterprise-installed extension.
+  </int>
+  <int value="6" label="Not pinned (Installed from sync)">
+    The extension was not pinned by default because it was installed via Chrome
+    Sync.
+  </int>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

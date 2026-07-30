@@ -83,6 +83,10 @@ class ExtensionSyncService : public syncer::SyncableService,
   void SetSyncStartFlareForTesting(
       const syncer::SyncableService::StartSyncFlare& flare);
 
+  // Returns true if the extension with `extension_id` is pending installation
+  // from sync.
+  bool IsPendingSyncInstall(const std::string& extension_id) const;
+
   // Special hack: There was a bug where themes incorrectly ended up in the
   // syncer::EXTENSIONS type. This is for cleaning up the data.
   // crbug.com/40445445 DO NOT USE FOR ANYTHING ELSE!
@@ -205,6 +209,12 @@ class ExtensionSyncService : public syncer::SyncableService,
   std::optional<base::flat_set<std::string>>
       migrating_default_chrome_app_ids_cache_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Tracks extension IDs currently being installed from sync to prevent race
+  // conditions in observer notification order. Populated during
+  // OnExtensionInstalled() for pending sync installs and cleared in a posted
+  // task after all OnExtensionInstalled observers have finished processing.
+  base::flat_set<std::string> sync_installs_in_progress_;
 
   base::WeakPtrFactory<ExtensionSyncService> weak_ptr_factory_{this};
 };
