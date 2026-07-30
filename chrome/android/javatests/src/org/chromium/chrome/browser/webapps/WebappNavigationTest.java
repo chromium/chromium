@@ -16,8 +16,10 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.util.Base64;
 import android.view.View;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -203,7 +205,25 @@ public class WebappNavigationTest {
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
     public void testRegularLinkOffOriginShortEdgesCutoutMode() throws Exception {
-        WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
+        runOffOriginShortEdgesCutoutModeTest(DisplayMode.STANDALONE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testRegularLinkOffOriginFullscreenShortEdgesCutoutMode() throws Exception {
+        runOffOriginShortEdgesCutoutModeTest(DisplayMode.FULLSCREEN);
+    }
+
+    private void runOffOriginShortEdgesCutoutModeTest(@DisplayMode.EnumType int displayMode)
+            throws Exception {
+        Intent intent =
+                mActivityTestRule
+                        .createIntent()
+                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, displayMode);
+        WebappActivity activity = runWebappActivityAndWaitForIdle(intent);
         assertEquals(
                 BrowserControlsState.HIDDEN, WebappActivityTestRule.getToolbarShowState(activity));
 
@@ -242,14 +262,23 @@ public class WebappNavigationTest {
         // The page-driven edge-to-edge state should be released and the toolbar laid out normally.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(
-                            activity.getEdgeToEdgeManager().shouldContentFitsWindowInsets(),
-                            Matchers.is(true));
-
                     View controlContainer = activity.findViewById(R.id.control_container);
                     Criteria.checkThat(controlContainer, Matchers.notNullValue());
                     Criteria.checkThat(controlContainer.getVisibility(), Matchers.is(View.VISIBLE));
                     Criteria.checkThat(controlContainer.getHeight(), Matchers.greaterThan(0));
+
+                    WindowInsets rootInsets =
+                            activity.getWindow().getDecorView().getRootWindowInsets();
+                    Criteria.checkThat(rootInsets, Matchers.notNullValue());
+                    int statusBarInset =
+                            WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
+                                    .getInsets(WindowInsetsCompat.Type.statusBars())
+                                    .top;
+                    Criteria.checkThat(statusBarInset, Matchers.greaterThan(0));
+
+                    int[] location = new int[2];
+                    controlContainer.getLocationOnScreen(location);
+                    Criteria.checkThat(location[1], Matchers.greaterThanOrEqualTo(statusBarInset));
                 });
     }
 

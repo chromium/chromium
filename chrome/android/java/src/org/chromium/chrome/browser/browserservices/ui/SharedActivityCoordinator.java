@@ -74,6 +74,11 @@ public class SharedActivityCoordinator implements InflationObserver {
                 verifier::wasPreviouslyVerified);
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
+        // Browser controls can become visible while staying in app mode, e.g. for a child tab
+        // opened by a contextual web search; immersive mode must yield to them.
+        mBrowserControlsVisibilityManager
+                .getControlsVisibleSupplier()
+                .addSyncObserver(visible -> updateImmersiveMode());
         lifecycleDispatcher.register(this);
 
         // Apply immersive mode ASAP, before layout inflation. This is a no-op unless the
@@ -119,7 +124,9 @@ public class SharedActivityCoordinator implements InflationObserver {
     private void updateImmersiveMode() {
         if (mImmersiveDisplayMode == null) return;
 
-        if (mUseAppModeUi) {
+        boolean controlsVisible =
+                mBrowserControlsVisibilityManager.getControlsVisibleSupplier().get();
+        if (mUseAppModeUi && !controlsVisible) {
             mImmersiveModeController
                     .get()
                     .enterImmersiveMode(

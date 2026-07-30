@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.browserservices.trustedwebactivityui.control
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -38,6 +41,9 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
     private final boolean mShowBrowserControlsForChildTab;
 
     private @BrowserControlsState int mBrowserControlsState = DEFAULT_BROWSER_CONTROLS_STATE;
+
+    private final SettableNonNullObservableSupplier<Boolean> mControlsVisibleSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private final CustomTabTabObserver mTabObserver =
             new CustomTabTabObserver() {
@@ -85,9 +91,16 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
         }
     }
 
+    /** Supplies whether browser controls are visible. */
+    public NonNullObservableSupplier<Boolean> getControlsVisibleSupplier() {
+        return mControlsVisibleSupplier;
+    }
+
     private void updateBrowserControlsState() {
         @BrowserControlsState
         int newBrowserControlsState = computeBrowserControlsState(mTabProvider.getTab());
+        mControlsVisibleSupplier.set(
+                mInAppMode && newBrowserControlsState != BrowserControlsState.HIDDEN);
         if (mBrowserControlsState == newBrowserControlsState) return;
 
         mBrowserControlsState = newBrowserControlsState;

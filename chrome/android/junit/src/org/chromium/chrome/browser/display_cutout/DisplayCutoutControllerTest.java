@@ -272,6 +272,28 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
+    public void testStandaloneCoverReleasesEdgeToEdgeWhileNotInteractable() {
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+
+        DisplayCutoutController controller = new DisplayCutoutController(mDelegate);
+        controller.setViewportFit(ViewportFit.COVER);
+        verify(mDelegate).setEdgeToEdgeState(true);
+
+        // The tab is hidden, e.g. behind a child tab; the edge-to-edge claim is released.
+        when(mDelegate.isInteractable()).thenReturn(false);
+        controller.maybeUpdateLayout();
+        verify(mDelegate).setEdgeToEdgeState(false);
+
+        // The tab becomes interactable again; edge-to-edge is re-applied.
+        clearInvocations(mDelegate);
+        when(mDelegate.isInteractable()).thenReturn(true);
+        controller.maybeUpdateLayout();
+        verify(mDelegate).setEdgeToEdgeState(true);
+    }
+
+    @Test
+    @SmallTest
     public void testBrowserFullscreenExplicitCoverRequestsEdgeToEdge() {
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);

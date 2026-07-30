@@ -541,8 +541,12 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     }
 
     private boolean shouldUseBrowserEdgeToEdge() {
+        // Only the interactable tab may drive the activity-wide edge-to-edge state. A hidden
+        // tab (e.g. behind a child tab opened for a web search) releases its claim so the
+        // foreground tab's state wins, and re-applies it when shown again.
         return mDelegate.isShortEdgesCutoutModeEnabled()
                 && mDelegate.isDrawEdgeToEdgeEnabled()
+                && mDelegate.isInteractable()
                 && isInEdgeToEdgeCompatibleDisplayMode()
                 && shouldTreatViewportFitAsCover(mViewportFit);
     }
