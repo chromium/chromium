@@ -331,7 +331,10 @@ public class SendTabToSelfAndroidBridge {
     }
 
     @CalledByNative
-    public static void showMessageBanner(@Nullable WebContents webContents, String deviceName) {
+    public static void showMessageBanner(
+            @Nullable WebContents webContents, String deviceName, int openedTabCount) {
+        assert openedTabCount > 0;
+
         // The tab or web page has been closed or destroyed.
         if (webContents == null || webContents.isDestroyed()) return;
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
@@ -359,7 +362,10 @@ public class SendTabToSelfAndroidBridge {
                                 MessageIdentifier.SEND_TAB_TO_SELF)
                         .with(
                                 MessageBannerProperties.TITLE,
-                                res.getString(R.string.send_tab_to_self_message_banner_title))
+                                res.getQuantityString(
+                                        R.plurals.send_tab_to_self_message_banner_title,
+                                        openedTabCount,
+                                        openedTabCount))
                         .with(
                                 MessageBannerProperties.DESCRIPTION,
                                 res.getString(

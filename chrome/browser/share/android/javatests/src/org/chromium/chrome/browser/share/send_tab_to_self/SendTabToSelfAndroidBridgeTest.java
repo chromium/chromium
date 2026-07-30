@@ -571,7 +571,7 @@ public class SendTabToSelfAndroidBridgeTest {
     // shown correctly and that the primary action callback is triggered correctly.
     public void testShowMessageBanner() {
         // Trigger the banner display logic.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10");
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
 
         // Capture the enqueued PropertyModel to verify its content and action callbacks.
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
@@ -582,7 +582,7 @@ public class SendTabToSelfAndroidBridgeTest {
         Assert.assertEquals(
                 MessageIdentifier.SEND_TAB_TO_SELF,
                 model.get(MessageBannerProperties.MESSAGE_IDENTIFIER));
-        Assert.assertEquals("Links received", model.get(MessageBannerProperties.TITLE));
+        Assert.assertEquals("Link received", model.get(MessageBannerProperties.TITLE));
         Assert.assertEquals("From Pixel 10", model.get(MessageBannerProperties.DESCRIPTION));
         Assert.assertEquals("Open", model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         Assert.assertEquals(
@@ -616,7 +616,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     public void testShowMessageBanner_ClickActionSingleTab_OpensTab() {
         // Trigger message banner display.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10");
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
@@ -664,10 +664,14 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     public void testShowMessageBanner_ClickActionMultipleTabs_OpensNewestTab() {
         // Trigger message banner display.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10");
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2);
 
         ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        Assert.assertEquals(
+                "2 links received",
+                messageCaptor.getValue().get(MessageBannerProperties.TITLE));
 
         Supplier<Integer> onPrimaryAction =
                 messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);
@@ -733,7 +737,7 @@ public class SendTabToSelfAndroidBridgeTest {
         when(mTabbedActivity.isInOverviewMode()).thenReturn(true);
 
         // Trigger the banner display logic.
-        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10");
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
 
         // Verify banner was never enqueued.
         verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), eq(false));

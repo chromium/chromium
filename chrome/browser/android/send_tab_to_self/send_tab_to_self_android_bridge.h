@@ -25,7 +25,8 @@ void AttachTabLabel(TabAndroid* tab,
 // is called upon successful auto-opening of the received tabs in the
 // background.
 void ShowMessageBanner(content::WebContents* web_contents,
-                       std::string_view device_name);
+                       std::string_view device_name,
+                       int opened_tab_count);
 
 }  // namespace send_tab_to_self
 

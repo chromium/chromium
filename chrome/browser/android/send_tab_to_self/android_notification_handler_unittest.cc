@@ -64,6 +64,7 @@ class MockAndroidNotificationHandler : public AndroidNotificationHandler {
   MOCK_METHOD(void,
               ShowMessageBanner,
               (std::string_view device_name,
+               int opened_tab_count,
                content::WebContents* web_contents),
               (override));
   MOCK_METHOD(bool, OpenInNativeAppIfPossible, (const GURL& url), (override));
@@ -134,7 +135,9 @@ TEST_F(AndroidNotificationHandlerTest,
   // Ensure no system notification is shown since Chrome is active.
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   // Expect the message banner to be displayed on the active WebContents.
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                web_contents()));
 
   // Trigger the addition of a new entry using the public ReceivingUiHandler
   // interface.
@@ -196,7 +199,9 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_CALL(*handler(), HideNotification(guid1));
   // Expect the message banner to be displayed for the opened entries.
   EXPECT_CALL(*handler(), HideNotification(guid2));
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/2,
+                                web_contents()));
 
   // Adding the tab model triggers OnTabModelAdded which executes auto-open on
   // all unread entries.
@@ -262,7 +267,9 @@ TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
   const std::string guid = entry->GetGUID();
 
   // Expect the message banner to be shown upon auto-opening the entry.
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                web_contents()));
 
   // Trigger the addition of a new entry.
   handler()->DisplayNewEntries({entry});
@@ -309,7 +316,9 @@ TEST_F(AndroidNotificationHandlerModelNotReadyTest,
   // Ensure no system notification is shown since Chrome is active.
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   // Expect the message banner to be displayed on the active WebContents.
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                web_contents()));
 
   // Mark the model as ready. This should trigger the auto-open of the pending
   // entry.
@@ -359,7 +368,8 @@ TEST_F(AndroidNotificationHandlerTest,
   // Expect it to be opened eventually.
   EXPECT_CALL(*handler(), HideNotification(guid));
   EXPECT_CALL(*handler(),
-              ShowMessageBanner(kRemoteDeviceName, raw_web_contents));
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                raw_web_contents));
 
   // Now simulate tab initialization (adding WebContents).
   empty_tab_model->AddTabFromWebContents(std::move(new_web_contents), 0,
@@ -422,7 +432,8 @@ TEST_F(AndroidNotificationHandlerTest,
   // Expect it to be opened eventually.
   EXPECT_CALL(*handler(), HideNotification(guid));
   EXPECT_CALL(*handler(),
-              ShowMessageBanner(kRemoteDeviceName, raw_web_contents));
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                raw_web_contents));
 
   // Now simulate tab initialization on the first model.
   empty_model1->AddTabFromWebContents(std::move(new_web_contents), 0,
@@ -455,7 +466,9 @@ TEST_F(AndroidNotificationHandlerTest,
   // Expect message banner to be shown on active web_contents(), NOT on
   // inactive_model's tab.
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                web_contents()));
 
   handler()->DisplayNewEntries({entry});
 
@@ -483,7 +496,8 @@ TEST_F(AndroidNotificationHandlerTest,
 
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   EXPECT_CALL(*handler(),
-              ShowMessageBanner(kRemoteDeviceName, raw_web_contents));
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                raw_web_contents));
 
   handler()->DisplayNewEntries({entry});
 
@@ -557,7 +571,9 @@ TEST_F(AndroidNotificationHandlerWithTabGridAutoOpenSupportTest,
   const std::string guid = entry->GetGUID();
 
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                web_contents()));
 
   handler()->DisplayNewEntries({entry});
 
@@ -586,7 +602,9 @@ TEST_F(AndroidNotificationHandlerWithNativeAppSupportTest,
   const std::string guid = entry->GetGUID();
 
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+  EXPECT_CALL(*handler(),
+              ShowMessageBanner(kRemoteDeviceName, /*opened_tab_count=*/1,
+                                web_contents()));
 
   handler()->DisplayNewEntries({entry});
 

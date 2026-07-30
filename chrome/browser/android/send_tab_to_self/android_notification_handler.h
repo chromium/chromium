@@ -56,6 +56,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   virtual void ShowNotification(const SendTabToSelfEntry& entry);
   virtual void HideNotification(const std::string& guid);
   virtual void ShowMessageBanner(std::string_view device_name,
+                                 int opened_tab_count,
                                  content::WebContents* web_contents);
   virtual bool OpenInNativeAppIfPossible(const GURL& url);
 
