@@ -2643,6 +2643,15 @@ TEST(DanglingPtrTest, DetectAndDestructor) {
   EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
 
+TEST(DanglingPtrTest, ReportIfDanglingOnNoOpImpl) {
+  // Ensure ReportIfDangling compiles cleanly when RawPtrNoOpImpl is selected,
+  // such as for UnprotectedInRelease on non-BRP release builds.
+  int x = 42;
+  raw_ptr<int, base::RawPtrTraits::kNoOpImpl> no_op_ptr = &x;
+  no_op_ptr.ReportIfDangling();
+  EXPECT_EQ(no_op_ptr.get(), &x);
+}
+
 TEST(DanglingPtrTest, DetectResetAndDestructor) {
   auto instrumentation = test::DanglingPtrInstrumentation::Create();
   if (!instrumentation.has_value()) {
