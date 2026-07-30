@@ -18,6 +18,8 @@ source_set("model") {
     "account_fetcher_factory_ios.mm",
     "account_investigator_factory.h",
     "account_investigator_factory.mm",
+    "account_preview_data_service_factory.h",
+    "account_preview_data_service_factory.mm",
     "account_profile_mapper.h",
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
