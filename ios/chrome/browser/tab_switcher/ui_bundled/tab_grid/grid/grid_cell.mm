@@ -764,7 +764,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 // If window is not nil, register for updates to its interface style updates and
 // set the user interface style to be the same as the window.
 - (void)updateInterfaceStyleForWindow:(UIWindow*)window {
-  if (self.traitRegistration && self.registeredWindowScene) {
+  if (self.traitRegistration) {
     [self.registeredWindowScene
         unregisterForTraitChanges:self.traitRegistration];
     self.traitRegistration = nil;
