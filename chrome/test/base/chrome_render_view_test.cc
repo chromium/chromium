@@ -26,7 +26,6 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -54,7 +53,6 @@ using autofill::PasswordGenerationAgent;
 using blink::WebFrame;
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
-using blink::WebScriptController;
 using blink::WebScriptSource;
 using blink::WebString;
 using blink::WebURLRequest;

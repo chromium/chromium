@@ -199,35 +199,6 @@ void ScriptController::SetWasmEvalErrorMessageForWorld(
       V8String(GetIsolate(), error_message));
 }
 
-namespace {
-
-Vector<const char*>& RegisteredExtensionNames() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Vector<const char*>, extension_names, ());
-  return extension_names;
-}
-
-}  // namespace
-
-void ScriptController::RegisterExtensionIfNeeded(
-    std::unique_ptr<v8::Extension> extension) {
-  for (const auto* extension_name : RegisteredExtensionNames()) {
-    if (std::string_view(extension_name) == extension->name()) {
-      return;
-    }
-  }
-  RegisteredExtensionNames().push_back(extension->name());
-  v8::RegisterExtension(std::move(extension));
-}
-
-v8::ExtensionConfiguration ScriptController::ExtensionsFor(
-    const ExecutionContext* context) {
-  if (context->ShouldInstallV8Extensions()) {
-    return v8::ExtensionConfiguration(RegisteredExtensionNames().size(),
-                                      RegisteredExtensionNames().data());
-  }
-  return v8::ExtensionConfiguration();
-}
-
 void ScriptController::UpdateDocument() {
   window_proxy_manager_->UpdateDocument();
 }

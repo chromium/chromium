@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_CONTROLLER_H_
 
-#include <memory>
-
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -109,11 +107,6 @@ class CORE_EXPORT ScriptController final
 
   void UpdateDocument();
   void UpdateSecurityOrigin(const SecurityOrigin*);
-
-  // Registers a v8 extension to be available on webpages. Will only
-  // affect v8 contexts initialized after this call.
-  static void RegisterExtensionIfNeeded(std::unique_ptr<v8::Extension>);
-  static v8::ExtensionConfiguration ExtensionsFor(const ExecutionContext*);
 
  private:
   bool CanExecuteScript(ExecuteScriptPolicy policy);

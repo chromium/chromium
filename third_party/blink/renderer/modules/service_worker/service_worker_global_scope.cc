@@ -274,11 +274,6 @@ ServiceWorkerGlobalScope::ServiceWorkerGlobalScope(
 
 ServiceWorkerGlobalScope::~ServiceWorkerGlobalScope() = default;
 
-bool ServiceWorkerGlobalScope::ShouldInstallV8Extensions() const {
-  return Platform::Current()->AllowScriptExtensionForServiceWorker(
-      WebSecurityOrigin(GetSecurityOrigin()));
-}
-
 // https://w3c.github.io/ServiceWorker/#update
 void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
     const KURL& script_url,

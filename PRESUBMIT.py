@@ -580,15 +580,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
     ),
     BanRule(
-        r'/v8::Extension\(',
-        (
-            'Do not introduce new v8::Extensions into the code base, use',
-            'gin::Wrappable instead. See http://crbug.com/334679',
-        ),
-        True,
-        (r'extensions/renderer/safe_builtins\.*', ),
-    ),
-    BanRule(
         '#pragma comment(lib,',
         ('Specify libraries to link with in build files and not in the source.',
          ),

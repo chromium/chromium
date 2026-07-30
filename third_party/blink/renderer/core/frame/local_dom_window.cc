@@ -407,10 +407,6 @@ bool LocalDOMWindow::IsContextThread() const {
   return IsMainThread();
 }
 
-bool LocalDOMWindow::ShouldInstallV8Extensions() const {
-  return GetFrame()->Client()->AllowScriptExtensions();
-}
-
 ContentSecurityPolicy* LocalDOMWindow::GetContentSecurityPolicyForWorld(
     const DOMWrapperWorld* world) {
   if (!world || !world->IsIsolatedWorld()) {

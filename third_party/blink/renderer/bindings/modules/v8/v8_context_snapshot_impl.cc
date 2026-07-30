@@ -313,7 +313,6 @@ void TakeSnapshotForWorld(v8::SnapshotCreator* snapshot_creator,
 v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
-    v8::ExtensionConfiguration* extension_config,
     v8::Local<v8::Object> global_proxy,
     Document* document) {
   DCHECK(document);
@@ -345,9 +344,8 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
   v8::DeserializeAPIWrapperCallback api_wrappers_deserializer(
       DeserializeAPIWrapperCallback, &deserializer_data);
   return v8::Context::FromSnapshot(
-             isolate, WorldToIndex(world), internal_field_desrializer,
-             extension_config, global_proxy,
-             document->GetExecutionContext()->GetMicrotaskQueue(),
+             isolate, WorldToIndex(world), internal_field_desrializer, nullptr,
+             global_proxy, document->GetExecutionContext()->GetMicrotaskQueue(),
              v8::DeserializeContextDataCallback(), api_wrappers_deserializer)
       .ToLocalChecked();
 }

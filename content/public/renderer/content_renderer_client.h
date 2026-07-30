@@ -356,10 +356,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // started.
   virtual void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {}
 
-  // Returns whether or not V8 script extensions should be allowed for a
-  // service worker.
-  virtual bool AllowScriptExtensionForServiceWorker(
-      const url::Origin& script_origin);
 
   // Notifies that a service worker context is going to be initialized. No
   // meaningful task has run on the worker thread at this point. This

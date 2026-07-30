@@ -38,7 +38,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -315,9 +314,6 @@ void LocalWindowProxy::CreateContext() {
                GetFrame()->IsOutermostMainFrame());
   base::ElapsedTimer timer;
 
-  v8::ExtensionConfiguration extension_configuration =
-      ScriptController::ExtensionsFor(GetFrame()->DomWindow());
-
   DCHECK(GetFrame()->DomWindow());
   v8::Local<v8::Context> context;
   {
@@ -328,7 +324,7 @@ void LocalWindowProxy::CreateContext() {
 
     v8::Local<v8::Object> global_proxy = global_proxy_.Get(isolate);
     context = V8ContextSnapshot::CreateContextFromSnapshot(
-        isolate, World(), &extension_configuration, global_proxy, document);
+        isolate, World(), global_proxy, document);
     context_was_created_from_snapshot_ = !context.IsEmpty();
 
     // Even if we enable V8 context snapshot feature, we may hit this branch
@@ -340,10 +336,10 @@ void LocalWindowProxy::CreateContext() {
               .As<v8::FunctionTemplate>()
               ->InstanceTemplate();
       CHECK(!global_template.IsEmpty());
-      context = v8::Context::New(isolate, &extension_configuration,
-                                 global_template, global_proxy,
-                                 v8::DeserializeInternalFieldsCallback(),
-                                 GetFrame()->DomWindow()->GetMicrotaskQueue());
+      context =
+          v8::Context::New(isolate, nullptr, global_template, global_proxy,
+                           v8::DeserializeInternalFieldsCallback(),
+                           GetFrame()->DomWindow()->GetMicrotaskQueue());
       VLOG(1) << "A context is created NOT from snapshot";
     }
   }

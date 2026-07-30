@@ -81,9 +81,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void WillReleaseScriptContext(v8::Local<v8::Context>,
                                 int32_t world_id) override;
 
-  // Returns true if we should allow register V8 extensions to be added.
-  bool AllowScriptExtensions() override;
-
   bool HasWebView() const override;
   bool IsForInitialWebUI() const override;
   bool InShadowTree() const override;

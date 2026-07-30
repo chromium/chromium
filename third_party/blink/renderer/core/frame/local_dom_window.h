@@ -176,7 +176,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // ExecutionContext overrides:
   bool IsWindow() const final { return true; }
   bool IsContextThread() const final;
-  bool ShouldInstallV8Extensions() const final;
   ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
       const DOMWrapperWorld* world) final;
   const KURL& Url() const final;

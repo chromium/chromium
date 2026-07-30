@@ -944,12 +944,6 @@ void RendererBlinkPlatformImpl::WorkerContextCreated(
       worker);
 }
 
-bool RendererBlinkPlatformImpl::AllowScriptExtensionForServiceWorker(
-    const blink::WebSecurityOrigin& script_origin) {
-  return GetContentClient()->renderer()->AllowScriptExtensionForServiceWorker(
-      script_origin);
-}
-
 blink::ProtocolHandlerSecurityLevel
 RendererBlinkPlatformImpl::GetProtocolHandlerSecurityLevel(
     const blink::WebSecurityOrigin& origin) {

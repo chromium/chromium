@@ -122,7 +122,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   // ExecutionContext overrides:
   bool IsServiceWorkerGlobalScope() const override { return true; }
-  bool ShouldInstallV8Extensions() const final;
   void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) override;
   void MaybeRecordFetchError(int net_error_code,
                              const FetchRequestData* request_data) override;

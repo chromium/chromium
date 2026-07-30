@@ -24,7 +24,6 @@ class MODULES_EXPORT V8ContextSnapshotImpl {
   static v8::Local<v8::Context> CreateContext(
       v8::Isolate* isolate,
       const DOMWrapperWorld& world,
-      v8::ExtensionConfiguration* extension_config,
       v8::Local<v8::Object> global_proxy,
       Document* document);
 

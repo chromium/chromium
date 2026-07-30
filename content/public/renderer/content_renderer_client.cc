@@ -259,11 +259,6 @@ ContentRendererClient::CreateSpeechRecognitionClient(
 }
 #endif
 
-bool ContentRendererClient::AllowScriptExtensionForServiceWorker(
-    const url::Origin& script_origin) {
-  return false;
-}
-
 bool ContentRendererClient::ShouldEnforceWebRTCRoutingPreferences() {
   return true;
 }

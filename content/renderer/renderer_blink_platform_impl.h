@@ -216,8 +216,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   void DidStartWorkerThread() override;
   void WillStopWorkerThread() override;
   void WorkerContextCreated(const v8::Local<v8::Context>& worker) override;
-  bool AllowScriptExtensionForServiceWorker(
-      const blink::WebSecurityOrigin& script_origin) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
       const blink::WebSecurityOrigin& origin) override;
   bool OriginCanAccessServiceWorkers(const GURL& url) override;
