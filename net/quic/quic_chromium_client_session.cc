@@ -280,7 +280,7 @@ base::DictValue NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
     std::string_view reason) {
   return base::DictValue()
-      .Set("connection_id", connection_id.ToString())
+      .Set("default_path_connection_id", connection_id.ToString())
       .Set("reason", reason);
 }
 
@@ -897,14 +897,8 @@ void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
 void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
-  session_->connection()->OnPathValidationFailureAtClient(
-      /*is_multi_port=*/false, *context);
-  // Note that socket, packet writer, and packet reader in |context| will be
-  // discarded.
-  auto* chrome_context =
-      static_cast<QuicChromiumPathValidationContext*>(context.get());
-  session_->OnProbeFailed(chrome_context->network(),
-                          chrome_context->peer_address());
+  session_->LogPathValidationFailure(
+      static_cast<QuicChromiumPathValidationContext*>(context.get()));
 }
 
 QuicChromiumClientSession::PortMigrationValidationResultDelegate::
@@ -926,14 +920,8 @@ void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
 void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
-  session_->connection()->OnPathValidationFailureAtClient(
-      /*is_multi_port=*/false, *context);
-  // Note that socket, packet writer, and packet reader in |context| will be
-  // discarded.
-  auto* chrome_context =
-      static_cast<QuicChromiumPathValidationContext*>(context.get());
-  session_->OnProbeFailed(chrome_context->network(),
-                          chrome_context->peer_address());
+  session_->LogPathValidationFailure(
+      static_cast<QuicChromiumPathValidationContext*>(context.get()));
 }
 
 QuicChromiumClientSession::ServerPreferredAddressValidationResultDelegate::
@@ -956,14 +944,8 @@ void QuicChromiumClientSession::ServerPreferredAddressValidationResultDelegate::
 void QuicChromiumClientSession::ServerPreferredAddressValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
-  session_->connection()->OnPathValidationFailureAtClient(
-      /*is_multi_port=*/false, *context);
-  // Note that socket, packet writer, and packet reader in |context| will be
-  // discarded.
-  auto* chrome_context =
-      static_cast<QuicChromiumPathValidationContext*>(context.get());
-  session_->OnProbeFailed(chrome_context->network(),
-                          chrome_context->peer_address());
+  session_->LogPathValidationFailure(
+      static_cast<QuicChromiumPathValidationContext*>(context.get()));
 }
 
 QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
@@ -3959,6 +3941,50 @@ void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
 
   // |current_migration_cause_| will be reset afterwards.
   LogMigrationResultToHistogram(MIGRATION_STATUS_SUCCESS);
+}
+
+void QuicChromiumClientSession::LogPathValidationFailure(
+    QuicChromiumPathValidationContext* context) {
+  connection()->OnPathValidationFailureAtClient(
+      /*is_multi_port=*/false, *context);
+  // Note that socket, packet writer, and packet reader in |context| will be
+  // discarded.
+  QuicConnectionMigrationStatus status;
+  const char* reason;
+  using enum quic::PathValidationFailure::Reason;
+  switch (context->failure_reason().value_or(kUnknown)) {
+    case kUnknown:
+      status = MIGRATION_STATUS_INTERNAL_ERROR;
+      reason = "Unknown";
+      break;
+    case kStatelessReset:
+      status = MIGRATION_STATUS_STATELESS_RESET;
+      reason = "Received Stateless Reset";
+      break;
+    case kNewerValidation:
+      status = MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION;
+      reason = "New migration, canceling old validation";
+      break;
+    case kRetryTimeout:
+      status = MIGRATION_STATUS_TIMEOUT;
+      reason = "Retry Timeout";
+      break;
+    case kNotConnected:
+      status = MIGRATION_STATUS_DISCONNECTING;
+      reason = "Disconnecting, abandoning validation";
+      break;
+    default:
+      status = MIGRATION_STATUS_INTERNAL_ERROR;
+      reason = "Unknown";
+      break;
+  }
+  // TODO(crbug.com/539527142): connection_id() returns the default path server
+  // connection ID. It might be more correct to use the alternate path
+  // connection ID. Add the probe connection ID to the Path Validation Context,
+  // or add a member to QuicConnection to return the alternate path connection
+  // ID.
+  OnProbeFailed(context->network(), context->peer_address());
+  HistogramAndLogMigrationFailure(status, connection_id(), reason);
 }
 
 base::DictValue QuicChromiumClientSession::GetInfoAsValue(

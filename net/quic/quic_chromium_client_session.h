@@ -137,6 +137,9 @@ enum QuicConnectionMigrationStatus {
   MIGRATION_STATUS_PATH_DEGRADING_BEFORE_HANDSHAKE_CONFIRMED,
   MIGRATION_STATUS_IDLE_MIGRATION_TIMEOUT,
   MIGRATION_STATUS_NO_UNUSED_CONNECTION_ID,
+  MIGRATION_STATUS_STATELESS_RESET,
+  MIGRATION_STATUS_DISCONNECTING,
+  MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION,
   MIGRATION_STATUS_MAX
 };
 
@@ -1115,6 +1118,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                                        quic::QuicConnectionId connection_id,
                                        const char* reason);
   void HistogramAndLogMigrationSuccess(quic::QuicConnectionId connection_id);
+  void LogPathValidationFailure(QuicChromiumPathValidationContext* context);
 
   // Notifies the factory that this session is going away and no more streams
   // should be created from it.  This needs to be called before closing any

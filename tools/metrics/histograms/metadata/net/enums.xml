@@ -2771,6 +2771,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="13" label="Path degrading before handshake confirmed"/>
   <int value="14" label="Idle migration period exceeded"/>
   <int value="15" label="Migration fails due to lack of connection ID"/>
+  <int value="16" label="Migration Probe received Stateless Reset"/>
+  <int value="17" label="Migration aborted due to session close"/>
+  <int value="18" label="Path validation aborted because of newer validation"/>
 </enum>
 
 <enum name="QuicDisabledReason">
