@@ -91,12 +91,19 @@ export class HistoryItemElement extends HistoryItemElementBase {
         type: Boolean,
         reflect: true,
       },
+
+      isCriticalActionsEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   private isShiftKeyDown_: boolean = false;
   protected accessor selectionNotAllowed_: boolean =
       !loadTimeData.getBoolean('allowDeletingHistory');
+  protected accessor isCriticalActionsEnabled_: boolean =
+      loadTimeData.getBoolean('isCriticalActionsEnabled');
   private eventTracker_: EventTracker = new EventTracker();
   accessor item: HistoryEntry|undefined;
   accessor hasTimeGap: boolean = false;
@@ -157,7 +164,8 @@ export class HistoryItemElement extends HistoryItemElementBase {
     for (let i = 0; i < path.length; i++) {
       const elem = path[i] as HTMLElement;
       if (elem.id !== 'checkbox' &&
-          (elem.nodeName === 'A' || elem.nodeName === 'CR-ICON-BUTTON')) {
+          (elem.nodeName === 'A' || elem.nodeName === 'CR-ICON-BUTTON' ||
+           elem.id === 'collapse')) {
         return;
       }
 
@@ -175,6 +183,10 @@ export class HistoryItemElement extends HistoryItemElementBase {
       index: this.index,
       shiftKey: e.shiftKey,
     });
+  }
+
+  protected onCollapseClick_(e: Event) {
+    e.stopPropagation();
   }
 
   /**
@@ -241,25 +253,21 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   protected shouldShowActorTooltip_(): boolean {
-    if (this.isCriticalActionsEnabled_()) {
+    if (this.isCriticalActionsEnabled_) {
       return false;
     }
     return !!this.item?.isActorVisit;
   }
 
   protected shouldShowActorIconNextToFavicon_(): boolean {
-    if (!this.isCriticalActionsEnabled_()) {
+    if (!this.isCriticalActionsEnabled_) {
       return false;
     }
     return !!this.item?.isActorVisit;
   }
 
-  private isCriticalActionsEnabled_(): boolean {
-    return loadTimeData.getBoolean('isCriticalActionsEnabled');
-  }
-
   protected isExpandable_(): boolean {
-    return this.isCriticalActionsEnabled_() && !!this.item?.isActorVisit;
+    return this.isCriticalActionsEnabled_ && !!this.item?.isActorVisit;
   }
 
   protected getExpandIcon_(): string {

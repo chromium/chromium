@@ -71,6 +71,31 @@ suite('<history-item> unit test', function() {
     time.dispatchEvent(new CustomEvent('mouseover'));
     assertNotEquals(initialTitle, time.title);
   });
+
+  test(
+      'website title margin adapts to critical actions flag', async function() {
+        loadTimeData.overrideValues({isCriticalActionsEnabled: true});
+        const enabledItem = document.createElement('history-item');
+        document.body.appendChild(enabledItem);
+        await microtasksFinished();
+        assertTrue(enabledItem.hasAttribute('is-critical-actions-enabled_'));
+        assertEquals(
+            '24px',
+            window.getComputedStyle(enabledItem)
+                .getPropertyValue('--website-title-margin-start')
+                .trim());
+
+        loadTimeData.overrideValues({isCriticalActionsEnabled: false});
+        const disabledItem = document.createElement('history-item');
+        document.body.appendChild(disabledItem);
+        await microtasksFinished();
+        assertFalse(disabledItem.hasAttribute('is-critical-actions-enabled_'));
+        assertEquals(
+            '8px',
+            window.getComputedStyle(disabledItem)
+                .getPropertyValue('--website-title-margin-start')
+                .trim());
+      });
 });
 
 suite('<history-item> integration test', function() {
@@ -231,6 +256,15 @@ suite('<history-item> integration test', function() {
     await microtasksFinished();
 
     assertTrue(collapse.hasAttribute('opened'));
+
+    const criticalActionsTitle =
+        items[1]!.shadowRoot.querySelector<HTMLElement>(
+            '.critical-actions-title');
+    assertTrue(!!criticalActionsTitle);
+    assertTrue(isVisible(criticalActionsTitle));
+    assertEquals(
+        loadTimeData.getString('geminiKeyBrowsingActionsTitle'),
+        criticalActionsTitle.textContent.trim());
   });
 
   test('non-actor visit with critical actions enabled', async function() {

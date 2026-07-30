@@ -14,6 +14,17 @@
   display: block;
   outline: none;
   pointer-events: none;
+
+  --item-container-padding-start: 14px;
+  --title-domain-padding-start: 5px;
+  --favicon-size: 24px;
+  --actor-icon-size: 16px;
+  --actor-icon-floating-offset: 6px;
+  --website-title-margin-start: 8px;
+}
+
+:host([is-critical-actions-enabled_]) {
+  --website-title-margin-start: 24px;
 }
 
 #main-container {
@@ -37,10 +48,10 @@
 }
 
 #item-container {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   min-height: var(--item-height);
-  padding-inline-start: 14px;
+  padding-inline-start: var(--item-container-padding-start);
   pointer-events: auto;
 }
 
@@ -52,11 +63,25 @@
   padding-bottom: var(--card-first-last-item-padding);
 }
 
-#item-info {
+#checkbox-cell {
   align-items: center;
   display: flex;
+  height: var(--item-height);
+}
+
+#item-info {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
+}
+
+#item-info-row {
+  align-items: center;
+  display: flex;
+  height: var(--item-height);
+  min-width: 0;
+  width: 100%;
 }
 
 #title-and-domain {
@@ -67,11 +92,20 @@
   margin-inline-end: auto;
   overflow: hidden;
   /* Allows the link's focus outline to be shown completely. */
-  padding-inline-start: 5px;
+  padding-inline-start: var(--title-domain-padding-start);
 }
 
 #checkbox {
   margin: 0 10px;
+}
+
+.website-icon {
+  height: var(--favicon-size);
+  width: var(--favicon-size);
+}
+
+.website-title {
+  margin-inline-start: var(--website-title-margin-start);
 }
 
 /* Styling the element before cr-checkbox is defined is necessary since
@@ -86,8 +120,11 @@
 }
 
 #timeAccessed {
+  align-items: center;
   color: var(--history-item-time-color);
+  display: flex;
   font-size: 12px;
+  height: var(--item-height);
   margin-inline-start: 6px;
   min-width: 96px;
 }
@@ -114,6 +151,10 @@
   padding-inline-start: 12px;
 }
 
+.website-link {
+  position: relative;
+}
+
 #title-and-domain #actor-icon {
   --cr-icon-color: var(--color-sys-on-tonal-container,
       var(--cr-fallback-color-on-tonal-container));
@@ -126,12 +167,14 @@
       var(--cr-fallback-color-on-tonal-container));
   display: flex;
   flex: none;
-  height: 16px;
+  height: var(--actor-icon-size);
+  width: var(--actor-icon-size);
+  inset-inline-start: calc(
+      var(--favicon-size) - var(--actor-icon-size) +
+      var(--actor-icon-floating-offset));
   justify-content: center;
-  margin-inline-start: -10px;
   padding-inline-start: 0;
-  position: relative;
-  width: 16px;
+  position: absolute;
   z-index: 1;
 }
 
@@ -154,7 +197,23 @@
 
 #expanded-container {
   border: 0;
-  padding: 0;
+  padding: 6px 0;
+}
+
+.critical-actions-title {
+  color: var(--cr-primary-text-color);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-inline-start: calc(
+    var(--title-domain-padding-start) +
+    var(--favicon-size) +
+    var(--website-title-margin-start)
+  );
+  padding-bottom: 4px;
 }
 
 #icons {
@@ -234,6 +293,7 @@
 #options {
   align-items: center;
   display: flex;
+  height: var(--item-height);
 }
 
 /* Visually hide the label but still allow the screen reader to
