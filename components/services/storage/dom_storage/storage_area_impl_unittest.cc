@@ -336,13 +336,17 @@ class StorageAreaImplTestBase : public testing::Test,
     return "";
   }
 
+  bool HasChangesToCommit(StorageAreaImpl* area) {
+    return area->commit_batch_.get();
+  }
+
   bool BlockingCommit() {
     return BlockingCommit(&delegate_, storage_area_.get());
   }
 
   bool BlockingCommit(MockDelegate* delegate, StorageAreaImpl* area) {
     bool did_something = false;
-    while (area->has_pending_load_tasks() || area->has_changes_to_commit()) {
+    while (area->has_pending_load_tasks() || HasChangesToCommit(area)) {
       base::RunLoop loop;
       delegate->SetDidCommitCallback(loop.QuitClosure());
       area->ScheduleImmediateCommit();
@@ -656,7 +660,7 @@ TEST_P(StorageAreaImplTest, PendingLoadTasks) {
   EXPECT_FALSE(storage_area_impl()->has_pending_load_read_write_tasks());
 
   // The `Put()` must be committed.
-  EXPECT_FALSE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_FALSE(HasChangesToCommit(storage_area_impl()));
 }
 
 TEST_P(StorageAreaImplCacheModeTest, GetAll) {
@@ -1074,10 +1078,10 @@ TEST_P(StorageAreaImplCacheModeTest, CommitOnDifferentCacheModes) {
   }
 
   ASSERT_NO_FATAL_FAILURE(ClearDatabase());
-  EXPECT_TRUE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_TRUE(HasChangesToCommit(storage_area_impl()));
   BlockingCommit();
   EXPECT_EQ("foobar", GetDatabaseEntry(*test_map_locator_, test_key2_));
-  EXPECT_FALSE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_FALSE(HasChangesToCommit(storage_area_impl()));
 }
 
 TEST_P(StorageAreaImplTest, GetAllWhenCacheOnlyKeys) {
@@ -1089,7 +1093,7 @@ TEST_P(StorageAreaImplTest, GetAllWhenCacheOnlyKeys) {
   ASSERT_TRUE(PutSync(key, value, std::nullopt));
   BlockingCommit();
   ASSERT_TRUE(PutSync(key, value2, value));
-  EXPECT_TRUE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_TRUE(HasChangesToCommit(storage_area_impl()));
 
   std::vector<blink::mojom::KeyValuePtr> data;
 
@@ -1131,7 +1135,7 @@ TEST_P(StorageAreaImplTest, GetAllWhenCacheOnlyKeys) {
   // The last "put" isn't committed yet.
   EXPECT_EQ("foo", GetDatabaseEntry(*test_map_locator_, test_key2_));
 
-  ASSERT_TRUE(storage_area_impl()->has_changes_to_commit());
+  ASSERT_TRUE(HasChangesToCommit(storage_area_impl()));
   BlockingCommit();
 
   EXPECT_EQ("foobar", GetDatabaseEntry(*test_map_locator_, test_key2_));
@@ -1148,7 +1152,7 @@ TEST_P(StorageAreaImplTest, GetAllAfterSetCacheMode) {
   EXPECT_TRUE(storage_area_impl()->map_state_ ==
               StorageAreaImpl::MapState::LOADED_KEYS_ONLY);
   ASSERT_TRUE(PutSync(key, value2, value));
-  EXPECT_TRUE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_TRUE(HasChangesToCommit(storage_area_impl()));
 
   storage_area_impl()->SetCacheModeForTesting(CacheMode::KEYS_AND_VALUES);
 
@@ -1195,7 +1199,7 @@ TEST_P(StorageAreaImplTest, GetAllAfterSetCacheMode) {
   // map should be loading.
   EXPECT_EQ("foobar", GetDatabaseEntry(*test_map_locator_, test_key2_));
 
-  ASSERT_TRUE(storage_area_impl()->has_changes_to_commit());
+  ASSERT_TRUE(HasChangesToCommit(storage_area_impl()));
   BlockingCommit();
 
   EXPECT_FALSE(HasDatabaseEntry(*test_map_locator_, test_key2_));
@@ -1214,11 +1218,11 @@ TEST_P(StorageAreaImplTest, SetCacheModeConsistent) {
   ASSERT_NO_FATAL_FAILURE(ClearDatabase());
 
   EXPECT_TRUE(PutSync(key, value, std::nullopt));
-  EXPECT_TRUE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_TRUE(HasChangesToCommit(storage_area_impl()));
   BlockingCommit();
 
   EXPECT_TRUE(PutSync(key, value2, value));
-  EXPECT_TRUE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_TRUE(HasChangesToCommit(storage_area_impl()));
 
   // Setting cache mode does not reload the cache till it is required.
   storage_area_impl()->SetCacheModeForTesting(CacheMode::KEYS_AND_VALUES);
@@ -1227,7 +1231,7 @@ TEST_P(StorageAreaImplTest, SetCacheModeConsistent) {
 
   // Put operation should change the mode.
   EXPECT_TRUE(PutSync(key, value, value2));
-  EXPECT_TRUE(storage_area_impl()->has_changes_to_commit());
+  EXPECT_TRUE(HasChangesToCommit(storage_area_impl()));
   EXPECT_EQ(StorageAreaImpl::MapState::LOADED_KEYS_AND_VALUES,
             storage_area_impl()->map_state_);
   std::optional<std::vector<uint8_t>> result = GetSync(key);
@@ -1519,7 +1523,7 @@ TEST_P(StorageAreaImplTest, MapForkingPseudoFuzzer) {
     }
   }
   for (const auto& area : areas) {
-    EXPECT_FALSE(area->has_changes_to_commit());
+    EXPECT_FALSE(HasChangesToCommit(area.get()));
   }
 
   // This section checks the data in the database itself to verify all areas

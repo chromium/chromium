@@ -141,8 +141,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   // modify this storage area's map with a `ReadWrite` task.
   bool has_pending_load_read_write_tasks() const;
 
-  bool has_changes_to_commit() const { return commit_batch_.get(); }
-
   AsyncDomStorageDatabase* database() { return database_; }
 
   // Commence aggressive flushing. This should be called early during startup,
@@ -201,6 +199,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   void OnCommitComplete(DbStatus status);
 
  private:
+  friend class StorageAreaImplTestBase;
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, GetAllAfterSetCacheMode);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest,
                            PutLoadsValuesAfterCacheModeUpgrade);
