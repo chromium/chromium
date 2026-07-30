@@ -315,6 +315,15 @@ void ArcIntentHelperBridge::OnOpenAppWithIntent(
     arc::mojom::LaunchIntentPtr intent) {
   // Web app launches should only be invoked on HTTPS URLs.
   if (CanOpenWebAppForUrl(start_url)) {
+    // The intent data URL may be opened directly in the browser when no
+    // matching app is installed, so restrict it to the same set of schemes as
+    // OnOpenUrl.
+    if (intent->data &&
+        !allowed_arc_schemes_.contains(intent->data->GetScheme())) {
+      LOG(WARNING) << "Pruning disallowed intent data scheme: "
+                   << intent->data->GetScheme();
+      intent->data.reset();
+    }
     g_open_url_delegate->OpenAppWithIntent(start_url, std::move(intent));
   }
 }

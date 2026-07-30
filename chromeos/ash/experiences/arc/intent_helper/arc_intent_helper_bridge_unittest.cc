@@ -277,6 +277,34 @@ TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
   EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
 }
 
+// Tests that OnOpenAppWithIntent only forwards intent data URLs with allowed
+// schemes.
+TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent_IntentDataScheme) {
+  const GURL start_url("https://www.google.com");
+
+  auto intent = mojom::LaunchIntent::New();
+  intent->action = arc::kIntentActionView;
+  intent->data = GURL("https://www.example.com");
+  instance_->OnOpenAppWithIntent(start_url, std::move(intent));
+  EXPECT_EQ(start_url, test_open_url_delegate_->TakeLastOpenedUrl());
+  EXPECT_EQ(GURL("https://www.example.com"),
+            test_open_url_delegate_->TakeLastOpenedIntent()->data);
+
+  intent = mojom::LaunchIntent::New();
+  intent->action = arc::kIntentActionView;
+  intent->data = GURL("chrome://settings");
+  instance_->OnOpenAppWithIntent(start_url, std::move(intent));
+  EXPECT_EQ(start_url, test_open_url_delegate_->TakeLastOpenedUrl());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedIntent()->data);
+
+  intent = mojom::LaunchIntent::New();
+  intent->action = arc::kIntentActionView;
+  intent->data = GURL("javascript:alert(1)");
+  instance_->OnOpenAppWithIntent(start_url, std::move(intent));
+  EXPECT_EQ(start_url, test_open_url_delegate_->TakeLastOpenedUrl());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedIntent()->data);
+}
+
 // Tests that AppendStringToIntentHelperPackageName works.
 TEST_F(ArcIntentHelperTest, TestAppendStringToIntentHelperPackageName) {
   std::string package_name = kArcIntentHelperPackageName;
