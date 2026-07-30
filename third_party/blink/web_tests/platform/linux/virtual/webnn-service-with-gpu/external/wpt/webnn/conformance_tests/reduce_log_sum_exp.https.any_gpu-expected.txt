@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] [required] reduceLogSumExp avoids overflows caused by taking the exp of large inputs
-  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual Infinity should be close enough to expected 100 by ULP distance: expected a number less than or equal to 20n but got 1018691584n
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual 88.37626647949219 should be close enough to expected 100 by ULP distance: expected a number less than or equal to 20n but got 1523546n
 [FAIL] [required] reduceLogSumExp avoids underflows caused by taking the log of small inputs
   assert_less_than_equal: assert_array_approx_equals_ulp: test reduceLogSumExp float32 actual -Infinity should be close enough to expected -100 by ULP distance: expected a number less than or equal to 20n but got 1018691584n
 Harness: the test ran to completion.

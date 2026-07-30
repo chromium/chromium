@@ -1,43 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] [required] l2Pool2d float32 4D tensor options.padding
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 284.8902587890625 should be close enough to expected 254.81358337402344 by ULP distance: expected a number less than or equal to 27n but got 1024429n
 [FAIL] [required] l2Pool2d float32 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
-[FAIL] [required] l2Pool2d float32 4D tensor options.outputShapeRounding=floor
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 210.05128479003906 should be close enough to expected 171.5061492919922 by ULP distance: expected a number less than or equal to 11n but got 2526094n
-[FAIL] [required] l2Pool2d float32 4D tensor options.outputShapeRounding=ceil
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 210.05128479003906 should be close enough to expected 171.5061492919922 by ULP distance: expected a number less than or equal to 11n but got 2526094n
-[FAIL] [required] l2Pool2d float32 4D tensor options.outputShapeRounding=ceil with asymmetric window
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 4.242640495300293 should be close enough to expected 3 by ULP distance: expected a number less than or equal to 8n but got 4703158n
-[FAIL] [required] l2Pool2d float32 4D tensor options.outputSizes ignores options.outputShapeRounding=floor
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 210.05128479003906 should be close enough to expected 171.5061492919922 by ULP distance: expected a number less than or equal to 11n but got 2526094n
-[FAIL] [required] l2Pool2d float32 4D tensor options.outputSizes ignores options.outputShapeRounding=ceil
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 210.05128479003906 should be close enough to expected 171.5061492919922 by ULP distance: expected a number less than or equal to 11n but got 2526094n
-[FAIL] [required] l2Pool2d float32 4D tensor options.dilations with options.strides
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 147.21841430664062 should be close enough to expected 120.20333862304688 by ULP distance: expected a number less than or equal to 11n but got 2281422n
-[FAIL] [required] l2Pool2d float16 4D constant tensor all positive default options
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 289 by ULP distance: expected a number less than or equal to 27 but got 8060
-[FAIL] [required] l2Pool2d float16 4D tensor all positive default options
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 289 by ULP distance: expected a number less than or equal to 27 but got 8060
-[FAIL] [required] l2Pool2d float16 4D tensor all negative default options
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 299 by ULP distance: expected a number less than or equal to 27 but got 8020
-[FAIL] [required] l2Pool2d float16 4D tensor options.padding
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 254.875 by ULP distance: expected a number less than or equal to 27 but got 8201
 [FAIL] [required] l2Pool2d float16 4D tensor options.dilations
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pool2d in tflite doesn't support dilations."
-[FAIL] [required] l2Pool2d float16 4D tensor options.layout=nchw
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 289 by ULP distance: expected a number less than or equal to 27 but got 8060
-[FAIL] [required] l2Pool2d float16 4D tensor options.layout=nhwc
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 289 by ULP distance: expected a number less than or equal to 27 but got 8060
-[FAIL] [required] l2Pool2d float16 4D tensor options.outputShapeRounding=floor
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual 209.875 should be close enough to expected 171.5 by ULP distance: expected a number less than or equal to 11 but got 307
-[FAIL] [required] l2Pool2d float16 4D tensor options.outputShapeRounding=ceil
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual 209.875 should be close enough to expected 171.5 by ULP distance: expected a number less than or equal to 11 but got 307
-[FAIL] [required] l2Pool2d float16 4D tensor options.outputSizes ignores options.outputShapeRounding=floor
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual 209.875 should be close enough to expected 171.5 by ULP distance: expected a number less than or equal to 11 but got 307
-[FAIL] [required] l2Pool2d float16 4D tensor options.outputSizes ignores options.outputShapeRounding=ceil
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual 209.875 should be close enough to expected 171.5 by ULP distance: expected a number less than or equal to 11 but got 307
-[FAIL] [required] l2Pool2d float16 4D tensor options.dilations with options.strides
-  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual 147.125 should be close enough to expected 120.1875 by ULP distance: expected a number less than or equal to 11 but got 278
 Harness: the test ran to completion.
 
