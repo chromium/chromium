@@ -43,8 +43,7 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
   if (scene_state && !scene_state.sceneSessionID.empty()) {
     const auto& map = browser_->GetProfile()->GetPrefs()->GetDict(
         prefs::kCobrowseSessionActiveMap);
-    is_session_active_ =
-        map.FindBool(scene_state.sceneSessionID).value_or(false);
+    is_session_active_ = map.FindString(scene_state.sceneSessionID) != nullptr;
     if (is_session_active_ && !IsAimCobrowseEligible(browser_->GetProfile())) {
       SetSessionActive(false);
     }
@@ -61,6 +60,19 @@ CobrowseContext* CobrowseBrowserAgent::GetCobrowseContext() {
 
 void CobrowseBrowserAgent::SetCobrowseContext(CobrowseContext* context) {
   context_ = context;
+  if (is_session_active_) {
+    SceneState* scene_state = browser_->GetSceneState();
+    if (scene_state && !scene_state.sceneSessionID.empty()) {
+      ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
+                                  prefs::kCobrowseSessionActiveMap);
+      std::string server_id = "";
+      if (context_) {
+        server_id = base::SysNSStringToUTF8(context_.serverID);
+      }
+      update->Set(scene_state.sceneSessionID, server_id);
+      browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
+    }
+  }
 }
 
 void CobrowseBrowserAgent::SetUIStateProvider(UIStateProvider* provider) {
@@ -119,7 +131,15 @@ void CobrowseBrowserAgent::SetSessionActive(bool active) {
   if (scene_state && !scene_state.sceneSessionID.empty()) {
     ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
                                 prefs::kCobrowseSessionActiveMap);
-    update->Set(scene_state.sceneSessionID, active);
+    if (active) {
+      std::string server_id = "";
+      if (context_) {
+        server_id = base::SysNSStringToUTF8(context_.serverID);
+      }
+      update->Set(scene_state.sceneSessionID, server_id);
+    } else {
+      update->Remove(scene_state.sceneSessionID);
+    }
     browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
   }
 }

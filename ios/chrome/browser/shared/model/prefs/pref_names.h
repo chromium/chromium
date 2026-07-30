@@ -38,8 +38,8 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 // (serverID) and creation timestamp.
 inline constexpr char kBwgSessionMap[] = "ios.bwg.session_map";
 
-// Map of scene session IDs to booleans which indicates if a cobrowse session is
-// active.
+// Map of scene session IDs to AIM thread IDs. The presence of a thread ID
+// indicates if a cobrowse session is active.
 inline constexpr char kCobrowseSessionActiveMap[] =
     "ios.cobrowse.session_active_map";
 
