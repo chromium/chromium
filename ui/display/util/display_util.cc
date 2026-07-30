@@ -223,18 +223,26 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
 bool CompareDisplayIds(int64_t id1, int64_t id2) {
   if (id1 == id2)
     return false;
-  // Output index is stored in the first 8 bits. See GetDisplayIdFromEDID
-  // in edid_parser.cc.
-  int index_1 = id1 & 0xFF;
-  int index_2 = id2 & 0xFF;
-  DCHECK_NE(index_1, index_2) << id1 << " and " << id2;
   bool first_is_internal = IsInternalDisplayId(id1);
   bool second_is_internal = IsInternalDisplayId(id2);
   if (first_is_internal && !second_is_internal)
     return true;
   if (!first_is_internal && second_is_internal)
     return false;
-  return index_1 < index_2;
+  int index_1 = id1 & 0xFF;
+  int index_2 = id2 & 0xFF;
+#if BUILDFLAG(IS_CHROMEOS)
+  // Output index is stored in the first 8 bits for ChromeOS EDID display IDs.
+  // See GetDisplayIdFromEDID in edid_parser.cc.
+  DCHECK_NE(index_1, index_2) << id1 << " and " << id2;
+#endif
+
+  if (index_1 != index_2) {
+    return index_1 < index_2;
+  }
+
+  // Fallback tie-breaker when low 8 bits collide.
+  return id1 < id2;
 }
 
 bool IsInternalDisplayId(int64_t display_id) {
