@@ -80,6 +80,7 @@ public class NtpCustomizationPromoManagerUnitTest {
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
         when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+        NtpCustomizationPromoManager.setEnableForTesting(true);
 
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
     }

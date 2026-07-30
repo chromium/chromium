@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -53,6 +54,14 @@ public class NtpCustomizationPromoManager {
     // and the Snackbar should be shown in the same window.
     private static int sTaskIdForRecreate;
 
+    private static boolean sEnableForTesting;
+
+    /** Sets whether to enable the customization bottom sheet for testing. */
+    public static void setEnableForTesting(boolean enable) {
+        sEnableForTesting = enable;
+        ResettersForTesting.register(() -> sEnableForTesting = false);
+    }
+
     /**
      * Returns whether to trigger the NTP theme tip bottom sheet showing.
      *
@@ -63,6 +72,10 @@ public class NtpCustomizationPromoManager {
     public static boolean canTriggerCustomizationBottomSheet(
             WindowAndroid windowAndroid, boolean isLff, int ntpOpenedCount) {
         if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled(windowAndroid, isLff)) {
+            return false;
+        }
+
+        if (BuildConfig.IS_FOR_TEST && !sEnableForTesting) {
             return false;
         }
 
