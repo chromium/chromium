@@ -658,6 +658,14 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
       QuarantineForBrp(slot_span, slot_start);
     }
 
+    if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+      // This flag is read in `FreeAfterBRPQuarantine()`. It must be set before
+      // calling ReleaseFromAllocator(); once allocator ownership is released,
+      // concurrent raw_ptr destructors may trigger FreeAfterBRPQuarantine and
+      // re-tag or re-allocate the slot immediately.
+      ref_count->SetQuarantineRequest();
+    }
+
     if (!(ref_count->ReleaseFromAllocator(slot_start.Untag(), slot_span)))
         [[unlikely]] {
       PA_CHECK(was_zapped);
@@ -669,11 +677,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
           slot_span->GetSlotSizeForBookkeeping(), std::memory_order_relaxed);
       cumulative_count_of_brp_quarantined_slots_.fetch_add(
           1, std::memory_order_relaxed);
-
-      if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
-        // This flag is to be read on `FreeAfterBRPQuarantine()`.
-        ref_count->SetQuarantineRequest();
-      }
       return;
     }
   }
