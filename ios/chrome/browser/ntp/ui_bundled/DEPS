@@ -83,10 +83,3 @@ include_rules = [
   "+third_party/omnibox_proto",
   # keep-sorted end
 ]
-
-specific_include_rules = {
-  # TODO(crbug.com/41259428): Remove this exception.
-  "^new_tab_page_controller\\.mm$": [
-    "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
-  ],
-}

@@ -39,7 +39,6 @@ include_rules = [
   "+ios/components/webui",
   "+ios/public/provider/chrome",
   "+ios/public/test",
-  "+ios/web/web_state/ui",
   "+mojo/core/embedder",
   "+net/url_request",
   "+services/network/public/cpp",
