@@ -281,6 +281,34 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithIncorrectPassword) {
             EncryptionInfo::kKnownIncorrect);
 }
 
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarMaxIterationCount) {
+  // Can quickly enumerate entries in an archive whose encrypted file headers
+  // specify the maximum permitted KDF iteration count, even though no
+  // password is supplied. Key derivation is unnecessary in this case because
+  // there is no candidate password to verify.
+  // encrypted_high_kdf.rar contains: e0.dat .. e7.dat (encrypted), payload.exe
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("encrypted_high_kdf.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 9);
+  EXPECT_EQ(results.archived_binary[0].file_path(), "e0.dat");
+  EXPECT_TRUE(results.archived_binary[0].is_encrypted());
+  EXPECT_EQ(results.archived_binary[7].file_path(), "e7.dat");
+  EXPECT_TRUE(results.archived_binary[7].is_encrypted());
+  EXPECT_EQ(results.archived_binary[8].file_path(), "payload.exe");
+  EXPECT_TRUE(results.archived_binary[8].is_executable());
+  EXPECT_FALSE(results.archived_binary[8].is_encrypted());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            EncryptionInfo::kKnownIncorrect);
+}
+
 TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPasswordMultipleFiles) {
   // Can list files inside an archive that has password protected data.
   // passwd1234_two_files.rar contains 2 files: signed.exe and text.txt

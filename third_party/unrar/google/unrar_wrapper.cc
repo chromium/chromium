@@ -65,6 +65,14 @@ bool RarReader::Open(std::unique_ptr<RarReaderDelegate> delegate,
   command_->ParseArg(password_flag.data());
   command_->ParseArg(const_cast<wchar_t*>(L"t"));
   command_->ParseDone();
+  if (password_.empty()) {
+    // Without a real password there is nothing useful key derivation can
+    // produce, so tell UnRAR to skip encrypted headers and entries instead of
+    // attempting decryption with the dummy password above. The work avoided
+    // scales with the archive's KDF iteration parameter and the number of
+    // distinct salts.
+    command_->SkipEncrypted = true;
+  }
   // Disables an optimization that can allow specially crafted archives to
   // bypass analysis. See crbug.com/506473226.
   command_->Recurse = RECURSE_ALWAYS;
@@ -100,8 +108,15 @@ bool RarReader::ExtractNextEntry() {
     temp_file_.SetLength(0);
     size_t header_size = archive_->ReadHeader();
     repeat = false;
-    success = extractor_->ExtractCurrentFile(
-        *archive_, header_size, repeat);  // |repeat| is passed by reference
+    // When no password was supplied, attempting to decrypt the entry will
+    // never succeed; skip extraction and report the available metadata.
+    bool skip_encrypted_entry = password_.empty() &&
+                                archive_->GetHeaderType() == HEAD_FILE &&
+                                archive_->FileHead.Encrypted;
+    success =
+        !skip_encrypted_entry &&
+        extractor_->ExtractCurrentFile(
+            *archive_, header_size, repeat);  // |repeat| is passed by reference
 
     if (archive_->GetHeaderType() == HEAD_FILE) {
 #if defined(OS_WIN)
