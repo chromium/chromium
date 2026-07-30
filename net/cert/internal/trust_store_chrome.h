@@ -403,10 +403,9 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
     MtcAnchorExtraData& operator=(const MtcAnchorExtraData& other);
     MtcAnchorExtraData& operator=(MtcAnchorExtraData&& other);
 
-    // TODO(crbug.com/452986179) rename to revoked_serials;
-    // The revocation map key is the end index (exclusive) and the value is the
-    // start index (inclusive).
-    base::flat_map<uint64_t, uint64_t> revoked_indices;
+    // The revocation map key is the end serial (exclusive) and the value is the
+    // start serial (inclusive).
+    base::flat_map<uint64_t, uint64_t> revoked_serials;
 
     // The Signer data from the SignerSet for this issuer.
     Signer signer_config;

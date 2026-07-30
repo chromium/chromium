@@ -704,8 +704,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       }
     }
 
-    auto it = mtc_anchor_data->revoked_indices.upper_bound(serial);
-    if (it != mtc_anchor_data->revoked_indices.end() && serial >= it->second) {
+    auto it = mtc_anchor_data->revoked_serials.upper_bound(serial);
+    if (it != mtc_anchor_data->revoked_serials.end() && serial >= it->second) {
       path->errors.GetErrorsForCert(0)->AddError(
           bssl::cert_errors::kCertificateRevoked);
       return;

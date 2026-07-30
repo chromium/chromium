@@ -1509,94 +1509,151 @@ TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcRevocation) {
-  constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
-  net::MtcLogBuilder mtc_log(kMtcLogId);
+TEST_F(CertVerifyProcBuiltinTest, MtcRevocation) {
+  constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+  constexpr uint64_t kLogNumber = 1;
+
+  MtcLogBuilder::Cosigner ca_cosigner = {
+      base::ToVector(kMtcCaId), crypto::keypair::PrivateKey::GenerateEcP256(),
+      bssl::SignatureAlgorithm::kEcdsaSha256};
+  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf1 =
       std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
   struct TestCertData {
     uint64_t mtc_log_index;
-    bool expect_is_revoked;
-    scoped_refptr<X509Certificate> cert;
+    uint64_t mtc_serial;
+    bool expect_is_revoked = false;
+    scoped_refptr<X509Certificate> landmark_relative_cert;
+    scoped_refptr<X509Certificate> standalone_cert;
   };
   std::array<TestCertData, 6> test_cert_data;
   for (TestCertData& data : test_cert_data) {
     data.mtc_log_index = mtc_log.AddEntry(*mtc_leaf1);
+    data.mtc_serial = (kLogNumber << 48) + data.mtc_log_index;
   }
-  ASSERT_EQ(test_cert_data.front().mtc_log_index, 1u);
-  ASSERT_EQ(test_cert_data.back().mtc_log_index, 6u);
 
   mtc_log.AdvanceLandmark();
 
   for (TestCertData& data : test_cert_data) {
-    data.cert = X509Certificate::CreateFromBuffer(
+    data.landmark_relative_cert = X509Certificate::CreateFromBuffer(
         mtc_log.CreateSignaturelessCertificateBuffer(data.mtc_log_index), {});
+    data.standalone_cert = X509Certificate::CreateFromBuffer(
+        mtc_log.CreateStandaloneCertificateBuffer(data.mtc_log_index,
+                                                  {&ca_cosigner}),
+        {});
   }
 
+  SetMockIsMtcCosignerPolicySatisfied(true);
   InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
 
   bssl::TrustStoreInMemory trust_store;
   auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
-      kMtcLogId, mtc_log.GetLandmarkSubtreeHashes());
+      ca_cosigner.id, ca_cosigner.signature_algorithm,
+      x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
+      mtc_log.GetPerLogLandmarkSubtreeHashes());
   ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
   AddTrustStore(&trust_store);
 
   // Test with GetMTCAnchorData returning a non-null MtcAnchorExtraData, but
-  // with revoked_indices empty. Nothing should be revoked.
+  // with revoked_serials empty. Nothing should be revoked.
   TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data;
   SetMockMTCAnchorData(mtc_anchor_extra_data);
   for (const TestCertData& data : test_cert_data) {
     SCOPED_TRACE(data.mtc_log_index);
 
-    CertVerifyResult verify_result;
-    NetLogSource verify_net_log_source;
-    TestCompletionCallback callback;
-    Verify(data.cert, "www.example.com", /*flags=*/0, &verify_result,
-           &verify_net_log_source, callback.callback());
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(data.landmark_relative_cert, "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
 
-    int error = callback.WaitForResult();
-    EXPECT_THAT(error, IsOk());
-  }
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsOk());
+    }
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(data.standalone_cert, "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
 
-  // Set revoked_indicies to mark some certs as revoked.
-  mtc_anchor_extra_data.revoked_indices =
-      base::flat_map<uint64_t, uint64_t>({{3, 1}, {5, 4}});
-  SetMockMTCAnchorData(mtc_anchor_extra_data);
-  for (const TestCertData& data : test_cert_data) {
-    SCOPED_TRACE(data.mtc_log_index);
-
-    CertVerifyResult verify_result;
-    NetLogSource verify_net_log_source;
-    TestCompletionCallback callback;
-    Verify(data.cert, "www.example.com", /*flags=*/0, &verify_result,
-           &verify_net_log_source, callback.callback());
-
-    int error = callback.WaitForResult();
-    if (data.mtc_log_index == 1 || data.mtc_log_index == 2 ||
-        data.mtc_log_index == 4) {
-      EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-    } else {
+      int error = callback.WaitForResult();
       EXPECT_THAT(error, IsOk());
     }
   }
 
-  // Set revoked_indicies to have a single range that includes all certs.
-  mtc_anchor_extra_data.revoked_indices =
-      base::flat_map<uint64_t, uint64_t>({{1000, 0}});
+  // Set revoked_indicies to mark some certs as revoked.
+  mtc_anchor_extra_data.revoked_serials = base::flat_map<uint64_t, uint64_t>({
+      {test_cert_data[3].mtc_serial, test_cert_data[1].mtc_serial},
+      {test_cert_data[5].mtc_serial, test_cert_data[4].mtc_serial},
+  });
+  test_cert_data[1].expect_is_revoked = true;
+  test_cert_data[2].expect_is_revoked = true;
+  test_cert_data[4].expect_is_revoked = true;
   SetMockMTCAnchorData(mtc_anchor_extra_data);
   for (const TestCertData& data : test_cert_data) {
     SCOPED_TRACE(data.mtc_log_index);
 
-    CertVerifyResult verify_result;
-    NetLogSource verify_net_log_source;
-    TestCompletionCallback callback;
-    Verify(data.cert, "www.example.com", /*flags=*/0, &verify_result,
-           &verify_net_log_source, callback.callback());
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(data.landmark_relative_cert, "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
 
-    int error = callback.WaitForResult();
-    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+      int error = callback.WaitForResult();
+      if (data.expect_is_revoked) {
+        EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+      } else {
+        EXPECT_THAT(error, IsOk());
+      }
+    }
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(data.standalone_cert, "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      if (data.expect_is_revoked) {
+        EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+      } else {
+        EXPECT_THAT(error, IsOk());
+      }
+    }
+  }
+
+  // Set revoked_indicies to have a single range that includes all certs.
+  mtc_anchor_extra_data.revoked_serials =
+      base::flat_map<uint64_t, uint64_t>({{(kLogNumber + 1) << 48, 0}});
+  SetMockMTCAnchorData(mtc_anchor_extra_data);
+  for (const TestCertData& data : test_cert_data) {
+    SCOPED_TRACE(data.mtc_log_index);
+
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(data.landmark_relative_cert, "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+    }
+    {
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback callback;
+      Verify(data.standalone_cert, "www.example.com", /*flags=*/0,
+             &verify_result, &verify_net_log_source, callback.callback());
+
+      int error = callback.WaitForResult();
+      EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+    }
   }
 }
 

@@ -449,7 +449,7 @@ TrustStoreChrome::TrustStoreChrome(
               mtc_anchor_data = it->second;
 
           trusted_subtrees = mtc_anchor_data.trusted_subtrees;
-          trust_store_anchor_data.revoked_indices =
+          trust_store_anchor_data.revoked_serials =
               mtc_anchor_data.revoked_serials;
         }
       }
