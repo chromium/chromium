@@ -36,7 +36,7 @@
 #include "components/safe_browsing/core/browser/db/v5_update_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -782,7 +782,7 @@ void SBLocalDatabaseManager::GetArtificialPrefixMatches(
          artificially_marked_store_and_hash_prefixes_) {
       FullHashStr artificial_full_hash =
           artificial_store_and_hash_prefix.hash_prefix;
-      DCHECK_EQ(crypto::kSHA256Length, artificial_full_hash.size());
+      DCHECK_EQ(crypto::hash::kSha256Size, artificial_full_hash.size());
       if (artificial_full_hash == full_hash &&
           check->stores_to_check.contains(
               artificial_store_and_hash_prefix.list_id)) {

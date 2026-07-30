@@ -23,7 +23,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/v5_store.pb.h"
 #include "crypto/hash.h"
-#include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -1110,7 +1109,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesWithSameSizesInEachMap) {
   std::string expected_checksum = std::string(
       "\xBC\xB3\xEDk\xE3x\xD1(\xA9\xEDz7]x\x18\xBDn]"
       "\xA5\xA8R\xF7\xAB\xCF\xC1\xA3\xA3\xC5Z,\xA6o",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions), nullptr,
@@ -1155,7 +1154,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesWithDifferentSizesInEachMap) {
       "\xA5\x8B\xCAsD\xC7\xF9\xCE\xD2\xF4\x4="
       "\xB2\"\x82\x1A\xC1\xB8\x1F\x10\r\v\x9A\x93\xFD\xE1\xB8"
       "B\x1Eh\xF7\xB4",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions), nullptr,
@@ -1193,7 +1192,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesOldMapRunsOutFirst) {
       "\x84\x92\xET\xED\xF7\x97"
       "C\xCE}\xFF"
       "E\x1\xAB-\b>\xDB\x95\b\xD8H\xD5\x1D\xF9]8x\xA4\xD4\xC2\xFA",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions), nullptr,
@@ -1228,7 +1227,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesAdditionsMapRunsOutFirst) {
       "\x84\x92\xET\xED\xF7\x97"
       "C\xCE}\xFF"
       "E\x1\xAB-\b>\xDB\x95\b\xD8H\xD5\x1D\xF9]8x\xA4\xD4\xC2\xFA",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions), nullptr,
@@ -1486,7 +1485,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesOnlyElement) {
       "\xE7\xD2\xE6\xDC\x16\xB9\x8C+\xA2\xB3\x9E\x89<,\x88"
       "B3\xA5\xB1"
       "D\x9E\x9E'\x14",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
@@ -1518,7 +1517,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesFirstElement) {
       "D7=\xB5v\xAD\b1\xC9\xB3"
       "A\xAC"
       "b\xF1lf\xA4",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
@@ -1552,7 +1551,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMiddleElement) {
       "\xFA-A\x15{\x17\0>\xAE"
       "8\xACigR\xD1\x93<\xB2\xC9\xB5\x81\xC0\xFB\xBB\x2\f\xAFpN\xEA"
       "44",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
@@ -1585,7 +1584,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesLastElement) {
   std::string expected_checksum = std::string(
       "a\xE1\xAD\x96\xFE\xA6"
       "A\xCA~7W\xF6z\xD8\n\xCA?\x96\x8A\x17U\x5\v\r\x88]\n\xB2JX\xC4S",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
@@ -1621,7 +1620,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesWhenOldHasDifferentSizes) {
       "\xA7OG\x9D\x83.\x9D-f\x8A\xE\x8B\r&\x19"
       "6\xE3\xF0\xEFTi\xA7\x5\xEA\xF7"
       "ej,\xA8\x9D\xAD\x91",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
@@ -1659,7 +1658,7 @@ TEST_F(V4StoreTest, TestMergeUpdatesRemovesMultipleAcrossDifferentSizes) {
       "E\xDD\x10\"\x9A\xCA\xF1"
       "3^\x83w\xBBL\x19n\xAD\xBDM\x9D"
       "b\x9F",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions),
@@ -1957,7 +1956,7 @@ TEST_F(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds) {
       "\xA5\x8B\xCAsD\xC7\xF9\xCE\xD2\xF4\x4="
       "\xB2\"\x82\x1A\xC1\xB8\x1F\x10\r\v\x9A\x93\xFD\xE1\xB8"
       "B\x1Eh\xF7\xB4",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions), nullptr,
@@ -2118,7 +2117,8 @@ TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
   // Now create a response with invalid checksum.
   std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
   lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
-  lur->mutable_checksum()->set_sha256(std::string(crypto::kSHA256Length, 0));
+  lur->mutable_checksum()->set_sha256(
+      std::string(crypto::hash::kSha256Size, 0));
   auto sb_response = std::make_unique<SBUpdateResponse>();
   sb_response->v4_response = std::move(lur);
   store.ApplyUpdate(std::move(sb_response), task_runner(),
@@ -2377,7 +2377,7 @@ TEST_F(V4StoreTest, MergeUpdatesWithHashPrefixMap) {
   std::string expected_checksum(
       "\xBC\xB3\xEDk\xE3x\xD1(\xA9\xEDz7]x\x18\xBDn]"
       "\xA5\xA8R\xF7\xAB\xCF\xC1\xA3\xA3\xC5Z,\xA6o",
-      crypto::kSHA256Length);
+      crypto::hash::kSha256Size);
   EXPECT_EQ(APPLY_UPDATE_SUCCESS,
             store.MergeUpdate(PrefixMapToView(prefix_map_old),
                               PrefixMapToView(prefix_map_additions), nullptr,

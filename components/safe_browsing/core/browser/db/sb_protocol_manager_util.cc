@@ -16,12 +16,13 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -562,7 +563,8 @@ void SBProtocolManagerUtil::UrlToFullHashes(
   full_hashes->reserve(full_hashes->size() + hosts.size() * paths.size());
   for (const std::string& host : hosts) {
     for (const std::string& path : paths) {
-      full_hashes->push_back(crypto::SHA256HashString(host + path));
+      full_hashes->emplace_back(
+          base::as_string_view(crypto::hash::Sha256(host + path)));
     }
   }
 }
@@ -643,7 +645,7 @@ FullHashStr SBProtocolManagerUtil::GetFullHash(const GURL& url) {
   std::string path;
   CanonicalizeUrl(url, &host, &path, nullptr);
 
-  return crypto::SHA256HashString(host + path);
+  return std::string(base::as_string_view(crypto::hash::Sha256(host + path)));
 }
 
 // static

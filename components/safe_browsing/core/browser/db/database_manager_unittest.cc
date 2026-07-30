@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -26,7 +27,7 @@
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -101,7 +102,8 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
   std::string GetV4GetHashResponseWithPermissions(
       const std::vector<std::string>& permissions) {
     ListIdentifier list_id = GetChromeUrlApiId();
-    FullHashStr full_hash = crypto::SHA256HashString("example.com/");
+    FullHashStr full_hash =
+        std::string(base::as_string_view(crypto::hash::Sha256("example.com/")));
 
     FindFullHashesResponse response;
     response.mutable_negative_cache_duration()->set_seconds(600);
@@ -145,7 +147,8 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
       response.mutable_cache_duration()->set_seconds(300);
       if (is_abusive) {
         V5::FullHash* full_hash = response.add_full_hashes();
-        full_hash->set_full_hash(crypto::SHA256HashString("example.com/"));
+        full_hash->set_full_hash(std::string(
+            base::as_string_view(crypto::hash::Sha256("example.com/"))));
         V5::FullHash::FullHashDetail* detail =
             full_hash->add_full_hash_details();
         detail->set_threat_type(v5_threat_type);

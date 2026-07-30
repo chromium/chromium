@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/util.h"
-#include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {

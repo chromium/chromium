@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,7 +21,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -815,10 +816,12 @@ TEST_P(V5SearchHashesCacheTest, TestOnHistoryDeletions_PartialHistory) {
                                                     /*is_unsafe=*/true);
 
   std::string prefix_url1_foo =
-      crypto::SHA256HashString("example.com/foo").substr(0, 4);
-  std::string prefix_url1_root =
-      crypto::SHA256HashString("example.com/").substr(0, 4);
-  std::string prefix_url2 = crypto::SHA256HashString("other.com/").substr(0, 4);
+      std::string(base::as_string_view(crypto::hash::Sha256("example.com/foo"))
+                      .substr(0, 4));
+  std::string prefix_url1_root = std::string(
+      base::as_string_view(crypto::hash::Sha256("example.com/")).substr(0, 4));
+  std::string prefix_url2 = std::string(
+      base::as_string_view(crypto::hash::Sha256("other.com/")).substr(0, 4));
 
   EXPECT_TRUE(cache->SearchCache({prefix_url1_foo}).contains(prefix_url1_foo));
   EXPECT_TRUE(
