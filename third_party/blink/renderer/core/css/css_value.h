@@ -424,7 +424,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   uint8_t value_list_separator_ = kSpaceSeparator;
 
   // CSSMathFunctionValue:
-  uint8_t allows_negative_percentage_reference_ : 1;  // NOLINT
+  uint8_t allows_negative_percentage_reference_ : 1;
 
   // Any CSS value that defines/references a global name should be tree-scoped.
   // However, to allow sharing StyleSheetContents, we don't directly populate
@@ -432,7 +432,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // element's style.
   // The flag is true if the value contains such references but hasn't been
   // populated with a tree scope.
-  uint8_t needs_tree_scope_population_ : 1;  // NOLINT
+  uint8_t needs_tree_scope_population_ : 1;
 
   // Whether this value originally came from a quirksmode-specific declaration.
   // Used for use counting of such situations (to see if we can try to remove

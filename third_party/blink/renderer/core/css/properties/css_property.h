@@ -321,9 +321,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
 
  private:
   static constexpr size_t kPropertyIdBits = 16;
-  uint64_t property_id_ : kPropertyIdBits;  // NOLINT(runtime/bitfields)
-  uint64_t repetition_separator_ : 8;       // NOLINT(runtime/bitfields)
-  uint64_t flags_ : 40;                     // NOLINT(runtime/bitfields)
+  uint64_t property_id_ : kPropertyIdBits;
+  uint64_t repetition_separator_ : 8;
+  uint64_t flags_ : 40;
 
   // Make sure we have room for all valid CSSPropertyIDs.
   // (Using bit fields here reduces CSSProperty size from 24 to 16
