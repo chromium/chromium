@@ -125,6 +125,13 @@ bool AccessibilityPanel::HandleContextMenu(
   return true;
 }
 
+bool AccessibilityPanel::ShouldAllowRendererInitiatedCrossProcessNavigation(
+    bool is_outermost_main_frame_navigation) {
+  // Block navigations that cause the main frame of the accessibility panel
+  // to navigate to non-extension content.
+  return !is_outermost_main_frame_navigation;
+}
+
 void AccessibilityPanel::DidFirstVisuallyNonEmptyPaint() {
   widget_->Show();
 }

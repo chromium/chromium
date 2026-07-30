@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -55,6 +56,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +69,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace ash {
@@ -1015,6 +1018,87 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
   EXPECT_EQ(600, panel->GetWidget()->GetWindowBoundsInScreen().width());
   EXPECT_TRUE(root_windows[0]->GetBoundsInScreen().Contains(
       panel->GetWidget()->GetWindowBoundsInScreen()));
+}
+
+// POC: ChromeVoxPanelWebContentsObserver::DidFinishNavigation() dispatches
+// EnterFullscreen()/Focus() purely on GetLastCommittedURL().GetRef() with no
+// origin check, and AccessibilityPanel (the WebContentsDelegate) does not
+// contain renderer-initiated cross-process navigations. Once arbitrary web
+// content commits in the panel WebContents, '#fullscreen' grants it a
+// fullscreen, activatable, keyboard-focused surface in
+// kShellWindowId_AccessibilityPanelContainer — z-ordered above the ChromeOS
+// lock screen and system modals.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       ChromeVoxPanelFragmentNoOriginCheck) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Enable ChromeVox so the panel is created.
+  extensions::ExtensionHostTestHelper host_helper(
+      AccessibilityManager::Get()->profile(),
+      extension_misc::kChromeVoxExtensionId);
+  SetSpokenFeedbackEnabled(true);
+  host_helper.WaitForHostCompletedFirstLoad();
+  ChromeVoxPanel* panel = GetChromeVoxPanel();
+  ASSERT_NE(nullptr, panel);
+
+  // Grab the panel WebContents (a bare views::WebView; not an ExtensionHost).
+  auto* web_view = static_cast<views::WebView*>(panel->GetContentsView());
+  content::WebContents* panel_wc = web_view->GetWebContents();
+  ASSERT_NE(nullptr, panel_wc);
+  ASSERT_TRUE(content::WaitForLoadStop(panel_wc));
+
+  aura::Window* root = ash::Shell::GetPrimaryRootWindow();
+  // Precondition: panel starts as a thin FULL_WIDTH strip, not activatable.
+  EXPECT_LT(panel->GetWidget()->GetWindowBoundsInScreen().height(),
+            root->bounds().height());
+  EXPECT_FALSE(panel->GetWidget()->widget_delegate()->CanActivate());
+
+  // 2) Simulate a compromised panel renderer: renderer-initiated top-level
+  //    navigation to web content. This should be BLOCKED.
+  const GURL attacker_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL original_url = panel_wc->GetLastCommittedURL();
+  {
+    content::TestNavigationObserver nav(panel_wc);
+    content::ExecuteScriptAsync(
+        panel_wc, "window.location = '" + attacker_url.spec() + "';");
+    nav.Wait();
+  }
+  // The navigation should NOT have committed.
+  EXPECT_EQ(original_url, panel_wc->GetLastCommittedURL());
+  EXPECT_NE(attacker_url, panel_wc->GetLastCommittedURL());
+
+  // 3) Test defense-in-depth: browser-initiated navigation to cross-origin URL.
+  //    This is allowed, but the fragment check should still block the
+  //    fullscreen/focus.
+  {
+    content::TestNavigationObserver nav(panel_wc);
+    panel_wc->GetController().LoadURL(attacker_url, content::Referrer(),
+                                      ui::PAGE_TRANSITION_TYPED, std::string());
+    nav.Wait();
+  }
+  EXPECT_EQ(attacker_url, panel_wc->GetLastCommittedURL());
+
+  // 4) Attacker page sets location.hash = 'fullscreen'.
+  {
+    content::TestNavigationObserver nav(panel_wc);
+    content::ExecuteScriptAsync(panel_wc, "location.hash = 'fullscreen';");
+    nav.Wait();
+  }
+
+  // The panel should NOT have entered fullscreen or become active because
+  // the origin is not ChromeVox.
+  EXPECT_LT(panel->GetWidget()->GetWindowBoundsInScreen().height(),
+            root->bounds().height());
+  EXPECT_FALSE(panel->GetWidget()->widget_delegate()->CanActivate());
+  EXPECT_FALSE(panel->GetWidget()->IsActive());
+
+  // 5) '#focus' should also be ignored.
+  {
+    content::TestNavigationObserver nav(panel_wc);
+    content::ExecuteScriptAsync(panel_wc, "location.hash = 'focus';");
+    nav.Wait();
+  }
+  EXPECT_FALSE(panel->GetWidget()->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
