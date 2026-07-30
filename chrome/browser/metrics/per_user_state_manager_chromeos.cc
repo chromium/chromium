@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_login_pref_names.h"
 #include "base/callback_list.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
@@ -73,9 +74,19 @@ void RecordIdReset(IdResetType id_type) {
   base::UmaHistogramEnumeration("UMA.CrosPerUser.IdReset", id_type);
 }
 
+// The daemon-store directory and /home/chronos are shared with other system
+// components. Use WriteFileNoFollow() so a compromised co-tenant cannot
+// redirect this chronos-uid write via a planted symlink.
+bool WriteFileNoFollow(const base::FilePath& path, std::string_view data) {
+  base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                            base::File::FLAG_WRITE |
+                            base::File::FLAG_NO_FOLLOW);
+  return file.IsValid() && file.WriteAndCheck(0, base::as_byte_span(data));
+}
+
 void WriteDaemonStore(base::FilePath path, bool user_choice) {
   const std::string file_contents = user_choice ? "1" : "0";
-  if (!base::WriteFile(path, file_contents)) {
+  if (!WriteFileNoFollow(path, file_contents)) {
     LOG(ERROR) << "Failed to persist consent change " << file_contents
                << " to daemon-store. State on disk will be inaccurate!";
     base::UmaHistogramEnumeration(kWriteFileFailMetric,
@@ -83,8 +94,8 @@ void WriteDaemonStore(base::FilePath path, bool user_choice) {
                                       ? DaemonStoreFailType::kFailedEnabling
                                       : DaemonStoreFailType::kFailedDisabling);
   }
-  if (!base::WriteFile(base::FilePath(kOutOfCryptohomeConsent),
-                       file_contents)) {
+  if (!WriteFileNoFollow(base::FilePath(kOutOfCryptohomeConsent),
+                         file_contents)) {
     LOG(ERROR) << "Failed to write out-of-cryptohome consent change: "
                << file_contents;
     base::UmaHistogramEnumeration(kWriteFileFailMetric,

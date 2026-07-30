@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/sync/sync_appsync_optin_client.h"
+
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -29,10 +31,23 @@ bool IsAppsSyncEnabledForSyncService(const syncer::SyncService& sync_service) {
       syncer::UserSelectableOsType::kOsApps);
 }
 
+// The daemon-store directory is shared with a minijailed daemon that owns it
+// per the /etc/daemon-store template. Use WriteFileNoFollow() so a
+// compromised daemon cannot redirect this chronos-uid write via a planted
+// symlink.
+bool WriteFileNoFollow(const base::FilePath& filepath,
+                       std::string_view file_contents) {
+  base::File file(filepath, base::File::FLAG_CREATE_ALWAYS |
+                                base::File::FLAG_WRITE |
+                                base::File::FLAG_NO_FOLLOW);
+  return file.IsValid() &&
+         file.WriteAndCheck(0, base::as_byte_span(file_contents));
+}
+
 void WriteOptinFile(base::FilePath filepath, bool opted_in) {
   const std::string file_contents = opted_in ? "1" : "0";
 
-  if (!base::WriteFile(filepath, file_contents)) {
+  if (!WriteFileNoFollow(filepath, file_contents)) {
     DLOG(ERROR) << "Failed to persist opt-in change " << file_contents
                 << " to daemon-store. State on disk will be inaccurate!";
   }
