@@ -1007,4 +1007,220 @@ TEST_F(AccessibilityTest, IsRelevantSlotElement) {
   EXPECT_TRUE(AXObjectCacheImpl::IsRelevantSlotElement(*empty_slot));
 }
 
+TEST_F(AccessibilityTest, AriaModalRetainsActiveStateWhenFocusMovesToBody) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <button id="bg_button">Background Button</button>
+    <div id="dialog" role="dialog" aria-modal="true">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(modal_button, nullptr);
+
+  // Focus node inside the modal dialog.
+  cache->HandleFocusedUIElementChanged(nullptr, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), GetElementById("dialog"));
+
+  // Move focus to document body (ancestor of dialog).
+  cache->HandleFocusedUIElementChanged(modal_button, GetDocument().body());
+
+  // Verify active_aria_modal_dialog_ remains set when focus moves to an
+  // ancestor.
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), GetElementById("dialog"));
+}
+
+TEST_F(AccessibilityTest, AriaModalClearsWhenFocusMovesToBackgroundButton) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <button id="bg_button">Background Button</button>
+    <div id="dialog" role="dialog" aria-modal="true">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* bg_button = GetElementById("bg_button");
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(bg_button, nullptr);
+  ASSERT_NE(modal_button, nullptr);
+
+  // Focus node inside the modal dialog.
+  cache->HandleFocusedUIElementChanged(nullptr, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), GetElementById("dialog"));
+
+  // Move focus outside the modal dialog to the background button.
+  cache->HandleFocusedUIElementChanged(modal_button, bg_button);
+
+  // Verify active_aria_modal_dialog_ is cleared when focus moves to background.
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), nullptr);
+}
+
+TEST_F(AccessibilityTest, AriaModalClearsWhenModalBecomesDisplayNone) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="dialog" role="dialog" aria-modal="true">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* dialog = GetElementById("dialog");
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(dialog, nullptr);
+  ASSERT_NE(modal_button, nullptr);
+
+  cache->HandleFocusedUIElementChanged(nullptr, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
+
+  // Hide the dialog via display: none.
+  dialog->setAttribute(html_names::kStyleAttr, AtomicString("display: none;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Trigger update.
+  cache->HandleFocusedUIElementChanged(modal_button, GetDocument().body());
+
+  // Verify active_aria_modal_dialog_ is cleared when dialog is display: none.
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), nullptr);
+}
+
+TEST_F(AccessibilityTest, AriaModalClearsWhenAttributeChangesToFalse) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="dialog" role="dialog" aria-modal="true">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* dialog = GetElementById("dialog");
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(dialog, nullptr);
+  ASSERT_NE(modal_button, nullptr);
+
+  cache->HandleFocusedUIElementChanged(nullptr, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
+
+  // Change aria-modal attribute to false.
+  dialog->setAttribute(html_names::kAriaModalAttr, AtomicString("false"));
+
+  // Trigger update.
+  cache->HandleFocusedUIElementChanged(modal_button, GetDocument().body());
+
+  // Verify active_aria_modal_dialog_ is cleared when aria-modal="false".
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), nullptr);
+}
+
+TEST_F(AccessibilityTest, AriaModalClearsWhenAriaHiddenSetToTrue) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="dialog" role="dialog" aria-modal="true">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* dialog = GetElementById("dialog");
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(dialog, nullptr);
+  ASSERT_NE(modal_button, nullptr);
+
+  cache->HandleFocusedUIElementChanged(nullptr, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
+
+  // Set aria-hidden="true" on the dialog.
+  dialog->setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
+
+  // Trigger update.
+  cache->HandleFocusedUIElementChanged(modal_button, GetDocument().body());
+
+  // Verify active_aria_modal_dialog_ is cleared when dialog is
+  // aria-hidden="true".
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), nullptr);
+}
+
+TEST_F(AccessibilityTest, AriaModalRetainsActiveStateWhenFocusBecomesNull) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <button id="bg_button">Background Button</button>
+    <div id="dialog" role="dialog" aria-modal="true">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(modal_button, nullptr);
+
+  // Focus node inside the modal dialog.
+  cache->HandleFocusedUIElementChanged(nullptr, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), GetElementById("dialog"));
+
+  // Move focus to nullptr (e.g. focus cleared / lost / window blurred).
+  cache->HandleFocusedUIElementChanged(modal_button, nullptr);
+
+  // Verify active_aria_modal_dialog_ remains set when focus is null.
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), GetElementById("dialog"));
+}
+
+TEST_F(AccessibilityTest,
+       AriaModalRetainsActiveStateWhenFocusMovesToDialogContainer) {
+  GetDocument().GetSettings()->SetAriaModalPrunesAXTree(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <button id="bg_button">Background Button</button>
+    <div id="dialog" role="dialog" aria-modal="true" tabindex="-1">
+      <button id="modal_button">Modal Button</button>
+    </div>
+  )HTML");
+
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(GetDocument().ExistingAXObjectCache());
+  ASSERT_NE(cache, nullptr);
+
+  Element* dialog = GetElementById("dialog");
+  Element* modal_button = GetElementById("modal_button");
+  ASSERT_NE(dialog, nullptr);
+  ASSERT_NE(modal_button, nullptr);
+
+  // 1. Initial focus directly on dialog container before any descendant focus
+  // -> no pruning.
+  cache->HandleFocusedUIElementChanged(nullptr, dialog);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), nullptr);
+
+  // 2. Focus descendant inside dialog -> pruning activated.
+  cache->HandleFocusedUIElementChanged(dialog, modal_button);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
+
+  // 3. Move focus back to dialog container itself -> pruning remains active.
+  cache->HandleFocusedUIElementChanged(modal_button, dialog);
+  EXPECT_EQ(cache->GetActiveAriaModalDialog(), dialog);
+}
+
 }  // namespace blink

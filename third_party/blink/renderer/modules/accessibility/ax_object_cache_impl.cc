@@ -6025,22 +6025,84 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* focused_node) {
     return;
   }
 
-  Element* new_active_aria_modal = AncestorAriaModalDialog(focused_node);
-  if (active_aria_modal_dialog_ == new_active_aria_modal)
-    return;
+  // Re-evaluate if the current active_aria_modal_dialog_ is still valid:
+  // - Still has role=dialog|alertdialog and aria-modal=true
+  // - Is visible in AXTree (not display:none / visibility:hidden / aria-hidden)
+  if (active_aria_modal_dialog_) {
+    const AXObject* ax_dialog = Get(active_aria_modal_dialog_);
+    bool is_valid_modal = ax_dialog && !ax_dialog->IsIgnored() &&
+                          ax_dialog->IsVisible() && ax_dialog->IsModal();
+    if (!is_valid_modal) {
+      active_aria_modal_dialog_ = nullptr;
+      MarkDocumentDirty();
+    }
+  }
 
-  // Don't update when the focus itself is the modal.
-  if (new_active_aria_modal == focused_node) {
+  if (!focused_node) {
     return;
   }
 
-  active_aria_modal_dialog_ = new_active_aria_modal;
-  MarkDocumentDirty();
+  Element* new_active_aria_modal = AncestorAriaModalDialog(focused_node);
+
+  if (new_active_aria_modal) {
+    // If focus is on the modal dialog element itself (rather than a descendant
+    // inside it):
+    // Only preserve tree pruning if this dialog was ALREADY the active modal
+    // (meaning focus was previously on a descendant inside it).
+    if (new_active_aria_modal == focused_node) {
+      if (active_aria_modal_dialog_ == new_active_aria_modal) {
+        return;
+      }
+      if (active_aria_modal_dialog_) {
+        active_aria_modal_dialog_ = nullptr;
+        MarkDocumentDirty();
+      }
+      return;
+    }
+
+    if (active_aria_modal_dialog_ != new_active_aria_modal) {
+      active_aria_modal_dialog_ = new_active_aria_modal;
+      MarkDocumentDirty();
+    }
+    return;
+  }
+
+  // Focus is outside any modal dialog.
+  if (active_aria_modal_dialog_) {
+    const AXObject* ax_focus = Get(focused_node);
+    const AXObject* ax_dialog = Get(active_aria_modal_dialog_);
+
+    // If focus is on a strict ancestor of the active modal dialog in the a11y
+    // tree (e.g. body/root), preserve active_aria_modal_dialog_.
+    if (ax_dialog && ax_focus) {
+      for (const AXObject* ancestor = ax_dialog->ParentObject(); ancestor;
+           ancestor = ancestor->ParentObject()) {
+        if (ancestor == ax_focus) {
+          return;
+        }
+      }
+    }
+
+    // Focus moved to background content outside the modal hierarchy.
+    active_aria_modal_dialog_ = nullptr;
+    MarkDocumentDirty();
+  }
 }
 
 Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
-  // Find an element with role=dialog|alertdialog and aria-modal="true" that
-  // either contains the focus, or is focused.
+  if (!node) {
+    return nullptr;
+  }
+
+  if (const AXObject* obj = Get(node)) {
+    for (; obj; obj = obj->ParentObject()) {
+      if (obj->IsModal()) {
+        return obj->GetElement();
+      }
+    }
+    return nullptr;
+  }
+
   do {
     Element* element = DynamicTo<Element>(node);
     if (element) {
@@ -6061,6 +6123,15 @@ Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
 }
 
 Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
+  if (!active_aria_modal_dialog_) {
+    return nullptr;
+  }
+  if (const AXObject* ax_dialog = Get(active_aria_modal_dialog_)) {
+    if (ax_dialog->IsIgnored() || !ax_dialog->IsVisible() ||
+        !ax_dialog->IsModal()) {
+      return nullptr;
+    }
+  }
   return active_aria_modal_dialog_;
 }
 
