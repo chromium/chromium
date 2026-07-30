@@ -45,6 +45,8 @@ void RecordGetHashResult(safe_browsing::V4OperationResult result) {
 void RecordBackoffErrorCountResult(size_t count) {
   base::UmaHistogramCounts100("SafeBrowsing.V4GetHash.Result.BackoffErrorCount",
                               count);
+  base::UmaHistogramCounts100("SafeBrowsing.SBGetHash.Result.BackoffErrorCount",
+                              count);
 }
 
 // Enumerate parsing failures for histogramming purposes.  DO NOT CHANGE

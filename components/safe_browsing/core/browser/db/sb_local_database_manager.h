@@ -258,6 +258,8 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
                            TestGetSeverestThreatTypeAndMetadata);
   FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest, NotificationOnUpdate);
   FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest, SyncedLists);
+  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest_V4V5,
+                           TimeSinceLastUpdateResponseHistograms);
 
   // The checks awaiting a full hash response from SafeBrowsing service.
   typedef std::unordered_set<raw_ptr<PendingCheck, CtnExperimental>>

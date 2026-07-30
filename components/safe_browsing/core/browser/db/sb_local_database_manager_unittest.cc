@@ -826,16 +826,41 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
               std::vector<SBThreatType>{SB_THREAT_TYPE_URL_MALWARE});
   }
 
-  histograms.ExpectTotalCount("SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+  if (GetParam()) {
+    histograms.ExpectTotalCount("SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup",
+                                1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+        1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.GetFullHashQueueDelay", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.GetFullHashDuration", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.ResponseProcessingDuration", 1);
+  } else {
+    histograms.ExpectTotalCount("SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+                                1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+        1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashDuration", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration", 1);
+  }
+  histograms.ExpectTotalCount("SafeBrowsing.SBCheckUrl.TimeTaken.LocalLookup",
                               1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.GetFullHashQueueDelay", 1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashDuration", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.GetFullHashDuration", 1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.ResponseProcessingDuration", 1);
 }
 
 class SBLocalDatabaseManagerTest_V5 : public SBLocalDatabaseManagerTest {
@@ -1431,16 +1456,41 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestChecksAreQueued) {
   // Wait for the DB thread search and UI thread reply callback to execute.
   WaitForTasksOnTaskRunner();
 
+  if (GetParam()) {
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay", 1);
+    histograms.ExpectTotalCount("SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup",
+                                1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup.DbThreadQueueDelay", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup.StoreLookupDuration", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V5CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+        1);
+  } else {
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay", 1);
+    histograms.ExpectTotalCount("SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+                                1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.DbThreadQueueDelay", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.StoreLookupDuration", 1);
+    histograms.ExpectTotalCount(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+        1);
+  }
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay", 1);
-  histograms.ExpectTotalCount("SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
+      "SafeBrowsing.SBCheckUrl.TimeTaken.DatabaseNotReadyQueueDelay", 1);
+  histograms.ExpectTotalCount("SafeBrowsing.SBCheckUrl.TimeTaken.LocalLookup",
                               1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.DbThreadQueueDelay", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.LocalLookup.DbThreadQueueDelay", 1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.StoreLookupDuration", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.LocalLookup.StoreLookupDuration", 1);
   histograms.ExpectTotalCount(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
+      "SafeBrowsing.SBCheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
 
   ResetSBDatabase();
   sb_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
@@ -2545,6 +2595,30 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, DatabaseInitializationHistograms) {
     histograms.ExpectTotalCount("SafeBrowsing.V5DatabaseInitializationTime", 0);
   }
   histograms.ExpectTotalCount("SafeBrowsing.SBDatabaseInitializationTime", 1);
+}
+
+TEST_P(SBLocalDatabaseManagerTest_V4V5, TimeSinceLastUpdateResponseHistograms) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(sb_local_database_manager_->update_protocol_manager_);
+  sb_local_database_manager_->update_protocol_manager_->last_response_time_ =
+      base::Time::Now() - base::Seconds(10);
+
+  const GURL url("http://example.com/a/");
+  TestClient client(SB_THREAT_TYPE_SAFE, url);
+  SetUpV5ClientIfNeeded(client, /*threat_type=*/SB_THREAT_TYPE_SAFE,
+                        /*metadata=*/ThreatMetadata());
+  sb_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
+                                             CheckBrowseUrlType::kHashDatabase);
+  WaitForTasksOnTaskRunner();
+
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V5LocalDatabaseManager.TimeSinceLastUpdateResponse",
+      GetParam() ? 1 : 0);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse",
+      GetParam() ? 0 : 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.SBLocalDatabaseManager.TimeSinceLastUpdateResponse", 1);
 }
 
 TEST_F(SBLocalDatabaseManagerTest, V5UpdateRequestCompleted) {
