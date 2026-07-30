@@ -46,16 +46,16 @@ std::optional<std::string_view> ResourceDataDLL::GetStringView(
   return std::nullopt;
 }
 
-base::RefCountedStaticMemory* ResourceDataDLL::GetStaticMemory(
+scoped_refptr<base::RefCountedStaticMemory> ResourceDataDLL::GetStaticMemory(
     uint16_t resource_id) const {
   void* data_ptr;
   size_t data_size;
   if (base::win::GetDataResourceFromModule(module_, resource_id, &data_ptr,
                                            &data_size)) {
-    return new base::RefCountedStaticMemory(
+    return base::MakeRefCounted<base::RefCountedStaticMemory>(
         UNSAFE_TODO(base::span(static_cast<uint8_t*>(data_ptr), data_size)));
   }
-  return NULL;
+  return nullptr;
 }
 
 ResourceHandle::TextEncodingType ResourceDataDLL::GetTextEncodingType() const {

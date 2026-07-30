@@ -30,7 +30,7 @@ class ResourceDataDLL : public ResourceHandle {
   bool HasResource(uint16_t resource_id) const override;
   std::optional<std::string_view> GetStringView(
       uint16_t resource_id) const override;
-  base::RefCountedStaticMemory* GetStaticMemory(
+  scoped_refptr<base::RefCountedStaticMemory> GetStaticMemory(
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
   ResourceScaleFactor GetResourceScaleFactor() const override;

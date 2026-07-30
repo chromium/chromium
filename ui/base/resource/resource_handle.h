@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/scoped_refptr.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) ResourceHandle {
 
   // Like GetStringView(), but returns a reference to memory.
   // Caller owns the returned object.
-  virtual base::RefCountedStaticMemory* GetStaticMemory(
+  virtual scoped_refptr<base::RefCountedStaticMemory> GetStaticMemory(
       uint16_t resource_id) const = 0;
 
   // Get the encoding type of text resources.
