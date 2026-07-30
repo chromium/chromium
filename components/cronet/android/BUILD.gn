@@ -779,7 +779,6 @@ android_apk("cronet_sample_apk") {
   shared_libraries = [ ":cronet" ]
 
   deps = [
-    ":cronet_combine_proguard_flags",
     ":cronet_sample_apk_java",
     ":cronet_sample_apk_resources",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -790,11 +789,6 @@ android_apk("cronet_sample_apk") {
 
   if (!is_java_debug) {
     proguard_enabled = true
-    proguard_configs = [
-      "$target_gen_dir/cronet_impl_native_proguard.cfg",
-      "cronet_impl_common_proguard.cfg",
-      "cronet_shared_proguard.cfg",
-    ]
   }
 }
 
@@ -804,23 +798,18 @@ android_resource_sizes_test("resource_sizes_cronet_sample_apk") {
 }
 
 # This will combine all the proguard configs found through the
-# transitive dependencies of those targets.
+# dependencies of those targets.
 template("collect_proguard_configs") {
   _build_config_target = "${target_name}__build_config"
   _build_config = "$target_gen_dir/${target_name}.build_config.json"
 
-  _deps = [
-    ":cronet_build_config_java",
-    ":cronet_jni_registration_java",
-    ":repackage_api",
-    ":repackage_native_impl",
-  ]
   write_build_config(_build_config_target) {
     type = "dist_jar"
     build_config = _build_config
     requires_android = true
     proguard_enabled = true
-    config_deps = _deps
+    config_deps = invoker.deps
+    forward_variables_from(invoker, [ "direct_deps_only" ])
   }
 
   action(target_name) {
@@ -829,7 +818,7 @@ template("collect_proguard_configs") {
     outputs = [ invoker.output ]
     sources = [ _build_config ]
     depfile = "$target_out_dir/$target_name.d"
-    deps = _deps + [ ":$_build_config_target" ]
+    deps = invoker.deps + [ ":$_build_config_target" ]
     args = [
       "--output_file",
       rebase_path(invoker.output, root_build_dir),
@@ -856,12 +845,88 @@ collect_proguard_configs("httpengine_combine_proguard_flags") {
     "org.jni_zero=android.net.http.internal.org.jni_zero",
     "androidx.annotation=android.net.http.internal.androidx.annotation",
   ]
+  deps = [
+    ":cronet_build_config_java",
+    ":cronet_jni_registration_java",
+    ":repackage_api",
+    ":repackage_native_impl",
+  ]
+  direct_deps_only = false
 }
 
-# TODO(b/313416274): Change the output name to something else
-# that doesn't actually exist.
-collect_proguard_configs("cronet_combine_proguard_flags") {
-  output = "$target_gen_dir/cronet_impl_native_proguard.cfg"
+_cronet_repackage_rules = [
+  # This is to prevent clashing with the real jni_zero in apps that include
+  # cronet (eg: google3). See https://crbug.com/353534209
+  {
+    from = "org.jni_zero"
+    to = "internal.org.jni_zero"
+  },
+  {
+    from = "org.chromium.build"
+    to = "internal.org.chromium.build"
+  },
+]
+
+_cronet_proguard_rename_rules = []
+foreach(rule, _cronet_repackage_rules) {
+  _cronet_proguard_rename_rules += [ "${rule.from}=${rule.to}" ]
+}
+
+_package_proguard_dir = "$target_gen_dir/package_proguard"
+
+collect_proguard_configs("package_shared_proguard_flags") {
+  output = "$_package_proguard_dir/cronet_shared_proguard.cfg"
+  deps = cronet_shared_api_dependencies_java_deps_to_package +
+         cronet_shared_java_deps_to_package +
+         [
+           ":cronet_shared_java",
+
+           # We don't bundle this target, but we need its ProGuard config
+           # (android/proguard/shared_with_cronet.flags).
+           # TODO: fix this mess.
+           "//base:base_java",
+         ]
+  direct_deps_only = true
+  rename_rules = _cronet_proguard_rename_rules
+}
+
+collect_proguard_configs("package_impl_common_proguard_flags") {
+  output = "$_package_proguard_dir/cronet_impl_common_proguard.cfg"
+  deps =
+      cronet_impl_common_java_deps_to_package + [ ":cronet_impl_common_java" ]
+  direct_deps_only = true
+  rename_rules = _cronet_proguard_rename_rules
+}
+
+collect_proguard_configs("package_impl_native_proguard_flags") {
+  output = "$_package_proguard_dir/cronet_impl_native_proguard.cfg"
+  deps = cronet_impl_native_java_deps_to_package + [
+           ":cronet_impl_native_java",
+           ":cronet_jni_registration_java",
+         ]
+  direct_deps_only = true
+  rename_rules = _cronet_proguard_rename_rules
+}
+
+collect_proguard_configs("package_impl_platform_proguard_flags") {
+  output = "$_package_proguard_dir/cronet_impl_platform_proguard.cfg"
+  deps = [ ":cronet_impl_platform_java" ]
+  direct_deps_only = true
+  rename_rules = _cronet_proguard_rename_rules
+}
+
+collect_proguard_configs("package_impl_fake_proguard_flags") {
+  output = "$_package_proguard_dir/cronet_impl_fake_proguard.cfg"
+  deps = [ ":cronet_impl_fake_java" ]
+  direct_deps_only = true
+  rename_rules = _cronet_proguard_rename_rules
+}
+
+collect_proguard_configs("package_httpengine_native_provider_proguard_flags") {
+  output = "$_package_proguard_dir/httpengine_native_provider_proguard.cfg"
+  deps = [ ":httpengine_native_provider_java" ]
+  direct_deps_only = true
+  rename_rules = _cronet_proguard_rename_rules
 }
 
 action("httpengine_combined_proguard_flags_golden_test") {
@@ -886,9 +951,9 @@ action("httpengine_combined_proguard_flags_golden_test") {
 
 action("cronet_combined_proguard_flags_golden_test") {
   script = "//components/cronet/tools/check_combined_proguard_file.py"
-  deps = [ ":cronet_combine_proguard_flags" ]
+  deps = [ ":package_impl_native_proguard_flags" ]
   sources = [
-    "$target_gen_dir/cronet_impl_native_proguard.cfg",
+    "$_package_proguard_dir/cronet_impl_native_proguard.cfg",
     "//components/cronet/android/cronet_combined_impl_native_proguard_golden.cfg",
   ]
   outputs = [ "$target_gen_dir/$target_name.stamp" ]
@@ -915,7 +980,11 @@ _tests_java_jars_without_jni_path =
 # usage.
 android_java_prebuilt("package_shared_java") {
   jar_path = "$_package_dir/cronet_shared_java.jar"
-  deps = [ ":repackage_shared" ]
+  deps = [
+    ":package_shared_proguard_flags",
+    ":repackage_shared",
+  ]
+  proguard_configs = [ "$_package_proguard_dir/cronet_shared_proguard.cfg" ]
 }
 
 android_java_prebuilt("package_test_java") {
@@ -931,12 +1000,22 @@ android_java_prebuilt("package_api_java") {
 
 android_java_prebuilt("package_impl_common_java") {
   jar_path = "$_package_dir/cronet_impl_common_java.jar"
-  deps = [ ":repackage_impl_common" ]
+  deps = [
+    ":package_impl_common_proguard_flags",
+    ":repackage_impl_common",
+  ]
+  proguard_configs =
+      [ "$_package_proguard_dir/cronet_impl_common_proguard.cfg" ]
 }
 
 android_java_prebuilt("package_impl_native_java") {
   jar_path = "$_package_dir/cronet_impl_native_java.jar"
-  deps = [ ":repackage_native" ]
+  deps = [
+    ":package_impl_native_proguard_flags",
+    ":repackage_native",
+  ]
+  proguard_configs =
+      [ "$_package_proguard_dir/cronet_impl_native_proguard.cfg" ]
 }
 
 android_java_prebuilt("package_impl_native_sentinel_java") {
@@ -951,17 +1030,31 @@ android_java_prebuilt("package_impl_util_java") {
 
 android_java_prebuilt("package_impl_platform_java") {
   jar_path = "$_package_dir/cronet_impl_platform_java.jar"
-  deps = [ ":repackage_platform" ]
+  deps = [
+    ":package_impl_platform_proguard_flags",
+    ":repackage_platform",
+  ]
+  proguard_configs =
+      [ "$_package_proguard_dir/cronet_impl_platform_proguard.cfg" ]
 }
 
 android_java_prebuilt("package_impl_fake_java") {
   jar_path = "$_package_dir/cronet_impl_fake_java.jar"
-  deps = [ ":repackage_fake" ]
+  deps = [
+    ":package_impl_fake_proguard_flags",
+    ":repackage_fake",
+  ]
+  proguard_configs = [ "$_package_proguard_dir/cronet_impl_fake_proguard.cfg" ]
 }
 
 android_java_prebuilt("package_httpengine_native_provider_java") {
   jar_path = "$_package_dir/httpengine_native_provider_java.jar"
-  deps = [ ":repackage_httpengine_native_provider" ]
+  deps = [
+    ":package_httpengine_native_provider_proguard_flags",
+    ":repackage_httpengine_native_provider",
+  ]
+  proguard_configs =
+      [ "$_package_proguard_dir/httpengine_native_provider_proguard.cfg" ]
 }
 
 # This target is not intended to be a functional APK. Instead, it is used to
@@ -1032,12 +1125,7 @@ cronet_package_apk("cronet_package_without_nativejava_apk") {
            ":package_impl_common_java",
            ":package_shared_java",
          ] + cronet_package_without_nativejava_external_deps
-  proguard_configs = [
-    "cronet_shared_proguard.cfg",
-    "cronet_impl_common_proguard.cfg",
-    "httpengine_native_provider_proguard.cfg",
-    "cronet_package_proguard.cfg",
-  ]
+  proguard_configs = [ "cronet_package_proguard.cfg" ]
 }
 
 # Dependencies of cronet_package_with_native_apk that are not bundled within the
@@ -1067,13 +1155,7 @@ cronet_package_apk("cronet_package_with_nativejava_apk") {
            ":package_impl_native_java",
            ":package_shared_java",
          ] + cronet_package_with_nativejava_external_deps
-  proguard_configs = [
-    "cronet_shared_proguard.cfg",
-    "cronet_impl_common_proguard.cfg",
-    "httpengine_native_provider_proguard.cfg",
-    "cronet_impl_native_proguard.cfg",
-    "cronet_package_proguard.cfg",
-  ]
+  proguard_configs = [ "cronet_package_proguard.cfg" ]
 }
 
 # Generates a source jar.
@@ -1243,13 +1325,20 @@ template("repackage_jars") {
     direct_deps_only = true
     jar_excluded_patterns = _excludes
 
-    # This is to prevent clashing with the real jni_zero in apps that include
-    # cronet (eg: google3). See https://crbug.com/353534209
-    renaming_rules = [
-      "org.jni_zero.**->internal.org.jni_zero",
-      "org.chromium.build.**->internal.org.chromium.build",
-    ]
-    forward_variables_from(invoker, "*", [ "jar_excluded_patterns" ])
+    if (defined(invoker.renaming_rules)) {
+      renaming_rules = invoker.renaming_rules
+    } else {
+      renaming_rules = []
+      foreach(rule, _cronet_repackage_rules) {
+        renaming_rules += [ "${rule.from}.**->${rule.to}" ]
+      }
+    }
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "jar_excluded_patterns",
+                             "renaming_rules",
+                           ])
   }
 }
 
@@ -1334,7 +1423,12 @@ android_java_prebuilt("repackage_native_java") {
   # Since only the unprocessed jar is used, no need to complete the bytecode
   # processing step.
   enable_bytecode_checks = false
-  deps = [ ":repackage_native_impl" ]
+  deps = [
+    ":package_impl_native_proguard_flags",
+    ":repackage_native_impl",
+  ]
+  proguard_configs =
+      [ "$_package_proguard_dir/cronet_impl_native_proguard.cfg" ]
 }
 
 repackage_jars("repackage_native_sentinel") {
@@ -1754,7 +1848,6 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
   # will fail in google3 but pass in Chromium. This means that only
   # //third_party libraries can be listed in the deps.
   deps = [
-           ":cronet_combine_proguard_flags",
            ":cronet_test_apk_resources",
            ":package_api_java",
            ":package_httpengine_native_provider_java",
@@ -1794,14 +1887,7 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
   if (!is_java_debug) {
     proguard_enabled = true
 
-    proguard_configs = [
-      "$target_gen_dir/cronet_impl_native_proguard.cfg",
-      "cronet_shared_proguard.cfg",
-      "cronet_impl_common_proguard.cfg",
-      "cronet_impl_platform_proguard.cfg",
-      "httpengine_native_provider_proguard.cfg",
-      "test/proguard.cfg",
-    ]
+    proguard_configs = [ "test/proguard.cfg" ]
   }
   srcjar_deps = [
     ":cronet_jni_registration",
@@ -1855,7 +1941,6 @@ instrumentation_test_apk(
   sources = cronet_smoketests_native_common_srcs + [ "test/smoketests/src/org/chromium/net/smoke/MissingNativeLibraryTest.java" ]
   deps = [
            ":cronet_api_java",
-           ":cronet_combine_proguard_flags",
            ":cronet_impl_common_java",
            ":cronet_impl_native_java",
            ":cronet_impl_native_sentinel_java",
@@ -1874,13 +1959,7 @@ instrumentation_test_apk(
 
   if (!is_java_debug) {
     proguard_enabled = true
-    proguard_configs = [
-      "$target_gen_dir/cronet_impl_native_proguard.cfg",
-      "cronet_shared_proguard.cfg",
-      "cronet_impl_common_proguard.cfg",
-      "cronet_impl_platform_proguard.cfg",
-      "test/proguard.cfg",
-    ]
+    proguard_configs = [ "test/proguard.cfg" ]
   }
 
   srcjar_deps = [
@@ -2094,26 +2173,26 @@ action("generate_licenses") {
 
 copy("cronet_package_copy") {
   sources = [
-    "$target_gen_dir/cronet_impl_native_proguard.cfg",
+    "$_package_proguard_dir/cronet_impl_common_proguard.cfg",
+    "$_package_proguard_dir/cronet_impl_fake_proguard.cfg",
+    "$_package_proguard_dir/cronet_impl_native_proguard.cfg",
+    "$_package_proguard_dir/cronet_impl_platform_proguard.cfg",
+    "$_package_proguard_dir/cronet_shared_proguard.cfg",
+    "$_package_proguard_dir/httpengine_native_provider_proguard.cfg",
     "//AUTHORS",
     "//chrome/VERSION",
     "api_version.txt",
-    "cronet_impl_common_proguard.cfg",
-    "cronet_impl_fake_proguard.cfg",
-    "cronet_impl_platform_proguard.cfg",
-    "cronet_shared_proguard.cfg",
-    "httpengine_native_provider_proguard.cfg",
   ]
   outputs = [ "$_package_dir/{{source_file_part}}" ]
 
   deps = [
     ":cronet_api_java",
-    ":cronet_combine_proguard_flags",
-    ":cronet_impl_common_java",
-    ":cronet_impl_fake_java",
-    ":cronet_impl_platform_java",
-    ":cronet_shared_java",
-    ":httpengine_native_provider_java",
+    ":package_httpengine_native_provider_proguard_flags",
+    ":package_impl_common_proguard_flags",
+    ":package_impl_fake_proguard_flags",
+    ":package_impl_native_proguard_flags",
+    ":package_impl_platform_proguard_flags",
+    ":package_shared_proguard_flags",
   ]
 }
 

@@ -187,7 +187,8 @@ class _TransitiveValuesBuilder:
 
     self._ret.proguard_configs.update(params.get('proguard_configs', []))
     self._ret.proguard_configs.update(
-        all_deps.collect('proguard_configs', flatten=True))
+        (direct_deps if params.get('direct_deps_only') else all_deps).collect(
+            'proguard_configs', flatten=True))
 
     if params.is_bundle_module() and self._remove_parent_module_overlap:
       self._RemoveParentModuleOverlap()
