@@ -90,7 +90,8 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
     case TabDragInputEvent::Type::kCaptureChanged: {
       if (drag_mode_ == DragMode::kDetaching ||
           drag_mode_ == DragMode::kAttaching ||
-          drag_mode_ == DragMode::kWaitingToExitMoveLoop) {
+          drag_mode_ == DragMode::kWaitingToExitMoveLoop ||
+          drag_mode_ == DragMode::kDetachedWindow) {
         break;
       }
       TabDragWindowAdapter* window = registry()->Get(dragged_window_);
