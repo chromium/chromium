@@ -347,7 +347,12 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             int minTouchTargetPx = getDimenPx(R.dimen.min_touch_target_size);
             backButton.setMinimumWidth(minTouchTargetPx);
             backButton.setMinimumHeight(minTouchTargetPx);
-            backButton.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
+            // Offset the button to the left so it aligns with the left edge of the cards below.
+            var layoutParams = new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL);
+            assertNonNull(backButton.getDrawable());
+            int iconWidthPx = backButton.getDrawable().getIntrinsicWidth();
+            layoutParams.setMarginStart(-(minTouchTargetPx - iconWidthPx) / 2);
+            backButton.setLayoutParams(layoutParams);
             backButton.setOnClickListener(v -> navigateToTitle(prevTitle, prevIndex));
             // Set both accessibility content description and tooltip.
             TooltipCompat.setTooltipText(backButton, mContext.getString(R.string.back));

@@ -196,6 +196,11 @@ public class MultiColumnTitleUpdaterTest {
         assertTrue(mContainer.getChildCount() > 1);
         assertTrue(mContainer.getChildAt(0) instanceof ChromeImageButton);
 
+        // Back button should be offset to the left.
+        ChromeImageButton backButton = (ChromeImageButton) mContainer.getChildAt(0);
+        var layoutParams = (LinearLayout.LayoutParams) backButton.getLayoutParams();
+        assertTrue(layoutParams.getMarginStart() < 0);
+
         // Parent title ("Appearance") should be clickable, but active title ("Theme") should not.
         assertTrue(mContainer.getChildAt(1) instanceof TextView);
         assertEquals("Appearance", ((TextView) mContainer.getChildAt(1)).getText().toString());
@@ -205,10 +210,8 @@ public class MultiColumnTitleUpdaterTest {
         assertEquals("Theme", ((TextView) mContainer.getChildAt(3)).getText().toString());
         assertFalse(mContainer.getChildAt(3).isClickable());
 
-        ChromeImageButton backButton = (ChromeImageButton) mContainer.getChildAt(0);
-        backButton.performClick();
-
         // Clicking back button should pop to previous title ("Appearance") and trigger callback.
+        backButton.performClick();
         verify(mTitleTapCallback).onResult("appearance_entry");
     }
 
