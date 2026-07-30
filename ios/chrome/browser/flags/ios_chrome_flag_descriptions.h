@@ -65,11 +65,6 @@ inline constexpr char kAimUrlNavigationFetchEnabledName[] =
 inline constexpr char kAimUrlNavigationFetchEnabledDescription[] =
     "Enables the AimUrlNavigationFetchEnabled feature.";
 
-inline constexpr char kAlertCrashFixKillSwitchName[] =
-    "AlertCrashFixKillSwitch";
-inline constexpr char kAlertCrashFixKillSwitchDescription[] =
-    "Enables the AlertCrashFixKillSwitch feature.";
-
 inline constexpr char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 inline constexpr char kAnimatedDefaultBrowserPromoInFREDescription[] =

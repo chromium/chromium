@@ -366,20 +366,16 @@ inline LayoutStateScenePassKey PassKey() {
   // unregister observers and destroy C++ objects before the application is
   // shut down without depending on non-deterministic call to -dealloc.
   [self stopSettingsAnimated:NO completion:nil];
-  if (!IsAlertCrashFixKillSwitchEnabled()) {
-    // Ensure command dispatching is stopped across all non-nil browsers so that
-    // shutdown captures unregistered targets in silently failing targets.
-    if (_regularBrowser) {
-      [_regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-    }
-    if (_incognitoBrowser) {
-      [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-    }
-    if (_inactiveBrowser) {
-      [_inactiveBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
-    }
-  } else {
+  // Ensure command dispatching is stopped across all non-nil browsers so that
+  // shutdown captures unregistered targets in silently failing targets.
+  if (_regularBrowser) {
     [_regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  }
+  if (_incognitoBrowser) {
+    [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  }
+  if (_inactiveBrowser) {
+    [_inactiveBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
   _policyWatcherObserver.reset();
   _policyWatcherObserverBridge.reset();
@@ -1655,7 +1651,7 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
-  if (!IsAlertCrashFixKillSwitchEnabled() && _incognitoBrowser) {
+  if (_incognitoBrowser) {
     [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
   _incognitoBrowser = incognitoBrowser;

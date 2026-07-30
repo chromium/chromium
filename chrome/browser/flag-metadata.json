@@ -162,11 +162,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "alert-crash-fix-kill-switch",
-    "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "align-pdf-default-print-settings-with-html",
     "owners": [ "thestig@chromium.org", "cathiechen@igalia.com" ],
     "expiry_milestone": 160

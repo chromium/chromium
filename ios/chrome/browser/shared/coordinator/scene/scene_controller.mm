@@ -1757,9 +1757,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   // The UI should be stopped before the models they observe are stopped.
   [_mainCoordinator stop];
-  if (IsAlertCrashFixKillSwitchEnabled()) {
-    _mainCoordinator = nil;
-  }
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
@@ -1774,11 +1771,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   [self.browserLifecycleManager shutdown];
   self.browserLifecycleManager = nil;
 
-  if (!IsAlertCrashFixKillSwitchEnabled()) {
-    // Keep _mainCoordinator alive until shutdown completes so that any late
-    // command invocations during UI teardown do not hit a deallocated target.
-    _mainCoordinator = nil;
-  }
+  // Keep _mainCoordinator alive until shutdown completes so that any late
+  // command invocations during UI teardown do not hit a deallocated target.
+  _mainCoordinator = nil;
 
   [self.sceneState.profileState removeObserver:self];
   [_sceneState.uiBlockerState removeObserver:self];
