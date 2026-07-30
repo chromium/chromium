@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.61"
+rust-version = "1.71"
 name = "ref-cast"
-version = "1.0.25"
+version = "1.0.26"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false
@@ -59,7 +59,7 @@ name = "test_trivial"
 path = "tests/test_trivial.rs"
 
 [dependencies.ref-cast-impl]
-version = "=1.0.25"
+version = "=1.0.26"
 
 [dev-dependencies.ref-cast-test-suite]
 version = "0"

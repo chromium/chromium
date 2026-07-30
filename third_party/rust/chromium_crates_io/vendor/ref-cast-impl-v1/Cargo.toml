@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.61"
+rust-version = "1.71"
 name = "ref-cast-impl"
-version = "1.0.25"
+version = "1.0.26"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false
@@ -50,7 +50,7 @@ version = "1.0.74"
 version = "1.0.35"
 
 [dependencies.syn]
-version = "2.0.46"
+version = "3"
 
 [dev-dependencies.ref-cast]
 version = "1"

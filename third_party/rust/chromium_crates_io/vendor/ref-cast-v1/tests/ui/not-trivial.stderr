@@ -4,11 +4,17 @@ error[E0277]: the trait bound `String: ref_cast::trivial::Trivial` is not satisf
 8 |     two: String,
   |          ^^^^^^ the trait `ref_cast::trivial::Trivial` is not implemented for `String`
   |
-  = help: the following other types implement trait `ref_cast::trivial::Trivial`:
-            ()
-            PhantomData<T>
-            PhantomPinned
-note: required by a bound in `assert_trivial`
+help: the following other types implement trait `ref_cast::trivial::Trivial`
+ --> src/trivial.rs
+  |
+  | impl Trivial for () {}
+  | ^^^^^^^^^^^^^^^^^^^ `()`
+  | impl<T: ?Sized> Trivial for PhantomData<T> {}
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `PhantomData<T>`
+...
+  | impl Trivial for PhantomPinned {}
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `PhantomPinned`
+note: required by a bound in `ref_cast::__private25::assert_trivial`
  --> src/trivial.rs
   |
   | pub fn assert_trivial<T: Trivial>() {}

@@ -16,24 +16,30 @@ error: unrecognized repr on struct that implements RefCast
 4 | #[repr(packed, C, usize, usize(0), usize = "0")]
   |                                    ^^^^^^^^^^^
 
-error[E0552]: invalid representation hint: `usize` does not take a parenthesized argument list
- --> tests/ui/unrecognized-repr.rs:4:26
+error: `#[repr(usize)]` attribute cannot be used on structs
+ --> tests/ui/unrecognized-repr.rs:4:1
   |
 4 | #[repr(packed, C, usize, usize(0), usize = "0")]
-  |                          ^^^^^^^^
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: `#[repr(usize)]` can only be applied to enums
 
-error[E0552]: invalid representation hint: `usize` does not take a value
- --> tests/ui/unrecognized-repr.rs:4:36
+error[E0565]: malformed `repr` attribute input
+ --> tests/ui/unrecognized-repr.rs:4:1
   |
 4 | #[repr(packed, C, usize, usize(0), usize = "0")]
-  |                                    ^^^^^^^^^^^
-
-error[E0517]: attribute should be applied to an enum
- --> tests/ui/unrecognized-repr.rs:4:19
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^---^^^^^^^^^^^^^^^
+  |                               |
+  |                               didn't expect any arguments here
   |
-4 |   #[repr(packed, C, usize, usize(0), usize = "0")]
-  |                     ^^^^^
-5 | / struct Test {
-6 | |     s: String,
-7 | | }
-  | |_- not an enum
+  = note: for more information, visit <https://doc.rust-lang.org/reference/type-layout.html#representations>
+
+error[E0565]: malformed `repr` attribute input
+ --> tests/ui/unrecognized-repr.rs:4:1
+  |
+4 | #[repr(packed, C, usize, usize(0), usize = "0")]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^^
+  |                                          |
+  |                                          didn't expect any arguments here
+  |
+  = note: for more information, visit <https://doc.rust-lang.org/reference/type-layout.html#representations>

@@ -1,13 +1,13 @@
 [package]
 name = "ref-cast-impl"
-version = "1.0.25"
+version = "1.0.26"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Derive implementation for ref_cast::RefCast."
 documentation = "https://docs.rs/ref-cast"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/ref-cast"
-rust-version = "1.61"
+rust-version = "1.71"
 
 [lib]
 proc-macro = true
@@ -15,7 +15,7 @@ proc-macro = true
 [dependencies]
 proc-macro2 = "1.0.74"
 quote = "1.0.35"
-syn = "2.0.46"
+syn = "3"
 
 [dev-dependencies]
 ref-cast = "1"

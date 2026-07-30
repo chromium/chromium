@@ -1,0 +1,11 @@
+Name: syn
+URL: https://crates.io/crates/syn
+Version: 3.0.3
+Revision: 23dbaab4b0c43f56cd803894054cf366661e53b0
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/syn-v3/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Parser for Rust source code

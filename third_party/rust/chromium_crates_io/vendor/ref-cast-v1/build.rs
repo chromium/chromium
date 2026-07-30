@@ -20,9 +20,8 @@ fn main() {
     let module = PRIVATE.replace("$$", &patch_version);
     fs::write(out_dir.join("private.rs"), module).unwrap();
 
-    let minor = match rustc_minor_version() {
-        Some(minor) => minor,
-        None => return,
+    let Some(minor) = rustc_minor_version() else {
+        return;
     };
 
     if minor >= 80 {

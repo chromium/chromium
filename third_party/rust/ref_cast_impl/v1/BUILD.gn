@@ -25,14 +25,14 @@ cargo_crate("lib") {
   cargo_pkg_name = "ref-cast-impl"
   cargo_pkg_description = "Derive implementation for ref_cast::RefCast."
   cargo_pkg_repository = "https://github.com/dtolnay/ref-cast"
-  cargo_pkg_version = "1.0.25"
+  cargo_pkg_version = "1.0.26"
 
   allow_unsafe = false
 
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/syn/v2:lib",
+    "//third_party/rust/syn/v3:lib",
   ]
 
   # Only for usage from third-party crates. Add the crate to

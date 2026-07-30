@@ -1,6 +1,6 @@
 [package]
 name = "ref-cast"
-version = "1.0.25"
+version = "1.0.26"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["rust-patterns", "no-std", "no-std::no-alloc"]
 description = "Safely cast &T to &U where the struct U contains a single field of type T."
@@ -8,10 +8,10 @@ documentation = "https://docs.rs/ref-cast"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/ref-cast"
-rust-version = "1.61"
+rust-version = "1.71"
 
 [dependencies]
-ref-cast-impl = { version = "=1.0.25", path = "derive" }
+ref-cast-impl = { version = "=1.0.26", path = "derive" }
 
 [dev-dependencies]
 ref-cast-test-suite = { version = "0", path = "tests/helper" }

@@ -916,8 +916,11 @@ allow_unsafe = false
 [crate.symphonia-metadata.extra_kv]
 allow_unsafe = false
 
+# TODO(https://crbug.com/540235303): Remove multiple versions of the `syn` crate:
+# syn@2.0.118, syn@3.0.3
 [crate.syn.extra_kv]
 allow_unsafe = true
+multiversion_cleanup_bug = "https://crbug.com/540235303"
 
 [crate.synstructure.extra_kv]
 allow_unsafe = false

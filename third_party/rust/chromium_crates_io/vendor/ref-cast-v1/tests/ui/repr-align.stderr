@@ -10,8 +10,12 @@ error: aligned repr on struct that implements RefCast is not supported
 4 | #[repr(align(2), C, align = "2")]
   |                     ^^^^^^^^^^^
 
-error[E0693]: incorrect `repr(align)` attribute format
- --> tests/ui/repr-align.rs:4:21
+error[E0539]: malformed `repr` attribute input
+ --> tests/ui/repr-align.rs:4:1
   |
 4 | #[repr(align(2), C, align = "2")]
-  |                     ^^^^^^^^^^^ help: use parentheses instead: `align(2)`
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^-----^^
+  |                           |
+  |                           expected this to be a list
+  |
+  = note: for more information, visit <https://doc.rust-lang.org/reference/type-layout.html#representations>
