@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "data_protection_scene_agent.h",
+    "data_protection_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors:util",
+    "//ios/chrome/browser/enterprise/data_controls/model",
+    "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
+    "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
+    "//ios/public/provider/chrome/browser/screenshot_protection:screenshot_protection_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "data_protection_scene_agent_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:test_support",
+    "//components/prefs",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
+    "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
+    "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
