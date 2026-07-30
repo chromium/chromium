@@ -28,8 +28,6 @@ component("dwa_recorder") {
 
 component("private_metrics_recorders") {
   sources = [
-    "dkm_recorder.cc",
-    "dkm_recorder.h",
     "lom_recorder.cc",
     "lom_recorder.h",
     "puma_histogram_functions.cc",
@@ -66,10 +64,6 @@ static_library("private_metrics") {
     "//components/metrics/dwa/dwa_service.h",
     "data_upload_config_downloader.cc",
     "data_upload_config_downloader.h",
-    "dkm_entry_builder.cc",
-    "dkm_entry_builder.h",
-    "dkm_entry_builder_base.cc",
-    "dkm_entry_builder_base.h",
     "private_metrics_pref_names.h",
     "private_metrics_reporting_service.cc",
     "private_metrics_reporting_service.h",
@@ -119,7 +113,6 @@ source_set("unit_tests") {
     "//components/metrics/private_metrics/puma_histogram_encoder_unittest.cc",
     "//components/metrics/private_metrics/puma_service_unittest.cc",
     "data_upload_config_downloader_unittest.cc",
-    "dkm_entry_builder_unittest.cc",
     "lom_recorder_unittest.cc",
     "puma_histogram_functions_unittest.cc",
   ]
