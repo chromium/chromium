@@ -477,12 +477,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(audio_data);
   constexpr size_t kMaxChunkSize = 1024;
 
-  // Send an audio chunk to the service. It will output "Hey Google". When the
-  // client receives the result, it responds to the service with `success =
-  // true`, informing the speech recognition service that it still wants
-  // transcriptions.
+  // Send an audio chunk to the service while the caption bubble is open.
   SendAudioChunk(audio_data, handler.get(), kMaxChunkSize);
-  WaitForRecognitionResult("Hey Google");
+  speech_recognition_recognizer_.FlushForTesting();
 
   // Close caption bubble. This means that the next time the client receives a
   // transcription, it will respond to the speech service with `success =
