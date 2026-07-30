@@ -41,7 +41,7 @@ export class ContextualCueingInternalsAppElement extends CrLitElement {
   private async loadShownCues_() {
     try {
       const {cues} = await this.browserProxy_.handler.getShownCues();
-      this.shownCues_ = cues;
+      this.shownCues_ = cues.reverse();
     } catch (e) {
       console.error('Error fetching shown cues:', e);
     }
