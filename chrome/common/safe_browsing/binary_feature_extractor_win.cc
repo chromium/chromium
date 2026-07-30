@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/pe_image_reader.h"
+#include "base/win/trust_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
@@ -54,44 +55,15 @@ void BinaryFeatureExtractor::CheckSignature(
 
   DVLOG(2) << "Checking signature for " << file_path.value();
 
-  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WIN_SHARE_DELETE);
+  base::win::ScopedWintrustData wintrust_data(file_path);
 
-  WINTRUST_FILE_INFO file_info = {0};
-  file_info.cbStruct = sizeof(file_info);
-  file_info.pcwszFilePath = file_path.value().c_str();
-  file_info.hFile = file.GetPlatformFile();
-  file_info.pgKnownSubject = NULL;
-
-  WINTRUST_DATA wintrust_data = {0};
-  wintrust_data.cbStruct = sizeof(wintrust_data);
-  wintrust_data.pPolicyCallbackData = NULL;
-  wintrust_data.pSIPClientData = NULL;
-  wintrust_data.dwUIChoice = WTD_UI_NONE;
-  wintrust_data.fdwRevocationChecks = WTD_REVOKE_NONE;
-  wintrust_data.dwUnionChoice = WTD_CHOICE_FILE;
-  wintrust_data.pFile = &file_info;
-  wintrust_data.dwStateAction = WTD_STATEACTION_VERIFY;
-  wintrust_data.hWVTStateData = NULL;
-  wintrust_data.pwszURLReference = NULL;
-  // Disallow revocation checks over the network.
-  wintrust_data.dwProvFlags = WTD_CACHE_ONLY_URL_RETRIEVAL;
-  wintrust_data.dwUIContext = WTD_UICONTEXT_EXECUTE;
-
-  // The WINTRUST_ACTION_GENERIC_VERIFY_V2 policy verifies that the certificate
-  // chains up to a trusted root CA, and that it has appropriate permission to
-  // sign code.
-  GUID policy_guid = WINTRUST_ACTION_GENERIC_VERIFY_V2;
-
-  LONG result = WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE),
-                               &policy_guid,
-                               &wintrust_data);
-
-  CRYPT_PROVIDER_DATA* prov_data = WTHelperProvDataFromStateData(
-      wintrust_data.hWVTStateData);
+  CRYPT_PROVIDER_DATA* prov_data =
+      WTHelperProvDataFromStateData(wintrust_data.hWVTStateData());
   if (prov_data) {
     if (prov_data->csSigners > 0) {
-      signature_info->set_trusted(result == ERROR_SUCCESS);
+      signature_info->set_trusted(
+          base::win::IsWintrustDataTrusted(wintrust_data,
+                                           /*verify_publisher=*/false));
     }
     // SAFETY: CRYPT_PROVIDER_DATA is defined by Windows and guarantees
     // pasSigners has csSsigners elements.
@@ -118,11 +90,6 @@ void BinaryFeatureExtractor::CheckSignature(
         }
       }
     }
-
-    // Free the provider data.
-    wintrust_data.dwStateAction = WTD_STATEACTION_CLOSE;
-    WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE),
-                   &policy_guid, &wintrust_data);
   }
 }
 

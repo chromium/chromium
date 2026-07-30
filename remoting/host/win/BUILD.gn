@@ -99,15 +99,6 @@ source_set("acl_util") {
   deps = [ "//base" ]
 }
 
-source_set("trust_util") {
-  sources = [
-    "trust_util.cc",
-    "trust_util.h",
-  ]
-  deps = [ "//base" ]
-  libs = [ "Wintrust.lib" ]
-}
-
 component("rdp_window") {
   sources = [
     "com_imported_mstscax.h",

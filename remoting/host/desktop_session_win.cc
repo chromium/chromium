@@ -30,6 +30,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/trust_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/base/switches.h"
@@ -41,7 +42,6 @@
 // MIDL-generated declarations and definitions.
 #include "remoting/host/win/chromoting_lib.h"
 #include "remoting/host/win/host_service.h"
-#include "remoting/host/win/trust_util.h"
 #include "remoting/host/win/wts_session_process_delegate.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 #include "remoting/host/win/wts_terminal_observer.h"
@@ -648,7 +648,7 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   base::FilePath desktop_binary;
   bool result = GetInstalledBinaryPath(kDesktopBinaryName, &desktop_binary);
 
-  if (!result || !IsBinaryTrusted(desktop_binary)) {
+  if (!result || !base::win::IsBinaryTrusted(desktop_binary)) {
     result = GetInstalledBinaryPath(kHostBinaryName, &desktop_binary);
   }
 

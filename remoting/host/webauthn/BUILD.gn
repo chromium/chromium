@@ -35,10 +35,6 @@ source_set("webauthn") {
     "//remoting/protocol",
   ]
 
-  if (is_win) {
-    deps += [ "//remoting/host/win:trust_util" ]
-  }
-
   if (is_mac) {
     deps += [ "//remoting/host/mac:trust_util" ]
   }

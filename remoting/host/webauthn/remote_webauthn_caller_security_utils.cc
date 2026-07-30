@@ -26,7 +26,7 @@
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
-#include "remoting/host/win/trust_util.h"
+#include "base/win/trust_util.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -94,7 +94,7 @@ bool IsLaunchedByTrustedProcess() {
     return false;
   }
 
-  return IsBinaryTrusted(launcher_image_path);
+  return base::win::IsBinaryTrusted(launcher_image_path);
 #elif BUILDFLAG(IS_MAC)
   // TODO: crbug.com/410903981 - move away from PID-based security checks, which
   // might be susceptible of PID reuse attacks, if Apple provides APIs to query
