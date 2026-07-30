@@ -2336,6 +2336,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/app_menu:browser_tests",
       "//chrome/browser/ui/views/apps/app_info_dialog:browser_tests",
+      "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/data_sharing",
       "//chrome/browser/ui/views/data_sharing:browser_tests",
@@ -2381,6 +2382,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/autofill_and_password_manager_internals:browser_tests",
       "//chrome/browser/ui/webui/autofill_ml_internals:browser_tests",
       "//chrome/browser/ui/webui/bookmarks",
+      "//chrome/browser/ui/webui/bookmarks:browser_tests",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:browser_tests",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
@@ -2995,8 +2997,6 @@ if (!is_android) {
       "../browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
-      "../browser/ui/views/bookmarks/bookmark_test_utils.cc",
-      "../browser/ui/views/bookmarks/bookmark_test_utils.h",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar_browsertest.cc",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar_component_browsertest.cc",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu_browsertest.cc",
@@ -3619,7 +3619,6 @@ if (!is_android) {
     }
 
     if (enable_dice_support || is_chromeos) {
-      sources += [ "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc" ]
       deps += [ "//chrome/browser/profiles/batch_upload:browser_tests" ]
     }
 
@@ -6372,7 +6371,6 @@ test("unit_tests") {
       "../browser/ui/webui/constrained_web_dialog_ui_unittest.cc",
       "../browser/ui/webui/managed_ui_handler_unittest.cc",
       "../browser/ui/webui/theme_colors_source_manager_unittest.cc",
-      "../browser/ui/webui/util/webui_util_desktop_unittest.cc",
       "../browser/ui/webui/webui_allowlist_provider_unittest.cc",
       "../browser/ui/webui/webui_embedding_context_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/dependency_parser_model_unittest.cc",
@@ -6527,6 +6525,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/signin:unit_tests",
       "//chrome/browser/ui/webui/skills:unit_tests",
       "//chrome/browser/ui/webui/support_tool:unit_tests",
+      "//chrome/browser/ui/webui/util:unit_tests",
       "//chrome/browser/ui/webui/version",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/webui_toolbar:unit_tests",
@@ -7508,8 +7507,10 @@ test("unit_tests") {
   }
 
   if (enable_dice_support || is_chromeos) {
-    sources += [ "../browser/ui/webui/batch_upload_promo/batch_upload_promo_handler_unittest.cc" ]
-    deps += [ "//chrome/browser/ui/webui/batch_upload_promo" ]
+    deps += [
+      "//chrome/browser/ui/webui/batch_upload_promo",
+      "//chrome/browser/ui/webui/batch_upload_promo:unit_tests",
+    ]
   }
 
   if (is_mac) {

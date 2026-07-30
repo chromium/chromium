@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 if (!is_android) {
@@ -56,6 +57,32 @@ if (!is_android) {
     if (enable_extensions_core) {
       deps += [ "//chrome/browser/ui/webui:managed_ui_handler" ]
     }
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "bookmarks_message_handler_browsertest.cc" ]
+    deps = [
+      ":bookmarks",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/views/bookmarks:test_support",
+      "//chrome/test:test_support",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/common",
+      "//components/bookmarks/managed",
+      "//components/bookmarks/test",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync_bookmarks",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/views",
+    ]
   }
 }
 

@@ -53,3 +53,14 @@ source_set("impl") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "webui_util_desktop_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":util",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

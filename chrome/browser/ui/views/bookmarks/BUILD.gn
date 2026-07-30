@@ -9,3 +9,19 @@ assert(toolkit_views)
 source_set("bookmark_bar_view_observer") {
   sources = [ "bookmark_bar_view_observer.h" ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "bookmark_test_utils.cc",
+    "bookmark_test_utils.h",
+  ]
+  deps = [
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/bookmarks/browser",
+    "//components/signin/public/identity_manager:test_support",
+    "//ui/gfx:test_support",
+  ]
+}
