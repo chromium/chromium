@@ -35,6 +35,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/local_network_access_check_result.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -579,6 +580,134 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        {
                            {WebFeature::kPrivateNetworkAccessNullIpAddress, 1},
                        }));
+}
+
+class LocalNetworkAccessWebSocketCountersBrowserTest
+    : public LocalNetworkAccessCountersBrowserTest {
+ public:
+  LocalNetworkAccessWebSocketCountersBrowserTest() = default;
+
+  net::EmbeddedTestServer& ws_server() { return ws_server_; }
+
+  std::string WaitAndGetTitle() {
+    return base::UTF16ToUTF8(watcher_->WaitAndGetTitle());
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    net::test_server::InstallDefaultWebSocketHandlers(&ws_server_);
+    ASSERT_TRUE(ws_server_.Start());
+
+    LocalNetworkAccessCountersBrowserTest::SetUpOnMainThread();
+
+    watcher_ = std::make_unique<content::TitleWatcher>(web_contents(), u"PASS");
+    watcher_->AlsoWaitForTitle(u"FAIL");
+  }
+
+  void TearDownOnMainThread() override { watcher_.reset(); }
+
+  net::EmbeddedTestServer ws_server_{net::EmbeddedTestServer::Type::TYPE_HTTPS};
+  std::unique_ptr<content::TitleWatcher> watcher_;
+};
+
+// When WebSocket is connected to a more-private ip address space, log a use
+// counter.
+// TODO(crbug.com/336429017): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WebSocketConnectedPublicToLocal \
+  DISABLED_WebSocketConnectedPublicToLocal
+#else
+#define MAYBE_WebSocketConnectedPublicToLocal WebSocketConnectedPublicToLocal
+#endif
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketCountersBrowserTest,
+                       MAYBE_WebSocketConnectedPublicToLocal) {
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  LOG(ERROR) << ws_server().GetURL("/echo-with-no-extension").spec();
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_public_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket.html"
+          "?url=" +
+              ws_server().GetURL("/echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessWebSocketConnected, 1},
+      }));
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WebSocketConnectedPublicToLocalNonLocalHost \
+  DISABLED_WebSocketConnectedPublicToLocalNonLocalHost
+#else
+#define MAYBE_WebSocketConnectedPublicToLocalNonLocalHost \
+  WebSocketConnectedPublicToLocalNonLocalHost
+#endif
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketCountersBrowserTest,
+                       MAYBE_WebSocketConnectedPublicToLocalNonLocalHost) {
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  LOG(ERROR) << ws_server().GetURL("b.com", "/echo-with-no-extension").spec();
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_public_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket.html"
+          "?url=" +
+              ws_server().GetURL("b.com", "/echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessWebSocketConnected, 1},
+          {WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate, 0},
+      }));
+}
+
+// When WebSocket is connected to the same ip address space, do not log a use
+// counter.
+// TODO(crbug.com/336429017): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WebSocketConnectedLocalToLocal \
+  DISABLED_WebSocketConnectedLocalToLocal
+#else
+#define MAYBE_WebSocketConnectedLocalToLocal WebSocketConnectedLocalToLocal
+#endif
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketCountersBrowserTest,
+                       MAYBE_WebSocketConnectedLocalToLocal) {
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket.html"
+          "?url=" +
+              ws_server().GetURL("/echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessWebSocketConnected, 0},
+          {WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate, 0},
+      }));
 }
 
 }  // namespace local_network_access

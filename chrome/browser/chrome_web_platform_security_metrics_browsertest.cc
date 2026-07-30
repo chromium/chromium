@@ -208,35 +208,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   base::test::ScopedFeatureList features_;
 };
 
-class PrivateNetworkAccessWebSocketMetricBrowserTest
-    : public ChromeWebPlatformSecurityMetricsBrowserTest {
- public:
-  PrivateNetworkAccessWebSocketMetricBrowserTest() = default;
-
-  net::EmbeddedTestServer& ws_server() { return ws_server_; }
-
-  std::string WaitAndGetTitle() {
-    return base::UTF16ToUTF8(watcher_->WaitAndGetTitle());
-  }
-
- private:
-  void SetUpOnMainThread() override {
-    net::test_server::InstallDefaultWebSocketHandlers(&ws_server_);
-    ASSERT_TRUE(ws_server_.Start());
-
-    ChromeWebPlatformSecurityMetricsBrowserTest::SetUpOnMainThread();
-
-    watcher_ = std::make_unique<content::TitleWatcher>(
-        browser()->tab_strip_model()->GetActiveWebContents(), u"PASS");
-    watcher_->AlsoWaitForTitle(u"FAIL");
-  }
-
-  void TearDownOnMainThread() override { watcher_.reset(); }
-
-  net::EmbeddedTestServer ws_server_{net::EmbeddedTestServer::Type::TYPE_HTTP};
-  std::unique_ptr<content::TitleWatcher> watcher_;
-};
-
 // Return the child of `parent`.
 // Precondition: the number of children must be one.
 content::RenderFrameHost* GetChild(content::RenderFrameHost& parent) {
@@ -259,87 +230,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   GURL url = https_server().GetURL("a.com", "/title1.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   ExpectHistogramIncreasedBy(0);
-}
-
-// When WebSocket is connected to a more-private ip address space, log a use
-// counter.
-// TODO(crbug.com/336429017): Flaky on Win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal \
-  DISABLED_PrivateNetworkAccessWebSocketConnectedPublicToLocal
-#else
-#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal \
-  PrivateNetworkAccessWebSocketConnectedPublicToLocal
-#endif
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessWebSocketMetricBrowserTest,
-    MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      http_server().GetURL(
-          "a.com",
-          "/local_network_access/"
-          "websocket-treat-as-public-address.html"
-          "?url=" +
-              ws_server().GetURL("/echo-with-no-extension").spec())));
-
-  EXPECT_EQ("PASS", WaitAndGetTitle());
-  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
-  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
-               0);
-}
-
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
-  DISABLED_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
-#else
-#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
-  PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
-#endif
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessWebSocketMetricBrowserTest,
-    MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      http_server().GetURL(
-          "a.com",
-          "/local_network_access/"
-          "websocket-treat-as-public-address.html"
-          "?url=" +
-              ws_server().GetURL("b.com", "/echo-with-no-extension").spec())));
-
-  EXPECT_EQ("PASS", WaitAndGetTitle());
-  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
-  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
-               1);
-}
-
-// When WebSocket is connected to the same ip address space, do not log a use
-// counter.
-// TODO(crbug.com/336429017): Flaky on Win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal \
-  DISABLED_PrivateNetworkAccessWebSocketConnectedLocalToLocal
-#else
-#define MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal \
-  PrivateNetworkAccessWebSocketConnectedLocalToLocal
-#endif
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessWebSocketMetricBrowserTest,
-    MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      http_server().GetURL(
-          "a.com",
-          "/local_network_access/"
-          "websocket.html"
-          "?url=" +
-              ws_server().GetURL("/echo-with-no-extension").spec())));
-
-  EXPECT_EQ("PASS", WaitAndGetTitle());
-  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
-  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
-               0);
 }
 
 // Check the kCrossOriginOpenerPolicyReporting feature usage. COOP-Report-Only +
