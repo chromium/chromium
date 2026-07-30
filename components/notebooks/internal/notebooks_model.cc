@@ -90,6 +90,15 @@ void NotebooksModel::UpdateNotebook(Notebook notebook) {
   }
 }
 
+void NotebooksModel::AddOrUpdateNotebook(Notebook notebook) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (Contains(notebook.id())) {
+    UpdateNotebook(std::move(notebook));
+  } else {
+    AddNotebook(std::move(notebook));
+  }
+}
+
 void NotebooksModel::RemoveNotebook(NotebookId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_notifying_);

@@ -166,6 +166,37 @@ TEST(NotebooksModelTest, UpdateNotebookNotifiesObserver) {
   EXPECT_EQ(observer.last_updated_id(), id);
 }
 
+TEST(NotebooksModelTest, AddOrUpdateNotebookAddsWhenMissing) {
+  NotebooksModel model;
+  TestNotebooksModelObserver observer;
+  model.AddObserver(&observer);
+  NotebookId id(base::Uuid::GenerateRandomV4());
+  Notebook notebook(id, base::Time::FromSecondsSinceUnixEpoch(1000),
+                    base::Time::FromSecondsSinceUnixEpoch(1000));
+
+  model.AddOrUpdateNotebook(notebook);
+
+  EXPECT_TRUE(model.Contains(id));
+  EXPECT_EQ(observer.last_added_id(), id);
+}
+
+TEST(NotebooksModelTest, AddOrUpdateNotebookUpdatesWhenPresent) {
+  NotebooksModel model;
+  TestNotebooksModelObserver observer;
+  model.AddObserver(&observer);
+  NotebookId id(base::Uuid::GenerateRandomV4());
+  base::Time initial_time = base::Time::FromSecondsSinceUnixEpoch(1000);
+  Notebook notebook(id, initial_time, initial_time);
+  model.AddNotebook(notebook);
+
+  base::Time updated_time = initial_time + base::Minutes(5);
+  notebook.SetUpdateTime(updated_time);
+  model.AddOrUpdateNotebook(notebook);
+
+  EXPECT_EQ(model.GetNotebook(id)->update_time(), updated_time);
+  EXPECT_EQ(observer.last_updated_id(), id);
+}
+
 TEST(NotebooksModelTest, RemoveNotebookErasesNotebook) {
   NotebooksModel model;
   NotebookId id(base::Uuid::GenerateRandomV4());
