@@ -100,6 +100,10 @@ BASE_DECLARE_FEATURE(kApiProxyOverrideRulesPrivate);
 // runtime.getPlatformInfo() API.
 BASE_DECLARE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch);
 
+// Controls the availability of runtime.sendNativeMessage and
+// runtime.connectNative on Desktop Android.
+BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessaging);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,7 +204,6 @@ BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 // extensions can be disabled at ESB opt-in time or when an extension is moved
 // out of the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
-
 
 // Controls whether the component webstore hosted app is loaded.
 BASE_DECLARE_FEATURE(kWebstoreHostedApp);

@@ -9,10 +9,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
@@ -52,12 +54,12 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 
 class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
-  RuntimeHooksDelegateTest() {}
+  RuntimeHooksDelegateTest() = default;
 
   RuntimeHooksDelegateTest(const RuntimeHooksDelegateTest&) = delete;
   RuntimeHooksDelegateTest& operator=(const RuntimeHooksDelegateTest&) = delete;
 
-  ~RuntimeHooksDelegateTest() override {}
+  ~RuntimeHooksDelegateTest() override = default;
 
   // NativeExtensionBindingsSystemUnittest:
   void SetUp() override {
@@ -368,12 +370,18 @@ TEST_F(RuntimeHooksDelegateTest, ConnectWithTrickyOptions) {
 class RuntimeHooksDelegateNativeMessagingTest
     : public RuntimeHooksDelegateTest {
  public:
-  RuntimeHooksDelegateNativeMessagingTest() {}
-  ~RuntimeHooksDelegateNativeMessagingTest() override {}
+  RuntimeHooksDelegateNativeMessagingTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kApiDesktopAndroidNativeMessaging);
+  }
+  ~RuntimeHooksDelegateNativeMessagingTest() override = default;
 
   scoped_refptr<const Extension> BuildExtension() override {
     return ExtensionBuilder("foo").AddAPIPermission("nativeMessaging").Build();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
@@ -578,7 +586,10 @@ TEST_F(RuntimeHooksDelegateMV3Test, RequestUpdateCheck) {
 class RuntimeHooksDelegateNativeMessagingMV3Test
     : public RuntimeHooksDelegateTest {
  public:
-  RuntimeHooksDelegateNativeMessagingMV3Test() = default;
+  RuntimeHooksDelegateNativeMessagingMV3Test() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kApiDesktopAndroidNativeMessaging);
+  }
   ~RuntimeHooksDelegateNativeMessagingMV3Test() override = default;
 
   scoped_refptr<const Extension> BuildExtension() override {
@@ -587,6 +598,9 @@ class RuntimeHooksDelegateNativeMessagingMV3Test
         .AddAPIPermission("nativeMessaging")
         .Build();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {

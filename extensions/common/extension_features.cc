@@ -82,6 +82,9 @@ BASE_FEATURE(kWebRequestSecurityInfo, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRequestPerContextEventDispatch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiDesktopAndroidNativeMessaging,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

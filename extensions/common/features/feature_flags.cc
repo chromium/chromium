@@ -31,6 +31,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiProxyOverrideRulesPrivate,
     &extensions_features::kExperimentalOmniboxLabs,
     &extensions_features::kExtensionIconVariants,
+    &extensions_features::kApiDesktopAndroidNativeMessaging,
     &extensions_features::
         kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
 #if BUILDFLAG(IS_CHROMEOS)

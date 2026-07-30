@@ -430,12 +430,18 @@
       "AA1C88257F51F7A9AFB947720AACE8CA7E9CF85C"   // Assessment Assistant (dev)
     ]
   },
-  "nativeMessaging": {
+  "nativeMessaging": [{
     "channel": "stable",
     "extension_types": [
       "extension", "legacy_packaged_app", "platform_app"
-    ]
-  },
+    ],
+    "platforms": ["chromeos", "linux", "mac", "win"]
+  }, {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "platforms": ["desktop_android"],
+    "feature_flag": "ApiDesktopAndroidNativeMessaging"
+  }],
   "networking.onc": [{
     "channel": "stable",
     "extension_types": ["platform_app"],

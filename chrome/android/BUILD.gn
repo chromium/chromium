@@ -1284,7 +1284,10 @@ if (_is_default_toolchain) {
     ]
 
     if (enable_extensions_core) {
-      deps += [ "//chrome/browser/ui/android/extensions:junit" ]
+      deps += [
+        "//chrome/browser/extensions/api/messaging/android:junit",
+        "//chrome/browser/ui/android/extensions:junit",
+      ]
     }
   }
 
