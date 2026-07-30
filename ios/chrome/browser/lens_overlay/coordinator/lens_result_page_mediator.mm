@@ -421,23 +421,20 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigationContext {
   BOOL isSameDocument = navigationContext->IsSameDocument();
-  if (isSameDocument) {
-    // Disregard same document navigation from initiating progress loading.
-
-    // Check for overlay status.
-    GURL URL = navigationContext->GetUrl();
-    if (IsAIMOverlayShownUrl(URL)) {
-      _isAIMOverlayShown = YES;
-      [self.bottomSheetCommands requestMaximizeBottomSheet];
-      [self.bottomSheetCommands hideSearchBar];
-    } else if (_isAIMOverlayShown) {
-      _isAIMOverlayShown = NO;
-      [self.bottomSheetCommands showSearchBar];
-    }
-  } else {
+  if (!isSameDocument) {
     // Reset progress for new page.
     _lastCommitedProgress = 0;
+  }
+
+  // Check for overlay status.
+  GURL URL = navigationContext->GetUrl();
+  if (IsAIMOverlayShownUrl(URL)) {
+    _isAIMOverlayShown = YES;
+    [self.bottomSheetCommands requestMaximizeBottomSheet];
+    [self.bottomSheetCommands hideSearchBar];
+  } else if (_isAIMOverlayShown) {
     _isAIMOverlayShown = NO;
+    [self.bottomSheetCommands showSearchBar];
   }
 }
 

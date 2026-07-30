@@ -10,6 +10,7 @@
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_commands.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -278,6 +279,40 @@ TEST_F(LensResultPageMediatorTest, ShouldAllowAnyNavigationNotInMainFrame) {
                                      /*target_frame_is_main=*/false));
   EXPECT_TRUE(TestShouldAllowRequest(@"https://www.google.com",
                                      /*target_frame_is_main=*/false));
+}
+
+// Tests that search bar is reshown when navigating away from AIM overlay
+// via a new document (non-same-document) navigation such as a region search.
+TEST_F(LensResultPageMediatorTest,
+       ShouldReshowSearchBarOnNewNavigationFromAIMOverlay) {
+  AttachFakeWebState();
+  id mock_bottom_sheet_commands = [OCMockObject
+      mockForProtocol:@protocol(LensOverlayBottomSheetPresentationCommands)];
+  mediator_.bottomSheetCommands = mock_bottom_sheet_commands;
+
+  // Simulate navigation to AIM overlay (same-document with aimos=1).
+  web::FakeNavigationContext aim_context;
+  aim_context.SetUrl(GURL(
+      "https://www.google.com/search?q=test&lns_surface=4&vsrid=1#aimos=1"));
+  aim_context.SetIsSameDocument(YES);
+
+  [[mock_bottom_sheet_commands expect] requestMaximizeBottomSheet];
+  [[mock_bottom_sheet_commands expect] hideSearchBar];
+
+  fake_web_state_->OnNavigationStarted(&aim_context);
+  [mock_bottom_sheet_commands verify];
+
+  // Simulate followup region search navigation (new document to region SRP
+  // URL).
+  web::FakeNavigationContext region_search_context;
+  region_search_context.SetUrl(
+      GURL("https://www.google.com/search?q=region&lns_surface=4"));
+  region_search_context.SetIsSameDocument(NO);
+
+  [[mock_bottom_sheet_commands expect] showSearchBar];
+
+  fake_web_state_->OnNavigationStarted(&region_search_context);
+  [mock_bottom_sheet_commands verify];
 }
 
 }  // namespace
