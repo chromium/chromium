@@ -27,19 +27,25 @@ function main() {
 
   const content = fs.readFileSync(pbFile, 'utf-8');
 
-  // Extract package names from download_urls
-  const urlRegex = /download_url:\s*"(.*?)"/g;
-  const packages = new Set();
-  let match = null;
-  while ((match = urlRegex.exec(content)) !== null) {
-    const url = match[1];
-    const pkgMatch = url.match(
-        /registry\.npmjs\.org\/(?<packageName>(?:@[^\/]+\/)?[^\/]+)\/-\//);
-    assert.ok(!!pkgMatch);
-    packages.add(pkgMatch.groups['packageName']);
-  }
+  // Extract package name and version from the first url block
+  const urlBlockRegex = /url\s*\{([^{}]*)\}/;
+  const match = urlBlockRegex.exec(content);
+  assert.ok(!!match, 'Could not find url block in 3pp.pb');
 
-  assert.ok(packages.size > 0, 'No packages found in 3pp.pb');
+  const blockContent = match[1];
+  const urlMatch = blockContent.match(/download_url:\s*"(.*?)"/);
+  const versionMatch = blockContent.match(/version:\s*"(.*?)"/);
+  assert.ok(!!urlMatch, 'Could not find download_url in url block');
+  assert.ok(!!versionMatch, 'Could not find version in url block');
+
+  const url = urlMatch[1];
+  const installedVersion = versionMatch[1];
+  assert.ok(
+      !!installedVersion, 'Could not parse installed version from url block');
+  const pkgMatch = url.match(
+      /registry\.npmjs\.org\/(?<packageName>(?:@[^\/]+\/)?[^\/]+)\/-\//);
+  assert.ok(!!pkgMatch, 'Could not parse package name from url block');
+  const pkg = pkgMatch.groups['packageName'];
 
   const now = new Date();
   // 3 weeks in milliseconds
@@ -52,50 +58,53 @@ function main() {
   const URL_TEMPLATE =
       'https://registry.npmjs.org/{packageName}/-/{subPackageName}-{version}.tgz';
 
-  const sortedPackages = Array.from(packages).sort();
-  for (const pkg of sortedPackages) {
-    console.info(`Checking ${pkg}...`);
+  console.info(`Checking ${pkg}...`);
+  console.info(`  Installed version: ${installedVersion}\n`);
 
-    let timesData = null;
+  let timesData = null;
 
-    try {
-      const stdout =
-          execSync(`npm view ${pkg} time --json`, {encoding: 'utf-8'});
-      timesData = JSON.parse(stdout);
-    } catch (error) {
-      console.error(`Error for ${pkg}: ${error.message}`, error.stderr);
-      process.exit(1);
-    }
+  try {
+    const stdout = execSync(`npm view ${pkg} time --json`, {encoding: 'utf-8'});
+    timesData = JSON.parse(stdout);
+  } catch (error) {
+    console.error(`Error for ${pkg}: ${error.message}`, error.stderr);
+    process.exit(1);
+  }
 
-    const validVersions = [];
-    for (const [version, timestampStr] of Object.entries(timesData)) {
-      if (version === 'modified' || version === 'created') {
-        continue;
-      }
+  const installedTimestampStr = timesData[installedVersion];
+  assert.ok(
+      !!installedTimestampStr,
+      `Could not find timestamp for installed version ${installedVersion}`);
+  const installedTimestamp = new Date(installedTimestampStr);
 
-      const timestamp = new Date(timestampStr);
-      assert.ok(!Number.isNaN(timestamp.getTime()));
-
-      if (timestamp <= targetTime) {
-        validVersions.push({version, timestamp});
-      }
-    }
-
-    if (validVersions.length > 0) {
-      validVersions.sort((a, b) => a.timestamp - b.timestamp);
-      const latest = validVersions.at(-1);
-      const url = URL_TEMPLATE.replaceAll('{packageName}', pkg)
-                      .replaceAll('{subPackageName}', pkg.split('/')[1])
-                      .replaceAll('{version}', latest.version);
-      console.info(`  Recommended version: ${latest.version}`);
-      console.info(`  Recommended URL:     ${url}`);
-      console.info(
-          `  Published:           ${latest.timestamp.toUTCString()}\n`);
+  const validVersions = [];
+  for (const [version, timestampStr] of Object.entries(timesData)) {
+    if (version === 'modified' || version === 'created') {
       continue;
     }
 
-    console.info('  No versions found that have soaked for at least 3 weeks.');
+    const timestamp = new Date(timestampStr);
+
+    if (timestamp <= targetTime && timestamp > installedTimestamp) {
+      validVersions.push({version, timestamp});
+    }
   }
+
+  if (validVersions.length === 0) {
+    console.info('  No versions found that have soaked for at least 3 weeks.');
+    return;
+  }
+
+  validVersions.sort((a, b) => a.timestamp - b.timestamp);
+  validVersions.forEach(latest => {
+    const url = URL_TEMPLATE.replaceAll('{packageName}', pkg)
+                    .replaceAll('{subPackageName}', pkg.split('/')[1])
+                    .replaceAll('{version}', latest.version);
+    console.info(`  Eligible version: ${latest.version}`);
+    console.info(`  Eligible URL:     ${url}`);
+    console.info(
+        `  Published:           ${latest.timestamp.toUTCString()}\n`);
+  });
 }
 
 main();
