@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -12,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -52,6 +56,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -68,6 +73,10 @@
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -2826,6 +2835,157 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
 // ExtensionViewHost for both global and contextual extension entries. One
 // example of this is having a link in the page that the user can open in a new
 // tab.
+
+// A SelectFileDialog that immediately reports `folder` as the chosen folder,
+// letting a test drive the <input webkitdirectory> upload flow without real
+// user interaction with the file picker.
+class FolderUploadSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  FolderUploadSelectFileDialog(Listener* listener,
+                               std::unique_ptr<ui::SelectFilePolicy> policy,
+                               const base::FilePath& folder)
+      : ui::SelectFileDialog(listener, std::move(policy)), folder_(folder) {}
+
+ private:
+  ~FolderUploadSelectFileDialog() override = default;
+
+  // ui::SelectFileDialog:
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      const GURL* caller) override {
+    listener_->FileSelected(ui::SelectedFileInfo(folder_), /*index=*/0);
+  }
+
+  bool IsRunning(gfx::NativeWindow owning_window) const override {
+    return true;
+  }
+
+  void ListenerDestroyed() override {}
+
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+  base::FilePath folder_;
+};
+
+class FolderUploadSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  explicit FolderUploadSelectFileDialogFactory(const base::FilePath& folder)
+      : folder_(folder) {}
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    return new FolderUploadSelectFileDialog(listener, std::move(policy),
+                                            folder_);
+  }
+
+ private:
+  base::FilePath folder_;
+};
+
+// Regression test for crbug.com/513847620. Using <input webkitdirectory> in an
+// extension side panel used to crash the browser: selecting a folder shows the
+// "Upload N files to this site?" confirmation as a tab-modal dialog, but the
+// side panel's WebContents had no WebContentsModalDialogManager attached, so
+// showing the dialog dereferenced a null manager. Drive the real folder-upload
+// flow end to end and verify the confirmation dialog is shown without crashing.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       WebModalDialogInSidePanelDoesNotCrash) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Side Panel Extension",
+           "version": "1.0",
+           "manifest_version": 3,
+           "permissions": ["sidePanel"],
+           "side_panel": {"default_path": "panel.html"}
+         })";
+  static constexpr char kPanelHtml[] =
+      R"(<body><input type="file" webkitdirectory></body>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("panel.html"), kPanelHtml);
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Open the extension's side panel and wait for its view to be shown.
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+  ShowEntryAndWait(extension_key);
+
+  ExtensionSidePanelCoordinator* coordinator =
+      GetCoordinator(extension->id(), /*web_contents=*/nullptr);
+  ASSERT_TRUE(coordinator);
+  content::WebContents* side_panel_contents =
+      coordinator->GetHostWebContentsForTesting();
+  ASSERT_TRUE(side_panel_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(side_panel_contents));
+
+  // The side panel's WebContents must have a WebContentsModalDialogManager so
+  // it can host the folder-upload confirmation dialog. Its absence is what
+  // caused the crash.
+  web_modal::WebContentsModalDialogManager* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          side_panel_contents);
+  ASSERT_TRUE(manager);
+
+  // Observe the manager to detect when a dialog is shown. The observer quits
+  // a RunLoop the instant ShowDialogWithManager fires OnWillShow, which is
+  // synchronous and immune to timing issues with dialog widget lifecycle.
+  base::RunLoop dialog_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  class DialogShownObserver
+      : public web_modal::WebContentsModalDialogManager::Observer {
+   public:
+    explicit DialogShownObserver(base::OnceClosure quit)
+        : quit_(std::move(quit)) {}
+    void OnWillShow() override {
+      if (quit_) {
+        std::move(quit_).Run();
+      }
+    }
+
+   private:
+    base::OnceClosure quit_;
+  } dialog_observer(dialog_run_loop.QuitClosure());
+  manager->AddObserver(&dialog_observer);
+
+  // Create a folder with a file in it for the fake picker to "select". Declare
+  // the blocking-allowed scope before `upload_dir` so it outlives it: the
+  // ScopedTempDir destructor deletes the folder (blocking I/O) at end of test,
+  // which must also run while blocking is permitted.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir upload_dir;
+  ASSERT_TRUE(upload_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(
+      base::WriteFile(upload_dir.GetPath().AppendASCII("file.txt"), "data"));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FolderUploadSelectFileDialogFactory>(
+          upload_dir.GetPath()));
+
+  // Click the folder-upload input. This drives the exact flow that crashed:
+  // FileSelectHelper opens the folder picker (satisfied by the fake dialog
+  // above), enumerates the folder, then shows the "Upload N files to this
+  // site?" confirmation as a tab-modal dialog on the side panel's WebContents.
+  ASSERT_TRUE(
+      content::ExecJs(side_panel_contents,
+                      "document.querySelector('input[type=file]').click();"));
+
+  // Wait for the confirmation dialog to be shown without crashing.
+  dialog_run_loop.Run();
+
+  // Clean up: close any active dialog to avoid leak reports.
+  if (manager->IsDialogActive()) {
+    manager->CloseAllDialogs();
+  }
+  base::RunLoop().RunUntilIdle();
+  manager->RemoveObserver(&dialog_observer);
+  ui::SelectFileDialog::SetFactory(nullptr);
+}
 
 }  // namespace
 }  // namespace extensions
