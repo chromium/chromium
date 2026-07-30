@@ -4598,7 +4598,9 @@ void RenderProcessHostImpl::Cleanup() {
         base::BindOnce(&WebRtcLog::ClearLogMessageCallback, GetDeprecatedID()));
   }
 
-  CHECK_EQ(0, pending_views_, base::NotFatalUntil::M152);
+  // TODO(crbug.com/540651680): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(0, pending_views_);
 
   // If the process associated with this RenderProcessHost is still alive,
   // notify all observers that the process has exited cleanly, even though it
