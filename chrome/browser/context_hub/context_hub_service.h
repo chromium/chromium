@@ -36,6 +36,7 @@ class PersonalContextService;
 
 namespace context_hub {
 
+class AutoTodosStore;
 class TabGroupStore;
 class ContextHubBackend;
 
@@ -47,7 +48,8 @@ class ContextHubService : public KeyedService {
           optimization_guide_remote_model_executor,
       std::unique_ptr<MemoryBank> memory_bank,
       std::unique_ptr<TabGroupStore> tab_group_store,
-      std::unique_ptr<ContextHubBackend> context_hub_backend);
+      std::unique_ptr<ContextHubBackend> context_hub_backend,
+      std::unique_ptr<AutoTodosStore> auto_todos_store);
 
   ContextHubService(const ContextHubService&) = delete;
   ContextHubService& operator=(const ContextHubService&) = delete;
@@ -149,6 +151,8 @@ class ContextHubService : public KeyedService {
   std::unique_ptr<MemoryBank> memory_bank_;
 
   std::unique_ptr<TabGroupStore> tab_group_store_;
+
+  std::unique_ptr<AutoTodosStore> auto_todos_store_;
 
   base::WeakPtrFactory<ContextHubService> weak_factory_{this};
 };

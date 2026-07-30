@@ -5,7 +5,6 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 
 #include <algorithm>
-#include <array>
 #include <string>
 #include <string_view>
 
@@ -16,20 +15,15 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/rand_util.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
+#include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_store.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -45,7 +39,8 @@ ContextHubService::ContextHubService(
         optimization_guide_remote_model_executor,
     std::unique_ptr<MemoryBank> memory_bank,
     std::unique_ptr<TabGroupStore> tab_group_store,
-    std::unique_ptr<ContextHubBackend> context_hub_backend)
+    std::unique_ptr<ContextHubBackend> context_hub_backend,
+    std::unique_ptr<AutoTodosStore> auto_todos_store)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       optimization_guide_remote_model_executor_(
           CHECK_DEREF(optimization_guide_remote_model_executor)),
@@ -53,7 +48,8 @@ ContextHubService::ContextHubService(
           features::kMaxTabGroupChatHistoryTurns.Get()),
       context_hub_backend_(std::move(context_hub_backend)),
       memory_bank_(std::move(memory_bank)),
-      tab_group_store_(std::move(tab_group_store)) {
+      tab_group_store_(std::move(tab_group_store)),
+      auto_todos_store_(std::move(auto_todos_store)) {
   CHECK(memory_bank_);
 }
 

@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("auto_todos") {
+  sources = [
+    "auto_todo_entry.h",
+    "auto_todos_store.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "in_memory_auto_todos_store.cc",
+    "in_memory_auto_todos_store.h",
+  ]
+
+  public_deps = [
+    ":auto_todos",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "in_memory_auto_todos_store_unittest.cc" ]
+
+  deps = [
+    ":auto_todos",
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

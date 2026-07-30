@@ -5174,6 +5174,7 @@ test("unit_tests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/context_hub:unit_tests",
+    "//chrome/browser/context_hub/auto_todos:unit_tests",
     "//chrome/browser/context_hub/memory_bank:unit_tests",
     "//chrome/browser/context_hub/storage:unit_tests",
     "//chrome/browser/context_hub/tab_group_store:unit_tests",

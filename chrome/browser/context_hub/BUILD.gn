@@ -24,6 +24,8 @@ source_set("context_hub") {
   public_deps = [
     ":features",
     "//base",
+    "//chrome/browser/context_hub/auto_todos",
+    "//chrome/browser/context_hub/auto_todos:impl",
     "//chrome/browser/context_hub/memory_bank",
     "//chrome/browser/context_hub/memory_bank:impl",
     "//chrome/browser/context_hub/storage",

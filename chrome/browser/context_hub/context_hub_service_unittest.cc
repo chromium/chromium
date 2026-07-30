@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/noop_memory_bank.h"
@@ -43,7 +44,8 @@ class ContextHubServiceTest : public testing::Test {
                  &mock_remote_model_executor_,
                  std::make_unique<InMemoryMemoryBank>(),
                  std::make_unique<InMemoryTabGroupStore>(),
-                 /*context_hub_backend=*/nullptr) {
+                 /*context_hub_backend=*/nullptr,
+                 std::make_unique<InMemoryAutoTodosStore>()) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
@@ -353,7 +355,8 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
                             &mock_remote_model_executor_,
                             std::make_unique<InMemoryMemoryBank>(),
                             std::make_unique<InMemoryTabGroupStore>(),
-                            /*context_hub_backend=*/nullptr);
+                            /*context_hub_backend=*/nullptr,
+                            std::make_unique<InMemoryAutoTodosStore>());
 
   for (size_t i = 0; i < 4; ++i) {
     service.AddTabGroupChatHistoryTurn(
