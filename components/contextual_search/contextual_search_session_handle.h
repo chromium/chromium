@@ -99,11 +99,11 @@ class ContextualSearchSessionHandle {
   }
   void set_smart_tab_sharing_active(std::optional<bool> active);
 
-  bool smart_tab_sharing_toggled_off_in_thread() const {
-    return smart_tab_sharing_toggled_off_in_thread_;
+  bool smart_tab_sharing_toggled_since_last_turn() const {
+    return smart_tab_sharing_toggled_since_last_turn_;
   }
-  void set_smart_tab_sharing_toggled_off_in_thread(bool toggled_off) {
-    smart_tab_sharing_toggled_off_in_thread_ = toggled_off;
+  void set_smart_tab_sharing_toggled_since_last_turn(bool toggled) {
+    smart_tab_sharing_toggled_since_last_turn_ = toggled;
   }
 
   std::optional<lens::LensOverlayInvocationSource> invocation_source() const {
@@ -393,10 +393,11 @@ class ContextualSearchSessionHandle {
   // Whether smart tab sharing is active for this session.
   std::optional<bool> smart_tab_sharing_active_;
 
-  // Whether smart tab sharing was explicitly toggled off since the last
-  // query submission and we need to clear the context on next query submission.
+  // Whether smart tab sharing was toggled since the last query submission
+  // (either smart tab sharing to manual or manual to smart tab sharing) and we
+  // need to clear the context on next query submission.
   // This is reset after the next query submission.
-  bool smart_tab_sharing_toggled_off_in_thread_ = false;
+  bool smart_tab_sharing_toggled_since_last_turn_ = false;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

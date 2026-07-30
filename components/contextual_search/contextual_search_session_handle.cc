@@ -506,8 +506,8 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
 
 void ContextualSearchSessionHandle::set_smart_tab_sharing_active(
     std::optional<bool> active) {
-  if (smart_tab_sharing_active_.value_or(true) && active == false) {
-    smart_tab_sharing_toggled_off_in_thread_ = true;
+  if (smart_tab_sharing_active_.value_or(false) != active.value_or(false)) {
+    smart_tab_sharing_toggled_since_last_turn_ = true;
   }
   smart_tab_sharing_active_ = active;
 }
@@ -524,7 +524,7 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
 
   auto* tab_validator = GetTabValidator();
 
-  if (smart_tab_sharing_toggled_off_in_thread_) {
+  if (smart_tab_sharing_toggled_since_last_turn_) {
     std::vector<lens::LensOverlayRequestId> expired_contexts;
 
     // Collect request IDs from submitted tabs.
@@ -566,7 +566,7 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
     persisted_tabs_.clear();
     uploaded_context_tokens_.clear();
     submitted_context_tokens_.clear();
-    smart_tab_sharing_toggled_off_in_thread_ = false;
+    smart_tab_sharing_toggled_since_last_turn_ = false;
   }
 
   // Check for closed/navigated/removed tabs.
