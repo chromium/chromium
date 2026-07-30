@@ -44,7 +44,7 @@ export {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_too
 export {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export type {OpenWindowProxy} from 'chrome://resources/js/open_window_proxy.js';
-export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+export {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {SettingsAboutPageElement} from './about_page/about_page.js';
 export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';

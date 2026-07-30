@@ -6,7 +6,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
 import type {SettingsDropdownMenuElement, SpeedPageElement} from 'chrome://settings/settings.js';
-import {loadTimeData, PerformanceBrowserProxyImpl, PrefsBrowserProxy, PrefService, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, PerformanceBrowserProxyImpl, PluralStringProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -161,7 +161,7 @@ suite('CpuPerformanceOverride', function() {
 
     pluralStringProxy = new TestPluralStringProxy();
     pluralStringProxy.text = '8 cores';
-    SettingsPluralStringProxyImpl.setInstance(pluralStringProxy);
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
 
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     performanceBrowserProxy.setCpuPerformanceInfo({

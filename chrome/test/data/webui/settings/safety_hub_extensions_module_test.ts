@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsSafetyHubExtensionsModuleElement} from 'chrome://settings/lazy_load.js';
 import {SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {SettingsPluralStringProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {PluralStringProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -40,7 +40,7 @@ suite('CrSettingsSafetyHubExtensionsTest', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     pluralString = new TestPluralStringProxy();
-    SettingsPluralStringProxyImpl.setInstance(pluralString);
+    PluralStringProxyImpl.setInstance(pluralString);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     return flushTasks();
   });

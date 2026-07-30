@@ -18,7 +18,7 @@ import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
-import {PageStatus, routes, UserSelectableType, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {PageStatus, routes, UserSelectableType, PluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {waitAfterNextRender, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {BatchUploadPromoProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -341,7 +341,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     BatchUploadPromoProxyImpl.setInstance(batchUploadPromoProxy);
 
     pluralStringProxy = new TestPluralStringProxy();
-    SettingsPluralStringProxyImpl.setInstance(pluralStringProxy);
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
 
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
     // <if expr="not is_chromeos">

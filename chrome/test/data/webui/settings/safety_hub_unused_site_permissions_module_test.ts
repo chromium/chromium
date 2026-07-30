@@ -12,7 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermission, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, PluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -232,7 +232,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     pluralString = new TestPluralStringProxy();
-    SettingsPluralStringProxyImpl.setInstance(pluralString);
+    PluralStringProxyImpl.setInstance(pluralString);
     resetRouterForTesting();
     await createPage();
     metricsBrowserProxy.reset();
