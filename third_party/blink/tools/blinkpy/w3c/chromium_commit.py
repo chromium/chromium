@@ -117,22 +117,24 @@ class ChromiumCommit:
             if is_file_exportable(f, self.project_config)
         ]
 
-    def format_patch(self) -> str:
+    def format_patch(self) -> bytes:
         """Makes a patch with only exportable changes."""
         filtered_files = self.filtered_changed_files()
         if not filtered_files:
             return ''
         # Disable rename detection, which may allow a chained CL with renames
         # to export too early (https://crbug.com/40242850#comment8).
-        return self._git.run([
+        args = [
             'format-patch',
+            '--binary',
             '-1',
             '--no-renames',
             '--stdout',
             self.sha,
             '--',
             *filtered_files,
-        ])
+        ]
+        return self._git.run(args, decode_output=False)
 
     def url(self) -> str:
         """Returns a URL to view more information about this commit."""

@@ -57,7 +57,7 @@ class LocalWPTTest(unittest.TestCase):
         local_wpt.fetch()
 
         local_wpt.create_branch_with_patch('chromium-export-decafbad',
-                                           'message', 'patch',
+                                           'message', b'patch',
                                            'author <author@author.com>')
         self.assertEqual(
             host.executive.calls,
@@ -89,7 +89,7 @@ class LocalWPTTest(unittest.TestCase):
                                            strict=True)
         local_wpt = LocalWPT(host, 'token')
 
-        self.assertEqual(local_wpt.test_patch('dummy patch'), (True, ''))
+        self.assertEqual(local_wpt.test_patch(b'dummy patch'), (True, ''))
 
     def test_test_patch_empty_diff(self):
         host = MockHost()
@@ -104,7 +104,7 @@ class LocalWPTTest(unittest.TestCase):
                                            strict=True)
         local_wpt = LocalWPT(host, 'token')
 
-        self.assertEqual(local_wpt.test_patch('dummy patch'), (False, ''))
+        self.assertEqual(local_wpt.test_patch(b'dummy patch'), (False, ''))
 
     def test_test_patch_error(self):
         def _run_fn(args):
@@ -116,9 +116,8 @@ class LocalWPTTest(unittest.TestCase):
         host.executive = MockExecutive(run_command_fn=_run_fn)
         local_wpt = LocalWPT(host, 'token')
 
-        self.assertEqual(
-            local_wpt.test_patch('dummy patch'),
-            (False, 'MOCK failed applying patch'))
+        self.assertEqual(local_wpt.test_patch(b'dummy patch'),
+                         (False, 'MOCK failed applying patch'))
 
     def test_commits_in_range(self):
         host = MockHost()

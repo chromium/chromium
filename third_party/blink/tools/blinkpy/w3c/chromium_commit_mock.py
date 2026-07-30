@@ -57,8 +57,8 @@ class MockChromiumCommit:
     def message(self):
         return self.subject() + '\n\n' + self.body()
 
-    def format_patch(self):
-        return self._patch
+    def format_patch(self) -> bytes:
+        return self._patch.encode()
 
     def change_id(self):
         return self._change_id

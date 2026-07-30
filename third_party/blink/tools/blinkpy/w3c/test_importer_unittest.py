@@ -398,7 +398,7 @@ class TestImporterTest(LoggingTestCase):
                               '--- a/css/css-ui-3/outline-004.html\n'
                               '+++ b/css/css-ui-3/outline-004.html\n'
                               '@@ -20,7 +20,7 @@\n'
-                              '...'),
+                              '...').encode(),
                     'cwd':
                     '/tmp/wpt',
                     'env':
