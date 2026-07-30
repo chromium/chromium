@@ -83,14 +83,13 @@ GeminiAvailabilityResult IsGeminiAvailable(EntryPoint entry_point,
         result.visible = true;
       } else if (gemini_service && auth_service &&
                  !auth_service->HasPrimaryIdentity()) {
-        // If the profile is ineligible, it might be just because the user is
-        // signed out. We still want to show the Gemini button (disabled) for
-        // signed-out users to encourage sign-in, unless a local enterprise
-        // policy explicitly disables it.
+        // If the profile is ineligible because the user is signed out, show the
+        // Gemini button and keep it enabled so tapping it triggers the sign-in
+        // flow, unless a local enterprise policy explicitly disables it.
         result.visible = gemini::GeminiAllowedByPolicy(pref_service);
       }
 
-      result.enabled = result.visible && profile_eligible && web_state_eligible;
+      result.enabled = result.visible && web_state_eligible;
       break;
     }
 

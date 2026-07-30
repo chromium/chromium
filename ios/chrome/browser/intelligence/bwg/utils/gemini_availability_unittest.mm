@@ -190,9 +190,10 @@ TEST_F(GeminiAvailabilityTest, ToolbarVisibleWhenSignedOutAndPolicyAllowed) {
   GeminiAvailabilityResult result =
       IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_,
                         auth_service_, profile_->GetPrefs());
-  // Visible for signed-out users when policy allows, but not enabled.
+  // Visible and enabled for signed-out users when policy allows, so tapping it
+  // can trigger the sign-in flow.
   EXPECT_TRUE(result.visible);
-  EXPECT_FALSE(result.enabled);
+  EXPECT_TRUE(result.enabled);
 }
 
 }  // namespace gemini
