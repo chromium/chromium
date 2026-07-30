@@ -72,7 +72,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/search_engines/dse_reset_dialog.h"
 #include "chrome/common/channel_info.h"
@@ -593,12 +592,10 @@ void ChromeOmniboxClient::CheckConditionsAndLaunchSurvey() {
     return;
   }
 
-  auto* location_bar_view = browser_view->GetLocationBarView();
+  auto* location_bar = browser_view->GetLocationBar();
 
   // Don't show the HaTS survey if the location bar has focus.
-  if (location_bar_view &&
-      !location_bar_view->Contains(
-          location_bar_view->GetFocusManager()->GetFocusedView())) {
+  if (location_bar && !location_bar->IsFocusWithin()) {
     hats_service->LaunchSurvey(
         survey_trigger, base::DoNothing(), base::DoNothing(), {},
         {{"page classification",
