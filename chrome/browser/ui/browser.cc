@@ -1271,7 +1271,10 @@ void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
   }
 
   // Save the dirty bits.
-  scheduled_updates_[source] |= changed_flags;
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(source);
+  if (tab) {
+    scheduled_updates_[tab] |= changed_flags;
+  }
 
   if (!chrome_updater_factory_.HasWeakPtrs()) {
     base::TimeDelta delay = update_ui_immediately_for_testing_
@@ -1291,28 +1294,19 @@ void Browser::ProcessPendingUIUpdates() {
   // Validate that all tabs we have pending updates for exist. This is scary
   // because the pending list must be kept in sync with any detached or
   // deleted tabs.
-  for (UpdateMap::const_iterator i = scheduled_updates_.begin();
-       i != scheduled_updates_.end(); ++i) {
-    bool found = false;
-    for (int tab = 0; tab < tab_strip_model_->count(); tab++) {
-      if (tab_strip_model_->GetWebContentsAt(tab) == i->first) {
-        found = true;
-        break;
-      }
+  size_t processed_count = 0;
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
+    if (scheduled_updates_.find(tab) != scheduled_updates_.end()) {
+      processed_count++;
     }
-    DCHECK(found);
   }
+  DCHECK_EQ(processed_count, scheduled_updates_.size());
 #endif
 
   chrome_updater_factory_.InvalidateWeakPtrs();
 
-  for (UpdateMap::const_iterator i = scheduled_updates_.begin();
-       i != scheduled_updates_.end(); ++i) {
-    // Do not dereference |contents|, it may be out-of-date!
-    const WebContents* contents = i->first;
-    unsigned flags = i->second;
-
-    if (contents == tab_strip_model_->GetActiveWebContents()) {
+  for (const auto& [tab, flags] : scheduled_updates_) {
+    if (tab->IsActivated()) {
       // Updates that only matter when the tab is selected go here.
 
       // Updating the URL happens synchronously in ScheduleUIUpdate.
@@ -1320,8 +1314,7 @@ void Browser::ProcessPendingUIUpdates() {
       if (flags & content::INVALIDATE_TYPE_LOAD && status_bubbles.size() > 0) {
         status_bubbles.front()->SetStatus(
             CoreTabHelper::FromWebContents(
-                tab_strip_model_->GetActiveWebContents())
-                ->GetStatusText());
+                tab->GetContents())->GetStatusText());
       }
 
       if (flags &
@@ -1333,7 +1326,7 @@ void Browser::ProcessPendingUIUpdates() {
     // Updates that don't depend upon the selected state go here.
     if (flags & (content::INVALIDATE_TYPE_TAB | content::INVALIDATE_TYPE_TITLE |
                  content::INVALIDATE_TYPE_AUDIO)) {
-      NotifyTabUIChanged(tab_strip_model_->GetIndexOfWebContents(contents),
+      NotifyTabUIChanged(tab_strip_model_->GetIndexOfTab(tab),
                          TabChangeType::kAll);
     }
 
@@ -1363,9 +1356,9 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
     return;
   }
 
-  auto i = scheduled_updates_.find(contents);
-  if (i != scheduled_updates_.end()) {
-    scheduled_updates_.erase(i);
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(contents);
+  if (tab) {
+    scheduled_updates_.erase(tab);
   }
 }
 

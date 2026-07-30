@@ -663,9 +663,9 @@ class Browser : public TabStripModelObserver,
 
   // UI update coalescing and handling ////////////////////////////////////////
 
-  typedef std::map<const content::WebContents*, int> UpdateMap;
+  typedef std::map<tabs::TabInterface*, int> UpdateMap;
 
-  // Maps from WebContents to pending UI updates that need to be processed.
+  // Maps from TabInterface to pending UI updates that need to be processed.
   // We don't update things like the URL or tab title right away to avoid
   // flickering and extra painting.
   // See ScheduleUIUpdate and ProcessPendingUIUpdates.
