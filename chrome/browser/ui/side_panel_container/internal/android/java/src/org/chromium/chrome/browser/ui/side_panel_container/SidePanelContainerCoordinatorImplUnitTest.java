@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 
 /** Unit tests for {@link SidePanelContainerCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -98,6 +99,28 @@ public class SidePanelContainerCoordinatorImplUnitTest {
                 0,
                 SidePanelContainerCoordinatorImpl.determineShowableWidthDp(
                         availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp));
+    }
+
+    @Test
+    public void determineHeightType_calculatePerShowableWidthAndVerticalTabsState() {
+        assertEquals(
+                HeightType.NOT_APPLICABLE,
+                SidePanelContainerCoordinatorImpl.determineHeightType(
+                        /* showableWidthDp= */ 0, /* isVerticalTabsEnabled= */ false));
+        assertEquals(
+                HeightType.NOT_APPLICABLE,
+                SidePanelContainerCoordinatorImpl.determineHeightType(
+                        /* showableWidthDp= */ 0, /* isVerticalTabsEnabled= */ true));
+        assertEquals(
+                HeightType.TOOLBAR,
+                SidePanelContainerCoordinatorImpl.determineHeightType(
+                        /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
+                        /* isVerticalTabsEnabled= */ false));
+        assertEquals(
+                HeightType.WEB_CONTENTS,
+                SidePanelContainerCoordinatorImpl.determineHeightType(
+                        /* showableWidthDp= */ WIDE_SIDE_PANEL_WIDTH_DP,
+                        /* isVerticalTabsEnabled= */ true));
     }
 
     private SidePanelContainerCoordinatorImpl createSidePanelContainerCoordinator() {
