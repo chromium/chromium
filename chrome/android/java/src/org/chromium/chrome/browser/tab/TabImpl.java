@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.LongSparseArray;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -128,8 +129,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -143,7 +142,7 @@ class TabImpl implements Tab, TabInternal {
 
     // Map from native tab pointer to TabImpl to allow scaling of unlimited tab objects.
     // ScopedGlobalRef tables are finite.
-    private static final Map<Long, TabImpl> sTabMap = new HashMap<>();
+    private static final LongSparseArray<TabImpl> sTabMap = new LongSparseArray<>();
 
     private static final String BACKGROUND_COLOR_CHANGE_PRE_OPTIMIZATION_HISTOGRAM =
             "Android.Tab.BackgroundColorChange.PreOptimization";
@@ -2181,7 +2180,8 @@ class TabImpl implements Tab, TabInternal {
     @CalledByNative
     void clearNativePtr() {
         assert mNativeTabAndroid != 0;
-        var oldValue = sTabMap.remove(mNativeTabAndroid);
+        var oldValue = sTabMap.get(mNativeTabAndroid);
+        sTabMap.remove(mNativeTabAndroid);
         assert oldValue == this;
         mNativeTabAndroid = 0;
     }
@@ -2190,8 +2190,8 @@ class TabImpl implements Tab, TabInternal {
     private void setNativePtr(long nativePtr) {
         assert nativePtr != 0;
         assert mNativeTabAndroid == 0;
-        var oldValue = sTabMap.put(nativePtr, this);
-        assert oldValue == null;
+        assert sTabMap.get(nativePtr) == null;
+        sTabMap.put(nativePtr, this);
         mNativeTabAndroid = nativePtr;
     }
 

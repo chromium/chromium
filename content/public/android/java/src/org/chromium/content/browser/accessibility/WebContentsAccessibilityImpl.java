@@ -75,6 +75,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.util.LongSparseArray;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -313,8 +314,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     // A map of native helper objects to their Java counterparts allows unlimited scaling in number
     // of tabs.
-    private static final Map<Long, WeakReference<WebContentsAccessibilityImpl>> sNativeHelperMap =
-            new HashMap<>();
+    private static final LongSparseArray<WeakReference<WebContentsAccessibilityImpl>>
+            sNativeHelperMap = new LongSparseArray<>();
 
     @CalledByNative
     private static @Nullable WebContentsAccessibilityImpl get(long nativeObj) {
@@ -596,7 +597,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     protected void onNativeObjectDestroyed() {
         if (mNativeObj == 0) return;
-        WeakReference<WebContentsAccessibilityImpl> oldValue = sNativeHelperMap.remove(mNativeObj);
+        WeakReference<WebContentsAccessibilityImpl> oldValue = sNativeHelperMap.get(mNativeObj);
+        sNativeHelperMap.remove(mNativeObj);
         assert oldValue != null;
         assert oldValue.get() == this;
         mNativeObj = 0;

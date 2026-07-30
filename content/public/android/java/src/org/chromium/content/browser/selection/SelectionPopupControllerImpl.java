@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.LongSparseArray;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
 import android.view.Menu;
@@ -97,9 +98,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Implementation of the interface {@link SelectionPopupController}. */
 @JNINamespace("content")
@@ -141,8 +140,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     // A map of native controller objects to their Java counterparts allows unlimited scaling in
     // number of tabs. Another class owns the SelectionPopupControllerImpl objects.
-    private static final Map<Long, WeakReference<SelectionPopupControllerImpl>> sNativeHelperMap =
-            new HashMap<>();
+    private static final LongSparseArray<WeakReference<SelectionPopupControllerImpl>>
+            sNativeHelperMap = new LongSparseArray<>();
 
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<SelectionPopupControllerImpl> INSTANCE =
@@ -2089,7 +2088,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private void destroyFromNative() {
         if (mNativeSelectionPopupController == 0) return;
         WeakReference<SelectionPopupControllerImpl> oldValue =
-                sNativeHelperMap.remove(mNativeSelectionPopupController);
+                sNativeHelperMap.get(mNativeSelectionPopupController);
+        sNativeHelperMap.remove(mNativeSelectionPopupController);
         assert oldValue != null;
         assert oldValue.get() == this;
         mNativeSelectionPopupController = 0;

@@ -26,6 +26,7 @@ import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.SuggestionSpan;
 import android.text.style.UnderlineSpan;
+import android.util.LongSparseArray;
 import android.util.SparseArray;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -103,10 +104,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -149,8 +148,8 @@ public class ImeAdapterImpl
     // of tabs. The UserDataHost owns the ImeAdapterImpl objects. This is used since
     // UserData#destroy() is not always called when the WebContents are destroyed, leading to memory
     // leaks.
-    private static final Map<Long, WeakReference<ImeAdapterImpl>> sNativeHelperMap =
-            new HashMap<>();
+    private static final LongSparseArray<WeakReference<ImeAdapterImpl>> sNativeHelperMap =
+            new LongSparseArray<>();
 
     private long mNativeImeAdapterAndroid;
     private InputMethodManagerWrapper mInputMethodManagerWrapper;
@@ -1154,7 +1153,8 @@ public class ImeAdapterImpl
             mBoundImeRenderWidgetHost = null;
         }
 
-        WeakReference<ImeAdapterImpl> oldValue = sNativeHelperMap.remove(mNativeImeAdapterAndroid);
+        WeakReference<ImeAdapterImpl> oldValue = sNativeHelperMap.get(mNativeImeAdapterAndroid);
+        sNativeHelperMap.remove(mNativeImeAdapterAndroid);
         assert oldValue != null;
         assert oldValue.get() == this;
         mNativeImeAdapterAndroid = 0;

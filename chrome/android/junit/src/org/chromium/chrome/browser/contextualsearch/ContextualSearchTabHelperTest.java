@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -63,12 +65,8 @@ public class ContextualSearchTabHelperTest {
     }
 
     @After
-    public void tearDown() throws Exception {
-        java.lang.reflect.Field field =
-                ContextualSearchTabHelper.class.getDeclaredField("sNativeHelperMap");
-        field.setAccessible(true);
-        java.util.Map<?, ?> map = (java.util.Map<?, ?>) field.get(null);
-        map.clear();
+    public void tearDown() {
+        ContextualSearchTabHelper.clearNativeHelperMapForTesting();
     }
 
     @Test
@@ -135,13 +133,5 @@ public class ContextualSearchTabHelperTest {
         // Trigger JNI setup on the new WebContents
         mHelper.onContentChanged(mTab);
         verify(mTabHelperJniMock, times(1)).init(mProfile);
-    }
-
-    private void assertNotNull(Object object) {
-        org.junit.Assert.assertNotNull(object);
-    }
-
-    private void assertNull(Object object) {
-        org.junit.Assert.assertNull(object);
     }
 }

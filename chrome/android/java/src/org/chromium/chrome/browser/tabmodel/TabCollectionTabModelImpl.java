@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartO
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -316,7 +317,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
     // objects are not GC'd as the C++ TabAndroid objects only hold weak references to their Java
     // counterparts.
-    private final Map<Integer, Tab> mTabIdToTabs = new HashMap<>();
+    private final SparseArray<Tab> mTabIdToTabs = new SparseArray<>();
 
     // Actively-maintained cache of all active tabs in their correct order.
     // If null, the cache is dirty/invalid and must be re-populated from native on the next read.
@@ -1603,7 +1604,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private void addTabInternal(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         commitAllTabClosures();
-        assert !mTabIdToTabs.containsKey(tab.getId())
+        assert mTabIdToTabs.indexOfKey(tab.getId()) < 0
                 : "Attempting to add a duplicate tab id=" + tab.getId();
         if (tab.isOffTheRecord() != isOffTheRecord()) {
             throw new IllegalStateException("Attempting to open a tab in the wrong model.");
@@ -1852,7 +1853,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         tabsToClose.removeIf(
                 tab -> {
-                    if (!mTabIdToTabs.containsKey(tab.getId())) {
+                    if (mTabIdToTabs.indexOfKey(tab.getId()) < 0) {
                         assert false : "Attempting to close a tab that is not in the TabModel.";
                         return true;
                     } else if (tab.isClosing()) {
@@ -2145,7 +2146,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         Map<Token, @Nullable Tab> tabGroupShownTabs = new HashMap<>();
         for (Tab tab : tabsToRemove) {
-            assert mTabIdToTabs.containsKey(tab.getId()) : "Tab not found in tab model.";
+            assert mTabIdToTabs.indexOfKey(tab.getId()) >= 0 : "Tab not found in tab model.";
             if (pauseMedia) TabUtils.pauseMedia(tab);
 
             Token tabGroupId = tab.getTabGroupId();

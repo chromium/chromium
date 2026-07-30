@@ -6,6 +6,7 @@ package org.chromium.content.browser.framehost;
 
 import android.graphics.Bitmap;
 import android.os.SystemClock;
+import android.util.LongSparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -26,9 +27,6 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * The NavigationControllerImpl Java wrapper to allow communicating with the native
  * NavigationControllerImpl object.
@@ -42,8 +40,8 @@ import java.util.Map;
     // entry per instance in the finite global ref table. This scales poorly with a large number of
     // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
     // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
-    private static final Map<Long, NavigationControllerImpl> sNavigationControllerImpls =
-            new HashMap<>();
+    private static final LongSparseArray<NavigationControllerImpl> sNavigationControllerImpls =
+            new LongSparseArray<>();
 
     private long mNativeNavigationControllerAndroid;
 
@@ -60,7 +58,8 @@ import java.util.Map;
     @CalledByNative
     private void destroy() {
         assert mNativeNavigationControllerAndroid != 0;
-        var removedValue = sNavigationControllerImpls.remove(mNativeNavigationControllerAndroid);
+        var removedValue = sNavigationControllerImpls.get(mNativeNavigationControllerAndroid);
+        sNavigationControllerImpls.remove(mNativeNavigationControllerAndroid);
         assert removedValue != null;
         mNativeNavigationControllerAndroid = 0;
     }

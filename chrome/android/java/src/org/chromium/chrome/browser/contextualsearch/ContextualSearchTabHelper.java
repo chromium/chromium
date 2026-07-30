@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextualsearch;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
+import android.util.LongSparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -46,14 +47,10 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
 @NullMarked
 public class ContextualSearchTabHelper extends EmptyTabObserver
-        implements NetworkChangeNotifier.ConnectionTypeObserver,
-                UserData {
+        implements NetworkChangeNotifier.ConnectionTypeObserver, UserData {
     private static final String TAG = "ContextualSearch";
 
     private static final Class<ContextualSearchTabHelper> USER_DATA_KEY =
@@ -61,7 +58,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
 
     // A map of native helper objects to their Java counterparts allows unlimited scaling in number
     // of tabs.
-    private static final Map<Long, ContextualSearchTabHelper> sNativeHelperMap = new HashMap<>();
+    private static final LongSparseArray<ContextualSearchTabHelper> sNativeHelperMap =
+            new LongSparseArray<>();
 
     /** The Tab that this helper tracks. */
     private @Nullable Tab mTab;
@@ -140,6 +138,11 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
+    @VisibleForTesting
+    public static void clearNativeHelperMapForTesting() {
+        sNativeHelperMap.clear();
+    }
+
     /**
      * Constructs a Tab helper that can enable and disable Contextual Search based on Tab activity.
      *
@@ -201,8 +204,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         Profile profile = tab.getProfile();
         if (mNativeHelper == 0 && tab.getWebContents() != null) {
             mNativeHelper = ContextualSearchTabHelperJni.get().init(profile);
-            var oldValue = sNativeHelperMap.put(mNativeHelper, this);
-            assert oldValue == null;
+            assert sNativeHelperMap.get(mNativeHelper) == null;
+            sNativeHelperMap.put(mNativeHelper, this);
         }
         if (profile != null && mTemplateUrlService == null) {
             mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -218,7 +221,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         tab.removeObserver(this);
         if (mNativeHelper != 0) {
             ContextualSearchTabHelperJni.get().destroy(mNativeHelper);
-            var oldValue = sNativeHelperMap.remove(mNativeHelper);
+            var oldValue = sNativeHelperMap.get(mNativeHelper);
+            sNativeHelperMap.remove(mNativeHelper);
             assert oldValue == this;
             mNativeHelper = 0;
         }
