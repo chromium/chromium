@@ -164,6 +164,10 @@ public final class ProductionSupportedFlagList {
                 "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
                         + "support. Only supported on TV."),
         Flag.baseFeature(
+                "AndroidYuvOverlayEvenAlignment",
+                "Enforces 2-pixel even boundary alignment for YUV hardware video overlays in"
+                        + " SurfaceControl to prevent odd-coordinate display scaling rejections."),
+        Flag.baseFeature(
                 GpuFeatures.LIMIT_A_IMAGE_READER_MAX_SIZE_TO_ONE,
                 "If disabled allows acquiring more than one image from the AImageReader"),
         Flag.baseFeature(
