@@ -36,8 +36,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,7 +45,6 @@ import org.robolectric.android.controller.ActivityController;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -64,8 +61,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Mock private VerticalTabListCoordinator mMockTabListCoordinator;
     @Mock private SideUiCoordinator mMockSideUiCoordinator;
 
-    @Captor private ArgumentCaptor<RailCollapseListener> mCollapseListenerCaptor;
-
+    private VerticalTabRailCollapseController mCollapseController;
     private VerticalTabsSideUiCoordinator mCoordinator;
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
@@ -90,6 +86,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         setWindowWidthPx(mWideWindowWidth);
         View mockView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mockView);
+        mCollapseController =
+                new VerticalTabRailCollapseController(/* setRailCollapseStateCallback= */ null);
+        when(mMockTabListCoordinator.getCollapseController()).thenReturn(mCollapseController);
 
         mCoordinator =
                 new VerticalTabsSideUiCoordinator(
@@ -260,40 +259,39 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testCollapseToggle() {
-        RailCollapseListener listener = captureCollapseListener();
+        VerticalTabRailCollapseController.RailCollapseListener listener =
+                mCollapseController.getRailCollapseListenerForTesting();
 
         // Initial state: expanded
-        assertEquals(
-                RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateByUserForTesting());
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
 
         // Collapse requested
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
-        assertEquals(
-                RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateByUserForTesting());
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Expand again
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
-        assertEquals(
-                RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateByUserForTesting());
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED);
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
     }
 
     @Test
     @SmallTest
     public void testHoverExpandAndCollapse() {
-        RailCollapseListener listener = captureCollapseListener();
+        VerticalTabRailCollapseController.RailCollapseListener listener =
+                mCollapseController.getRailCollapseListenerForTesting();
 
         // Collapse the rail
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover enter: rail expands for hovering
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED_FOR_HOVERING);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
@@ -302,7 +300,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover exit: rail collapses back
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator, times(3))
@@ -312,16 +310,17 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testPinRailWhenHoverExpanded() {
-        RailCollapseListener listener = captureCollapseListener();
+        VerticalTabRailCollapseController.RailCollapseListener listener =
+                mCollapseController.getRailCollapseListenerForTesting();
 
         // Start in COLLAPSED
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         verify(mMockSideUiCoordinator, times(1))
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover expand
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED_FOR_HOVERING);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
@@ -329,7 +328,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // User clicks expand chevron button to open pinned rail.
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED);
         assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
         // updateUi() is not called when transitioning from EXPANDED_FOR_HOVERING to EXPANDED
@@ -376,10 +375,11 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDeferredStateApplication_OnSideUiSpecsChanged() {
-        RailCollapseListener listener = captureCollapseListener();
+        VerticalTabRailCollapseController.RailCollapseListener listener =
+                mCollapseController.getRailCollapseListenerForTesting();
 
         // Trigger collapse request
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
 
         // Verify setRailCollapseState is NOT called immediately
         verify(mMockTabListCoordinator, never()).setRailCollapseState(anyInt());
@@ -415,10 +415,11 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testNarrowWindow_AlreadyCollapsed_ReenablesButtonOnWindowExpanded() {
-        RailCollapseListener listener = captureCollapseListener();
+        VerticalTabRailCollapseController.RailCollapseListener listener =
+                mCollapseController.getRailCollapseListenerForTesting();
 
         // Collapse rail manually while in wide window.
-        listener.onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+        listener.onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
 
         // Shrink window to narrow (< 652dp). Layout listener fires and disables button.
         setWindowWidthPx(mNarrowWindowWidth);
@@ -433,13 +434,6 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockTabListCoordinator, times(2)).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
-    }
-
-    private RailCollapseListener captureCollapseListener() {
-        verify(mMockTabListCoordinator).setCollapseListener(mCollapseListenerCaptor.capture());
-        RailCollapseListener listener = mCollapseListenerCaptor.getValue();
-        assertNotNull(listener);
-        return listener;
     }
 
     private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {
