@@ -62,6 +62,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -1201,8 +1202,12 @@ public class VerticalTabListCoordinatorUnitTest {
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(4, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.VerticalTabs.RailCollapsed", true);
+
         // Click collapse
         collapseButton.performClick();
+        histogramWatcher.assertExpected();
 
         // Verify listener requested collapse, but model is NOT updated yet (deferred)
         verify(mMockRailCollapseListener)
@@ -1224,8 +1229,13 @@ public class VerticalTabListCoordinatorUnitTest {
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(1, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.RailCollapsed", false);
+
         // Click again to expand
         collapseButton.performClick();
+        histogramWatcher.assertExpected();
 
         // Verify listener requested expand, but model is still collapsed
         verify(mMockRailCollapseListener)

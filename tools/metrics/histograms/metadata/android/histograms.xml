@@ -6951,6 +6951,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.RailCollapsed" enum="Boolean"
+    expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>spdonghao@google.com</owner>
+  <summary>
+    Recorded when the user clicks on the collapse button to collapse or expand
+    the vertical tab strip rail. True if the user is collapsing the rail and
+    false if a user is expanding it.
+  </summary>
+</histogram>
+
 <histogram name="Android.VerticalTabs.TabGroupCollapsed" enum="Boolean"
     expires_after="2027-07-22">
   <owner>agazal@google.com</owner>

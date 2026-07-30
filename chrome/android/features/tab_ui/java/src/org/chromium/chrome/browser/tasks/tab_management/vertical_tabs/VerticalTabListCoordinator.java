@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -793,6 +794,8 @@ public class VerticalTabListCoordinator {
                 currentState == RailCollapseState.EXPANDED
                         ? RailCollapseState.COLLAPSED
                         : RailCollapseState.EXPANDED;
+        RecordHistogram.recordBooleanHistogram(
+                "Android.VerticalTabs.RailCollapsed", targetState == RailCollapseState.COLLAPSED);
         requestRailCollapseStateChange(targetState);
     }
 
