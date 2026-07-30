@@ -47,7 +47,6 @@ test("libjingle_xmpp_unittests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   sources = [
