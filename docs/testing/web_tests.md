@@ -606,7 +606,7 @@ the log file.
   ```sh
   third_party/blink/tools/run_web_tests.py -t Release \
    --additional-driver-flag="--inspector-protocol-log=/path/to/log.txt" \
-   http/tests/inspector-protocol/network/url-fragment.js
+   http/tests/inspector-protocol/fetch/legacy/url-fragment.js
   ```
 
 ## Bisecting Regressions

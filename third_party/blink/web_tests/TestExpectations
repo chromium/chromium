@@ -5093,7 +5093,7 @@ crbug.com/359279545 [ Win ] http/tests/html/scaled-oopif-text-not-blurry.html [ 
 crbug.com/927769 fast/webgl/OffscreenCanvas-webgl-preserveDrawingBuffer.html [ Crash Failure Pass Timeout ]
 
 # These started failing when network service was enabled by default.
-crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
+crbug.com/933880 http/tests/inspector-protocol/fetch/legacy/xhr-interception-auth-fail.js [ Failure ]
 # This passes in content_shell but not in chrome with network service disabled,
 # because content_shell does not add the about: handler. With network service
 # enabled this fails in both content_shell and chrome.
@@ -9315,7 +9315,7 @@ crbug.com/521896358 external/wpt/webmcp/imperative/document-domain-enabled.https
 crbug.com/517759858 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
 crbug.com/453144946 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash Failure Pass ]
 # Gardener 2026-06-02
-crbug.com/466779984 [ Win10.20h2 ] http/tests/inspector-protocol/network/request-interception.js [ Failure Pass ]
+crbug.com/466779984 [ Win10.20h2 ] http/tests/inspector-protocol/fetch/legacy/request-interception.js [ Failure Pass ]
 
 # Gardener 2026-06-08
 crbug.com/521335938 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Skip Timeout ]
