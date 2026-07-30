@@ -499,7 +499,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
 
     @Override
     public float getOpenTabIconX() {
-        if (ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()) {
+        if (ChromeFeatureList.sContextualPanelCloseButton.isEnabled()) {
             return super.getOpenTabIconX();
         }
         return LocalizationUtils.isLayoutRtl()
@@ -509,7 +509,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
 
     @Override
     protected boolean isCoordinateInsideCloseButton(float x) {
-        return ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()
+        return ChromeFeatureList.sContextualPanelCloseButton.isEnabled()
                 && super.isCoordinateInsideCloseButton(x);
     }
 
@@ -522,7 +522,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
      * @return The resource ID of the close icon, or {@code INVALID_RESOURCE_ID} if disabled.
      */
     public int getCloseIconResourceId() {
-        return ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()
+        return ChromeFeatureList.sContextualPanelCloseButton.isEnabled()
                 ? R.drawable.btn_close
                 : SceneLayer.INVALID_RESOURCE_ID;
     }

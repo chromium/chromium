@@ -146,7 +146,7 @@ BASE_DECLARE_FEATURE(kClearIntentWhenRecreated);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);
 BASE_DECLARE_FEATURE(kCompositorViewHolderObscuring);
 BASE_DECLARE_FEATURE(kCompositorViewRemeasureFix);
-BASE_DECLARE_FEATURE(kContextualPanelCloseButtonOnTablets);
+BASE_DECLARE_FEATURE(kContextualPanelCloseButton);
 BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kControlsVisibilityFromNavigations);
