@@ -619,6 +619,31 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithSkillIdSmokeTest) {
   ASSERT_OK(WaitForGlicClient(instance));
 }
 
+// Verifies that invoking with an InvocationPayloadPtr doesn't cause crashes or
+// failures during the mapping of source_or_payload.
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeWithUniversalCartPayloadSmokeTest) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  // Construct options via payload branch instead of just InvocationSource enum.
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationPayload::NewUniversalCart(
+                                mojom::UniversalCartPayload::New()));
+  options.on_success = success_future.GetCallback();
+
+  EXPECT_FALSE(GetInstanceForTab(tab));
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  GlicInstanceImpl* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+
+  ASSERT_OK(WaitForGlicClient(instance));
+}
+
 // TODO(crbug.com/528472503): Re-enable this test on Android once flakiness is
 // fixed.
 #if !BUILDFLAG(IS_ANDROID)
