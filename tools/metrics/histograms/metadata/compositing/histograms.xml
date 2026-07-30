@@ -536,6 +536,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Compositing.Renderer.PauseRenderingUntilVisibilityChangeTimeout"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <summary>
+    Reported when the safety-valve timer fires after pause rendering until
+    visibility change times out. This indicates that the expected visibility
+    change never occurred and rendering was unpaused by the safety valve.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.ResourcePool.PeakMemoryUsage" units="MB"
     expires_after="2027-05-08">
   <owner>lizeb@chromium.org</owner>

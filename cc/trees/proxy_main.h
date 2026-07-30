@@ -103,6 +103,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool has_sent_urgent_commit_request() const {
     return has_sent_urgent_commit_request_;
   }
+  ProxyImpl* proxy_impl_for_testing() const { return proxy_impl_.get(); }
 
  private:
   // Proxy implementation.

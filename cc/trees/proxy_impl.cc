@@ -13,8 +13,10 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
@@ -59,6 +61,19 @@ namespace {
 // Measured in seconds.
 constexpr auto kSmoothnessTakesPriorityExpirationDelay =
     base::Milliseconds(250);
+
+// This is only used in view transitions. The risk of this timer firing early
+// is that the view transition fails a capture, resulting in a blank "old"
+// state. However, the risk of not having a timeout is that we erroneously
+// prevent rendering until the window forces another hidden state (e.g. minimize
+// or switch tabs). This signal should be sent at roughly the same time as we
+// unpause rendering, since we wait until visibility change only if the document
+// is hidden.
+//
+// TODO(vmpstr): We need to revisit this after we gather enough metrics of how
+// often this triggers.
+constexpr auto kPauseRenderingUntilVisibilityChangeTimeout =
+    base::Milliseconds(300);
 
 }  // namespace
 
@@ -229,13 +244,27 @@ void ProxyImpl::SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame) {
 
 void ProxyImpl::SetPauseRendering(bool pause_rendering,
                                   bool delay_until_visibility_change) {
-  DCHECK(IsImplThread());
+  CHECK(IsImplThread());
   if (!pause_rendering && delay_until_visibility_change &&
       host_impl_->visible()) {
-    pause_rendering_until_visibility_change_ = true;
+    // TODO(crbug.com/537790296): This timeout is necessary to avoid situations
+    // when the visibility change never happens. We need to investigate when
+    // that is the case (see the histogram recorded).
+    pause_rendering_until_visibility_change_timer_->Start(
+        FROM_HERE, kPauseRenderingUntilVisibilityChangeTimeout, this,
+        &ProxyImpl::OnPauseRenderingUntilVisibilityChangeTimeout);
   } else {
+    pause_rendering_until_visibility_change_timer_->Stop();
     scheduler_->SetPauseRendering(pause_rendering);
   }
+}
+
+void ProxyImpl::OnPauseRenderingUntilVisibilityChangeTimeout() {
+  TRACE_EVENT0("cc", "ProxyImpl::OnPauseRenderingUntilVisibilityChangeTimeout");
+  CHECK(IsImplThread());
+  base::UmaHistogramBoolean(
+      "Compositing.Renderer.PauseRenderingUntilVisibilityChangeTimeout", true);
+  scheduler_->SetPauseRendering(false);
 }
 
 void ProxyImpl::SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) {
@@ -297,8 +326,8 @@ void ProxyImpl::SetVisibleOnImpl(bool visible) {
   host_impl_->SetVisible(visible);
   scheduler_->SetVisible(visible);
 
-  if (pause_rendering_until_visibility_change_) {
-    pause_rendering_until_visibility_change_ = false;
+  if (pause_rendering_until_visibility_change_timer_->IsRunning()) {
+    pause_rendering_until_visibility_change_timer_->Stop();
     scheduler_->SetPauseRendering(false);
   }
 }

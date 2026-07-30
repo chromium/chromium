@@ -21,8 +21,10 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
@@ -69,6 +71,7 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "cc/trees/proxy.h"
+#include "cc/trees/proxy_impl.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
@@ -7249,6 +7252,77 @@ class LayerTreeHostTestBypassSchedulerPauseSoon : public LayerTreeHostTest {
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestBypassSchedulerPauseSoon);
+
+class LayerTreeHostTestPauseRenderingUntilVisibilityChangeTimeout
+    : public LayerTreeHostTest {
+ public:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    if (!timer_initialized_) {
+      timer_initialized_ = true;
+      auto timer = std::make_unique<base::MockOneShotTimer>();
+      auto* proxy_impl =
+          static_cast<ProxyImpl*>(host_impl->delegate_for_testing());
+      proxy_impl->SetPauseRenderingUntilVisibilityChangeTimerForTesting(
+          std::move(timer));
+    }
+  }
+
+  void DidCommitAndDrawFrame() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      rendering_paused_ = layer_tree_host()->PauseRendering();
+      rendering_paused_->SetDelayUntilVisibilityChange();
+      rendering_paused_.reset();
+
+      auto* proxy_main = static_cast<ProxyMain*>(layer_tree_host()->proxy());
+      ImplThreadTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &LayerTreeHostTestPauseRenderingUntilVisibilityChangeTimeout::
+                  FireTimerOnImplThread,
+              base::Unretained(this), proxy_main->proxy_impl_for_testing()));
+    } else if (timer_fired_) {
+      EndTest();
+    }
+  }
+
+  void FireTimerOnImplThread(ProxyImpl* proxy_impl) {
+    auto* mock_timer = static_cast<base::MockOneShotTimer*>(
+        proxy_impl->PauseRenderingUntilVisibilityChangeTimerForTesting());
+    EXPECT_TRUE(mock_timer->IsRunning());
+    EXPECT_EQ(mock_timer->GetCurrentDelay(), base::Milliseconds(300));
+    mock_timer->Fire();
+    EXPECT_FALSE(mock_timer->IsRunning());
+    timer_fired_ = true;
+
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostTestPauseRenderingUntilVisibilityChangeTimeout::
+                UnpauseAndCommitOnMainThread,
+            base::Unretained(this)));
+  }
+
+  void UnpauseAndCommitOnMainThread() {
+    layer_tree_host()->SetNeedsCommitWithForcedRedraw();
+  }
+
+  void AfterTest() override {
+    histogram_tester_.ExpectUniqueSample(
+        "Compositing.Renderer.PauseRenderingUntilVisibilityChangeTimeout", true,
+        1);
+  }
+
+ private:
+  std::unique_ptr<ScopedPauseRendering> rendering_paused_;
+  bool timer_initialized_ = false;
+  bool timer_fired_ = false;
+  base::HistogramTester histogram_tester_;
+};
+
+MULTI_THREAD_TEST_F(
+    LayerTreeHostTestPauseRenderingUntilVisibilityChangeTimeout);
 
 class LayerTreeHostTestActivateOnInvisible : public LayerTreeHostTest {
  public:

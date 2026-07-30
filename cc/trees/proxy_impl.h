@@ -13,6 +13,8 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
@@ -123,6 +125,13 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
       const {
     return smoothness_priority_expiration_notifier_;
   }
+  void SetPauseRenderingUntilVisibilityChangeTimerForTesting(
+      std::unique_ptr<base::OneShotTimer> timer) {
+    pause_rendering_until_visibility_change_timer_ = std::move(timer);
+  }
+  base::OneShotTimer* PauseRenderingUntilVisibilityChangeTimerForTesting() {
+    return pause_rendering_until_visibility_change_timer_.get();
+  }
   void SetRequestHighFramerate(bool flag);
 
   void NotifyNewLocalSurfaceIdExpectedWhilePaused();
@@ -218,6 +227,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
 
   const int layer_tree_host_id_;
 
+  void OnPauseRenderingUntilVisibilityChangeTimeout();
+
   std::unique_ptr<Scheduler> scheduler_;
 
   struct DataForCommit {
@@ -270,7 +281,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   // Either thread can request deferring BeginMainFrame; keep track of both.
   bool main_wants_defer_begin_main_frame_ = false;
   bool impl_wants_defer_begin_main_frame_ = false;
-  bool pause_rendering_until_visibility_change_ = false;
+  std::unique_ptr<base::OneShotTimer>
+      pause_rendering_until_visibility_change_timer_ =
+          std::make_unique<base::OneShotTimer>();
 };
 
 }  // namespace cc

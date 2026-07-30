@@ -884,6 +884,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   const LayerTreeHostImplDelegate* delegate_for_testing() const {
     return delegate_;
   }
+  LayerTreeHostImplDelegate* delegate_for_testing() { return delegate_; }
 
   void SetViewTransitionContentRect(
       uint32_t sequence_id,
