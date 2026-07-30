@@ -426,6 +426,11 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
+  // Appends common search parameters (gsc=2, hl, cs, theme, country overrides)
+  // to the given URL for side panel load.
+  static GURL AddCommonSidePanelParams(const GURL& url,
+                                       content::WebContents* source_contents);
+
  protected:
   virtual void StartTaskUiInSidePanelImpl(
       BrowserWindowInterface* browser_window_interface,
@@ -449,6 +454,41 @@ class ContextualTasksUiService : public KeyedService {
       const std::optional<content::GlobalRenderFrameHostToken>&
           initiator_frame_token,
       const blink::mojom::WindowFeatures& window_features);
+
+  // Post-rearchitecture navigation handler called when
+  // kContextualTasksRearchitecture is enabled.
+  virtual bool HandleNavigationImplPostRearchitecture(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents,
+      tabs::TabInterface* tab,
+      bool is_from_embedded_page,
+      bool from_can_create_window,
+      bool is_same_site_or_from_ui,
+      bool is_mobile_ua,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<content::GlobalRenderFrameHostToken>&
+          initiator_frame_token,
+      const blink::mojom::WindowFeatures& window_features);
+
+  // Determines if a navigation in the side panel requires
+  // common search parameters (e.g. gsc=2, hl, cs) to be appended or updated.
+  // Only applies when source_contents is explicitly the side panel WebContents.
+  virtual bool ShouldAddRequiredSidePanelParams(
+      const content::OpenURLParams& url_params,
+      content::WebContents* source_contents);
+
+  // Handles side panel navigation by appending common search parameters
+  // (gsc=2, hl, cs, theme, country overrides) and reloading the URL in the
+  // side panel WebContents. Returns true if the navigation was handled.
+  virtual bool AddRequiredSidePanelParams(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents);
+
+  // Helper to build the common search parameters map for Contextual Tasks,
+  // matching what was previously provided to app.ts via GetCommonSearchParams.
+  static std::map<std::string, std::string>
+  GetCommonSearchParamsMapForContextualTasks(
+      content::WebContents* source_contents);
 
   // Used primarily for debugging - loads a URL in the specified WebContents.
   virtual void LoadUrlInWebContents(

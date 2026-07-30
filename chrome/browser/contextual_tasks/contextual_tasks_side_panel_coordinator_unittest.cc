@@ -1042,7 +1042,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   content::WebContents* cached_wc =
       GetWebContentsForTaskForTesting(expected_task.GetTaskId());
   ASSERT_TRUE(cached_wc);
-  EXPECT_EQ(cached_wc->GetVisibleURL(), initial_url);
+  GURL expected_url(
+      "https://www.google.com/search?udm=50&q=test&cs=0&gsc=2&hl=en");
+  EXPECT_EQ(cached_wc->GetVisibleURL(), expected_url);
 }
 
 }  // namespace contextual_tasks

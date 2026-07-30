@@ -43,6 +43,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -1199,13 +1201,216 @@ bool ContextualTasksUiService::HandleNavigation(
     const blink::mojom::WindowFeatures& window_features) {
   if (contextual_tasks::IsContextualTasksRearchitectureEnabled() ||
       contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
-    return false;
+    return HandleNavigationImplPostRearchitecture(
+        std::move(url_params), source_contents,
+        tabs::TabInterface::MaybeGetFromContents(source_contents),
+        is_from_embedded_page, from_can_create_window, is_same_site_or_from_ui,
+        is_mobile_ua, initiator_origin, initiator_frame_token, window_features);
   }
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
       is_from_embedded_page, from_can_create_window, is_same_site_or_from_ui,
       is_mobile_ua, initiator_origin, initiator_frame_token, window_features);
+}
+
+bool ContextualTasksUiService::HandleNavigationImplPostRearchitecture(
+    content::OpenURLParams url_params,
+    content::WebContents* source_contents,
+    tabs::TabInterface* tab,
+    bool is_from_embedded_page,
+    bool from_can_create_window,
+    bool is_same_site_or_from_ui,
+    bool is_mobile_ua,
+    const std::optional<url::Origin>& initiator_origin,
+    const std::optional<content::GlobalRenderFrameHostToken>&
+        initiator_frame_token,
+    const blink::mojom::WindowFeatures& window_features) {
+  OMNIBOX_LOG("nav_trace")
+      << "ContextualTasks HandleNavigationImplPostRearchitecture: "
+      << url_params.url.spec();
+  // Check if the navigation originates from the side panel WebContents and
+  // requires parameters to be added.
+  if (ShouldAddRequiredSidePanelParams(url_params, source_contents)) {
+    OMNIBOX_LOG("nav_trace")
+        << "ContextualTasks HandleNavigationImplPostRearchitecture: adding "
+           "params";
+    return AddRequiredSidePanelParams(std::move(url_params), source_contents);
+  }
+
+  return false;
+}
+
+bool ContextualTasksUiService::ShouldAddRequiredSidePanelParams(
+    const content::OpenURLParams& url_params,
+    content::WebContents* source_contents) {
+  if (!source_contents) {
+    return false;
+  }
+
+  // Retrieve the BrowserWindowInterface registered on the side panel
+  // WebContents.
+  BrowserWindowInterface* browser_window =
+      webui::GetBrowserWindowInterface(source_contents);
+  if (!browser_window) {
+    return false;
+  }
+
+  // If not panel open on this browser window, then source_contents cannot be in
+  // the side panel.
+  auto* controller = ContextualTasksPanelController::From(browser_window);
+  if (!controller) {
+    return false;
+  }
+
+  // Verify that source_contents is explicitly a side panel WebContents.
+  bool is_side_panel_contents = false;
+  for (auto* wc : controller->GetPanelWebContentsList()) {
+    if (wc == source_contents) {
+      is_side_panel_contents = true;
+      break;
+    }
+  }
+  if (!is_side_panel_contents) {
+    return false;
+  }
+
+  const GURL& url = url_params.url;
+
+  // Only apply to HTTP and HTTPS URLs.
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // Do not intercept Google CAPTCHA challenge URLs.
+  if (IsGoogleCaptchaUrl(url)) {
+    return false;
+  }
+
+  // Only apply to Search or AIM/Lens search URLs.
+  if (!IsSearchResultsUrl(url) && !IsAiUrl(url)) {
+    return false;
+  }
+
+  // Retrieve expected common search parameters (gsc=2, hl, cs, gl=us, etc.).
+  auto expected_params =
+      GetCommonSearchParamsMapForContextualTasks(source_contents);
+
+  // Check if any expected parameter is missing, or if 'cs' (dark mode) or
+  // 'gsc' (side panel) is out of sync.
+  for (const auto& [key, value] : expected_params) {
+    std::string current_val;
+    bool has_key = net::GetValueForKeyInQuery(url, key, &current_val);
+    if (!has_key) {
+      OMNIBOX_LOG("nav_trace")
+          << "ShouldAddRequiredSidePanelParams: missing param " << key;
+      return true;  // Missing parameter -> needs handling.
+    }
+    if (key == lens::kChromeSidePanelParameterKey && current_val != value) {
+      OMNIBOX_LOG("nav_trace")
+          << "ShouldAddRequiredSidePanelParams: " << key << " value mismatch";
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool ContextualTasksUiService::AddRequiredSidePanelParams(
+    content::OpenURLParams url_params,
+    content::WebContents* source_contents) {
+  if (!source_contents) {
+    return false;
+  }
+
+  GURL new_url = AddCommonSidePanelParams(url_params.url, source_contents);
+
+  OMNIBOX_LOG("nav_trace")
+      << "AddRequiredSidePanelParams: loading parameterized URL: "
+      << new_url.spec();
+
+  // Load the parameterized URL into the side panel WebContents asynchronously
+  // to avoid re-entrancy issues with NavigationControllerImpl while a
+  // navigation is in progress.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             content::OpenURLParams params, GURL url) {
+            if (!web_contents) {
+              return;
+            }
+            content::NavigationController::LoadURLParams load_params(url);
+            load_params.referrer = params.referrer;
+            load_params.transition_type = params.transition;
+            web_contents->GetController().LoadURLWithParams(load_params);
+          },
+          source_contents->GetWeakPtr(), url_params, new_url));
+
+  return true;
+}
+
+GURL ContextualTasksUiService::AddCommonSidePanelParams(
+    const GURL& url,
+    content::WebContents* source_contents) {
+  if (!source_contents) {
+    return url;
+  }
+
+  auto common_params =
+      GetCommonSearchParamsMapForContextualTasks(source_contents);
+
+  GURL new_url = url;
+  for (const auto& [key, value] : common_params) {
+    std::string current_val;
+    // Skip existing keys except 'gsc'.
+    if (key != lens::kChromeSidePanelParameterKey &&
+        net::GetValueForKeyInQuery(new_url, key, &current_val)) {
+      continue;
+    }
+    if (value.empty()) {
+      new_url = net::AppendOrReplaceQueryParameter(new_url, key, std::nullopt);
+    } else {
+      new_url = net::AppendOrReplaceQueryParameter(new_url, key, value);
+    }
+  }
+  return new_url;
+}
+
+std::map<std::string, std::string>
+ContextualTasksUiService::GetCommonSearchParamsMapForContextualTasks(
+    content::WebContents* source_contents) {
+  if (!source_contents) {
+    return {};
+  }
+
+  bool is_dark_mode = false;
+  // TODO(crbug.com/536100150): Add support for Desktop Android
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(source_contents->GetBrowserContext());
+  ThemeService* theme_service =
+      profile ? ThemeServiceFactory::GetForProfile(profile) : nullptr;
+  is_dark_mode = theme_service ? theme_service->BrowserUsesDarkColors() : false;
+#endif
+
+  bool is_side_panel =
+      tabs::TabInterface::MaybeGetFromContents(source_contents) == nullptr;
+  if (contextual_tasks::ShouldForceGscInTabMode()) {
+    is_side_panel = true;
+  }
+
+  std::string country_code = g_browser_process->GetApplicationLocale();
+  if (contextual_tasks::ShouldForceCountryCodeUS()) {
+    country_code = "US";
+  }
+
+  auto params = lens::GetCommonSearchParametersMap(country_code, is_dark_mode,
+                                                   is_side_panel);
+  if (contextual_tasks::ShouldForceCountryCodeUS()) {
+    params["gl"] = "us";
+  }
+  return params;
 }
 
 void ContextualTasksUiService::GetAccessToken(
