@@ -331,8 +331,7 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
   ButtonActionViewInterface::ActionItemChangedImpl(action_item);
 
   if (action_view_->IsIconVisible() &&
-      actions::IsActionItemClass<actions::StatefulImageActionItem>(
-          action_item)) {
+      actions::IsActionClass<actions::StatefulImageActionItem>(action_item)) {
     auto* stateful_action_item =
         static_cast<actions::StatefulImageActionItem*>(action_item);
     if (stateful_action_item->GetStatefulImage().IsVectorIcon()) {
@@ -399,8 +398,7 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
   // Update the button's icon. If the action item is a stateful image action
   // item, use the stateful image. Otherwise, use the action item's image.
   ui::ImageModel image_model;
-  if (actions::IsActionItemClass<actions::StatefulImageActionItem>(
-          action_item)) {
+  if (actions::IsActionClass<actions::StatefulImageActionItem>(action_item)) {
     image_model = static_cast<actions::StatefulImageActionItem*>(action_item)
                       ->GetStatefulImage();
   } else {

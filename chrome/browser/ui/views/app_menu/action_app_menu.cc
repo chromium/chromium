@@ -108,10 +108,10 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
   const auto* provider = ChromeLayoutProvider::Get();
 
   for (size_t i = 0; i < child_count; ++i) {
-    actions::ActionItem* child_ptr = children[i].get();
+    actions::ActionItem* child_ptr = children[i]->GetActionItem();
     // If the child is a section action item, append it as a MenuItem that
     // represents a section header.
-    if (actions::IsActionItemClass<AppMenuSectionActionItem>(child_ptr)) {
+    if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
       auto* header_menu_item =
           view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
       header_menu_item->SetEnabled(false);

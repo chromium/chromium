@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_utils.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 
@@ -33,7 +35,8 @@ class CallbackListSubscription;
 namespace actions {
 
 class ActionItem;
-using ActionListVector = std::vector<std::unique_ptr<ActionItem>>;
+class BaseAction;
+using ActionListVector = std::vector<std::unique_ptr<BaseAction>>;
 using ActionItemVector = std::vector<raw_ptr<ActionItem, VectorExperimental>>;
 
 class COMPONENT_EXPORT(ACTIONS) ActionList {
@@ -49,8 +52,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionList {
   const ActionListVector& children() const { return children_; }
   bool empty() const { return children_.empty(); }
 
-  ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);
-  std::unique_ptr<ActionItem> RemoveAction(ActionItem* action_item);
+  BaseAction* AddAction(std::unique_ptr<BaseAction> action_item);
+  std::unique_ptr<BaseAction> RemoveAction(BaseAction* action_item);
   // Clear the action list vector
   void Reset();
 
@@ -75,14 +78,35 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
 
   BaseAction* GetParent() const;
 
-  ActionItem* AddChild(std::unique_ptr<ActionItem> action_item);
-  std::unique_ptr<ActionItem> RemoveChild(ActionItem* action_item);
+  template <typename T>
+  T* AddChild(std::unique_ptr<T> action_item) {
+    DCHECK(!action_item->GetParent());
+    action_item->parent_ = this;
+    T* result = action_item.get();
+    AddChildInternal(std::move(action_item));
+    return result;
+  }
+
+  template <typename T>
+  std::unique_ptr<T> RemoveChild(T* action_item) {
+    DCHECK(action_item);
+    DCHECK_EQ(action_item->GetParent(), this);
+    action_item->parent_ = nullptr;
+    std::unique_ptr<BaseAction> removed_action =
+        children_.RemoveAction(action_item);
+    if (!removed_action) {
+      return nullptr;
+    }
+    return base::WrapUnique(ui::metadata::AsClass<T>(removed_action.release()));
+  }
 
   const ActionList& GetChildren() const { return children_; }
   void ResetActionList();
   void SetPopulateChildrenCallback(PopulateChildActions callback);
   bool HasPopulateChildActionsCallback() const;
   void PopulateChildItems();
+
+  virtual ActionItem* GetActionItem() = 0;
 
  protected:
   void ActionListChanged() override;
@@ -91,6 +115,7 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
   raw_ptr<BaseAction> parent_ = nullptr;
   ActionList children_{this};
   PopulateChildActions populate_child_callback_;
+  void AddChildInternal(std::unique_ptr<BaseAction> action_item);
 };
 
 // Class returned from ActionItem::BeginUpdate() in order to allow a "batch"
@@ -406,6 +431,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     return ActionItemBuilder(std::move(callback));
   }
 
+  ActionItem* GetActionItem() override;
+
   // Configure action states and attributes.
   std::u16string_view GetAccessibleName() const;
   void SetAccessibleName(std::u16string_view accessible_name);
@@ -494,6 +521,21 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   base::WeakPtrFactory<ActionItem> weak_ptr_factory_{this};
 };
 
+class COMPONENT_EXPORT(ACTIONS) IndirectActionItem : public BaseAction {
+  METADATA_HEADER(IndirectActionItem, BaseAction)
+
+ public:
+  explicit IndirectActionItem(ActionItem* delegate)
+      : delegate_(delegate->GetActionItem()) {
+    CHECK(delegate_);
+  }
+
+  ActionItem* GetActionItem() override;
+
+ private:
+  raw_ptr<ActionItem> delegate_;
+};
+
 // TODO(crbug.com/375261318): Make it so that this ActionItem descendant can
 // also be subclassed along with the builder.
 // A subclass of ActionItem that has an additional image that reflects the
@@ -538,8 +580,8 @@ class COMPONENT_EXPORT(ACTIONS) StatefulImageActionItem : public ActionItem {
 };
 
 template <typename A>
-bool IsActionItemClass(ActionItem* action_item) {
-  return ui::metadata::IsClass<A, ActionItem>(action_item);
+bool IsActionClass(BaseAction* action_item) {
+  return ui::metadata::IsClass<A, BaseAction>(action_item);
 }
 
 class COMPONENT_EXPORT(ACTIONS) ActionManager
@@ -602,7 +644,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   std::unique_ptr<ActionItemInitializerList> initializer_list_;
 
   // All "root" actions are parented to this action.
-  BaseAction root_action_parent_;
+  std::unique_ptr<BaseAction> root_action_parent_ =
+      std::make_unique<ActionItem>();
 };
 
 class COMPONENT_EXPORT(ACTIONS) ActionIdMap {

@@ -67,6 +67,9 @@ class AppMenuActionManager : public actions::ActionManager {
   std::unique_ptr<AppMenuProxyActionItem> CreateAppMenuProxyActionItem(
       actions::ActionId action_id);
 
+  std::unique_ptr<actions::IndirectActionItem> CreateAppMenuIndirectActionItem(
+      actions::ActionId action_id);
+
   raw_ptr<actions::ActionItem> action_scope_ = nullptr;
   std::unique_ptr<actions::ActionItem> root_action_item_;
 };

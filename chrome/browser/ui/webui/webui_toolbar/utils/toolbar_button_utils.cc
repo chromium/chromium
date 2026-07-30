@@ -163,7 +163,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
   if (item->GetImage().IsVectorIcon()) {
     icon = item->GetImage().GetVectorIcon().vector_icon();
   }
-  if (actions::IsActionItemClass<actions::StatefulImageActionItem>(item)) {
+  if (actions::IsActionClass<actions::StatefulImageActionItem>(item)) {
     auto* stateful_item = static_cast<actions::StatefulImageActionItem*>(item);
     if (stateful_item->GetStatefulImage().IsVectorIcon()) {
       icon = stateful_item->GetStatefulImage().GetVectorIcon().vector_icon();

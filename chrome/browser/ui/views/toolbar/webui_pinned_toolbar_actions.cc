@@ -115,7 +115,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     }
 
     ui::ImageModel image_model;
-    if (actions::IsActionItemClass<actions::StatefulImageActionItem>(item)) {
+    if (actions::IsActionClass<actions::StatefulImageActionItem>(item)) {
       image_model = static_cast<actions::StatefulImageActionItem*>(item)
                         ->GetStatefulImage();
     } else {
