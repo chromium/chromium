@@ -214,12 +214,10 @@ void ReceiverSessionImpl::OnSessionEnded() {
   audio_demuxer_stream_data_provider_.reset();
   video_demuxer_stream_data_provider_.reset();
 
+  // NOTE: OnSessionEnded may be called multiple times, and the client may
+  // destroy itself as part of invoking its OnStreamingSessionEnded() method.
   if (client_) {
-    client_->OnStreamingSessionEnded();
-    // OnSessionEnded may be called multiple times. Avoid using client_ after
-    // OnstreamingSessionEnded has been called, since it may have been
-    // destroyed in the shutdown process.
-    client_ = nullptr;
+    client_.ExtractAsDangling()->OnStreamingSessionEnded();
   }
 }
 
