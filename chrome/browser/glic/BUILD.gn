@@ -941,7 +941,7 @@ source_set("browser_tests") {
   if (is_android) {
     sources += [
       "browser_ui/glic_nudge_controller_android_browsertest.cc",
-      "widget/glic_side_panel_coordinator_android_browsertest.cc",
+      "widget/glic_side_panel_coordinator_desktop_android_browsertest.cc",
     ]
     deps += [
       "//chrome/browser/glic/browser_ui",

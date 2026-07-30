@@ -25,16 +25,16 @@ using ::testing::Eq;
 
 namespace glic {
 
-class GlicSidePanelCoordinatorAndroidBrowserTest : public GlicBrowserTest {
+class GlicSidePanelCoordinatorDesktopAndroidBrowserTest : public GlicBrowserTest {
  public:
-  GlicSidePanelCoordinatorAndroidBrowserTest() {
+  GlicSidePanelCoordinatorDesktopAndroidBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicActor,
          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
-  ~GlicSidePanelCoordinatorAndroidBrowserTest() override = default;
+  ~GlicSidePanelCoordinatorDesktopAndroidBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     if (!AndroidSidePanelEnabledFn::IsEnabled()) {
@@ -71,7 +71,7 @@ class GlicSidePanelCoordinatorAndroidBrowserTest : public GlicBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
                        ResizeTriggersToastAndShowsIdleMessage) {
   // Open Glic for the active tab to ensure the side panel is initialized.
   ASSERT_OK(OpenGlicForActiveTab());
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   observer->OnEntryShown(coordinator()->GetEntryForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
                        ResizeTriggersToastAndShowsActuatingMessage) {
   // Open Glic for the active tab.
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   EXPECT_EQ(task->GetState(), actor::ActorTask::State::kPausedByUser);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorDesktopAndroidBrowserTest,
                        BackgroundedOnTabSwitch) {
   // Open Glic for the active tab (Tab 1).
   ASSERT_OK(OpenGlicForActiveTab());
