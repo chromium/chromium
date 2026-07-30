@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.util;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -19,7 +18,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Px;
 
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -221,19 +219,5 @@ public class AvatarGenerator {
                 0,
                 (int) (avatar.getWidth() * 0.75),
                 avatar.getHeight());
-    }
-
-    /**
-     * Wraps the given avatar in a custom drawable that renders an AI tier status ring around it.
-     *
-     * @param context the context used to retrieve display metrics.
-     * @param avatar the existing avatar drawable to wrap.
-     * @return the avatar wrapped with the AI tier ring drawable.
-     */
-    public static Drawable getAvatarWithAiTierRing(
-            Context context, Drawable avatar, @Px int ringThicknessPx) {
-        SubscriptionTierBrandingDelegate brandingDelegate =
-                ServiceLoaderUtil.maybeCreate(SubscriptionTierBrandingDelegate.class);
-        return new AiTierRingDrawable(context, avatar, ringThicknessPx, brandingDelegate);
     }
 }

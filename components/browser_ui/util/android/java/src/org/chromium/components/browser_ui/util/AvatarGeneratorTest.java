@@ -4,14 +4,12 @@
 
 package org.chromium.components.browser_ui.util;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 
 import androidx.test.filters.SmallTest;
 
@@ -227,32 +225,5 @@ public class AvatarGeneratorTest {
                         AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
 
         assertTrue(separateAvatarsOutput.getBitmap().sameAs(mergedAvatarOutput.getBitmap()));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetAvatarWithAiTierRing() {
-        Bitmap avatar = makeColoredImage(Color.RED);
-        Drawable avatarDrawable =
-                AvatarGenerator.makeRoundAvatar(mResources, avatar, IMAGE_SIZE_PX);
-
-        final int ringThicknessPx = 2;
-        Drawable wrappedDrawable =
-                AvatarGenerator.getAvatarWithAiTierRing(
-                        ContextUtils.getApplicationContext(), avatarDrawable, ringThicknessPx);
-
-        assertTrue(wrappedDrawable instanceof AiTierRingDrawable);
-
-        int ringSpacingPx =
-                ContextUtils.getApplicationContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.ai_tier_ring_spacing);
-        int totalPadding = (ringThicknessPx + ringSpacingPx) * 2;
-        assertEquals(
-                avatarDrawable.getIntrinsicWidth() + totalPadding,
-                wrappedDrawable.getIntrinsicWidth());
-        assertEquals(
-                avatarDrawable.getIntrinsicHeight() + totalPadding,
-                wrappedDrawable.getIntrinsicHeight());
     }
 }

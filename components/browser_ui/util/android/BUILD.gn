@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/browser_ui/util/AiTierRingDrawable.java",
     "java/src/org/chromium/components/browser_ui/util/AutomotiveUtils.java",
     "java/src/org/chromium/components/browser_ui/util/AvatarGenerator.java",
     "java/src/org/chromium/components/browser_ui/util/BitmapCache.java",
@@ -21,7 +20,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/util/DrawableUtils.java",
     "java/src/org/chromium/components/browser_ui/util/FirstDrawDetector.java",
     "java/src/org/chromium/components/browser_ui/util/GlobalDiscardableReferencePool.java",
-    "java/src/org/chromium/components/browser_ui/util/SubscriptionTierBrandingDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/TextResolver.java",
     "java/src/org/chromium/components/browser_ui/util/TimeTextResolver.java",
     "java/src/org/chromium/components/browser_ui/util/ToolbarUtils.java",
