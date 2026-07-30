@@ -440,6 +440,28 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testMaybeShowGlicPromo_GlicDisabledByFlags_ResetsPref() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        GlicEnabling.setEnabledForTesting(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, true);
+                    assertFalse(mTabbedRootUiCoordinator.maybeShowGlicPromo());
+                });
+
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED));
+    }
+
+    @Test
+    @MediumTest
     public void testToggleTabStripMetrics() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =

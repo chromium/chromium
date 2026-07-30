@@ -1803,6 +1803,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return false;
         }
 
+        boolean hasEvaluatedGlicPromo =
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+
+        if (!GlicEnabling.isEnabledByFlags() && hasEvaluatedGlicPromo) {
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+            return false;
+        }
+
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.GLIC, "adaptive-toolbar-auto-pin", true)) {
             return false;
@@ -1816,9 +1826,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return false;
         }
 
-        boolean hasEvaluatedGlicPromo =
-                ChromeSharedPreferences.getInstance()
-                        .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
         if (hasEvaluatedGlicPromo) {
             return false;
         }
