@@ -147,25 +147,4 @@ message SuggestTemplateInfo {
   }
 
   optional FuseboxAction fusebox_action = 8;
-
-  // The override action for when a suggestion is clicked. Default action
-  // is to issue the suggestion query text.
-  // TODO(crbug.com/534469815): Ensure this enum is rolled over when ready
-  //   and add LINT statements to match `action_chip.mojom`.
-  enum ClickActionOverride {
-    // Default implicit behavior: Issue the query immediately and navigate
-    // to the destination (SRP or AIM page depending on request parameters).
-    CLICK_ACTION_UNSPECIFIED = 0;
-    // Copy the suggestion text to the Realbox.
-    CLICK_ACTION_POPULATE_REALBOX_WITH_QUERY = 1;
-    // Open and prepopulate the Composebox with the suggestion
-    // query text.
-    CLICK_ACTION_OPEN_COMPOSEBOX_WITH_QUERY = 2;
-    // Open the Composebox and display the suggestion query
-    // text as a placeholder hint.
-    CLICK_ACTION_OPEN_COMPOSEBOX_WITH_HINT = 3;
-    // Open the Composebox and animate the plus button.
-    CLICK_ACTION_OPEN_COMPOSEBOX_WITH_ANIMATED_PLUS_BUTTON = 4;
-  }
-  optional ClickActionOverride click_action = 9;
 }

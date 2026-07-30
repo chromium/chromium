@@ -4,6 +4,7 @@
 
 module action_chips.mojom;
 
+import "components/omnibox/browser/fusebox_action.mojom";
 import "components/omnibox/browser/searchbox.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
@@ -37,17 +38,6 @@ enum IconType {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
 
-// LINT.IfChange(ClickAction)
-enum ClickAction {
-  kClickActionUnspecified = 0,
-  kClickActionPopulateRealboxWithQuery = 1,
-  kClickActionOpenComposeboxWithQuery = 2,
-  kClickActionOpenComposeboxWithHint = 3,
-  kClickActionOpenComposeboxWithAnimatedPlusButton = 4,
-};
-
-// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:ClickActionOverride)
-
 // This enum is mapped to third_party/omnibox_proto/tool_mode.proto.
 enum ToolMode {
   kUnspecified = 0,
@@ -71,13 +61,16 @@ struct FormattedString {
 // SuggestTemplateInfo contains a subset of the fields of SuggestTemplateInfo in
 // third_party/omnibox_proto/suggest_template_info.proto.
 // The field names must match.
+// TODO(crbug.com/540070720): Clean up redundant FuseboxAction data structures
+// (ToolMode, ModelMode, SearchboxOverride, QueryActionOverride, TutorialId,
+// TabContext) from this file once FuseboxAction migration is complete.
 struct SuggestTemplateInfo {
   IconType type_icon;
   FormattedString? primary_text;
   FormattedString? secondary_text;
   ToolMode? preselected_tool;
   searchbox.mojom.SuggestInventory? preferred_inventory;
-  ClickAction? click_action;
+  fusebox_action.mojom.FuseboxAction? fusebox_action;
 };
 
 // The information representing a single action chip.

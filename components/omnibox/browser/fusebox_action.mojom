@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module fusebox_action.mojom;
+
+import "components/omnibox/browser/searchbox.mojom";
+import "components/omnibox/composebox/composebox_query.mojom";
+
+// TODO(crbug.com/539651790): Add more fields to FuseboxAction.
+struct FuseboxAction {
+  composebox_query.mojom.ToolMode? preselected_tool;
+  searchbox.mojom.SuggestInventory? preferred_inventory;
+};

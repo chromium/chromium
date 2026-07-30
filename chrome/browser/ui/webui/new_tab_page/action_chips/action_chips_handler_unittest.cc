@@ -34,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/omnibox/browser/fusebox_action.mojom.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -176,7 +177,7 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
       SuggestTemplateInfo::New(
           fields.icon_type, CreateFormattedString(fields.primary_text),
           CreateFormattedString(fields.secondary_text), fields.preselected_tool,
-          fields.preferred_inventory, std::nullopt),
+          fields.preferred_inventory, nullptr),
       std::move(tab));
 }
 
@@ -517,20 +518,20 @@ TEST_F(
           });
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
-          ActionChip::New("suggention1",
-                          SuggestTemplateInfo::New(
-                              IconType::kIconTypeUnspecified,
-                              CreateFormattedString("title1"),
-                              CreateFormattedString("subtitle1"), std::nullopt,
-                              std::nullopt, std::nullopt),
-                          nullptr),
-          ActionChip::New("suggention2",
-                          SuggestTemplateInfo::New(
-                              IconType::kIconTypeUnspecified,
-                              CreateFormattedString("title2"),
-                              CreateFormattedString("subtitle2"), std::nullopt,
-                              std::nullopt, std::nullopt),
-                          nullptr))));
+          ActionChip::New(
+              "suggention1",
+              SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
+                                       CreateFormattedString("title1"),
+                                       CreateFormattedString("subtitle1"),
+                                       std::nullopt, std::nullopt, nullptr),
+              nullptr),
+          ActionChip::New(
+              "suggention2",
+              SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
+                                       CreateFormattedString("title2"),
+                                       CreateFormattedString("subtitle2"),
+                                       std::nullopt, std::nullopt, nullptr),
+              nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();
@@ -573,14 +574,14 @@ TEST_F(ActionChipsHandlerTest,
             SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
                                      CreateFormattedString("title1"),
                                      CreateFormattedString("subtitle1"),
-                                     std::nullopt, std::nullopt, std::nullopt),
+                                     std::nullopt, std::nullopt, nullptr),
             nullptr),
         ActionChip::New(
             "suggestion2",
             SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
                                      CreateFormattedString("title2"),
                                      CreateFormattedString("subtitle2"),
-                                     std::nullopt, std::nullopt, std::nullopt),
+                                     std::nullopt, std::nullopt, nullptr),
             nullptr));
   };
 

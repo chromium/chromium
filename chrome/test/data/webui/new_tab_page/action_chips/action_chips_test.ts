@@ -74,12 +74,12 @@ suite('NewTabPageActionChipsTest', () => {
     },
   ];
 
-  // A helper type to make suggestTemplateInfo.clickAction optional for test
+  // A helper type to make suggestTemplateInfo.fuseboxAction optional for test
   // definitions.
   type TestActionChip = Omit<ActionChip, 'suggestTemplateInfo'>&{
     suggestTemplateInfo:
-        Omit<ActionChip['suggestTemplateInfo'], 'clickAction'>& {
-          clickAction?: ActionChip['suggestTemplateInfo']['clickAction'],
+        Omit<ActionChip['suggestTemplateInfo'], 'fuseboxAction'>& {
+          fuseboxAction?: ActionChip['suggestTemplateInfo']['fuseboxAction'],
         },
   };
 
@@ -108,7 +108,7 @@ suite('NewTabPageActionChipsTest', () => {
           ...chip,
           suggestTemplateInfo: {
             ...chip.suggestTemplateInfo,
-            clickAction: chip.suggestTemplateInfo.clickAction ?? null,
+            fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?? null,
           },
         }));
     handler.setResultMapperFor('startActionChipsRetrieval', () => {

@@ -1136,3 +1136,26 @@ mojom("mojo_bindings") {
     ]
   }
 }
+
+if (!is_ios) {
+  mojom("fusebox_action_mojo_bindings") {
+    sources = [ "fusebox_action.mojom" ]
+    webui_module_path = "/"
+    public_deps = [
+      ":mojo_bindings",
+      "//components/omnibox/composebox:mojo_bindings",
+    ]
+  }
+
+  source_set("fusebox_action_mojo_utils") {
+    sources = [
+      "fusebox_action_mojo_utils.cc",
+      "fusebox_action_mojo_utils.h",
+    ]
+    deps = [
+      ":fusebox_action_mojo_bindings",
+      ":mojo_bindings",
+      "//third_party/omnibox_proto",
+    ]
+  }
+}
