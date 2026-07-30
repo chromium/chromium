@@ -30,6 +30,7 @@ class Profile;
 namespace readaloud {
 
 class ReadAloudPlaybackSession;
+class ReadAloudServiceTest;
 
 // Central lifecycle and state orchestrator for the Read Aloud feature in
 // Chrome, which allows users to listen to web page content.
@@ -138,7 +139,14 @@ class ReadAloudService
     virtual void OnNativeDestroyed() = 0;
   };
 
-  explicit ReadAloudService(Profile* profile);
+  // Callback type used to inject a fake or mock ReadAloudPlaybackController receiver
+  // during unit testing without friending test classes or exposing ForTesting methods.
+  using PlaybackControllerBinder = base::RepeatingCallback<
+      void(mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackController>)>;
+
+  explicit ReadAloudService(
+      Profile* profile,
+      PlaybackControllerBinder controller_binder = {});
 
   ReadAloudService(const ReadAloudService&) = delete;
   ReadAloudService& operator=(const ReadAloudService&) = delete;
@@ -215,14 +223,13 @@ class ReadAloudService
   void OnDistillationFailed(
       dom_distiller::DistillationParseResult reason) override;
 
+  // Initializes the connection to the utility process.
+  void Initialize();
+
   dom_distiller::ViewerHandle* GetViewerHandleForTesting() const {
     return viewer_handle_.get();
   }
 
-  // Initializes the connection to the utility process.
-  void Initialize();
-
- private:
   // read_aloud::mojom::ReadAloudPlaybackControllerClient (called by Utility):
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override;
   void OnPlaybackDurationChanged(base::TimeDelta duration) override;
@@ -235,11 +242,12 @@ class ReadAloudService
       read_aloud::mojom::ReadAloudPlaybackControllerClient::
           RequestSpeechSynthesisCallback callback) override;
 
-  void EnsureServiceConnected();
+  void EnsurePlaybackControllerConnected();
   void OnUtilityDisconnect();
   PlaybackState GetCurrentPlaybackState() const;
 
   raw_ptr<Profile> profile_;
+  PlaybackControllerBinder controller_binder_;
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;
   base::TimeTicks distillation_start_time_;
