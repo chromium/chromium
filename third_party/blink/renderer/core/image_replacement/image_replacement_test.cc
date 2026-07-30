@@ -1411,6 +1411,14 @@ TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPI) {
       WebScriptSource("window.onEndHandlerFired"));
   ASSERT_TRUE(on_end_count->IsInt32());
   EXPECT_EQ(1, on_end_count.As<v8::Int32>()->Value());
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      mojom::WebFeature::
+          kV8HTMLImageElement_ReplacedByUserAgent_AttributeGetter));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      mojom::WebFeature::kUAReplaceStartAddListener));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(mojom::WebFeature::kUAReplaceEndAddListener));
 }
 
 TEST_F(ImageReplacementSimTest, UserAgentImageReplacementAPIDisabled) {

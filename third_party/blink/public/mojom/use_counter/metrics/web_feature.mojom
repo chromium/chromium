@@ -5292,6 +5292,9 @@ enum WebFeature {
   kSingleAxisScrollerPositionSticky = 5975,
   kSingleAxisScrollerOverscrollBehavior = 5976,
   kSingleAxisScrollerAutoMinSize = 5977,
+  kV8HTMLImageElement_ReplacedByUserAgent_AttributeGetter = 5978,
+  kUAReplaceStartAddListener = 5979,
+  kUAReplaceEndAddListener = 5980,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

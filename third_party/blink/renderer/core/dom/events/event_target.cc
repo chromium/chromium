@@ -709,6 +709,10 @@ void EventTarget::AddedEventListener(
                    DesktopPWAsAdditionalWindowingControlsOnMoveEnabled() &&
                (event_type == event_type_names::kMove)) {
       UseCounter::Count(*document, WebFeature::kMoveEvent);
+    } else if (event_type == event_type_names::kUareplacestart) {
+      UseCounter::Count(*document, WebFeature::kUAReplaceStartAddListener);
+    } else if (event_type == event_type_names::kUareplaceend) {
+      UseCounter::Count(*document, WebFeature::kUAReplaceEndAddListener);
     }
   }
 
