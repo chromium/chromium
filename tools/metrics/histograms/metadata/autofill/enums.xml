@@ -658,7 +658,7 @@ Called by update_autofill_enums.py.-->
   <int value="15" label="Autofill, Gmail, Calendar, Photos"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/at_memory/memory_search_result.h:MemoryEntrySourceType) -->
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/at_memory/memory_data_type.h:MemoryEntrySourceType) -->
 
 <enum name="AutofillAtMemoryQueryCompletedStatus">
   <int value="0" label="Query returned data"/>

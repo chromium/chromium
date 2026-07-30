@@ -853,8 +853,13 @@ std::vector<EntryMetadata> ExtractMetadata(
     } else if (secondary.has_schemaless_key()) {
       other_type_name = base::UTF8ToUTF16(secondary.schemaless_key());
     }
+    std::optional<personal_context::proto::TypedValue> typed_value;
+    if (secondary.has_typed_value()) {
+      typed_value = secondary.typed_value();
+    }
     metadata_list.emplace_back(other_type, std::move(other_type_name),
-                               FormatAttributeValue(secondary, app_locale));
+                               FormatAttributeValue(secondary, app_locale),
+                               std::move(typed_value));
   }
   return metadata_list;
 }
@@ -865,6 +870,7 @@ MemorySearchResult ConvertToMemorySearchResult(
   MemoryDataType memory_data_type = MemoryDataType::kUnknown;
   std::u16string type_name;
   std::u16string primary_value;
+  std::optional<personal_context::proto::TypedValue> primary_typed_value;
   if (proto_result.has_primary_attribute()) {
     const personal_context::proto::Attribute& primary =
         proto_result.primary_attribute();
@@ -874,11 +880,14 @@ MemorySearchResult ConvertToMemorySearchResult(
       type_name = base::UTF8ToUTF16(primary.schemaless_key());
     }
     primary_value = FormatAttributeValue(primary, app_locale);
+    if (primary.has_typed_value()) {
+      primary_typed_value = primary.typed_value();
+    }
   }
 
-  MemorySearchResult pcontext_result(memory_data_type, std::move(type_name),
-                                     std::move(primary_value),
-                                     proto_result.relevance_score());
+  MemorySearchResult pcontext_result(
+      memory_data_type, std::move(type_name), std::move(primary_value),
+      proto_result.relevance_score(), std::move(primary_typed_value));
   pcontext_result.sources = ExtractSources(proto_result);
   pcontext_result.metadata_list = ExtractMetadata(proto_result, app_locale);
   pcontext_result.is_obfuscated = IsSpiiMemoryDataType(memory_data_type);

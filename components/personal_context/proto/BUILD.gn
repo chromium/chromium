@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("personal_context_proto") {
@@ -13,4 +14,12 @@ proto_library("personal_context_proto") {
     "features/auto_todos.proto",
     "features/common_data.proto",
   ]
+}
+
+proto_extras("personal_context_proto_extras") {
+  sources = [
+    "features/at_memory.proto",
+    "features/common_data.proto",
+  ]
+  deps = [ ":personal_context_proto" ]
 }

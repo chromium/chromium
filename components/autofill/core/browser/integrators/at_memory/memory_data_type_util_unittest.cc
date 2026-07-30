@@ -22,6 +22,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Ne;
 
 // Tests that `ToPersonalContextEntity` correctly converts individual memory
 // entry attributes and metadata into the corresponding fields of the personal
@@ -368,8 +369,27 @@ TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultFormatsTypedValue) {
   MemorySearchResult result =
       ConvertToMemorySearchResult(proto_result, "en-US");
   EXPECT_EQ(result.value, u"2030-05-20");
+  EXPECT_TRUE(result.typed_value.has_value());
   EXPECT_THAT(result.metadata_list,
               ElementsAre(Field(&EntryMetadata::value, u"France")));
+  EXPECT_THAT(
+      result.metadata_list,
+      ElementsAre(Field(&EntryMetadata::typed_value, Ne(std::nullopt))));
+}
+
+// Tests equality comparison between TypedValue proto messages using operator==.
+TEST(MemoryDataTypeUtilTest, TypedValueEquality) {
+  personal_context::proto::TypedValue a;
+  a.mutable_date()->set_year(2024);
+  a.mutable_date()->set_month(6);
+  a.mutable_date()->set_day(7);
+
+  personal_context::proto::TypedValue b = a;
+  personal_context::proto::TypedValue c;
+  c.set_country_code("US");
+
+  EXPECT_EQ(a, b);
+  EXPECT_NE(a, c);
 }
 
 }  // namespace

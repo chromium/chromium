@@ -11,10 +11,15 @@
 
 namespace autofill {
 
-EntryMetadata::EntryMetadata(MemoryDataType type,
-                             std::u16string type_name,
-                             std::u16string value)
-    : type(type), type_name(std::move(type_name)), value(std::move(value)) {}
+EntryMetadata::EntryMetadata(
+    MemoryDataType type,
+    std::u16string type_name,
+    std::u16string value,
+    std::optional<personal_context::proto::TypedValue> typed_value)
+    : type(type),
+      type_name(std::move(type_name)),
+      value(std::move(value)),
+      typed_value(std::move(typed_value)) {}
 EntryMetadata::EntryMetadata(const EntryMetadata&) = default;
 EntryMetadata& EntryMetadata::operator=(const EntryMetadata&) = default;
 EntryMetadata::EntryMetadata(EntryMetadata&&) = default;
@@ -31,13 +36,16 @@ MemoryEntrySource::MemoryEntrySource(MemoryEntrySource&&) = default;
 MemoryEntrySource& MemoryEntrySource::operator=(MemoryEntrySource&&) = default;
 MemoryEntrySource::~MemoryEntrySource() = default;
 
-MemorySearchResult::MemorySearchResult(MemoryDataType type,
-                                       std::u16string type_name,
-                                       std::u16string value,
-                                       double confidence_score)
+MemorySearchResult::MemorySearchResult(
+    MemoryDataType type,
+    std::u16string type_name,
+    std::u16string value,
+    double confidence_score,
+    std::optional<personal_context::proto::TypedValue> typed_value)
     : type(type),
       type_name(std::move(type_name)),
       value(std::move(value)),
+      typed_value(std::move(typed_value)),
       confidence_score(confidence_score) {}
 MemorySearchResult::MemorySearchResult(const MemorySearchResult&) = default;
 MemorySearchResult& MemorySearchResult::operator=(const MemorySearchResult&) =

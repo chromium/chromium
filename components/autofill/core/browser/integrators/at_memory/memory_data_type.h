@@ -94,6 +94,21 @@ enum class MemoryDataType {
 // LINT.ThenChange(
 //     //tools/metrics/histograms/metadata/autofill/enums.xml:MemoryDataType)
 
+// Type of the data source.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(MemoryEntrySourceType)
+enum class MemoryEntrySourceType {
+  kAutofill = 1 << 0,
+  kGmail = 1 << 1,
+  kCalendar = 1 << 2,
+  kPhotos = 1 << 3,
+  kMaxValue = kPhotos,
+};
+// LINT.ThenChange(
+//     //tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask)
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_H_

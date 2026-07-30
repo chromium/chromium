@@ -1043,6 +1043,7 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types",
     "//components/leveldb_proto",
+    "//components/personal_context/proto:personal_context_proto_extras",
     "//components/resources",
     "//components/security_interstitials/core",
     "//components/security_state/core",

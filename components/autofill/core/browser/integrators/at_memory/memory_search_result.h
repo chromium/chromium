@@ -14,15 +14,18 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
+#include "components/personal_context/proto/features/at_memory.equal.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 
 namespace autofill {
-
 
 // Key-value metadata providing additional context for an entry.
 struct EntryMetadata {
   EntryMetadata(MemoryDataType type,
                 std::u16string type_name,
-                std::u16string value);
+                std::u16string value,
+                std::optional<personal_context::proto::TypedValue> typed_value =
+                    std::nullopt);
   EntryMetadata(const EntryMetadata&);
   EntryMetadata& operator=(const EntryMetadata&);
   EntryMetadata(EntryMetadata&&);
@@ -37,24 +40,12 @@ struct EntryMetadata {
   std::u16string type_name;
   // Value of the metadata (eg: New York).
   std::u16string value;
+  // Typed value of the metadata, if available, it should semantically match
+  // `value`.
+  std::optional<personal_context::proto::TypedValue> typed_value;
 };
 
 std::ostream& operator<<(std::ostream& os, const EntryMetadata& metadata);
-
-// Type of the data source.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(MemoryEntrySourceType)
-enum class MemoryEntrySourceType {
-  kAutofill = 1 << 0,
-  kGmail = 1 << 1,
-  kCalendar = 1 << 2,
-  kPhotos = 1 << 3,
-  kMaxValue = kPhotos,
-};
-// LINT.ThenChange(
-//     //tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemoryAcceptedSuggestionDataSourcesBitmask)
 
 // Source of the search result entry, including the data source type and an
 // optional direct attribution.
@@ -81,7 +72,9 @@ struct MemorySearchResult {
   MemorySearchResult(MemoryDataType type,
                      std::u16string type_name,
                      std::u16string value,
-                     double confidence_score = 0.0);
+                     double confidence_score = 0.0,
+                     std::optional<personal_context::proto::TypedValue>
+                         typed_value = std::nullopt);
   MemorySearchResult(const MemorySearchResult&);
   MemorySearchResult& operator=(const MemorySearchResult&);
   MemorySearchResult(MemorySearchResult&&);
@@ -99,6 +92,10 @@ struct MemorySearchResult {
 
   // Candidate value to be filled in (eg: CX123).
   std::u16string value;
+
+  // Typed value of the entry, if available, it should semantically match
+  // `value`.
+  std::optional<personal_context::proto::TypedValue> typed_value;
 
   // Sources of the search result entry.
   std::vector<MemoryEntrySource> sources;
