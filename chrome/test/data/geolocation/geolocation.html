@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title>Show Geolocation on page load</title>
+    <title>Show Geolocation</title>
     <script>
 
 function triggerGeo(onSuccess, onError) {
@@ -39,10 +39,14 @@ function showError(positionError) {
   window.document.title = "Denied";
 }
 
+function initiate_geolocation() {
+  triggerGeo(showPosition, showError);
+}
+
     </script>
   </head>
 
-<body onload="triggerGeo(showPosition, showError)">
+<body>
 <b id=lat>-1</b>, <b id=lng>-1</b>
 </body>
 

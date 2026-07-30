@@ -180,10 +180,10 @@ public class SiteSettingsLocationTest {
         // Launch a page that uses geolocation and make sure a permission prompt shows up.
         mPermissionTestRule.runAllowTest(
                 mPermissionUpdateWaiter,
-                "/chrome/test/data/geolocation/geolocation_on_load.html",
-                "",
+                "/chrome/test/data/geolocation/geolocation.html",
+                "initiate_geolocation()",
                 0,
-                false);
+                true);
     }
 
     /** Sets Allow Location Enabled to be false and make sure it is set correctly. */
@@ -211,10 +211,10 @@ public class SiteSettingsLocationTest {
         initializeUpdateWaiter(/* expectGranted= */ false);
         mPermissionTestRule.runNoPromptTest(
                 mPermissionUpdateWaiter,
-                "/chrome/test/data/geolocation/geolocation_on_load.html",
-                "",
+                "/chrome/test/data/geolocation/geolocation.html",
+                "initiate_geolocation()",
                 0,
-                false);
+                true);
     }
 
     @Test

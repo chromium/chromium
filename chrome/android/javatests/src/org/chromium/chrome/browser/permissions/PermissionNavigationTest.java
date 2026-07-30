@@ -72,7 +72,8 @@ public class PermissionNavigationTest {
     @Feature({"Permissions"})
     public void testNavigationDismissesModalPermissionPrompt() throws Exception {
         mPermissionRule.setUpUrl(TEST_FILE);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                "requestGeolocationPermission()");
         mPermissionRule.waitForDialogShownState(true);
 
         Tab tab = mPermissionRule.getActivityTab();
@@ -101,7 +102,8 @@ public class PermissionNavigationTest {
     public void testUmaMetricsForDismissalReasonsNavigateBackAndTouchOutsideTheScrim()
             throws Exception {
         mPermissionRule.setUpUrl(TEST_FILE);
-        mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                "requestGeolocationPermission()");
         mPermissionRule.waitForDialogShownState(true);
 
         // Verify dismissing by pressing back is recorded in UMA
@@ -120,7 +122,8 @@ public class PermissionNavigationTest {
                 "Should record tapping back to dismiss permission prompt in UMA");
 
         // Verify touching outside the scrim is recorded in UMA
-        mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                "requestGeolocationPermission()");
         mPermissionRule.waitForDialogShownState(true);
 
         histogramExpectation =

@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   permission_request_manager->AddRequest(
       web_contents->GetPrimaryMainFrame(),
       std::make_unique<permissions::MockPermissionRequest>(
-          permissions::RequestType::kGeolocation));
+          permissions::RequestType::kCameraStream));
 
   observer.Wait();
   ASSERT_TRUE(observer.request_shown());

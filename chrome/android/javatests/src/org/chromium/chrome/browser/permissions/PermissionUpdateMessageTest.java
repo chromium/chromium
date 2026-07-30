@@ -63,8 +63,7 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM
 })
 public class PermissionUpdateMessageTest {
-    private static final String GEOLOCATION_PAGE =
-            "/chrome/test/data/geolocation/geolocation_on_load.html";
+    private static final String GEOLOCATION_PAGE = "/chrome/test/data/geolocation/geolocation.html";
     private static final String MEDIASTREAM_PAGE = "/content/test/data/media/getusermedia.html";
 
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -234,7 +233,7 @@ public class PermissionUpdateMessageTest {
             mPermissionRule.loadUrl(mPermissionRule.getURL(testPage));
 
             if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
-                mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(javascriptToExecute);
+                mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascriptToExecute);
             }
 
             expectMessagesCount(windowAndroid, 1);
@@ -296,7 +295,7 @@ public class PermissionUpdateMessageTest {
         runTest(
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                /* javascriptToExecute= */ null,
+                "initiate_geolocation()",
                 getGeolocationType(),
                 /* switchContent= */ false);
     }
@@ -339,7 +338,7 @@ public class PermissionUpdateMessageTest {
         runTest(
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                /* javascriptToExecute= */ null,
+                "initiate_geolocation()",
                 getGeolocationType(),
                 /* switchContent= */ true);
     }
@@ -369,10 +368,15 @@ public class PermissionUpdateMessageTest {
         try {
             setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.ALLOW);
             mPermissionRule.loadUrl(mPermissionRule.getURL(GEOLOCATION_PAGE));
+            mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab("initiate_geolocation()");
             CriteriaHelper.pollUiThread(
                     () -> {
-                        return MessagesTestHelper.getMessageIdentifier(windowAndroid, 0)
-                                == MessageIdentifier.PERMISSION_UPDATE;
+                        Criteria.checkThat(
+                                MessagesTestHelper.getMessageCount(windowAndroid),
+                                Matchers.greaterThan(0));
+                        Criteria.checkThat(
+                                MessagesTestHelper.getMessageIdentifier(windowAndroid, 0),
+                                Matchers.is(MessageIdentifier.PERMISSION_UPDATE));
                     });
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {

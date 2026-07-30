@@ -128,7 +128,7 @@ public class IncognitoPermissionLeakageTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(/* forceBackingSize= */ false));
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+        JavaScriptUtils.executeJavaScriptWithUserGestureAndWaitForResult(
                 tab.getWebContents(), "initiate_getCurrentPosition()");
     }
 

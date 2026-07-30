@@ -148,17 +148,8 @@ public class PermissionClapperQuietTest {
         // Wait for the security state to stabilize before triggering the permission.
         waitForSecurityIcon();
 
-        // Inject a click handler to satisfy the User Gesture (Transient Activation) requirement.
-        // Notification.requestPermission() must be called from a user interaction.
-        // PermissionTestRule.runJavaScriptCodeInCurrentTabWithGesture() simulates a tap,
-        // but permission_navigation.html is a generic page without an onclick listener.
-        // This injection ensures the tap executes the function stored in 'window.functionToRun'.
-        mPermissionRule.runJavaScriptCodeInCurrentTab(
-                "window.onclick = function() { if (window.functionToRun) {"
-                        + " eval(window.functionToRun); } };");
-
         // Trigger notification permission with a gesture.
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "Notification.requestPermission()");
     }
 
@@ -268,7 +259,7 @@ public class PermissionClapperQuietTest {
 
         // We trigger the notification and immediately update window.promiseResolved when it
         // resolves/rejects
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "Notification.requestPermission().then(() => { window.promiseResolved = true;"
                         + " }).catch(() => { window.promiseResolved = true; })");
 
@@ -641,7 +632,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         // Trigger a high-priority permission request (Microphone) to preempt the quiet one.
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
 
         // The Microphone prompt (Loud UI) should be shown.
@@ -668,7 +659,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoOpen();
 
         // Trigger a high-priority permission request (Microphone) to preempt the quiet one.
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
         // The Microphone prompt (Loud UI) should be shown.
         mPermissionRule.waitForDialogShownState(true);
@@ -707,7 +698,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoOpen();
 
         // Trigger preemption.
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
         mPermissionRule.waitForDialogShownState(true);
 
@@ -745,7 +736,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoOpen();
 
         // Trigger preemption.
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
         mPermissionRule.waitForDialogShownState(true);
 

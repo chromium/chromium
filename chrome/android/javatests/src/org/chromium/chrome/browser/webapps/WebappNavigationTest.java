@@ -505,7 +505,8 @@ public class WebappNavigationTest {
                         mActivityTestRule
                                 .getTestServer()
                                 .getURL("/content/test/data/android/permission_navigation.html"));
-        mActivityTestRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                "requestGeolocationPermission()");
         CriteriaHelper.pollUiThread(
                 () -> PermissionDialogController.getInstance().isDialogShownForTest(),
                 "Permission prompt did not appear in allotted time");

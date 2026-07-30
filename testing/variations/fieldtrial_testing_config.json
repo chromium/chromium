@@ -19649,18 +19649,20 @@
             ],
             "experiments": [
                 {
-                    "name": "MuteNotifications",
+                    "name": "MuteGeolocation",
                     "params": {
-                        "mute_notifications": "true"
+                        "exclude_same_origin_navigations": "true",
+                        "mute_geolocation": "true"
                     },
                     "enable_features": [
                         "PermissionsGestureGatedPrompts"
                     ]
                 },
                 {
-                    "name": "MuteGeolocation",
+                    "name": "MuteNotifications",
                     "params": {
-                        "mute_geolocation": "true"
+                        "exclude_same_origin_navigations": "true",
+                        "mute_notifications": "true"
                     },
                     "enable_features": [
                         "PermissionsGestureGatedPrompts"

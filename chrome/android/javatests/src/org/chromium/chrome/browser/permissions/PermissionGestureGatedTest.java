@@ -133,7 +133,7 @@ public class PermissionGestureGatedTest {
             mPermissionRule.runJavaScriptCodeInCurrentTab(
                     "window.onclick = function() { if (window.functionToRun) {"
                             + " eval(window.functionToRun); } };");
-            mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+            mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                     "Notification.requestPermission()");
         } else {
             mPermissionRule.runJavaScriptCodeInCurrentTab("Notification.requestPermission()");
@@ -146,7 +146,7 @@ public class PermissionGestureGatedTest {
             mPermissionRule.runJavaScriptCodeInCurrentTab(
                     "window.onclick = function() { if (window.functionToRun) {"
                             + " eval(window.functionToRun); } };");
-            mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+            mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                     "navigator.geolocation.getCurrentPosition(function(){})");
         } else {
             // Use setTimeout to ensure any transient user gesture from the test runner is lost.

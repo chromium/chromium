@@ -18,6 +18,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
@@ -82,6 +83,7 @@ public class GeolocationTest {
     @Test
     @MediumTest
     @Feature({"Location", "Main"})
+    @DisableFeatures({"PermissionsGestureGatedPrompts"})
     public void testGeolocationPlumbingAllowedDialogNoGesture() throws Exception {
         runTest("initiate_getCurrentPosition()", 1, false);
     }

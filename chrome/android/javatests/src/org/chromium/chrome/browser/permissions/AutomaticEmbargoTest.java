@@ -47,7 +47,7 @@ public class AutomaticEmbargoTest {
     public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);
 
     private static final String GEOLOCATION_TEST_FILE =
-            "/chrome/test/data/geolocation/geolocation_on_load.html";
+            "/chrome/test/data/geolocation/geolocation.html";
     private static final String NOTIFICATIONS_TEST_FILE =
             "/chrome/test/data/notifications/notification_tester.html";
     private static final String MIDI_TEST_FILE = "/content/test/data/android/midi_permissions.html";
@@ -73,11 +73,11 @@ public class AutomaticEmbargoTest {
     ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
 
     for (int i = 0; i < NUMBER_OF_DISMISSALS; ++i) {
-      mPermissionRule.setUpUrl(testFile);
-      if (withGesture) {
-        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(javascript);
-      } else {
-        mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
+            mPermissionRule.setUpUrl(testFile);
+            if (withGesture) {
+                mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
+            } else {
+                mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
       }
       PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
       int dialogType = mPermissionRule.getActivity().getModalDialogManager().getCurrentType();
@@ -105,23 +105,23 @@ public class AutomaticEmbargoTest {
     @Feature({"Location"})
     @DisabledTest(message = "Flaky test crbug.com/325324593")
     public void testGeolocationEmbargo() throws Exception {
-    LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-    LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
-    runTest(GEOLOCATION_TEST_FILE, "", "Denied", /* withGesture= */ true);
-  }
+        runTest(GEOLOCATION_TEST_FILE, "initiate_geolocation()", "Denied", /* withGesture= */ true);
+    }
 
-  @Test
-  @LargeTest
-  @Feature({"Notifications"})
-  @DisableFeatures({"PermissionsAndroidClapperLoud", "PermissionsGestureGatedPrompts"})
-  public void testNotificationsEmbargo() throws Exception {
-    runTest(
-        NOTIFICATIONS_TEST_FILE,
-        "requestPermission()",
-        "request-callback-denied",
-        /* withGesture= */ false);
-  }
+    @Test
+    @LargeTest
+    @Feature({"Notifications"})
+    @DisableFeatures({"PermissionsAndroidClapperLoud", "PermissionsGestureGatedPrompts"})
+    public void testNotificationsEmbargo() throws Exception {
+        runTest(
+                NOTIFICATIONS_TEST_FILE,
+                "requestPermission()",
+                "request-callback-denied",
+                /* withGesture= */ false);
+    }
 
   @Test
   @LargeTest

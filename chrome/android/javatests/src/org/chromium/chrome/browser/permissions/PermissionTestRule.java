@@ -52,7 +52,6 @@ import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
@@ -374,13 +373,8 @@ public class PermissionTestRule implements TestRule {
             setUpUrl(url);
         }
 
-        // Inject a click handler to satisfy the User Gesture requirement.
-        runJavaScriptCodeInCurrentTab(
-                "window.onclick = function() { if (window.functionToRun) {"
-                        + " eval(window.functionToRun); } };");
-
         // Trigger notification permission with a gesture.
-        runJavaScriptCodeInCurrentTabWithGesture("Notification.requestPermission()");
+        runJavaScriptCodeWithUserGestureInCurrentTab("Notification.requestPermission()");
     }
 
     /** Waits for the Page Info UI to be opened. */
@@ -631,7 +625,7 @@ public class PermissionTestRule implements TestRule {
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
-            runJavaScriptCodeInCurrentTabWithGesture(javascript);
+            runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
@@ -659,7 +653,7 @@ public class PermissionTestRule implements TestRule {
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
-            runJavaScriptCodeInCurrentTabWithGesture(javascript);
+            runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
@@ -687,7 +681,7 @@ public class PermissionTestRule implements TestRule {
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
-            runJavaScriptCodeInCurrentTabWithGesture(javascript);
+            runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
@@ -708,12 +702,6 @@ public class PermissionTestRule implements TestRule {
         Assert.assertFalse(
                 "Modal permission prompt shown when none expected",
                 PermissionDialogController.getInstance().isDialogShownForTest());
-    }
-
-    public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
-            throws TimeoutException {
-        runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
-        TouchCommon.singleClickView(getActivityTab().getView());
     }
 
     /**

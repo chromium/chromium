@@ -87,8 +87,7 @@ public class PageInfoDiscoverabilityTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule.getActivityTestRule(), false);
 
-    private static final String GEOLOCATION_TEST =
-            "/chrome/test/data/geolocation/geolocation_on_load.html";
+    private static final String GEOLOCATION_TEST = "/chrome/test/data/geolocation/geolocation.html";
 
     /**
      * Parameter provider for testing the different |RequestType|s that affect discoverability. The
@@ -324,7 +323,7 @@ public class PageInfoDiscoverabilityTest {
                 /* promptDecision= */ PermissionTestRule.PromptDecision.ALLOW,
                 /* waitForMissingPermissionPrompt= */ false,
                 /* waitForUpdater= */ true,
-                /* javascriptToExecute= */ null,
+                "initiate_geolocation()",
                 /* missingPermissionPromptTextId= */ 0);
 
         Assert.assertEquals(
@@ -359,7 +358,7 @@ public class PageInfoDiscoverabilityTest {
                 /* promptDecision= */ PermissionTestRule.PromptDecision.DENY,
                 /* waitForMissingPermissionPrompt= */ false,
                 /* waitForUpdater= */ true,
-                /* javascriptToExecute= */ null,
+                "initiate_geolocation()",
                 /* missingPermissionPromptTextId= */ 0);
 
         Assert.assertEquals(
