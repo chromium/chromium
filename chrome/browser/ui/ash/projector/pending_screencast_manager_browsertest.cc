@@ -805,6 +805,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                     url);
                 run_loop.Quit();
               }),
+          ProjectorAppClient::Get()->GetIdentityManager(),
           &test_url_loader_factory));
 
   // Mocks a metadata file finishes upload:

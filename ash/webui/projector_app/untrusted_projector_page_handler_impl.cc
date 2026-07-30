@@ -12,12 +12,13 @@
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/projector_app_client.h"
-#include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/files/safe_base_name.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -74,11 +75,14 @@ UntrustedProjectorPageHandlerImpl::UntrustedProjectorPageHandlerImpl(
         receiver,
     mojo::PendingRemote<projector::mojom::UntrustedProjectorPage>
         projector_remote,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    network::mojom::URLLoaderFactory* url_loader_factory)
     : receiver_(this, std::move(receiver)),
       projector_remote_(std::move(projector_remote)),
       pref_service_(pref_service),
-      xhr_sender_(ProjectorAppClient::Get()->GetUrlLoaderFactory()) {
+      identity_manager_(identity_manager),
+      xhr_sender_(identity_manager, url_loader_factory) {
   ProjectorAppClient::Get()->AddObserver(this);
 }
 
@@ -209,9 +213,9 @@ void UntrustedProjectorPageHandlerImpl::SendXhr(
 void UntrustedProjectorPageHandlerImpl::GetAccounts(
     GetAccountsCallback callback) {
   const std::vector<AccountInfo> accounts =
-      ProjectorOAuthTokenFetcher::GetAccounts();
+      identity_manager_->GetExtendedAccountInfoForAccountsWithRefreshToken();
   const CoreAccountInfo primary_account =
-      ProjectorOAuthTokenFetcher::GetPrimaryAccountInfo();
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   std::vector<projector::mojom::AccountPtr> mojo_accounts;
   mojo_accounts.reserve(accounts.size());
