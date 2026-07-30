@@ -146,7 +146,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     // Feature params on ClankGlicContextMenu gating each context-menu entry
     // point, so every entry shares the same feature (and experiment).
-    @VisibleForTesting static final String PARAM_SHOW_ON_LINK = "show_on_link";
+    @VisibleForTesting static final String PARAM_SHOW_ASK_GEMINI_ON_LINK = "show_on_link";
+    @VisibleForTesting static final String PARAM_SHOW_ASK_GEMINI_ON_PAGE = "show_on_page";
 
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
@@ -522,9 +523,26 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         // bottom sheet is enabled.
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, PARAM_SHOW_ON_LINK, true)
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                        PARAM_SHOW_ASK_GEMINI_ON_LINK,
+                        true)
                 && (AndroidSidePanelEnabledFn.isEnabled()
                         || TabBottomSheetUtils.isTabBottomSheetEnabled())
+                && !DeviceInfo.isAutomotive()
+                && !mItemDelegate.isIncognito()
+                && GlicEnabling.isEnabledForProfile(getProfile());
+    }
+
+    @VisibleForTesting
+    boolean shouldShowAskGeminiForPage() {
+        // The empty-space (page) entry point is desktop Android only, where
+        // Glic is presented in the side panel.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                        PARAM_SHOW_ASK_GEMINI_ON_PAGE,
+                        false)
+                && AndroidSidePanelEnabledFn.isEnabled()
                 && !DeviceInfo.isAutomotive()
                 && !mItemDelegate.isIncognito()
                 && GlicEnabling.isEnabledForProfile(getProfile());
@@ -563,6 +581,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 pageNavigationGroup.add(createListItem(Item.RELOAD));
             }
             groupedItems.add(pageNavigationGroup);
+
+            if (shouldShowAskGeminiForPage()) {
+                ModelList geminiGroup = new ModelList();
+                geminiGroup.add(createListItem(Item.ASK_GEMINI));
+                groupedItems.add(geminiGroup);
+            }
 
             if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
                 ModelList pageGroup = new ModelList();
