@@ -369,14 +369,6 @@ bool Request::RequestToken(
   // TODO(crbug.com/40218857): handle active mode with multiple IdP.
   if (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive) {
     rp_mode_ = RpMode::kActive;
-    std::optional<base::TimeTicks> user_info_accounts_response_time =
-        GetPageData(render_frame_host().GetPage())
-            ->ConsumeUserInfoAccountsResponseTime(
-                idp_get_params_ptrs[0]->providers[0]->config->config_url);
-    if (user_info_accounts_response_time) {
-      fedcm_metrics_->RecordTimeBetweenUserInfoAndActiveModeAPI(
-          start_time_ - user_info_accounts_response_time.value());
-    }
     if (!had_transient_user_activation_) {
       CompleteRequestWithError(
           FederatedRequestResult::kMissingTransientUserActivation,

@@ -716,19 +716,6 @@ void Metrics::RecordMultipleRequestsRpMode(
   base::UmaHistogramEnumeration("Blink.FedCm.MultipleRequestsRpMode", status);
 }
 
-void Metrics::RecordTimeBetweenUserInfoAndActiveModeAPI(
-    base::TimeDelta duration) {
-  auto SetUkm = [&](auto ukm_builder) {
-    ukm_builder->SetTiming_GetUserInfoToButtonMode(
-        ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
-  };
-
-  SetUkm(GetOrCreateFedCmBuilder());
-
-  base::UmaHistogramMediumTimes("Blink.FedCm.Timing.GetUserInfoToButtonMode",
-                                duration);
-}
-
 void Metrics::RecordNumMatchingAccounts(size_t accounts_remaining,
                                         const std::string& filter_type) {
   Metrics::NumAccounts num_matching =
@@ -842,10 +829,6 @@ void RecordAccountsResponseInvalidReason(
     IdpNetworkRequestManager::AccountsResponseInvalidReason reason) {
   base::UmaHistogramEnumeration(
       "Blink.FedCm.Status.AccountsResponseInvalidReason", reason);
-}
-
-void RecordSetLoginStatusIgnoredReason(SetLoginStatusIgnoredReason reason) {
-  base::UmaHistogramEnumeration("Blink.FedCm.SetLoginStatusIgnored", reason);
 }
 
 void RecordLifecycleStateFailureReason(LifecycleStateFailureReason reason) {

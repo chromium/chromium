@@ -208,10 +208,6 @@ void UserInfoRequest::OnAccountsResponseReceived(
     return;
   }
 
-  GetPageData(render_frame_host_->GetPage())
-      ->SetUserInfoAccountsResponseTime(idp_config_url_,
-                                        base::TimeTicks::Now());
-
   IdentityRequestAccount::ComputeIdpClaimedLoginStates(client_id_,
                                                        accounts.accounts);
 

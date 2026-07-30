@@ -85,16 +85,12 @@ void SetIdpSigninStatus(base::WeakPtr<BrowserContext> context,
     // If the id was valid, but the lookup failed, we ignore the load because we
     // cannot do same-site checks.
     if (!frame_tree_node) {
-      RecordSetLoginStatusIgnoredReason(
-          SetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
       return;
     }
   }
 
   if (destination != network::mojom::RequestDestination::kDocument) {
     if (!initiator || !net::SchemefulSite::IsSameSite(idp_origin, *initiator)) {
-      RecordSetLoginStatusIgnoredReason(
-          SetLoginStatusIgnoredReason::kCrossOrigin);
       return;
     }
   }
@@ -102,14 +98,10 @@ void SetIdpSigninStatus(base::WeakPtr<BrowserContext> context,
   // Make sure we're same-origin with our ancestors.
   if (frame_tree_node) {
     if (frame_tree_node->IsInFencedFrameTree()) {
-      RecordSetLoginStatusIgnoredReason(
-          SetLoginStatusIgnoredReason::kInFencedFrame);
       return;
     }
 
     if (!IsSameSiteWithAncestors(idp_origin, frame_tree_node->parent())) {
-      RecordSetLoginStatusIgnoredReason(
-          SetLoginStatusIgnoredReason::kCrossOrigin);
       return;
     }
   }

@@ -177,19 +177,6 @@ enum class DisconnectStatus {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmDisconnectStatus)
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SetLoginStatusIgnoredReason)
-
-enum class SetLoginStatusIgnoredReason {
-  kFrameTreeLookupFailed = 0,
-  kInFencedFrame = 1,
-  kCrossOrigin = 2,
-  kMaxValue = kCrossOrigin
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmSetLoginStatusIgnoredReason)
-
 // This enum describes the result of the error dialog.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -575,10 +562,6 @@ class CONTENT_EXPORT Metrics {
       blink::mojom::RpMode new_request_rp_mode,
       const std::vector<GURL>& requested_providers);
 
-  // Records the time from when a User Info API call, if any, most likely upon
-  // page load, to when the first Active Mode API is called afterwards, if any.
-  void RecordTimeBetweenUserInfoAndActiveModeAPI(base::TimeDelta duration);
-
   // Records the number of accounts matching a given filter, when the FedCM call
   // involved filtering out accounts with that filter. Filter must be one of
   // "LoginHint", "DomainHint", and "AccountLabel".
@@ -670,9 +653,6 @@ void RecordIdpSignOutNetError(int response_code);
 // Records why there's no valid account in the response.
 void RecordAccountsResponseInvalidReason(
     IdpNetworkRequestManager::AccountsResponseInvalidReason reason);
-
-// Records the reason why we ignored an attempt to set a login status.
-void RecordSetLoginStatusIgnoredReason(SetLoginStatusIgnoredReason reason);
 
 // Records the lifecycle state if we fail a FedCM request due to a page not
 // being primary.

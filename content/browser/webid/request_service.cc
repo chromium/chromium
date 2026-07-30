@@ -750,8 +750,6 @@ void RequestService::SetIdpSigninStatus(
   auto scoped_closure = base::ScopedClosureRunner(std::move(callback));
 
   if (render_frame_host().IsNestedWithinFencedFrame()) {
-    RecordSetLoginStatusIgnoredReason(
-        SetLoginStatusIgnoredReason::kInFencedFrame);
     return;
   }
   // We only allow setting the IDP signin status when the subresource is loaded
@@ -760,8 +758,6 @@ void RequestService::SetIdpSigninStatus(
   // that would set this signin status for the tracker, enabling the FedCM
   // request.
   if (!IsSameSiteWithAncestors(idp_origin, &render_frame_host())) {
-    RecordSetLoginStatusIgnoredReason(
-        SetLoginStatusIgnoredReason::kCrossOrigin);
     return;
   }
 

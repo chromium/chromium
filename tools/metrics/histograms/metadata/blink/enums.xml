@@ -7369,16 +7369,6 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:RpParameters) -->
 
-<!-- LINT.IfChange(FedCmSetLoginStatusIgnoredReason) -->
-
-<enum name="FedCmSetLoginStatusIgnoredReason">
-  <int value="0" label="Looking up the FrameTreeNode by ID failed"/>
-  <int value="1" label="Request came from within a fenced frame tree"/>
-  <int value="2" label="Request came from a cross-origin context"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/webid/metrics.h:SetLoginStatusIgnoredReason) -->
-
 <!-- LINT.IfChange(FedCmSheetType) -->
 
 <enum name="FedCmSheetType">
