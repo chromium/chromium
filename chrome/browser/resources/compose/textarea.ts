@@ -59,6 +59,7 @@ export class ComposeTextareaElement extends CrLitElement {
         type: String,
         notify: true,
       },
+      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -72,6 +73,8 @@ export class ComposeTextareaElement extends CrLitElement {
   protected accessor invalidInput_: boolean = false;
   protected accessor tooLong_: boolean = false;
   protected accessor tooShort_: boolean = false;
+  protected accessor webuiRoundedIconsEnabled_: boolean =
+      loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   accessor value: string = '';
 
   private animator_: ComposeTextareaAnimator;

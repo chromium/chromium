@@ -36,7 +36,10 @@ export function getHtml(this: ComposeTextareaElement) {
   <div id="readonlyText">${this.value}</div>
   <div id="editButtonContainer"
       ?hidden="${!this.shouldShowEditIcon_()}">
-    <cr-icon-button id="editButton" iron-icon="compose:edit"
+    <cr-icon-button id="editButton"
+        iron-icon="${this.webuiRoundedIconsEnabled_
+            ? 'compose:edit'
+            : 'compose:edit-old'}"
         title="$i18n{editButton}" @click="${this.onEditClick_}">
     </cr-icon-button>
   </div>
