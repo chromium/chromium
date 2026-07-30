@@ -113,6 +113,19 @@ void NotebooksModel::RemoveNotebook(NotebookId id) {
   }
 }
 
+void NotebooksModel::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_notifying_);
+  std::vector<NotebookId> ids;
+  ids.reserve(notebooks_.size());
+  for (const auto& [id, notebook] : notebooks_) {
+    ids.push_back(id);
+  }
+  for (const NotebookId& id : ids) {
+    RemoveNotebook(id);
+  }
+}
+
 void NotebooksModel::AddObserver(NotebooksModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);

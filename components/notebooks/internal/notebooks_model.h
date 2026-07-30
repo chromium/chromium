@@ -43,6 +43,7 @@ class NotebooksModel {
   void UpdateNotebook(Notebook notebook);
   void AddOrUpdateNotebook(Notebook notebook);
   void RemoveNotebook(NotebookId id);
+  void Clear();
 
   // Observer management.
   void AddObserver(NotebooksModelObserver* observer);

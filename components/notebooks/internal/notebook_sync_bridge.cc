@@ -166,6 +166,7 @@ std::string NotebookSyncBridge::GetStorageKey(
 void NotebookSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_->Clear();
   entries_.clear();
   store_->DeleteAllDataAndMetadata(std::move(delete_metadata_change_list),
                                    base::DoNothing());

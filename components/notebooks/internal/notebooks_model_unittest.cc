@@ -33,6 +33,7 @@ class TestNotebooksModelObserver : public NotebooksModelObserver {
 
   void OnNotebookRemoved(const NotebookId& id) override {
     last_removed_id_ = id;
+    removed_count_++;
   }
 
   bool loaded_called() const { return loaded_called_; }
@@ -45,12 +46,14 @@ class TestNotebooksModelObserver : public NotebooksModelObserver {
   const std::optional<NotebookId>& last_removed_id() const {
     return last_removed_id_;
   }
+  int removed_count() const { return removed_count_; }
 
  private:
   bool loaded_called_ = false;
   std::optional<NotebookId> last_added_id_;
   std::optional<NotebookId> last_updated_id_;
   std::optional<NotebookId> last_removed_id_;
+  int removed_count_ = 0;
 };
 
 TEST(NotebooksModelTest, InitialStateNotLoaded) {
@@ -255,6 +258,36 @@ TEST(NotebooksModelTest, AddNotebookDuplicateIdDies) {
   EXPECT_CHECK_DEATH(model.AddNotebook(
       Notebook(id, base::Time::FromSecondsSinceUnixEpoch(1000),
                base::Time::FromSecondsSinceUnixEpoch(1000))));
+}
+
+TEST(NotebooksModelTest, ClearRemovesAllNotebooks) {
+  NotebooksModel model;
+  model.AddNotebook(Notebook(NotebookId(base::Uuid::GenerateRandomV4()),
+                             base::Time::FromSecondsSinceUnixEpoch(1000),
+                             base::Time::FromSecondsSinceUnixEpoch(1000)));
+  model.AddNotebook(Notebook(NotebookId(base::Uuid::GenerateRandomV4()),
+                             base::Time::FromSecondsSinceUnixEpoch(1000),
+                             base::Time::FromSecondsSinceUnixEpoch(1000)));
+
+  model.Clear();
+
+  EXPECT_TRUE(model.GetAllNotebooks().empty());
+}
+
+TEST(NotebooksModelTest, ClearNotifiesObserver) {
+  NotebooksModel model;
+  TestNotebooksModelObserver observer;
+  model.AddObserver(&observer);
+  model.AddNotebook(Notebook(NotebookId(base::Uuid::GenerateRandomV4()),
+                             base::Time::FromSecondsSinceUnixEpoch(1000),
+                             base::Time::FromSecondsSinceUnixEpoch(1000)));
+  model.AddNotebook(Notebook(NotebookId(base::Uuid::GenerateRandomV4()),
+                             base::Time::FromSecondsSinceUnixEpoch(1000),
+                             base::Time::FromSecondsSinceUnixEpoch(1000)));
+
+  model.Clear();
+
+  EXPECT_EQ(observer.removed_count(), 2);
 }
 
 }  // namespace

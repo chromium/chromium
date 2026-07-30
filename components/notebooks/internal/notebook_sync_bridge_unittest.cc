@@ -290,22 +290,6 @@ TEST_F(NotebookSyncBridgeTest, GetAllDataForDebugging) {
   EXPECT_FALSE(batch->HasNext());
 }
 
-TEST_F(NotebookSyncBridgeTest, ApplyDisableSyncChanges) {
-  syncer::EntityChangeList add_changes;
-  add_changes.push_back(syncer::EntityChange::CreateAdd(
-      kTestUuid, CreateTestEntityData(kTestUuid)));
-  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
-                                       std::move(add_changes));
-
-  EXPECT_EQ(bridge().entries_for_testing().size(), 1u);
-  EXPECT_EQ(model().GetAllNotebooks().size(), 1u);
-
-  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
-
-  EXPECT_THAT(bridge().entries_for_testing(), testing::IsEmpty());
-  EXPECT_EQ(model().GetAllNotebooks().size(), 1u);
-}
-
 TEST_F(NotebookSyncBridgeTest,
        ApplyIncrementalSyncChangesDuplicateAddUpdatesModel) {
   syncer::EntityChangeList add_changes;
@@ -334,6 +318,29 @@ TEST_F(NotebookSyncBridgeTest,
             base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(300)));
 }
 
+TEST_F(NotebookSyncBridgeTest, ApplyDisableSyncChangesClearsBridge) {
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd(
+      kTestUuid, CreateTestEntityData(kTestUuid)));
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(add_changes));
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+
+  EXPECT_EQ(bridge().entries_for_testing().size(), 0u);
+}
+
+TEST_F(NotebookSyncBridgeTest, ApplyDisableSyncChangesClearsModel) {
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd(
+      kTestUuid, CreateTestEntityData(kTestUuid)));
+
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(add_changes));
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+
+  EXPECT_EQ(model().GetAllNotebooks().size(), 0u);
+}
 }  // namespace
 
 }  // namespace notebooks
