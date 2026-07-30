@@ -5,9 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
-# TODO(crbug.com/359926651): Add assert(is_chromeos) once the proxy's
-# integration tests no longer need to build on Linux (see comment below).
-assert(is_linux || is_chromeos)
+assert(is_chromeos)
 
 executable("mojo_proxy") {
   sources = [
@@ -41,27 +39,21 @@ mojom("test_mojom") {
   public_deps = [ "//mojo/public/mojom/base" ]
 }
 
-# TODO(crbug.com/359926651): Enable these tests on ChromeOS (and linux-chromeos)
-# and remove Linux support. The test child processes run the frozen legacy Mojo
-# Core clone, but the host process must run Mojo over ipcz, which is not yet the
-# default on ChromeOS builds.
-if (is_linux) {
-  test("mojo_proxy_unittests") {
-    sources = [ "mojo_proxy_test.cc" ]
-    deps = [
-      ":switches",
-      ":test_mojom",
-      "//base",
-      "//base/test:test_support",
-      "//chromeos/ash/components/mojo_proxy/mojo_core",
-      "//mojo/core/embedder",
-      "//mojo/core/test:run_all_unittests",
-      "//mojo/core/test:test_support",
-      "//mojo/public/cpp/bindings",
-      "//mojo/public/cpp/platform",
-      "//mojo/public/cpp/system",
-      "//testing/gtest",
-    ]
-    data_deps = [ ":mojo_proxy" ]
-  }
+test("mojo_proxy_unittests") {
+  sources = [ "mojo_proxy_test.cc" ]
+  deps = [
+    ":switches",
+    ":test_mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/mojo_proxy/mojo_core",
+    "//mojo/core/embedder",
+    "//mojo/core/test:run_all_unittests",
+    "//mojo/core/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//testing/gtest",
+  ]
+  data_deps = [ ":mojo_proxy" ]
 }

@@ -259,7 +259,9 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       &media::kPlatformHEVCDecoderSupport,
 #endif
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
       &mojo::core::kMojoIpcz,
+#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
   };
   std::vector<std::string> enabled_features;
   std::vector<std::string> disabled_features;

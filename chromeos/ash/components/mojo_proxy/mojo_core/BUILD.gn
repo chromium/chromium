@@ -7,10 +7,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
-# TODO(crbug.com/359926651): assert(is_chromeos) when the proxy's
-# integration tests no longer need to build on Linux (they currently require
-# mojo_support_legacy_core=true, which only Linux developer builds can set).
-assert(is_linux || is_chromeos)
+assert(is_chromeos)
 
 group("mojo_core") {
   visibility = [ "//chromeos/ash/components/mojo_proxy/*" ]
@@ -191,17 +188,15 @@ source_set("core") {
     "core/watcher_set.h",
   ]
 
-  defines = [ "MOJO_LEGACY_SYSTEM_IMPL_IMPLEMENTATION" ]
+  defines = [
+    "MOJO_LEGACY_SYSTEM_IMPL_IMPLEMENTATION",
 
-  # Mirrors the //mojo/core and //mojo/core/ports defines, which are enabled
-  # on ChromeOS (and Android) builds. They affect the wire protocol, so they
-  # must match what ChromeOS legacy Mojo Core peers were built with.
-  if (is_chromeos) {
-    defines += [
-      "MOJO_LEGACY_CORE_LEGACY_PROTOCOL",
-      "MOJO_LEGACY_BACKWARDS_COMPAT",
-    ]
-  }
+    # Mirrors the //mojo/core and //mojo/core/ports defines, which are enabled
+    # on ChromeOS (and Android) builds. They affect the wire protocol, so they
+    # must match what ChromeOS legacy Mojo Core peers were built with.
+    "MOJO_LEGACY_CORE_LEGACY_PROTOCOL",
+    "MOJO_LEGACY_BACKWARDS_COMPAT",
+  ]
 
   public_deps = [
     ":mojo_buildflags",

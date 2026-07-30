@@ -19,14 +19,17 @@
 
 namespace {
 
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 constexpr char kUseFlagsPathName[] = "/etc/ui_use_flags.txt";
 constexpr char kMojoIpczUseFlag[] = "ipcz";
+#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 
 }  // namespace
 
 ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
     InProcessBrowserTestMixinHost* host)
     : InProcessBrowserTestMixin(host) {
+#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
   base::FilePath use_flags_path(kUseFlagsPathName);
   if (base::PathExists(use_flags_path)) {
     std::string data;
@@ -41,6 +44,7 @@ ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
       feature_list_.InitAndEnableFeature(mojo::core::kMojoIpcz);
     }
   }
+#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 }
 
 ChromeOSIntegrationTestMixin::~ChromeOSIntegrationTestMixin() = default;
