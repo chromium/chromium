@@ -37,36 +37,9 @@
 #endif
 
 #ifndef HAS_AVATAR_BADGE_SPECS
-// Fallback specs when the included avatar decoration header does not define
-// badge specs.
-// TODO(crbug.com/532163925): Remove this section once we can consume the
-// correct public and branded specs (after the branded specs can be pulled).
-inline constexpr ui::ColorId kAvatarBadgeBackgroundColorId =
-    ui::kColorRefNeutral50;
-
-inline constexpr float kAvatarBadgeUnscaledWidth = 37.0f;
-inline constexpr float kAvatarBadgeUnscaledHeight = 22.0f;
-inline constexpr float kAvatarBadgeShadowDx = 0.0f;
-inline constexpr float kAvatarBadgeShadowDy = 0.0f;
-inline constexpr float kAvatarBadgeShadowBlur = 0.0f;
-inline constexpr float kAvatarBadgeShadowInversePadding = 0.0f;
-inline constexpr ui::ColorId kAvatarBadgeShadowColorId = ui::kColorRefNeutral90;
-inline constexpr float kAvatarBadgeWaveBlurFactor = 0.0f;
-
-inline constexpr std::array<ui::ColorId, 0> kAvatarBadgeBaseColorIds = {};
-inline constexpr std::array<float, 0> kAvatarBadgeBaseOffsets = {};
-inline constexpr std::array<ui::ColorId, 0> kAvatarBadgeOverlayColorIds = {};
-inline constexpr std::array<float, 0> kAvatarBadgeOverlayOffsets = {};
-
-inline constexpr std::array<float, 2> kAvatarBadgeBaseStart = {0.0f, 0.0f};
-inline constexpr std::array<float, 2> kAvatarBadgeBaseEnd = {0.0f, 0.0f};
-inline constexpr std::array<float, 2> kAvatarBadgeOverlayStart = {0.0f, 0.0f};
-inline constexpr std::array<float, 2> kAvatarBadgeOverlayEnd = {0.0f, 0.0f};
-
-inline constexpr std::array<AvatarBadgePathOp, 0> kAvatarBadgeWaveOps = {};
-inline constexpr std::array<std::array<float, 2>, 0> kAvatarBadgeWavePoints =
-    {};
-#endif  // HAS_AVATAR_BADGE_SPECS
+#error \
+    "HAS_AVATAR_BADGE_SPECS must be defined by the avatar decoration specs header."
+#endif
 
 namespace {
 
@@ -280,9 +253,11 @@ void PaintAvatarBadgeBackground(gfx::Canvas* canvas,
   canvas->DrawPath(pill_path, bg_flags);
 
   if (wave_path.has_value()) {
-    DrawBadgeInnerShadow(canvas, width, height, pill_path, color_provider);
+    // Draw background wave layers first so that the inner drop shadow is
+    // rendered on top rather than being obscured by opaque wave fills.
     DrawBadgeBackground(canvas, width, height, pill_path, color_provider,
                         wave_path);
+    DrawBadgeInnerShadow(canvas, width, height, pill_path, color_provider);
   }
 }
 
@@ -290,8 +265,16 @@ void PaintAvatarBadgeBackground(gfx::Canvas* canvas,
 
 // static
 std::u16string AvatarBadgeView::GetAvatarBadgeLabel(int tier) {
-  // TODO(crbug.com/532163925): Decide the label based on the tier.
-  return u"Tier";
+  switch (tier) {
+    case 1:
+      return std::u16string(kAvatarBadgeLabelTier1);
+    case 2:
+      return std::u16string(kAvatarBadgeLabelTier2);
+    case 3:
+      return std::u16string(kAvatarBadgeLabelTier3);
+    default:
+      return std::u16string();
+  }
 }
 
 AvatarBadgeView::AvatarBadgeView(const std::u16string& label_text,

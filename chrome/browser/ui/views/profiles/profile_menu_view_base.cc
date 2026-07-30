@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -172,15 +173,13 @@ class AvatarImageView : public views::ImageView {
 
  public:
   AvatarImageView(const ui::ImageModel& avatar_image,
-                  const ProfileMenuViewBase* root_view,
                   int image_size,
                   int border_size,
-                  bool has_dotted_ring)
+                  ProfileMenuViewBase::AvatarRingType avatar_ring)
       : avatar_image_(avatar_image),
         image_size_(image_size),
         border_size_(border_size),
-        has_dotted_ring_(has_dotted_ring),
-        root_view_(root_view) {
+        avatar_ring_(avatar_ring) {
     if (avatar_image_.IsEmpty()) {
       // This can happen if the account image hasn't been fetched yet, if there
       // is no image, or in tests.
@@ -197,42 +196,47 @@ class AvatarImageView : public views::ImageView {
     DCHECK(!avatar_image_.IsEmpty());
     ui::ColorProvider* color_provider = GetColorProvider();
     CHECK(color_provider);
-    const bool should_show_gradient_ring_enabled =
-        ShouldShowAvatarGradientRing(&(root_view_->profile()));
 
     gfx::ImageSkia sized_avatar_image;
     bool should_crop = true;
 
-    if (has_dotted_ring_) {
-      const int size_with_border = image_size_ + 2 * border_size_;
-      sized_avatar_image = profiles::GetAvatarWithDottedRing(
-          avatar_image_, size_with_border, /*has_padding=*/true,
-          /*has_background=*/true, *color_provider);
-      // Dotted ring avatar does not support a border, as the border is already
-      // included with the dotted ring.
-      CHECK_EQ(border_size_, 0);
-    } else if (should_show_gradient_ring_enabled) {
-      // Keep the avatar's size identical with the no-ring case, the ring
-      // expands outwards.
-      sized_avatar_image = AddLinearGradientRingToAvatar(
-          avatar_image_, *color_provider, image_size_);
-      should_crop = false;
-    } else {
-      if (border_size_ > 0) {
-        // Total image size is `image_size_ + 2 * border_size_`.
-        ui::ImageModel sized_avatar_image_without_border =
-            ProfileMenuViewBase::GetCircularSizedImage(avatar_image_,
-                                                       image_size_);
-        sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
-            sized_avatar_image_without_border.Rasterize(color_provider),
-            gfx::Insets(border_size_));
-      } else {
-        sized_avatar_image =
-            profiles::GetSizedAvatarImageModel(avatar_image_, image_size_)
-                .Rasterize(color_provider);
+    switch (avatar_ring_) {
+      case ProfileMenuViewBase::AvatarRingType::kDotted: {
+        const int size_with_border = image_size_ + 2 * border_size_;
+        sized_avatar_image = profiles::GetAvatarWithDottedRing(
+            avatar_image_, size_with_border, /*has_padding=*/true,
+            /*has_background=*/true, *color_provider);
+        // Dotted ring avatar does not support a border, as the border is
+        // already included with the dotted ring.
+        CHECK_EQ(border_size_, 0);
+        break;
       }
-      sized_avatar_image = profiles::AddBackgroundToImage(sized_avatar_image,
-                                                          GetBackgroundColor());
+      case ProfileMenuViewBase::AvatarRingType::kGradient: {
+        // Keep the avatar's size identical with the no-ring case, the ring
+        // expands outwards.
+        sized_avatar_image = AddLinearGradientRingToAvatar(
+            avatar_image_, *color_provider, image_size_);
+        should_crop = false;
+        break;
+      }
+      case ProfileMenuViewBase::AvatarRingType::kNone: {
+        if (border_size_ > 0) {
+          // Total image size is `image_size_ + 2 * border_size_`.
+          ui::ImageModel sized_avatar_image_without_border =
+              ProfileMenuViewBase::GetCircularSizedImage(avatar_image_,
+                                                         image_size_);
+          sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
+              sized_avatar_image_without_border.Rasterize(color_provider),
+              gfx::Insets(border_size_));
+        } else {
+          sized_avatar_image =
+              profiles::GetSizedAvatarImageModel(avatar_image_, image_size_)
+                  .Rasterize(color_provider);
+        }
+        sized_avatar_image = profiles::AddBackgroundToImage(
+            sized_avatar_image, GetBackgroundColor());
+        break;
+      }
     }
 
     if (should_crop) {
@@ -254,8 +258,7 @@ class AvatarImageView : public views::ImageView {
   ui::ImageModel avatar_image_;
   const int image_size_;
   const int border_size_;
-  const bool has_dotted_ring_;
-  raw_ptr<const ProfileMenuViewBase> root_view_;
+  const ProfileMenuViewBase::AvatarRingType avatar_ring_;
 };
 
 BEGIN_METADATA(AvatarImageView)
@@ -484,6 +487,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   constexpr int kSubtitleBottomMarginInfoBelow = 4;
   constexpr int kSubtitleBottomMarginButtonBelow = 12;
   constexpr int kButtonBottomMargin = 28;
+  constexpr int kAvatarBadgeTopMargin = 8;
 
   // Vertical view structure when all elements are present. Square brackets []
   // represent empty space:
@@ -566,12 +570,22 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   identity_info_container_->AddChildView(
       views::Builder<views::View>(
           std::make_unique<AvatarImageView>(
-              params.profile_image, this,
+              params.profile_image,
               kIdentityInfoImageSize - 2 * params.profile_image_padding,
-              params.profile_image_padding, params.has_dotted_ring))
+              params.profile_image_padding, params.avatar_ring))
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_top(kAvatarTopMargin))
           .Build());
+
+  // Optional subscription badge.
+  if (params.avatar_ring == AvatarRingType::kGradient) {
+    if (auto badge_view = GetAvatarBadgeView(params.badge_label)) {
+      badge_view->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(kAvatarBadgeTopMargin, 0, 0, 0));
+      identity_info_container_->AddChildView(std::move(badge_view));
+    }
+  }
 
   // Title.
   const bool has_any_subtitle =
