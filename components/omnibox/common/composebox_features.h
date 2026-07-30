@@ -43,6 +43,12 @@ BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxEverywhere);
 // If enabled, skills are enabled in the composebox/searchbox for Omnibox Popup.
 BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxPopup);
 
+// Parameter determining the daily limit for the context menu animation.
+extern const base::FeatureParam<int> kContextMenuAnimationDailyLimit;
+
+// Parameter determining the lifetime limit for the context menu animation.
+extern const base::FeatureParam<int> kContextMenuAnimationLifetimeLimit;
+
 // If enabled, the composebox context menu will stay open on selection for
 // realbox.
 extern const base::FeatureParam<bool> kKeepMenuOpenOnTabSelectForRealbox;

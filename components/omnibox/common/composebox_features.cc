@@ -28,6 +28,16 @@ const base::FeatureParam<bool>
         "enable_tab_deselection",
         false);
 
+const base::FeatureParam<int> kContextMenuAnimationDailyLimit(
+    &kContextMenuAnimationLimiting,
+    "ContextMenuAnimationDailyLimit",
+    5);
+
+const base::FeatureParam<int> kContextMenuAnimationLifetimeLimit(
+    &kContextMenuAnimationLimiting,
+    "ContextMenuAnimationLifetimeLimit",
+    20);
+
 bool IsTabDeselectionInComposeboxEnabled() {
   return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
          kContextManagementInComposeboxEnableTabDeselection.Get();
