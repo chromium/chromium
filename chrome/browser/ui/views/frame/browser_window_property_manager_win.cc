@@ -54,7 +54,9 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   // name. See http://crbug.com/41308099.
   std::wstring app_id =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-              browser->is_type_app_popup() || browser->is_type_devtools() ||
+              browser->GetType() ==
+                  BrowserWindowInterface::Type::TYPE_APP_POPUP ||
+              browser->is_type_devtools() ||
               (browser->GetType() ==
                    BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE &&
                !browser->app_name().empty())
@@ -64,7 +66,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
                 profile->GetPath());
   // Apps set their relaunch details based on app's details.
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->is_type_app_popup()) {
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
         web_app::GetAppIdFromApplicationName(browser->app_name()),

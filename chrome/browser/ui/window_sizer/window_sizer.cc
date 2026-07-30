@@ -114,7 +114,8 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     // position.
     if (browser_ && !web_app::AppBrowserController::IsWebApp(browser_) &&
         (browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-         browser_->is_type_app_popup() || browser_->is_type_devtools())) {
+         browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP ||
+         browser_->is_type_devtools())) {
       return false;
     }
 
@@ -455,7 +456,7 @@ ui::mojom::WindowShowState WindowSizer::GetWindowDefaultShowState(
   use_command_line =
       use_command_line ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->is_type_app_popup();
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
 #endif
 
   if (use_command_line && base::CommandLine::ForCurrentProcess()->HasSwitch(

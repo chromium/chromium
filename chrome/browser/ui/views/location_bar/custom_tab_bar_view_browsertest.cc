@@ -296,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
   Browser* popup_browser =
       OpenPopup(app_view->GetActiveWebContents(), out_of_scope_url);
-  EXPECT_TRUE(popup_browser->is_type_app_popup());
+  EXPECT_EQ(popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_APP_POPUP);
 
   // Out of scope, so custom tab bar should be shown.
   EXPECT_TRUE(web_app::AppBrowserController::From(popup_browser)

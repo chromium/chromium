@@ -1178,7 +1178,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, AboutBlankPWAPopup) {
   EXPECT_TRUE(AppBrowserController::IsWebApp(popup_browser));
 
   // The popup browser's BrowserWindowInterface::Type should be TYPE_APP_POPUP.
-  EXPECT_TRUE(popup_browser->is_type_app_popup());
+  EXPECT_EQ(popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_APP_POPUP);
 
   // Toolbar should not be shown, as about:blank app popups are a special case.
   EXPECT_FALSE(web_app::AppBrowserController::From(popup_browser)

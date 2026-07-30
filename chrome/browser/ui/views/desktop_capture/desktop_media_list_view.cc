@@ -43,9 +43,10 @@ gfx::ImageSkia LoadDefaultIcon(aura::Window* window) {
   // windows without Browser association as apps.
   // Technically dev tool is actually a special app, but we would like to
   // display product logo for it, because intuitively it is internal to browser.
-  bool is_app = !browser ||
-                browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-                browser->is_type_app_popup();
+  bool is_app =
+      !browser ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
   int idr = is_app ? IDR_APP_DEFAULT_ICON : IDR_PRODUCT_LOGO_32;
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

@@ -374,7 +374,7 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
     if (primary_main_frame &&
         primary_main_frame->GetLastCommittedOrigin().IsSameOriginWith(
             start_url) &&
-        browser()->is_type_app_popup()) {
+        browser()->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
       return false;
     }
   }

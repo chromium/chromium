@@ -664,7 +664,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // Navigate() should have opened a new `TYPE_APP_POPUP` window.
   Browser* app_popup_browser = params.browser->GetBrowserForMigrationOnly();
-  EXPECT_TRUE(app_popup_browser->is_type_app_popup());
+  EXPECT_EQ(app_popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_APP_POPUP);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), chrome::ChromeUINewTabPageURLAsGURL(),

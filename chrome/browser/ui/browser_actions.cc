@@ -328,7 +328,7 @@ bool IsInProgressiveWebApp(BrowserWindowInterface* bwi) {
   const Browser* const browser = bwi->GetBrowserForMigrationOnly();
   return browser &&
          (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-          browser->is_type_app_popup());
+          browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP);
 }
 
 BrowserWindowInterface* FindNormalBrowser(const Profile* profile) {

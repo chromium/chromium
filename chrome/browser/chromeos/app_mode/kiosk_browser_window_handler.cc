@@ -260,8 +260,8 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
 
   bool app_browser =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->is_type_app_popup() ||
-      browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP;
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP ||
+      browser->is_type_popup();
   if (!app_browser) {
     // If this browser is not an app browser, create a new app browser if none
     // yet exists.
@@ -363,7 +363,8 @@ void KioskBrowserWindowHandler::OnBrowserClosed(
 bool KioskBrowserWindowHandler::IsNewBrowserWindowAllowed(
     Browser* browser) const {
   return kiosk_policies_.IsWindowCreationAllowed() &&
-         browser->is_type_app_popup() && web_app_name_.has_value() &&
+         browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP &&
+         web_app_name_.has_value() &&
          browser->app_name() == web_app_name_.value();
 }
 

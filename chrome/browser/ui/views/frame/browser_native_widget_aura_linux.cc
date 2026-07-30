@@ -45,7 +45,7 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   const Browser& browser = *browser_view()->browser();
   params.wm_class_name =
       (browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser.is_type_app_popup())
+       browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)
           ? shell_integration_linux::GetWMClassFromAppName(browser.app_name())
           // This window is a hosted app or v1 packaged app.
           // NOTE: v2 packaged app windows are created by
@@ -61,7 +61,7 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
   if ((browser.GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser.is_type_app_popup()) &&
+       browser.GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) &&
       browser.GetProfile()) {
     params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
         browser.app_name(), browser.GetProfile()->GetPath());

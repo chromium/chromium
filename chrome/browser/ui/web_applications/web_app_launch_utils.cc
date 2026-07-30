@@ -185,7 +185,7 @@ std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
       system_app && system_app->ShouldHaveTabStrip();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   const bool has_tab_strip =
-      !browser->is_type_app_popup() &&
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_APP_POPUP &&
       (should_have_tab_strip_for_swa ||
        provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id));
   return std::make_unique<WebAppBrowserController>(*provider, browser, app_id,

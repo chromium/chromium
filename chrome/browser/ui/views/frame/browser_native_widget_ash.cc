@@ -108,7 +108,7 @@ void BrowserNativeWidgetAsh::OnWidgetInitDone() {
   // Ash window manager.
   window_state->SetCanConsumeSystemKeys(
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->is_type_app_popup());
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP);
 
   app_restore::AppRestoreInfo::GetInstance()->OnWidgetInitialized(GetWidget());
 }
@@ -201,15 +201,16 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
   params.init_properties_container.SetProperty(
       app_restore::kAppTypeBrowser,
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser->is_type_app_popup()));
+       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP));
 
   params.init_properties_container.SetProperty(app_restore::kBrowserAppNameKey,
                                                browser->app_name());
   params.init_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 
-  bool is_app = browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-                browser->is_type_app_popup();
+  bool is_app =
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
   web_app::AppBrowserController* controller =
       web_app::AppBrowserController::From(browser);
   if (controller && controller->system_app()) {

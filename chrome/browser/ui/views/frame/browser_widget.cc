@@ -172,7 +172,7 @@ void BrowserWidget::InitBrowserWidget() {
 #if BUILDFLAG(IS_OZONE)
   params.inhibit_keyboard_shortcuts =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->is_type_app_popup();
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
 
   params.session_data = browser->platform_session_data();
 #endif

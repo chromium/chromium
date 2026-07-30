@@ -401,7 +401,7 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
   Browser* browser = bwi->GetBrowserForMigrationOnly();
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser->is_type_app_popup())) {
+       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
     LogDecision(ReadAnythingOmniboxChipDecision::kHideAppWindow);
     return false;
   }

@@ -563,7 +563,8 @@ ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
 std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #if BUILDFLAG(IS_CHROMEOS)
   // System App popups (settings pages) always use default theme.
-  if (system_app() && browser()->is_type_app_popup()) {
+  if (system_app() &&
+      browser()->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
     return std::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

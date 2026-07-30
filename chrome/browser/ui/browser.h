@@ -396,7 +396,7 @@ class Browser : public TabStripModelObserver,
   void TabStripEmpty() override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
-  bool is_type_app_popup() const { return type_ == TYPE_APP_POPUP; }
+  bool is_type_popup() const { return type_ == TYPE_POPUP; }
   bool is_type_devtools() const { return type_ == TYPE_DEVTOOLS; }
 
   // Called each time the browser window is shown.
