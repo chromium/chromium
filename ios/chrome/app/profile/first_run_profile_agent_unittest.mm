@@ -81,6 +81,8 @@
 }
 - (void)presentPinTabBubble {
 }
+- (void)presentCreateTabGroupBubble {
+}
 - (void)showPageActionMenuFromTabGrid {
 }
 - (void)activateGridContainerConstraints {

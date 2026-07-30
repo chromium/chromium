@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -40,8 +41,13 @@ class TabGroupsTaskInfo : public TaskInfo {
   }
   TaskInfo::NavigationAction GetNavigationAction() const override {
     return base::BindRepeating(^(CommandDispatcher* dispatcher) {
-      id<SceneCommands> handler = HandlerForProtocol(dispatcher, SceneCommands);
-      [handler displayTabGridInMode:TabGridOpeningMode::kTabGroups];
+      id<SceneCommands> sceneHandler =
+          HandlerForProtocol(dispatcher, SceneCommands);
+      [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+
+      id<TabGridCommands> tabGridHandler =
+          HandlerForProtocol(dispatcher, TabGridCommands);
+      [tabGridHandler presentCreateTabGroupBubble];
     });
   }
 };

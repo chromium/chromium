@@ -47,6 +47,9 @@ class TabGroup;
 // Presents an IPH bubble to highlight pinning the active tab in the Tab Grid.
 - (void)presentPinTabBubble;
 
+// Presents an IPH bubble to highlight creating a tab group in the Tab Grid.
+- (void)presentCreateTabGroupBubble;
+
 // Presents the page action menu from the tab grid, registering the source.
 - (void)showPageActionMenuFromTabGrid;
 
