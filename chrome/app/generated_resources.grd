@@ -683,9 +683,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_READING_MODE" desc="Context menu menuitem to open page in reading mode view">
            Open in reading mode
           </message>
-          <message name="IDS_CONTENT_CONTEXT_READING_MODE_SELECTION" desc="Context menu menuitem to open selected text in reading mode view">
-           Open “<ph name="SELECTION">$1<ex>text</ex></ph>” in reading mode
-          </message>
           <message name="IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE" desc="Context menu item to listen to this page">
            Listen to this page
           </message>
@@ -1023,9 +1020,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_READING_MODE" desc="Context menu menuitem to open page in reading mode view">
            Open in Reading Mode
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_READING_MODE_SELECTION" desc="In Title Case: Context menu menuitem to open selected text in reading mode view">
-           Open “<ph name="SELECTION">$1<ex>text</ex></ph>” in Reading Mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE" desc="In Title Case: Context menu item to listen to this page">
            Listen to This Page

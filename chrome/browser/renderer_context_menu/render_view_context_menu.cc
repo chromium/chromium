@@ -2772,16 +2772,8 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
 
   // Show Read Anything option if it's not already open in the side panel.
   if (IsNormalBrowser() && !IsReadAnythingEntryShowing(GetBrowser())) {
-    std::u16string label;
-    const std::u16string printable_selection_text = PrintableSelectionText();
-    if (is_menu_simplification_enabled && !printable_selection_text.empty()) {
-      label = l10n_util::GetStringFUTF16(
-          IDS_CONTENT_CONTEXT_READING_MODE_SELECTION, printable_selection_text);
-    } else {
-      label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_READING_MODE);
-    }
-
-    menu_model_.AddItem(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, label);
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                                    IDS_CONTENT_CONTEXT_READING_MODE);
 
     if (is_menu_simplification_enabled) {
       menu_model_.SetIconForCommandId(
