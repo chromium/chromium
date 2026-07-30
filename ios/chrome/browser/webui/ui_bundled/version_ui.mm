@@ -7,6 +7,8 @@
 #import <memory>
 
 #import "base/command_line.h"
+#import "base/i18n/icubridge/date_time_formatter.h"
+#import "base/i18n/icubridge/icu_bridge.h"
 #import "base/i18n/time_formatting.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
@@ -62,11 +64,15 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                   IDS_VERSION_UI_COPY_LABEL);
   html_source->AddLocalizedString(version_ui::kCopyNotice,
                                   IDS_VERSION_UI_COPY_NOTICE);
+  using base::i18n::IcuBridge;
+  using base::i18n::datetime_options::Y;
+
   html_source->AddString(
       version_ui::kCopyright,
       l10n_util::GetStringFUTF16(
           IDS_IOS_ABOUT_VERSION_COPYRIGHT,
-          base::LocalizedTimeFormatWithPattern(base::Time::Now(), "y")));
+          IcuBridge::GetInstance().date_time_formatter().Format(
+              base::Time::Now(), Y::Medium())));
   html_source->AddLocalizedString(version_ui::kRevision,
                                   IDS_VERSION_UI_REVISION);
   std::string last_change(version_info::GetLastChange());
