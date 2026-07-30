@@ -12,6 +12,7 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -180,6 +181,7 @@ bool ChromeBrowserCloudManagementControllerDesktop::
           kEnrollmentSuccess:
       case ChromeBrowserCloudManagementController::RegisterResult::
           kEnrollmentFailedSilently:
+        CHECK(!IsEnterpriseStartupDialogShowing(), base::NotFatalUntil::M155);
 #if BUILDFLAG(IS_MAC)
         app_controller_mac::EnterpriseStartupDialogClosed();
 #endif

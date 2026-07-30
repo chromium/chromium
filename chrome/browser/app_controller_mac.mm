@@ -27,6 +27,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -2691,6 +2692,10 @@ void CreateGuestProfileIfNeeded() {
 }
 
 void EnterpriseStartupDialogClosed() {
+  CHECK(!g_browser_process->browser_policy_connector()
+             ->chrome_browser_cloud_management_controller()
+             ->IsEnterpriseStartupDialogShowing(),
+        base::NotFatalUntil::M155);
   NSNotification* notify = [NSNotification
       notificationWithName:NSApplicationDidFinishLaunchingNotification
                     object:NSApp];

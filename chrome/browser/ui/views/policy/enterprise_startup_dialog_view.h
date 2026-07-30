@@ -39,6 +39,8 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   void AddWidgetObserver(views::WidgetObserver* observer);
   void RemoveWidgetObserver(views::WidgetObserver* observer);
 
+  bool IsShowing();
+
  private:
   // Run the dialog modally for MacOSX.
   void StartModalDialog();
