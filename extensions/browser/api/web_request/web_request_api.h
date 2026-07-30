@@ -164,21 +164,26 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
 
     ~RequestIDGenerator();
 
-    // Generates a WebRequest ID. If the same (routing_id,
-    // network_service_request_id) pair is passed to this as was previously
-    // passed to SaveID(), the `request_id` passed to SaveID() will be returned.
-    int64_t Generate(int32_t routing_id, int32_t network_service_request_id);
+    // Generates a WebRequest ID. If `SaveID()` was previously called with the
+    // same (`routing_id`, `client_request_id`) pair, returns the saved ID and
+    // removes the mapping. Otherwise, generates and returns a new unique ID.
+    int64_t Generate(int32_t routing_id, int32_t client_request_id);
 
-    // This saves a WebRequest ID mapped to the (routing_id,
-    // network_service_request_id) pair. Clients must call Generate() with the
-    // same ID pair to retrieve the `request_id`, or else there may be a memory
-    // leak.
+    // Maps a WebRequest ID to a (`routing_id`, `client_request_id`) pair when a
+    // request is restarted. Callers must subsequently call `Generate()` with
+    // the same pair to reclaim the ID and prevent memory leaks.
     void SaveID(int32_t routing_id,
-                int32_t network_service_request_id,
+                int32_t client_request_id,
                 uint64_t request_id);
+
+    // Generates a non-zero request ID to forward to the network service for
+    // requests originating from child processes. Values are unique for the
+    // lifetime of this generator (until wrap-around).
+    int32_t GenerateNetworkRequestId();
 
    private:
     int64_t id_ = 0;
+    int32_t network_request_id_ = 0;
     std::map<std::pair<int32_t, int32_t>, uint64_t> saved_id_map_;
   };
 
