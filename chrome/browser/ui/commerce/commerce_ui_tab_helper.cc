@@ -692,13 +692,6 @@ CommerceUiTabHelper::GetPageActionControllerNotificationCallback(
       std::move(page_action_icon_update_callback));
 }
 
-void CommerceUiTabHelper::UpdatePageActionIconView(PageActionIconType type) {
-  BrowserWindowInterface* bwi = tab().GetBrowserWindowInterface();
-  if (!bwi) {
-    return;
-  }
 
-  BrowserWindow::FromBrowser(bwi)->UpdatePageActionIcon(type);
-}
 
 }  // namespace commerce

@@ -200,10 +200,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   base::RepeatingClosure GetPageActionControllerNotificationCallback(
       base::RepeatingClosure page_action_icon_update_callback);
 
-  // This helper is for the legacy page actions. It will be removed after the
-  // migration to the new framework.
-  void UpdatePageActionIconView(PageActionIconType type);
-
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;

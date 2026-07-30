@@ -106,9 +106,7 @@ class TestBrowserWindow : public BrowserWindow,
   ui::mojom::WindowShowState GetWindowShowState() const override;
   bool IsFullscreen() const override;
   LocationBar* GetLocationBar() const override;
-  void UpdatePageActionIcon(PageActionIconType type) override {}
   autofill::AutofillBubbleHandler* GetAutofillBubbleHandler() override;
-  void ExecutePageActionIconForTesting(PageActionIconType type) override {}
   void SetFocusToLocationBar(bool is_user_initiated) override {}
   void UpdateReloadStopState(bool is_loading, bool force) override {}
   void UpdateToolbar(content::WebContents* contents) override {}

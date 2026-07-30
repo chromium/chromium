@@ -232,12 +232,6 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
           page_action_params));
   views::SetHitTestComponent(page_action_container_,
                              static_cast<int>(HTCLIENT));
-
-  // Note: the page action setup below is for the legacy page actions framework,
-  // which will eventually be removed altogether.
-  // This is the point where we will be inserting page action icons.
-  page_action_insertion_point_ = static_cast<int>(children().size());
-
   bool create_extensions_container = true;
   auto display_mode = (base::FeatureList::IsEnabled(
                            features::kDesktopPWAsElidedExtensionsMenu) ||
@@ -390,28 +384,6 @@ void WebAppToolbarButtonContainer::DisableAnimationForTesting(bool disable) {
   g_animation_disabled_for_testing = disable;
 }
 
-void WebAppToolbarButtonContainer::AddPageActionIcon(
-    std::unique_ptr<views::View> icon) {
-  auto* icon_ptr =
-      AddChildViewAt(std::move(icon), page_action_insertion_point_++);
-  views::SetHitTestComponent(icon_ptr, static_cast<int>(HTCLIENT));
-}
-
-int WebAppToolbarButtonContainer::GetPageActionIconSize() const {
-  return GetLayoutConstant(LayoutConstant::kWebAppPageActionIconSize);
-}
-
-gfx::Insets WebAppToolbarButtonContainer::GetPageActionIconInsets(
-    const PageActionIconView* icon_view) const {
-  const int icon_size =
-      icon_view->GetImageContainerView()->GetPreferredSize().height();
-  if (icon_size == 0) {
-    return gfx::Insets();
-  }
-
-  return PageActionIconInsetsFromSize(icon_size);
-}
-
 gfx::Insets WebAppToolbarButtonContainer::PageActionIconInsetsFromSize(
     int icon_size) const {
   const int height = toolbar_button_provider_->GetToolbarButtonSize().height();
@@ -497,12 +469,6 @@ void WebAppToolbarButtonContainer::OnImmersiveRevealStarted() {
   if (content_settings_container_) {
     content_settings_container_->EnsureVisible();
   }
-}
-
-// PageActionIconView::Delegate:
-content::WebContents*
-WebAppToolbarButtonContainer::GetWebContentsForPageActionIconView() {
-  return browser_view_->GetActiveWebContents();
 }
 
 void WebAppToolbarButtonContainer::AddedToWidget() {

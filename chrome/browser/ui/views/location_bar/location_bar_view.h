@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "components/permissions/permission_prompt.h"
@@ -75,7 +74,6 @@ class OmniboxPopupFileSelector;
 class OmniboxPopupUI;
 class OmniboxPopupView;
 class OmniboxViewViews;
-class PageActionIconContainerView;
 class PermissionChipView;
 class PermissionDashboardView;
 class Profile;
@@ -116,7 +114,6 @@ class LocationBarView
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
       public device::GeolocationSystemPermissionManager::PermissionObserver,
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-      public PageActionIconView::Delegate,
       public OmniboxPopupPresenterDelegate {
   METADATA_HEADER(LocationBarView, views::View)
 
@@ -452,14 +449,7 @@ class LocationBarView
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
-  // PageActionIconView::Delegate:
-  content::WebContents* GetWebContentsForPageActionIconView() override;
-  bool ShouldHidePageActionIcons() const override;
-  bool ShouldHidePageActionIcon(
-      const PageActionIconView* icon_view) const override;
-  bool ShouldHidePageActionIconForContext(
-      const PageActionIconView* icon_view,
-      metrics::OmniboxEventProto::PageClassification page_context) const;
+  bool ShouldHidePageActionIcons() const;
 
   struct PageActionInfo {
     // Is the AIM page action the right-most visible page action?
@@ -603,7 +593,6 @@ class LocationBarView
   ContentSettingViews content_setting_views_;
 
   // The container for page action icons.
-  raw_ptr<PageActionIconContainerView> page_action_icon_container_ = nullptr;
   raw_ptr<page_actions::PageActionContainerView> page_action_container_ =
       nullptr;
 

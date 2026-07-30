@@ -1339,10 +1339,6 @@ void Browser::ProcessPendingUIUpdates() {
       // handled in Browser::OnActiveTabChanged().
       BookmarkBarController::From(this)->UpdateBookmarkBarState(
           BookmarkBarController::StateChangeReason::kTabState);
-
-      // TODO(crbug.com/40122780): Ideally, we should simply ask the state to
-      // update, and doing that in an appropriate and efficient manner.
-      window_->UpdatePageActionIcon(PageActionIconType::kPwaInstall);
     }
 
     // We don't need to process INVALIDATE_STATE, since that's not visible.

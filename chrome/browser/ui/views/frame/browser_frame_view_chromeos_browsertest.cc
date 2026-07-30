@@ -75,7 +75,6 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -502,16 +501,10 @@ class WebAppFrameViewChromeOSTest
     return web_app_frame_toolbar_->paint_as_active_;
   }
 
-  IconLabelBubbleView* GetPageActionView(
-      std::variant<actions::ActionId, PageActionIconType> action_type) {
-    if (std::holds_alternative<actions::ActionId>(action_type)) {
-      auto action_id = std::get<actions::ActionId>(action_type);
-      auto* provider = browser_view_->toolbar_button_provider();
-      return page_actions::GetIconLabelBubbleViewForTesting(
-          provider->GetPageActionViewInterface(action_id), action_id);
-    } else {
-      return nullptr;
-    }
+  IconLabelBubbleView* GetPageActionView(actions::ActionId action_id) {
+    auto* provider = browser_view_->toolbar_button_provider();
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(action_id), action_id);
   }
 
   ContentSettingImageView* GrantGeolocationPermission() {

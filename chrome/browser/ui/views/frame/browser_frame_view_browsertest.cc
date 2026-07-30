@@ -9,10 +9,12 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -423,9 +425,12 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, DISABLED_SaveCardIcon) {
   nav_observer.Wait();
   offer_observer.Wait();
 
-  PageActionIconView* icon =
-      app_browser_view_->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kSaveCard);
+  page_actions::PageActionViewInterface* page_action_interface =
+      app_browser_view_->toolbar_button_provider()->GetPageActionViewInterface(
+          kActionShowPaymentsBubbleOrPage);
+  ASSERT_TRUE(page_action_interface);
+  views::View* icon =
+      page_action_interface->GetIconLabelBubbleViewNotMigrated();
   EXPECT_TRUE(GetAppFrameView()->Contains(icon));
   EXPECT_TRUE(icon->GetVisible());
 }

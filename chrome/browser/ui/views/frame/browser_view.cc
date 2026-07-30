@@ -187,7 +187,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -2284,22 +2283,8 @@ ToolbarButtonProvider* BrowserView::toolbar_button_provider() {
   return ToolbarButtonProvider::From(browser_);
 }
 
-void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
-  PageActionIconView* icon =
-      ToolbarButtonProvider::From(browser_)->GetPageActionIconView(type);
-  if (icon) {
-    icon->Update();
-  }
-}
-
 autofill::AutofillBubbleHandler* BrowserView::GetAutofillBubbleHandler() {
   return autofill_bubble_handler_.get();
-}
-
-void BrowserView::ExecutePageActionIconForTesting(PageActionIconType type) {
-  ToolbarButtonProvider::From(browser_)
-      ->GetPageActionIconView(type)
-      ->ExecuteForTesting();
 }
 
 LocationBar* BrowserView::GetLocationBar() const {
@@ -5909,9 +5894,7 @@ void BrowserView::OnImmersiveModeControllerDestroyed() {
 // BrowserView, webapps::AppBannerManager::Observer implementation:
 void BrowserView::OnInstallableWebAppStatusUpdated(
     webapps::InstallableWebAppCheckResult result,
-    const std::optional<webapps::WebAppBannerData>& data) {
-  UpdatePageActionIcon(PageActionIconType::kPwaInstall);
-}
+    const std::optional<webapps::WebAppBannerData>& data) {}
 
 void BrowserView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   UpdateAccessibleNameForRootView();

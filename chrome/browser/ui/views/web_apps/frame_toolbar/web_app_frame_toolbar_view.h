@@ -80,7 +80,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   PinnedToolbarActions* GetPinnedToolbarActions() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::BubbleAnchor GetDefaultExtensionDialogAnchor() override;
-  PageActionIconView* GetPageActionIconView(PageActionIconType type) override;
   page_actions::PageActionViewInterface* GetPageActionViewInterface(
       actions::ActionId action_id) override;
   AppMenuControl* GetAppMenuControl() override;

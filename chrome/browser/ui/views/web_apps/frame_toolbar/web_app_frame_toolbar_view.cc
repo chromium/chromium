@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -284,10 +285,6 @@ views::BubbleAnchor WebAppFrameToolbarView::GetDefaultExtensionDialogAnchor() {
   }
   auto* control = GetAppMenuControl();
   return control ? control->GetAnchor() : views::BubbleAnchor();
-}
-PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
-    PageActionIconType type) {
-  return nullptr;
 }
 
 page_actions::PageActionViewInterface*

@@ -17,7 +17,6 @@ class AvatarToolbarButtonInterface;
 class BrowserWindowInterface;
 class PinnedToolbarActions;
 class ExtensionsContainerViews;
-class PageActionIconView;
 class ReloadButton;
 class ReloadControl;
 class ToolbarButton;
@@ -56,12 +55,6 @@ class ToolbarButtonProvider {
   // Gets the default anchor for extension dialogs if the
   // ToolbarActionView is not visible or available.
   virtual views::BubbleAnchor GetDefaultExtensionDialogAnchor() = 0;
-
-  // Gets the specified page action icon. This function should only be used
-  // if you need functionality for the legacy page action icon view. This
-  // method will be removed after the migration is complete.
-  virtual PageActionIconView* GetPageActionIconView(
-      PageActionIconType type) = 0;
 
   // Gets an interface representing the specified page action icon. This
   // function can be used to retrieve either the legacy page action icon view,

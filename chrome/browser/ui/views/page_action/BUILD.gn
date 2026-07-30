@@ -15,11 +15,6 @@ source_set("page_action") {
   public = [
     "anchored_message_view.h",
     "page_action_container_view.h",
-    "page_action_icon_container.h",
-    "page_action_icon_loading_indicator_view.h",
-    "page_action_icon_params.h",
-    "page_action_icon_view.h",
-    "page_action_icon_view_observer.h",
     "page_action_view.h",
     "page_action_view_interface.h",
     "page_action_view_params.h",
@@ -63,10 +58,6 @@ source_set("impl") {
     "multi_icon_button.cc",
     "multi_icon_button.h",
     "page_action_container_view.cc",
-    "page_action_icon_container.cc",
-    "page_action_icon_loading_indicator_view.cc",
-    "page_action_icon_params.cc",
-    "page_action_icon_view.cc",
     "page_action_view.cc",
     "page_action_view_util.cc",
     "webui_page_action_control.cc",
@@ -170,7 +161,6 @@ source_set("unit_tests") {
   sources = [
     "anchored_message_view_unittest.cc",
     "page_action_container_view_unittest.cc",
-    "page_action_icon_view_unittest.cc",
     "page_action_view_unittest.cc",
     "webui_page_action_control_unittest.cc",
   ]

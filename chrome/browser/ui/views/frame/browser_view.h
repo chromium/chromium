@@ -539,9 +539,7 @@ class BrowserView : public BrowserWindow,
   bool GetCanResize() override;
   ui::mojom::WindowShowState GetWindowShowState() const override;
   bool IsFullscreen() const override;
-  void UpdatePageActionIcon(PageActionIconType type) override;
   autofill::AutofillBubbleHandler* GetAutofillBubbleHandler() override;
-  void ExecutePageActionIconForTesting(PageActionIconType type) override;
   LocationBar* GetLocationBar() const override;
   void SetFocusToLocationBar(bool is_user_initiated) override;
   void UpdateReloadStopState(bool is_loading, bool force) override;

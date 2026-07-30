@@ -99,14 +99,7 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
 
   std::optional<actions::ActionId> action_id = GetActionIdForPageAction();
 
-  // Legacy path for unmigrated page actions or when migration disabled by
-  // feature flag.
   if (!action_id.has_value()) {
-    if (BrowserWindowInterface* browser =
-            GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-                web_contents())) {
-      BrowserWindow::FromBrowser(browser)->UpdatePageActionIcon(*icon_type);
-    }
     return;
   }
 

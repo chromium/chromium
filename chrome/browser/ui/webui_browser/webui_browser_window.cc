@@ -813,19 +813,10 @@ void WebUIBrowserWindow::OnContentsElementShown(ui::TrackedElement* element) {
   }
 }
 
-void WebUIBrowserWindow::UpdatePageActionIcon(PageActionIconType type) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 autofill::AutofillBubbleHandler*
 WebUIBrowserWindow::GetAutofillBubbleHandler() {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
-}
-
-void WebUIBrowserWindow::ExecutePageActionIconForTesting(
-    PageActionIconType type) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 LocationBar* WebUIBrowserWindow::GetLocationBar() const {

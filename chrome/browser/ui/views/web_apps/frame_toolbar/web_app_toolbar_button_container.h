@@ -15,8 +15,6 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
@@ -39,9 +37,7 @@ class ExtensionsToolbarCoordinator;
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
                                      public ContentSettingImageViewDelegate,
-                                     public ImmersiveModeController::Observer,
-                                     public PageActionIconView::Delegate,
-                                     public PageActionIconContainer {
+                                     public ImmersiveModeController::Observer {
   METADATA_HEADER(WebAppToolbarButtonContainer, views::View)
 
  public:
@@ -113,15 +109,6 @@ class WebAppToolbarButtonContainer : public views::View,
   static constexpr base::TimeDelta kTitlebarAnimationDelay =
       base::Milliseconds(750);
 
-  // PageActionIconContainer:
-  void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
-
-  // PageActionIconView::Delegate:
-  int GetPageActionIconSize() const override;
-
-  gfx::Insets GetPageActionIconInsets(
-      const PageActionIconView* icon_view) const override;
-
   // Methods for coordinate the titlebar animation (origin text slide, menu
   // highlight and icon fade in).
   bool GetAnimate() const;
@@ -147,9 +134,6 @@ class WebAppToolbarButtonContainer : public views::View,
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
 
-  // PageActionIconView::Delegate:
-  content::WebContents* GetWebContentsForPageActionIconView() override;
-
   // views::View:
   void AddedToWidget() override;
 
@@ -171,7 +155,6 @@ class WebAppToolbarButtonContainer : public views::View,
   SkColor foreground_color_ = gfx::kPlaceholderColor;
   SkColor background_color_ = gfx::kPlaceholderColor;
 
-  int page_action_insertion_point_ = 0;
   raw_ptr<page_actions::PageActionContainerView> page_action_container_;
 
   std::unique_ptr<ExtensionsToolbarCoordinator> extensions_toolbar_coordinator_;

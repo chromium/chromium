@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_TEST_SUPPORT_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_TEST_SUPPORT_H_
 
-#include "ui/actions/action_id.h"
-
-class IconLabelBubbleView;
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 
 namespace page_actions {
 class PageActionViewInterface;

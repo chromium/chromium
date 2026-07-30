@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_views_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"

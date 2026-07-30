@@ -78,9 +78,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -469,29 +466,6 @@ void LocationBarView::Init() {
           page_action_items, page_actions::PageActionPropertiesProvider(),
           page_action_params));
 
-  PageActionIconParams params;
-  // |browser_| may be null when LocationBarView is used for non-Browser windows
-  // such as PresentationReceiverWindowView, which do not support page actions.
-  if (browser_) {
-    // Page action icons that participate in label animations should be added
-    // first so that they appear on the left side of the icon container.
-    // TODO(crbug.com/40835681): Improve the ordering heuristics for page action
-    // icons and determine a way to handle simultaneous icon animations.
-
-    params.types_enabled.push_back(PageActionIconType::kFederation);
-  }
-
-
-  params.icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
-  params.between_icon_spacing = kBetweenIconSpacing;
-  params.font_list = &page_action_font_list;
-  params.browser = browser_;
-  params.command_updater = command_updater();
-  params.icon_label_bubble_delegate = this;
-  params.page_action_icon_delegate = this;
-  page_action_icon_container_ =
-      AddChildView(std::make_unique<PageActionIconContainerView>(params));
-
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(
           &OmniboxView::SetUserText),
@@ -868,20 +842,6 @@ void LocationBarView::Layout(PassKey) {
     }
   };
 
-  // When the AIM page action is shown as the right-most page action in the
-  // location bar, it should be positioned flush against the right edge of the
-  // location bar.
-  // If page actions migration is enabled, then the extra padding that is
-  // usually added to bridge the new and legacy containers can be discounted.
-  const int kTrailingEdgePaddingForAim = 5;
-  const PageActionInfo info = GetPageActionInfo();
-  const int kTrailingEdgePaddingForNonAim = trailing_decorations_edge_padding;
-  add_trailing_decoration(page_action_icon_container_,
-                          /*intra_item_padding=*/0,
-                          /*edge_padding=*/
-                          info.is_aim_last_visible_page_action
-                              ? kTrailingEdgePaddingForAim
-                              : kTrailingEdgePaddingForNonAim);
   add_trailing_decoration(page_action_container_,
                           /*intra_item_padding=*/0,
                           /*edge_padding=*/trailing_decorations_edge_padding);
@@ -1234,10 +1194,6 @@ void LocationBarView::SetPermissionPromptShowing(bool showing) {
   }
 }
 
-WebContents* LocationBarView::GetWebContentsForPageActionIconView() {
-  return GetWebContents();
-}
-
 bool LocationBarView::ShouldHidePageActionIcons() const {
   if (!omnibox_view_) {
     return false;
@@ -1252,44 +1208,6 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
   // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
   // The page action icons are not relevant to the displayed suggestions.
   return GetOmniboxController()->IsPopupOpen();
-}
-
-bool LocationBarView::ShouldHidePageActionIcon(
-    const PageActionIconView* icon_view) const {
-  if (ShouldHidePageActionIcons()) {
-    return true;
-  }
-
-  if (ShouldHidePageActionIconForContext(
-          icon_view,
-          GetOmniboxController()->edit_model()->GetPageClassification())) {
-    return true;
-  }
-
-  if (!browser_) {
-    return false;
-  }
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  if (!browser_view) {
-    return false;
-  }
-
-  PinnedToolbarActions* pinned_toolbar_actions =
-      browser_view->toolbar_button_provider()->GetPinnedToolbarActions();
-  return pinned_toolbar_actions &&
-         pinned_toolbar_actions->IsActionPinnedOrPoppedOut(
-             icon_view->action_id().value_or(-1));
-}
-
-bool LocationBarView::ShouldHidePageActionIconForContext(
-    const PageActionIconView* icon_view,
-    metrics::OmniboxEventProto::PageClassification page_context) const {
-  if (omnibox::IsNTPPage(page_context)) {
-    return icon_view->action_id().value_or(kChromeActionsEnd) ==
-           kActionBookmarkThisTab;
-  }
-  return false;
 }
 
 /*
@@ -1354,16 +1272,8 @@ LocationBarView::PageActionInfo LocationBarView::GetPageActionInfo() const {
     }
   }
 
-  // Check PageActionIconContainerView (legacy page actions).
-  for (views::View* view : page_action_icon_container_->children()) {
-    if (view->GetVisible()) {
-      info.num_legacy_page_actions_shown++;
-    }
-  }
-
   if (migrated_aim_page_action_is_visible &&
-      (info.num_migrated_page_actions_shown +
-       info.num_legacy_page_actions_shown) == 1) {
+      info.num_migrated_page_actions_shown == 1) {
     info.is_aim_last_visible_page_action = true;
   }
 
@@ -1410,8 +1320,7 @@ int LocationBarView::GetMinimumLeadingWidth() const {
 }
 
 int LocationBarView::GetMinimumTrailingWidth() const {
-  int trailing_width = IncrementalMinimumWidth(page_action_icon_container_) +
-                       IncrementalMinimumWidth(page_action_container_);
+  int trailing_width = IncrementalMinimumWidth(page_action_container_);
 
   for (ContentSettingImageView* content_setting_view : content_setting_views_) {
     trailing_width += IncrementalMinimumWidth(content_setting_view);
