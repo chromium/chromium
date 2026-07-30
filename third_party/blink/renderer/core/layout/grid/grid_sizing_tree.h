@@ -174,6 +174,15 @@ class CORE_EXPORT GridSizingTree {
     has_block_size_dependent_grid_item_ = true;
   }
 
+  // True if any nested subgrid's baseline was deferred during track sizing
+  // because its layout subtree had unresolved geometry.
+  bool HasDeferredSubgridBaseline() const {
+    return has_deferred_subgrid_baseline_;
+  }
+  void SetHasDeferredSubgridBaseline() {
+    has_deferred_subgrid_baseline_ = true;
+  }
+
  private:
   struct SubgriddedItemIndices {
     wtf_size_t item_index_in_parent;
@@ -209,6 +218,9 @@ class CORE_EXPORT GridSizingTree {
 
   // True if any grid item in the tree depends on the block-size of its area.
   bool has_block_size_dependent_grid_item_{false};
+
+  // True if a nested subgrid's baseline was deferred during track sizing.
+  bool has_deferred_subgrid_baseline_{false};
 };
 
 // This class represents a subtree in a `GridSizingTree` and provides seamless
@@ -243,6 +255,10 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
   wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const {
     DCHECK(subgrid_data.IsSubgrid());
     return SizingTree().LookupSubgridIndex(subgrid_data.node);
+  }
+
+  wtf_size_t LookupSubgridSubtreeIndex(const GridItemData& subgrid_data) const {
+    return LookupSubgridIndex(subgrid_data) - subtree_root_;
   }
 
   GridSizingSubtree SubgridSizingSubtree(
@@ -295,6 +311,10 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
 
   void SetHasBlockSizeDependentGridItem() const {
     SizingTree().SetHasBlockSizeDependentGridItem();
+  }
+
+  void SetHasDeferredSubgridBaseline() const {
+    SizingTree().SetHasDeferredSubgridBaseline();
   }
 
  private:

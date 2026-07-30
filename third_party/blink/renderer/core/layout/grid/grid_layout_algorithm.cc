@@ -497,6 +497,17 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
                                  &grid_sizing_tree);
   }
 
+  // A standalone subgrid's baseline depends on its own children (which may be
+  // nested subgrids), so it can't be resolved until those are finalized. Run a
+  // bottom-up pass first: by resolving the innermost subgrids first, every grid
+  // has its standalone-axis subgrid baselines populated before the final
+  // top-down pass measures it.
+  if (grid_sizing_tree.HasDeferredSubgridBaseline()) {
+    ResolveBaselinesInStandaloneAxes(GridSizingSubtree(&grid_sizing_tree),
+                                     &grid_sizing_tree,
+                                     SizingConstraint::kLayout);
+  }
+
   // Calculate final alignment baselines of the entire grid sizing tree.
   CompleteFinalBaselineAlignment(&grid_sizing_tree);
 
@@ -953,7 +964,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
-    bool is_track_sizing) const {
+    bool is_track_sizing,
+    BaselineCollectionPhase phase) const {
   auto& layout_data = sizing_subtree.LayoutData();
 
   if (!layout_data.HasBaselines(track_direction)) {
@@ -962,7 +974,13 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
 
   auto& track_collection = sizing_subtree.SizingCollection(track_direction);
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
-  layout_data.ResetBaselines(track_direction, track_collection.GetSetCount());
+
+  // The bottom-up phase (`kBaselinesForStandaloneAxes`) accumulates subgrid
+  // baselines on top of the values from the previous baseline calculation pass
+  // during track sizing, so it must not reset them.
+  if (phase != BaselineCollectionPhase::kBaselinesForStandaloneAxes) {
+    layout_data.ResetBaselines(track_direction, track_collection.GetSetCount());
+  }
 
   for (auto& grid_item :
        sizing_subtree.GetGridItems().IncludeSubgriddedItems()) {
@@ -971,15 +989,36 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
       continue;
     }
 
+    // The standalone-axes phase only fills in subgrid items and skips all leaf
+    // nodes.
+    if (phase == BaselineCollectionPhase::kBaselinesForStandaloneAxes &&
+        !grid_item.IsSubgrid()) {
+      continue;
+    }
+
     GridLayoutSubtree* subgrid_layout_subtree = nullptr;
     if (grid_item.IsSubgrid()) {
-      subgrid_layout_subtree = MakeGarbageCollected<GridLayoutSubtree>(
-          layout_tree, sizing_subtree.LookupSubgridIndex(grid_item));
+      // The standalone-axes phase re-finalizes only the current subtree, so the
+      // `layout_tree` passed in here is that subtree with its root at index 0;
+      // rebase the subgrid's absolute index to a subtree-relative one.
+      const wtf_size_t subgrid_index =
+          phase == BaselineCollectionPhase::kBaselinesForStandaloneAxes
+              ? sizing_subtree.LookupSubgridSubtreeIndex(grid_item)
+              : sizing_subtree.LookupSubgridIndex(grid_item);
+      subgrid_layout_subtree =
+          MakeGarbageCollected<GridLayoutSubtree>(layout_tree, subgrid_index);
 
       if (subgrid_layout_subtree->HasUnresolvedGeometry()) {
-        // Calling `Layout` for a nested subgrid rely on the geometry of its
-        // respective layout subtree to be fully resolved. Otherwise, the
-        // subgrid won't be able to resolve its intrinsic sizes.
+        // A subgrid's geometry can only be unresolved during the track-sizing
+        // phase; by the standalone-axes and final phases the sizing tree has
+        // been finalized, so every subgrid subtree is fully resolved.
+        CHECK_EQ(phase, BaselineCollectionPhase::kBaselinesForTrackSizing);
+        // Laying out a nested subgrid relies on its layout subtree geometry
+        // being fully resolved; otherwise it can't resolve its intrinsic sizes,
+        // so its baseline is deferred here. Flag the tree so the bottom-up
+        // standalone-axis pass resolves this subgrid's baseline and propagates
+        // it up to the ancestors that measure it.
+        sizing_subtree.SetHasDeferredSubgridBaseline();
         continue;
       }
     }
@@ -1315,7 +1354,10 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
         } else {
           ComputeGridItemBaselines(
               layout_tree, sizing_subtree, track_direction, sizing_constraint,
-              /*is_track_sizing=*/opt_track_direction.has_value());
+              /*is_track_sizing=*/opt_track_direction.has_value(),
+              opt_track_direction.has_value()
+                  ? BaselineCollectionPhase::kBaselinesForTrackSizing
+                  : BaselineCollectionPhase::kFinalBaselines);
         }
       };
 
@@ -1329,6 +1371,37 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
   ComputeBaselineAlignmentForEachSubgrid(sizing_subtree, *this, layout_tree,
                                          opt_track_direction,
                                          sizing_constraint);
+}
+
+void GridLayoutAlgorithm::ResolveBaselinesInStandaloneAxes(
+    const GridSizingSubtree& sizing_subtree,
+    GridSizingTree* sizing_tree,
+    SizingConstraint sizing_constraint) const {
+  ForEachSubgrid(sizing_subtree, *this,
+                 [&](const GridLayoutAlgorithm& subgrid_algorithm,
+                     const GridSizingSubtree& subgrid_subtree,
+                     const SubgriddedItemData& /*subgrid_data*/) {
+                   subgrid_algorithm.ResolveBaselinesInStandaloneAxes(
+                       subgrid_subtree, sizing_tree, sizing_constraint);
+                 });
+
+  // If both axes are subgridded, this grid inherits all its baselines top-down
+  // and has nothing to resolve here.
+  auto& layout_data = sizing_subtree.LayoutData();
+  if (layout_data.HasSubgriddedAxis(kForColumns) &&
+      layout_data.HasSubgriddedAxis(kForRows)) {
+    return;
+  }
+
+  const GridLayoutTree* layout_tree = sizing_subtree.FinalizeTree();
+  for (auto track_direction : {kForColumns, kForRows}) {
+    if (!layout_data.HasSubgriddedAxis(track_direction)) {
+      ComputeGridItemBaselines(
+          layout_tree, sizing_subtree, track_direction, sizing_constraint,
+          /*is_track_sizing=*/false,
+          BaselineCollectionPhase::kBaselinesForStandaloneAxes);
+    }
+  }
 }
 
 void GridLayoutAlgorithm::CompleteFinalBaselineAlignment(
