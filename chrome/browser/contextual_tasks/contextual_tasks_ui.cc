@@ -1081,6 +1081,9 @@ ContextualTasksUIConfig::CreateWebUIController(content::WebUI* web_ui,
 void ContextualTasksUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
         pending_receiver) {
+  if (!contextual_tasks::IsContextualTasksUIEnabled()) {
+    return;
+  }
   composebox_page_handler_factory_receiver_.reset();
   composebox_page_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
