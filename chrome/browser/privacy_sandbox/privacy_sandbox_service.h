@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -139,17 +139,6 @@ class PrivacySandboxService : public KeyedService {
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
-
-  // Notice Framework Result Callbacks.
-  virtual void UpdateTopicsApiResult(bool value) = 0;
-  virtual void UpdateProtectedAudienceApiResult(bool value) = 0;
-  virtual void UpdateMeasurementApiResult(bool value) = 0;
-  // Notice Framework Eligibility Callbacks.
-  virtual privacy_sandbox::EligibilityLevel GetTopicsApiEligibility() = 0;
-  virtual privacy_sandbox::EligibilityLevel
-  GetProtectedAudienceApiEligibility() = 0;
-  virtual privacy_sandbox::EligibilityLevel
-  GetAdMeasurementApiEligibility() = 0;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

@@ -43,10 +43,6 @@
 
 namespace {
 
-using ::privacy_sandbox::EligibilityLevel;
-
-using enum privacy_sandbox::EligibilityLevel;
-
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
 // Returns whether 3P cookies are blocked by |cookie_settings|. This can be
@@ -593,41 +589,6 @@ void PrivacySandboxServiceImpl::OnAdMeasurementPrefChanged() {
   }
 }
 
-// We are intentionally not setting the old pref
-// `kPrivacySandboxM1ConsentDecisionMade` here. This means that when switching
-// to the new implementation, GetRequiredPromptType as part of the old PSService
-// will no longer return the correct value due to its reliance on the old prefs.
-// See go/notice-framework-migration-plan-onepager for more details on how we
-// plan on doing a safe migration with this constraint.
-void PrivacySandboxServiceImpl::UpdateTopicsApiResult(bool value) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, value);
-}
-
-// We are intentionally not setting the old prefs
-// `PrivacySandboxM1EEANoticeAcknowledged` or
-// `PrivacySandboxM1RowNoticeAcknowledged` here. This means that when switching
-// to the new implementation, GetRequiredPromptType as part of the old
-// PSService will no longer return the correct value due to its reliance on the
-// old prefs. See go/notice-framework-migration-plan-onepager for more
-// details on how we plan on doing a safe migration with this constraint
-void PrivacySandboxServiceImpl::UpdateProtectedAudienceApiResult(bool value) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, value);
-}
-
-// We are intentionally not setting the old pref
-// `PrivacySandboxM1EEANoticeAcknowledged`,
-// `PrivacySandboxM1RowNoticeAcknowledged`,
-// `PrivacySandboxM1RestrictedNoticeAcknowledged` here.
-// This means that when switching to the new implementation,
-// the GetRequiredPromptType as part of the old PSService will no longer return
-// the correct value due to its reliance on the old prefs. See
-// go/notice-framework-migration-plan-onepager for more details on the migration
-// plan.
-void PrivacySandboxServiceImpl::UpdateMeasurementApiResult(bool value) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                            value);
-}
-
 bool PrivacySandboxServiceImpl::IsConsentRequired() {
   return privacy_sandbox::IsConsentRequired(privacy_sandbox_countries_);
 }
@@ -641,15 +602,3 @@ bool PrivacySandboxServiceImpl::IsRestrictedNoticeRequired() {
       privacy_sandbox_countries_);
 }
 
-EligibilityLevel PrivacySandboxServiceImpl::GetTopicsApiEligibility() {
-  return kNotEligible;
-}
-
-EligibilityLevel
-PrivacySandboxServiceImpl::GetProtectedAudienceApiEligibility() {
-  return kNotEligible;
-}
-
-EligibilityLevel PrivacySandboxServiceImpl::GetAdMeasurementApiEligibility() {
-  return kNotEligible;
-}

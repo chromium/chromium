@@ -54,11 +54,6 @@ class NoticeCatalogImpl : public NoticeCatalog {
   // Populates the catalog with all the notices and their requirements.
   void Populate();
 
-  template <typename T>
-  auto EligibilityCallback(auto (T::*f)());
-
-  template <typename T>
-  T* GetApiService();
 
   raw_ptr<Profile> profile_;
   std::vector<std::unique_ptr<NoticeApi>> apis_;

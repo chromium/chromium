@@ -65,7 +65,6 @@ namespace {
 using ::browsing_topics::Topic;
 using ::privacy_sandbox::CanonicalTopic;
 
-using EligibilityLevel = ::privacy_sandbox::EligibilityLevel;
 using ::testing::Combine;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -1434,47 +1433,4 @@ TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxAdMeasurementPolicy) {
                         {kAdMeasurementReportingOrigin,
                          url::Origin::Create(GURL("https://embedded.com"))}},
               TestOutput{{kIsPrivateAggregationAllowed, false}});
-}
-
-class PrivacySandboxNoticeFrameworkResultCallbackUnitTest
-    : public PrivacySandboxServiceTest,
-      public testing::WithParamInterface<bool> {};
-
-TEST_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
-       UpdateTopicsApiResult_UpdatesCorrectly) {
-  privacy_sandbox_service()->UpdateTopicsApiResult(GetParam());
-  EXPECT_EQ(GetParam(),
-            prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
-}
-
-TEST_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
-       UpdateProtectedAudienceApiResult_UpdatesCorrectly) {
-  privacy_sandbox_service()->UpdateProtectedAudienceApiResult(GetParam());
-  EXPECT_EQ(GetParam(),
-            prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
-}
-
-TEST_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
-       UpdateMeasurementApiResult_UpdatesCorrectly) {
-  privacy_sandbox_service()->UpdateMeasurementApiResult(GetParam());
-  EXPECT_EQ(GetParam(),
-            prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
-}
-
-INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
-                         PrivacySandboxNoticeFrameworkResultCallbackUnitTest,
-                         testing::Bool());
-
-class PrivacySandboxNoticeFrameworkEligibilityTest
-    : public PrivacySandboxServiceTest {};
-
-TEST_F(PrivacySandboxNoticeFrameworkEligibilityTest, EligibilityCallbacks) {
-  // TODO(crbug.com/408017260): These are currently placeholders. Update tests
-  // when real eligibility logic is implemented.
-  EXPECT_EQ(privacy_sandbox_service()->GetTopicsApiEligibility(),
-            EligibilityLevel::kNotEligible);
-  EXPECT_EQ(privacy_sandbox_service()->GetProtectedAudienceApiEligibility(),
-            EligibilityLevel::kNotEligible);
-  EXPECT_EQ(privacy_sandbox_service()->GetAdMeasurementApiEligibility(),
-            EligibilityLevel::kNotEligible);
 }

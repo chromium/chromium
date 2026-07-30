@@ -90,21 +90,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (const, override));
   MOCK_METHOD(base::Time, TopicsConsentLastUpdateTime, (), (const, override));
   MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (const, override));
-  MOCK_METHOD(void, UpdateTopicsApiResult, (bool), (override));
-  MOCK_METHOD(void, UpdateProtectedAudienceApiResult, (bool), (override));
-  MOCK_METHOD(void, UpdateMeasurementApiResult, (bool), (override));
-  MOCK_METHOD(privacy_sandbox::EligibilityLevel,
-              GetTopicsApiEligibility,
-              (),
-              (override));
-  MOCK_METHOD(privacy_sandbox::EligibilityLevel,
-              GetProtectedAudienceApiEligibility,
-              (),
-              (override));
-  MOCK_METHOD(privacy_sandbox::EligibilityLevel,
-              GetAdMeasurementApiEligibility,
-              (),
-              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

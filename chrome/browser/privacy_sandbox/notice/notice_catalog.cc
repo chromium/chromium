@@ -10,8 +10,6 @@
 #include "chrome/browser/privacy_sandbox/notice/deprecated_notices.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace privacy_sandbox {
@@ -20,6 +18,10 @@ namespace {
 
 using enum privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 using enum privacy_sandbox::SurfaceType;
+
+EligibilityLevel AlwaysIneligible() {
+  return EligibilityLevel::kNotEligible;
+}
 
 template <typename T>
 std::unique_ptr<Notice> Make(NoticeId id) {
@@ -78,44 +80,22 @@ Notice* NoticeCatalogImpl::GetNotice(NoticeId notice_id) {
   return notice_ptr != notices_.end() ? notice_ptr->second.get() : nullptr;
 }
 
-template <typename T>
-auto NoticeCatalogImpl::EligibilityCallback(auto (T::*f)()) {
-  T* api_service = GetApiService<T>();
-  CHECK(api_service);
-  return base::BindRepeating(f, base::Unretained(api_service));
-}
-
-template <typename T>
-T* NoticeCatalogImpl::GetApiService() {
-  static_assert(std::is_void_v<T>,
-                "GetApiService not implemented for this type");
-  return nullptr;
-}
-
-template <>
-PrivacySandboxService*
-NoticeCatalogImpl::GetApiService<PrivacySandboxService>() {
-  return PrivacySandboxServiceFactory::GetForProfile(profile_);
-}
-
 void NoticeCatalogImpl::Populate() {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
 
   // Define APIs.
-  NoticeApi* topics = RegisterAndRetrieveNewApi()
-                          ->SetFeature(&kNoticeFrameworkTopicsApiFeature)
-                          ->SetEligibilityCallback(EligibilityCallback(
-                              &PrivacySandboxService::GetTopicsApiEligibility));
+  NoticeApi* topics =
+      RegisterAndRetrieveNewApi()
+          ->SetFeature(&kNoticeFrameworkTopicsApiFeature)
+          ->SetEligibilityCallback(base::BindRepeating(&AlwaysIneligible));
   NoticeApi* protected_audience =
       RegisterAndRetrieveNewApi()
           ->SetFeature(&kNoticeFrameworkProtectedAudienceApiFeature)
-          ->SetEligibilityCallback(EligibilityCallback(
-              &PrivacySandboxService::GetProtectedAudienceApiEligibility));
+          ->SetEligibilityCallback(base::BindRepeating(&AlwaysIneligible));
   NoticeApi* measurement =
       RegisterAndRetrieveNewApi()
           ->SetFeature(&kNoticeFrameworkMeasurementApiFeature)
-          ->SetEligibilityCallback(EligibilityCallback(
-              &PrivacySandboxService::GetAdMeasurementApiEligibility));
+          ->SetEligibilityCallback(base::BindRepeating(&AlwaysIneligible));
 
   // Define Notices.
   // Topics EEA Consent.
