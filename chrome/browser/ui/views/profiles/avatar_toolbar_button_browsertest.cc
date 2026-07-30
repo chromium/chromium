@@ -1951,8 +1951,8 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
                              PromoNotShownWhenPromotionsDisabled) {
   SetupRequirementsForPromoType(GetAvatarPromoType());
 
-  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-      prefs::kPromotionsEnabled, false);
+  g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
+                                               false);
   AvatarToolbarButtonInterface* avatar =
       GetAvatarToolbarButtonInterface(browser());
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
