@@ -23,10 +23,10 @@ export function getHtml(this: ThemesElement) {
   </div>
   <cr-grid columns="3" role="radiogroup">
     ${this.themes_.map((item, index) => html`
-      <div class="tile theme" tabindex="0" role="radio"
+      <div id="themeTile_${index}" class="tile theme" tabindex="0" role="radio"
           data-index="${index}" @click="${this.onThemeClick_}"
-          title="${item.attribution1}"
           aria-checked="${this.isThemeSelected_(item.imageUrl)}"
+          aria-label="${item.attribution1}"
           ?hidden="${!this.shouldShowTheme_(item.imageVerified)}">
         <customize-chrome-check-mark-wrapper
             ?checked="${this.isThemeSelected_(item.imageUrl)}">
@@ -40,8 +40,11 @@ export function getHtml(this: ThemesElement) {
           </div>
         </customize-chrome-check-mark-wrapper>
       </div>
+      <cr-tooltip for="themeTile_${index}" position="top">
+        ${item.attribution1}
+      </cr-tooltip>
     `)}
-  <cr-grid>
+  </cr-grid>
 </div>
 <!--_html_template_end_-->`;
 }

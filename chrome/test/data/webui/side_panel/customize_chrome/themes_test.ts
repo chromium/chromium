@@ -250,8 +250,11 @@ suite('ThemesTest', () => {
         themesElement.shadowRoot.querySelectorAll('.theme [checked]');
     assertEquals(1, checkedThemes.length);
     const checkedTile = checkedThemes[0]!.parentElement as HTMLElement;
-    assertEquals(checkedTile.title, 'attribution1_1');
     assertEquals(checkedTile.getAttribute('aria-checked'), 'true');
+    assertEquals(checkedTile.getAttribute('aria-label'), 'attribution1_1');
+    const tooltip = themesElement.shadowRoot.querySelector('cr-tooltip');
+    assertTrue(!!tooltip);
+    assertEquals(tooltip.textContent.trim(), 'attribution1_1');
 
     // Set daily refresh.
     theme.backgroundImage.collectionId = 'test_collection_id';
