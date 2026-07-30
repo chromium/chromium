@@ -294,7 +294,6 @@ source_set("web_applications") {
     "preinstalled_web_app_manager.h",
     "preinstalled_web_app_utils.cc",
     "preinstalled_web_app_utils.h",
-    "preinstalled_web_apps/extension_ids_to_replace.h",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils.h",
     "preinstalled_web_apps/preinstalled_web_apps.cc",
