@@ -55,7 +55,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             boolean isSelectionReadOnly,
             String selectedText) {
         List<SelectionMenuItem> items = new ArrayList<>();
-        if (shouldShowReadingMode()) {
+        if (shouldShowReadingMode(menuType)) {
             items.add(
                     new SelectionMenuItem.Builder(R.string.contextmenu_open_in_reading_mode)
                             .setId(R.id.contextmenu_open_in_reading_mode)
@@ -129,7 +129,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         return context.getString(R.string.contextmenu_search_web_for_text, fullName, sanitizedText);
     }
 
-    private boolean shouldShowReadingMode() {
+    private boolean shouldShowReadingMode(@MenuType int menuType) {
         if (mTab.isDestroyed()) return false;
 
         GURL pageUrl = mTab.getUrl();
@@ -140,6 +140,8 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                 UrlConstants.CHROME_SCHEME.equals(scheme)
                         || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)
                         || mTab.isNativePage();
-        return !isChromeOrNativePage && !DomDistillerUrlUtils.isDistilledPage(pageUrl);
+        return !isChromeOrNativePage
+                && !DomDistillerUrlUtils.isDistilledPage(pageUrl)
+                && menuType == MenuType.DROPDOWN;
     }
 }

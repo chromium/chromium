@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.selection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,8 +27,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -45,6 +48,7 @@ import java.util.List;
 /** Unit tests for {@link TextSelectionActionMenuDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
 public class TextSelectionActionMenuDelegateTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -57,6 +61,15 @@ public class TextSelectionActionMenuDelegateTest {
 
     private MockTab mTab;
     private TextSelectionActionMenuDelegate mDelegate;
+
+    private boolean containsId(List<SelectionMenuItem> items, int id) {
+        for (SelectionMenuItem item : items) {
+            if (item.id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Before
     public void setUp() {
@@ -76,12 +89,12 @@ public class TextSelectionActionMenuDelegateTest {
     public void testGetAdditionalMenuItems_standardWebPage() {
         List<SelectionMenuItem> items =
                 mDelegate.getAdditionalMenuItems(
-                        MenuType.FLOATING,
+                        MenuType.DROPDOWN,
                         /* isSelectionPassword= */ false,
                         /* isSelectionReadOnly= */ true,
                         /* selectedText= */ "test");
 
-        assertEquals(1, items.size());
+        assertEquals(2, items.size());
         SelectionMenuItem item = items.get(0);
         assertEquals(R.id.contextmenu_open_in_reading_mode, item.id);
 
@@ -97,12 +110,12 @@ public class TextSelectionActionMenuDelegateTest {
 
         List<SelectionMenuItem> items =
                 mDelegate.getAdditionalMenuItems(
-                        MenuType.FLOATING,
+                        MenuType.DROPDOWN,
                         /* isSelectionPassword= */ false,
                         /* isSelectionReadOnly= */ true,
                         /* selectedText= */ "test");
 
-        assertTrue(items.isEmpty());
+        assertFalse(containsId(items, R.id.contextmenu_open_in_reading_mode));
     }
 
     @Test
@@ -111,12 +124,12 @@ public class TextSelectionActionMenuDelegateTest {
 
         List<SelectionMenuItem> items =
                 mDelegate.getAdditionalMenuItems(
-                        MenuType.FLOATING,
+                        MenuType.DROPDOWN,
                         /* isSelectionPassword= */ false,
                         /* isSelectionReadOnly= */ true,
                         /* selectedText= */ "test");
 
-        assertTrue(items.isEmpty());
+        assertFalse(containsId(items, R.id.contextmenu_open_in_reading_mode));
     }
 
     @Test
@@ -127,12 +140,12 @@ public class TextSelectionActionMenuDelegateTest {
 
         List<SelectionMenuItem> items =
                 mDelegate.getAdditionalMenuItems(
-                        MenuType.FLOATING,
+                        MenuType.DROPDOWN,
                         /* isSelectionPassword= */ false,
                         /* isSelectionReadOnly= */ true,
                         /* selectedText= */ "test");
 
-        assertTrue(items.isEmpty());
+        assertFalse(containsId(items, R.id.contextmenu_open_in_reading_mode));
     }
 
     @Test
