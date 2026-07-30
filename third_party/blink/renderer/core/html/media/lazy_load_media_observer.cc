@@ -73,6 +73,11 @@ bool LazyLoadMediaObserver::LoadAllImagesAndBlockLoadEvent(
   for (const IntersectionObservation* observation :
        lazy_load_intersection_observer_->Observations()) {
     Element* element = observation->Target();
+    // The observer may retain an observation after its weak target is garbage
+    // collected.
+    if (!element) {
+      continue;
+    }
     if (!IsDescendantOrSameDocument(element->GetDocument(), for_document)) {
       continue;
     }

@@ -703,6 +703,26 @@ TEST_F(LazyLoadImagesTest, GarbageCollectDeferredLazyLoadImages) {
   EXPECT_EQ(nullptr, image);
 }
 
+TEST_F(LazyLoadImagesTest, CollectedObserverTargetDoesNotCrashOnPrint) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<body></body>");
+
+  WeakPersistent<HTMLImageElement> image =
+      MakeGarbageCollected<HTMLImageElement>(GetDocument());
+  GetDocument().body()->AppendChild(image);
+  LazyLoadMediaObserver& observer = GetDocument().EnsureLazyLoadMediaObserver();
+  observer.StartMonitoringNearViewport(&GetDocument(), image);
+  EXPECT_EQ(observer.GetObservationCountForTesting(), 1u);
+
+  image->remove();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_EQ(nullptr, image);
+  EXPECT_EQ(observer.GetObservationCountForTesting(), 1u);
+  observer.LoadAllImagesAndBlockLoadEvent(GetDocument());
+}
+
 // This is a regression test added for https://crbug.com/40071424, which was
 // filed as a result of outstanding decode promises *not* keeping an underlying
 // lazyload-deferred image alive, even after removal from the DOM. Images of
