@@ -248,28 +248,9 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   base::UmaHistogramEnumeration("Signin.AccountPreview.AllFetchTriggerCause",
                                 cause);
 
-  for (const auto& account : accounts) {
-    account_id_to_gaia_id_[account.account_id] = account.gaia;
-  }
-
-  if (switches::kAccountPreviewDataPersistAccounts.Get()) {
-    if (cached_data_.empty() && cause != FetchTriggerCause::kPeriodicRefresh) {
-      if (!HaveAccountsMutatedSinceLastFetch(accounts)) {
-        base::UmaHistogramEnumeration(
-            "Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch",
-            cause);
-
-        all_accounts_fetched_barrier_.Reset();
-        if (all_data_available_callback_for_testing_) {
-          std::move(all_data_available_callback_for_testing_).Run();
-        }
-        return;
-      }
-    }
-  }
-
   std::vector<GaiaId> gaia_ids_to_fetch;
   for (const auto& account : accounts) {
+    account_id_to_gaia_id_[account.account_id] = account.gaia;
     if (!cached_data_.contains(account.gaia)) {
       gaia_ids_to_fetch.push_back(account.gaia);
     }
@@ -351,45 +332,9 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   return std::nullopt;
 }
 
-bool AccountPreviewDataServiceImpl::HaveAccountsMutatedSinceLastFetch(
-    const std::vector<CoreAccountInfo>& accounts) const {
-  absl::flat_hash_set<std::string> last_hashed_gaia_ids;
-  for (const auto& val :
-       pref_service_->GetList(prefs::kAccountPreviewDataLastFetchAccounts)) {
-    if (const std::string* str = val.GetIfString()) {
-      last_hashed_gaia_ids.insert(*str);
-    }
-  }
-
-  if (accounts.size() != last_hashed_gaia_ids.size()) {
-    return true;
-  }
-  for (const auto& account : accounts) {
-    if (!last_hashed_gaia_ids.contains(account.gaia.ToString())) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void AccountPreviewDataServiceImpl::RecordAccountsUsedForLastFetch() {
-  if (switches::kAccountPreviewDataPersistAccounts.Get()) {
-    base::ListValue account_list;
-    for (const auto& [account_id, gaia_id] : account_id_to_gaia_id_) {
-      account_list.Append(gaia_id.ToString());
-    }
-    pref_service_->SetList(prefs::kAccountPreviewDataLastFetchAccounts,
-                           std::move(account_list));
-  } else {
-    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
-  }
-}
-
 void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
     bool should_reset_periodic_timer) {
   all_accounts_fetched_barrier_.Reset();
-
-  RecordAccountsUsedForLastFetch();
 
   if (base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {

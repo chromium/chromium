@@ -321,9 +321,6 @@ BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
 // This flag has no effect if `kEnableAccountPreviewData` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Controls whether fetched accounts are stored to reduce redundant fetches.
-const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts{
-    &kEnableAccountPreviewData, "persist_accounts", true};
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag controls whether the CCT captures the account name of the 1p app

@@ -292,8 +292,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewEntityPreviews);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccount);
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts;
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables the use of 1P app account information on Android in preferred account

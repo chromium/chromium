@@ -24,8 +24,6 @@ extern const char kAccountPreviewDataLastUpdatePref[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewNonPeriodicFetchCountPref[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kAccountPreviewDataLastFetchAccounts[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieHash[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieChangedTime[];

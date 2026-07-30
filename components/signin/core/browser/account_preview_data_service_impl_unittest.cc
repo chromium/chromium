@@ -472,6 +472,7 @@ TEST_F(AccountPreviewDataServiceTest, NoFetchOnStartupIfTimerNotExpired) {
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
 }
 
+
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountPreviewDataServiceTest,
        ClearsInvalidDataOnPrimaryAccountCleared) {
@@ -953,122 +954,6 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshWithNoAccounts) {
     EXPECT_EQ(
         0, prefs_.GetInteger(prefs::kAccountPreviewNonPeriodicFetchCountPref));
   }
-}
-
-TEST_F(AccountPreviewDataServiceTest, AccountsNotMutatedSkipsFetch) {
-  base::HistogramTester histograms;
-  base::test::ScopedFeatureList custom_feature_list;
-  custom_feature_list.InitAndEnableFeature(switches::kEnableAccountPreviewData);
-
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-
-  // Set the pref so they match
-  base::ListValue fetch_accounts;
-  fetch_accounts.Append(account1.gaia.ToString());
-  prefs_.SetList(prefs::kAccountPreviewDataLastFetchAccounts,
-                 std::move(fetch_accounts));
-
-  // Set the last update pref to just now, so the timer does NOT fire.
-  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
-
-  // We explicitly tear down and recreate the service here to emulate a browser
-  // cold boot. The mitigation we are testing specifically triggers when the
-  // in-memory cache is empty (which natively happens at startup) but the
-  // persisted valid accounts list is fully populated. Wiping the object
-  // entirely ensures we do not rely on testing-only cache-clearing methods
-  // and accurately replicates real startup lifecycle state.
-  network_delay_helper_ = nullptr;
-  service_.reset();
-
-  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
-  network_delay_helper_ = helper.get();
-  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-      version_info::Channel::UNKNOWN, &profile_metrics_service_);
-
-  base::RunLoop run_loop;
-  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-
-  // No timer fires, so we manually simulate an update.
-  service_->OnRefreshTokenUpdatedForAccount(account1);
-  run_loop.Run();
-
-  histograms.ExpectUniqueSample(
-      "Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch",
-      AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated,
-      1);
-
-  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.gaia));
-}
-
-TEST_F(AccountPreviewDataServiceTest,
-       M1b_AccountsMutatedAdditionTriggersFetch) {
-  base::HistogramTester histograms;
-  base::test::ScopedFeatureList custom_feature_list;
-  custom_feature_list.InitAndEnableFeature(switches::kEnableAccountPreviewData);
-
-  network_delay_helper_ = nullptr;
-  service_.reset();
-
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-
-  prefs_.SetList(prefs::kAccountPreviewDataLastFetchAccounts,
-                 base::ListValue());
-  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
-
-  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
-  network_delay_helper_ = helper.get();
-  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-      version_info::Channel::UNKNOWN, &profile_metrics_service_);
-
-  MockSuccessfulFetch(&test_url_loader_factory_);
-  base::RunLoop run_loop;
-  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-
-  service_->OnRefreshTokenUpdatedForAccount(account1);
-  run_loop.Run();
-
-  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
-}
-
-TEST_F(AccountPreviewDataServiceTest, AccountsMutatedRemovalTriggersFetch) {
-  base::HistogramTester histograms;
-  base::test::ScopedFeatureList custom_feature_list;
-  custom_feature_list.InitAndEnableFeature(switches::kEnableAccountPreviewData);
-
-  network_delay_helper_ = nullptr;
-  service_.reset();
-
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-
-  base::ListValue last_fetch;
-  last_fetch.Append("account1@gmail.com");
-  last_fetch.Append("account2@gmail.com");
-  prefs_.SetList(prefs::kAccountPreviewDataLastFetchAccounts,
-                 std::move(last_fetch));
-  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
-
-  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
-  network_delay_helper_ = helper.get();
-  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-      version_info::Channel::UNKNOWN, &profile_metrics_service_);
-
-  MockSuccessfulFetch(&test_url_loader_factory_);
-  base::RunLoop run_loop;
-  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-
-  service_->OnRefreshTokenUpdatedForAccount(account1);
-  run_loop.Run();
-
-  EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
 }
 
 TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshTimingParam) {
