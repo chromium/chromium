@@ -331,23 +331,6 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="2.39"/>
 </enum>
 
-<enum name="LinuxPasswordStoreUsage">
-  <int value="0" label="No decision"/>
-  <int value="1" label="No decision - Initialization failed"/>
-  <int value="2" label="Basic text"/>
-  <int value="3" label="Basic text - Initialization failed"/>
-  <int value="4" label="Gnome any"/>
-  <int value="5" label="Gnome any - Initialization failed"/>
-  <int value="6" label="Gnome keyring"/>
-  <int value="7" label="Gnome keyring - Initialization failed"/>
-  <int value="8" label="Gnome libsecret"/>
-  <int value="9" label="Gnome libsecret - Initialization failed"/>
-  <int value="10" label="KWallet"/>
-  <int value="11" label="KWallet - Initialization failed"/>
-  <int value="12" label="KWallet5"/>
-  <int value="13" label="KWallet5 - Initialization failed"/>
-</enum>
-
 <enum name="LinuxSandboxStatus">
   <int value="0" label="none"/>
   <int value="1" label="suid"/>
