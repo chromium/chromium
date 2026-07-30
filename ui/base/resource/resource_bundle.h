@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
     // Return a ref counted memory resource or null to attempt retrieval of the
     // default resource.
-    virtual scoped_refptr<base::RefCountedMemory> LoadDataResourceBytes(
+    virtual base::RefCountedMemory* LoadDataResourceBytes(
         int resource_id,
         ResourceScaleFactor scale_factor) = 0;
 
@@ -344,8 +344,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   bool HasDataResource(int resource_id) const;
 
   // Loads the raw bytes of a scale independent data resource or null.
-  scoped_refptr<base::RefCountedMemory> LoadDataResourceBytes(
-      int resource_id) const;
+  base::RefCountedMemory* LoadDataResourceBytes(int resource_id) const;
 
   // Whether the |resource_id| is gzipped in this bundle. False is also returned
   // if the resource is not found.
@@ -360,7 +359,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // before returning. Use ResourceHandle::kScaleFactorNone for scale
   // independent image resources (such as wallpaper). Returns null if we fail
   // to read the resource.
-  scoped_refptr<base::RefCountedMemory> LoadDataResourceBytesForScale(
+  base::RefCountedMemory* LoadDataResourceBytesForScale(
       int resource_id,
       ResourceScaleFactor scale_factor) const;
 
@@ -399,8 +398,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Get a localized resource (for example, localized image logo) given a
   // resource id.
-  scoped_refptr<base::RefCountedMemory> LoadLocalizedResourceBytes(
-      int resource_id) const;
+  base::RefCountedMemory* LoadLocalizedResourceBytes(int resource_id) const;
 
   // Returns a font list derived from the platform-specific "Base" font list.
   // The result is always cached and exists for the lifetime of the process.
