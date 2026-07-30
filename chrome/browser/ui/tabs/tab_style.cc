@@ -21,7 +21,6 @@ namespace {
 // the tab.
 constexpr int kSeparatorThickness = 2;
 constexpr int kSeparatorHorizontalMargin = 2;
-// TODO (crbug.com/40915785): This constant should be in LayoutConstants.
 constexpr int kSeparatorHeight = 16;
 
 // The padding from the top of the tab to the content area.

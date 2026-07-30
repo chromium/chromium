@@ -240,8 +240,9 @@ class TabModel final : public TabInterface,
   bool pinned_ = false;
   bool blocked_ = false;
   bool visible_ = false;
-  // TODO(crbug.com/392951786): Remove this property, and instead determine a
-  // tab's split status based on whether it is part of a split tab collection.
+  // In the future, it might be worth removing this property, and instead
+  // determine a tab's split status based on whether it is part of a split tab
+  // collection.
   std::optional<split_tabs::SplitTabId> split_;
   std::optional<tab_groups::TabGroupId> group_;
   raw_ptr<TabCollection> parent_collection_ = nullptr;

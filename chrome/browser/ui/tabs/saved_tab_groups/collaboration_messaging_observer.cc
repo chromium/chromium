@@ -114,7 +114,6 @@ std::optional<TabInfo> UnwrapTabInfo(PersistentMessage message) {
 void CollaborationMessagingObserver::HandleDirtyTabGroup(
     PersistentMessage message,
     MessageDisplayStatus display) {
-  // TODO(crbug.com/392604409): Refactor to use a TabGroupFeature.
   std::optional<LocalTabGroupID> local_tab_group_id = UnwrapTabGroupID(message);
   if (!local_tab_group_id) {
     return;
@@ -135,7 +134,6 @@ void CollaborationMessagingObserver::HandleDirtyTabGroup(
 void CollaborationMessagingObserver::HandleDirtyTab(
     PersistentMessage message,
     MessageDisplayStatus display) {
-  // TODO(crbug.com/392604409): Refactor to use a TabFeature.
   std::optional<TabInfo> tab_info = UnwrapTabInfo(message);
   if (!tab_info) {
     return;

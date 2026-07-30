@@ -71,8 +71,6 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
   std::vector<raw_ptr<content::WebContents, VectorExperimental>>
       active_tab_history_;
 
-  // TODO(crbug.com/364501603): revert smart pointer once the modularization is
-  // complete.
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 };
 

@@ -385,9 +385,6 @@ TabStripModel* TabModel::GetModelForTabInterface() const {
   return soon_to_be_owning_model_ ? soon_to_be_owning_model_ : owning_model_;
 }
 
-// TODO(crbug.com/392950857): Consider making collections responsible for
-// updating the properties of their children. TabModel::OnAddedToModel could be
-// called from here instead of manually doing it in TabStripModel.
 void TabModel::UpdateProperties() {
   bool pinned = false;
   std::optional<tab_groups::TabGroupId> group;

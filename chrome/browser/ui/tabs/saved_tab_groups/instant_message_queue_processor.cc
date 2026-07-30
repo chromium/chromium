@@ -282,8 +282,6 @@ base::TimeDelta InstantMessageQueueProcessor::GetMessageInterval() {
   // Take the maximum time a toast can show and add a second to ensure
   // that we wait until a message has completely timed out before trying
   // to show the next message.
-  // TODO(crbug.com/390814333): Determine the correct heuristic for
-  // time-between-messages.
   return base::Seconds(1) + std::max(ToastController::kToastDefaultTimeout,
                                      ToastController::kToastWithActionTimeout);
 }

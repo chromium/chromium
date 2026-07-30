@@ -416,20 +416,12 @@ int TabStripModelObserver::CountObservedModels(
 void TabStripModelObserver::StartedObserving(
     TabStripModelObserver::ModelPasskey,
     TabStripModel* model) {
-  // TODO(crbug.com/40639200): Add this DCHECK here. This DCHECK enforces
-  // that a given TabStripModelObserver only observes a given TabStripModel
-  // once.
-  // DCHECK_EQ(observed_models_.count(model), 0U);
   observed_models_.insert(model);
 }
 
 void TabStripModelObserver::StoppedObserving(
     TabStripModelObserver::ModelPasskey,
     TabStripModel* model) {
-  // TODO(crbug.com/40639200): Add this DCHECK here. This DCHECK enforces
-  // that a given TabStripModelObserver is only removed from a given
-  // TabStripModel once.
-  // DCHECK_EQ(observed_models_.count(model), 1U);
   observed_models_.erase(model);
 }
 

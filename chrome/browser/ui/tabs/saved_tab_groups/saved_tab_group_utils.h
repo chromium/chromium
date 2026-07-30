@@ -125,12 +125,6 @@ class SavedTabGroupUtils {
   static std::vector<tabs::TabInterface*> GetTabsInGroup(
       tab_groups::TabGroupId group_id);
 
-  // TODO(crbug.com/350514491) remove this once all cases are handled by
-  // GetTabsInGroup. Prefer GetTabsInGroup over this method.
-  // Returns the list of WebContentses in the local group `group_id` in order.
-  static std::vector<content::WebContents*> GetWebContentsesInGroup(
-      tab_groups::TabGroupId group_id);
-
   // Activates the first tab in the saved group. If a tab in the group is
   // already activated, then we focus the window the group belongs to instead.
   static void FocusFirstTabOrWindowInOpenGroup(

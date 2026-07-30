@@ -2047,8 +2047,6 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   const tab_groups::TabGroupId new_group =
       tab_groups::TabGroupId::GenerateNew();
   AddToNewGroupImpl(indices, new_group);
-  // TODO(crbug.com/339858272) : Consolidate all default save logic to
-  // TabStripModel::AddToNewGroupImpl.
   delegate_->GroupAdded(new_group);
 
   for (TabStripModelObserver& observer : observers_) {

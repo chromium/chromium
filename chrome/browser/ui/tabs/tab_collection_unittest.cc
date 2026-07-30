@@ -32,10 +32,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/392950857): Refactor tests so that things that are shared
-// between all tab collections are tested once at the TabCollectionBaseTest
-// level. Then only things specific to individual collections will be tested in
-// their respective test suites.
 class TabCollectionBaseTest : public ::testing::Test {
  public:
   TabCollectionBaseTest() {

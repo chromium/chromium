@@ -532,8 +532,6 @@ class TabStripModelObserver {
   // TabStripModel, which allows an observer to react to an impending change to
   // the TabStripModel. The only use case of this signal that is currently
   // supported is the drag controller completing a drag before a tab is removed.
-  // TODO(crbug.com/40838330): Unify and generalize this and OnTabWillBeAdded,
-  // e.g. via OnTabStripModelWillChange().
   virtual void OnTabWillBeRemoved(tabs::TabInterface* tab, int index);
 
   // Called when a tab is attempted to be closed but the closure is not

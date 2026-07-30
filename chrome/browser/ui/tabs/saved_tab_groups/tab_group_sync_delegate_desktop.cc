@@ -281,7 +281,6 @@ TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
 
 std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
-  // TODO(b/346871861): Implement.
   return std::vector<LocalTabID>();
 }
 
@@ -334,7 +333,6 @@ std::u16string TabGroupSyncDelegateDesktop::GetTabTitle(
 std::unique_ptr<SavedTabGroup>
 TabGroupSyncDelegateDesktop::CreateSavedTabGroupFromLocalGroup(
     const LocalTabGroupID& local_tab_group_id) {
-  // TODO(b/346871861): Implement.
   return nullptr;
 }
 
