@@ -359,10 +359,13 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             mContainer.addView(backButton);
         }
 
-        for (int i = 0; i < titles.size(); ++i) {
-            if (i < mFirstVisibleTitleIndex) continue;
-
-            if (i != mFirstVisibleTitleIndex) {
+        // SettingsInTab only shows the last title, not the full breadcrumb path.
+        int startIndex =
+                SettingsInTab.isEnabled()
+                        ? Math.max(mFirstVisibleTitleIndex, titles.size() - 1)
+                        : mFirstVisibleTitleIndex;
+        for (int i = startIndex; i < titles.size(); ++i) {
+            if (i != startIndex) {
                 // '>' separator.
                 var view = new ImageView(mContext);
                 view.setPadding(paddingPx, 0, paddingPx, 0);

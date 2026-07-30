@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -173,7 +174,7 @@ public class MultiColumnTitleUpdaterTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    public void testMultipleTitles_showsBackButtonAndNavigatesToPreviousDetailPane() {
+    public void testMultipleTitles_settingsInTabEnabled_showsBackButtonAndLastTitle() {
         List<MultiColumnSettings.Title> titles = new ArrayList<>();
         titles.add(
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
@@ -192,8 +193,8 @@ public class MultiColumnTitleUpdaterTest {
 
         updater.onTitleUpdated();
 
-        // Multiple titles should prepend the back button as child at index 0.
-        assertTrue(mContainer.getChildCount() > 1);
+        // When SettingsInTab is enabled, only the back button and the last title should be shown.
+        assertEquals(2, mContainer.getChildCount());
         assertTrue(mContainer.getChildAt(0) instanceof ChromeImageButton);
 
         // Back button should be offset to the left.
@@ -201,14 +202,10 @@ public class MultiColumnTitleUpdaterTest {
         var layoutParams = (LinearLayout.LayoutParams) backButton.getLayoutParams();
         assertTrue(layoutParams.getMarginStart() < 0);
 
-        // Parent title ("Appearance") should be clickable, but active title ("Theme") should not.
+        // Last title should be shown.
         assertTrue(mContainer.getChildAt(1) instanceof TextView);
-        assertEquals("Appearance", ((TextView) mContainer.getChildAt(1)).getText().toString());
-        assertTrue(mContainer.getChildAt(1).isClickable());
-
-        assertTrue(mContainer.getChildAt(3) instanceof TextView);
-        assertEquals("Theme", ((TextView) mContainer.getChildAt(3)).getText().toString());
-        assertFalse(mContainer.getChildAt(3).isClickable());
+        assertEquals("Theme", ((TextView) mContainer.getChildAt(1)).getText().toString());
+        assertFalse(mContainer.getChildAt(1).isClickable());
 
         // Clicking back button should pop to previous title ("Appearance") and trigger callback.
         backButton.performClick();
@@ -217,7 +214,7 @@ public class MultiColumnTitleUpdaterTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    public void testMultipleTitles_featureDisabled_noBackButton() {
+    public void testMultipleTitles_settingsInTabDisabled_noBackButton() {
         List<MultiColumnSettings.Title> titles = new ArrayList<>();
         titles.add(
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
@@ -236,7 +233,24 @@ public class MultiColumnTitleUpdaterTest {
 
         updater.onTitleUpdated();
 
-        // When SettingsInTab is disabled, back button is not shown (first child is TextView).
+        // When SettingsInTab is disabled, back button is not shown and all titles are added with
+        // separators.
+        assertEquals(3, mContainer.getChildCount());
+
         assertTrue(mContainer.getChildAt(0) instanceof TextView);
+        assertEquals("Appearance", ((TextView) mContainer.getChildAt(0)).getText().toString());
+        assertTrue(mContainer.getChildAt(0).isClickable());
+
+        assertTrue(mContainer.getChildAt(1) instanceof ImageView);
+
+        assertTrue(mContainer.getChildAt(2) instanceof TextView);
+        assertEquals("Theme", ((TextView) mContainer.getChildAt(2)).getText().toString());
+        assertFalse(mContainer.getChildAt(2).isClickable());
+
+        TextView parentTitle = (TextView) mContainer.getChildAt(0);
+        parentTitle.performClick();
+
+        // Clicking parent title ("Appearance") should pop to previous title and trigger callback.
+        verify(mTitleTapCallback).onResult("appearance_entry");
     }
 }
