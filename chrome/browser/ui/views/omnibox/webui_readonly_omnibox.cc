@@ -177,11 +177,15 @@ void WebUIReadOnlyOmnibox::Update() {
 void WebUIReadOnlyOmnibox::SetTextAndSelectedRange(
     const std::u16string& text,
     const std::u16string& inline_autocompletion,
-    const gfx::Range& selection) {
+    const gfx::Range& selection,
+    bool keep_additional_text) {
   text_ = text;
   inline_autocompletion_ = inline_autocompletion;
   selection_ = selection;
   ResetFormatting();
+  if (!keep_additional_text) {
+    additional_text_.clear();
+  }
 }
 
 std::u16string WebUIReadOnlyOmnibox::GetText() const {
@@ -306,8 +310,8 @@ void WebUIReadOnlyOmnibox::OnInlineAutocompleteTextMaybeChanged(
   // The JS side will likely render the inline completion using selection,
   // but conceptually we're at end of text.
   gfx::Range selection(user_text.size());
-  SetTextAndSelectedRange(user_text, inline_autocompletion, selection);
-  SetAdditionalText(std::u16string());
+  SetTextAndSelectedRange(user_text, inline_autocompletion, selection,
+                          /*keep_additional_text=*/false);
   ResetFormatting();
   EmphasizeURLComponents();
   RequestUpdateWebUI();
@@ -578,8 +582,11 @@ WebUIReadOnlyOmnibox::OnTextInput(
   if (text_input.browser_version == browser_version_) {
     OnBeforePossibleChange();
     ui_version_ = text_input.ui_version;
+    bool keep_additional_text =
+        text_ + inline_autocompletion_ ==
+        text_input.text + text_input.inline_autocompletion;
     SetTextAndSelectedRange(text_input.text, text_input.inline_autocompletion,
-                            text_input.selection);
+                            text_input.selection, keep_additional_text);
     OnAfterPossibleChange(/*allow_keyword_ui_change=*/true);
   }
   return base::ok(std::monostate());

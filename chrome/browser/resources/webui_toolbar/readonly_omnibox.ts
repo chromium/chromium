@@ -685,9 +685,11 @@ export class ReadonlyOmniboxElement extends CrLitElement {
           oldAll.substring(newValue.length);
     } else {
       this.omniboxViewState.inlineAutocompletion = '';
+      this.omniboxViewState.additionalText = '';
     }
 
     this.omniboxViewState.selection = this.getMojoSelection();
+    // Sync up the read-only view to have the right text.
     this.updateTextPiecesFromUserText();
   }
 

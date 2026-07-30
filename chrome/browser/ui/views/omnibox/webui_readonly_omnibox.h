@@ -98,7 +98,8 @@ class WebUIReadOnlyOmnibox
   // notify the OmniboxEditModel or the WebUI end.
   void SetTextAndSelectedRange(const std::u16string& text,
                                const std::u16string& inline_autocompletion,
-                               const gfx::Range& selection);
+                               const gfx::Range& selection,
+                               bool keep_additional_text);
 
   // OmniboxView:
   void Update() override;

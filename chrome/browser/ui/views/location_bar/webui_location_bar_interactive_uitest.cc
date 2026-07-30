@@ -1027,7 +1027,11 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, AdditionalText) {
       WaitTillOmniboxViewFocus(), EnterText(kOmniboxElementId, u"ne"),
       WaitForClassicPopupReady(), SendKeyPress(kWebUIToolbarId, ui::VKEY_W),
       WaitTillInlineComplete("new", "s weather"),
-      WaitTillAdditionalText(" - www.cnn.com/index.html"));
+      WaitTillAdditionalText(" - www.cnn.com/index.html"),
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_BACK),
+      WaitTillOmniboxViewText("new"), WaitTillAdditionalText(""),
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_BACK),
+      WaitTillOmniboxViewText("ne"), WaitTillAdditionalText(""));
 }
 
 // Use Ctrl-Alt-Enter to append www. and .com to URL and open it in new tab.
