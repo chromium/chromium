@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1307,4 +1308,47 @@ TEST(ActionChipGeneratorTest,
                           Eq(std::cref(GetStaticImageGenerationChip()))));
 }
 
+TEST(ActionChipGeneratorTest, GenerateDynamicChipsWithSmallActionChipsEnabled) {
+  EnvironmentFixture env;
+  GeneratorFixture generator_fixture;
+
+  // Create mock response of 7 chips.
+  EXPECT_CALL(
+      generator_fixture.mock_service(),
+      GetActionChipSuggestions(Eq(std::nullopt), Eq(std::nullopt), _, _, _))
+      .WillOnce(WithArg<4>(
+          [&](base::OnceCallback<void(RemoteSuggestionsServiceSimple::
+                                          ActionChipSuggestionsResult&&)>
+                  callback) {
+            SearchSuggestionParser::SuggestResults suggestions;
+            for (int i = 1; i <= 7; ++i) {
+              suggestions.push_back(CreateSuggestion({
+                  .group_id = omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION,
+                  .icon_type = omnibox::SuggestTemplateInfo::BANANA,
+                  .match_contents = base::StringPrintf("small chip %d", i),
+                  .annotation = "",
+                  .suggestion =
+                      base::ASCIIToUTF16(base::StringPrintf("Query %d", i)),
+                  .preselected_tool = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+              }));
+            }
+            std::move(callback).Run(std::move(suggestions));
+            return nullptr;
+          }));
+
+  base::test::ScopedFeatureList list;
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}}},
+       {ntp_features::kNtpScaledActionChipsSmall, {}}},
+      {});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
+  run_loop.Run();
+
+  // Capped at 6 by default kNtpMaxSmallChips limit.
+  EXPECT_EQ(actual.size(), 6u);
+}
 }  // namespace
