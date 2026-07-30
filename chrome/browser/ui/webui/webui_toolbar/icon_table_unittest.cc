@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/security_state/core/security_state.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,6 +35,7 @@ class IconTableTest : public testing::Test, public IconTable::Delegate {
     icon_table_.PermitFallbackVectorRasterizationForTesting();
     color_provider_.SetColorForTesting(ui::kColorIcon, SK_ColorBLUE);
     color_provider_.SetColorForTesting(ui::kColorMenuIcon, SK_ColorGREEN);
+    color_provider_.SetColorForTesting(ui::kColorSysPrimary, SK_ColorCYAN);
   }
 
   // IconTable::Delegate:
@@ -337,10 +339,19 @@ TEST_F(IconTableTest, Colors) {
       2u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/SK_ColorGREEN);
 
+  toolbar_ui_api::IconHandle i3 =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          omnibox::kStarFilledIcon, ui::kColorSysPrimary));
+  ASSERT_FALSE(i3.is_null());
+  auto expected_i3 = toolbar_ui_api::mojom::IconUpdate::New(
+      3u, "webui-toolbar:star_filled", IconType::kIconSet,
+      /*color=*/SK_ColorCYAN);
+
   EXPECT_THAT(
       icon_table_.GetFullState(),
       testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1)),
-                                    MatchesIconUpdate(std::ref(expected_i2))));
+                                    MatchesIconUpdate(std::ref(expected_i2)),
+                                    MatchesIconUpdate(std::ref(expected_i3))));
 }
 
 TEST_F(IconTableTest, AllSecurityIconsAreMapped) {
