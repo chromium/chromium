@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.firstrun.SafetyPromoFirstRunView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ScrollView
+      android:id="@+id/safety_promo_fre_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_alignParentTop="true"
+      android:layout_above="@id/fre_continue_button"
+      android:fillViewport="true"
+      android:scrollIndicators="bottom">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/fre_spacing">
+
+      <Space
+          android:id="@+id/fre_space_above_logo"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1" />
+
+      <ImageView
+          android:id="@+id/fre_icon"
+          android:layout_width="@dimen/safety_fre_logo_size"
+          android:layout_height="@dimen/safety_fre_logo_size"
+          android:layout_gravity="center"
+          android:layout_marginTop="@dimen/fre_spacing"
+          android:layout_marginBottom="@dimen/fre_spacing"
+          android:scaleType="fitCenter"
+          android:adjustViewBounds="true"
+          android:src="@drawable/fre_product_logo"
+          android:importantForAccessibility="no" />
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:layout_marginBottom="@dimen/safety_fre_title_margin_bottom"
+          android:text="@string/safety_fre_promo_title"
+          android:textAppearance=
+              "@style/TextAppearance.HeadlineLargeThick.Primary" />
+
+      <LinearLayout
+          android:id="@+id/safety_promo_cards_container"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/fre_spacing"
+          android:orientation="vertical" />
+
+      <Space
+          android:id="@+id/fre_space_between_header_and_bottom_button"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1" />
+    </LinearLayout>
+  </ScrollView>
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/fre_continue_button"
+      style="@style/FilledButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_marginHorizontal="@dimen/fre_spacing"
+      android:layout_marginBottom="@dimen/fre_spacing"
+      android:text="@string/safety_fre_promo_start_browsing_button" />
+</org.chromium.chrome.browser.firstrun.SafetyPromoFirstRunView>

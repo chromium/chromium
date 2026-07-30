@@ -580,6 +580,7 @@ chrome_java_resources = [
   "java/res/layout/recent_tabs_list_item.xml",
   "java/res/layout/recent_tabs_page.xml",
   "java/res/layout/safety_promo_card_item.xml",
+  "java/res/layout/safety_promo_fre_cards_portrait_view.xml",
   "java/res/layout/safety_promo_fre_illustration_landscape_view.xml",
   "java/res/layout/safety_promo_fre_illustration_portrait_view.xml",
   "java/res/layout/search_activity.xml",

@@ -12,12 +12,14 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /** Provides first run related utility functions. */
 @NullMarked
@@ -115,6 +117,25 @@ public class FirstRunUtils {
     public static void setDisableDelayOnExitFreForTest(boolean isDisable) {
         sDisableDelayOnExitFreForTest = isDisable;
         ResettersForTesting.register(() -> sDisableDelayOnExitFreForTest = false);
+    }
+
+    public static boolean shouldShowSafetyFrePromo() {
+        if (!ChromeFeatureList.sSafetyFrePromo.isEnabled()) {
+            return false;
+        }
+        @SafetyFrePromoArm int arm = ChromeFeatureList.sSafetyFrePromoArm.getValue();
+        return arm == SafetyFrePromoArm.ANIMATED_ILLUSTRATION
+                || arm == SafetyFrePromoArm.PASSWORD_MANAGER;
+    }
+
+    public static List<SafetyPromoCard> getCardsForSafetyFrePromoArm(@SafetyFrePromoArm int arm) {
+        if (arm == SafetyFrePromoArm.PASSWORD_MANAGER) {
+            return List.of(
+                    SafetyPromoCard.PASSWORD_MANAGER,
+                    SafetyPromoCard.ENHANCED_SAFE_BROWSING,
+                    SafetyPromoCard.INCOGNITO);
+        }
+        return List.of();
     }
 
     @NativeMethods

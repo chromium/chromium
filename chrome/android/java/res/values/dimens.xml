@@ -148,6 +148,10 @@ found in the LICENSE file.
     <dimen name="safety_fre_card_subtitle_margin_top">4dp</dimen>
     <dimen name="safety_fre_card_chevron_size">24dp</dimen>
 
+    <!-- Safety FRE with cards UI dimensions -->
+    <dimen name="safety_fre_logo_size">48dp</dimen>
+    <dimen name="safety_fre_title_margin_bottom">36dp</dimen>
+
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses
     a lot of the fre_* dimensions for consistency. -->
