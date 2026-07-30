@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 #include "chrome/browser/ui/cookie_controls/roll_back_mode_b_infobar_controller.h"
+#include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -501,6 +502,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           ChromeTranslateClient::FromWebContents(tab.GetContents()),
           favicon::ContentFaviconDriver::FromWebContents(tab.GetContents()));
 
+  focus_tab_after_navigation_helper_ =
+      std::make_unique<FocusTabAfterNavigationHelper>(tab.GetContents());
+
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
           tab.GetContents());
@@ -691,6 +695,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
           tab->GetBrowserWindowInterface()->GetProfile())) {
     web_app::WebAppTabHelper::Create(tab, new_contents);
   }
+
+  focus_tab_after_navigation_helper_ =
+      std::make_unique<FocusTabAfterNavigationHelper>(new_contents);
 
   sync_sessions_router_.reset();
   sync_sessions_router_ =

@@ -503,6 +503,7 @@ if (!is_android) {
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:focus_tab_after_navigation_helper",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_util",
