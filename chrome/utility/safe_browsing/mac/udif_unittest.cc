@@ -11,6 +11,7 @@
 
 #include <array>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -195,6 +196,16 @@ TEST_P(UDIFParserTest, ReadAll_8181) {
 
 TEST_P(UDIFParserTest, ReadAll_100000) {
   RunReadAllTest(100000);
+}
+
+TEST_P(UDIFParserTest, ReadAll_SmallDecompressChunk_64) {
+  base::AutoReset<size_t> auto_reset(&GetMaxDecompressChunkSize(), 64);
+  RunReadAllTest(512);
+}
+
+TEST_P(UDIFParserTest, ReadAll_SmallDecompressChunk_1024) {
+  base::AutoReset<size_t> auto_reset(&GetMaxDecompressChunkSize(), 1024);
+  RunReadAllTest(512);
 }
 
 constexpr UDIFTestCase cases[] = {
