@@ -1180,6 +1180,22 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
         },
         {
+            .type = JOURNEY,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kJourneyFieldNumber,
+            .debug_string = "Journey",
+            .histogram_suffix = "JOURNEY",
+            .stable_lowercase_string = "journey",
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+            .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
+        },
+        {
             .type = NIGORI,
             .specifics_field_number =
                 sync_pb::EntitySpecifics::kNigoriFieldNumber,
@@ -1216,7 +1232,7 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 66,
+static_assert(GetNumDataTypes() == 67,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1441,6 +1457,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case NOTEBOOK:
       specifics->mutable_notebook();
+      break;
+    case JOURNEY:
+      specifics->mutable_journey();
       break;
   }
 }
@@ -1782,6 +1801,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kThemesAndroid;
     case NOTEBOOK:
       return DataTypeForHistograms::kNotebook;
+    case JOURNEY:
+      return DataTypeForHistograms::kJourney;
   }
   NOTREACHED();
 }

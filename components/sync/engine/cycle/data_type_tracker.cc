@@ -122,6 +122,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case GEMINI_THREAD:
     case THEMES_ANDROID:
     case NOTEBOOK:
+    case JOURNEY:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
@@ -203,6 +204,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case GEMINI_THREAD:
     case THEMES_ANDROID:
     case NOTEBOOK:
+    case JOURNEY:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

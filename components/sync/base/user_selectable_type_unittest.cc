@@ -57,6 +57,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(CONTEXTUAL_TASK);
+    // TODO(crbug.com/526686844): In CL #3, map JOURNEY to an existing
+    // selectable type or to a new one and remove it from here (unless it's
+    // ambiguous).
+    data_types.Put(JOURNEY);
 
     return data_types;
   }

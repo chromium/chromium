@@ -210,7 +210,10 @@ enum DataType {
   // Information about a notebook.
   NOTEBOOK,
 
-  LAST_USER_DATA_TYPE = NOTEBOOK,
+  // Information about a history journey.
+  JOURNEY,
+
+  LAST_USER_DATA_TYPE = JOURNEY,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -323,7 +326,8 @@ enum class DataTypeForHistograms {
   kEncryptedTabContextContainer = 81,
   kEncryptedTabContextItem = 82,
   kNotebook = 83,
-  kMaxValue = kNotebook,
+  kJourney = 84,
+  kMaxValue = kJourney,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 

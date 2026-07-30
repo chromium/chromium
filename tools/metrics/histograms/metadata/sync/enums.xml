@@ -1059,6 +1059,7 @@ chromium-metrics-reviews@google.com.
   <int value="81" label="Encrypted Tab Context Container"/>
   <int value="82" label="Encrypted Tab Context Item"/>
   <int value="83" label="Notebook"/>
+  <int value="84" label="Journey"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

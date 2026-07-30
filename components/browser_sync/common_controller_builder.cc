@@ -595,6 +595,10 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     add_controller(CreateNotebookDataTypeController());
   }
 
+  if (!disabled_types.Has(syncer::JOURNEY)) {
+    add_controller(CreateJourneyDataTypeController());
+  }
+
   if (!disabled_types.Has(syncer::CONTEXTUAL_TASK)) {
     add_controller(CreateContextualTaskDataTypeController());
   }
@@ -1271,6 +1275,27 @@ CommonControllerBuilder::CreateNotebookDataTypeController() {
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
+}
+
+std::unique_ptr<syncer::DataTypeController>
+CommonControllerBuilder::CreateJourneyDataTypeController() {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
+    return nullptr;
+  }
+
+  // TODO(crbug.com/526686844): In CL #4, register the type, i.e. instantiate
+  // the DataTypeController. There is more than one way to go about it,
+  // but one option is:
+  // - Create a trivial implementation of DataTypeSyncBridge which lives in
+  //   your feature's directory. It should have synchronous access to your
+  //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
+  //   CoolKeyedService (often the model itself).
+  // - Expose CoolKeyedService::GetControllerDelegate() which calls
+  //   bridge->change_processor()->GetControllerDelegate().
+  // - Inject CoolKeyedService in this class and call GetControllerDelegate()
+  //   on it to create the DataTypeController.
+  // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+  return nullptr;
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

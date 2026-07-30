@@ -44,6 +44,7 @@ sync_protocol_sources = [
   "history_delete_directive_specifics.proto",
   "history_specifics.proto",
   "history_status.proto",
+  "journey_specifics.proto",
   "loopback_server.proto",
   "managed_user_setting_specifics.proto",
   "nigori_local_data.proto",

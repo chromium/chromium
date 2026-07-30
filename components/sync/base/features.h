@@ -51,6 +51,9 @@ BASE_DECLARE_FEATURE(kSyncLoyaltyCardMetadata);
 // Enables syncing Notebooks.
 BASE_DECLARE_FEATURE(kSyncNotebook);
 
+// Enables syncing history journeys.
+BASE_DECLARE_FEATURE(kSyncJourney);
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:

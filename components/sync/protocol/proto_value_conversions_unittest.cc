@@ -71,7 +71,7 @@ using ::testing::Pointee;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(66 == syncer::GetNumDataTypes(),
+static_assert(67 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -142,6 +142,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(contextual_task)
 DEFINE_SPECIFICS_TO_VALUE_TEST(skill)
 DEFINE_SPECIFICS_TO_VALUE_TEST(gemini_thread)
 DEFINE_SPECIFICS_TO_VALUE_TEST(notebook)
+DEFINE_SPECIFICS_TO_VALUE_TEST(journey)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   sync_pb::AutofillWalletSpecifics specifics;

@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".HISTORY_DELETE_DIRECTIVE" summary="HISTORY_DELETE_DIRECTIVE"/>
   <variant name=".INCOMING_PASSWORD_SHARING_INVITATION"
       summary="INCOMING_PASSWORD_SHARING_INVITATION"/>
+  <variant name=".JOURNEY" summary="JOURNEY"/>
   <variant name=".MANAGED_USER_SETTING" summary="MANAGED_USER_SETTING"/>
   <variant name=".NIGORI" summary="NIGORI"/>
   <variant name=".NOTEBOOK" summary="NOTEBOOK"/>

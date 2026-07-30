@@ -57,7 +57,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(66 == syncer::GetNumDataTypes(),
+    static_assert(67 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -134,6 +134,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     }
     if (base::FeatureList::IsEnabled(syncer::kSyncNotebook)) {
       datatypes.Put(syncer::NOTEBOOK);
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
+      datatypes.Put(syncer::JOURNEY);
     }
     return datatypes;
   }
