@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -43,6 +45,16 @@ class FocusgroupControllerTest : public PageTestBase {
     if (target)
       event->SetTarget(target);
 
+    return event;
+  }
+
+  KeyboardEvent* UntrustedKeyDownEvent(const String& key, Element* target) {
+    KeyboardEventInit* init = KeyboardEventInit::Create();
+    init->setBubbles(true);
+    init->setKey(key);
+    auto* event =
+        MakeGarbageCollected<KeyboardEvent>(event_type_names::kKeydown, init);
+    event->SetTarget(target);
     return event;
   }
 
@@ -1108,6 +1120,100 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
   SendEvent(event);
 
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
+}
+
+TEST_F(FocusgroupControllerTest,
+       UntrustedArrowDownDoesNotMoveFocusOrMarkUserGesture) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="menu block">
+      <div id=first tabindex=0>First</div>
+      <div id=spellcheck tabindex=0 contenteditable spellcheck=true>
+        Spellcheck target
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* first = GetElementById("first");
+  auto* spellcheck = GetElementById("spellcheck");
+  ASSERT_TRUE(first);
+  ASSERT_TRUE(spellcheck);
+
+  first->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), first);
+  ASSERT_FALSE(spellcheck->WasLastFocusFromUserGesture());
+
+  auto* event = UntrustedKeyDownEvent(keywords::kArrowDown, first);
+  ASSERT_FALSE(event->isTrusted());
+  EXPECT_FALSE(FocusgroupController::HandleKeyboardEvent(
+      event, GetDocument().GetFrame()));
+  EXPECT_EQ(GetDocument().FocusedElement(), first);
+  EXPECT_FALSE(spellcheck->WasLastFocusFromUserGesture());
+}
+
+TEST_F(FocusgroupControllerTest,
+       UntrustedArrowUpDoesNotMoveFocusOrMarkUserGesture) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="menu block">
+      <div id=spellcheck tabindex=0 contenteditable spellcheck=true>
+        Spellcheck target
+      </div>
+      <div id=last tabindex=0>Last</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* spellcheck = GetElementById("spellcheck");
+  auto* last = GetElementById("last");
+  ASSERT_TRUE(spellcheck);
+  ASSERT_TRUE(last);
+
+  last->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), last);
+  ASSERT_FALSE(spellcheck->WasLastFocusFromUserGesture());
+
+  auto* event = UntrustedKeyDownEvent(keywords::kArrowUp, last);
+  ASSERT_FALSE(event->isTrusted());
+  EXPECT_FALSE(FocusgroupController::HandleKeyboardEvent(
+      event, GetDocument().GetFrame()));
+  EXPECT_EQ(GetDocument().FocusedElement(), last);
+  EXPECT_FALSE(spellcheck->WasLastFocusFromUserGesture());
+}
+
+TEST_F(FocusgroupControllerTest, TrustedArrowKeysMoveFocusAndMarkUserGesture) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="menu block">
+      <div id=first tabindex=0>First</div>
+      <div id=spellcheck tabindex=0 contenteditable spellcheck=true>
+        Spellcheck target
+      </div>
+      <div id=last tabindex=0>Last</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* first = GetElementById("first");
+  auto* spellcheck = GetElementById("spellcheck");
+  auto* last = GetElementById("last");
+  ASSERT_TRUE(first);
+  ASSERT_TRUE(spellcheck);
+  ASSERT_TRUE(last);
+
+  first->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), first);
+  ASSERT_FALSE(spellcheck->WasLastFocusFromUserGesture());
+
+  SendArrowDown(first);
+  EXPECT_EQ(GetDocument().FocusedElement(), spellcheck);
+  EXPECT_TRUE(spellcheck->WasLastFocusFromUserGesture());
+
+  last->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), last);
+  ASSERT_FALSE(spellcheck->WasLastFocusFromUserGesture());
+
+  SendArrowUp(last);
+  EXPECT_EQ(GetDocument().FocusedElement(), spellcheck);
+  EXPECT_TRUE(spellcheck->WasLastFocusFromUserGesture());
 }
 
 TEST_F(FocusgroupControllerTest, NestedFocusgroupsHaveSeparateScopes) {

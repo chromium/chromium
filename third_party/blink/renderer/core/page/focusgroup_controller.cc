@@ -29,6 +29,9 @@ bool FocusgroupController::HandleKeyboardEvent(KeyboardEvent* event,
                                                const LocalFrame* frame) {
   CHECK(frame);
   CHECK(frame->DomWindow());
+  if (!event->isTrusted()) {
+    return false;
+  }
   ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
   if (!RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
     return false;
