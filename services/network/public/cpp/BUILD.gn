@@ -668,6 +668,8 @@ component("cpp_base") {
     "url_request_param_mojom_traits.h",
     "web_transport_error_mojom_traits.cc",
     "web_transport_error_mojom_traits.h",
+    "web_transport_http_request_headers_mojom_traits.cc",
+    "web_transport_http_request_headers_mojom_traits.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -869,6 +871,7 @@ source_set("tests") {
     "url_request_mojom_traits_unittest.cc",
     "url_util_unittest.cc",
     "web_sandbox_flags_unittest.cc",
+    "web_transport_http_request_headers_mojom_traits_unittest.cc",
     "websocket_utils_unittest.cc",
     "x_frame_options_parser_unittest.cc",
   ]

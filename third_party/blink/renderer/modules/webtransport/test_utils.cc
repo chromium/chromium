@@ -98,6 +98,7 @@ void TestWebTransportCreator::Connect(
     /*anticipated_concurrent_incoming_unidirectional_streams*/,
     std::optional<uint16_t>
     /*anticipated_concurrent_incoming_bidirectional_streams*/,
+    net::HttpRequestHeaders::HeaderVector,
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         pending_handshake_client) {
   mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>

@@ -366,5 +366,79 @@ TEST_F(DedicatedWebTransportHttp3Test, SubprotocolHeader) {
   EXPECT_EQ(read_buffer, "first");
 }
 
+// Test backend that captures request headers for inspection.
+class HeaderCapturingBackend : public quic::test::QuicTestBackend {
+ public:
+  quic::QuicSimpleServerBackend::WebTransportResponse
+  ProcessWebTransportRequest(const quiche::HttpHeaderBlock& request_headers,
+                             quic::WebTransportSession* session) override {
+    for (const auto& [name, value] : request_headers) {
+      captured_headers_.emplace_back(std::string(name), std::string(value));
+    }
+    return QuicTestBackend::ProcessWebTransportRequest(request_headers,
+                                                       session);
+  }
+
+  const std::vector<std::pair<std::string, std::string>>& captured_headers()
+      const {
+    return captured_headers_;
+  }
+
+ private:
+  std::vector<std::pair<std::string, std::string>> captured_headers_;
+};
+
+class DedicatedWebTransportHttp3HeadersTest
+    : public DedicatedWebTransportHttp3Test {
+ public:
+  void StartServerWithCapture() {
+    capturing_backend_.set_enable_webtransport(true);
+    server_ = std::make_unique<QuicSimpleServer>(
+        quic::test::crypto_test_utils::ProofSourceForTesting(),
+        quic::QuicConfig(), quic::QuicCryptoServerConfig::ConfigOptions(),
+        AllSupportedQuicVersions(), &capturing_backend_);
+    ASSERT_TRUE(server_->CreateUDPSocketAndListen(
+        quic::QuicSocketAddress(quiche::QuicheIpAddress::Any6(), /*port=*/0)));
+    port_ = server_->server_address().port();
+  }
+
+ protected:
+  HeaderCapturingBackend capturing_backend_;
+};
+
+// Verify that additional_headers with mixed casing are lowercased and that
+// duplicate names (differing only in case) have their values combined.
+TEST_F(DedicatedWebTransportHttp3HeadersTest,
+       AdditionalHeadersCasingAndDuplicates) {
+  StartServerWithCapture();
+  WebTransportParameters parameters;
+  parameters.additional_headers = {
+      {"X-Custom", "first"},
+      {"x-custom", "second"},
+  };
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), parameters);
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+
+  // Find x-custom in the captured headers. With AppendValueOrAddHeader, both
+  // values are combined with a null separator (quiche's internal format).
+  // With operator[], only "second" would be present.
+  std::string custom_value;
+  for (const auto& [name, value] : capturing_backend_.captured_headers()) {
+    if (name == "x-custom") {
+      custom_value = value;
+      break;
+    }
+  }
+  EXPECT_THAT(custom_value, ::testing::HasSubstr("first"));
+  EXPECT_THAT(custom_value, ::testing::HasSubstr("second"));
+}
+
 }  // namespace
 }  // namespace net::test

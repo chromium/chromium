@@ -15,9 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_version.h"
-#include "services/network/public/mojom/http_response_headers.mojom-blink.h"
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_byob_reader_read_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_bytestringbytestringrecord_bytestringsequencesequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_receive_stream_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
+#include "third_party/blink/renderer/core/fetch/headers.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
@@ -97,6 +99,7 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
             anticipated_concurrent_incoming_unidirectional_streams,
         std::optional<uint16_t>
             anticipated_concurrent_incoming_bidirectional_streams,
+        net::HttpRequestHeaders::HeaderVector additional_headers,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
@@ -107,6 +110,7 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
               anticipated_concurrent_incoming_unidirectional_streams),
           anticipated_concurrent_incoming_bidirectional_streams(
               anticipated_concurrent_incoming_bidirectional_streams),
+          additional_headers(std::move(additional_headers)),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
@@ -118,6 +122,7 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         anticipated_concurrent_incoming_unidirectional_streams;
     std::optional<uint16_t>
         anticipated_concurrent_incoming_bidirectional_streams;
+    net::HttpRequestHeaders::HeaderVector additional_headers;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -132,13 +137,14 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      net::HttpRequestHeaders::HeaderVector additional_headers,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
     connect_args_.push_back(ConnectArgs(
         url, std::move(fingerprints), application_protocols, congestion_control,
         anticipated_concurrent_incoming_unidirectional_streams,
         anticipated_concurrent_incoming_bidirectional_streams,
-        std::move(handshake_client)));
+        std::move(additional_headers), std::move(handshake_client)));
   }
 
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }
@@ -248,10 +254,21 @@ class WebTransportTest : public ::testing::Test {
     test::RunPendingTasks();
   }
 
+  // Connects a WebTransport object with custom server response headers. Runs
+  // the event loop.
+  void ConnectSuccessfullyWithResponseHeaders(
+      WebTransport* web_transport,
+      scoped_refptr<net::HttpResponseHeaders> response_headers) {
+    ConnectSuccessfullyWithoutRunningPendingTasks(
+        web_transport, base::TimeDelta(), std::move(response_headers));
+    test::RunPendingTasks();
+  }
+
   void ConnectSuccessfullyWithoutRunningPendingTasks(
       WebTransport* web_transport,
       base::TimeDelta expected_outgoing_datagram_expiration_duration =
-          base::TimeDelta()) {
+          base::TimeDelta(),
+      scoped_refptr<net::HttpResponseHeaders> response_headers = nullptr) {
     DCHECK(!mock_web_transport_) << "Only one connection supported, sorry";
 
     test::RunPendingTasks();
@@ -295,8 +312,10 @@ class WebTransportTest : public ::testing::Test {
     handshake_client->OnConnectionEstablished(
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
-        net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
-            .Build(),
+        response_headers ? std::move(response_headers)
+                         : net::HttpResponseHeaders::Builder(
+                               net::HttpVersion(1, 1), "200 OK")
+                               .Build(),
         /*selected_application_protocol=*/String(),
         network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));
@@ -3466,6 +3485,186 @@ TEST_F(WebTransportTest, AnticipatedStreamsSetterStoresValue) {
       std::nullopt);
   EXPECT_EQ(web_transport->anticipatedConcurrentIncomingUnidirectionalStreams(),
             std::nullopt);
+}
+
+TEST_F(WebTransportTest, ResponseHeadersNullBeforeConnection) {
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto* web_transport = WebTransport::Create(
+      scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
+      ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(web_transport->responseHeaders(), nullptr);
+}
+
+TEST_F(WebTransportTest, ResponseHeadersNotNullAfterConnection) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, String("https://example.com/"));
+  // Per spec, responseHeaders should be an empty Headers object, not null,
+  // even when the server sends no custom headers.
+  EXPECT_NE(web_transport->responseHeaders(), nullptr);
+}
+
+TEST_F(WebTransportTest, AdditionalHeadersEmptyByDefault) {
+  V8TestingScope scope;
+  AddBinder(scope);
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       EmptyOptions(), ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  EXPECT_TRUE(args[0].additional_headers.empty());
+}
+
+TEST_F(WebTransportTest, AdditionalHeadersSentWhenEnabled) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setHeaders(MakeGarbageCollected<V8HeadersInit>(
+      Vector<std::pair<String, String>>{{"X-Custom-Header", "value"}}));
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  ASSERT_EQ(1u, args[0].additional_headers.size());
+  EXPECT_EQ(args[0].additional_headers[0].key, "X-Custom-Header");
+  EXPECT_EQ(args[0].additional_headers[0].value, "value");
+}
+
+TEST_F(WebTransportTest, AdditionalHeaderValueBytesPreserved) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  std::array<uint8_t, 0x80> high_bytes;
+  for (size_t i = 0; i < high_bytes.size(); ++i) {
+    high_bytes[i] = static_cast<uint8_t>(0x80 + i);
+  }
+  const String value(base::as_byte_span(high_bytes));
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setHeaders(MakeGarbageCollected<V8HeadersInit>(
+      Vector<std::pair<String, String>>{{"x-bytes", value}}));
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  ASSERT_EQ(1u, args[0].additional_headers.size());
+  EXPECT_EQ(args[0].additional_headers[0].key, "x-bytes");
+  EXPECT_EQ(String(base::as_byte_span(args[0].additional_headers[0].value)),
+            value);
+}
+
+TEST_F(WebTransportTest, WtAvailableProtocolsHeaderRejected) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto& exception_state = scope.GetExceptionState();
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setHeaders(MakeGarbageCollected<V8HeadersInit>(
+      Vector<std::pair<String, String>>{{"wt-available-protocols", "h3"}}));
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ("The 'wt-available-protocols' header cannot be set.",
+            exception_state.Message());
+  test::RunPendingTasks();
+  EXPECT_TRUE(connector_.TakeConnectArgs().empty());
+}
+
+TEST_F(WebTransportTest, ForbiddenRequestHeaderDropped) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  // "x-allowed" is an allowed header; "host" is a forbidden header.
+  options->setHeaders(
+      MakeGarbageCollected<V8HeadersInit>(Vector<std::pair<String, String>>{
+          {"host", "evil.example"}, {"x-allowed", "ok"}}));
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
+
+  test::RunPendingTasks();
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  ASSERT_EQ(1u, args[0].additional_headers.size());
+  EXPECT_EQ(args[0].additional_headers[0].key, "x-allowed");
+}
+
+TEST_F(WebTransportTest, InvalidHeaderNameRejected) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+  auto& exception_state = scope.GetExceptionState();
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setHeaders(MakeGarbageCollected<V8HeadersInit>(
+      Vector<std::pair<String, String>>{{"invalid header", "value"}}));
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  test::RunPendingTasks();
+  EXPECT_TRUE(connector_.TakeConnectArgs().empty());
+}
+
+TEST_F(WebTransportTest, ResponseHeadersExposeServerHeaders) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport = Create(scope, "https://example.com/", EmptyOptions());
+
+  std::array<char, 0x80> server_bytes;
+  for (size_t i = 0; i < server_bytes.size(); ++i) {
+    server_bytes[i] = static_cast<char>(0x80 + i);
+  }
+  const std::string byte_value(server_bytes.data(), server_bytes.size());
+
+  ConnectSuccessfullyWithResponseHeaders(
+      web_transport,
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .AddHeader("x-custom-header", "custom-value")
+          .AddHeader("x-bytes", byte_value)
+          .Build());
+
+  Headers* headers = web_transport->responseHeaders();
+  ASSERT_NE(headers, nullptr);
+  EXPECT_TRUE(headers->has("x-custom-header", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("custom-value",
+            headers->get("x-custom-header", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ(headers->get("x-bytes", ASSERT_NO_EXCEPTION),
+            String(base::as_byte_span(byte_value)));
+}
+
+TEST_F(WebTransportTest, ResponseHeadersStripProtocolAndCookies) {
+  ScopedWebTransportHeadersForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport = Create(scope, "https://example.com/", EmptyOptions());
+  ConnectSuccessfullyWithResponseHeaders(
+      web_transport,
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .AddHeader("wt-protocol", "h3")
+          .AddHeader("set-cookie", "a=b")
+          .AddHeader("set-cookie2", "c=d")
+          .AddHeader("x-visible", "yes")
+          .Build());
+
+  Headers* headers = web_transport->responseHeaders();
+  ASSERT_NE(headers, nullptr);
+  EXPECT_FALSE(headers->has("wt-protocol", ASSERT_NO_EXCEPTION));
+  EXPECT_FALSE(headers->has("set-cookie", ASSERT_NO_EXCEPTION));
+  EXPECT_FALSE(headers->has("set-cookie2", ASSERT_NO_EXCEPTION));
+  EXPECT_TRUE(headers->has("x-visible", ASSERT_NO_EXCEPTION));
 }
 
 }  // namespace

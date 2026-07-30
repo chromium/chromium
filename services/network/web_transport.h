@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/http/http_request_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/web_transport_client.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -61,6 +62,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+          additional_headers,
       NetworkContext* context,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>

@@ -826,6 +826,17 @@ mojom("url_loader_base") {
     {
       types = [
         {
+          mojom = "network.mojom.WebTransportHttpRequestHeaders"
+          cpp = "::net::HttpRequestHeaders::HeaderVector"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/web_transport_http_request_headers_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
           mojom = "network.mojom.IsolationInfo"
           cpp = "::net::IsolationInfo"
         },

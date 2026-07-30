@@ -20,6 +20,7 @@
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_request_headers.h"
 #include "net/net_buildflags.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -234,6 +235,8 @@ class TestNetworkContext : public mojom::NetworkContext {
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+          additional_headers,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,

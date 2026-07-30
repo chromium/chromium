@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -73,6 +74,7 @@ class TestWebTransportCreator final
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      net::HttpRequestHeaders::HeaderVector additional_headers,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>)
       override;
 

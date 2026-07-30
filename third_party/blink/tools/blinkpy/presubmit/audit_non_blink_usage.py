@@ -1428,10 +1428,14 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.cc'
+            'third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.cc',
+            'third_party/blink/renderer/modules/webtransport/test_utils.cc',
+            'third_party/blink/renderer/modules/webtransport/test_utils.h',
+            'third_party/blink/renderer/modules/webtransport/web_transport.cc',
         ],
         'allowed': [
             # Used by WebPackageRequestMatcher in //third_party/blink/common.
+            # Used by WebTransport in //third_party/blink/renderer/modules/webtransport.
             'net::HttpRequestHeaders',
         ],
     },

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,8 +20,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_request_headers.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/quic_context.h"
@@ -172,6 +177,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
     has_seen_connection_establishment_ = true;
     receiver_.reset();
     selected_application_protocol_ = selected_application_protocol;
+    response_headers_ = response_headers;
     std::move(callback_).Run();
   }
 
@@ -211,6 +217,9 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   std::optional<std::string> selected_application_protocol() const {
     return selected_application_protocol_;
   }
+  const scoped_refptr<net::HttpResponseHeaders>& response_headers() const {
+    return response_headers_;
+  }
 
  private:
   mojo::Receiver<mojom::WebTransportHandshakeClient> receiver_;
@@ -223,6 +232,7 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   bool has_seen_mojo_connection_error_ = false;
   std::optional<net::WebTransportError> handshake_error_;
   std::optional<std::string> selected_application_protocol_;
+  scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
 
 class TestClient final : public mojom::WebTransportClient {
@@ -379,7 +389,8 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
         mojom::WebTransportCongestionControl::kDefault,
         /*anticipated_concurrent_incoming_unidirectional_streams=*/std::nullopt,
         /*anticipated_concurrent_incoming_bidirectional_streams=*/std::nullopt,
-        std::move(handshake_client), std::move(url_loader_network_observer),
+        /*additional_headers=*/{}, std::move(handshake_client),
+        std::move(url_loader_network_observer),
         std::move(client_security_state),
         network::GetTestNetworkRestrictionsId());
   }
@@ -426,6 +437,24 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
           handshake_client) {
     CreateWebTransport(url, origin, net::NetworkAnonymizationKey(),
                        std::move(fingerprints), std::move(handshake_client));
+  }
+
+  void CreateWebTransportWithHeaders(
+      const GURL& url,
+      const url::Origin& origin,
+      std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+          additional_headers,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient>
+          handshake_client) {
+    network_context_->CreateWebTransport(
+        url, origin, net::NetworkAnonymizationKey(), /*fingerprints=*/{},
+        /*application_protocols=*/{},
+        mojom::WebTransportCongestionControl::kDefault,
+        /*anticipated_concurrent_incoming_unidirectional_streams=*/std::nullopt,
+        /*anticipated_concurrent_incoming_bidirectional_streams=*/std::nullopt,
+        std::move(additional_headers), std::move(handshake_client),
+        url_loader_network_observer_.Bind(), mojom::ClientSecurityState::New(),
+        /*network_restrictions_id=*/network::GetTestNetworkRestrictionsId());
   }
 
   GURL GetURL(std::string_view suffix) {
@@ -1030,6 +1059,91 @@ TEST_F(WebTransportTest, ExplicitConnectionClose) {
 
   // The torn_down_ flag should prevent double Close() when Dispose() is called.
   EXPECT_EQ(0u, network_context().NumOpenWebTransports());
+}
+
+TEST_F(WebTransportTest, AllowsBenignAdditionalHeader) {
+  mojo::FakeMessageDispatchContext dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  std::vector<net::HttpRequestHeaders::HeaderKeyValuePair> headers;
+  headers.push_back({"x-custom", "value"});
+
+  CreateWebTransportWithHeaders(GetURL("/echo"), origin(), std::move(headers),
+                                std::move(handshake_client));
+
+  run_loop_for_handshake.Run();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_TRUE(test_handshake_client.has_seen_connection_establishment());
+  EXPECT_FALSE(test_handshake_client.has_seen_handshake_failure());
+  EXPECT_EQ(1u, network_context().NumOpenWebTransports());
+}
+
+// https://fetch.spec.whatwg.org/#forbidden-response-header-name — the
+// network service must strip Set-Cookie and Set-Cookie2 from the response
+// header list so they are never visible to the renderer, regardless of
+// what the server sent.
+
+TEST_F(WebTransportTest, StripsSetCookieResponseHeader) {
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GetURL("/echo?set-header=set-cookie:probe=1"), origin(),
+                     std::move(handshake_client));
+  run_loop_for_handshake.Run();
+
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+  ASSERT_TRUE(test_handshake_client.response_headers());
+  EXPECT_FALSE(
+      test_handshake_client.response_headers()->HasHeader("Set-Cookie"))
+      << "Set-Cookie must be stripped at the network service layer";
+}
+
+TEST_F(WebTransportTest, StripsSetCookie2ResponseHeader) {
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GetURL("/echo?set-header=set-cookie2:probe=1"), origin(),
+                     std::move(handshake_client));
+  run_loop_for_handshake.Run();
+
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+  ASSERT_TRUE(test_handshake_client.response_headers());
+  EXPECT_FALSE(
+      test_handshake_client.response_headers()->HasHeader("Set-Cookie2"))
+      << "Set-Cookie2 must be stripped at the network service layer";
+}
+
+TEST_F(WebTransportTest, AllowsBenignResponseHeader) {
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GetURL("/echo?set-header=x-custom:value"), origin(),
+                     std::move(handshake_client));
+  run_loop_for_handshake.Run();
+
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+  ASSERT_TRUE(test_handshake_client.response_headers());
+  std::optional<std::string> value =
+      test_handshake_client.response_headers()->GetNormalizedHeader("x-custom");
+  ASSERT_TRUE(value.has_value())
+      << "benign response headers must pass through the network service";
+  EXPECT_EQ(*value, "value");
 }
 
 class WebTransportWithCustomCertificateTest : public WebTransportTest {

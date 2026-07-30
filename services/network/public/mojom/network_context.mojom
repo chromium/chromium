@@ -1574,6 +1574,7 @@ interface NetworkContext {
       WebTransportCongestionControl congestion_control,
       uint16? anticipated_concurrent_incoming_unidirectional_streams,
       uint16? anticipated_concurrent_incoming_bidirectional_streams,
+      WebTransportHttpRequestHeaders additional_headers,
       pending_remote<WebTransportHandshakeClient> handshake_client,
       pending_remote<URLLoaderNetworkServiceObserver>?
           url_loader_network_observer,

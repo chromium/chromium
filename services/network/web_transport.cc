@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/local_network_access_check_result.h"
+#include "services/network/public/mojom/http_request_headers.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-shared.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
@@ -42,7 +43,9 @@ net::WebTransportParameters CreateParameters(
     std::optional<uint16_t>
         anticipated_concurrent_incoming_unidirectional_streams,
     std::optional<uint16_t>
-        anticipated_concurrent_incoming_bidirectional_streams) {
+        anticipated_concurrent_incoming_bidirectional_streams,
+    std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+        additional_headers) {
   net::WebTransportParameters params;
   params.enable_web_transport_http3 = true;
   params.application_protocols = std::move(application_protocols);
@@ -74,6 +77,7 @@ net::WebTransportParameters CreateParameters(
         quic::CertificateFingerprint{.algorithm = fingerprint->algorithm,
                                      .fingerprint = fingerprint->fingerprint});
   }
+  params.additional_headers = std::move(additional_headers);
   return params;
 }
 
@@ -449,6 +453,7 @@ WebTransport::WebTransport(
         anticipated_concurrent_incoming_unidirectional_streams,
     std::optional<uint16_t>
         anticipated_concurrent_incoming_bidirectional_streams,
+    std::vector<net::HttpRequestHeaders::HeaderKeyValuePair> additional_headers,
     NetworkContext* context,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -468,7 +473,8 @@ WebTransport::WebTransport(
               std::move(application_protocols),
               congestion_control,
               anticipated_concurrent_incoming_unidirectional_streams,
-              anticipated_concurrent_incoming_bidirectional_streams))),
+              anticipated_concurrent_incoming_bidirectional_streams,
+              std::move(additional_headers)))),
       url_(url),
       origin_(origin),
       context_(context),
@@ -729,10 +735,19 @@ void WebTransport::OnConnected(
   }
 
   DCHECK(handshake_client_);
+  CHECK(response_headers);
+
+  // https://fetch.spec.whatwg.org/#forbidden-response-header-name
+  auto filtered_response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(
+          response_headers->raw_headers());
+  filtered_response_headers->RemoveHeader("Set-Cookie");
+  filtered_response_headers->RemoveHeader("Set-Cookie2");
 
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
-      client_.BindNewPipeAndPassReceiver(), std::move(response_headers),
+      client_.BindNewPipeAndPassReceiver(),
+      std::move(filtered_response_headers),
       transport_->session()->GetNegotiatedSubprotocol(),
       StatsToMojom(transport_->session()->GetSessionStats()));
 

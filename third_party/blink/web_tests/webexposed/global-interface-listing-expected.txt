@@ -12703,6 +12703,7 @@ interface WebTransport
     getter incomingUnidirectionalStreams
     getter protocol
     getter ready
+    getter responseHeaders
     method close
     method constructor
     method createBidirectionalStream

@@ -2153,6 +2153,7 @@ void NetworkContext::CreateWebTransport(
         anticipated_concurrent_incoming_unidirectional_streams,
     std::optional<uint16_t>
         anticipated_concurrent_incoming_bidirectional_streams,
+    std::vector<net::HttpRequestHeaders::HeaderKeyValuePair> additional_headers,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -2170,8 +2171,8 @@ void NetworkContext::CreateWebTransport(
   web_transports_.insert(std::make_unique<WebTransport>(
       url, origin, key, fingerprints, application_protocols, congestion_control,
       anticipated_concurrent_incoming_unidirectional_streams,
-      anticipated_concurrent_incoming_bidirectional_streams, this,
-      std::move(pending_handshake_client),
+      anticipated_concurrent_incoming_bidirectional_streams,
+      std::move(additional_headers), this, std::move(pending_handshake_client),
       std::move(url_loader_network_observer),
       std::move(client_security_state)));
 }

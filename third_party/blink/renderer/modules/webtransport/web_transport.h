@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_connection_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagram_stats.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/fetch/headers.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -106,6 +107,7 @@ class MODULES_EXPORT WebTransport final
       const;
   void setAnticipatedConcurrentIncomingBidirectionalStreams(
       std::optional<uint16_t> value);
+  Headers* responseHeaders() const;
 
   void SetNextSendGroupIdForTesting(uint32_t id) { next_send_group_id_ = id; }
 
@@ -267,6 +269,7 @@ class MODULES_EXPORT WebTransport final
   const KURL url_;
 
   String selected_application_protocol_ = "";
+  Member<Headers> response_headers_;
 
   V8WebTransportCongestionControl congestion_control_{
       V8WebTransportCongestionControl::Enum::kDefault};

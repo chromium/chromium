@@ -12,6 +12,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
@@ -52,6 +53,8 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+          additional_headers,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
@@ -66,6 +69,8 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+          additional_headers,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::unique_ptr<WebTransportThrottleContext::Tracker> tracker);
@@ -80,6 +85,8 @@ class WebTransportConnectorImpl final
           anticipated_concurrent_incoming_unidirectional_streams,
       std::optional<uint16_t>
           anticipated_concurrent_incoming_bidirectional_streams,
+      std::vector<net::HttpRequestHeaders::HeaderKeyValuePair>
+          additional_headers,
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,

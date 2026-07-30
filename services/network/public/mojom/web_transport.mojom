@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -44,6 +45,13 @@ struct WebTransportError {
 struct WebTransportCertificateFingerprint {
   string algorithm;
   string fingerprint;
+};
+
+// Additional HTTP headers attached to a WebTransport CONNECT request, as
+// supplied via WebTransportOptions.headers
+// (https://w3c.github.io/webtransport/#dom-webtransportoptions-headers).
+struct WebTransportHttpRequestHeaders {
+  array<HttpRequestHeaderKeyValuePair> headers;
 };
 
 // Data (possibly) attached when WebTransport is closed gracefully.

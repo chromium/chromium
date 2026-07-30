@@ -48,4 +48,10 @@
   attribute [EnforceRange] unsigned short? anticipatedConcurrentIncomingUnidirectionalStreams;
   [RuntimeEnabled=WebTransportAnticipatedConcurrentIncomingStreams]
   attribute [EnforceRange] unsigned short? anticipatedConcurrentIncomingBidirectionalStreams;
+
+  // The spec labels responseHeaders as [SameObject], but that is incorrect:
+  // the value changes from null to a Headers object once the connection is
+  // established, so it cannot return the same object across accesses.
+  [RuntimeEnabled=WebTransportHeaders]
+  readonly attribute Headers? responseHeaders;
 };

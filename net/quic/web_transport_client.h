@@ -13,6 +13,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
+#include "net/http/http_request_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/web_transport_error.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
@@ -147,6 +148,9 @@ struct NET_EXPORT WebTransportParameters {
   std::optional<uint16_t>
       anticipated_concurrent_incoming_unidirectional_streams;
   std::optional<uint16_t> anticipated_concurrent_incoming_bidirectional_streams;
+  // Additional HTTP headers to include in the CONNECT request.
+  // https://w3c.github.io/webtransport/#dom-webtransportoptions-headers
+  std::vector<HttpRequestHeaders::HeaderKeyValuePair> additional_headers;
 };
 
 // An abstract base for a WebTransport client.  Most of the useful operations

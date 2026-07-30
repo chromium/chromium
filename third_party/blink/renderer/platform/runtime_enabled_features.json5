@@ -7345,6 +7345,11 @@
       base_feature: "none",
     },
     {
+      name: "WebTransportHeaders",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebTransportReceiveStream",
       status: "experimental",
       base_feature: "none",

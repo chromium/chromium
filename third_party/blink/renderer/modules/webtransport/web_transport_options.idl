@@ -10,4 +10,5 @@ dictionary WebTransportOptions {
   [RuntimeEnabled=WebTransportCongestionControl] WebTransportCongestionControl congestionControl = "default";
   [RuntimeEnabled=WebTransportAnticipatedConcurrentIncomingStreams, EnforceRange] unsigned short? anticipatedConcurrentIncomingUnidirectionalStreams = null;
   [RuntimeEnabled=WebTransportAnticipatedConcurrentIncomingStreams, EnforceRange] unsigned short? anticipatedConcurrentIncomingBidirectionalStreams = null;
+  [RuntimeEnabled=WebTransportHeaders] HeadersInit headers;
 };

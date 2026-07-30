@@ -166,6 +166,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
       anticipated_concurrent_incoming_unidirectional_streams_;
   const std::optional<uint16_t>
       anticipated_concurrent_incoming_bidirectional_streams_;
+  const std::vector<HttpRequestHeaders::HeaderKeyValuePair> additional_headers_;
   const raw_ptr<URLRequestContext> context_;          // Unowned.
   const raw_ptr<WebTransportClientVisitor> visitor_;  // Unowned.
 
