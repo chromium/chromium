@@ -18,6 +18,10 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
+// <if expr="_google_chrome">
+import {Router, routes} from 'chrome://settings/settings.js';
+// </if>
+
 // <if expr="_google_chrome and is_win">
 import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 
@@ -386,6 +390,17 @@ suite('settings system page', function() {
     assertTrue(getPrefValue());
     assertTrue(await metricsBrowserProxy.whenCalled(
         'recordFeatureNotificationsChange'));
+  });
+  // </if>
+
+  // <if expr="_google_chrome">
+  test('onDeviceAi', function() {
+    const onDeviceAiLink =
+        systemPage.shadowRoot.querySelector<HTMLElement>('#onDeviceAiLink');
+    assertTrue(!!onDeviceAiLink);
+
+    onDeviceAiLink.click();
+    assertEquals(routes.AI, Router.getInstance().getCurrentRoute());
   });
   // </if>
 });
