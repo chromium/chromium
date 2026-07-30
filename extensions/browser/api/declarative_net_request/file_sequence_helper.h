@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "base/version.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -56,11 +55,6 @@ class RulesetInfo {
   void set_expected_checksum(int checksum) { expected_checksum_ = checksum; }
   std::optional<int> expected_checksum() const { return expected_checksum_; }
 
-  // Whether indexing of the ruleset was successful.
-  void set_indexing_successful(bool val) { indexing_successful_ = val; }
-  std::optional<bool> indexing_successful() const {
-    return indexing_successful_;
-  }
 
   // Returns the result of loading the ruleset. The return value is valid (not
   // equal to std::nullopt) iff CreateVerifiedMatcher() has been called.
@@ -89,8 +83,6 @@ class RulesetInfo {
   // set in case of flatbuffer version mismatch.
   std::optional<int> new_checksum_;
 
-  // Whether the indexing of this ruleset was successful.
-  std::optional<bool> indexing_successful_;
 };
 
 // Helper to pass information related to the ruleset being loaded.
@@ -157,14 +149,7 @@ class FileSequenceHelper {
       const RuleCounts& rule_limit,
       UpdateDynamicRulesUICallback ui_callback) const;
 
- private:
-  // Callback invoked when the JSON rulesets are indexed.
-  void OnRulesetsIndexed(LoadRulesetsUICallback ui_callback,
-                         LoadRequestData load_data) const;
 
-  // Must be the last member variable. See WeakPtrFactory documentation for
-  // details. Mutable to allow GetWeakPtr() usage from const methods.
-  mutable base::WeakPtrFactory<FileSequenceHelper> weak_factory_{this};
 };
 
 }  // namespace declarative_net_request

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
@@ -20,9 +19,6 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace data_decoder {
-class DataDecoder;
-}  // namespace data_decoder
 
 namespace extensions {
 class Extension;
@@ -195,27 +191,14 @@ class FileBackedRulesetSource : public RulesetSource {
 
   bool is_dynamic_ruleset() const { return id() == kDynamicRulesetID; }
 
-  // Indexes and persists the JSON ruleset. This is potentially unsafe since the
-  // JSON rules file is parsed in-process. Note: This must be called on a
+  // Indexes and persists the JSON ruleset. Note: This must be called on a
   // sequence where file IO is allowed.
-  IndexAndPersistJSONRulesetResult IndexAndPersistJSONRulesetUnsafe(
+  IndexAndPersistJSONRulesetResult IndexAndPersistJSONRuleset(
       uint8_t parse_flags) const;
 
-  using IndexAndPersistJSONRulesetCallback =
-      base::OnceCallback<void(IndexAndPersistJSONRulesetResult)>;
-  // Same as IndexAndPersistJSONRulesetUnsafe but parses the JSON rules file
-  // out-of-process. `decoder` corresponds to a Data Decoder service instance
-  // to use for decode operations related to this call.
-  //
-  // NOTE: This must be called on a sequence where file IO is allowed.
-  void IndexAndPersistJSONRuleset(
-      data_decoder::DataDecoder* decoder,
-      uint8_t parse_flags,
-      IndexAndPersistJSONRulesetCallback callback) const;
-
-  // Reads JSON rules synchronously. Callers should only use this if the JSON is
-  // trusted. Must be called on a sequence which supports file IO.
-  ReadJSONRulesResult ReadJSONRulesUnsafe() const;
+  // Reads JSON rules synchronously. Must be called on a sequence which supports
+  // file IO.
+  ReadJSONRulesResult ReadJSONRules() const;
 
   // Serializes `rules` into the `json` string. Returns false on failure.
   bool SerializeRulesToJSON(

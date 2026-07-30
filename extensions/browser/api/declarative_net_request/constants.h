@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/time/time.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
 namespace extensions::declarative_net_request {
@@ -302,6 +303,9 @@ inline constexpr int kMaxDisabledStaticRules = 5000;
 // Maximum size of a compiled RegEx rule in KB. Limited to 2 KB which means
 // that given 1024 rules, the total usage would be 2 MB.
 inline constexpr int kRegexMaxMemKb = 2;
+
+// Target execution slice budget for static ruleset indexing.
+inline constexpr base::TimeDelta kMaxTimeSlice = base::Milliseconds(50);
 
 // Identifier for a Flatbuffer containing `flat::EmbedderConditions` as the
 // root.

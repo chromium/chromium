@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_ostream_operators.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
@@ -29,7 +31,6 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -46,7 +47,6 @@ api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
 
 struct TestLoadRulesetInfo {
   bool has_new_checksum = false;
-  std::optional<bool> indexing_successful;
   std::optional<LoadRulesetResult> load_result;
 };
 
@@ -147,8 +147,6 @@ class FileSequenceHelperTest : public ExtensionsTest {
 
             EXPECT_EQ(expected_result.has_new_checksum,
                       ruleset.new_checksum().has_value());
-            EXPECT_EQ(expected_result.indexing_successful,
-                      ruleset.indexing_successful());
             ASSERT_TRUE(ruleset.load_ruleset_result());
             EXPECT_EQ(expected_result.load_result,
                       ruleset.load_ruleset_result())
@@ -208,9 +206,6 @@ class FileSequenceHelperTest : public ExtensionsTest {
 
  private:
   std::unique_ptr<FileSequenceHelper> helper_;
-
-  // Required to use DataDecoder's JSON parsing for re-indexing.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(FileSequenceHelperTest, NoRulesetsToLoad) {
@@ -227,8 +222,6 @@ TEST_F(FileSequenceHelperTest, IndexedRulesetDeleted) {
   // re-index.
   base::DeleteFile(test_cases[0].source.indexed_path());
   base::DeleteFile(test_cases[2].source.indexed_path());
-  test_cases[0].expected_result.indexing_successful = true;
-  test_cases[2].expected_result.indexing_successful = true;
 
   TestLoadRulesets(test_cases);
 
@@ -259,9 +252,6 @@ TEST_F(FileSequenceHelperTest, ChecksumMismatch) {
   test_cases[1].expected_result.load_result = LoadRulesetResult::kSuccess;
   test_cases[2].expected_result.load_result = LoadRulesetResult::kSuccess;
 
-  test_cases[1].expected_result.indexing_successful = true;
-  test_cases[2].expected_result.indexing_successful = true;
-
   TestLoadRulesets(test_cases);
 
   // TODO(crbug.com/380434972): Wait for a mock content verification job to be
@@ -280,7 +270,6 @@ TEST_F(FileSequenceHelperTest, RulesetFormatVersionMismatch) {
 
   // Version mismatch will cause re-indexing and updated checksums.
   for (auto& test_case : test_cases) {
-    test_case.expected_result.indexing_successful = true;
     test_case.expected_result.has_new_checksum = true;
     test_case.expected_result.load_result = LoadRulesetResult::kSuccess;
   }
@@ -300,9 +289,6 @@ TEST_F(FileSequenceHelperTest, JSONAndIndexedRulesetDeleted) {
   base::DeleteFile(test_cases[1].source.indexed_path());
 
   // Re-indexing will fail since the JSON ruleset is now deleted.
-  test_cases[0].expected_result.indexing_successful = false;
-  test_cases[1].expected_result.indexing_successful = false;
-
   test_cases[0].expected_result.load_result =
       LoadRulesetResult::kErrorInvalidPath;
   test_cases[1].expected_result.load_result =
@@ -397,7 +383,6 @@ TEST_F(FileSequenceHelperTest, MaxRulesetSizeStatic) {
   // - Chrome will try to re-index from JSON. This fails as the JSON file size
   //   also exceeds the limit.
   // - Loading fails with kErrorRulesetFileSizeLimitExceeded.
-  test_cases[0].expected_result.indexing_successful = false;
   test_cases[0].expected_result.load_result =
       LoadRulesetResult::kErrorRulesetFileSizeLimitExceeded;
 
