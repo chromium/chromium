@@ -4871,7 +4871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.LoginAnimation.Duration2.{TabletOrClamshellMode}"
-    units="ms" expires_after="2026-11-29">
+    units="ms" expires_after="2027-07-31">
   <owner>oshima@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -4882,9 +4882,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.LoginAnimation.Jank.{TabletOrClamshellMode}" units="%"
-    expires_after="2026-07-28">
+    expires_after="2027-07-31">
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Jank metrics of all animations applied during the login process. This
     represents how often the frame update rate changed during animation.
@@ -4893,9 +4893,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.LoginAnimation.Smoothness.{TabletOrClamshellMode}"
-    units="%" expires_after="2027-01-03">
+    units="%" expires_after="2027-07-31">
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Relative smoothness of all animations applied during the login process. 100%
     represents the ideal smoothness for 60 frames per second.
