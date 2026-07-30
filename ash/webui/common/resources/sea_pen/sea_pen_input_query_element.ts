@@ -115,8 +115,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   declare private searchButtonText_: string|null;
   declare private searchButtonIcon_: string;
   declare private shouldShowSuggestions_: boolean;
-  private innerContainerOriginalHeight_: number;
-  private resizeObserver_: ResizeObserver;
+  private innerContainerOriginalHeight_: number|null = null;
+  private resizeObserver_: ResizeObserver =
+      new ResizeObserver(() => this.animateContainerHeight_());
   private replacePromptListener_: (e: SeaPenSampleSelectedEvent|
                                    SeaPenHistoryPromptSelectedEvent) => void;
   private deleteRecentImageListener_: EventListener;
@@ -144,6 +145,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.watch<SeaPenInputQueryElement['seaPenQuery_']>(
         'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
+    this.observeSuggestionsContainer_();
 
     document.body.addEventListener(
         SeaPenSampleSelectedEvent.EVENT_NAME, this.replacePromptListener_);
@@ -155,9 +157,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         this.replacePromptListener_);
 
     this.focusInput_();
-
-    this.resizeObserver_ =
-        new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
 
@@ -196,9 +195,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.$.queryInput.focusInput();
   }
 
-  // Called when there is a custom dom-change event dispatched from
-  // `sea-pen-suggestions` element.
-  private onSeaPenSuggestionsDomChanged_() {
+  private observeSuggestionsContainer_() {
     const suggestionsContainer =
         this.shadowRoot!.querySelector('sea-pen-suggestions');
     if (suggestionsContainer) {
@@ -207,7 +204,10 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   }
 
   // Updates main container's height and applies transition style.
-  private animateContainerHeight() {
+  private animateContainerHeight_() {
+    if (this.innerContainerOriginalHeight_ === null) {
+      return;
+    }
     const suggestionsContainer =
         this.shadowRoot!.querySelector('sea-pen-suggestions');
     const suggestionsContainerHeight =

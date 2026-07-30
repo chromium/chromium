@@ -661,4 +661,56 @@ suite('SeaPenInputQueryElementTest', function() {
     assertTrue(!!inputElement);
     assertEquals(getActiveElement(seaPenInputQueryElement), inputElement);
   });
+
+  test(
+      're-observes suggestions container after disconnect and reconnect',
+      async () => {
+        const observedTargets: Element[] = [];
+        const originalResizeObserver = window.ResizeObserver;
+        class MockResizeObserver implements ResizeObserver {
+          constructor(_callback: ResizeObserverCallback) {}
+          observe(target: Element) {
+            observedTargets.push(target);
+          }
+          unobserve() {}
+          disconnect() {
+            observedTargets.length = 0;
+          }
+          takeRecords(): ResizeObserverEntry[] {
+            return [];
+          }
+        }
+        window.ResizeObserver = MockResizeObserver;
+
+        try {
+          seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+          await waitAfterNextRender(seaPenInputQueryElement);
+          await setTextInputValue('test');
+
+          const seaPenSuggestionsElement =
+              seaPenInputQueryElement.shadowRoot!.querySelector(
+                  SeaPenSuggestionsElement.is)!;
+          assertTrue(
+              !!seaPenSuggestionsElement,
+              'suggestions element should be stamped');
+          assertTrue(
+              observedTargets.includes(seaPenSuggestionsElement),
+              'suggestions element should be observed initially');
+
+          // Simulate disconnect and reconnect cycle.
+          seaPenInputQueryElement.remove();
+          assertTrue(
+              observedTargets.length === 0,
+              'observed targets should be empty on disconnect');
+
+          document.body.appendChild(seaPenInputQueryElement);
+          await waitAfterNextRender(seaPenInputQueryElement);
+
+          assertTrue(
+              observedTargets.includes(seaPenSuggestionsElement),
+              'suggestions element should be re-observed on reconnect');
+        } finally {
+          window.ResizeObserver = originalResizeObserver;
+        }
+      });
 });

@@ -124,13 +124,13 @@ export class Sparkle {
   private topLeftBackgroundColor: Vec4 = [1.0, 1.0, 1.0, 1.0];
   private bottomRightBackgroundColor: Vec4 = [1.0, 1.0, 1.0, 1.0];
   private sparkleColor: Vec4 = [1.0, 1.0, 1.0, 1.0];
-  private noiseMove: [number, number, number] = [0., 0., 0.];
+  private noiseMove: [number, number, number] = [0.0, 0.0, 0.0];
   private applyNoise = false;
   private gridNum: number = 1.2;
-  private lumaMatteBlendFactor: number;
-  private lumaMatteOverallBrightness: number;
-  private inverseLuma: number = -1.;
-  private opacity: number = 1.;
+  private lumaMatteBlendFactor: number = 1.0;
+  private lumaMatteOverallBrightness: number = 0.0;
+  private inverseLuma: number = -1.0;
+  private opacity: number = 1.0;
   private then: number = performance.now();
   private needsUpdate: boolean = true;
 
@@ -190,7 +190,7 @@ export class Sparkle {
    */
   setLumaMatteFactors(
       lumaMatteBlendFactor: number = 1.0,
-      lumaMatteOverallBrightness: number = 0.) {
+      lumaMatteOverallBrightness: number = 0.0) {
     this.lumaMatteBlendFactor = lumaMatteBlendFactor;
     this.lumaMatteOverallBrightness = lumaMatteOverallBrightness;
     this.needsUpdate = true;
@@ -204,7 +204,7 @@ export class Sparkle {
    * blend color onto the darker side, set to true.
    */
   setInverseNoiseLuminosity(inverse: boolean) {
-    this.inverseLuma = inverse ? -1. : 1.;
+    this.inverseLuma = inverse ? -1.0 : 1.0;
     this.needsUpdate = true;
   }
 

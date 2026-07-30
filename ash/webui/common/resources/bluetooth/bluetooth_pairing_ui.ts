@@ -174,12 +174,12 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement
   declare private isBluetoothEnabled_: boolean;
   private systemPropertiesObserverReceiver_: SystemPropertiesObserverReceiver;
   private bluetoothDiscoveryDelegateReceiver_: BluetoothDiscoveryDelegateReceiver;
-  private devicePairingHandler_: DevicePairingHandlerInterface|null;
+  private devicePairingHandler_: DevicePairingHandlerInterface|null = null;
   /**
    * The device to be paired with after the current pairDevice_() request has
    * finished.
    */
-  private queuedDevicePendingPairing_: BluetoothDeviceProperties|null;
+  private queuedDevicePendingPairing_: BluetoothDeviceProperties|null = null;
 
   /**
    * The Mojo receiver of the current ongoing pairing. If null indicates no

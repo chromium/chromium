@@ -629,4 +629,102 @@ suite('SeaPenTemplateQueryElementTest', function() {
                 '#freeformInfo')),
         'freeform navigation info displays');
   });
+
+  test(
+      're-observes options container after disconnect and reconnect',
+      async () => {
+        const observedTargets: Element[] = [];
+        const originalResizeObserver = window.ResizeObserver;
+        class MockResizeObserver implements ResizeObserver {
+          constructor(_callback: ResizeObserverCallback) {}
+          observe(target: Element) {
+            observedTargets.push(target);
+          }
+          unobserve() {}
+          disconnect() {
+            observedTargets.length = 0;
+          }
+          takeRecords(): ResizeObserverEntry[] {
+            return [];
+          }
+        }
+        window.ResizeObserver = MockResizeObserver;
+
+        try {
+          seaPenTemplateQueryElement = initElement(
+              SeaPenTemplateQueryElement,
+              {templateId: SeaPenTemplateId.kFlower.toString()});
+          await waitAfterNextRender(seaPenTemplateQueryElement);
+
+          // Click a chip to stamp <sea-pen-options>.
+          const chips = seaPenTemplateQueryElement.shadowRoot!
+                            .querySelectorAll<HTMLElement>('.chip-text');
+          chips[0]!.click();
+          await waitAfterNextRender(seaPenTemplateQueryElement);
+
+          const seaPenOptionsElement =
+              seaPenTemplateQueryElement.shadowRoot!.querySelector(
+                  SeaPenOptionsElement.is)!;
+          assertTrue(
+              !!seaPenOptionsElement, 'options element should be stamped');
+          assertTrue(
+              observedTargets.includes(seaPenOptionsElement),
+              'options element should be observed initially');
+
+          // Simulate disconnect and reconnect cycle.
+          seaPenTemplateQueryElement.remove();
+          assertTrue(
+              observedTargets.length === 0,
+              'observed targets should be empty on disconnect');
+
+          document.body.appendChild(seaPenTemplateQueryElement);
+          await waitAfterNextRender(seaPenTemplateQueryElement);
+
+          assertTrue(
+              observedTargets.includes(seaPenOptionsElement),
+              'options element should be re-observed on reconnect');
+        } finally {
+          window.ResizeObserver = originalResizeObserver;
+        }
+      });
+
+  test('hides Freeform navigation info if thumbnails are loading', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info displays');
+
+    // Simulate loading start.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertFalse(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info no longer displays');
+
+    // Simulate loading end.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertTrue(
+        isVisible(
+            seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo')),
+        'freeform navigation info displays');
+  });
 });

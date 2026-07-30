@@ -210,7 +210,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   declare private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
   declare private thumbnailResponseStatusCode_: MantaStatusCode|null;
   declare private showError_: boolean;
-  private cameraFeed_: HTMLVideoElement|null;
+  private cameraFeed_: HTMLVideoElement|null = null;
   declare private isSeaPenTextInputEnabled_: boolean;
   declare private isManagedSeaPenFeedbackEnabled_: boolean;
   declare private showHistory_: boolean;

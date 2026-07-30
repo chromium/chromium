@@ -100,7 +100,7 @@
     <div id="nextTemplate">Using the experimental theme (if available)</div>
   </template>
   <template is="dom-if" if="[[shouldShowOptions_(options_)]]"
-      on-dom-change="onSeaPenOptionsDomChanged_">
+      on-dom-change="observeOptionsContainer_">
     <sea-pen-options
         class="fade-in-200ms"
         options="[[options_]]"

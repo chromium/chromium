@@ -92,7 +92,7 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
   declare private selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>;
   declare private chipsExpanded_: boolean;
   declare private shouldShowExpandButton_: boolean;
-  private debouncer_: Debouncer;
+  private debouncer_: Debouncer|null = null;
   private onResized_: () => void = () => {
     this.debouncer_ =
         Debouncer.debounce(this.debouncer_, timeOut.after(50), () => {

@@ -75,7 +75,7 @@
   </div>
   <div id="innerContainer">
     <template is="dom-if" if="[[shouldShowSuggestions_]]"
-        on-dom-change="onSeaPenSuggestionsDomChanged_" restamp>
+        on-dom-change="observeSuggestionsContainer_" restamp>
       <sea-pen-suggestions class="fade-in-200ms"
           on-sea-pen-suggestion-selected="onSuggestionSelected_">
       </sea-pen-suggestions>
