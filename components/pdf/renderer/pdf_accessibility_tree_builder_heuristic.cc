@@ -54,10 +54,6 @@ constexpr float kHeadingFontSizeRatio = 1.2f;
 // size on the page for it to be considered an H1 instead of H2.
 constexpr float kH1MinFontSizeRatio = 1.7f;
 
-// Ratio between the smallest heading candidate font size and the median font
-// size on the page for it to be considered a heading.
-constexpr float kMinHeadingFontSizeRatio = 1.2f;
-
 // Ratio between the line spacing between two lines and the median on the
 // page for that line spacing to be considered a paragraph break.
 constexpr float kParagraphLineSpacingRatio = 1.2f;
@@ -65,9 +61,12 @@ constexpr float kParagraphLineSpacingRatio = 1.2f;
 // The default heading level used when the run is determined to be a heading.
 constexpr int kDefaultHeadingLevel = 2;
 
-// The heading level used when the run is determined to be a heading due to a
-// combination of its font size and other styling, instead of just size.
-constexpr int kStyledHeadingLevel = 3;
+// The largest heading level used when the run is determined to be a heading due
+// to a combination of its font size and other styling, instead of just size.
+constexpr int kLargestStyledHeadingLevel = 3;
+
+// The smallest heading level allowed (corresponds to <h6>).
+constexpr int kSmallestHeadingLevel = 6;
 
 // This class is used as part of our heuristic to determine which text runs live
 // on the same "line".  As we process runs, we keep a weighted average of the
@@ -242,22 +241,28 @@ void ComputeParagraphAndHeadingThresholds(
         bool is_much_larger = current_cluster_font_size >=
                               (*out_median_font_size * kH1MinFontSizeRatio);
         int current_level = is_much_larger ? 1 : 2;
-        float heading_font_size_threshold =
-            *out_median_font_size * kMinHeadingFontSizeRatio;
-        // Iterate from the largest font size down to the heading threshold. The
+        float min_mapping_font_size = *out_median_font_size;
+        // Iterate from the largest font size down to the median font size. The
         // largest font size is compared to itself in the first iteration of the
         // loop so that it's set as the first level.
         for (float size : base::Reversed(font_sizes)) {
-          if (size < heading_font_size_threshold) {
+          if (size < min_mapping_font_size) {
             break;
           }
           // If the current cluster size and the new size are different enough,
           // update the heading level. Otherwise, maintain the current cluster.
           if (current_cluster_font_size - size > kFontSizeWiggleRoom) {
             current_cluster_font_size = size;
-            if (current_level < 6) {
+            if (current_level < kSmallestHeadingLevel) {
               current_level++;
             }
+          }
+          // Once the normal heading size threshold is reached, start at level
+          // `kMaxStyledHeadingLevel` and increment from there so that no text
+          // of size < heading threshold is a heading level h1 or h2.
+          if (size < *out_heading_font_size_threshold &&
+              current_level < kLargestStyledHeadingLevel) {
+            current_level = kLargestStyledHeadingLevel;
           }
           (*out_heading_font_size_mapping)[size] = current_level;
         }
@@ -280,8 +285,8 @@ void ComputeParagraphAndHeadingThresholds(
 int GetHeadingLevelFromSize(
     const std::map<float, int>& heading_font_size_mapping,
     float font_size) {
-  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
-      heading_font_size_mapping.empty()) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  if (heading_font_size_mapping.empty()) {
     return 0;
   }
 
@@ -622,7 +627,10 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
                 text_run, GetTextRunChars(layout, text_run_index),
                 thresholds.median_font_size);
             if (current_heading_classifier != HeadingClassifier::kNone) {
-              PromoteNodeToHeading(block_node, kStyledHeadingLevel);
+              int heading_level =
+                  GetHeadingLevelFromSize(*thresholds.heading_font_size_mapping,
+                                          text_run.style.font_size);
+              PromoteNodeToHeading(block_node, heading_level);
             }
           }
         }
