@@ -37,7 +37,7 @@ details.
     down an emulator instance using `--avd-config` - eg.
     `out/Debug/bin/run_base_unittests --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb`.
     As a faster alternative when an emulator is already running, specify which
-    emulator to use with `-d emulator-5554`.
+    emulator to use with `-d emulator-1234`.
   * **Running a standalone emulator:** to start an emulator independently when
     installing or launching an APK - eg.
     `tools/android/avd/avd.py start --avd-config tools/android/avd/proto/android_35_google_apis_x64.textpb`.
