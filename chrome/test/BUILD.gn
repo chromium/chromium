@@ -626,10 +626,6 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_devtools_frontend) {
-    sources += []
-  }
-
   if (use_nss_certs) {
     public_configs = [ "//build/config/linux/nss" ]
   }
@@ -7967,7 +7963,6 @@ static_library("test_support_unit") {
   }
 
   if (enable_bound_session_credentials) {
-    sources += []
     public_deps += [ "//components/unexportable_keys" ]
   }
 }
