@@ -720,7 +720,6 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void ActorKeyedService::AddObserver(BackgroundActuationObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -744,6 +743,7 @@ void ActorKeyedService::NotifyBackgroundSetupFailed(
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::CallbackListSubscription
 ActorKeyedService::AddForegroundServiceStartedCallback(
     EnsureForegroundServiceStartedCallback callback) {

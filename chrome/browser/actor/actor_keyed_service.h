@@ -187,7 +187,6 @@ class ActorKeyedService : public KeyedService,
   // download::AllDownloadItemNotifier::Observer
   void OnProfileInitializationComplete(Profile* profile) override;
 
-#if BUILDFLAG(IS_ANDROID)
   class BackgroundActuationObserver : public base::CheckedObserver {
    public:
     virtual void OnBackgroundTabPrepared(
@@ -203,6 +202,7 @@ class ActorKeyedService : public KeyedService,
                                 const std::string& glic_trigger_message_id);
   void NotifyBackgroundSetupFailed(const std::string& glic_trigger_message_id);
 
+#if BUILDFLAG(IS_ANDROID)
   using EnsureForegroundServiceStartedCallback =
       base::RepeatingCallback<void(const std::string&)>;
   base::CallbackListSubscription AddForegroundServiceStartedCallback(
@@ -254,10 +254,11 @@ class ActorKeyedService : public KeyedService,
   base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
 
+  base::ObserverList<BackgroundActuationObserver> observers_;
+
 #if BUILDFLAG(IS_ANDROID)
   base::RepeatingCallbackList<void(const std::string&)>
       ensure_foreground_service_started_callbacks_;
-  base::ObserverList<BackgroundActuationObserver> observers_;
 #endif
 
   // Owns this.

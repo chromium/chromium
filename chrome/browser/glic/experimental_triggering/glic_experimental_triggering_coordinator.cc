@@ -847,7 +847,8 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
     const std::string& context_id,
     const ExperimentalTriggeringRequest& request,
     ScopedIncomingMessageResultLogger result_logger,
-    GlicExperimentalTriggeringUpdateCallback update_callback) {
+    GlicExperimentalTriggeringUpdateCallback update_callback,
+    tabs::TabInterface* prepared_tab) {
   auto it = context_id_to_updates_handler_map_.find(context_id);
   ExperimentalTriggeringUpdatesHandler* handler = nullptr;
   if (it != context_id_to_updates_handler_map_.end()) {
@@ -866,7 +867,7 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
   CHECK(handler);
 
   return handler->OnRequest(request, std::move(result_logger),
-                            std::move(update_callback), nullptr);
+                            std::move(update_callback), prepared_tab);
 }
 
 void GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup(

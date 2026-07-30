@@ -111,7 +111,7 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
         kTestContextId, request,
         ScopedIncomingMessageResultLogger(
             ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
-        base::DoNothing());
+        base::DoNothing(), nullptr);
   }
 
  protected:

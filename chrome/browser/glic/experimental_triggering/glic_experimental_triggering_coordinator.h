@@ -47,7 +47,8 @@ class GlicExperimentalTriggeringCoordinator {
       const std::string& context_id,
       const ExperimentalTriggeringRequest& request,
       ScopedIncomingMessageResultLogger result_logger,
-      GlicExperimentalTriggeringUpdateCallback update_callback);
+      GlicExperimentalTriggeringUpdateCallback update_callback,
+      tabs::TabInterface* prepared_tab);
 
   size_t GetUpdatesHandlerMapSizeForTesting() const {
     return context_id_to_updates_handler_map_.size();
