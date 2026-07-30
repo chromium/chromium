@@ -88,7 +88,8 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_NullAnnotation) {
             SuggestionApplicationResult::kFailedNoExtractedAnnotations);
 }
 
-TEST(FilterApplicationVerifierTest, VerifyOutcome_CountMismatch) {
+TEST(FilterApplicationVerifierTest,
+     VerifyOutcome_MissingSuggestedFilters_Failure) {
   UrlFilterSuggestion suggestion =
       CreateSuggestion({{"color", "red"}, {"size", "XL"}});
   FilterAnnotation annotation = CreateAnnotation({{"color", "red"}});
@@ -97,7 +98,23 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_CountMismatch) {
       FilterApplicationVerifier::Verify(suggestion, annotation);
 
   EXPECT_FALSE(result.is_success());
-  EXPECT_EQ(result.outcome, SuggestionApplicationResult::kFailedCountMismatch);
+  EXPECT_EQ(result.outcome,
+            SuggestionApplicationResult::kFailedAttributeMismatch);
+  ASSERT_EQ(result.missing_keys.size(), 1u);
+  EXPECT_EQ(result.missing_keys[0], "size");
+}
+
+TEST(FilterApplicationVerifierTest,
+     VerifyOutcome_ExtraExtractedAnnotations_Success) {
+  UrlFilterSuggestion suggestion = CreateSuggestion({{"color", "red"}});
+  FilterAnnotation annotation =
+      CreateAnnotation({{"color", "red"}, {"size", "XL"}});
+
+  const FilterApplicationVerifier::Result result =
+      FilterApplicationVerifier::Verify(suggestion, annotation);
+
+  EXPECT_TRUE(result.is_success());
+  EXPECT_EQ(result.outcome, SuggestionApplicationResult::kAllFiltersApplied);
   EXPECT_TRUE(result.missing_keys.empty());
 }
 
@@ -122,6 +139,22 @@ TEST(FilterApplicationVerifierTest, VerifyOutcome_ValueMismatch) {
       CreateSuggestion({{"color", "red"}, {"size", "XL"}});
   FilterAnnotation annotation =
       CreateAnnotation({{"color", "blue"}, {"size", "XL"}});
+
+  const FilterApplicationVerifier::Result result =
+      FilterApplicationVerifier::Verify(suggestion, annotation);
+
+  EXPECT_FALSE(result.is_success());
+  EXPECT_EQ(result.outcome,
+            SuggestionApplicationResult::kFailedAttributeMismatch);
+  ASSERT_EQ(result.missing_keys.size(), 1u);
+  EXPECT_EQ(result.missing_keys[0], "color");
+}
+
+TEST(FilterApplicationVerifierTest,
+     VerifyOutcome_DuplicateMissingKeys_Uniqued) {
+  UrlFilterSuggestion suggestion =
+      CreateSuggestion({{"color", "red"}, {"color", "blue"}});
+  FilterAnnotation annotation = CreateAnnotation({{"size", "XL"}});
 
   const FilterApplicationVerifier::Result result =
       FilterApplicationVerifier::Verify(suggestion, annotation);

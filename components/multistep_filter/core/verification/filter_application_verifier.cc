@@ -21,11 +21,6 @@ FilterApplicationVerifier::Result FilterApplicationVerifier::Verify(
                 SuggestionApplicationResult::kFailedNoExtractedAnnotations};
   }
 
-  if (suggested_filters.attribute_ui_labels.size() !=
-      extracted_annotation->attributes.size()) {
-    return {.outcome = SuggestionApplicationResult::kFailedCountMismatch};
-  }
-
   std::vector<std::string> missing_keys;
   for (const FilterAttributeUiLabel& suggested_label :
        suggested_filters.attribute_ui_labels) {
@@ -44,6 +39,10 @@ FilterApplicationVerifier::Result FilterApplicationVerifier::Verify(
   if (missing_keys.empty()) {
     return {.outcome = SuggestionApplicationResult::kAllFiltersApplied};
   }
+
+  std::sort(missing_keys.begin(), missing_keys.end());
+  missing_keys.erase(std::unique(missing_keys.begin(), missing_keys.end()),
+                     missing_keys.end());
 
   return {.outcome = SuggestionApplicationResult::kFailedAttributeMismatch,
           .missing_keys = std::move(missing_keys)};
