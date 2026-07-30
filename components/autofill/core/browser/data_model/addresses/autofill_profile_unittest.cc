@@ -772,6 +772,7 @@ TEST_F(AutofillProfileTest, CreateInferredLabels_StreetAddress) {
                                               .with_first_name("John")
                                               .with_last_name("Doe")
                                               .with_address1("666 Erebus St.")
+                                              .with_address2("ACME Corp.")
                                               .with_city("Elysium")
                                               .with_zipcode("91111")
                                               .Build());
@@ -810,8 +811,8 @@ TEST_F(AutofillProfileTest, CreateInferredLabels_StreetAddress) {
     std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles), suggested_fields, {NAME_FIRST},
         /*minimal_fields_shown=*/1, "en-US");
-    EXPECT_THAT(labels,
-                testing::ElementsAre(u"666 Erebus St.", u"123 Letha Shore."));
+    EXPECT_THAT(labels, testing::ElementsAre(u"666 Erebus St., ACME Corp.",
+                                             u"123 Letha Shore."));
 
     // A form with ADDRESS_HOME_LINE1 also generates street address line 1
     // as the inferred label.
