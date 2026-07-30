@@ -11,7 +11,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -33,7 +33,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -55,7 +55,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -78,7 +78,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -100,7 +100,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -122,7 +122,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -144,7 +144,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -174,7 +174,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -196,7 +196,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -219,7 +219,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -241,7 +241,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -266,7 +266,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -288,7 +288,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -310,7 +310,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -332,7 +332,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -354,7 +354,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -376,7 +376,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -398,7 +398,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -439,7 +439,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -461,7 +461,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -483,7 +483,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -505,7 +505,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -527,7 +527,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -550,7 +550,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -572,7 +572,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -594,7 +594,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -616,7 +616,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -638,7 +638,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -660,7 +660,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -682,7 +682,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -704,7 +704,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -726,7 +726,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -748,7 +748,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -770,7 +770,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -792,7 +792,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -814,7 +814,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -854,7 +854,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -876,7 +876,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -899,7 +899,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -921,7 +921,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -943,7 +943,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -965,7 +965,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -987,7 +987,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1009,7 +1009,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1031,7 +1031,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1053,7 +1053,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1075,7 +1075,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1097,7 +1097,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1119,7 +1119,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1141,7 +1141,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1163,7 +1163,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1185,7 +1185,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1207,7 +1207,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1229,7 +1229,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1252,7 +1252,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1274,7 +1274,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1296,7 +1296,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1318,7 +1318,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1340,7 +1340,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1362,7 +1362,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1384,7 +1384,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1406,7 +1406,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1447,7 +1447,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1469,7 +1469,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1491,7 +1491,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1513,7 +1513,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1536,7 +1536,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1558,7 +1558,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1580,7 +1580,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1602,7 +1602,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1624,7 +1624,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1646,7 +1646,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1668,7 +1668,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1695,7 +1695,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1788,7 +1788,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1856,7 +1856,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1905,7 +1905,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1931,7 +1931,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -1956,7 +1956,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -2013,7 +2013,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -2038,7 +2038,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {
@@ -2063,7 +2063,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "idempotent": false,
           "optional_dimensions": {
@@ -2093,7 +2093,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "idempotent": false,
           "optional_dimensions": {
@@ -2124,7 +2124,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "idempotent": false,
           "optional_dimensions": {
@@ -2154,7 +2154,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15|Mac-26"
+            "os": "Mac-26"
           },
           "optional_dimensions": {
             "30": {

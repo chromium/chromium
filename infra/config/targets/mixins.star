@@ -1347,23 +1347,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "mac_15_vm_optional",
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "arm64",  # fallback on bare metal if no VMs are available
-            # TODO(crbug.com/521856600): Remove OR when Mac-26 once upgrade
-            # process is complete and CQ migrates to mac26-arm64-rel-tests.
-            "os": "Mac-15|Mac-26",
-        },
-        optional_dimensions = {
-            30: {
-                "cpu": "Apple_(Virtual)",
-            },
-        },
-    ),
-)
-
-targets.mixin(
     name = "mac_26_vm_optional",
     swarming = targets.swarming(
         dimensions = {

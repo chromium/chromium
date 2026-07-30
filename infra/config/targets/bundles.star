@@ -2034,7 +2034,7 @@ targets.bundle(
         "mac_specific_chromium_gtests",
     ],
     mixins = [
-        "mac_15_vm_optional",
+        "mac_26_vm_optional",
     ],
 )
 
@@ -5264,7 +5264,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             mixins = [
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPHONE_14_PLUS_18_2",
@@ -5280,7 +5280,7 @@ targets.bundle(
             targets = "ios_eg2_cq_tests",
             mixins = [
                 "xcodebuild_sim_runner",
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
@@ -5301,7 +5301,7 @@ targets.bundle(
             targets = "ios_eg2_tests",
             mixins = [
                 "xcodebuild_sim_runner",
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPHONE_15_18_2",
@@ -5320,7 +5320,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             mixins = [
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
@@ -5357,7 +5357,7 @@ targets.bundle(
             mixins = [
                 "xcodebuild_sim_runner",
                 "record_failed_tests",
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
@@ -5409,7 +5409,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             mixins = [
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPHONE_15_18_2",
@@ -5425,7 +5425,7 @@ targets.bundle(
             targets = "ios_vm_eg2_cq_tests",
             mixins = [
                 "xcodebuild_sim_runner",
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPHONE_15_18_2",
@@ -5443,7 +5443,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             mixins = [
-                "mac_15_vm_optional",
+                "mac_26_vm_optional",
             ],
             variants = [
                 "SIM_IPHONE_15_18_2",
