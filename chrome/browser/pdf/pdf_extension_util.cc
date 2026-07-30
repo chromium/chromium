@@ -39,6 +39,7 @@
 #include "pdf/pdf_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
@@ -86,6 +87,9 @@ base::DictValue GetCommonStrings() {
   dict.Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
   dict.Set("pdfOopifEnabled",
            chrome_pdf::features::IsOopifPdfEnabled() ? "pdfOopifEnabled" : "");
+  dict.Set(
+      "webuiRoundedIconsAttribute",
+      features::IsWebUIRoundedIconsEnabled() ? "webui-rounded-icons" : "");
   return dict;
 }
 
