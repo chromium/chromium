@@ -1,7 +1,7 @@
 # Using crashpad with content shell
 
 When running web tests, it is possible to use
-[crashpad](../third_party/crashpad/)/[breakpad](../../third_party/breakpad/) to
+[crashpad](../../third_party/crashpad/)/[breakpad](../../third_party/breakpad/) to
 capture stack traces on crashes while running without a debugger attached and
 with the sandbox enabled.
 
