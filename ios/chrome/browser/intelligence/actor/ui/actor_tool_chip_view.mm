@@ -27,6 +27,10 @@ const CGFloat kChipIconSize = 18.0;
   UIStackView* _stackView;
 }
 
+- (instancetype)init {
+  return [self initWithText:@"" icon:nil];
+}
+
 - (instancetype)initWithText:(NSString*)text icon:(UIImage*)icon {
   DCHECK(text);
   self = [super initWithFrame:CGRectZero];
