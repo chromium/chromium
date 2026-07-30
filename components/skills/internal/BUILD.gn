@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_static_library.gni")
+
 source_set("internal") {
   visibility = [
     ":*",
@@ -15,6 +17,8 @@ source_set("internal") {
   ]
 
   sources = [
+    "enterprise_skills_provider.cc",
+    "enterprise_skills_provider.h",
     "skills_service_impl.cc",
     "skills_service_impl.h",
     "skills_sync_bridge.cc",
@@ -28,6 +32,7 @@ source_set("internal") {
 
   deps = [
     ":downloader",
+    ":skill_parser_rust",
     "//components/optimization_guide/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -47,6 +52,16 @@ source_set("internal") {
       "enterprise_published_skills_policy_handler.h",
     ]
   }
+}
+
+rust_static_library("skill_parser_rust") {
+  crate_root = "skill_parser.rs"
+  sources = [ "skill_parser.rs" ]
+  cxx_bindings = [ "skill_parser.rs" ]
+
+  # Required for cxx::bridge to generate C-ABI FFI bindings under the hood.
+  # The parser itself contains zero manual unsafe blocks.
+  allow_unsafe = true
 }
 
 source_set("downloader") {
@@ -80,6 +95,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "enterprise_skills_provider_unittest.cc",
     "skills_downloader_unittest.cc",
     "skills_service_impl_unittest.cc",
     "skills_sync_bridge_unittest.cc",
@@ -87,6 +103,10 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [ "skills_fetcher_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "enterprise_published_skills_policy_handler_unittest.cc" ]
   }
 
   deps = [
@@ -113,10 +133,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
   ]
-
-  if (is_win || is_mac || is_linux) {
-    sources += [ "enterprise_published_skills_policy_handler_unittest.cc" ]
-  }
 
   visibility = [ "//components/skills:unit_tests" ]
 }

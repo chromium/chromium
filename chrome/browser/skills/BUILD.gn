@@ -128,6 +128,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/skills:features",
+    "//components/skills/internal",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
   ]

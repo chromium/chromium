@@ -17,6 +17,12 @@ namespace skills {
 // LINT.IfChange(Skill)
 // Represents a single skill.
 struct Skill {
+  // TODO(crbug.com/538134415): Have other skills code use these shared
+  // constants to avoid duplicating validation constraints.
+  static constexpr size_t kMaxNameLength = 20;
+  static constexpr size_t kMaxDescriptionLength = 100;
+  static constexpr size_t kMaxPromptLength = 20000;
+
   // A unique identifier for the skill. It's GUID now but can be other IDs in
   // the future.
   std::string id;

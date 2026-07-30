@@ -1,5 +1,7 @@
 include_rules = [
   "+components/sync/protocol",
+  "+components/policy/core/common/policy_logger.h",
+  "+crypto",
   "+net/http",
   "+net/base",
   "+net/traffic_annotation",

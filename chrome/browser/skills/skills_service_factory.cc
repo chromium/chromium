@@ -18,6 +18,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/skills/features.h"
+#include "components/skills/internal/enterprise_skills_provider.h"
 #include "components/skills/internal/skills_service_impl.h"
 #include "components/skills/public/skills_features.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -64,13 +65,20 @@ SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
-  return std::make_unique<SkillsServiceImpl>(
+  auto service = std::make_unique<SkillsServiceImpl>(
       profile->GetPrefs(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
       std::move(store_factory),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
+
+  if (base::FeatureList::IsEnabled(
+          features::kEnterprisePublishedSkillsPolicyEnabled)) {
+    service->AddProvider(std::make_unique<EnterpriseSkillsProvider>());
+  }
+
+  return service;
 }
 
 }  // namespace skills
