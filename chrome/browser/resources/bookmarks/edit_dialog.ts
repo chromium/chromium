@@ -230,6 +230,7 @@ export class BookmarksEditDialogElement extends CrLitElement {
   protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
+
 }
 
 declare global {

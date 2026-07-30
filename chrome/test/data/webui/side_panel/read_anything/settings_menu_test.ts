@@ -364,8 +364,10 @@ suite('SettingsMenuElement', () => {
   });
 
   test('forward arrow is ignored when focus is on previewplaybutton', () => {
-    // Pretend we are in Voice Selection submenu.
-    settingsMenu['currentOpenId_'] = SettingsOption.VOICE_SELECTION;
+    // Open Voice Selection submenu.
+    const voiceItem = settingsMenu.$.lazyMenu.get().querySelector<HTMLButtonElement>(
+        `#${SettingsOption.VOICE_SELECTION}`)!;
+    voiceItem.click();
 
     // Move focus away from settings menu row.
     const dummySubmenuElement = document.createElement('button');

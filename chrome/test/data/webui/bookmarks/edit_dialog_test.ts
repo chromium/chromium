@@ -175,9 +175,12 @@ suite('<bookmarks-edit-dialog>', function() {
     await microtasksFinished();
 
     const longTitle = 'a'.repeat(MAX_BOOKMARK_INPUT_LENGTH + 100);
-    // Directly set the private property to avoid performance issues with
-    // rendering extremely long strings in cr-input during tests.
-    dialog['titleValue_'] = longTitle;
+    dialog.$.name.value = longTitle;
+    dialog.$.name.dispatchEvent(new CustomEvent('value-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {value: longTitle},
+    }));
     await microtasksFinished();
 
     dialog.$.url.value = 'http://example.com';

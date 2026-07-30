@@ -7,7 +7,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {MenuItemId} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
-import type {MenuItem, PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
+import type {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -258,17 +258,17 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
 
     await microtasksFinished();
 
-    const menuItems = powerBookmarksContextMenu['getMenuItemsForBookmarks_']();
+    const menuItems = Array.from(
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll<HTMLElement>(
+            '.dropdown-item'));
 
-    const itemIds = menuItems.map((item: MenuItem) => item.id);
+    const itemIds = menuItems.map(item => Number(item.dataset['id']));
     const expectedIds = [
       MenuItemId.OPEN_NEW_TAB,
       MenuItemId.OPEN_NEW_WINDOW,
       MenuItemId.OPEN_NEW_TAB_GROUP,
       MenuItemId.OPEN_INCOGNITO,
-      MenuItemId.DIVIDER,
       MenuItemId.RENAME,
-      MenuItemId.DIVIDER,
       MenuItemId.DELETE,
     ];
 

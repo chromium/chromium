@@ -731,6 +731,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       focused.click();
     }
   }
+
+
 }
 
 declare global {

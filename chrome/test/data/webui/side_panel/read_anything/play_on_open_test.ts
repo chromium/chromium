@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -37,9 +37,9 @@ suite('PlayOnOpen', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     speechController = SpeechController.getInstance();
 
+    VoiceLanguageController.setInstance(new VoiceLanguageController());
     app = await createApp();
     setupBasicSpeech(speech);
-    app['selectedVoice_'] = speech.getVoices()[0]!;
   });
 
   test(
@@ -63,9 +63,15 @@ suite('PlayOnOpen', () => {
 
         assertTrue(
             playPauseToggled, 'onPlayPauseToggle should have been called');
+
+        // Verify playOnOpen was reset to false by updating content again and
+        // ensuring onPlayPauseToggle is not called a second time.
+        playPauseToggled = false;
+        app.updateContent();
+        await microtasksFinished();
         assertFalse(
-            app['playOnOpen_'],
-            'playOnOpen_ should be automatically reset to false');
+            playPauseToggled,
+            'onPlayPauseToggle should not be called again after reset');
       });
 
   test(
@@ -83,7 +89,6 @@ suite('PlayOnOpen', () => {
         await microtasksFinished();
 
         assertFalse(playPauseToggled, 'onPlayPauseToggle should not be called');
-        assertFalse(app['playOnOpen_']);
       });
 
   test(
@@ -118,8 +123,20 @@ suite('PlayOnOpen', () => {
         assertFalse(
             playPauseToggled,
             'Should not toggle playback before content is ready');
+
+        // Now provide playable content and verify speech triggers when ready
+        readingMode.getChildren = (nodeId: number) => {
+          return nodeId === 1 ? [2, 3] : [];
+        };
+        readingMode.getTextContent = (_nodeId: number) => {
+          return 'Hello world';
+        };
+        chrome.readingMode.setContentForTesting(axTree, [3]);
+        app.updateContent();
+        await microtasksFinished();
+
         assertTrue(
-            app['playOnOpen_'],
-            'playOnOpen_ should remain true until playable content arrives');
+            playPauseToggled,
+            'onPlayPauseToggle should be called once content is ready');
       });
 });

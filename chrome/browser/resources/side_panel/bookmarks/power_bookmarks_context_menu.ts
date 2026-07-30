@@ -468,6 +468,8 @@ export class PowerBookmarksContextMenuElement extends CrLitElement {
     }
     this.$.menu.close();
   }
+
+
 }
 
 declare global {
