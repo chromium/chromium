@@ -356,6 +356,13 @@ class PasswordCombinedSelectorListView : public views::View {
           PasswordCombinedSelectorController::DisplayType::kRemoteActor) {
         username = form->username_value;
         details.push_back(u"••••••••");
+        if (form->match_type.has_value() &&
+            password_manager_util::GetMatchType(*form) !=
+                password_manager_util::GetLoginMatchType::kExact) {
+          details.push_back(url_formatter::FormatOriginForSecurityDisplay(
+              url::Origin::Create(form->url),
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+        }
       } else {
         std::pair<std::u16string, std::u16string> labels =
             GetCredentialLabelsForAccountChooser(*form);
