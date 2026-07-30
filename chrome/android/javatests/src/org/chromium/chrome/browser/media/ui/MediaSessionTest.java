@@ -145,7 +145,7 @@ public class MediaSessionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MediaNotificationController controller =
-                            MediaNotificationManager.getController(
+                            MediaNotificationManager.getActiveOrFallbackControllerByMediaTypeId(
                                     R.id.media_playback_notification);
                     Assert.assertEquals(
                             UrlFormatter.formatUrlForSecurityDisplay(
@@ -163,13 +163,14 @@ public class MediaSessionTest {
         // Extended timeout to avoid flakiness https://crbug.com/40833503
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    if (MediaNotificationManager.getController(R.id.media_playback_notification)
+                    if (MediaNotificationManager.getActiveOrFallbackControllerByMediaTypeId(
+                                    R.id.media_playback_notification)
                             == null) {
                         return false;
                     }
 
                     MediaNotificationController controller =
-                            MediaNotificationManager.getController(
+                            MediaNotificationManager.getActiveOrFallbackControllerByMediaTypeId(
                                     R.id.media_playback_notification);
                     controller.mPendingIntentActionSwipe =
                             controller.createPendingIntent(

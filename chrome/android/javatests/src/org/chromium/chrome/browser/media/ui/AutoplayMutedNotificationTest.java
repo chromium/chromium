@@ -56,7 +56,9 @@ public class AutoplayMutedNotificationTest {
     }
 
     private boolean isMediaNotificationVisible() {
-        return MediaNotificationManager.getController(R.id.media_playback_notification) != null;
+        return MediaNotificationManager.getActiveOrFallbackControllerByMediaTypeId(
+                        R.id.media_playback_notification)
+                != null;
     }
 
     private class MockAudioFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {

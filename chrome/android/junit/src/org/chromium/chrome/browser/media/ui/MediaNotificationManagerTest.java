@@ -183,7 +183,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info1);
 
         int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
-        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
         assertNotNull(controller1);
 
         // Manually initialize PendingIntent to bypass Robolectric timing issues
@@ -222,7 +223,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info1);
 
         int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
-        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
         assertNotNull(controller1);
         controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -236,7 +238,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info2);
 
         int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
-        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
         assertNotNull(controller2);
         controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -277,7 +280,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info1);
 
         int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
-        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
         assertNotNull(controller1);
         controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -291,7 +295,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info2Paused);
 
         int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
-        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
         assertNotNull(controller2);
         controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -323,7 +328,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info1);
 
         int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
-        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
         assertNotNull(controller1);
         controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -334,7 +340,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         ChromeMediaNotificationManager.show(info2);
 
         int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
-        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
         assertNotNull(controller2);
         controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -380,7 +387,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
                 mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
         ChromeMediaNotificationManager.show(info1);
         int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
-        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
         assertNotNull(controller1);
         controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -391,7 +399,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
                 mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
         ChromeMediaNotificationManager.show(info2);
         int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
-        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
         assertNotNull(controller2);
         controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -403,7 +412,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
                 mMediaNotificationInfoBuilder.setInstanceId(3).setPaused(false).build();
         ChromeMediaNotificationManager.show(info3);
         int uniqueId3 = MediaNotificationManager.getUniqueId(3, getNotificationId());
-        MediaNotificationController controller3 = MediaNotificationManager.getController(uniqueId3);
+        MediaNotificationController controller3 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId3);
         assertNotNull(controller3);
         controller3.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -446,7 +456,7 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         // 7. Tab 3 is hidden (delayed hide)
         MediaNotificationManager.hide(3, getNotificationId());
         advanceTimeByMillis(500);
-        assertNull(MediaNotificationManager.getController(uniqueId3));
+        assertNull(MediaNotificationManager.getControllerByNotificationId(uniqueId3));
         // Tab 1 should now successfully promote to FGS on hide fallback
         assertTrue(controller1.isForeground());
 
@@ -457,7 +467,7 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         int uniqueId3New = MediaNotificationManager.getUniqueId(3, getNotificationId());
         assertNotEquals(uniqueId3, uniqueId3New);
         MediaNotificationController controller3New =
-                MediaNotificationManager.getController(uniqueId3New);
+                MediaNotificationManager.getControllerByNotificationId(uniqueId3New);
         assertNotNull(controller3New);
         controller3New.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -478,7 +488,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
                 mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
         ChromeMediaNotificationManager.show(info1);
         int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
-        MediaNotificationController controller1 = MediaNotificationManager.getController(uniqueId1);
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
         assertNotNull(controller1);
         controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);
@@ -488,7 +499,8 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
                 mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
         ChromeMediaNotificationManager.show(info2);
         int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
-        MediaNotificationController controller2 = MediaNotificationManager.getController(uniqueId2);
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
         assertNotNull(controller2);
         controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
         advanceTimeByMillis(500);

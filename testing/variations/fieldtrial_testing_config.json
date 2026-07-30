@@ -828,6 +828,21 @@
             ]
         }
     ],
+    "AllowMultipleMediaNotifications": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowMultipleMediaNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "AlwaysRegisterSessionsInvalidationsAndroid": [
         {
             "platforms": [
