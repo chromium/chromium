@@ -29,11 +29,6 @@ namespace ui {
 class NativeTheme;
 }
 
-enum class DefaultFaviconBehavior {
-  kUseGlobeIcon = 0,
-  kUseEmptyIcon = 1,
-};
-
 // FaviconSource is the gateway between network-level chrome:
 // requests for favicons and the history backend that serves these.
 // Two possible formats are allowed: chrome://favicon, kept only for backwards
@@ -76,8 +71,10 @@ class FaviconSource : public content::URLDataSource {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
  private:
-  // Defines the allowed pixel sizes for requested favicons.
-  enum IconSize { SIZE_16, SIZE_32, SIZE_64, NUM_SIZES };
+  enum class DefaultFaviconBehavior {
+    kUseGlobeIcon = 0,
+    kUseEmptyIcon = 1,
+  };
 
   ui::NativeTheme* GetNativeTheme(
       const content::WebContents::Getter& wc_getter);
