@@ -248,12 +248,14 @@ class TabVerticalViewBinder {
 
         // 1. Resolve independent "wanted" states
         TabActionButtonData actionData = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+        // Close button is always visible on touch devices, but only visible on select/hover on
+        // desktop.
         boolean actionWanted =
                 actionButton != null
                         && actionData != null
                         && (isRailCollapsed
-                                ? (isSelected && isHovered)
-                                : (isSelected || isHovered));
+                                ? (isSelected && (!DeviceInfo.isDesktop() || isHovered))
+                                : (!DeviceInfo.isDesktop() || isSelected || isHovered));
         @Nullable UiTabState actorState = model.get(TabProperties.ACTOR_UI_STATE);
         boolean actorActuationWanted =
                 actuationSpark != null
