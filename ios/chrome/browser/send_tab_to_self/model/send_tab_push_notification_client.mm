@@ -172,10 +172,6 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
   send_tab_to_self::RecordAutoOpenOutcome(
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification);
 
-  if (!IsProvisionalNotificationAlertEnabled()) {
-    return;
-  }
-
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
   id<SystemIdentity> identity =

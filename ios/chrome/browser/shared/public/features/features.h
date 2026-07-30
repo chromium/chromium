@@ -341,7 +341,6 @@ BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
 bool IsPinnedTabsEnabled();
 
 // Feature flag for caching the ios module ranker.
-BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
 
 // Feature flag to enable app background refresh.
 // Use IsAppBackgroundRefreshEnabled() instead of this constant directly.
@@ -421,10 +420,8 @@ BASE_DECLARE_FEATURE(kIOSOneTimeDefaultBrowserNotification);
 
 // Feature flag to show an alert to the user when only provisiona notifications
 // are allowed.
-BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);
 
 // Returns whether `kIOSReactivationNotifications` is enabled.
-bool IsProvisionalNotificationAlertEnabled();
 
 // Feature to enable different text for the main header text on FRE sign-in
 // promo.

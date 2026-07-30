@@ -784,24 +784,19 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           levelUpFreshnessImpressionCount));
   segmentation_platform::PredictionOptions options;
 
-  if (base::FeatureList::IsEnabled(
-          kSegmentationPlatformIosModuleRankerCaching)) {
-    // Ignores tab resumption freshness since local tab always logs a freshness
-    // signal for Start.
-    BOOL hasNoFreshnessSignal = shortcutsFreshnessImpressionCount != 0 &&
-                                parcelTrackingFreshnessImpressionCount != 0 &&
-                                levelUpFreshnessImpressionCount != 0;
-    hasNoFreshnessSignal =
-        hasNoFreshnessSignal && safetyCheckFreshnessImpressionCount != 0;
-    if (hasNoFreshnessSignal && [self.homeStartDataSource isStartSurface]) {
-      options = segmentation_platform::PredictionOptions::ForCached(true);
-    } else {
-      options = segmentation_platform::PredictionOptions::ForOnDemand(true);
-    }
-    options.can_update_cache_for_future_requests = true;
+  // Ignores tab resumption freshness since local tab always logs a freshness
+  // signal for Start.
+  BOOL hasNoFreshnessSignal = shortcutsFreshnessImpressionCount != 0 &&
+                              parcelTrackingFreshnessImpressionCount != 0 &&
+                              levelUpFreshnessImpressionCount != 0;
+  hasNoFreshnessSignal =
+      hasNoFreshnessSignal && safetyCheckFreshnessImpressionCount != 0;
+  if (hasNoFreshnessSignal && [self.homeStartDataSource isStartSurface]) {
+    options = segmentation_platform::PredictionOptions::ForCached(true);
   } else {
-    options.on_demand_execution = true;
+    options = segmentation_platform::PredictionOptions::ForOnDemand(true);
   }
+  options.can_update_cache_for_future_requests = true;
   inputContext->metadata_args.emplace(
       segmentation_platform::kNumPriceDropsInShoppingList,
       segmentation_platform::processing::ProcessedValue::FromFloat(-1.0f));

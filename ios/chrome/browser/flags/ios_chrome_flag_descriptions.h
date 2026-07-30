@@ -1736,12 +1736,6 @@ inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerName[] =
 inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerDescription[] =
     "Enables the popup blocker feature row in the Page Action Menu.";
 
-inline constexpr char kProvisionalNotificationAlertName[] =
-    "Provisional notifiation alert on iOS";
-inline constexpr char kProvisionalNotificationAlertDescription[] =
-    "Shows an alert to the user when app notification settings are changed but "
-    "only provisonal notifications are enabled";
-
 inline constexpr char kReaderModeContentSettingsForLinksName[] =
     "Enables Content Settings options for Reading Mode";
 inline constexpr char kReaderModeContentSettingsForLinksDescription[] =
@@ -1810,12 +1804,6 @@ inline constexpr char kSegmentationPlatformEphemeralCardRankerName[] =
 inline constexpr char kSegmentationPlatformEphemeralCardRankerDescription[] =
     "Enables the segmentation platform to rank ephemeral cards in the Magic "
     "Stack";
-
-inline constexpr char kSegmentationPlatformIosModuleRankerCachingName[] =
-    "Enabled Magic Stack Segmentation Ranking Caching";
-inline constexpr char kSegmentationPlatformIosModuleRankerCachingDescription[] =
-    "Enables the Segmentation platform to cache the Magic Stack module rank "
-    "for Start";
 
 inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
     "Send Tab To Self enhanced handoff";

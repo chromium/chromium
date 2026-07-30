@@ -69,7 +69,6 @@ class ScopedOpenUrlSwizzler : public EarlGreyScopedBlockSwizzler {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kProvisionalNotificationAlert);
   return config;
 }
 
