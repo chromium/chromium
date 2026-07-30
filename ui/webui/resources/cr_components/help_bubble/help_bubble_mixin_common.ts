@@ -247,20 +247,19 @@ export class HelpBubbleMixinCommon {
    * This event is emitted by the TrackedElementManager
    */
   private onAnchorVisibilityChanged_(update: TrackedElementVisibilityUpdate) {
-    const nativeIdentifier = update.element.dataset['nativeId']!;
-    const secondaryIdentifier = update.element.dataset['secondaryId']!;
-    const ctrl = this.helpBubbleControllerById_.get(nativeIdentifier);
+    const id = TrackedElementManager.getElementId(update.element);
+    assert(id, 'Got visibility event for element without an identifier.');
+    const ctrl = this.helpBubbleControllerById_.get(id.nativeIdentifier);
     if (!ctrl || ctrl.getAnchor() !== update.element) {
       // If we've signed up for broader notifications than usual, we might get
       // one that doesn't apply to our specific anchor. Ignore it.
       return;
     }
     if (!update.visible) {
-      const hidden = this.hideHelpBubble(nativeIdentifier);
+      const hidden = this.hideHelpBubble(id.nativeIdentifier);
       if (hidden) {
         this.helpBubbleProxy_.handler.helpBubbleClosed(
-            {nativeIdentifier, secondaryIdentifier},
-            HelpBubbleClosedReason.kPageChanged);
+            id, HelpBubbleClosedReason.kPageChanged);
       }
     }
     if (ctrl) {
