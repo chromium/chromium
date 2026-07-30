@@ -50,15 +50,13 @@ ReaderModeEligibilityDecider::ReaderModeEligibilityDecider(
     web::WebState* web_state,
     ReaderModeMetricsHelper* metrics_helper)
     : web_state_(web_state), metrics_helper_(metrics_helper) {
-  if (IsReaderModeOptimizationGuideEligibilityAvailable()) {
-    OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForProfile(
-            ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
-    if (optimization_guide_service) {
-      optimization_guide_service->RegisterOptimizationTypes(
-          {optimization_guide::proto::READER_MODE_ELIGIBLE});
-      optimization_guide_decider_ = optimization_guide_service;
-    }
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
+  if (optimization_guide_service) {
+    optimization_guide_service->RegisterOptimizationTypes(
+        {optimization_guide::proto::READER_MODE_ELIGIBLE});
+    optimization_guide_decider_ = optimization_guide_service;
   }
 }
 
@@ -67,8 +65,7 @@ ReaderModeEligibilityDecider::~ReaderModeEligibilityDecider() = default;
 void ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult(
     ReaderModeHeuristicResult result) {
   if (result == ReaderModeHeuristicResult::kReaderModeEligible &&
-      optimization_guide_decider_ && eligibility_heuristic_url_.has_value() &&
-      IsReaderModeOptimizationGuideEligibilityAvailable()) {
+      optimization_guide_decider_ && eligibility_heuristic_url_.has_value()) {
     // Do additional checks.
     optimization_guide_decider_->CanApplyOptimization(
         eligibility_heuristic_url_.value(),

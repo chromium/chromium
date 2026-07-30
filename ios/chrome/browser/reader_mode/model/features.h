@@ -14,9 +14,6 @@ BASE_DECLARE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS);
 // Feature to enable Readability heuristic for page triggering eligibility.
 BASE_DECLARE_FEATURE(kEnableReadabilityHeuristic);
 
-// Feature to enable optimization guide eligibility check.
-BASE_DECLARE_FEATURE(kEnableReaderModeOptimizationGuideEligibility);
-
 // Feature to enable disabling links in Reading Mode from Content Settings.
 BASE_DECLARE_FEATURE(kEnableContentSettingsOptionForLinks);
 
@@ -25,10 +22,6 @@ BASE_DECLARE_FEATURE(kReaderModeIgnoreBadgeThreshold);
 
 // Returns whether the omnibox entrypoint is enabled.
 bool IsReaderModeOmniboxEntryPointEnabled();
-
-// Returns whether optimization guide eligibility check is enabled.
-bool IsReaderModeOptimizationGuideEligibilityAvailable();
-
 // Returns whether option to disable links in Content Settings is enabled.
 bool IsReaderModeContentSettingsForLinkEnabled();
 

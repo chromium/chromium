@@ -8565,11 +8565,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "reader-mode-optimization-guide-eligibility",
-    "owners": [ "fernandex@google.com", "qpubert@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "reader-mode-readability-heuristic-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 150

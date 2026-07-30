@@ -1764,11 +1764,6 @@ inline constexpr char kReaderModeOmniboxEntrypointInUSName[] =
 inline constexpr char kReaderModeOmniboxEntrypointInUSDescription[] =
     "Enables the omnibox entrypoint for Reader Mode for users in the US.";
 
-inline constexpr char kReaderModeOptimizationGuideEligibilityName[] =
-    "Enables Reader Mode Optimization Guide Eligibility";
-inline constexpr char kReaderModeOptimizationGuideEligibilityDescription[] =
-    "Enables the optimization guide eligibility check for Reader Mode.";
-
 inline constexpr char kReaderModeReadabilityHeuristicName[] =
     "Enables Readability heuristic for Reader Mode";
 inline constexpr char kReaderModeReadabilityHeuristicDescription[] =

@@ -182,7 +182,7 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
                           web_state->GetWeakPtr(), web_frame->AsWeakPtr(),
                           result));
 
-  if (mock_opt_guide && IsReaderModeOptimizationGuideEligibilityAvailable() &&
+  if (mock_opt_guide &&
       result == ReaderModeHeuristicResult::kReaderModeEligible) {
     OptimizationGuideService* optimization_guide_service =
         OptimizationGuideServiceFactory::GetForProfile(profile());
