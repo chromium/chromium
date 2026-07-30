@@ -103,3 +103,23 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = [ "downloads_page_interactive_uitest.cc" ]
+  deps = [
+    ":downloads",
+    "//chrome/browser/download",
+    "//chrome/browser/download:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/download/public/common:public",
+    "//components/safe_browsing:buildflags",
+    "//content/test:test_support",
+    "//ui/base/interaction",
+  ]
+}

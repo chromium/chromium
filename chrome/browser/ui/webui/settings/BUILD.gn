@@ -690,3 +690,62 @@ if (!is_android) {
     }
   }
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = [
+    "performance_settings_interactive_uitest.cc",
+    "settings_interactive_uitest.cc",
+  ]
+  deps = [
+    ":settings",
+    "//chrome/browser/performance_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/performance_controls/test_support",
+    "//chrome/browser/ui/webui/feedback",
+    "//chrome/browser/ui/webui/test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/common",
+    "//components/performance_manager",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+    "//content/test:test_support",
+    "//ui/base/interaction",
+  ]
+
+  if (is_win) {
+    deps += [
+      "//chrome/browser/win:isolated_browser_support",
+      "//chrome/install_static/test:test_support",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chrome/test/base/ash/interactive:test_support" ]
+  }
+
+  if ((is_mac || is_linux || is_win) && enable_dice_support) {
+    sources += [ "sync_settings_interactive_uitest.cc" ]
+    deps += [
+      "//chrome/browser/signin",
+      "//chrome/browser/signin:signin_browser_test_base",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/webui/signin/signout_confirmation",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//content/test:test_support",
+      "//device/bluetooth:mocks",
+      "//ui/views",
+    ]
+  }
+}

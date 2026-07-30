@@ -8419,11 +8419,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/web_dialog_view_interactive_uitest.cc",
       "../browser/ui/views/webview_interactive_uitest.cc",
       "../browser/ui/web_applications/web_app_interactive_uitest.cc",
-      "../browser/ui/webui/cr_components/history_embeddings/history_embeddings_interactive_uitest.cc",
-      "../browser/ui/webui/downloads/downloads_page_interactive_uitest.cc",
-      "../browser/ui/webui/settings/performance_settings_interactive_uitest.cc",
-      "../browser/ui/webui/settings/settings_interactive_uitest.cc",
-      "../browser/ui/webui/skills/skills_page_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
     ]
@@ -8431,12 +8426,6 @@ if (!is_android && !is_chromeos_device) {
     if (is_mac || is_linux || is_win) {
       sources +=
           [ "../browser/ui/views/default_link_capturing_interactive_uitest.cc" ]
-
-      if (enable_dice_support) {
-        sources += [
-          "../browser/ui/webui/settings/sync_settings_interactive_uitest.cc",
-        ]
-      }
     }
 
     if (is_mac || is_linux || is_win || is_chromeos) {
@@ -8643,11 +8632,15 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui:chrome_web_contents_handler",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
+      "//chrome/browser/ui/webui/cr_components/history_embeddings:interactive_ui_tests",
+      "//chrome/browser/ui/webui/downloads:interactive_ui_tests",
       "//chrome/browser/ui/webui/searchbox:interactive_ui_tests",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
+      "//chrome/browser/ui/webui/settings:interactive_ui_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:interactive_ui_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search:interactive_ui_tests",
       "//chrome/browser/ui/webui/skills",
+      "//chrome/browser/ui/webui/skills:interactive_ui_tests",
       "//chrome/browser/ui/webui/whats_new:interactive_ui_tests",
       "//chrome/browser/ui/webui_browser:interactive_ui_tests",
       "//chrome/browser/ui/window_metadata",
