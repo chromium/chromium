@@ -194,6 +194,63 @@ TEST_F(PeerConnectionTrackerTest, TrackCreateOffer) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(PeerConnectionTrackerTest, TrackCreateOfferWithUnsetOfferToReceive) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  // -1 means unset.
+  RTCOfferOptionsPlatform* options =
+      MakeGarbageCollected<RTCOfferOptionsPlatform>(-1, -1, true, false);
+  base::RunLoop run_loop;
+  String logged_value;
+  EXPECT_CALL(*mock_host_, UpdatePeerConnection(_, String("createOffer"), _))
+      .WillOnce([&](int, const String&, const String& value) {
+        logged_value = value;
+        run_loop.Quit();
+      });
+  tracker_->TrackCreateOffer(mock_handler_.get(), options);
+  run_loop.Run();
+  EXPECT_EQ(logged_value, String("{\"voiceActivityDetection\":true}"));
+}
+
+TEST_F(PeerConnectionTrackerTest, TrackCreateOfferWithFalseOfferToReceive) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  RTCOfferOptionsPlatform* options =
+      MakeGarbageCollected<RTCOfferOptionsPlatform>(0, 0, true, false);
+  base::RunLoop run_loop;
+  String logged_value;
+  EXPECT_CALL(*mock_host_, UpdatePeerConnection(_, String("createOffer"), _))
+      .WillOnce([&](int, const String&, const String& value) {
+        logged_value = value;
+        run_loop.Quit();
+      });
+  tracker_->TrackCreateOffer(mock_handler_.get(), options);
+  run_loop.Run();
+  EXPECT_EQ(
+      logged_value,
+      String("{\"offerToReceiveAudio\":false,\"offerToReceiveVideo\":false,"
+             "\"voiceActivityDetection\":true}"));
+}
+
+TEST_F(PeerConnectionTrackerTest, TrackCreateOfferWithVideoOnlyOfferToReceive) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  // Video comes first in the constructor.
+  RTCOfferOptionsPlatform* options =
+      MakeGarbageCollected<RTCOfferOptionsPlatform>(1, -1, true, false);
+  base::RunLoop run_loop;
+  String logged_value;
+  EXPECT_CALL(*mock_host_, UpdatePeerConnection(_, String("createOffer"), _))
+      .WillOnce([&](int, const String&, const String& value) {
+        logged_value = value;
+        run_loop.Quit();
+      });
+  tracker_->TrackCreateOffer(mock_handler_.get(), options);
+  run_loop.Run();
+  EXPECT_EQ(logged_value, String("{\"offerToReceiveVideo\":true,"
+                                 "\"voiceActivityDetection\":true}"));
+}
+
 TEST_F(PeerConnectionTrackerTest, OnSuspend) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();

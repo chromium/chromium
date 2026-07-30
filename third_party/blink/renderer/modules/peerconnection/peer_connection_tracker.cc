@@ -71,11 +71,12 @@ String SerializeOfferOptions(blink::RTCOfferOptionsPlatform* options) {
   }
 
   auto json = std::make_unique<JSONObject>();
-  if (options->OfferToReceiveAudio()) {
-    json->SetBoolean("offerToReceiveAudio", true);
+  // -1 means unset.
+  if (options->OfferToReceiveAudio() >= 0) {
+    json->SetBoolean("offerToReceiveAudio", options->OfferToReceiveAudio() > 0);
   }
-  if (options->OfferToReceiveVideo()) {
-    json->SetBoolean("offerToReceiveVideo", true);
+  if (options->OfferToReceiveVideo() >= 0) {
+    json->SetBoolean("offerToReceiveVideo", options->OfferToReceiveVideo() > 0);
   }
   if (options->VoiceActivityDetection()) {
     json->SetBoolean("voiceActivityDetection", true);
