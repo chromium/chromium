@@ -93,6 +93,12 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/internal/profiles/profile_view_avatar_decoration_specs_branded.h"
+#else
+#include "chrome/browser/ui/profiles/profile_view_avatar_decoration_specs.h"
+#endif
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -609,6 +615,36 @@ void ProfileMenuView::SetMenuTitleForAccessibility() {
       break;
   }
 
+  if (ShouldShowAvatarGradientRing(&profile())) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile().GetPath());
+    if (entry) {
+      switch (entry->GetAiSubscriptionTier()) {
+        case 1:
+          menu_title_ = l10n_util::GetStringFUTF16(
+              IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
+              std::u16string(kAvatarFullMembershipTier1));
+          break;
+        case 2:
+          menu_title_ = l10n_util::GetStringFUTF16(
+              IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
+              std::u16string(kAvatarFullMembershipTier2));
+          break;
+        case 3:
+          menu_title_ = l10n_util::GetStringFUTF16(
+              IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_TIER, menu_title_,
+              std::u16string(kAvatarFullMembershipTier3));
+          break;
+        default:
+          menu_title_ = l10n_util::GetStringFUTF16(
+              IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, menu_title_);
+          break;
+      }
+    }
+  }
+
   if (GetWidget()) {
     GetWidget()->UpdateAccessibleNameForRootView();
   }
@@ -639,10 +675,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       identity_manager->FindExtendedAccountInfo(primary_account_info);
   CoreAccountInfo account_info_for_signin_action = primary_account_info;
 
-  const bool is_dasherless_profile = entry.IsDasherlessManagement();
 
   IdentitySectionParams params;
   params.title = GetProfileIdentifier(entry);
+
   profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
                                                        .has_background = false};
   params.profile_image = ui::ImageModel::FromImage(
@@ -674,7 +710,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   }
 
   // Clarify Dasherless profile with subtitle while not adding the button.
-  if (is_dasherless_profile) {
+  if (entry.IsDasherlessManagement()) {
     params.subtitle =
         l10n_util::GetStringUTF16(IDS_PROFILES_DASHER_FEATURE_DISABLED_TITLE);
     return params;
@@ -1305,6 +1341,8 @@ void ProfileMenuView::BuildOtherProfilesSection(
                 BrowserWindow::FromBrowser(&browser())
                     ->GetColorProvider()
                     ->GetColor(ui::kColorMenuBackground))));
+    std::u16string name = profile_entry->GetName();
+    std::u16string extra_accessible_text;
     if (base::FeatureList::IsEnabled(
             switches::kEnableAiSubscriptionAvatarRing) &&
         profile_entry->GetAiSubscriptionTier() > 0) {
@@ -1313,15 +1351,20 @@ void ProfileMenuView::BuildOtherProfilesSection(
               avatar_image,
               *BrowserWindow::FromBrowser(&browser())->GetColorProvider(),
               kOtherProfileImageSize));
+      if (!name.empty()) {
+        extra_accessible_text = l10n_util::GetStringFUTF16(
+            IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, std::u16string());
+      }
     } else {
       avatar_image = ProfileMenuViewBase::GetCircularSizedImage(
           avatar_image, kOtherProfileImageSize);
     }
     AddAvailableProfile(
-        avatar_image, profile_entry->GetName(),
+        avatar_image, name,
         /*is_guest=*/false,
         base::BindRepeating(&ProfileMenuView::OnOtherProfileSelected,
-                            base::Unretained(this), profile_entry->GetPath()));
+                            base::Unretained(this), profile_entry->GetPath()),
+        extra_accessible_text);
   }
 }
 

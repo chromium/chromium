@@ -105,4 +105,11 @@ inline constexpr std::u16string_view kAvatarBadgeLabelTier1 = u"tier 1";
 inline constexpr std::u16string_view kAvatarBadgeLabelTier2 = u"tier 2";
 inline constexpr std::u16string_view kAvatarBadgeLabelTier3 = u"tier 3";
 
+inline constexpr std::u16string_view kAvatarFullMembershipTier1 =
+    u"Google Subscription tier 1";
+inline constexpr std::u16string_view kAvatarFullMembershipTier2 =
+    u"Google Subscription tier 2";
+inline constexpr std::u16string_view kAvatarFullMembershipTier3 =
+    u"Google Subscription tier 3";
+
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_VIEW_AVATAR_DECORATION_SPECS_H_

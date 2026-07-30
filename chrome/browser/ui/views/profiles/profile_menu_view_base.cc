@@ -708,10 +708,12 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
   label->SetHandlesTooltips(false);
 }
 
-void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
-                                              const std::u16string& name,
-                                              bool is_guest,
-                                              base::RepeatingClosure action) {
+void ProfileMenuViewBase::AddAvailableProfile(
+    const ui::ImageModel& image_model,
+    const std::u16string& name,
+    bool is_guest,
+    base::RepeatingClosure action,
+    const std::u16string& extra_accessible_text) {
   // Initialize layout if this is the first time a button is added.
   if (!selectable_profiles_container_->GetLayoutManager()) {
     selectable_profiles_container_->SetLayoutManager(
@@ -730,13 +732,19 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
   const int icon_offset =
       (image_model.Size().width() - kOtherProfileImageSize) / 2;
 
-  views::Button* button =
-      selectable_profiles_container_->AddChildView(CreateMenuRowButton(
-          std::move(action), std::make_unique<views::ImageView>(image_model),
-          name, icon_offset));
+  std::unique_ptr<HoverButton> button = CreateMenuRowButton(
+      std::move(action), std::make_unique<views::ImageView>(image_model), name,
+      icon_offset);
+
+  if (!extra_accessible_text.empty()) {
+    button->AddExtraAccessibleText(extra_accessible_text);
+  }
+
+  views::Button* added_button =
+      selectable_profiles_container_->AddChildView(std::move(button));
 
   if (!is_guest && !first_profile_button_) {
-    first_profile_button_ = button;
+    first_profile_button_ = added_button;
   }
 }
 
