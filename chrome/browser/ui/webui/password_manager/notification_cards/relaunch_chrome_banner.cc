@@ -8,29 +8,38 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-constexpr char kRelauchChromeId[] = "relaunch_chrome_promo";
+constexpr char kRelaunchChromeId[] = "relaunch_chrome_promo";
 
-RelaunchChromeBanner::RelaunchChromeBanner(PrefService* prefs)
-    : password_manager::PasswordNotificationCardBase(kRelauchChromeId, prefs) {}
+RelaunchChromeBanner::RelaunchChromeBanner() = default;
 
 RelaunchChromeBanner::~RelaunchChromeBanner() = default;
 
 std::string RelaunchChromeBanner::GetCardID() const {
-  return kRelauchChromeId;
+  return kRelaunchChromeId;
 }
 
 password_manager::NotificationCardType
 RelaunchChromeBanner::GetNotificationCardType() const {
-  return password_manager::NotificationCardType::kRelauchChrome;
+  return password_manager::NotificationCardType::kRelaunchChrome;
 }
 
-bool RelaunchChromeBanner::ShouldShowCard() const {
+password_manager::NotificationSeverity
+RelaunchChromeBanner::GetNotificationSeverity() const {
+  return password_manager::NotificationSeverity::kCritical;
+}
+
+bool RelaunchChromeBanner::ShouldShowCard(
+    const password_manager::NotificationCardPrefState& pref_state) const {
   if (is_encryption_available_.value_or(true)) {
     return false;
   }
 
   return base::FeatureList::IsEnabled(
       password_manager::features::kRestartToGainAccessToKeychain);
+}
+
+bool RelaunchChromeBanner::IsDismissible() const {
+  return false;
 }
 
 std::u16string RelaunchChromeBanner::GetTitle() const {

@@ -36,25 +36,25 @@ class NotificationCardRelaunchChromeTest
 };
 
 TEST_F(NotificationCardRelaunchChromeTest, ShouldShow) {
-  auto promo = std::make_unique<RelaunchChromeBanner>(pref_service());
+  auto promo = std::make_unique<RelaunchChromeBanner>();
+
+  EXPECT_EQ(promo->GetNotificationSeverity(), NotificationSeverity::kCritical);
+  EXPECT_FALSE(promo->IsDismissible());
 
   promo->set_is_encryption_available(false);
-  EXPECT_TRUE(promo->ShouldShowCard());
+  EXPECT_TRUE(promo->ShouldShowCard(NotificationCardPrefState{}));
 
   promo->set_is_encryption_available(true);
-  EXPECT_FALSE(promo->ShouldShowCard());
+  EXPECT_FALSE(promo->ShouldShowCard(NotificationCardPrefState{}));
 }
 
 TEST_F(NotificationCardRelaunchChromeTest, ShouldShowAfterDismiss) {
-  ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
-              IsEmpty());
-
-  auto promo = std::make_unique<RelaunchChromeBanner>(pref_service());
+  auto promo = std::make_unique<RelaunchChromeBanner>();
   promo->set_is_encryption_available(false);
-  EXPECT_TRUE(promo->ShouldShowCard());
+  EXPECT_TRUE(promo->ShouldShowCard(NotificationCardPrefState{}));
 
-  promo->OnNotificationCardDismissed();
-  EXPECT_TRUE(promo->ShouldShowCard());
+  NotificationCardPrefState dismissed_state{.was_dismissed = true};
+  EXPECT_TRUE(promo->ShouldShowCard(dismissed_state));
 }
 
 }  // namespace password_manager

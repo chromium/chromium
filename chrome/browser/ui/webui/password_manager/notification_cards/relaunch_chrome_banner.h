@@ -13,7 +13,7 @@
 class RelaunchChromeBanner
     : public password_manager::PasswordNotificationCardBase {
  public:
-  explicit RelaunchChromeBanner(PrefService* prefs);
+  RelaunchChromeBanner();
   ~RelaunchChromeBanner() override;
 
   const std::optional<bool> is_encryption_available() const {
@@ -27,7 +27,11 @@ class RelaunchChromeBanner
   std::string GetCardID() const override;
   password_manager::NotificationCardType GetNotificationCardType()
       const override;
-  bool ShouldShowCard() const override;
+  password_manager::NotificationSeverity GetNotificationSeverity()
+      const override;
+  bool ShouldShowCard(const password_manager::NotificationCardPrefState&
+                          pref_state) const override;
+  bool IsDismissible() const override;
   std::u16string GetTitle() const override;
   std::u16string GetDescription() const override;
   std::u16string GetActionButtonText() const override;

@@ -26,6 +26,7 @@ class Encryptor;
 namespace password_manager {
 
 class PasswordNotificationCardBase;
+enum class NotificationCardType;
 
 // A class allowing providing PasswordManager WebUI capability to dynamically
 // display actionable notification cards depending on the current account

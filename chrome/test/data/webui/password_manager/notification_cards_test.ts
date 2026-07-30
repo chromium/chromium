@@ -47,6 +47,7 @@ suite('PasswordsSectionTest', function() {
       id: 'test_promo',
       title: 'Hello there',
       description: 'This is a notification card.',
+      isDismissible: true,
     };
 
     const section = await createPasswordsSection();
@@ -84,6 +85,7 @@ suite('PasswordsSectionTest', function() {
       title: 'Checkup promo',
       description: 'Checkup promo description.',
       actionButtonText: 'Start check',
+      isDismissible: true,
     };
 
     const section = await createPasswordsSection();
@@ -114,6 +116,7 @@ suite('PasswordsSectionTest', function() {
       title: 'Shortcut promo',
       description: 'Shortcut promo description.',
       actionButtonText: 'Add shortcut',
+      isDismissible: true,
     };
 
     const section = await createPasswordsSection();
@@ -140,6 +143,7 @@ suite('PasswordsSectionTest', function() {
       title: 'Move passwords promo',
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
+      isDismissible: true,
     };
     passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [createCredentialGroup({
@@ -166,6 +170,7 @@ suite('PasswordsSectionTest', function() {
       title: 'Move passwords promo',
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
+      isDismissible: true,
     };
     passwordManager.data.isAccountStorageActive = false;
     passwordManager.data.groups = [createCredentialGroup({
@@ -188,6 +193,7 @@ suite('PasswordsSectionTest', function() {
       title: 'Move passwords promo',
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
+      isDismissible: true,
     };
     passwordManager.data.isAccountStorageActive = true;
 
