@@ -41,6 +41,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -257,6 +258,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/540893583")
     // PictureInPicture#isEnabled() is true on Android 11+.
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R)
     // PiP is not supported for automotive.
