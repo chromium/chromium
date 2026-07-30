@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
 
 #include "base/containers/adapters.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -22,9 +23,12 @@ namespace blink {
 WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     base::WeakPtr<WebGpuSharedImageWrapperCache> cache)
-    : shared_image_wrapper_(std::move(shared_image_wrapper)), cache_(cache) {}
+    : shared_image_wrapper_(std::move(shared_image_wrapper)), cache_(cache) {
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+}
 
 WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
+  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   if (cache_ && shared_image_wrapper_) {
     cache_->ReturnWebGpuSharedImageWrapper(std::move(shared_image_wrapper_),
                                            completion_sync_token_);
@@ -281,6 +285,29 @@ bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
   return true;
 }
 
+void WebGpuSharedImageWrapperLease::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
+                                        reinterpret_cast<uintptr_t>(this));
+
+  std::string dump_name =
+      base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, path.c_str(),
+                         reinterpret_cast<uintptr_t>(this));
+  auto* dump = pmd->CreateAllocatorDump(dump_name);
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  GetSize());
+
+  shared_image_wrapper_->shared_image_->OnMemoryDump(
+      pmd, dump->guid(),
+      static_cast<int>(gpu::TracingImportance::kClientOwner));
+}
+
+size_t WebGpuSharedImageWrapperLease::GetSize() const {
+  return base::checked_cast<size_t>(
+      shared_image_wrapper_->shared_image_->EstimatedSizeInBytes().InBytes());
+}
+
 WebGpuSharedImageWrapperCache::WebGpuSharedImageWrapperCache(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -291,6 +318,38 @@ WebGpuSharedImageWrapperCache::WebGpuSharedImageWrapperCache(
       &WebGpuSharedImageWrapperCache::ReleaseStaleResources, weak_ptr_);
 
   DCHECK_LE(kTimerDurationInSeconds, kCleanUpDelayInSeconds);
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+}
+
+WebGpuSharedImageWrapperCache::~WebGpuSharedImageWrapperCache() {
+  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+}
+
+void WebGpuSharedImageWrapperCache::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  for (const auto& unused_resource : unused_wrappers_) {
+    std::string path =
+        base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
+                           reinterpret_cast<uintptr_t>(
+                               unused_resource.shared_image_wrapper_.get()));
+
+    std::string dump_name =
+        base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, path.c_str(),
+                           reinterpret_cast<uintptr_t>(
+                               unused_resource.shared_image_wrapper_.get()));
+    auto* dump = pmd->CreateAllocatorDump(dump_name);
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    unused_resource.resource_size_);
+
+    unused_resource.shared_image_wrapper_->shared_image_->OnMemoryDump(
+        pmd, dump->guid(),
+        static_cast<int>(gpu::TracingImportance::kClientOwner));
+  }
+}
+
+size_t WebGpuSharedImageWrapperCache::GetSize() const {
+  return base::checked_cast<size_t>(total_unused_resources_in_bytes_);
 }
 
 std::unique_ptr<WebGpuSharedImageWrapperLease>

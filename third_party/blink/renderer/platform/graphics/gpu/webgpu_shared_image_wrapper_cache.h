@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -38,7 +39,8 @@ class WebGpuSharedImageWrapper;
 class WebGpuSharedImageWrapperCache;
 class WebGraphicsContext3DProviderWrapper;
 
-class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
+class PLATFORM_EXPORT WebGpuSharedImageWrapperLease final
+    : public CanvasMemoryDumpClient {
  public:
   WebGpuSharedImageWrapperLease(
       std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
@@ -84,6 +86,10 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
     completion_sync_token_ = completion_sync_token;
   }
 
+  // CanvasMemoryDumpClient implementation.
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override;
+
  private:
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
@@ -92,12 +98,17 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
   gpu::SyncToken completion_sync_token_;
 };
 
-class PLATFORM_EXPORT WebGpuSharedImageWrapperCache {
+class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
+    : public CanvasMemoryDumpClient {
  public:
   explicit WebGpuSharedImageWrapperCache(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  ~WebGpuSharedImageWrapperCache() = default;
+  ~WebGpuSharedImageWrapperCache();
+
+  // CanvasMemoryDumpClient implementation.
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override;
 
   std::unique_ptr<WebGpuSharedImageWrapperLease> LeaseWebGpuSharedImageWrapper(
       viz::SharedImageFormat format,

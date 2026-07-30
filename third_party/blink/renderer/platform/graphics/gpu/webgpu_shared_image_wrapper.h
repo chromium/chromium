@@ -38,8 +38,7 @@ class Size;
 
 namespace blink {
 
-class PLATFORM_EXPORT WebGpuSharedImageWrapper final
-    : public CanvasMemoryDumpClient {
+class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
  public:
   static std::unique_ptr<WebGpuSharedImageWrapper> Create(
       gfx::Size size,
@@ -76,10 +75,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
                            const gfx::ColorSpace&,
                            const gfx::HDRMetadata&,
                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
-
-  // CanvasMemoryDumpClient implementation.
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
-  size_t GetSize() const override;
 };
 
 }  // namespace blink

@@ -154,7 +154,6 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
                                             alpha_type,
                                             context_provider_wrapper.get())),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   // Graphite can handle a large buffer size.
   if (context_provider_wrapper_->ContextProvider()
           .GetGpuFeatureInfo()
@@ -168,44 +167,13 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
   release_sync_token_ = shared_image_->creation_sync_token();
 }
 
-WebGpuSharedImageWrapper::~WebGpuSharedImageWrapper() {
-  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-}
+WebGpuSharedImageWrapper::~WebGpuSharedImageWrapper() = default;
 
 void WebGpuSharedImageWrapper::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
     shared_image_->UpdateDestructionSyncToken(acquire_sync_token_);
   }
-}
-
-
-
-
-
-
-
-void WebGpuSharedImageWrapper::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd) {
-  std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
-                                        reinterpret_cast<uintptr_t>(this));
-
-  std::string dump_name =
-      base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, path.c_str(),
-                         reinterpret_cast<uintptr_t>(this));
-  auto* dump = pmd->CreateAllocatorDump(dump_name);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  GetSize());
-
-  shared_image_->OnMemoryDump(
-      pmd, dump->guid(),
-      static_cast<int>(gpu::TracingImportance::kClientOwner));
-}
-
-size_t WebGpuSharedImageWrapper::GetSize() const {
-  return base::checked_cast<size_t>(
-      shared_image_->EstimatedSizeInBytes().InBytes());
 }
 
 }  // namespace blink
