@@ -15623,6 +15623,154 @@ TEST_F(HostResolverManagerTest, CalculateResolvePath) {
   }
 }
 
+namespace {
+
+using TaskType = HostResolverManagerTest::TaskType;
+
+struct PushDnsTasksTestCase {
+  std::string_view description;
+  bool doh_available = true;
+  bool dns_tasks_allowed = true;
+  bool allow_fallback_to_systemtask = true;
+  bool system_task_allowed = false;
+  SecureDnsMode secure_dns_mode = SecureDnsMode::kOff;
+  InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kEnabledBuiltIn;
+  bool allow_cache = false;
+  bool prioritize_local_lookups = false;
+  std::deque<TaskType> initial_tasks;
+  std::vector<TaskType> expected_tasks;
+};
+
+}  // namespace
+
+class HostResolverManagerPushDnsTasksTest
+    : public HostResolverManagerTest,
+      public testing::WithParamInterface<PushDnsTasksTestCase> {};
+
+TEST_P(HostResolverManagerPushDnsTasksTest, PushDnsTasks) {
+  const PushDnsTasksTestCase& test_case = GetParam();
+
+  DnsConfig config = CreateValidDnsConfig();
+  if (test_case.doh_available) {
+    config.doh_config =
+        *DnsOverHttpsConfig::FromString("https://doh.example/dns-query");
+  } else {
+    config.doh_config = DnsOverHttpsConfig();
+  }
+  MockDnsClient dns_client(config, MockDnsClientRuleList());
+  if (test_case.doh_available) {
+    dns_client.SetForceDohServerAvailable(true);
+  }
+
+  std::deque<TaskType> tasks = test_case.initial_tasks;
+  PushDnsTasks(dns_client, test_case.dns_tasks_allowed,
+               test_case.allow_fallback_to_systemtask,
+               test_case.system_task_allowed, test_case.secure_dns_mode,
+               test_case.insecure_dns_mode, test_case.allow_cache,
+               test_case.prioritize_local_lookups, resolve_context_.get(),
+               &tasks);
+
+  EXPECT_THAT(tasks, testing::ElementsAreArray(test_case.expected_tasks));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HostResolverManagerPushDnsTasksTest,
+    HostResolverManagerPushDnsTasksTest,
+    testing::Values(
+        // 1. SecureDnsMode::kSecure
+        PushDnsTasksTestCase{.description = "SecureMode_DoHAvailable",
+                             .secure_dns_mode = SecureDnsMode::kSecure,
+                             .expected_tasks = {TaskType::SECURE_DNS}},
+        PushDnsTasksTestCase{.description = "SecureMode_DisallowedDnsTasks",
+                             .dns_tasks_allowed = false,
+                             .secure_dns_mode = SecureDnsMode::kSecure,
+                             .expected_tasks = {}},
+        PushDnsTasksTestCase{.description = "SecureMode_WithCache",
+                             .secure_dns_mode = SecureDnsMode::kSecure,
+                             .allow_cache = true,
+                             .initial_tasks = {TaskType::SECURE_CACHE_LOOKUP},
+                             .expected_tasks = {TaskType::SECURE_CACHE_LOOKUP,
+                                                TaskType::SECURE_DNS}},
+
+        // 2. SecureDnsMode::kAutomatic
+        PushDnsTasksTestCase{
+            .description = "AutomaticMode_WithCache",
+            .secure_dns_mode = SecureDnsMode::kAutomatic,
+            .allow_cache = true,
+            .initial_tasks = {TaskType::CACHE_LOOKUP},
+            .expected_tasks = {TaskType::SECURE_CACHE_LOOKUP,
+                               TaskType::SECURE_DNS,
+                               TaskType::INSECURE_CACHE_LOOKUP, TaskType::DNS}},
+        PushDnsTasksTestCase{
+            .description = "AutomaticMode_WithoutCache",
+            .secure_dns_mode = SecureDnsMode::kAutomatic,
+            .allow_cache = false,
+            .expected_tasks = {TaskType::SECURE_DNS, TaskType::DNS}},
+        PushDnsTasksTestCase{
+            .description = "AutomaticMode_PrioritizeLocalLookups",
+            .secure_dns_mode = SecureDnsMode::kAutomatic,
+            .allow_cache = true,
+            .prioritize_local_lookups = true,
+            .initial_tasks = {TaskType::CACHE_LOOKUP},
+            .expected_tasks = {TaskType::CACHE_LOOKUP, TaskType::SECURE_DNS,
+                               TaskType::DNS}},
+        PushDnsTasksTestCase{.description = "AutomaticMode_NoDoHServer",
+                             .doh_available = false,
+                             .secure_dns_mode = SecureDnsMode::kAutomatic,
+                             .expected_tasks = {TaskType::DNS}},
+        PushDnsTasksTestCase{
+            .description = "AutomaticMode_InsecurePlatform",
+            .secure_dns_mode = SecureDnsMode::kAutomatic,
+            .insecure_dns_mode = InsecureDnsMode::kEnabledPlatform,
+            .expected_tasks = {TaskType::SECURE_DNS, TaskType::DNS_PLATFORM}},
+        PushDnsTasksTestCase{.description = "AutomaticMode_InsecureDisabled",
+                             .secure_dns_mode = SecureDnsMode::kAutomatic,
+                             .insecure_dns_mode = InsecureDnsMode::kDisabled,
+                             .expected_tasks = {TaskType::SECURE_DNS}},
+
+        // 3. SecureDnsMode::kOff
+        PushDnsTasksTestCase{
+            .description = "OffMode_InsecureBuiltIn",
+            .secure_dns_mode = SecureDnsMode::kOff,
+            .insecure_dns_mode = InsecureDnsMode::kEnabledBuiltIn,
+            .expected_tasks = {TaskType::DNS}},
+        PushDnsTasksTestCase{
+            .description = "OffMode_InsecurePlatform",
+            .secure_dns_mode = SecureDnsMode::kOff,
+            .insecure_dns_mode = InsecureDnsMode::kEnabledPlatform,
+            .expected_tasks = {TaskType::DNS_PLATFORM}},
+        PushDnsTasksTestCase{.description = "OffMode_InsecureDisabled",
+                             .secure_dns_mode = SecureDnsMode::kOff,
+                             .insecure_dns_mode = InsecureDnsMode::kDisabled,
+                             .expected_tasks = {}},
+
+        // 4. System Task Fallback
+        PushDnsTasksTestCase{
+            .description =
+                "SystemFallback_AllowedWithBuiltInAndFallbackEnabled",
+            .allow_fallback_to_systemtask = true,
+            .system_task_allowed = true,
+            .secure_dns_mode = SecureDnsMode::kOff,
+            .expected_tasks = {TaskType::DNS, TaskType::SYSTEM}},
+        PushDnsTasksTestCase{
+            .description =
+                "SystemFallback_AllowedWithBuiltInButFallbackDisabled",
+            .allow_fallback_to_systemtask = false,
+            .system_task_allowed = true,
+            .secure_dns_mode = SecureDnsMode::kOff,
+            .expected_tasks = {TaskType::DNS}},
+        PushDnsTasksTestCase{
+            .description = "SystemFallback_AllowedWhenNoBuiltInTasksExist",
+            .dns_tasks_allowed = false,
+            .allow_fallback_to_systemtask = false,
+            .system_task_allowed = true,
+            .secure_dns_mode = SecureDnsMode::kOff,
+            .insecure_dns_mode = InsecureDnsMode::kDisabled,
+            .expected_tasks = {TaskType::SYSTEM}}),
+    [](const testing::TestParamInfo<PushDnsTasksTestCase>& info) {
+      return std::string(info.param.description);
+    });
+
 TEST_F(HostResolverManagerTest,
        RequestsForDifferentNetworksAreCachedSeparately) {
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42");

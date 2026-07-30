@@ -63,9 +63,25 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
   void IPv4AddressLiteralInIPv6OnlyNetworkNoDns64Test(bool is_async);
   void IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(bool is_async);
 
- protected:
   using TaskType = HostResolverManager::TaskType;
 
+  static void PushDnsTasks(const DnsClient& dns_client,
+                           bool dns_tasks_allowed,
+                           bool allow_fallback_to_systemtask,
+                           bool system_task_allowed,
+                           SecureDnsMode secure_dns_mode,
+                           InsecureDnsMode insecure_dns_mode,
+                           bool allow_cache,
+                           bool prioritize_local_lookups,
+                           ResolveContext* resolve_context,
+                           std::deque<TaskType>* out_tasks) {
+    HostResolverManager::PushDnsTasks(
+        dns_client, dns_tasks_allowed, allow_fallback_to_systemtask,
+        system_task_allowed, secure_dns_mode, insecure_dns_mode, allow_cache,
+        prioritize_local_lookups, resolve_context, out_tasks);
+  }
+
+ protected:
   // testing::Test implementation:
   void SetUp() override;
   void TearDown() override;

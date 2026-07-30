@@ -1327,20 +1327,22 @@ bool HostResolverManager::ShouldForceSystemResolverDueToTestOverride() const {
          !system_resolver_disabled_for_testing_;
 }
 
-void HostResolverManager::PushDnsTasks(bool system_task_allowed,
+// static
+void HostResolverManager::PushDnsTasks(const DnsClient& dns_client,
+                                       bool dns_tasks_allowed,
+                                       bool allow_fallback_to_systemtask,
+                                       bool system_task_allowed,
                                        SecureDnsMode secure_dns_mode,
                                        InsecureDnsMode insecure_dns_mode,
                                        bool allow_cache,
                                        bool prioritize_local_lookups,
                                        ResolveContext* resolve_context,
                                        std::deque<TaskType>* out_tasks) {
-  DCHECK(dns_client_);
-  DCHECK(dns_client_->GetEffectiveConfig());
+  DCHECK(dns_client.GetEffectiveConfig());
 
   // If a catch-all DNS block has been set for unit tests, we shouldn't send
   // DnsTasks. It is still necessary to call this method, however, so that the
   // correct cache tasks for the secure dns mode are added.
-  const bool dns_tasks_allowed = !ShouldForceSystemResolverDueToTestOverride();
   const bool insecure_tasks_allowed =
       (insecure_dns_mode != InsecureDnsMode::kDisabled);
   const TaskType dns_task_type =
@@ -1354,13 +1356,13 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
              out_tasks->front() == TaskType::SECURE_CACHE_LOOKUP);
       // Policy misconfiguration can put us in secure DNS mode without any DoH
       // servers to query. See https://crbug.com/1326526.
-      if (dns_tasks_allowed && dns_client_->CanUseSecureDnsTransactions())
+      if (dns_tasks_allowed && dns_client.CanUseSecureDnsTransactions()) {
         out_tasks->push_back(TaskType::SECURE_DNS);
+      }
       break;
     case SecureDnsMode::kAutomatic:
       DCHECK(!allow_cache || out_tasks->front() == TaskType::CACHE_LOOKUP);
-      if (dns_client_->FallbackFromSecureTransactionPreferred(
-              resolve_context)) {
+      if (dns_client.FallbackFromSecureTransactionPreferred(resolve_context)) {
         // Don't run a secure DnsTask if there are no available DoH servers.
         if (dns_tasks_allowed && insecure_tasks_allowed)
           out_tasks->push_back(dns_task_type);
@@ -1404,7 +1406,7 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
   // The system resolver can be used as a fallback for a non-existent or
   // failing builtin resolver task, if allowed by the request parameters.
   if (system_task_allowed &&
-      (no_builtin_tasks || allow_fallback_to_systemtask_)) {
+      (no_builtin_tasks || allow_fallback_to_systemtask)) {
     out_tasks->push_back(TaskType::SYSTEM);
   }
 }
@@ -1470,9 +1472,11 @@ void HostResolverManager::CreateTaskSequence(
                dns_client_->CanQueryAdditionalTypesViaInsecureDns())) {
             insecure_dns_mode = dns_client_->GetInsecureDnsMode();
           }
-          PushDnsTasks(system_task_allowed, job_key.secure_dns_mode,
-                       insecure_dns_mode, allow_cache, prioritize_local_lookups,
-                       &*job_key.resolve_context, out_tasks);
+          PushDnsTasks(
+              *dns_client_, !ShouldForceSystemResolverDueToTestOverride(),
+              allow_fallback_to_systemtask_, system_task_allowed,
+              job_key.secure_dns_mode, insecure_dns_mode, allow_cache,
+              prioritize_local_lookups, &*job_key.resolve_context, out_tasks);
         } else if (system_task_allowed) {
           out_tasks->push_back(TaskType::SYSTEM);
         }
@@ -1496,9 +1500,11 @@ void HostResolverManager::CreateTaskSequence(
              dns_client_->CanQueryAdditionalTypesViaInsecureDns())) {
           insecure_dns_mode = dns_client_->GetInsecureDnsMode();
         }
-        PushDnsTasks(false /* system_task_allowed */, job_key.secure_dns_mode,
-                     insecure_dns_mode, allow_cache, prioritize_local_lookups,
-                     &*job_key.resolve_context, out_tasks);
+        PushDnsTasks(
+            *dns_client_, !ShouldForceSystemResolverDueToTestOverride(),
+            allow_fallback_to_systemtask_, false /* system_task_allowed */,
+            job_key.secure_dns_mode, insecure_dns_mode, allow_cache,
+            prioritize_local_lookups, &*job_key.resolve_context, out_tasks);
       }
       break;
     case HostResolverSource::MULTICAST_DNS:
