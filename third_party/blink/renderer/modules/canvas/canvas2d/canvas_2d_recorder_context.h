@@ -829,9 +829,7 @@ ALWAYS_INLINE void Canvas2DRecorderContext::CheckOverdraw(
     }
   }
 
-  if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
-    recorder->RestartCurrentLayer();
-  }
+  Recorder()->RestartCurrentLayer();
 }
 
 template <Canvas2DRecorderContext::OverdrawOp CurrentOverdrawOp,
