@@ -224,6 +224,9 @@ public class EventForwarder {
      * @see View#onTouchEvent(MotionEvent)
      */
     public boolean onTouchEvent(MotionEvent event) {
+        if (!validateMotionEvent(event)) {
+            return false;
+        }
         boolean requiresSpecialHandling = touchEventRequiresSpecialHandling(event);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -248,6 +251,9 @@ public class EventForwarder {
      * @param event the MotionEvent targeting the handle.
      */
     public boolean onTouchHandleEvent(MotionEvent event) {
+        if (!validateMotionEvent(event)) {
+            return false;
+        }
         final boolean isTouchHandleEvent = true;
         return sendTouchEvent(event, isTouchHandleEvent);
     }
@@ -452,6 +458,9 @@ public class EventForwarder {
      */
     public boolean onHoverEvent(MotionEvent event) {
         TraceEvent.begin("onHoverEvent");
+        if (!validateMotionEvent(event)) {
+            return false;
+        }
 
         if (mStylusWritingDelegate != null) {
             mStylusWritingDelegate.handleHoverEvent(event);
@@ -525,6 +534,9 @@ public class EventForwarder {
      */
     public boolean onMouseEvent(MotionEvent event) {
         TraceEvent.begin("sendMouseEvent");
+        if (!validateMotionEvent(event)) {
+            return false;
+        }
         boolean didOffsetEvent = false;
         try {
             if (hasTouchEventOffset()) {
@@ -866,6 +878,9 @@ public class EventForwarder {
      */
     public boolean onGenericMotionEvent(MotionEvent event) {
         if (mNativeEventForwarder == 0) return false;
+        if (!validateMotionEvent(event)) {
+            return false;
+        }
         boolean isMouseEvent =
                 (event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0
                         && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE;
@@ -898,6 +913,9 @@ public class EventForwarder {
      */
     @VisibleForTesting
     public boolean onCapturedPointerEvent(MotionEvent event, int deviceRotation) {
+        if (!validateMotionEvent(event)) {
+            return false;
+        }
         boolean shouldConvertToMouseEvent =
                 isTrackpadToMouseEventConversionEnabled()
                         && event.isFromSource(InputDevice.SOURCE_TOUCHPAD);
@@ -1060,6 +1078,18 @@ public class EventForwarder {
     @CalledByNative
     public static @Nullable EventForwarder getJavaObject(long nativeEventForwarder) {
         return sEventForwarders.get(nativeEventForwarder);
+    }
+
+    private static boolean validateMotionEvent(MotionEvent event) {
+        for (int i = 0; i < event.getPointerCount(); ++i) {
+            if (!Float.isFinite(event.getX(i))
+                    || !Float.isFinite(event.getY(i))
+                    || !Float.isFinite(event.getRawX(i))
+                    || !Float.isFinite(event.getRawY(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
