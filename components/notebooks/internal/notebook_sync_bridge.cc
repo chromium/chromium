@@ -7,9 +7,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -27,12 +31,27 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
   return entity_data;
 }
 
+std::optional<Notebook> SpecificsToNotebook(
+    const sync_pb::NotebookSpecifics& specifics) {
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(specifics.uuid());
+  if (!uuid.is_valid()) {
+    return std::nullopt;
+  }
+  base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(specifics.creation_time_windows_epoch_micros()));
+  base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(specifics.update_time_windows_epoch_micros()));
+  return Notebook(NotebookId(uuid), creation_time, update_time);
+}
+
 }  // namespace
 
 NotebookSyncBridge::NotebookSyncBridge(
+    NotebooksModel* model,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory)
-    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
+      model_(CHECK_DEREF(model)) {
   std::move(store_factory)
       .Run(syncer::NOTEBOOK, base::BindOnce(&NotebookSyncBridge::OnStoreCreated,
                                             weak_ptr_factory_.GetWeakPtr()));
@@ -74,14 +93,29 @@ NotebookSyncBridge::ApplyIncrementalSyncChanges(
         // Guaranteed by ClientTagBasedDataTypeProcessor, based on
         // IsEntityDataValid().
         CHECK(entity_specifics.has_notebook());
-        entries_[change->storage_key()] = entity_specifics.notebook();
-        batch->WriteData(change->storage_key(),
-                         entity_specifics.notebook().SerializeAsString());
+        const sync_pb::NotebookSpecifics& specifics =
+            entity_specifics.notebook();
+        entries_[change->storage_key()] = specifics;
+        batch->WriteData(change->storage_key(), specifics.SerializeAsString());
+        if (std::optional<Notebook> notebook = SpecificsToNotebook(specifics)) {
+          model_->AddOrUpdateNotebook(*std::move(notebook));
+        } else {
+          DLOG(WARNING) << "Failed to parse Notebook from specifics: "
+                        << change->storage_key();
+        }
         break;
       }
       case syncer::EntityChange::ACTION_DELETE: {
         entries_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
+        base::Uuid uuid =
+            base::Uuid::ParseCaseInsensitive(change->storage_key());
+        if (uuid.is_valid()) {
+          model_->RemoveNotebook(NotebookId(uuid));
+        } else {
+          DLOG(WARNING) << "Invalid storage key UUID on delete: "
+                        << change->storage_key();
+        }
         break;
       }
     }
@@ -188,9 +222,17 @@ void NotebookSyncBridge::OnReadAllData(
 
   for (const syncer::DataTypeStore::Record& record : *records) {
     sync_pb::NotebookSpecifics specifics;
-    if (specifics.ParseFromString(record.value)) {
-      entries_[record.id] = std::move(specifics);
+    if (!specifics.ParseFromString(record.value)) {
+      DLOG(WARNING) << "Failed to parse NotebookSpecifics from record: "
+                    << record.id;
+      continue;
     }
+    if (std::optional<Notebook> notebook = SpecificsToNotebook(specifics)) {
+      model_->AddOrUpdateNotebook(*std::move(notebook));
+    } else {
+      DLOG(WARNING) << "Failed to parse Notebook from specifics: " << record.id;
+    }
+    entries_[record.id] = std::move(specifics);
   }
 
   store_->ReadAllMetadata(base::BindOnce(&NotebookSyncBridge::OnReadAllMetadata,
@@ -206,6 +248,7 @@ void NotebookSyncBridge::OnReadAllMetadata(
     return;
   }
 
+  model_->SetLoaded();
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 

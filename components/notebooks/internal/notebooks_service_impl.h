@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/notebooks/internal/notebook_sync_bridge.h"
+#include "components/notebooks/internal/notebooks_model.h"
 #include "components/notebooks/public/notebooks_service.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
@@ -32,6 +33,7 @@ class NotebooksServiceImpl : public NotebooksService {
       override;
 
  private:
+  NotebooksModel model_;
   NotebookSyncBridge bridge_;
 };
 

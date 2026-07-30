@@ -9,8 +9,10 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/notebooks/internal/notebooks_model.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -24,6 +26,7 @@ namespace notebooks {
 class NotebookSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   NotebookSyncBridge(
+      NotebooksModel* model,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceDataTypeStoreFactory store_factory);
 
@@ -72,6 +75,7 @@ class NotebookSyncBridge : public syncer::DataTypeSyncBridge {
   std::unique_ptr<syncer::DataTypeStore> store_;
   absl::flat_hash_map<std::string, sync_pb::NotebookSpecifics> entries_;
 
+  const raw_ref<NotebooksModel> model_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<NotebookSyncBridge> weak_ptr_factory_{this};
 };

@@ -11,7 +11,7 @@ namespace notebooks {
 NotebooksServiceImpl::NotebooksServiceImpl(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory)
-    : bridge_(std::move(change_processor), std::move(store_factory)) {}
+    : bridge_(&model_, std::move(change_processor), std::move(store_factory)) {}
 
 NotebooksServiceImpl::~NotebooksServiceImpl() = default;
 
