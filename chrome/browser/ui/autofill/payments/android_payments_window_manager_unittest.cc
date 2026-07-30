@@ -140,6 +140,35 @@ TEST_F(AndroidPaymentsWindowManagerTest, InitBnplFlow) {
                                        true, 1);
 }
 
+// Test that calling InitBnplFlow() when a flow is already ongoing safely
+// resets the previous flow state and initializes the new flow context.
+TEST_F(AndroidPaymentsWindowManagerTest, InitBnplFlow_WhenFlowAlreadyOngoing) {
+  SetUpMockPaymentsWindowBridge();
+  EXPECT_CALL(static_cast<MockPaymentsWindowBridge&>(
+                  test_api(window_manager()).GetPaymentsWindowBridge()),
+              OpenEphemeralTab)
+      .Times(2);
+
+  // Initialize the first flow.
+  InitBnplFlowForTest();
+  EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_EQ(test_api(window_manager()).GetBnplContext()->initial_url,
+            GURL(kBnplInitialUrl));
+
+  // Initialize a second flow while the first flow's state is still present.
+  PaymentsWindowManager::BnplContext second_context;
+  second_context.issuer_id = BnplIssuer::IssuerId::kBnplZip;
+  second_context.initial_url = GURL("https://www.zipinitialurl.com/");
+  window_manager().InitBnplFlow(std::move(second_context));
+
+  // Verify that the second flow context cleanly replaced the first flow
+  // context.
+  EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
+  ASSERT_TRUE(test_api(window_manager()).GetBnplContext().has_value());
+  EXPECT_EQ(test_api(window_manager()).GetBnplContext()->initial_url,
+            GURL("https://www.zipinitialurl.com/"));
+}
+
 // Test that OnWebContentsObservationStarted disables payments autofill.
 TEST_F(AndroidPaymentsWindowManagerTest,
        OnWebContentsObservationStarted_DisablesPaymentsAutofill) {

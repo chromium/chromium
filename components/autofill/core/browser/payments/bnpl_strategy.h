@@ -111,6 +111,19 @@ class BnplStrategy {
     kMaxValue = kResetSelectedIssuerOrFlowStateOnAndroid,
   };
 
+  // Defines the action to take when the user decides to use BNPL again (e.g.
+  // returned to Pay Later tab when flow state already exists).
+  enum class UserDecisionToUseBnplAgainNextAction {
+    // Desktop: Do nothing (user has already navigated or flow is ongoing).
+    kDoNothing = 0,
+
+    // Android: Re-show the BNPL issuer selection UI with cached checkout
+    // amount.
+    kReshowSelectBnplIssuerUiOnAndroid = 1,
+
+    kMaxValue = kReshowSelectBnplIssuerUiOnAndroid,
+  };
+
   virtual ~BnplStrategy();
 
   // Returns the next action to take after the user has been shown a payment
@@ -120,6 +133,10 @@ class BnplStrategy {
   // Returns the next action to take after the user has decided to use BNPL.
   virtual UserDecisionToUseBnplNextAction
   GetNextActionOnUserDecisionToUseBnpl();
+
+  // Returns the next action to take when the user decides to use BNPL again.
+  virtual UserDecisionToUseBnplAgainNextAction
+  GetNextActionOnUserDecisionToUseBnplAgain();
 
   // Returns the next action to take after the amount extraction is finished.
   virtual BnplAmountExtractionReturnedNextAction

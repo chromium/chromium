@@ -586,10 +586,8 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         mModel.set(SELECTED_TAB_INDEX, tabIndex);
         if (tabIndex == PAY_NOW) {
             mDelegate.onUserDecisionToUseSavedCards();
-            if (mShowBnplLoadingInTab) {
-                mShowBnplLoadingInTab = false;
-                mBnplIssuerContexts = null;
-            }
+            mShowBnplLoadingInTab = false;
+            mBnplIssuerContexts = null;
         } else if (tabIndex == PAY_LATER && mBnplIssuerContexts == null && !mShowBnplLoadingInTab) {
             mDelegate.bnplSuggestionSelected(null);
         }

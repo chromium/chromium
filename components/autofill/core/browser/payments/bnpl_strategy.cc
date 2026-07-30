@@ -21,6 +21,11 @@ BnplStrategy::GetNextActionOnUserDecisionToUseBnpl() {
   NOTREACHED();
 }
 
+BnplStrategy::UserDecisionToUseBnplAgainNextAction
+BnplStrategy::GetNextActionOnUserDecisionToUseBnplAgain() {
+  NOTREACHED();
+}
+
 BnplStrategy::BnplAmountExtractionReturnedNextAction
 BnplStrategy::GetNextActionOnAmountExtractionReturned() {
   NOTREACHED();

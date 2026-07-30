@@ -3861,6 +3861,12 @@ TEST_F(BnplManagerTest, OnUserDecisionToUseSavedCards_AndroidStrategy) {
   EXPECT_EQ(
       test_api(*bnpl_manager_).GetOngoingFlowState()->final_checkout_amount,
       1000);
+
+  // When returning to Pay Later tab, OnUserDecisionToUseBnpl should re-trigger
+  // ShowSelectBnplIssuerUi to update the UI with cached checkout amount.
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi);
+  bnpl_manager_->OnUserDecisionToUseBnpl(/*final_checkout_amount=*/std::nullopt,
+                                         base::DoNothing());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

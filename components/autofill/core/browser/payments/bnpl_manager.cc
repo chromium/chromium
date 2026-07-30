@@ -128,9 +128,36 @@ void BnplManager::OnUserDecisionToUseBnpl(
   if (ongoing_flow_state_ != nullptr &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
-    // User has already navigated to Pay Later tab before in this popup. This
-    // means that either there is an ongoing flow already, or the user is in an
-    // error state, both of which mean a new flow should not be started.
+    // User has already navigated to Pay Later tab before. This means that
+    // either there is an ongoing flow already, or the user is in an error
+    // state, both of which mean a new flow should not be started.
+    CHECK(payments_autofill_client().GetBnplStrategy());
+    using enum BnplStrategy::UserDecisionToUseBnplAgainNextAction;
+    switch (payments_autofill_client()
+                .GetBnplStrategy()
+                ->GetNextActionOnUserDecisionToUseBnplAgain()) {
+      case kDoNothing:
+        break;
+      case kReshowSelectBnplIssuerUiOnAndroid:
+        // For Android only: If the user previously extracted an amount,
+        // selected an issuer, switched to Pay Now (which reset the issuer
+        // choice while preserving the final checkout amount), and now returns
+        // to the Pay Later tab: re-show the issuer selection UI.
+        if (!ongoing_flow_state_->issuer.has_value()) {
+          CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+              .ShowSelectBnplIssuerUi(
+                  GetSortedBnplIssuerContext(
+                      browser_autofill_manager_->client(),
+                      ongoing_flow_state_->final_checkout_amount),
+                  ongoing_flow_state_->app_locale,
+                  base::BindRepeating(&BnplManager::OnIssuerAccepted,
+                                      weak_factory_.GetWeakPtr()),
+                  base::BindOnce(&BnplManager::Reset,
+                                 weak_factory_.GetWeakPtr()),
+                  HasSeenAmountExtractionAiTerms());
+        }
+        break;
+    }
     return;
   }
 

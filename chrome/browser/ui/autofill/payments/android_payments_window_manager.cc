@@ -30,7 +30,6 @@ AndroidPaymentsWindowManager::AndroidPaymentsWindowManager(
 AndroidPaymentsWindowManager::~AndroidPaymentsWindowManager() = default;
 
 void AndroidPaymentsWindowManager::InitBnplFlow(BnplContext context) {
-  CHECK(!flow_state_.has_value());
   flow_state_ = FlowState();
 
   flow_state_->flow_type = FlowType::kBnpl;

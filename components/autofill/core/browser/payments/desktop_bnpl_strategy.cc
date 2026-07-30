@@ -31,6 +31,11 @@ DesktopBnplStrategy::GetNextActionOnUserDecisionToUseBnpl() {
   return UserDecisionToUseBnplNextAction::kShowSelectBnplIssuerUiForDesktop;
 }
 
+BnplStrategy::UserDecisionToUseBnplAgainNextAction
+DesktopBnplStrategy::GetNextActionOnUserDecisionToUseBnplAgain() {
+  return UserDecisionToUseBnplAgainNextAction::kDoNothing;
+}
+
 BnplStrategy::BnplAmountExtractionReturnedNextAction
 DesktopBnplStrategy::GetNextActionOnAmountExtractionReturned() {
   return BnplAmountExtractionReturnedNextAction::

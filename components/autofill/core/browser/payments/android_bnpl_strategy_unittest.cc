@@ -66,6 +66,14 @@ TEST_F(AndroidBnplStrategyTest, GetNextActionOnUserDecisionToUseSavedCards) {
                 kResetSelectedIssuerOrFlowStateOnAndroid);
 }
 
+// Verify that GetNextActionOnUserDecisionToUseBnplAgain() returns the correct
+// action for the Android platform.
+TEST_F(AndroidBnplStrategyTest, GetNextActionOnUserDecisionToUseBnplAgain) {
+  EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnUserDecisionToUseBnplAgain(),
+            BnplStrategy::UserDecisionToUseBnplAgainNextAction::
+                kReshowSelectBnplIssuerUiOnAndroid);
+}
+
 // Verify that GetUiDismissalAction() returns the correct action for
 // the Android platform.
 TEST_F(AndroidBnplStrategyTest, GetUiDismissalAction) {

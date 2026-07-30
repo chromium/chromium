@@ -25,6 +25,12 @@ AndroidBnplStrategy::GetNextActionOnUserDecisionToUseBnpl() {
       kCheckAmountExtractionBeforeContinuingFlowForAndroid;
 }
 
+BnplStrategy::UserDecisionToUseBnplAgainNextAction
+AndroidBnplStrategy::GetNextActionOnUserDecisionToUseBnplAgain() {
+  return UserDecisionToUseBnplAgainNextAction::
+      kReshowSelectBnplIssuerUiOnAndroid;
+}
+
 BnplStrategy::BnplAmountExtractionReturnedNextAction
 AndroidBnplStrategy::GetNextActionOnAmountExtractionReturned() {
   return BnplAmountExtractionReturnedNextAction::
