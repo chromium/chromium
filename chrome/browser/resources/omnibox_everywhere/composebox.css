@@ -113,3 +113,65 @@ cr-composebox-submit::part(submit) {
 #bottomControls #contextEntrypoint {
   padding-inline-start: 0;
 }
+
+#actionButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchbox-icon-button-container {
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 36px;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+  z-index: 100;
+}
+
+.searchbox-icon-button-container:hover {
+  background-color: var(--color-new-tab-page-realbox-next-icon-hover);
+}
+
+.searchbox-icon-button {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  height: 100%;
+  outline: none;
+  padding: 0;
+  pointer-events: auto;
+  position: static;
+  width: 26px;
+  z-index: 100;
+}
+
+#voiceSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+}
+
+#lensSearchButton {
+  background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+}
+
+#profileIcon {
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  z-index: 100;
+}
+
+cr-composebox-input::part(input) {
+  -webkit-app-region: no-drag;
+}

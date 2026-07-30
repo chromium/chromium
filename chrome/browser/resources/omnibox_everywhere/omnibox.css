@@ -120,6 +120,7 @@
 }
 
 cr-searchbox-input::part(searchbox-input) {
+  -webkit-app-region: no-drag;
   align-self: center;
   padding-top: 2px;
 }

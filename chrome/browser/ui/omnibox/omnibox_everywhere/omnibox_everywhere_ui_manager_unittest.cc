@@ -68,12 +68,12 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShowAndCloseWidget) {
   auto ui_manager = CreateUIManager();
 
   // Initially, no widget should exist.
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 
   // Showing the UI manager for a profile should instantiate and display a
   // widget.
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
@@ -82,14 +82,14 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShowAndCloseWidget) {
   ui_manager->Close();
   waiter.Wait();
 
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ShowWhileWidgetIsClosing) {
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* first_widget = ui_manager->widget_for_testing();
+  views::Widget* first_widget = ui_manager->widget();
   ASSERT_TRUE(first_widget);
 
   // Close the widget.
@@ -98,13 +98,13 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShowWhileWidgetIsClosing) {
   // Showing it again immediately should successfully clean up the closing
   // widget and create a new visible widget.
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* second_widget = ui_manager->widget_for_testing();
+  views::Widget* second_widget = ui_manager->widget();
   ASSERT_TRUE(second_widget);
   EXPECT_TRUE(second_widget->IsVisible());
 
   // Clean up.
   ui_manager->Close();
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, FileChooserStateTracking) {
@@ -122,7 +122,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivation) {
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
@@ -130,14 +130,14 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivation) {
   views::test::WidgetDestroyedWaiter waiter(widget);
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   waiter.Wait();
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
@@ -148,7 +148,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   // Simulating deactivation while a file chooser is open should NOT close the
   // widget.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
-  EXPECT_TRUE(ui_manager->widget_for_testing());
+  EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
   // Clean up: closing file chooser and triggering deactivation should close the
@@ -157,7 +157,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   ui_manager->OnFileChooserClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   waiter2.Wait();
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, MultiProfileSwapping) {
@@ -166,18 +166,18 @@ TEST_F(OmniboxEverywhereUIManagerTest, MultiProfileSwapping) {
 
   ui_manager->ShowForProfile(&profile_, GetContext());
   EXPECT_EQ(ui_manager->profile(), &profile_);
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
   // Swapping to profile2 should update the active profile on the same UIManager
   // shell.
   ui_manager->ShowForProfile(&profile2, GetContext());
   EXPECT_EQ(ui_manager->profile(), &profile2);
-  EXPECT_TRUE(ui_manager->widget_for_testing());
+  EXPECT_TRUE(ui_manager->widget());
 
   // Clean up.
   ui_manager->Close();
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -185,14 +185,14 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
   // ShowForProfile when already visible for the same profile should NOT close
   // the widget.
   ui_manager->ShowForProfile(&profile_, GetContext());
-  EXPECT_EQ(ui_manager->widget_for_testing(), widget);
+  EXPECT_EQ(ui_manager->widget(), widget);
   EXPECT_TRUE(widget->IsVisible());
 
   ui_manager->Close();
@@ -202,12 +202,12 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShutdownSynchronouslyDestroysResources) {
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
-  ASSERT_TRUE(ui_manager->widget_for_testing());
+  ASSERT_TRUE(ui_manager->widget());
   ASSERT_TRUE(ui_manager->contents_wrapper_for_testing());
 
   ui_manager->Shutdown();
 
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
   EXPECT_FALSE(ui_manager->contents_wrapper_for_testing());
   EXPECT_EQ(ui_manager->profile(), nullptr);
   EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
@@ -254,7 +254,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_ShowPositionsOnTargetDisplay) {
 
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
@@ -287,7 +287,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
-  views::Widget* widget = ui_manager->widget_for_testing();
+  views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
@@ -298,7 +298,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
   // Simulating deactivation while drive picker is open should NOT close the
   // widget.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
-  EXPECT_TRUE(ui_manager->widget_for_testing());
+  EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
   // Clean up: closing drive picker and triggering deactivation should close the
@@ -307,7 +307,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
   ui_manager->OnDrivePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   waiter.Wait();
-  EXPECT_FALSE(ui_manager->widget_for_testing());
+  EXPECT_FALSE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -316,4 +316,10 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   MockBrowserWindowInterface mock_browser;
   ui_manager->OnBrowserActivated(&mock_browser);
   ui_manager->OnBrowserClosed(&mock_browser);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DraggableRegionsChangedDoesNotCrash) {
+  auto ui_manager = CreateUIManager();
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+  ui_manager->DraggableRegionsChanged(regions, nullptr);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_UI_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -21,6 +24,7 @@ class Profile;
 
 namespace omnibox_everywhere {
 
+class OmniboxEverywhereEventHandler;
 class OmniboxEverywhereWidgetDelegate;
 
 // Manages the desktop Omnibox Everywhere native window (views::Widget)
@@ -29,6 +33,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
                                    public WebUIContentsWrapper::Host,
                                    public BrowserCollectionObserver {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOmniboxEverywhereElementId);
+
   using ContentsWrapperFactory =
       base::RepeatingCallback<std::unique_ptr<WebUIContentsWrapper>(Profile*)>;
 
@@ -64,6 +70,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
 
   void OnFileChooserOpened();
   void OnFileChooserClosed();
@@ -82,7 +91,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   Profile* profile() { return profile_; }
   const Profile* profile() const { return profile_; }
-  views::Widget* widget_for_testing() { return widget_.get(); }
+  views::Widget* widget() { return widget_.get(); }
+  const views::Widget* widget() const { return widget_.get(); }
   WebUIContentsWrapper* contents_wrapper_for_testing() {
     return contents_wrapper_.get();
   }
@@ -104,9 +114,12 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void CleanUpWidget();
   void OnWidgetClosed(views::Widget::ClosedReason reason);
 
+  std::unique_ptr<OmniboxEverywhereEventHandler> event_handler_;
+
   // The native window hosting the Omnibox Everywhere UI.
   raw_ptr<Profile> profile_ = nullptr;
   ContentsWrapperFactory contents_wrapper_factory_;
+
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
   std::unique_ptr<OmniboxEverywhereWidgetDelegate> widget_delegate_;
   std::unique_ptr<views::Widget> widget_;
