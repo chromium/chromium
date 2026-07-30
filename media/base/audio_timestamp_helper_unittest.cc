@@ -74,6 +74,11 @@ TEST_F(AudioTimestampHelperTest, FramesToTime) {
   // Argument and return value exceeding 32 bits.
   EXPECT_EQ(base::Seconds(1000000),
             AudioTimestampHelper::FramesToTime(48000000000, k48kHz));
+  // Floating point sample rate (double / float).
+  EXPECT_EQ(base::Seconds(1),
+            AudioTimestampHelper::FramesToTime(44100, 44100.0));
+  EXPECT_EQ(base::Seconds(1),
+            AudioTimestampHelper::FramesToTime(44100, 44100.0f));
 }
 
 TEST_F(AudioTimestampHelperTest, TimeToFrames) {
@@ -100,6 +105,11 @@ TEST_F(AudioTimestampHelperTest, TimeToFrames) {
   // Argument and return value exceeding 32 bits.
   EXPECT_EQ(48000000000,
             AudioTimestampHelper::TimeToFrames(base::Seconds(1000000), k48kHz));
+  // Floating point sample rate (double / float).
+  EXPECT_EQ(44100,
+            AudioTimestampHelper::TimeToFrames(base::Seconds(1), 44100.0));
+  EXPECT_EQ(44100,
+            AudioTimestampHelper::TimeToFrames(base::Seconds(1), 44100.0f));
 }
 
 TEST_F(AudioTimestampHelperTest, Basic) {

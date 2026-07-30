@@ -7,19 +7,19 @@
 #include <array>
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/test/test_simple_task_runner.h"
 #include "base/run_loop.h"
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/threading/thread_restrictions.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -350,7 +351,7 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   // delay.
   const int priming_frames = RoundUpToRenderQuantum(requested_frames);
 #endif
-  base::TimeDelta priming_delay = audio_utilities::FramesToTime(
+  base::TimeDelta priming_delay = media::AudioTimestampHelper::FramesToTime(
       priming_frames, Platform::Current()->AudioHardwareSampleRate());
 
   auto audio_bus = media::AudioBus::Create(kDefaultHardwareOutputChannelNumber,

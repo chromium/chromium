@@ -42,6 +42,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -281,15 +282,15 @@ int AudioDestination::Render(base::TimeDelta delay,
     // audio that we are about to request, so we add that duration to the
     // delay of the audio we request. Note that it doesn't matter if there was
     // a fifo underrun, the delay will be the same either way.
-    delay += audio_utilities::FramesToTime(number_of_frames,
-                                           web_audio_device_->SampleRate());
+    delay += media::AudioTimestampHelper::FramesToTime(
+        number_of_frames, web_audio_device_->SampleRate());
 
     media::AudioGlitchInfo combined_glitch_info = glitch_info;
     bool has_fifo_underrun_occurred = false;
     if (result.frames_provided < number_of_frames) {
       media::AudioGlitchInfo underrun{
           // FIFO contains audio at the output device sample rate.
-          .duration = audio_utilities::FramesToTime(
+          .duration = media::AudioTimestampHelper::FramesToTime(
               number_of_frames - result.frames_provided,
               web_audio_device_->SampleRate()),
           .count = 1};
@@ -315,8 +316,8 @@ int AudioDestination::Render(base::TimeDelta delay,
     // The audio that we just pulled from the fifo will be played before the
     // audio that we are about to request, so we add that duration to the
     // delay of the audio we request.
-    delay += audio_utilities::FramesToTime(number_of_frames,
-                                           web_audio_device_->SampleRate());
+    delay += media::AudioTimestampHelper::FramesToTime(
+        number_of_frames, web_audio_device_->SampleRate());
     RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp,
                   glitch_info, /*request_timestamp=*/base::TimeTicks::Now(),
                   session_id_.load(std::memory_order_relaxed));
@@ -451,8 +452,8 @@ int AudioDestination::FramesPerBuffer() const {
 
 base::TimeDelta AudioDestination::GetPlatformBufferDuration() const {
   DCHECK(IsMainThread());
-  return audio_utilities::FramesToTime(web_audio_device_->FramesPerBuffer(),
-                                       web_audio_device_->SampleRate());
+  return media::AudioTimestampHelper::FramesToTime(
+      web_audio_device_->FramesPerBuffer(), web_audio_device_->SampleRate());
 }
 
 uint32_t AudioDestination::MaxChannelCount() const {
@@ -707,7 +708,7 @@ bool AudioDestination::RequestRender(
   }
 
   // FIFO contains audio at the output device sample rate.
-  base::TimeDelta fifo_delay = audio_utilities::FramesToTime(
+  base::TimeDelta fifo_delay = media::AudioTimestampHelper::FramesToTime(
       fifo_->FramesAvailable(), web_audio_device_->SampleRate());
   uma_reporter_.AddFifoDelay(fifo_delay);
   if (has_unexpected_fifo_underrun_occurred) {
@@ -774,8 +775,9 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
   // resampling.
   TRACE_EVENT("webaudio", "AudioDestination::ProvideResamplerInput",
               "delay (frames)", resampler_frame_delay);
-  auto adjusted_delay = delay_to_report_ + audio_utilities::FramesToTime(
-      resampler_frame_delay, context_sample_rate_);
+  auto adjusted_delay =
+      delay_to_report_ + media::AudioTimestampHelper::FramesToTime(
+                             resampler_frame_delay, context_sample_rate_);
   PullFromCallback(dest, adjusted_delay);
 }
 

@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -34,16 +35,17 @@ class MEDIA_EXPORT AudioTimestampHelper {
   // Returns the time duration of the given number of frames of audio with the
   // given sample rate (in samples per second).
   static constexpr base::TimeDelta FramesToTime(int64_t frames,
-                                                int samples_per_second) {
-    CHECK_GT(samples_per_second, 0);
-    return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
-                              samples_per_second);
+                                                double samples_per_second) {
+    CHECK_GT(samples_per_second, 0.0);
+    return base::Microseconds(base::saturated_cast<int64_t>(
+        frames * base::Time::kMicrosecondsPerSecond / samples_per_second));
   }
 
   // Returns the number of frames in the given duration of audio with the given
   // sample rate (in samples per second).
   static constexpr int64_t TimeToFrames(base::TimeDelta time,
-                                        int samples_per_second) {
+                                        double samples_per_second) {
+    CHECK_GT(samples_per_second, 0.0);
     return std::round(time.InSecondsF() * samples_per_second);
   }
 

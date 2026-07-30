@@ -63,12 +63,6 @@ TimeToSampleFrame(double time,
                   double sample_rate,
                   enum SampleFrameRounding rounding = kRoundToNearest);
 
-// Calculate a buffer duration given the number of frames and a sample rate.
-// The only reason we have it here is because it takes sample_rate as float.
-// Otherwise, media::AudioTimestampHelper::FramesToTime would be just fine.
-PLATFORM_EXPORT
-base::TimeDelta FramesToTime(int64_t frames, float sample_rate);
-
 // Check that |sampleRate| is a valid rate for AudioBuffers.
 PLATFORM_EXPORT bool IsValidAudioBufferSampleRate(float sample_rate);
 

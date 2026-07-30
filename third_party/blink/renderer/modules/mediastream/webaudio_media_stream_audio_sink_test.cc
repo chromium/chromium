@@ -14,6 +14,7 @@
 #include "media/base/audio_latency.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_pull_fifo.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -171,10 +172,10 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   int context_buffer_size =
       media::AudioLatency::GetHighLatencyBufferSize(context_sample_rate, 0);
 
-  Configure(
-      source_sample_rate, source_buffer_size, context_sample_rate,
-      audio_utilities::FramesToTime(context_buffer_size, context_sample_rate),
-      render_quantum_frames);
+  Configure(source_sample_rate, source_buffer_size, context_sample_rate,
+            media::AudioTimestampHelper::FramesToTime(context_buffer_size,
+                                                      context_sample_rate),
+            render_quantum_frames);
 
   // 1. Source preparation.
   std::unique_ptr<media::AudioBus> source_bus =
