@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -136,10 +137,12 @@ public class VerticalTabListCoordinator {
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
     private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
+    private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
-    private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
+    private final @Nullable TabHoverCardListener mTabHoverCardListener;
+    private final @Nullable ViewStub mTabHoverCardViewStub;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
@@ -232,7 +235,8 @@ public class VerticalTabListCoordinator {
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
         mDataSharingTabManager = dataSharingTabManager;
-
+        mTabHoverCardViewStub = tabHoverCardViewStub;
+        mTabHoverCardListener = this::showOrHideTabHoverCard;
         mRailCollapseStateSupplier = ObservableSuppliers.createNonNull(RailCollapseState.EXPANDED);
         mModelList = new TabListModel();
 
@@ -429,6 +433,11 @@ public class VerticalTabListCoordinator {
                     public @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                             getRailCollapseStateSupplier() {
                         return mRailCollapseStateSupplier;
+                    }
+
+                    @Override
+                    public @Nullable TabHoverCardListener getTabHoverCardListener() {
+                        return mTabHoverCardListener;
                     }
                 };
 
@@ -825,6 +834,30 @@ public class VerticalTabListCoordinator {
         }
 
         requestRailCollapseStateChange(targetState);
+    }
+
+    private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
+        if (isHovered) {
+            // Skip showing for the selected tab.
+            if (mTabModelSelector.getCurrentTabId() == tabId) return;
+
+            if (mTabHoverCardViewStub != null && mTabHoverCardViewStub.getParent() != null) {
+                mTabHoverCardViewStub.inflate();
+            }
+            if (mTabHoverCardView == null) return;
+
+            Tab tab = mTabModelSelector.getTabById(tabId);
+            if (tab == null) return;
+
+            float[] position =
+                    VerticalTabHoverCardHelper.getHoverCardPosition(
+                            view, mContainerView, mTabHoverCardView);
+            mTabHoverCardView.show(tab, position[0], position[1]);
+        } else {
+            if (mTabHoverCardView != null) {
+                mTabHoverCardView.hide();
+            }
+        }
     }
 
     private void setupItemTouchHelper(
@@ -1355,48 +1388,6 @@ public class VerticalTabListCoordinator {
         mContainerView.setDesktopWindowSpacerVisible(isInDesktopWindow);
     }
 
-    @Nullable TabStripContextMenuCoordinator getTabStripContextMenuCoordinatorForTesting() {
-        return mTabStripContextMenuCoordinator;
-    }
-
-    PropertyModel getContainerModelForTesting() {
-        return mContainerModel;
-    }
-
-    @Nullable TabContextMenuCoordinator getTabContextMenuCoordinatorForTesting() {
-        return mTabContextMenuCoordinator;
-    }
-
-    @Nullable TabGroupContextMenuCoordinator getTabGroupContextMenuCoordinatorForTesting() {
-        return mTabGroupContextMenuCoordinator;
-    }
-
-    void setTabGroupContextMenuCoordinatorForTesting(TabGroupContextMenuCoordinator coordinator) {
-        mTabGroupContextMenuCoordinator = coordinator;
-    }
-
-    void setTabStripContextMenuCoordinatorForTesting(
-            TabStripContextMenuCoordinator contextMenuCoordinator) {
-        mTabStripContextMenuCoordinator = contextMenuCoordinator;
-    }
-
-    void setTabContextMenuCoordinatorForTesting(TabContextMenuCoordinator contextMenuCoordinator) {
-        mTabContextMenuCoordinator = contextMenuCoordinator;
-    }
-
-    Point getLastTouchPointForTesting() {
-        return mLastTouchPoint;
-    }
-
-    boolean handleContextMenuInteractionForTesting(
-            Activity activity, RecyclerView recyclerView, float localX, float localY) {
-        return handleContextMenuInteraction(activity, recyclerView, localX, localY);
-    }
-
-    GridLayoutManager getPinnedLayoutManagerForTesting() {
-        return mPinnedLayoutManager;
-    }
-
     private View buildGridCardDragShadow(Activity activity, PropertyModel model) {
         ViewGroup gridCardView =
                 (ViewGroup)
@@ -1447,6 +1438,48 @@ public class VerticalTabListCoordinator {
         return groupHeaderView;
     }
 
+    @Nullable TabStripContextMenuCoordinator getTabStripContextMenuCoordinatorForTesting() {
+        return mTabStripContextMenuCoordinator;
+    }
+
+    PropertyModel getContainerModelForTesting() {
+        return mContainerModel;
+    }
+
+    @Nullable TabContextMenuCoordinator getTabContextMenuCoordinatorForTesting() {
+        return mTabContextMenuCoordinator;
+    }
+
+    @Nullable TabGroupContextMenuCoordinator getTabGroupContextMenuCoordinatorForTesting() {
+        return mTabGroupContextMenuCoordinator;
+    }
+
+    void setTabGroupContextMenuCoordinatorForTesting(TabGroupContextMenuCoordinator coordinator) {
+        mTabGroupContextMenuCoordinator = coordinator;
+    }
+
+    void setTabStripContextMenuCoordinatorForTesting(
+            TabStripContextMenuCoordinator contextMenuCoordinator) {
+        mTabStripContextMenuCoordinator = contextMenuCoordinator;
+    }
+
+    void setTabContextMenuCoordinatorForTesting(TabContextMenuCoordinator contextMenuCoordinator) {
+        mTabContextMenuCoordinator = contextMenuCoordinator;
+    }
+
+    Point getLastTouchPointForTesting() {
+        return mLastTouchPoint;
+    }
+
+    boolean handleContextMenuInteractionForTesting(
+            Activity activity, RecyclerView recyclerView, float localX, float localY) {
+        return handleContextMenuInteraction(activity, recyclerView, localX, localY);
+    }
+
+    GridLayoutManager getPinnedLayoutManagerForTesting() {
+        return mPinnedLayoutManager;
+    }
+
     /** Sets the tab switcher drag handler supplier override for testing. */
     static void setTabSwitcherDragHandlerSupplierForTesting(
             @Nullable Supplier<TabSwitcherDragHandler> supplier) {
@@ -1466,5 +1499,9 @@ public class VerticalTabListCoordinator {
 
     NonNullObservableSupplier<@RailCollapseState Integer> getRailCollapseStateSupplierForTesting() {
         return mRailCollapseStateSupplier;
+    }
+
+    @Nullable TabHoverCardListener getTabHoverCardListenerForTesting() {
+        return mTabHoverCardListener;
     }
 }
