@@ -1207,7 +1207,7 @@ class RequestTest : public RenderViewHostImplTestHarness {
                            /*delay_token_response=*/false,
                            AccountsDialogAction::kSelectFirstAccount,
                            IdpSigninStatusMismatchDialogAction::kNone,
-                           ErrorDialogAction::kClose,
+                           ErrorDialogAction::kNone,
                            LoadingDialogAction::kNone};
     kConfigurationMultiIdpValid = {
         kToken,
@@ -6533,6 +6533,7 @@ TEST_F(RequestTest, IdTokenInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.token_response.parse_status =
       ParseStatus::kInvalidContentTypeError;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedRequestResult::kIdTokenInvalidContentType,
@@ -7258,6 +7259,7 @@ TEST_F(RequestTest, InvalidResponseErrorDialogShown) {
       ParseStatus::kInvalidResponseError;
   configuration.error_dialog_type = error_dialog_type;
   configuration.token_response_type = token_response_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -7293,6 +7295,7 @@ TEST_F(RequestTest, NoResponseErrorDialogShown) {
   configuration.token_response.parse_status = ParseStatus::kNoResponseError;
   configuration.error_dialog_type = error_dialog_type;
   configuration.token_response_type = token_response_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedRequestResult::kIdTokenNoResponse,
@@ -7330,6 +7333,7 @@ TEST_F(RequestTest, ErrorUrlDisplayedWithProperUrl) {
   configuration.error_dialog_type = error_dialog_type;
   configuration.token_response_type = token_response_type;
   configuration.error_url_type = error_url_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -7540,6 +7544,7 @@ TEST_F(RequestTest, ErrorDialogTypeMetrics) {
   configuration.token_error = TokenError(/*code=*/"invalid_request",
                                          GURL("https://foo.idp.example/error"));
   configuration.error_dialog_type = error_dialog_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -7593,6 +7598,7 @@ TEST_F(RequestTest, TokenResponseTypeMetrics) {
   configuration.token_error = TokenError(/*code=*/"invalid_request",
                                          GURL("https://foo.idp.example/error"));
   configuration.token_response_type = token_response_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -7619,6 +7625,7 @@ TEST_F(RequestTest, ErrorUrlTypeMetrics) {
   configuration.token_error = TokenError(/*code=*/"invalid_request",
                                          GURL("https://foo.idp.example/error"));
   configuration.error_url_type = error_url_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -7646,6 +7653,7 @@ TEST_F(RequestTest, CrossSiteErrorDialogDevtoolsIssue) {
   configuration.token_error = TokenError(
       /*code=*/"invalid_request", GURL("https://cross-site.example/error"));
   configuration.error_url_type = error_url_type;
+  configuration.error_dialog_action = ErrorDialogAction::kClose;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
