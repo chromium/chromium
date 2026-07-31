@@ -540,6 +540,7 @@ public class NtpCustomizationMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
     public void testBuildListContent_ExcludesThemeWhenWebUiNtpEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         List<Integer> listContent = mMediator.buildListContent(mContext);
         assertFalse(listContent.contains(THEME));
     }

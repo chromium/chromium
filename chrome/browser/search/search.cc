@@ -35,6 +35,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #else
@@ -305,11 +306,12 @@ bool IsInstantNTPURL(const GURL& url, Profile* profile) {
   return new_tab_url.is_valid() && MatchesOriginAndPath(url, new_tab_url);
 }
 
-bool IsWebUiNtpEnabled() {
+bool IsWebUiNtpEnabledForDesktopAndroid() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtpAndroid);
+  return base::android::device_info::is_desktop() &&
+         base::FeatureList::IsEnabled(chrome::android::kUseWebUiNtpAndroid);
 #else
-  return true;
+  return false;
 #endif
 }
 

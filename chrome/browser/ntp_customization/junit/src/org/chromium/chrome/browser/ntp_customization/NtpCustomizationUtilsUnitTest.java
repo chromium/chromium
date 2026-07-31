@@ -77,6 +77,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -307,6 +308,7 @@ public class NtpCustomizationUtilsUnitTest {
         ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
     })
     public void testIsNtpThemeCustomizationEnabledWithWindowAndroid_WebUiNtpEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         // Skips the early exit: !isNtpThemeCustomizationEnabled()
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);

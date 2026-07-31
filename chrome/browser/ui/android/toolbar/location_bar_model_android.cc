@@ -78,7 +78,7 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
       url.host() == chrome::kChromeUINewTabHost) {
     return true;
   }
-  if (search::IsWebUiNtpEnabled() && url.SchemeIs(content::kChromeUIScheme) &&
+  if (search::IsWebUiNtpEnabledForDesktopAndroid() && url.SchemeIs(content::kChromeUIScheme) &&
       url.host() == chrome::kChromeUINewTabPageHost) {
     return true;
   }

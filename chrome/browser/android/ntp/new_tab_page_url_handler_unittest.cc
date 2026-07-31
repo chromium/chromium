@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/android/device_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/search/search.h"
@@ -34,7 +35,10 @@ class NewTabPageUrlHandlerTest : public testing::Test {
         TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory());
   }
 
-  void TearDown() override { test_util_.reset(); }
+  void TearDown() override {
+    base::android::device_info::reset_is_desktop_for_testing();
+    test_util_.reset();
+  }
 
   TemplateURLService* model() { return test_util_->model(); }
   TestingProfile* profile() { return test_util_->profile(); }
@@ -54,6 +58,7 @@ TEST_F(NewTabPageUrlHandlerTest, TestNonSpecialURL) {
 
 TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseGoogle) {
   // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(true);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chrome::android::kUseWebUiNtpAndroid);
@@ -74,6 +79,7 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseGoogle) {
 
 TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseNotGoogle) {
   // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(true);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chrome::android::kUseWebUiNtpAndroid);
@@ -94,8 +100,30 @@ TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseNotGoogle) {
 
 TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Disabled) {
   // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(true);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
+      chrome::android::kUseWebUiNtpAndroid);
+
+  // Set DSE to Google.
+  std::unique_ptr<TemplateURL> google_turl = CreateTestTemplateURL(
+      u"google", "http://www.google.com/search?q={searchTerms}");
+  TemplateURL* added_turl = model()->Add(std::move(google_turl));
+  model()->SetUserSelectedDefaultSearchProvider(added_turl);
+  test_util_->ChangeModelToLoadState();
+
+  GURL url(chrome::kChromeUINewTabURL);
+
+  // Act and assert.
+  EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ(chrome::kChromeUINativeNewTabURL, url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest, TestWebUiNtpRedirection_Enabled_DseGoogle_Mobile) {
+  // Arrange.
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       chrome::android::kUseWebUiNtpAndroid);
 
   // Set DSE to Google.

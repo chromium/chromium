@@ -44,7 +44,7 @@ bool HandleAndroidNativePageURL(GURL* url,
 
   if (url->SchemeIs(content::kChromeUIScheme)) {
     if (url->GetHost() == chrome::kChromeUINewTabHost) {
-      if (search::IsWebUiNtpEnabled() &&
+      if (search::IsWebUiNtpEnabledForDesktopAndroid() &&
           search::DefaultSearchProviderIsGoogle(
               Profile::FromBrowserContext(browser_context))) {
         *url = GURL(chrome::kChromeUINewTabPageURL);

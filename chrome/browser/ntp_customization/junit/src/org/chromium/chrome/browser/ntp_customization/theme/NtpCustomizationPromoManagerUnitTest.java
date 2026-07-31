@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -400,6 +401,7 @@ public class NtpCustomizationPromoManagerUnitTest {
         ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
     })
     public void testNtpThemeDisabled_whenWebUiNtpOverrideEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         assertTrue(UrlOverrideUtils.isWebUiNtpOverrideEnabled());
         assertFalse(
                 NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
@@ -437,6 +439,7 @@ public class NtpCustomizationPromoManagerUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     @Features.DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
     public void testNtpThemeEnabled_whenWebUiNtpOverrideDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         assertFalse(UrlOverrideUtils.isWebUiNtpOverrideEnabled());
         assertTrue(
                 NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
