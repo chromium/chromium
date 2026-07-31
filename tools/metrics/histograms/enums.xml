@@ -12573,6 +12573,7 @@ from previous Chrome versions.
   <int value="-619178295" label="MediaAppLens:disabled"/>
   <int value="-617598270" label="kEnableNearbyBleV2GattServer:disabled"/>
   <int value="-617452890" label="media-router"/>
+  <int value="-616870045" label="GlicContextMenuBelowSearch:disabled"/>
   <int value="-616818899" label="SameSiteByDefaultCookies:enabled"/>
   <int value="-616508634" label="DisableCryptAuthV1DeviceSync:enabled"/>
   <int value="-616414905" label="ThumbnailCacheRefactor:disabled"/>
@@ -17001,6 +17002,7 @@ from previous Chrome versions.
   <int value="778000757" label="EnableInputEventLogging:disabled"/>
   <int value="778338284" label="Prewarm:enabled"/>
   <int value="778533213" label="WebAssemblyStackSwitching:disabled"/>
+  <int value="779078009" label="GlicContextMenuBelowSearch:enabled"/>
   <int value="779086132" label="enable-data-reduction-proxy-alt"/>
   <int value="779703052" label="ChromeOSAmbientMode:enabled"/>
   <int value="779849093" label="OfflinePagesCTSuppressNotifications:disabled"/>

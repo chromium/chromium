@@ -101,6 +101,8 @@ const base::FeatureParam<std::string> kGlicContextMenuArm{&kGlicContextMenu,
 const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
     &kGlicContextMenu, "WithOnboarding", false};
 
+BASE_FEATURE(kGlicContextMenuBelowSearch, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicTextSelectionContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTieredRolloutV2, base::FEATURE_DISABLED_BY_DEFAULT);

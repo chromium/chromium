@@ -5576,6 +5576,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "glic-context-menu-below-search",
+    "owners": [ "sanaakbani@google.com", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-contextual-cue-bubble",
     "owners": [ "iwells@chromium.org" ],
     "expiry_milestone": 150

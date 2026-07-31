@@ -1675,6 +1675,11 @@ inline constexpr char kGlicOSIconVariantDescription[] =
 inline constexpr char kGlicClientZoomControlName[] = "Glic Client Zoom Control";
 inline constexpr char kGlicClientZoomControlDescription[] =
     "Enables the use of Chrome zoom keyboard controls in the Glic UI.";
+inline constexpr char kGlicContextMenuBelowSearchName[] =
+    "Glic Context Menu Below Search";
+inline constexpr char kGlicContextMenuBelowSearchDescription[] =
+    "Places the Glic (Ask Gemini) context menu entry point below the Search "
+    "option.";
 inline constexpr char kGlicSparkSettingsAccessibleLabelsName[] =
     "Glic Spark Settings Accessible Labels";
 inline constexpr char kGlicSparkSettingsAccessibleLabelsDescription[] =
