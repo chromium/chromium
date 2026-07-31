@@ -157,7 +157,7 @@ public class NtpCustomizationConfigManager {
                             fileIdHash);
             NtpCustomizationUtils.readNtpBackgroundImage(
                     (bitmap) -> {
-                        onBackgroundImageAvailable(bitmap, imageInfo);
+                        onBackgroundImageLoadedFromDisk(bitmap, imageInfo);
                     },
                     EXECUTOR,
                     filePath);
@@ -171,7 +171,7 @@ public class NtpCustomizationConfigManager {
             int primaryColor = ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
             ntpThemeDailyRefreshManager.readNtpBackgroundImageForThemeCollection(
                     (bitmap) -> {
-                        onBackgroundImageAvailable(bitmap, imageInfo);
+                        onBackgroundImageLoadedFromDisk(bitmap, imageInfo);
                     },
                     EXECUTOR,
                     filePath);
@@ -193,7 +193,7 @@ public class NtpCustomizationConfigManager {
     }
 
     @VisibleForTesting
-    void onBackgroundImageAvailable(
+    void onBackgroundImageLoadedFromDisk(
             @Nullable Bitmap bitmap, @Nullable BackgroundImageInfo imageInfo) {
         if (bitmap == null) {
             // TODO(crbug.com/423579377): need to update the trailing icons in the NTP appearance
@@ -397,12 +397,10 @@ public class NtpCustomizationConfigManager {
         @ColorInt
         Integer primaryColor =
                 NtpCustomizationUtils.saveBackgroundInfo(
-                        /* customBackgroundInfo= */ null,
+                        uploadImageData,
                         fromHistoryData ? null : bitmap,
                         backgroundImageInfo,
-                        fromHistoryData,
-                        uploadImageData.getPrimaryColor(),
-                        uploadImageData.getLastUploadImageFilePath());
+                        fromHistoryData);
         if (!fromHistoryData) {
             uploadImageData.setPrimaryColor(primaryColor);
         }
@@ -441,14 +439,11 @@ public class NtpCustomizationConfigManager {
         // defer the saving of the primary color until the bottom sheet is closed. It will be
         // handled by NtpCustomizationMediator. For case 2), the primary color has been calculated
         // before, save it to the Shared Preference now.
-        boolean fromHistoryData = themeCollectionData.getPrimaryColor() != null;
         NtpCustomizationUtils.saveBackgroundInfo(
-                mCustomBackgroundInfo,
-                fromHistoryData ? null : themeCollectionData.getBitmap(),
+                themeCollectionData,
+                themeCollectionData.isBitmapSaved() ? null : themeCollectionData.getBitmap(),
                 assumeNonNull(themeCollectionData.getBackgroundImageInfo()),
-                /* skipSavingPrimaryColor= */ true,
-                themeCollectionData.getPrimaryColor(),
-                themeCollectionData.getLastUploadImageFilePath());
+                /* skipSavingPrimaryColor= */ true);
     }
 
     /**

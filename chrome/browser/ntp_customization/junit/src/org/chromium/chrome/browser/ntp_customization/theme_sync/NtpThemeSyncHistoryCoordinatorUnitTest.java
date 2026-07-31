@@ -94,6 +94,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     private static final String TEST_ATTRIBUTE_2 = "attr2";
     private static final int BITMAP_SIZE = 1;
     private static final int FULL_BITMAP_SIZE = 10;
+    private static final String TEST_FILE_ID_HASH = "test_already_has_bitmap_hash";
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private View.OnClickListener mMoreOptionsClickListener;
@@ -119,6 +120,22 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
 
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
+        doAnswer(
+                        invocation -> {
+                            NtpBackgroundDataBase data = invocation.getArgument(1);
+                            if (data instanceof NtpBackgroundDataThemeCollection themeData) {
+                                if (!themeData.isBitmapSaved()) {
+                                    Bitmap bitmap = themeData.getBitmap();
+                                    if (bitmap != null) {
+                                        NtpCustomizationUtils.saveBackgroundImageFile(
+                                                themeData, bitmap);
+                                    }
+                                }
+                            }
+                            return null;
+                        })
+                .when(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(eq(mContext), any());
 
         mNtpBackgroundDataManager = new NtpBackgroundDataManager(mContext);
         mNtpBackgroundDataManager.resetSharedPreferenceForTesting();
@@ -748,6 +765,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 .fetchImage(any(), any());
 
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify it fetches the image again.
         ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
@@ -762,6 +780,11 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertNotNull(themeData.getBackgroundImageInfo());
 
         assertBackgroundDataChangedImpl(themeData, /* expectedRecreate= */ true);
+
+        // Verify the file is saved to disk and isBitmapSaved is true.
+        assertTrue(themeData.isBitmapSaved());
+        File expectedSavedFile = new File(themeData.getLastUploadImageFilePath());
+        assertTrue(expectedSavedFile.exists());
     }
 
     @Test
@@ -782,10 +805,20 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 (NtpBackgroundDataThemeCollection)
                         coordinator.getDataShowingListForTesting().get(3);
 
-        // Manually set the bitmap.
+        // Manually simulate that it already has the bitmap, has been saved, and has a fileIdHash.
         Bitmap fullBitmap =
                 Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
         themeData.setBitmap(fullBitmap);
+        themeData.setFileIdHash(TEST_FILE_ID_HASH);
+        themeData.setIsBitmapSaved(/* isBitmapSaved= */ true);
+
+        // Pre-create the file and then delete it to verify it won't be saved again.
+        File expectedSavedFile = new File(themeData.getLastUploadImageFilePath());
+        NtpCustomizationUtils.saveBackgroundImageFile(themeData, fullBitmap);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(expectedSavedFile.exists());
+        expectedSavedFile.delete();
+        assertFalse(expectedSavedFile.exists());
 
         NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
                 coordinator.getRecyclerViewAdaptorForTesting();
@@ -796,11 +829,15 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // Click the theme collection item (index 3).
         int position = 3;
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify it does NOT fetch the image again.
         verify(mMockImageFetcher, never()).fetchImage(any(), any());
 
         assertBackgroundDataChangedImpl(themeData, /* expectedRecreate= */ true);
+
+        // Verify the file was NOT saved again (does not exist).
+        assertFalse(expectedSavedFile.exists());
     }
 
     @Test
@@ -848,7 +885,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         String filePath = localThemeInList.getLastUploadImageFilePath();
         Bitmap diskBitmap =
                 Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
-        NtpCustomizationUtils.saveBackgroundImageFile(filePath, diskBitmap);
+        NtpCustomizationUtils.saveBackgroundImageFile(localThemeInList, diskBitmap);
         RobolectricUtil.runAllBackgroundAndUi();
 
         localThemeInList.getBitmapOrLoadImage((result) -> {});
@@ -949,59 +986,6 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         List<NtpBackgroundDataBase> list = mCoordinator.getDataShowingListForTesting();
         return (NtpBackgroundDataImageBase) list.get(1);
-    }
-
-    @Test
-    public void testOnItemClicked_NotLocalHistoryDoesNotSave() {
-        CollectionImage image =
-                new CollectionImage(
-                        TEST_COLLECTION_ID,
-                        new GURL(TEST_IMAGE_URL_1),
-                        new GURL(TEST_PREVIEW_URL_1),
-                        Arrays.asList(TEST_ATTRIBUTE_1),
-                        GURL.emptyGURL());
-
-        NtpThemeSyncHistoryCoordinator coordinator =
-                setupThemeCollectionsAndCoordinator(new CollectionImage[] {image});
-
-        coordinator.prepareToShow();
-
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                coordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
-
-        int position = -1;
-        List<NtpBackgroundDataBase> list = coordinator.getDataShowingListForTesting();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) instanceof NtpBackgroundDataThemeCollection) {
-                position = i;
-                break;
-            }
-        }
-        assertTrue(position != -1);
-
-        NtpBackgroundDataThemeCollection themeData =
-                (NtpBackgroundDataThemeCollection) list.get(position);
-
-        Bitmap fullBitmap =
-                Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
-        themeData.setBitmap(fullBitmap);
-        String fileIdHash = "test_hash_not_local";
-        themeData.setFileIdHash(fileIdHash);
-
-        File expectedSavedFile =
-                NtpCustomizationUtils.createThemeImageFileInDir(
-                        fileIdHash, themeData.getImageDirName());
-        if (expectedSavedFile.exists()) {
-            expectedSavedFile.delete();
-        }
-        assertFalse(expectedSavedFile.exists());
-
-        adapter.setSelectedPosition(position, /* isFromClick= */ true);
-
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        assertFalse(expectedSavedFile.exists());
     }
 
     private NtpThemeSyncHistoryCoordinator setupThemeCollectionsAndCoordinator(

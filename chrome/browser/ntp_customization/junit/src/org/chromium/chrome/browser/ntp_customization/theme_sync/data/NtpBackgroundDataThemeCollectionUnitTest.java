@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -76,6 +77,11 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
+        assertEquals(data1.hashCode(), data2.hashCode());
+
+        // isBitmapSaved should not affect equality.
+        data1.setIsBitmapSaved(/* isBitmapSaved= */ true);
+        assertEquals(data1, data2);
         assertEquals(data1.hashCode(), data2.hashCode());
     }
 
@@ -200,6 +206,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertEquals(
                 isDailyRefreshEnabled, restored.getCustomBackgroundInfo().isDailyRefreshEnabled);
         assertEquals(primaryColor, restored.getPrimaryColor());
+        assertEquals(data.isBitmapSaved(), restored.isBitmapSaved());
 
         assertNotNull(restored.getBackgroundImageInfo());
         assertEquals(
@@ -216,5 +223,33 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         } else {
             assertNull(restored.getLastUploadImageFilePath());
         }
+    }
+
+    @Test
+    public void testIsBitmapSaved() throws JSONException {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        GURL.emptyGURL(),
+                        "id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection data =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.RED,
+                        /* fileIdHash= */ null);
+
+        // Should default to false.
+        assertFalse(data.isBitmapSaved());
+
+        data.setIsBitmapSaved(/* isBitmapSaved= */ true);
+        assertTrue(data.isBitmapSaved());
+
+        JSONObject json = data.toJson();
+        NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);
+        assertTrue(restored.isBitmapSaved());
     }
 }

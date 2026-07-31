@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 import android.graphics.Bitmap;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 
 import java.util.Objects;
@@ -23,12 +25,15 @@ import java.util.Objects;
 /** Base data class for NTP image-based background data. */
 @NullMarked
 public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
+    @VisibleForTesting static final String IS_BITMAP_SAVED_KEY = "isBitmapSaved";
+
     private @Nullable BackgroundImageInfo mBackgroundImageInfo;
     // The mFileIdHash isn't null when NTP theme sync is enabled.
     private @Nullable String mFileIdHash;
     // The mLastUploadImageFilePath isn't null when mFileIdHash isn't null.
     private @Nullable String mLastUploadImageFilePath;
     private @Nullable Bitmap mBitmap;
+    private boolean mIsBitmapSaved;
     private @Nullable @ColorInt Integer mPrimaryColor;
 
     /**
@@ -83,6 +88,25 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     /** Sets the bitmap. */
     public void setBitmap(@Nullable Bitmap bitmap) {
         mBitmap = bitmap;
+    }
+
+    /** Returns whether the bitmap has been saved to the device as a file. */
+    public boolean isBitmapSaved() {
+        return mIsBitmapSaved;
+    }
+
+    /**
+     * Sets whether the bitmap has been saved to the device as a file.
+     *
+     * @param isBitmapSaved Whether the bitmap has been saved.
+     */
+    public void setIsBitmapSaved(boolean isBitmapSaved) {
+        mIsBitmapSaved = isBitmapSaved;
+    }
+
+    /** Returns the {@link CustomBackgroundInfo} if it's a theme collection, or null otherwise. */
+    public @Nullable CustomBackgroundInfo getCustomBackgroundInfo() {
+        return null;
     }
 
     /**
@@ -149,6 +173,7 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     @Override
     public JSONObject toJson() throws JSONException {
         JSONObject json = super.toJson();
+        json.put(IS_BITMAP_SAVED_KEY, mIsBitmapSaved);
         if (mPrimaryColor != null) {
             json.put(PRIMARY_COLOR_KEY, mPrimaryColor);
         }
@@ -159,6 +184,11 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
             json.put(BACKGROUND_IMAGE_INFO_KEY, mBackgroundImageInfo.toJson());
         }
         return json;
+    }
+
+    /** Reads the isBitmapSaved value from the given JSON and sets it on this object. */
+    public void setIsBitmapSavedFromJson(JSONObject json) {
+        setIsBitmapSaved(json.optBoolean(IS_BITMAP_SAVED_KEY, false));
     }
 
     @Override

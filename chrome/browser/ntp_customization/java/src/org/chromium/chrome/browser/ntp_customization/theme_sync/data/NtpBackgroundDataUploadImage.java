@@ -74,11 +74,14 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataImageBase {
             backgroundImageInfo =
                     BackgroundImageInfo.fromJson(json.getJSONObject(BACKGROUND_IMAGE_INFO_KEY));
         }
-        return new NtpBackgroundDataUploadImage(
-                json.getInt(PLATFORM_TYPE_KEY),
-                backgroundImageInfo,
-                /* bitmap= */ null,
-                json.has(PRIMARY_COLOR_KEY) ? json.getInt(PRIMARY_COLOR_KEY) : null,
-                json.has(FILE_ID_HASH_KEY) ? json.getString(FILE_ID_HASH_KEY) : null);
+        NtpBackgroundDataUploadImage data =
+                new NtpBackgroundDataUploadImage(
+                        json.getInt(PLATFORM_TYPE_KEY),
+                        backgroundImageInfo,
+                        /* bitmap= */ null,
+                        json.has(PRIMARY_COLOR_KEY) ? json.getInt(PRIMARY_COLOR_KEY) : null,
+                        json.has(FILE_ID_HASH_KEY) ? json.getString(FILE_ID_HASH_KEY) : null);
+        data.setIsBitmapSavedFromJson(json);
+        return data;
     }
 }

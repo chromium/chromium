@@ -392,8 +392,7 @@ public class NtpThemeSyncHistoryCoordinator {
                 // might haven deleted. Save it to the disk again.
                 Bitmap bitmap = imageBaseData.getBitmap();
                 if (bitmap != null) {
-                    NtpCustomizationUtils.saveBackgroundImageFile(
-                            imageBaseData.getLastUploadImageFilePath(), bitmap);
+                    NtpCustomizationUtils.saveBackgroundImageFile(imageBaseData, bitmap);
                 }
             }
         }
@@ -438,10 +437,6 @@ public class NtpThemeSyncHistoryCoordinator {
 
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundDataChanged(mContext, themeCollectionData);
-        // onBackgroundDataChanged() will skip saving the bitmap when the primary color has been
-        // set. Saves it here.
-        NtpCustomizationUtils.saveBackgroundImageFile(
-                themeCollectionData.getLastUploadImageFilePath(), bitmap);
     }
 
     /**
