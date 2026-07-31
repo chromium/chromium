@@ -26,9 +26,9 @@ export type FakeSystemRoutineControllerInterface =
 
 export class FakeSystemRoutineController implements
     FakeSystemRoutineControllerInterface {
-  private methods: FakeMethodResolver = new FakeMethodResolver();
-  private routineResults: Map<RoutineType, RoutineResult> = new Map();
-  private routineDetails: Map<RoutineType, string> = new Map();
+  private readonly methods: FakeMethodResolver = new FakeMethodResolver();
+  private readonly routineResults: Map<RoutineType, RoutineResult> = new Map();
+  private readonly routineDetails: Map<RoutineType, string> = new Map();
   /**
    * Controls the delay resolving routines. By default this is 0 and routines
    * resolve immediately, but still asynchronously.

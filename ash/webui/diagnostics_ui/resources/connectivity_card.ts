@@ -93,7 +93,7 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
   declare private networkType: string;
   declare private networkState: string;
   declare private routineGroups: RoutineGroup[];
-  private networkHealthProvider: NetworkHealthProviderInterface =
+  private readonly networkHealthProvider: NetworkHealthProviderInterface =
       getNetworkHealthProvider();
   private networkStateObserverReceiver: NetworkStateObserverReceiver|null =
       null;

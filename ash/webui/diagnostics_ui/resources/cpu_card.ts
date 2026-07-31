@@ -81,7 +81,7 @@ export class CpuCardElement extends CpuCardElementBase {
   declare private cpuUsage: CpuUsage;
   declare private cpuChipInfo: string;
   private memoryUsage: MemoryUsage;
-  private systemDataProvider: SystemDataProviderInterface =
+  private readonly systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
   private cpuUsageObserverReceiver: CpuUsageObserverReceiver|null = null;
   private memoryUsageObserverReceiver: MemoryUsageObserverReceiver|null = null;

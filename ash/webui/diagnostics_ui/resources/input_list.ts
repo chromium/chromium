@@ -104,9 +104,9 @@ export class InputListElement extends InputListElementBase {
   private keyboardTester: KeyboardTesterElement;
   private touchscreenTester: TouchscreenTesterElement|null = null;
   private touchpadTester: TouchpadTesterElement|null = null;
-  private browserProxy: DiagnosticsBrowserProxy =
+  private readonly browserProxy: DiagnosticsBrowserProxy =
       DiagnosticsBrowserProxyImpl.getInstance();
-  private inputDataProvider: InputDataProviderInterface =
+  private readonly inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
 
   private computeShowTouchpads(numTouchpads: number): boolean {

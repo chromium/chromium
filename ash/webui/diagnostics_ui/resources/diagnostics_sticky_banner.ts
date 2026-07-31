@@ -79,23 +79,24 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
    * section. Event will contain message to display on message property of
    * event found on path `event.detail.message`.
    */
-  private showCautionBannerHandler = (e: ShowCautionBannerEvent): void => {
-    assert(e.detail.message);
-    this.bannerMessage = e.detail.message;
-  };
+  private readonly showCautionBannerHandler =
+      (e: ShowCautionBannerEvent): void => {
+        assert(e.detail.message);
+        this.bannerMessage = e.detail.message;
+      };
 
   /**
    * Event callback for 'dismiss-caution-banner' which is triggered from
    * routine-section.
    */
-  private dismissCautionBannerHandler = (): void => {
+  private readonly dismissCautionBannerHandler = (): void => {
     this.bannerMessage = '';
   };
 
   /**
    * Event callback for 'scroll'.
    */
-  private scrollClassHandler = (): void => {
+  private readonly scrollClassHandler = (): void => {
     this.onScroll();
   };
 

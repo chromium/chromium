@@ -40,7 +40,7 @@ interface DrawingProvider {
  * Canvas API. This design makes the drawing mechanism in a replaceable module.
  */
 export class CanvasDrawingProvider implements DrawingProvider {
-  private ctx: CanvasRenderingContext2D;
+  private readonly ctx: CanvasRenderingContext2D;
 
   constructor(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;

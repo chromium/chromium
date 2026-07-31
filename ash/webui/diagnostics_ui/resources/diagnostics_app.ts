@@ -103,9 +103,9 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   declare protected isLoggedIn: boolean;
   declare private saveSessionLogEnabled: boolean;
   declare private toastText: string;
-  private browserProxy: DiagnosticsBrowserProxyImpl =
+  private readonly browserProxy: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
-  private inputDataProvider: InputDataProviderInterface =
+  private readonly inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
   private numKeyboards: number = 0;
 
@@ -122,7 +122,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
    * will contain message to display on message property of event found on
    * event found on path `e.detail.message`.
    */
-  private showToastHandler = (e: ShowToastEvent): void => {
+  private readonly showToastHandler = (e: ShowToastEvent): void => {
     assert(e.detail.message);
     this.toastText = e.detail.message;
     this.$.toast.show();
