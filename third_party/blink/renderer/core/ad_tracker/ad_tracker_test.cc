@@ -3983,6 +3983,55 @@ TEST_F(AdTrackerDisabledSimTest, VerifyAdTrackingDisabled) {
   EXPECT_FALSE(GetDocument().GetFrame()->IsAdFrame());
 }
 
+TEST_F(AdTrackerSimTest, RegressionTest_AsyncStackExternalScriptMonkeyPatch) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String vanilla_script_url = "https://example.com/vanilla_script.js";
+  String target_script_url = "https://example.com/target_script.js";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest target_script(target_script_url, "text/javascript");
+  SimSubresourceRequest target_image("https://example.com/target_image.png",
+                                     "image/png");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js?ad=true"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(...args) {
+      return originalAppendChild.apply(this, args);
+    };
+  )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    const script = document.createElement("script");
+    script.src = "target_script.js";
+    document.body.appendChild(script);
+  )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(target_script_url);
+  target_script.Complete(R"SCRIPT(
+    const img = document.createElement('img');
+    img.src = 'target_image.png';
+    document.body.appendChild(img);
+  )SCRIPT");
+
+  ad_tracker_->WaitForSubresource("https://example.com/target_image.png");
+  target_image.Complete("data");
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(target_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(
+      "https://example.com/target_image.png"));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AdTrackerVanillaOrAdSimTest,
                          ::testing::Values(true, false));

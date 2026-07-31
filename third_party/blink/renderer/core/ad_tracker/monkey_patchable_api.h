@@ -11,11 +11,9 @@
 
 namespace blink {
 
-// A list of JavaScript APIs that are frequently monkey patched by ad scripts.
-// This enum is used as a parameter to stack-walking functions (like
-// `IsAdScriptInStack`) to enable a heuristic that can ignore a top-level
-// ad script, preventing false positives when the API is called from a
-// non-ad script through an ad script's monkey patch.
+// A list of JavaScript APIs that are frequently monkey patched by scripts
+// at points that the trackers care about (e.g., during script creation
+// or during API calls that are intervened on).
 enum class MonkeyPatchableApi {
   // Default setting to disable the heuristic.
   kNone,
