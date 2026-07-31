@@ -79,6 +79,10 @@ public class OmniboxCapabilities {
             return sHasDesktopExperienceForTesting;
         }
 
+        if (isDesktopPlatform()) {
+            return true;
+        }
+
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
