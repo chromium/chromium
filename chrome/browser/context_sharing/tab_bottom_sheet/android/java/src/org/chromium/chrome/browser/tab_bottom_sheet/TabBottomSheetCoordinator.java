@@ -97,6 +97,7 @@ public class TabBottomSheetCoordinator {
     private @Nullable TabBottomSheetPeekView mPeekView;
     private @Nullable PeekViewManager mPeekViewManager;
     private @Nullable PropertyModelChangeProcessor mPeekViewChangeProcessor;
+    private @Nullable ResizingStrategy mResizingStrategy;
 
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
@@ -232,6 +233,11 @@ public class TabBottomSheetCoordinator {
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
+        if (canResizeWebView()) {
+            WebViewResizingHelper helper = mCoBrowseViews.getWebViewResizingHelper();
+            assert helper != null : "WebViewResizingHelper must not be null when resizing WebView";
+            mResizingStrategy = ResizingStrategyFactory.create(helper);
+        }
     }
 
     private void onSheetContentShown(boolean animate, boolean startsExpanded) {
@@ -337,6 +343,9 @@ public class TabBottomSheetCoordinator {
             mPeekViewManager.destroy();
             mPeekViewManager = null;
         }
+        if (mResizingStrategy != null) {
+            mResizingStrategy.destroy();
+        }
         mPeekView = null;
         mSheetEventsCallback = null;
 
@@ -414,7 +423,8 @@ public class TabBottomSheetCoordinator {
                 }
 
                 if (canResizeWebView()) {
-                    mMediator.onSheetResizingStatusChanged(state == SheetState.SCROLLING);
+                    assert mResizingStrategy != null;
+                    mResizingStrategy.onSheetResizingStatusChanged(state == SheetState.SCROLLING);
                 }
 
                 if (state != SheetState.SCROLLING && state != SheetState.NONE) {
@@ -466,9 +476,15 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 if (mBottomSheetController.getSheetState() == SheetState.SCROLLING) {
-                    mMediator.onSheetOffsetChanged(offsetPx, isPastHalfAndLessThanFull(offsetPx));
+                    mMediator.onSheetOffsetChanged(offsetPx);
                     if (canResizeWebView()) {
-                        mMediator.updatePlaceholderHeight(offsetPx - mWebUiTopMargin);
+                        assert mSheetContent != null;
+                        assert mResizingStrategy != null;
+                        float halfRatio = mSheetContent.getHalfHeightRatio();
+                        float halfHeight = mBottomSheetController.getContainerHeight() * halfRatio;
+                        float fullHeight = mBottomSheetController.getMaxOffset();
+                        mResizingStrategy.onSheetOffsetChanged(
+                                offsetPx - mWebUiTopMargin, halfHeight, fullHeight);
                     }
                 }
             }
@@ -679,20 +695,6 @@ public class TabBottomSheetCoordinator {
             return SMALL_SCREEN_HEIGHT_RATIO;
         }
         return isKeyboardShowing() ? SMALL_SCREEN_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
-    }
-
-    private boolean isPastHalfAndLessThanFull(float offsetPx) {
-        if (mSheetContent == null || mBottomSheetController == null) return false;
-
-        if (mBottomSheetController.isSmallScreen()) return false;
-
-        float halfRatio = mSheetContent.getHalfHeightRatio();
-        if (halfRatio == BottomSheetContent.HeightMode.DISABLED) return false;
-
-        float halfOffset = mBottomSheetController.getContainerHeight() * halfRatio;
-        float fullOffset = mBottomSheetController.getMaxOffset();
-
-        return offsetPx > halfOffset && offsetPx < fullOffset;
     }
 
     private void updateRoundingEdges() {

@@ -39,6 +39,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.chrome.browser.tab_bottom_sheet.WebViewResizingHelper.ResizeLock;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.WebContents;
@@ -136,7 +137,7 @@ public class WebViewResizingHelperUnitTest {
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         View placeholder = container.getChildAt(0);
 
-        WebViewResizingHelper.ResizeLock lock = mHelper.requestResize();
+        ResizeLock lock = mHelper.requestResize();
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
 
         assertEquals(1000, layoutParams.height);
@@ -157,7 +158,7 @@ public class WebViewResizingHelperUnitTest {
         // Override runOnNextFrame behavior to not automatically run.
         doAnswer(invocation -> null).when(mMockThinWebView).runOnNextFrame(any());
 
-        WebViewResizingHelper.ResizeLock lock = mHelper.requestResize();
+        ResizeLock lock = mHelper.requestResize();
         assertEquals(View.VISIBLE, placeholder.getVisibility());
 
         ArgumentCaptor<Runnable> frameCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
