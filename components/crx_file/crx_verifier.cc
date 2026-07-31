@@ -5,6 +5,7 @@
 #include "components/crx_file/crx_verifier.h"
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cstring>
 #include <iterator>
@@ -14,6 +15,8 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -35,6 +38,11 @@ namespace {
 
 using KeyHash = std::array<uint8_t, crypto::hash::kSha256Size>;
 
+// A feature to block EOCD64 record tokens in CRX files, only here as a
+// killswitch. This can be removed in October 2026.
+BASE_FEATURE(kDisallowEocdRecord64TokensInCrx,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The SHA256 hash of the DER SPKI "ecdsa_2017_public" Crx3 key.
 constexpr KeyHash kPublisherKeyHash = {
     0x61, 0xf7, 0xf2, 0xa6, 0xbf, 0xcf, 0x74, 0xcd, 0x0b, 0xc1, 0xfe,
@@ -49,6 +57,7 @@ constexpr KeyHash kPublisherTestKeyHash = {
 
 constexpr auto kEocd = std::to_array<uint8_t>({'P', 'K', 0x05, 0x06});
 constexpr auto kEocd64 = std::to_array<uint8_t>({'P', 'K', 0x06, 0x07});
+constexpr auto kEocd64Record = std::to_array<uint8_t>({'P', 'K', 0x06, 0x06});
 
 using VerifierCollection = std::vector<std::unique_ptr<crypto::sign::Verifier>>;
 using RepeatedProof = ::google::protobuf::RepeatedPtrField<AsymmetricKeyProof>;
@@ -122,10 +131,17 @@ VerifierResult VerifyCrx3(
     return VerifierResult::ERROR_HEADER_INVALID;
   }
 
-  // If the header contains a ZIP EOCD or EOCD64 token, unzipping may not work
-  // correctly.
+  // If the header contains a ZIP EOCD, EOCD64, or EOCD64 record token,
+  // unzipping may not work correctly.
   if (std::ranges::search(header_bytes, kEocd) ||
       std::ranges::search(header_bytes, kEocd64)) {
+    return VerifierResult::ERROR_HEADER_INVALID;
+  }
+  // Out of an abundance of caution, we gate the EOCD64 record token on a
+  // base::Feature. The feature check can be removed (and this can be folded
+  // into the if-statement above) in October 2026.
+  if (base::FeatureList::IsEnabled(kDisallowEocdRecord64TokensInCrx) &&
+      std::ranges::search(header_bytes, kEocd64Record)) {
     return VerifierResult::ERROR_HEADER_INVALID;
   }
 

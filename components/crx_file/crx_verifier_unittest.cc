@@ -3,8 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/crx_file/crx_verifier.h"
+
+#include <string>
+#include <vector>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -260,6 +266,41 @@ TEST_F(CrxVerifierTest, ChecksCompressedVerifiedContentsEmpty) {
   EXPECT_EQ(std::string(kJlnHash), crx_id);
   EXPECT_EQ(std::string(kJlnKey), public_key);
   EXPECT_TRUE(compressed_verified_contents.empty());
+}
+
+// Tests that we properly reject a crx file that includes an EOCD64 Record
+// token. Regression test for https://crbug.com/538715523.
+TEST_F(CrxVerifierTest, RejectsEocd64RecordInHeader) {
+  const std::vector<std::vector<uint8_t>> keys;
+  const std::vector<uint8_t> hash;
+  std::string public_key = "UNSET";
+  std::string crx_id = "UNSET";
+
+  std::string crx_contents;
+  ASSERT_TRUE(base::ReadFileToString(TestFile("valid_no_publisher.crx3"),
+                                     &crx_contents));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Insert PK\x06\x06 (Zip64 EOCD Record) into header_bytes (starts at offset
+  // 12).
+  std::string crx_with_eocd64_record = crx_contents;
+  ASSERT_GT(crx_with_eocd64_record.size(), 20u);
+  crx_with_eocd64_record[12] = 'P';
+  crx_with_eocd64_record[13] = 'K';
+  crx_with_eocd64_record[14] = 0x06;
+  crx_with_eocd64_record[15] = 0x06;
+
+  base::FilePath test_file =
+      temp_dir.GetPath().AppendASCII("eocd64record.crx3");
+  ASSERT_TRUE(base::WriteFile(test_file, crx_with_eocd64_record));
+
+  EXPECT_EQ(VerifierResult::ERROR_HEADER_INVALID,
+            Verify(test_file, VerifierFormat::CRX3, keys, hash, &public_key,
+                   &crx_id, /*compressed_verified_contents=*/nullptr));
+  EXPECT_EQ("UNSET", crx_id);
+  EXPECT_EQ("UNSET", public_key);
 }
 
 }  // namespace crx_file
