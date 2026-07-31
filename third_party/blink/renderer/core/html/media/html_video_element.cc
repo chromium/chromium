@@ -542,8 +542,7 @@ void HTMLVideoElement::RequestSaveVideoFrame() {
   }
 
   ImageEncodingMimeType encoding_mime_type =
-      ImageEncoderUtils::ToEncodingMimeType(
-          "image/png", ImageEncoderUtils::kEncodeReasonToDataURL);
+      ImageEncoderUtils::ToEncodingMimeType("image/png");
 
   Vector<unsigned char> png_bytes;
   if (!data_buffer->EncodeImage(encoding_mime_type, /*quality=*/0,

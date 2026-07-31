@@ -171,8 +171,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
   CHECK(context);
   CHECK(image);
 
-  mime_type_ = ImageEncoderUtils::ToEncodingMimeType(
-      options->type(), ImageEncoderUtils::kEncodeReasonConvertToBlobPromise);
+  mime_type_ = ImageEncoderUtils::ToEncodingMimeType(options->type());
 
   // We use pixmap to access the image pixels. Make the image unaccelerated if
   // necessary. May return nullptr if GPU context lost or readback buffer

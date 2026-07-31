@@ -1282,8 +1282,7 @@ String HTMLCanvasElement::ToDataURLInternal(
     return String("data:,");
 
   ImageEncodingMimeType encoding_mime_type =
-      ImageEncoderUtils::ToEncodingMimeType(
-          mime_type, ImageEncoderUtils::kEncodeReasonToDataURL);
+      ImageEncoderUtils::ToEncodingMimeType(mime_type);
 
   scoped_refptr<StaticBitmapImage> image_bitmap = Snapshot(source_buffer);
   if (image_bitmap) {
@@ -1386,8 +1385,7 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
   }
 
   ImageEncodingMimeType encoding_mime_type =
-      ImageEncoderUtils::ToEncodingMimeType(
-          mime_type, ImageEncoderUtils::kEncodeReasonToBlobCallback);
+      ImageEncoderUtils::ToEncodingMimeType(mime_type);
 
   CanvasAsyncBlobCreator* async_creator = nullptr;
   scoped_refptr<StaticBitmapImage> image_bitmap = Snapshot(kBackBuffer);

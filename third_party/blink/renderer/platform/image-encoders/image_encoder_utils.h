@@ -16,19 +16,11 @@ class PLATFORM_EXPORT ImageEncoderUtils {
   STATIC_ONLY(ImageEncoderUtils);
 
  public:
-  enum EncodeReason {
-    kEncodeReasonToDataURL = 0,
-    kEncodeReasonToBlobCallback = 1,
-    kEncodeReasonConvertToBlobPromise = 2,
-    kNumberOfEncodeReasons
-  };
-
   // Default image mime type for toDataURL and toBlob functions
   static const char kDefaultRequestedMimeType[];
   static const ImageEncodingMimeType kDefaultEncodingMimeType;
 
-  static ImageEncodingMimeType ToEncodingMimeType(const String&,
-                                                  const EncodeReason);
+  static ImageEncodingMimeType ToEncodingMimeType(const String&);
 
   static String MimeTypeName(ImageEncodingMimeType);
   static bool ParseMimeType(const String&, ImageEncodingMimeType&);

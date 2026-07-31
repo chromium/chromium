@@ -8697,17 +8697,6 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="NormalPriority"/>
 </enum>
 
-<enum name="RequestedImageMimeType">
-  <int value="0" label="Png"/>
-  <int value="1" label="Jpeg"/>
-  <int value="2" label="Webp"/>
-  <int value="3" label="Gif"/>
-  <int value="4" label="Bmp"/>
-  <int value="5" label="Ico"/>
-  <int value="6" label="Tiff"/>
-  <int value="7" label="Unknown"/>
-</enum>
-
 <enum name="RevalidationPolicy">
   <int value="0" label="Use"/>
   <int value="1" label="Revalidate"/>

@@ -488,26 +488,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Blink.Canvas.RequestedImageMimeTypes{CanvasRequestedImageMimeTypeFunctions}"
-    enum="RequestedImageMimeType" expires_after="2025-08-10">
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Records the occurence of image file formats passed into toDataURL and toBlob
-    functions in canvas. {CanvasRequestedImageMimeTypeFunctions}
-  </summary>
-  <token key="CanvasRequestedImageMimeTypeFunctions">
-    <variant name="_convertToBlobPromise"
-        summary="Image formats passed to OffscreenCanvas.convertToBlob
-                 (promise)"/>
-    <variant name="_toBlobCallback"
-        summary="Image formats passed to canvas.toBlob (callback)"/>
-    <variant name="_toDataURL"
-        summary="Image formats passed to canvas.toDataURL"/>
-  </token>
-</histogram>
-
 <histogram name="Blink.Canvas.ResourceProviderIsAccelerated"
     enum="BooleanHardwareAccelerated" expires_after="2025-04-01">
   <owner>aaronhk@chromium.org</owner>
