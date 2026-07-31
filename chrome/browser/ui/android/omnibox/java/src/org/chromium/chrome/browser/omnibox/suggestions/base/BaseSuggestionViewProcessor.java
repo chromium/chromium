@@ -37,8 +37,6 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
-import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -76,9 +74,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
         mActionChipsProcessor = new ActionChipsProcessor(uiContext.host, uiContext.actionDelegate);
 
-        mShouldShowRemoveButton =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                        && DeviceInput.supportsPrecisionPointer();
+        mShouldShowRemoveButton = OmniboxCapabilities.hasPrecisionPointerExperience(mContext);
     }
 
     /**

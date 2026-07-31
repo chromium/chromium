@@ -56,6 +56,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
@@ -353,7 +354,7 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     @Config(qualifiers = "w400dp")
-    public void setRemoveOrRefineAction_noRmoveActionOnPhone() {
+    public void setRemoveOrRefineAction_noRemoveActionOnPhone() {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
 
         var action = setUpDeleteScenarioForRemoveActionTesting();
@@ -368,7 +369,6 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void setRemoveOrRefineAction_noRemoveActionOnTabletWithoutPeripherals() {
-        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
 
         var action = setUpDeleteScenarioForRemoveActionTesting();
@@ -395,6 +395,26 @@ public class BaseSuggestionProcessorUnitTest {
         assertEquals(R.drawable.btn_close, shadowOf(action.icon.drawable).getCreatedFromResId());
 
         var monitor = new UserActionTester();
+        action.callback.run();
+        assertEquals(1, monitor.getActionCount("MobileOmniboxRemoveSuggestion.Button"));
+        assertEquals(1, monitor.getActions().size());
+        monitor.tearDown();
+    }
+
+    @Test
+    public void setRemoveOrRefineAction_removeActionOnDesktopPlatform() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        Action action = setUpDeleteScenarioForRemoveActionTesting();
+
+        String expectedDescription =
+                mContext.getString(
+                        R.string.accessibility_omnibox_remove_suggestion,
+                        mSuggestion.getFillIntoEdit());
+        assertEquals(expectedDescription, action.accessibilityDescription);
+        assertEquals(R.drawable.btn_close, shadowOf(action.icon.drawable).getCreatedFromResId());
+
+        UserActionTester monitor = new UserActionTester();
         action.callback.run();
         assertEquals(1, monitor.getActionCount("MobileOmniboxRemoveSuggestion.Button"));
         assertEquals(1, monitor.getActions().size());

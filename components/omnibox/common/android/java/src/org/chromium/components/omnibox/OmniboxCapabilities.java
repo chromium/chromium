@@ -95,6 +95,20 @@ public class OmniboxCapabilities {
     }
 
     /**
+     * Return whether the device is in a desktop platform or is a tablet with a precision pointer.
+     *
+     * @param context the context to use to determine device form factor
+     */
+    public static boolean hasPrecisionPointerExperience(Context context) {
+        if (isDesktopPlatform()) {
+            return true;
+        }
+
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && DeviceInput.supportsPrecisionPointer();
+    }
+
+    /**
      * Return whether the current platform is specifically a desktop platform.
      *
      * <p>This call should be used sparingly - only to gate features that are strictly Desktop
