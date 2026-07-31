@@ -56,6 +56,14 @@ class PermissionsRepromptControllerAndroidTest
         std::move(callback));
   }
 
+  void RepromptMissingLocalNetworkAccess(
+      base::OnceCallback<void(bool)> callback) {
+    controller_->RepromptPermissionRequestInternal(
+        {ContentSettingsType::LOCAL_NETWORK_ACCESS},
+        {ContentSettingsType::LOCAL_NETWORK_ACCESS},
+        ContentSettingsType::LOCAL_NETWORK_ACCESS, std::move(callback));
+  }
+
   size_t GetPendingCallbackCount() const {
     size_t callback_count = 0;
     for (const auto& it : controller_->pending_callbacks_) {
@@ -166,6 +174,24 @@ TEST_P(PermissionsRepromptControllerAndroidWithApproximateLocationTest,
   EXPECT_EQ(1u, GetPendingCallbackCount());
   EXPECT_CALL(mock_callback1, Run(false));
   EXPECT_CALL(mock_callback2, Run).Times(0);
+  WaitForNextReprompting();
+  EXPECT_EQ(1u, GetRepromptCount());
+  EXPECT_EQ(0u, GetPendingCallbackCount());
+}
+
+// Duplicated requests for LOCAL_NETWORK_ACCESS context. All callbacks must be
+// preserved and called when the prompt completes to avoid dropping Mojo
+// callbacks.
+TEST_F(PermissionsRepromptControllerAndroidTest,
+       DuplicatedRequestSameContext_LocalNetworkAccess) {
+  base::MockOnceCallback<void(bool)> mock_callback1;
+  base::MockOnceCallback<void(bool)> mock_callback2;
+  RepromptMissingLocalNetworkAccess(mock_callback1.Get());
+  EXPECT_EQ(1u, GetPendingCallbackCount());
+  RepromptMissingLocalNetworkAccess(mock_callback2.Get());
+  EXPECT_EQ(2u, GetPendingCallbackCount());
+  EXPECT_CALL(mock_callback1, Run(false));
+  EXPECT_CALL(mock_callback2, Run(false));
   WaitForNextReprompting();
   EXPECT_EQ(1u, GetRepromptCount());
   EXPECT_EQ(0u, GetPendingCallbackCount());

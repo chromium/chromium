@@ -51,11 +51,17 @@ void PermissionsRepromptControllerAndroid::RepromptPermissionRequestInternal(
   auto it = pending_callbacks_.find(key);
   if (it != pending_callbacks_.end()) {
     auto& context_set = it->second.first;
-    // Simply bail out if we are requesting duplicated requests from the
-    // same PermissionContext
-    if (context_set.find(permission_context_content_setting_type) !=
-        context_set.end())
+    // For LOCAL_NETWORK_ACCESS, `callback` MUST be called so no Mojo IPC
+    // response callbacks are dropped. For other permission types, simply bail
+    // out if we are requesting duplicated requests from the same
+    // PermissionContext
+    bool callback_must_be_called = std::ranges::contains(
+        content_settings_types, ContentSettingsType::LOCAL_NETWORK_ACCESS);
+    if (!callback_must_be_called &&
+        context_set.find(permission_context_content_setting_type) !=
+            context_set.end()) {
       return;
+    }
 
     context_set.insert(permission_context_content_setting_type);
     auto& callbacks = it->second.second;
