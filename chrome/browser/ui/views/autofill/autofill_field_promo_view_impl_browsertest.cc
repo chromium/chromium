@@ -9,13 +9,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/display/screen.h"
@@ -23,7 +26,12 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
 
 namespace autofill {
 namespace {
@@ -54,19 +62,19 @@ AutofillFieldPromoViewImpl* GetViewRawPtr(
   return static_cast<AutofillFieldPromoViewImpl*>(view.get());
 }
 
-class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
+class AutofillFieldPromoViewImplBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
-    // Create the first tab so that `web_contents()` exists.
-    AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     if (view_) {
       view_->Close();
     }
-    TestWithBrowserView::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   content::WebContents* web_contents() {
@@ -91,10 +99,6 @@ class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
 #if BUILDFLAG(IS_MAC)
   // On Mac, web contents bounds cannot be easily modified. As an alternative,
   // the bounds of the containing widget are changed.
-  // This works based on the assumption that the top chrome UI bounds do not
-  // change. There are only a few operations which can do that (ex: toggling the
-  // bookmark bar) and none of them occur in this test fixture and they should
-  // never occur in the future.
   void ChangeBrowserWindowBoundsForDesiredWebContentsBounds(
       gfx::Rect expected_web_contents_bounds) {
     views::Widget* widget =
@@ -122,7 +126,8 @@ class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
   base::WeakPtr<AutofillFieldPromoView> view_;
 };
 
-TEST_F(AutofillFieldPromoViewImplTest, BoundsAreCorrect) {
+IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
+                       BoundsAreCorrect) {
   // Set custom web contents bounds.
 #if BUILDFLAG(IS_MAC)
   ChangeBrowserWindowBoundsForDesiredWebContentsBounds(
@@ -147,7 +152,8 @@ TEST_F(AutofillFieldPromoViewImplTest, BoundsAreCorrect) {
       gfx::Rect(0, 199, 200, 1));
 }
 
-TEST_F(AutofillFieldPromoViewImplTest, LifetimeIsManagedCorrectlyOnClose) {
+IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
+                       LifetimeIsManagedCorrectlyOnClose) {
   base::WeakPtr<AutofillFieldPromoView> view = CreateView();
   AutofillFieldPromoViewImpl* view_ptr = GetViewRawPtr(view);
 
@@ -159,7 +165,8 @@ TEST_F(AutofillFieldPromoViewImplTest, LifetimeIsManagedCorrectlyOnClose) {
   EXPECT_FALSE(view);
 }
 
-TEST_F(AutofillFieldPromoViewImplTest, OverlapsWithPictureInPictureWindow) {
+IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
+                       OverlapsWithPictureInPictureWindow) {
   base::WeakPtr<AutofillFieldPromoView> view =
       CreateView(gfx::RectF(200, 200, 300, 300));
   TestPictureInPictureWindowController picture_in_picture_window_controller;
@@ -175,9 +182,13 @@ TEST_F(AutofillFieldPromoViewImplTest, OverlapsWithPictureInPictureWindow) {
   picture_in_picture_window_controller.SetWindowBounds(
       gfx::Rect(100, 100, 1000, 1000));
   EXPECT_TRUE(view->OverlapsWithPictureInPictureWindow());
+
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(nullptr);
 }
 
-TEST_F(AutofillFieldPromoViewImplTest, ElementIdForIphIsCorrect) {
+IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
+                       ElementIdForIphIsCorrect) {
   EXPECT_EQ(
       GetViewRawPtr(CreateView())->GetProperty(views::kElementIdentifierKey),
       element_identifier());
