@@ -30,6 +30,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -505,6 +506,46 @@ TEST_F(NativeMessagingTest, DisallowUserLevel) {
 
   // The host should fail to start.
   ASSERT_TRUE(channel_closed_);
+}
+
+// Tests that the size of messages sent and received for native messaging are
+// logged.
+TEST_F(NativeMessagingTest, LogMessageSize) {
+  base::HistogramTester histogram_tester;
+  base::FilePath temp_output_file = temp_dir_.GetPath().AppendASCII("output");
+#if BUILDFLAG(IS_WIN)
+  base::FilePath temp_input_file = CreateTempFileWithMessage(kTestMessage);
+  ASSERT_FALSE(temp_input_file.empty());
+  std::unique_ptr<NativeProcessLauncher> launcher =
+      FakeLauncher::Create(temp_input_file, temp_output_file);
+#else
+  base::PlatformFile pipe_handles[2];
+  ASSERT_EQ(0, pipe(pipe_handles));
+  base::File read_file(pipe_handles[0]);
+  std::string formatted_message = FormatMessage(kTestMessage);
+  ASSERT_GT(base::GetPageSize(), formatted_message.size());
+  ASSERT_TRUE(base::WriteFileDescriptor(pipe_handles[1], formatted_message));
+  base::File write_file(pipe_handles[1]);
+  std::unique_ptr<NativeProcessLauncher> launcher =
+      FakeLauncher::CreateWithPipeInput(std::move(read_file), temp_output_file);
+#endif
+  // Set up native_message_host_ with FakeLauncher which mocks a native host
+  // application echoing back kTestMessage over pipe input.
+  native_message_host_ = NativeMessageProcessHost::CreateWithLauncher(
+      ScopedTestNativeMessagingHost::kExtensionId, "empty_app.py",
+      std::move(launcher));
+  native_message_host_->Start(this);
+
+  native_message_host_->OnMessage(kTestMessage);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.NativeMessaging.MessageSize.Extension", strlen(kTestMessage),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.NativeMessaging.MessageSize.NativeApp", strlen(kTestMessage),
+      1);
 }
 
 }  // namespace extensions

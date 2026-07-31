@@ -108,6 +108,11 @@ chromium-metrics-reviews@google.com.
                kCommandLine and kUnpacked)"/>
 </variants>
 
+<variants name="NativeMessagingSource">
+  <variant name=".Extension" summary="the extension to the native app"/>
+  <variant name=".NativeApp" summary="the native app to the extension"/>
+</variants>
+
 <!--
 This is emitted for two scenarios when a worker may be unregistered:
 
@@ -3716,6 +3721,18 @@ This is emitted for two scenarios when a worker may be unregistered:
     disable MV2 extensions. Only emitted for non-component MV2 extensions.
   </summary>
   <token key="ManifestLocation" variants="ManifestLocationGroup"/>
+</histogram>
+
+<histogram name="Extensions.NativeMessaging.MessageSize{NativeMessagingSource}"
+    units="bytes" expires_after="2027-01-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The size of the message in bytes sent from {NativeMessagingSource} for
+    native messaging. Recorded only for native hosts launched via host manifest
+    files on desktop platforms.
+  </summary>
+  <token key="NativeMessagingSource" variants="NativeMessagingSource"/>
 </histogram>
 
 <histogram name="Extensions.Navigation.Scheme" enum="ExtensionNavigationScheme"
