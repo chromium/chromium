@@ -829,8 +829,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
-    this.styleUpdater_.setLineFocusStyle(
-        this.lineFocusController_.getCurrentLineFocusType());
+    if (this.computeHasContent()) {
+      this.styleUpdater_.setLineFocusStyle(
+          this.lineFocusController_.getCurrentLineFocusType());
+      return;
+    }
+    this.styleUpdater_.setLineFocusStyle(LineFocusType.NONE);
   }
 
   private onTextLocationsChange_() {
