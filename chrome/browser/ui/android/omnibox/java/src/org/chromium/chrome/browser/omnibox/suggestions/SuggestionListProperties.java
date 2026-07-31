@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -91,6 +92,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     WritableObjectPropertyKey<Void> RESET_SELECTION =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
+    /** The resource provider for omnibox suggestions. */
+    WritableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
+            new WritableObjectPropertyKey<>();
+
     WritableBooleanPropertyKey ROUND_TOP_CORNERS = new WritableBooleanPropertyKey();
 
     /** The list of models controlling the state of the suggestion items. */
@@ -125,6 +130,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 NAVIGATION_LISTENER,
                 OMNIBOX_SESSION_ACTIVE,
                 RESET_SELECTION,
+                RESOURCE_PROVIDER,
                 ROUND_TOP_CORNERS,
                 SUGGESTION_MODELS,
                 TOOLBAR_POSITION,

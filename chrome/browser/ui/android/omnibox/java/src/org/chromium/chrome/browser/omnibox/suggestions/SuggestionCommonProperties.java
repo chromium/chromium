@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -93,6 +94,10 @@ public @interface SuggestionCommonProperties {
     /** The total number of visible suggestions in the group. */
     WritableIntPropertyKey TOTAL_IN_GROUP = new WritableIntPropertyKey();
 
+    /** The provider for omnibox resources. */
+    WritableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
+            new WritableObjectPropertyKey<>();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 APPLY_SIDE_SPACING,
@@ -106,6 +111,7 @@ public @interface SuggestionCommonProperties {
                 SHOW_GROUP_SEPARATOR,
                 HEADER_TITLE,
                 INDEX_IN_GROUP,
-                TOTAL_IN_GROUP
+                TOTAL_IN_GROUP,
+                RESOURCE_PROVIDER
             };
 }
