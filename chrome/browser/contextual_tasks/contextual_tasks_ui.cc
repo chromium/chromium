@@ -1240,6 +1240,16 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
     return;
   }
 
+  // If not eligible for suggested tab context, clear any active suggestion and
+  // exit early.
+  if (!CanUpdateSuggestedTabContext(tab, last_committed_url)) {
+    auto_suggestion_manager_->SetCurrentSuggestion(nullptr);
+    if (composebox_handler_) {
+      composebox_handler_->UpdateSuggestedTabContext(nullptr);
+    }
+    return;
+  }
+
   // If last_committed_url is already in the context, clear the suggested tab
   // context.
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>

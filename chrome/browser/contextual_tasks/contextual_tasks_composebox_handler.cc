@@ -613,8 +613,7 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
         }
       }
       if (!submitted_tabs.empty()) {
-        SearchboxHandler::page_->SetAimThreadRestoredTabs(
-            std::move(submitted_tabs));
+        SetAimThreadRestoredTabs(std::move(submitted_tabs));
       }
     }
   }
@@ -645,6 +644,12 @@ bool ContextualTasksComposeboxHandler::IsContextualSearchTabSharingEligible()
 
 void ContextualTasksComposeboxHandler::SetAimThreadRestoredTabs(
     std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+  if (!IsContextualSearchTabSharingEligible()) {
+    if (SearchboxHandler::page_) {
+      SearchboxHandler::page_->SetAimThreadRestoredTabs({});
+    }
+    return;
+  }
   if (SearchboxHandler::page_) {
     SearchboxHandler::page_->SetAimThreadRestoredTabs(std::move(tabs));
   }
@@ -1163,6 +1168,22 @@ void ContextualTasksComposeboxHandler::MaybeTriggerLens() {
 
 void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     const contextual_tasks::SuggestedTabInfo* suggested_tab) {
+  std::optional<std::string> invocation_source;
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->invocation_source().has_value()) {
+      invocation_source = lens::InvocationSourceToString(
+          controller->invocation_source().value());
+    }
+  }
+#endif
+
+  if (!IsContextualSearchTabSharingEligible()) {
+    SearchboxHandler::page_->UpdateAutoSuggestedTabContext(nullptr,
+                                                           invocation_source);
+    return;
+  }
+
   // Always use the passed info as the result of the manager's filtering.
   searchbox::mojom::TabInfoPtr filtered_suggestion;
   const bool is_tab_suggestion_enabled =
@@ -1176,16 +1197,6 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
     filtered_suggestion->url = suggested_tab->url;
     filtered_suggestion->last_active = suggested_tab->last_active;
   }
-
-  std::optional<std::string> invocation_source;
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller = GetLensSearchController()) {
-    if (controller->invocation_source().has_value()) {
-      invocation_source = lens::InvocationSourceToString(
-          controller->invocation_source().value());
-    }
-  }
-#endif
 
   SearchboxHandler::page_->UpdateAutoSuggestedTabContext(
       std::move(filtered_suggestion), invocation_source);

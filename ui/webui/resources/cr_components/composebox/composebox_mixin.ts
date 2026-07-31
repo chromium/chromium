@@ -751,13 +751,15 @@ export const ComposeboxEmbedderMixin =
               this.deleteFile(uuid);
             }
           });
+
+          if (this.tabSuggestionsState === TabSuggestionsState.LOADED) {
+            this.refreshTabSuggestions(/*forceRefresh=*/ true);
+          }
         }
 
         setAimThreadRestoredTabs(tabs: TabInfo[]) {
           this.aimThreadRestoredTabs = tabs;
-          if (tabs.length > 0) {
-            this.refreshTabSuggestions(/*forceRefresh=*/ true);
-          }
+          this.refreshTabSuggestions(/*forceRefresh=*/ true);
           this.requestUpdate();
         }
 
