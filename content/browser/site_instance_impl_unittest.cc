@@ -2704,4 +2704,77 @@ TEST_F(SiteInstanceTest, MimeHandlerRequiresDedicatedProcess) {
   SetBrowserClientForTesting(regular_client);
 }
 
+// Verify that a SiteInfo with a privileged EmbedderIsolationInfo requires a
+// dedicated process, even on platforms where not all sites get dedicated
+// processes.
+TEST_F(SiteInstanceTest, PrivilegedRequiresDedicatedProcess) {
+  // Disable the global "every site is dedicated" path so that
+  // `RequiresDedicatedProcess()` has to consult the EmbedderIsolationInfo
+  // branch in `RequiresDedicatedProcessInternal()`. See
+  // MimeHandlerRequiresDedicatedProcess for why both switches are needed.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSiteIsolation);
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kSitePerProcess);
+
+  NoStrictSiteIsolationContentBrowserClient custom_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&custom_client);
+
+  ASSERT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+
+  const GURL url("https://example.com/");
+
+  SiteInfo privileged_site_info =
+      SiteInfo::Create(IsolationContext(context()),
+                       UrlInfo(UrlInfoInit(url).WithEmbedderIsolationInfo(
+                           EmbedderIsolationInfo::CreateForPrivileged(42))));
+
+  EXPECT_TRUE(privileged_site_info.RequiresDedicatedProcess(
+      IsolationContext(context())));
+  EXPECT_TRUE(privileged_site_info.embedder_isolation_info().is_privileged());
+  EXPECT_EQ(42, privileged_site_info.embedder_isolation_info()
+                    .privileged_feature_id()
+                    .value());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
+// Verify that the privileged feature id differentiates security principals:
+// the same URL with different feature ids must produce different principals,
+// the same feature id must produce the same principal, and a privileged
+// SiteInfo must differ from an ordinary (non-privileged) SiteInfo for the same
+// URL.
+TEST_F(SiteInstanceTest, PrivilegedFeatureIdDifferentiatesPrincipals) {
+  const GURL url("https://example.com/");
+
+  SiteInfo feature_42 =
+      SiteInfo::Create(IsolationContext(context()),
+                       UrlInfo(UrlInfoInit(url).WithEmbedderIsolationInfo(
+                           EmbedderIsolationInfo::CreateForPrivileged(42))));
+  SiteInfo feature_43 =
+      SiteInfo::Create(IsolationContext(context()),
+                       UrlInfo(UrlInfoInit(url).WithEmbedderIsolationInfo(
+                           EmbedderIsolationInfo::CreateForPrivileged(43))));
+
+  // Different feature ids must produce different principals.
+  EXPECT_FALSE(feature_42.IsSamePrincipalWith(feature_43));
+  EXPECT_NE(feature_42, feature_43);
+
+  // The same feature id must produce the same principal.
+  SiteInfo feature_42_dup =
+      SiteInfo::Create(IsolationContext(context()),
+                       UrlInfo(UrlInfoInit(url).WithEmbedderIsolationInfo(
+                           EmbedderIsolationInfo::CreateForPrivileged(42))));
+  EXPECT_TRUE(feature_42.IsSamePrincipalWith(feature_42_dup));
+  EXPECT_EQ(feature_42, feature_42_dup);
+
+  // Privileged vs ordinary content for the same URL must differ.
+  SiteInfo ordinary =
+      SiteInfo::Create(IsolationContext(context()), UrlInfo(UrlInfoInit(url)));
+  EXPECT_FALSE(feature_42.IsSamePrincipalWith(ordinary));
+  EXPECT_NE(feature_42, ordinary);
+}
+
 }  // namespace content

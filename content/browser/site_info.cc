@@ -1325,6 +1325,12 @@ bool SiteInfo::RequiresDedicatedProcessInternal(
     return true;
   }
 
+  // Isolate privileged-feature content (see //chrome's PrivilegedWebContents)
+  // so it never shares a process with ordinary content of the same site.
+  if (embedder_isolation_info.is_privileged()) {
+    return true;
+  }
+
   // Isolate WebUI pages from one another and from other kinds of schemes.
   for (const auto& webui_scheme : URLDataManagerBackend::GetWebUISchemes()) {
     if (site_url.SchemeIs(webui_scheme)) {

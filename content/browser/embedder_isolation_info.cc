@@ -28,6 +28,13 @@ EmbedderIsolationInfo EmbedderIsolationInfo::CreateForUniqueInstance(
   return EmbedderIsolationInfo(Mode::kUniqueInstance, instance_id);
 }
 
+// static
+EmbedderIsolationInfo EmbedderIsolationInfo::CreateForPrivileged(
+    int64_t feature_id) {
+  CHECK_GE(feature_id, 0);
+  return EmbedderIsolationInfo(Mode::kPrivileged, feature_id);
+}
+
 EmbedderIsolationInfo::EmbedderIsolationInfo() = default;
 EmbedderIsolationInfo::EmbedderIsolationInfo(const EmbedderIsolationInfo&) =
     default;
@@ -46,6 +53,9 @@ std::string EmbedderIsolationInfo::ToDebugString() const {
       return "pdf";
     case Mode::kUniqueInstance:
       return base::StringPrintf("unique_instance(id=%" PRId64 ")",
+                                instance_id_);
+    case Mode::kPrivileged:
+      return base::StringPrintf("privileged(feature_id=%" PRId64 ")",
                                 instance_id_);
   }
 }
