@@ -42,7 +42,7 @@ WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
-    base::PassKey<ort::DispatchContextImplOrt> pass_key)
+    base::PassKey<ort::GraphImplOrt> pass_key)
     : input_names_to_descriptors(std::move(input_names_to_descriptors)),
       output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
 

@@ -90,8 +90,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) API_AVAILABLE(macos(14.4))
           constant_operands,
       CompileCallback callback);
 
-  void DidCompile(WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-                  BuildGraphCallback callback,
+  void DidCompile(BuildGraphCallback callback,
                   base::expected<std::unique_ptr<CompilationResult>,
                                  mojom::ErrorPtr> result);
 

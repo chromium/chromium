@@ -57,7 +57,6 @@ class GraphImplOrt final : public WebNNGraphImpl {
   static base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>
   CreateSessionFromCompiledGraph(
       WebNNContextImpl& context,
-      ComputeResourceInfo compute_resource_info,
       scoped_refptr<SessionOptions> session_options,
       scoped_refptr<Environment> env,
       mojo_base::BigBuffer compiled_model_data,

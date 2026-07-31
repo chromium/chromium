@@ -4,9 +4,11 @@
 
 #include "services/webnn/ort/graph_impl_ort.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
@@ -17,10 +19,12 @@
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/external_weights_manager.h"
 #include "services/webnn/ort/model_editor.h"
+#include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
@@ -30,6 +34,130 @@
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
+
+namespace {
+
+// Builds operand descriptors by querying the session's actual I/O metadata.
+// Returns nullopt if the session metadata is invalid or doesn't match the
+// expected binding names.
+std::optional<base::flat_map<std::string, OperandDescriptor>>
+BuildDescriptorsFromSession(
+    const OrtSession* session,
+    const base::flat_map<std::string, std::string>& operand_name_to_onnx_name,
+    const ContextProperties& context_properties,
+    bool is_input) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  size_t operand_count = 0;
+  if (is_input ? ORT_CALL_FAILED(
+                     ort_api->SessionGetInputCount(session, &operand_count))
+               : ORT_CALL_FAILED(
+                     ort_api->SessionGetOutputCount(session, &operand_count))) {
+    return std::nullopt;
+  }
+  if (operand_count != operand_name_to_onnx_name.size()) {
+    return std::nullopt;
+  }
+
+  // Build a reverse map: onnx_name -> operand_name.
+  std::vector<std::pair<std::string, std::string>> reverse_pairs;
+  reverse_pairs.reserve(operand_name_to_onnx_name.size());
+  for (const auto& [operand_name, onnx_name] : operand_name_to_onnx_name) {
+    reverse_pairs.emplace_back(onnx_name, operand_name);
+  }
+  base::flat_map<std::string, std::string> onnx_name_to_operand_name(
+      std::move(reverse_pairs));
+  if (onnx_name_to_operand_name.size() != operand_name_to_onnx_name.size()) {
+    // In case there are duplicate ONNX names.
+    return std::nullopt;
+  }
+
+  OrtAllocator* allocator = nullptr;
+  CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
+  CHECK(allocator);
+
+  std::vector<std::pair<std::string, OperandDescriptor>> descriptor_pairs;
+  descriptor_pairs.reserve(operand_count);
+
+  for (size_t i = 0; i < operand_count; ++i) {
+    char* onnx_name = nullptr;
+    base::ScopedClosureRunner free_onnx_name(base::BindOnce(
+        [](OrtAllocator* a, char** p) {
+          if (*p) {
+            a->Free(a, *p);
+          }
+        },
+        allocator, &onnx_name));
+    if (is_input ? ORT_CALL_FAILED(ort_api->SessionGetInputName(
+                       session, i, allocator, &onnx_name))
+                 : ORT_CALL_FAILED(ort_api->SessionGetOutputName(
+                       session, i, allocator, &onnx_name))) {
+      return std::nullopt;
+    }
+    auto name_it = onnx_name_to_operand_name.find(onnx_name);
+    if (name_it == onnx_name_to_operand_name.end()) {
+      return std::nullopt;
+    }
+    const auto& operand_name = name_it->second;
+
+    // Get tensor info from the session.
+    ScopedOrtTypeInfo type_info;
+    if (is_input
+            ? ORT_CALL_FAILED(ort_api->SessionGetInputTypeInfo(
+                  session, i, ScopedOrtTypeInfo::Receiver(type_info).get()))
+            : ORT_CALL_FAILED(ort_api->SessionGetOutputTypeInfo(
+                  session, i, ScopedOrtTypeInfo::Receiver(type_info).get()))) {
+      return std::nullopt;
+    }
+    const OrtTensorTypeAndShapeInfo* tensor_info = nullptr;
+    if (ORT_CALL_FAILED(
+            ort_api->CastTypeInfoToTensorInfo(type_info.get(), &tensor_info))) {
+      return std::nullopt;
+    }
+    if (!tensor_info) {
+      return std::nullopt;
+    }
+
+    // Get operand data type.
+    ONNXTensorElementDataType onnx_type =
+        ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
+    if (ORT_CALL_FAILED(
+            ort_api->GetTensorElementType(tensor_info, &onnx_type))) {
+      return std::nullopt;
+    }
+    std::optional<OperandDataType> data_type = OnnxToWebnnDataType(onnx_type);
+    if (!data_type.has_value()) {
+      return std::nullopt;
+    }
+
+    // Get operand shape.
+    size_t dim_count = 0;
+    if (ORT_CALL_FAILED(ort_api->GetDimensionsCount(tensor_info, &dim_count))) {
+      return std::nullopt;
+    }
+    std::vector<int64_t> onnx_dims(dim_count);
+    if (dim_count > 0 && ORT_CALL_FAILED(ort_api->GetDimensions(
+                             tensor_info, onnx_dims.data(), dim_count))) {
+      return std::nullopt;
+    }
+    std::optional<std::vector<uint32_t>> shape = OnnxToWebnnShape(onnx_dims);
+    if (!shape.has_value()) {
+      return std::nullopt;
+    }
+
+    auto descriptor = OperandDescriptor::Create(context_properties, *data_type,
+                                                *shape, operand_name);
+    if (!descriptor.has_value()) {
+      return std::nullopt;
+    }
+    descriptor_pairs.emplace_back(operand_name, std::move(descriptor.value()));
+  }
+
+  return base::flat_map<std::string, OperandDescriptor>(
+      std::move(descriptor_pairs));
+}
+
+}  // namespace
 
 // Represents the collection of resources associated with a particular graph.
 // These resources may outlive their associated `GraphImplOrt` instance while
@@ -208,7 +336,6 @@ void GraphImplOrt::DidCreateAndBuild(
 base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>
 GraphImplOrt::CreateSessionFromCompiledGraph(
     WebNNContextImpl& context,
-    ComputeResourceInfo compute_resource_info,
     scoped_refptr<SessionOptions> session_options,
     scoped_refptr<Environment> env,
     mojo_base::BigBuffer compiled_model_data,
@@ -225,6 +352,23 @@ GraphImplOrt::CreateSessionFromCompiledGraph(
         mojom::Error::New(mojom::Error::Code::kUnknownError,
                           "Failed to create session from compiled model."));
   }
+
+  // Build operand descriptors from the session's I/O metadata.
+  auto input_descriptors = BuildDescriptorsFromSession(
+      session.get(), operand_input_name_to_onnx_input_name,
+      context.properties(), /*is_input=*/true);
+  auto output_descriptors = BuildDescriptorsFromSession(
+      session.get(), operand_output_name_to_onnx_output_name,
+      context.properties(), /*is_input=*/false);
+  if (!input_descriptors.has_value() || !output_descriptors.has_value()) {
+    LOG(ERROR) << "Failed to build operand descriptors from session metadata.";
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to build graph."));
+  }
+
+  ComputeResourceInfo compute_resource_info(std::move(*input_descriptors),
+                                            std::move(*output_descriptors),
+                                            base::PassKey<GraphImplOrt>());
 
   auto compute_resources = base::WrapUnique(new GraphImplOrt::ComputeResources(
       std::move(env), std::move(session),

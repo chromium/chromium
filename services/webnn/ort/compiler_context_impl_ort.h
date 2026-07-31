@@ -77,8 +77,7 @@ class CompilerContextImplOrt final : public GraphBuilderContext,
           constant_operands);
 
   // Called on the main thread after compilation completes.
-  void DidCompile(WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-                  BuildGraphCallback callback,
+  void DidCompile(BuildGraphCallback callback,
                   base::expected<std::unique_ptr<CompilationResult>,
                                  mojom::ErrorPtr> result);
 

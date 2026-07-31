@@ -27,7 +27,7 @@ class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 
 namespace ort {
-class DispatchContextImplOrt;
+class GraphImplOrt;
 }  // namespace ort
 
 // GPU process implementation of the `MLGraph` interface. While this class is
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
                             input_names_to_descriptors,
                         base::flat_map<std::string, OperandDescriptor>
                             output_names_to_descriptors,
-                        base::PassKey<ort::DispatchContextImplOrt> pass_key);
+                        base::PassKey<ort::GraphImplOrt> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;

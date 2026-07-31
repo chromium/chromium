@@ -4,7 +4,6 @@
 
 #include "services/webnn/ort/dispatch_context_impl_ort.h"
 
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "services/webnn/error.h"
 #include "services/webnn/gpu_task_scheduler.h"
@@ -153,47 +152,11 @@ void DispatchContextImplOrt::RequestCompilerContext(
 void DispatchContextImplOrt::LoadCompiledGraph(
     mojom::CompiledGraphPtr compiled_graph,
     LoadCompiledGraphCallback callback) {
-  // Split CompiledOperandDescriptor maps into separate binding name maps
-  // and descriptor maps for ComputeResourceInfo and session creation.
-
-  // Inputs
-  std::vector<std::pair<std::string, OperandDescriptor>> input_desc_pairs;
-  std::vector<std::pair<std::string, std::string>> input_name_pairs;
-  input_desc_pairs.reserve(compiled_graph->inputs.size());
-  input_name_pairs.reserve(compiled_graph->inputs.size());
-  for (auto& [name, desc] : compiled_graph->inputs) {
-    input_name_pairs.emplace_back(name, std::move(desc->binding_name));
-    input_desc_pairs.emplace_back(name, std::move(desc->descriptor));
-  }
-  base::flat_map<std::string, OperandDescriptor> input_descriptors(
-      std::move(input_desc_pairs));
-  base::flat_map<std::string, std::string> input_binding_names(
-      std::move(input_name_pairs));
-
-  // Outputs
-  std::vector<std::pair<std::string, OperandDescriptor>> output_desc_pairs;
-  std::vector<std::pair<std::string, std::string>> output_name_pairs;
-  output_desc_pairs.reserve(compiled_graph->outputs.size());
-  output_name_pairs.reserve(compiled_graph->outputs.size());
-  for (auto& [name, desc] : compiled_graph->outputs) {
-    output_name_pairs.emplace_back(name, std::move(desc->binding_name));
-    output_desc_pairs.emplace_back(name, std::move(desc->descriptor));
-  }
-  base::flat_map<std::string, OperandDescriptor> output_descriptors(
-      std::move(output_desc_pairs));
-  base::flat_map<std::string, std::string> output_binding_names(
-      std::move(output_name_pairs));
-
-  // Build ComputeResourceInfo from the I/O descriptors sent by Compiler.
-  WebNNGraphImpl::ComputeResourceInfo compute_resource_info(
-      std::move(input_descriptors), std::move(output_descriptors),
-      base::PassKey<DispatchContextImplOrt>());
-
   auto result = GraphImplOrt::CreateSessionFromCompiledGraph(
-      *this, std::move(compute_resource_info), session_options(), env(),
+      *this, session_options(), env(),
       std::move(compiled_graph->compiled_model_data),
-      std::move(input_binding_names), std::move(output_binding_names));
-
+      std::move(compiled_graph->input_binding_names),
+      std::move(compiled_graph->output_binding_names));
   if (!result.has_value()) {
     std::move(callback).Run(base::unexpected(std::move(result.error())));
     return;

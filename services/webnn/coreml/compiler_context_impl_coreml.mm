@@ -61,13 +61,13 @@ const mojom::CreateContextOptions& CompilerContextImplCoreml::options() const {
 
 void CompilerContextImplCoreml::BuildGraph(
     mojom::GraphInfoPtr graph_info,
-    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    WebNNGraphImpl::ComputeResourceInfo /*compute_resource_info*/,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     BuildGraphCallback callback) {
-  auto did_compile_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      &CompilerContextImplCoreml::DidCompile, weak_ptr_factory_.GetWeakPtr(),
-      std::move(compute_resource_info), std::move(callback)));
+  auto did_compile_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&CompilerContextImplCoreml::DidCompile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -181,7 +181,6 @@ void CompilerContextImplCoreml::CompileOnBackgroundThread(
 }
 
 void CompilerContextImplCoreml::DidCompile(
-    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     BuildGraphCallback callback,
     base::expected<std::unique_ptr<CompilationResult>, mojom::ErrorPtr>
         result) {
@@ -192,27 +191,10 @@ void CompilerContextImplCoreml::DidCompile(
 
   std::unique_ptr<CompilationResult> compilation = std::move(result.value());
 
-  base::flat_map<std::string, mojom::CompiledOperandDescriptorPtr> inputs;
-  for (auto& [name, descriptor] :
-       compute_resource_info.input_names_to_descriptors) {
-    inputs.emplace(name,
-                   mojom::CompiledOperandDescriptor::New(
-                       std::move(compilation->input_name_to_coreml_name[name]),
-                       std::move(descriptor)));
-  }
-
-  base::flat_map<std::string, mojom::CompiledOperandDescriptorPtr> outputs;
-  for (auto& [name, descriptor] :
-       compute_resource_info.output_names_to_descriptors) {
-    outputs.emplace(
-        name, mojom::CompiledOperandDescriptor::New(
-                  std::move(compilation->output_name_to_coreml_name[name]),
-                  std::move(descriptor)));
-  }
-
-  auto compiled_graph =
-      mojom::CompiledGraph::New(compilation->compiled_model_dir.GetPath(),
-                                std::move(inputs), std::move(outputs));
+  auto compiled_graph = mojom::CompiledGraph::New(
+      compilation->compiled_model_dir.GetPath(),
+      std::move(compilation->input_name_to_coreml_name),
+      std::move(compilation->output_name_to_coreml_name));
 
   model_loader_->LoadCompiledGraph(
       std::move(compiled_graph),

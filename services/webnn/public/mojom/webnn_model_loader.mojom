@@ -8,17 +8,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "services/webnn/public/mojom/webnn_device.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
-import "services/webnn/public/mojom/webnn_graph.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
-
-// Combines the binding name and descriptor for a compiled graph operand.
-struct CompiledOperandDescriptor {
-  // The name used to bind this operand during inference (e.g., ONNX graph
-  // input/output name for ORT backend).
-  string binding_name;
-  // The operand descriptor for dispatch validation in GPU process.
-  OperandDescriptor descriptor;
-};
 
 // Compiled model bytes and operand metadata produced by the Compiler process.
 // Sent to the GPU process to load the model and validate dispatch calls.
@@ -32,9 +22,10 @@ struct CompiledGraph {
   [EnableIf=is_apple]
   mojo_base.mojom.FilePath compiled_model_path;
 
-  // Maps from WebNN operand name to binding name and descriptor.
-  map<string, CompiledOperandDescriptor> inputs;
-  map<string, CompiledOperandDescriptor> outputs;
+  // Maps from WebNN operand name to binding name (e.g., ONNX graph input/output
+  // name for ORT backend).
+  map<string, string> input_binding_names;
+  map<string, string> output_binding_names;
 };
 
 // Graph handle and execution devices assigned by the GPU process after
