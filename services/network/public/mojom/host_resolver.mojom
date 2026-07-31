@@ -43,6 +43,14 @@ enum SecureDnsMode {
   SECURE,
 };
 
+// This enum corresponds to net::InsecureDnsMode.
+enum InsecureDnsMode {
+  DISABLED,
+  ENABLED_BUILT_IN,
+  ENABLED_PLATFORM,
+  ENABLED_PLATFORM_NO_SYSTEM,
+};
+
 // This enum corresponds to net::SecureDnsPolicy
 enum SecureDnsPolicy {
   ALLOW,

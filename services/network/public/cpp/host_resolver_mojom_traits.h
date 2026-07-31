@@ -25,6 +25,7 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -154,6 +155,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
   static network::mojom::SecureDnsMode ToMojom(
       net::SecureDnsMode secure_dns_mode);
   static net::SecureDnsMode FromMojom(network::mojom::SecureDnsMode in);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_HOST_RESOLVER)
+    EnumTraits<network::mojom::InsecureDnsMode, net::InsecureDnsMode> {
+  static network::mojom::InsecureDnsMode ToMojom(
+      net::InsecureDnsMode insecure_dns_mode);
+  static net::InsecureDnsMode FromMojom(network::mojom::InsecureDnsMode in);
 };
 
 template <>

@@ -247,9 +247,9 @@ interface NetworkService {
   // In SECURE mode, only DoH lookups will be performed. In AUTOMATIC mode,
   // DoH lookups to available servers will be performed first, and insecure
   // lookups will be used as a fallback. In OFF mode, only insecure lookups will
-  // be performed. When insecure lookups are performed, they will be sent by
-  // the async resolver first if `insecure_dns_client_enabled` is true and
-  // then by the system resolver as a fallback.
+  // be performed.
+  //
+  // `insecure_dns_mode` defines if and how insecure lookups are performed.
   //
   // DNS over HTTPS will use the primary NetworkContext, so can only be enabled
   // after the primary network context has been created. Other than that
@@ -269,17 +269,12 @@ interface NetworkService {
   // DoH is preferred to falling back to insecure DNS. If these nameservers are
   // successfully upgraded to DoH, they are used in the order defined by
   // `net::ResolveContext::GetDohIterator`.
-  //
-  // `insecure_dns_via_platform_apis_enabled` controls whether the DNS_PLATFORM
-  // task type is used instead of the DNS task type. See
-  // HostResolver::ManagerOptions::insecure_dns_via_platform_apis_enabled.
-  ConfigureStubHostResolver(bool insecure_dns_client_enabled,
+  ConfigureStubHostResolver(InsecureDnsMode insecure_dns_mode,
                             bool happy_eyeballs_v3_enabled,
                             SecureDnsMode secure_dns_mode,
                             DnsOverHttpsConfig dns_over_https_config,
                             bool additional_dns_types_enabled,
-                            array<IPEndPoint> fallback_doh_nameservers,
-                            bool insecure_dns_via_platform_apis_enabled);
+                            array<IPEndPoint> fallback_doh_nameservers);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
   // and all new ones that are created. Once called, QUIC cannot be re-enabled.

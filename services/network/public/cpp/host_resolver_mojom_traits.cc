@@ -9,6 +9,7 @@
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -337,6 +338,39 @@ EnumTraits<network::mojom::SecureDnsMode, net::SecureDnsMode>::FromMojom(
       return net::SecureDnsMode::kAutomatic;
     case network::mojom::SecureDnsMode::SECURE:
       return net::SecureDnsMode::kSecure;
+  }
+  NOTREACHED();
+}
+
+// static
+network::mojom::InsecureDnsMode
+EnumTraits<network::mojom::InsecureDnsMode, net::InsecureDnsMode>::ToMojom(
+    net::InsecureDnsMode insecure_dns_mode) {
+  switch (insecure_dns_mode) {
+    case net::InsecureDnsMode::kDisabled:
+      return network::mojom::InsecureDnsMode::DISABLED;
+    case net::InsecureDnsMode::kEnabledBuiltIn:
+      return network::mojom::InsecureDnsMode::ENABLED_BUILT_IN;
+    case net::InsecureDnsMode::kEnabledPlatform:
+      return network::mojom::InsecureDnsMode::ENABLED_PLATFORM;
+    case net::InsecureDnsMode::kEnabledPlatformNoSystem:
+      return network::mojom::InsecureDnsMode::ENABLED_PLATFORM_NO_SYSTEM;
+  }
+}
+
+// static
+net::InsecureDnsMode
+EnumTraits<network::mojom::InsecureDnsMode, net::InsecureDnsMode>::FromMojom(
+    network::mojom::InsecureDnsMode in) {
+  switch (in) {
+    case network::mojom::InsecureDnsMode::DISABLED:
+      return net::InsecureDnsMode::kDisabled;
+    case network::mojom::InsecureDnsMode::ENABLED_BUILT_IN:
+      return net::InsecureDnsMode::kEnabledBuiltIn;
+    case network::mojom::InsecureDnsMode::ENABLED_PLATFORM:
+      return net::InsecureDnsMode::kEnabledPlatform;
+    case network::mojom::InsecureDnsMode::ENABLED_PLATFORM_NO_SYSTEM:
+      return net::InsecureDnsMode::kEnabledPlatformNoSystem;
   }
   NOTREACHED();
 }

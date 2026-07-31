@@ -1812,6 +1812,10 @@ mojom("mojom_host_resolver") {
           mojom = "network.mojom.SecureDnsMode"
           cpp = "::net::SecureDnsMode"
         },
+        {
+          mojom = "network.mojom.InsecureDnsMode"
+          cpp = "::net::InsecureDnsMode"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/host_resolver_mojom_traits.h" ]
