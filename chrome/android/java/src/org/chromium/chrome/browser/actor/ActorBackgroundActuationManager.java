@@ -36,6 +36,8 @@ public class ActorBackgroundActuationManager {
      * Represents a background session (either provisioned or transitioned). It owns the offscreen
      * {@link Tab} and manages its lifecycle.
      */
+    // TODO(crbug.com/540473733): Deprecate BackgroundSession in favor of
+    // org.chromium.chrome.browser.actor.BackgroundSession.
     public static class BackgroundSession {
         private final Tab mTab;
         private final int mTaskId;
