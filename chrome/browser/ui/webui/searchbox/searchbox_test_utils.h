@@ -74,6 +74,12 @@ class MockSearchboxPage : public searchbox::mojom::Page {
                searchbox::mojom::SelectionStep));
   MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible));
+  MOCK_METHOD(void,
+              SetAimButtonConfig,
+              (const std::string&,
+               const std::string&,
+               const std::string&,
+               const GURL&));
   MOCK_METHOD(void, SetInputText, (const std::string& input_text));
   MOCK_METHOD(void,
               SetThumbnail,

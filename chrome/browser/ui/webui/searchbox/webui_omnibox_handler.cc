@@ -14,6 +14,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -63,11 +64,13 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
@@ -124,11 +127,22 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(Profile::FromWebUI(web_ui));
   if (aim_eligibility_service) {
+    // `base::Unretained(this)` is safe here (and below) because `this` owns
+    // the subscriptions and will automatically unsubscribe them when the
+    // destructor for this class is invoked (thereby preventing any access to
+    // freed memory).
     aim_eligibility_subscription_ =
         aim_eligibility_service->RegisterEligibilityChangedCallback(
             base::BindRepeating(
                 &WebuiOmniboxHandler::OnAimPopupEligibilityChanged,
                 base::Unretained(this)));
+  }
+  if (auto* ai_mode_button_service =
+          AiModeButtonServiceFactory::GetForProfile(profile_)) {
+    ai_mode_config_subscription_ =
+        ai_mode_button_service->RegisterOnConfigChanged(base::BindRepeating(
+            &WebuiOmniboxHandler::OnAiModeButtonConfigChanged,
+            base::Unretained(this)));
   }
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -527,6 +541,30 @@ void WebuiOmniboxHandler::OnAimPopupEligibilityChanged() {
   page_->UpdateAimPopupEligibility(
       omnibox::IsAimPopupEnabled(profile_) &&
       profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+}
+
+void WebuiOmniboxHandler::OnAiModeButtonConfigChanged(
+    const AiModeButtonUiConfig* config) {
+  if (!config) {
+    return;
+  }
+  GURL compose_icon(
+      "chrome://resources/cr_components/searchbox/icons/search_spark.svg");
+  std::string favicon_url(config->favicon_url);
+  if (config->id != SearchEngineType::SEARCH_ENGINE_GOOGLE &&
+      !favicon_url.empty()) {
+    GURL chrome_favicon_url("chrome://favicon2/");
+    chrome_favicon_url =
+        net::AppendQueryParameter(chrome_favicon_url, "iconUrl", favicon_url);
+    chrome_favicon_url =
+        net::AppendQueryParameter(chrome_favicon_url, "size", "32");
+    chrome_favicon_url =
+        net::AppendQueryParameter(chrome_favicon_url, "scaleFactor", "2x");
+    compose_icon = chrome_favicon_url;
+  }
+  page_->SetAimButtonConfig(
+      base::UTF16ToUTF8(config->text), base::UTF16ToUTF8(config->tooltip),
+      base::UTF16ToUTF8(config->a11y_label), compose_icon);
 }
 
 void WebuiOmniboxHandler::OnNavigationFinished(

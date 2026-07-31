@@ -25,6 +25,8 @@
 class MetricsReporter;
 class OmniboxController;
 
+struct AiModeButtonUiConfig;
+
 namespace content {
 class WebUI;
 }  // namespace content
@@ -124,6 +126,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   void OnContentSharingPolicyChanged();
   void OnAimPopupEligibilityChanged();
+  void OnAiModeButtonConfigChanged(const AiModeButtonUiConfig* config);
   void OnNavigationFinished(content::NavigationHandle* navigation_handle);
 
   WebContentsObserver web_contents_observer_;
@@ -134,6 +137,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription aim_eligibility_subscription_;
+  base::CallbackListSubscription ai_mode_config_subscription_;
   base::CallbackListSubscription tab_will_detach_subscription_;
   base::CallbackListSubscription tab_did_insert_subscription_;
 

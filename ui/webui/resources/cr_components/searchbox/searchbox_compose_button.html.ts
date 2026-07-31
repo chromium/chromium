@@ -38,12 +38,19 @@ export function getHtml(this: SearchboxComposeButtonElement) {
       class="compose-container"
       part="compose-button"
       exportparts="hoverBackground"
-      title="${this.i18n('searchboxComposeButtonTitle')}">
+      aria-label="${this.a11yLabel}"
+      title="${this.tooltipTitle}">
+    ${this.hasFavicon_() ? html`
+    <img slot="prefix-icon" class="compose-icon compose-icon-favicon"
+         part="compose-icon compose-icon-favicon"
+        src="${this.composeIcon}">
+    ` : html`
     <div slot="prefix-icon" class="compose-icon" part="compose-icon"
-        style="-webkit-mask-image: url(${this.composeIcon_});
-               mask-image: url(${this.composeIcon_});">
+        style="-webkit-mask-image: url(${this.composeIcon});
+               mask-image: url(${this.composeIcon});">
     </div>
-    <span id="label" part="label">${this.i18n('searchboxComposeButtonText')}</span>
+    `}
+    <span id="label" part="label">${this.labelText}</span>
     <div id="arrowIcon" slot="suffix-icon" class="arrow-icon" part="arrow-icon"
         style="-webkit-mask-image: url(${this.arrowIcon_});
                mask-image: url(${this.arrowIcon_});">

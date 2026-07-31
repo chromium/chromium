@@ -399,6 +399,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       {"dismissButton", IDS_NTP_DISMISS},
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},
       {"searchboxComposeButtonTitle", IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL},
+      {"searchboxComposeButtonA11yLabel",
+       IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL},
       {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
       {"composeboxCancelButtonTitleInput",
        IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT},

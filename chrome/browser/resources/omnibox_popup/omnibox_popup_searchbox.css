@@ -280,12 +280,20 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 #composeButton::part(compose-icon) {
   height: 15px;
-  inset-inline-start: 6px;
   max-width: 15px;
+}
+
+#composeButton[dynamic]::part(compose-icon) {
+  inset-inline-start: 6px;
 }
 
 #composeButton[dynamic][has-user-input]::part(compose-icon) {
   max-width: 0;
+}
+
+#composeButton::part(compose-icon-favicon) {
+  height: 16px;
+  max-width: 16px;
 }
 
 #composeButton::part(label) {
