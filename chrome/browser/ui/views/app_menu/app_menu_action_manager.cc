@@ -10,10 +10,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_proxy_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -85,9 +85,9 @@ void AppMenuActionManager::PopulateSubtree(
   // - Entries without an action_id become section headings.
   // - Entries with an action_id become proxy action items.
   for (const auto& child : entry.children) {
-    std::unique_ptr<actions::ActionItem> child_item;
+    std::unique_ptr<actions::BaseAction> child_item;
     if (child.action_id.has_value()) {
-      child_item = CreateAppMenuProxyActionItem(child.action_id.value());
+      child_item = CreateAppMenuIndirectActionItem(child.action_id.value());
       if (!child_item) {
         continue;
       }
@@ -99,7 +99,7 @@ void AppMenuActionManager::PopulateSubtree(
         child.container_color.has_value() ? child.container_color
                                           : inherited_container_color;
 
-    actions::ActionItem* child_item_ptr = child_item.get();
+    actions::ActionItem* child_item_ptr = child_item->GetActionItem();
     child_item_ptr->SetProperty(kAppMenuDisplayTypeKey, child.display_type);
     if (effective_container_color.has_value()) {
       child_item_ptr->SetProperty(kAppMenuContainerColorKey,
@@ -113,8 +113,8 @@ void AppMenuActionManager::PopulateSubtree(
   }
 }
 
-std::unique_ptr<AppMenuProxyActionItem>
-AppMenuActionManager::CreateAppMenuProxyActionItem(
+std::unique_ptr<actions::IndirectActionItem>
+AppMenuActionManager::CreateAppMenuIndirectActionItem(
     actions::ActionId action_id) {
   actions::ActionItem* action =
       actions::ActionManager::Get().FindAction(action_id, action_scope_);
@@ -125,5 +125,5 @@ AppMenuActionManager::CreateAppMenuProxyActionItem(
     return nullptr;
   }
 
-  return std::make_unique<AppMenuProxyActionItem>(action);
+  return std::make_unique<actions::IndirectActionItem>(action);
 }

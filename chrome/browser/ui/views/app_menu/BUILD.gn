@@ -10,7 +10,6 @@ source_set("app_menu") {
   public = [
     "action_app_menu.h",
     "app_menu_action_manager.h",
-    "app_menu_proxy_action_item.h",
     "app_menu_section_action_item.h",
   ]
 
@@ -31,7 +30,6 @@ source_set("impl") {
   sources = [
     "action_app_menu.cc",
     "app_menu_action_manager.cc",
-    "app_menu_proxy_action_item.cc",
     "app_menu_section_action_item.cc",
   ]
 

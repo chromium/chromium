@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_proxy_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
