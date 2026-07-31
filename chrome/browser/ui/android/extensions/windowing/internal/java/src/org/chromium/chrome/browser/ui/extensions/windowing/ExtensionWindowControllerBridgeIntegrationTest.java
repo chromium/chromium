@@ -22,7 +22,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -187,7 +186,6 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
-    @DisabledTest(message = "crbug.com/541275233")
     public void
             openIncognitoWindow_destroyIncognitoTabModel_notifyExtensionInternalsOfWindowDestruction() {
         // Arrange:
@@ -198,7 +196,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         WebPageStation blankPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
         ExtensionWindowControllerBridgeImpl.initializeWindowControllerListObserverForTesting();
         IncognitoNewTabPageStation incognitoNtpStation =
-                blankPageStation.openRegularTabAppMenu().openNewIncognitoWindow();
+                blankPageStation.openNewIncognitoWindowFast();
         int incognitoTaskId = incognitoNtpStation.getActivity().getTaskId();
         var extensionWindowControllerBridge =
                 getExtensionWindowControllerBridge(
