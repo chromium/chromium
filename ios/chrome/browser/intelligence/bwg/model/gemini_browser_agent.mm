@@ -1684,12 +1684,14 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   // be hidden quickly followed by a new WebState being shown where
   // hiding/showing the floaty are valid invocations.
   bool is_web_navigation = source == gemini::FloatyUpdateSource::WebNavigation;
+  bool is_context_menu = source == gemini::FloatyUpdateSource::ContextMenu;
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* gemini_tab_helper = GetActiveTabHelper(web_state);
   bool should_block =
       gemini_tab_helper && gemini_tab_helper->ShouldBlockFloatyFromShowing();
-  if ((!is_web_navigation && triggered_during_transition) || should_block) {
+  if ((!is_web_navigation && !is_context_menu && triggered_during_transition) ||
+      should_block) {
     return;
   }
 
