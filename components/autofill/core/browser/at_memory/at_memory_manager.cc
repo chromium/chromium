@@ -321,6 +321,7 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kAddressCountry:
     case MemoryDataType::kPhone:
     case MemoryDataType::kCompanyName:
+    case MemoryDataType::kEmail:
       return is_autofill_only ? Suggestion::Icon::kLocation
                               : Suggestion::Icon::kLocationSpark;
     case MemoryDataType::kVehicle:
@@ -405,7 +406,6 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kShipmentShippedDate:
       return is_autofill_only ? Suggestion::Icon::kShipment
                               : Suggestion::Icon::kShipmentSpark;
-    case MemoryDataType::kEmail:
     case MemoryDataType::kUnknown:
       return is_autofill_only ? Suggestion::Icon::kNoIcon
                               : Suggestion::Icon::kTextSpark;
