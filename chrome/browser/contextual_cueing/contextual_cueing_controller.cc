@@ -1020,6 +1020,9 @@ void ContextualCueingController::ShowCue(
                                         target.GetOmniboxChipIcon());
   page_action_controller->OverrideAccessibleName(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
+  page_action_controller->OverrideTooltip(
+      kActionAnchoredContextualCue,
+      base::UTF8ToUTF16(strings.action_text()));
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type,
@@ -1280,6 +1283,7 @@ void ContextualCueingController::HideCue() {
   }
   page_action_controller->ClearOverrideAccessibleName(
       kActionAnchoredContextualCue);
+  page_action_controller->ClearOverrideTooltip(kActionAnchoredContextualCue);
   page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
   page_action_controller->Hide(kActionAnchoredContextualCue);
 #endif
