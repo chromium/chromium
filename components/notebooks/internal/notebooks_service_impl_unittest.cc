@@ -54,6 +54,40 @@ syncer::EntityData CreateTestEntityData(const std::string& uuid) {
   return entity_data;
 }
 
+class TestNotebooksServiceObserver : public NotebooksService::Observer {
+ public:
+  void OnNotebooksModelLoaded() override { loaded_called_ = true; }
+
+  void OnNotebookAdded(const Notebook& notebook) override {
+    last_added_id_ = notebook.id();
+  }
+
+  void OnNotebookUpdated(const Notebook& notebook) override {
+    last_updated_id_ = notebook.id();
+  }
+
+  void OnNotebookRemoved(const NotebookId& id) override {
+    last_removed_id_ = id;
+  }
+
+  bool loaded_called() const { return loaded_called_; }
+  const std::optional<NotebookId>& last_added_id() const {
+    return last_added_id_;
+  }
+  const std::optional<NotebookId>& last_updated_id() const {
+    return last_updated_id_;
+  }
+  const std::optional<NotebookId>& last_removed_id() const {
+    return last_removed_id_;
+  }
+
+ private:
+  bool loaded_called_ = false;
+  std::optional<NotebookId> last_added_id_;
+  std::optional<NotebookId> last_updated_id_;
+  std::optional<NotebookId> last_removed_id_;
+};
+
 }  // namespace
 
 class NotebooksServiceImplTest : public testing::Test {
@@ -84,6 +118,33 @@ class NotebooksServiceImplTest : public testing::Test {
         syncer::EntityChange::CreateAdd(uuid, CreateTestEntityData(uuid)));
     bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
                                          std::move(add_changes));
+  }
+
+  void InjectRemoteUpdate(const std::string& uuid) {
+    CHECK(bridge_);
+    sync_pb::NotebookSpecifics updated_specifics =
+        CreateTestNotebookSpecifics(uuid);
+    updated_specifics.set_update_time_windows_epoch_micros(
+        base::Time::FromSecondsSinceUnixEpoch(2000)
+            .ToDeltaSinceWindowsEpoch()
+            .InMicroseconds());
+    syncer::EntityData updated_data;
+    *updated_data.specifics.mutable_notebook() = updated_specifics;
+    updated_data.name = uuid;
+    syncer::EntityChangeList update_changes;
+    update_changes.push_back(
+        syncer::EntityChange::CreateUpdate(uuid, std::move(updated_data)));
+    bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                         std::move(update_changes));
+  }
+
+  void InjectRemoteDelete(const std::string& uuid) {
+    CHECK(bridge_);
+    syncer::EntityChangeList delete_changes;
+    delete_changes.push_back(
+        syncer::EntityChange::CreateDelete(uuid, syncer::EntityData()));
+    bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
+                                         std::move(delete_changes));
   }
 
  protected:
@@ -128,6 +189,48 @@ TEST_F(NotebooksServiceImplTest, GetAllNotebooksReturnsSyncedNotebooks) {
                            base::Time::FromSecondsSinceUnixEpoch(1000));
   EXPECT_THAT(service()->GetAllNotebooks(),
               testing::UnorderedElementsAre(expected1, expected2));
+}
+
+TEST_F(NotebooksServiceImplTest, ObserverNotifiedOnNotebookAdded) {
+  TestNotebooksServiceObserver observer;
+  service()->AddObserver(&observer);
+
+  InjectRemoteAdd(kTestUuid1);
+
+  EXPECT_EQ(observer.last_added_id(),
+            NotebookId(base::Uuid::ParseCaseInsensitive(kTestUuid1)));
+}
+
+TEST_F(NotebooksServiceImplTest, ObserverNotifiedOnNotebookUpdated) {
+  TestNotebooksServiceObserver observer;
+  InjectRemoteAdd(kTestUuid1);
+  service()->AddObserver(&observer);
+
+  InjectRemoteUpdate(kTestUuid1);
+
+  EXPECT_EQ(observer.last_updated_id(),
+            NotebookId(base::Uuid::ParseCaseInsensitive(kTestUuid1)));
+}
+
+TEST_F(NotebooksServiceImplTest, ObserverNotifiedOnNotebookRemoved) {
+  TestNotebooksServiceObserver observer;
+  InjectRemoteAdd(kTestUuid1);
+  service()->AddObserver(&observer);
+
+  InjectRemoteDelete(kTestUuid1);
+
+  EXPECT_EQ(observer.last_removed_id(),
+            NotebookId(base::Uuid::ParseCaseInsensitive(kTestUuid1)));
+}
+
+TEST_F(NotebooksServiceImplTest, ObserverNotNotifiedAfterRemoval) {
+  TestNotebooksServiceObserver observer;
+  service()->AddObserver(&observer);
+  service()->RemoveObserver(&observer);
+
+  InjectRemoteAdd(kTestUuid1);
+
+  EXPECT_FALSE(observer.last_added_id().has_value());
 }
 
 }  // namespace notebooks

@@ -13,6 +13,7 @@ source_set("public") {
     "notebooks_eligibility_service.h",
     "notebooks_network_service.cc",
     "notebooks_network_service.h",
+    "notebooks_service.cc",
     "notebooks_service.h",
   ]
 

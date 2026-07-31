@@ -15,19 +15,19 @@ namespace notebooks {
 // must not synchronously mutate the model from notification methods.
 class NotebooksModelObserver : public base::CheckedObserver {
  public:
-  ~NotebooksModelObserver() override = default;
+  ~NotebooksModelObserver() override;
 
   // Called when the model finishes loading data from storage or sync.
-  virtual void OnNotebooksModelLoaded() {}
+  virtual void OnNotebooksModelLoaded();
 
   // Called when a new Notebook is added to the model.
-  virtual void OnNotebookAdded(const Notebook& notebook) {}
+  virtual void OnNotebookAdded(const Notebook& notebook);
 
   // Called when an existing Notebook is updated in the model.
-  virtual void OnNotebookUpdated(const Notebook& notebook) {}
+  virtual void OnNotebookUpdated(const Notebook& notebook);
 
   // Called when a Notebook is removed from the model.
-  virtual void OnNotebookRemoved(const NotebookId& id) {}
+  virtual void OnNotebookRemoved(const NotebookId& id);
 };
 
 }  // namespace notebooks

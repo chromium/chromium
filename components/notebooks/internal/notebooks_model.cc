@@ -13,6 +13,13 @@
 
 namespace notebooks {
 
+NotebooksModelObserver::~NotebooksModelObserver() = default;
+
+void NotebooksModelObserver::OnNotebooksModelLoaded() {}
+void NotebooksModelObserver::OnNotebookAdded(const Notebook& notebook) {}
+void NotebooksModelObserver::OnNotebookUpdated(const Notebook& notebook) {}
+void NotebooksModelObserver::OnNotebookRemoved(const NotebookId& id) {}
+
 NotebooksModel::NotebooksModel() = default;
 
 NotebooksModel::~NotebooksModel() {

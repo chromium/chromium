@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/notebooks/public/notebook.h"
 #include "components/notebooks/public/notebook_id.h"
@@ -22,11 +23,32 @@ namespace notebooks {
 // The core class for managing Notebooks.
 class NotebooksService : public KeyedService {
  public:
-  NotebooksService() = default;
-  ~NotebooksService() override = default;
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+
+    // Called when notebook data finishes loading.
+    virtual void OnNotebooksModelLoaded();
+
+    // Called when a new Notebook is added.
+    virtual void OnNotebookAdded(const Notebook& notebook);
+
+    // Called when an existing Notebook is updated.
+    virtual void OnNotebookUpdated(const Notebook& notebook);
+
+    // Called when a Notebook is removed.
+    virtual void OnNotebookRemoved(const NotebookId& id);
+  };
+
+  NotebooksService();
+  ~NotebooksService() override;
 
   NotebooksService(const NotebooksService&) = delete;
   NotebooksService& operator=(const NotebooksService&) = delete;
+
+  // Subscription management.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Model read accessors.
   virtual std::optional<Notebook> GetNotebook(const NotebookId& id) const = 0;

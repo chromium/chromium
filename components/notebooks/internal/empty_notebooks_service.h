@@ -21,6 +21,8 @@ class EmptyNotebooksService : public NotebooksService {
   EmptyNotebooksService& operator=(const EmptyNotebooksService&) = delete;
 
   // NotebooksService:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   std::optional<Notebook> GetNotebook(const NotebookId& id) const override;
   std::vector<Notebook> GetAllNotebooks() const override;
   bool IsEmptyForTesting() const override;
