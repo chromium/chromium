@@ -36,11 +36,6 @@ fuzzer_test("ini_parser_fuzzer") {
 }
 grit("resources") {
   source = "common_resources.grd"
-  inputs = [
-    "apps/platform_apps/api/_api_features.json",
-    "controlled_frame/api/_api_features.json",
-    "extensions/api/_api_features.json",
-  ]
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
   output_name = "common_resources"

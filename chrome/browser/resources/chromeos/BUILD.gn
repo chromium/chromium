@@ -57,18 +57,6 @@ group("resources") {
 
 grit("app_icon_resources") {
   source = "app_icon/app_icon_resources.grd"
-  inputs = [
-    "app_icon/default_100_percent/badges/block-icon-badge.png",
-    "app_icon/default_100_percent/badges/chrome-icon-badge.png",
-    "app_icon/default_100_percent/badges/hourglass-icon-badge.png",
-    "app_icon/default_100_percent/mask/badge-mask.png",
-    "app_icon/default_200_percent/badges/block-icon-badge.png",
-    "app_icon/default_200_percent/badges/chrome-icon-badge.png",
-    "app_icon/default_200_percent/badges/hourglass-icon-badge.png",
-    "app_icon/default_200_percent/mask/badge-mask.png",
-    "app_icon/default_200_percent/badges/hourglass-icon-badge.png",
-    "app_icon/default_200_percent/mask/badge-mask.png",
-  ]
   defines = chrome_grit_defines
   outputs = [
     "grit/chromeos_app_icon_resources.h",

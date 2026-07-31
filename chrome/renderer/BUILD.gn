@@ -22,18 +22,6 @@ assert(enable_supervised_users)
 
 grit("resources") {
   source = "resources/renderer_resources.grd"
-  inputs = [
-    "//components/security_interstitials/core/browser/resources/images/blocked.svg",
-    "//components/security_interstitials/core/browser/resources/images/heavy_ad.svg",
-    "//components/security_interstitials/core/browser/resources/interstitial_webview_quiet.css",
-    "//components/security_interstitials/core/common/resources/interstitial_common.css",
-    "//components/security_interstitials/core/common/resources/interstitial_core.css",
-    "//ui/webui/resources/images/extension.svg",
-    "resources/plugins/blocked_plugin.html",
-    "resources/plugins/disabled_plugin.html",
-    "resources/plugins/pdf_plugin.html",
-    "resources/plugins/plugin_placeholders.css",
-  ]
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
   output_name = "renderer_resources"
