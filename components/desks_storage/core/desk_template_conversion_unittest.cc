@@ -601,4 +601,79 @@ TEST_F(DeskTemplateConversionTest, PreserveEmptyUrlsInSyncProtoConversion) {
             gfx::Range(0, 2));
 }
 
+TEST_F(DeskTemplateConversionTest,
+       SanitizePrivilegedUrlsInSyncProtoConversion) {
+  sync_pb::WorkspaceDeskSpecifics pb_entry;
+  pb_entry.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  pb_entry.set_name("Sanitization Test");
+  pb_entry.set_created_time_windows_epoch_micros(123456);
+  pb_entry.set_desk_type(sync_pb::WorkspaceDeskSpecifics_DeskType_TEMPLATE);
+
+  // 1. Add Browser App with tabs containing privileged and valid URLs
+  auto* app = pb_entry.mutable_desk()->add_apps();
+  app->set_window_id(1);
+  auto* browser_app_window = app->mutable_app()->mutable_browser_app_window();
+
+  // Tab 0: Valid HTTPS
+  browser_app_window->add_tabs()->set_url("https://example.com/");
+  // Tab 1: Privileged chrome:// settings
+  browser_app_window->add_tabs()->set_url("chrome://settings/");
+  // Tab 2: Privileged chrome:// restart
+  browser_app_window->add_tabs()->set_url("chrome://restart/");
+  // Tab 3: Privileged chrome-untrusted://
+  browser_app_window->add_tabs()->set_url("chrome-untrusted://terminal/");
+  // Tab 4: extension
+  browser_app_window->add_tabs()->set_url(
+      "chrome-extension://hhaomjibdihbaogdhjpdfengpeeedbki/");
+  // Tab 5: file
+  browser_app_window->add_tabs()->set_url("file:///etc/hosts");
+  // Tab 6: Empty GURL (blank tab)
+  browser_app_window->add_tabs()->set_url("");
+  // 3. Add PWA App with privileged override url
+  auto* pwa_app = pb_entry.mutable_desk()->add_apps();
+  pwa_app->set_window_id(2);
+  pwa_app->mutable_app()->mutable_progress_web_app()->set_app_id("pwa_app_id");
+  pwa_app->set_override_url("chrome://restart/");
+
+  // 4. Add Coral Tab App Entities with privileged URL
+  auto* coral_tab =
+      pb_entry.mutable_coral_tab_app_entities()->add_tab_entities();
+  coral_tab->set_tab_title("Unsafe Coral Tab");
+  coral_tab->set_tab_url("chrome://restart/");
+
+  // Deserialize the protobuf back to a DeskTemplate
+  std::unique_ptr<ash::DeskTemplate> deserialized_template =
+      desk_template_conversion::FromSyncProto(pb_entry);
+  ASSERT_TRUE(deserialized_template);
+  ASSERT_TRUE(deserialized_template->desk_restore_data());
+
+  // Verify Browser App URLs
+  const app_restore::AppRestoreData* restored_browser_data =
+      deserialized_template->desk_restore_data()->GetAppRestoreData(
+          app_constants::kChromeAppId, 1);
+  ASSERT_TRUE(restored_browser_data);
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls.size(), 7u);
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[0],
+            GURL("https://example.com/"));
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[1], GURL());
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[2], GURL());
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[3], GURL());
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[4], GURL());
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[5], GURL());
+  EXPECT_EQ(restored_browser_data->browser_extra_info.urls[6], GURL());
+
+  // Verify PWA override URL is not set (since chrome://restart/ is privileged)
+  const app_restore::AppRestoreData* restored_pwa_data =
+      deserialized_template->desk_restore_data()->GetAppRestoreData(
+          "pwa_app_id", 2);
+  ASSERT_TRUE(restored_pwa_data);
+  EXPECT_FALSE(restored_pwa_data->override_url.has_value());
+
+  // Verify Coral tab entities are sanitized
+  const auto& coral_entities = deserialized_template->coral_tab_app_entities();
+  ASSERT_EQ(coral_entities.size(), 1u);
+  ASSERT_TRUE(coral_entities[0]->is_tab());
+  EXPECT_EQ(coral_entities[0]->get_tab()->url, GURL());
+}
+
 }  // namespace desks_storage
