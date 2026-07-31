@@ -31,6 +31,8 @@ export class TestSearchboxBrowserProxy {
     });
     this.handler.setPromiseResolveFor<'getSmartTabSharingActive'>(
         'getSmartTabSharingActive', {active: false});
+    this.handler.setPromiseResolveFor<'getPageClassification'>(
+        'getPageClassification', {metricSource: 'OMNIBOX_EVERYWHERE'});
   }
 
   initVisibilityPrefs() {
