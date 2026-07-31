@@ -1844,10 +1844,10 @@ class BookmarkManagerMediator
         if (startIndex < 0 || endIndex < 0) return;
 
         for (int i = startIndex; i <= endIndex; i++) {
-            // Section headers may be embedded in the list for reading list.
+            // Section headers and other promo/divider rows may be embedded in the list.
             // TODO(crbug.com/40278854): Consider using RecyclerView decorations for section
             // headers.
-            if (mModelList.get(i).type == ViewType.SECTION_HEADER) continue;
+            if (!isBookmarkRowType(mModelList.get(i).type)) continue;
             PropertyModel model = mModelList.get(i).model;
 
             BookmarkId id = model.get(BookmarkManagerProperties.BOOKMARK_ID);
