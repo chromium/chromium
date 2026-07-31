@@ -480,11 +480,15 @@ public class TabBottomSheetCoordinator {
                     if (canResizeWebView()) {
                         assert mSheetContent != null;
                         assert mResizingStrategy != null;
+                        float peekHeight = mSheetContent.getPeekHeight();
                         float halfRatio = mSheetContent.getHalfHeightRatio();
                         float halfHeight = mBottomSheetController.getContainerHeight() * halfRatio;
                         float fullHeight = mBottomSheetController.getMaxOffset();
                         mResizingStrategy.onSheetOffsetChanged(
-                                offsetPx - mWebUiTopMargin, halfHeight, fullHeight);
+                                offsetPx - mWebUiTopMargin,
+                                peekHeight - mWebUiTopMargin,
+                                halfHeight,
+                                fullHeight);
                     }
                 }
             }

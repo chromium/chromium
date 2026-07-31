@@ -56,6 +56,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewFactory.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViews.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/DefaultResizingStrategy.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/DragDirectionResizingStrategy.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/ResizingStrategy.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/ResizingStrategyFactory.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinator.java",
@@ -133,6 +134,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewsUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/DefaultResizingStrategyUnitTest.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/DragDirectionResizingStrategyUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekViewBinderTest.java",

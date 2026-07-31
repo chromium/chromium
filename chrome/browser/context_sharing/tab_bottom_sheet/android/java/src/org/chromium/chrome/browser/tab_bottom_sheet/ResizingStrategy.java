@@ -16,10 +16,12 @@ public interface ResizingStrategy {
      * Called when the sheet offset or height bounds change.
      *
      * @param offsetPx The current sheet offset in pixels.
+     * @param peekHeightPx The peek height bound of the sheet in pixels.
      * @param halfHeightPx The half height bound of the sheet in pixels.
      * @param fullHeightPx The full height bound of the sheet in pixels.
      */
-    void onSheetOffsetChanged(float offsetPx, float halfHeightPx, float fullHeightPx);
+    void onSheetOffsetChanged(
+            float offsetPx, float peekHeightPx, float halfHeightPx, float fullHeightPx);
 
     /** Called when the sheet starts or stops resizing/scrolling. */
     void onSheetResizingStatusChanged(boolean isResizing);
