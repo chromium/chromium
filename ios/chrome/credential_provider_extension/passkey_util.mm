@@ -18,7 +18,7 @@
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/constants.h"
-#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
+#import "ios/chrome/common/credential_provider/credential_provider_migration_notifier.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
 using base::SysNSStringToUTF8;
@@ -320,9 +320,7 @@ void SavePasskeyCredential(id<Credential> credential) {
     }
 
     SaveToIdentityStore(credential, ^{
-      // TODO(crbug.com/432260316): Consider renaming this class as its purpose
-      // is to trigger migration, but not necessarily for creations only.
-      [CredentialProviderCreationNotifier notifyCredentialCreated];
+      [CredentialProviderMigrationNotifier notifyMigrationNeeded];
     });
   }];
 }

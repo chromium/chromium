@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
+#import "ios/chrome/common/credential_provider/credential_provider_migration_notifier.h"
 
 #import "base/time/time.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
-// The name of the file used to communicate the new credential notification from
-// the Credential Provider Extension to Chrome. The file will contain a
-// timestamp of the latest credential's creation time.
+// The name of the file used to communicate the credential migration
+// notification from the Credential Provider Extension to the browser. The file
+// will contain a timestamp of the latest credential change/creation time.
+// Note: The file name is kept as "credential_created_time" for compatibility.
 static NSString* const kNotificationFileName = @"credential_created_time";
 
-@interface CredentialProviderCreationNotifier () <NSFilePresenter>
+@interface CredentialProviderMigrationNotifier () <NSFilePresenter>
 
 @end
 
-@implementation CredentialProviderCreationNotifier {
+@implementation CredentialProviderMigrationNotifier {
   // The agent which can trigger the passkey migration.
   ProceduralBlock _block;
 }
@@ -51,8 +52,9 @@ static NSString* const kNotificationFileName = @"credential_created_time";
   [NSFileCoordinator removeFilePresenter:self];
 }
 
-// Notify Chrome that a new credential was created using file observers.
-+ (void)notifyCredentialCreated {
+// Notify the browser that credentials changed or were created using file
+// observers.
++ (void)notifyMigrationNeeded {
   void (^mergingAccessor)(NSURL*) = ^(NSURL* url) {
     NSString* creationTime =
         [NSString stringWithFormat:@"%lld", base::Time::Now()
@@ -67,7 +69,7 @@ static NSString* const kNotificationFileName = @"credential_created_time";
   NSFileCoordinator* coordinator =
       [[NSFileCoordinator alloc] initWithFilePresenter:nil];
   NSError* error = nil;
-  [coordinator coordinateWritingItemAtURL:[CredentialProviderCreationNotifier
+  [coordinator coordinateWritingItemAtURL:[CredentialProviderMigrationNotifier
                                               notificationFile]
                                   options:NSFileCoordinatorWritingForMerging
                                     error:&error
@@ -85,12 +87,12 @@ static NSString* const kNotificationFileName = @"credential_created_time";
 }
 
 - (NSURL*)presentedItemURL {
-  return [CredentialProviderCreationNotifier notificationFile];
+  return [CredentialProviderMigrationNotifier notificationFile];
 }
 
 #pragma mark - Private
 
-// Returns the URL to the credential creation notification file.
+// Returns the URL to the credential migration notification file.
 + (NSURL*)notificationFile {
   NSFileManager* manager = [NSFileManager defaultManager];
   NSURL* containerURL =

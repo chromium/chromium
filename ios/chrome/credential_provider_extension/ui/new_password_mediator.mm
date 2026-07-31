@@ -15,7 +15,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_util.h"
 #import "ios/chrome/common/credential_provider/constants.h"
-#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
+#import "ios/chrome/common/credential_provider/credential_provider_migration_notifier.h"
 #import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/chrome/common/credential_provider/net_util.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
@@ -109,7 +109,7 @@ using base::SysUTF16ToNSString;
                }
                [self.uiHandler credentialSaved:credential];
                [self userSelectedCredential:credential];
-               [CredentialProviderCreationNotifier notifyCredentialCreated];
+               [CredentialProviderMigrationNotifier notifyMigrationNeeded];
              }];
 }
 

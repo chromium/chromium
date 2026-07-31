@@ -38,7 +38,7 @@
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
-#import "ios/chrome/common/credential_provider/credential_provider_creation_notifier.h"
+#import "ios/chrome/common/credential_provider/credential_provider_migration_notifier.h"
 #import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 
 @interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
@@ -70,7 +70,7 @@ void MigrationCompleteForProfile(
 }  // namespace
 
 @implementation CredentialProviderMigratorAppAgent {
-  CredentialProviderCreationNotifier* _credentialProviderCreationNotifier;
+  CredentialProviderMigrationNotifier* _credentialProviderMigrationNotifier;
 
   // Maps of PasskeyModel to the registered observer.
   std::map<webauthn::PasskeyModel*,
@@ -90,7 +90,7 @@ void MigrationCompleteForProfile(
 - (void)appDidEnterForeground {
   // Migrate credentials when Chrome enters foreground.
   [self migrateCredentialForAllPasskeyModels];
-  [self createCredentialProviderCreationNotifierIfNeeded];
+  [self createCredentialProviderMigrationNotifierIfNeeded];
 }
 
 - (void)appState:(AppState*)appState
@@ -100,7 +100,7 @@ void MigrationCompleteForProfile(
   // Check if the app is now fully initialized.
   if (appState.initStage == AppInitStage::kFinal) {
     [self migrateCredentialForAllPasskeyModels];
-    [self createCredentialProviderCreationNotifierIfNeeded];
+    [self createCredentialProviderMigrationNotifierIfNeeded];
   }
 }
 
@@ -149,12 +149,12 @@ void MigrationCompleteForProfile(
          self.appState.initStage == AppInitStage::kFinal;
 }
 
-// Creates the CredentialProviderCreationNotifier if the app is ready.
-- (void)createCredentialProviderCreationNotifierIfNeeded {
-  if (!_credentialProviderCreationNotifier && [self canMigrate]) {
+// Creates the CredentialProviderMigrationNotifier if the app is ready.
+- (void)createCredentialProviderMigrationNotifierIfNeeded {
+  if (!_credentialProviderMigrationNotifier && [self canMigrate]) {
     __weak __typeof__(self) weakSelf = self;
-    _credentialProviderCreationNotifier =
-        [[CredentialProviderCreationNotifier alloc] initWithBlock:^() {
+    _credentialProviderMigrationNotifier =
+        [[CredentialProviderMigrationNotifier alloc] initWithBlock:^() {
           [weakSelf migrateCredentialForAllPasskeyModels];
         }];
   }
