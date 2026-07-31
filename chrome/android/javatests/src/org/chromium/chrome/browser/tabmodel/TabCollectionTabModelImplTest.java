@@ -17,9 +17,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -41,6 +41,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -65,7 +67,6 @@ import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -84,6 +85,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 @Batch(Batch.PER_CLASS)
 public class TabCollectionTabModelImplTest {
+    private static final String GROUP_1_TITLE = "Group 1 Title";
+    private static final String GROUP_2_TITLE = "Group 2 Title";
+
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
@@ -460,7 +464,7 @@ public class TabCollectionTabModelImplTest {
         CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
         CallbackHelper didSelectTabHelper = new CallbackHelper();
 
-        List<Tab> tabsToClose = Arrays.asList(tab1, tab2);
+        List<Tab> tabsToClose = List.of(tab1, tab2);
         AtomicReference<List<Tab>> tabsInWillCloseMultiple = new AtomicReference<>();
         List<Tab> tabsInWillCloseTab = Collections.synchronizedList(new ArrayList<>());
         List<Tab> tabsInDidRemove = Collections.synchronizedList(new ArrayList<>());
@@ -1493,7 +1497,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(collapsedObserver);
-                    mCollectionModel.setTabGroupCollapsed(tabGroupId, true, false);
+                    mCollectionModel.setTabGroupCollapsed(
+                            tabGroupId, /* isCollapsed= */ true, /* animate= */ false);
                     assertTrue(mCollectionModel.getTabGroupCollapsed(tabGroupId));
                     mCollectionModel.removeTabGroupObserver(collapsedObserver);
                 });
@@ -1667,10 +1672,10 @@ public class TabCollectionTabModelImplTest {
 
         String freshTitle = "Fresh Title";
         TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
-        doReturn(tabGroupId).when(mockData).getTabGroupId();
-        doReturn(freshTitle).when(mockData).getTitle();
-        doReturn(TabGroupColorId.GREY).when(mockData).getColor();
-        doReturn(false).when(mockData).isCollapsed();
+        when(mockData.getTabGroupId()).thenReturn(tabGroupId);
+        when(mockData.getTitle()).thenReturn(freshTitle);
+        when(mockData.getColor()).thenReturn(TabGroupColorId.GREY);
+        when(mockData.isCollapsed()).thenReturn(false);
 
         TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
 
@@ -1759,10 +1764,10 @@ public class TabCollectionTabModelImplTest {
         assertEquals(titleA, mCollectionModel.getTabGroupTitle(tabGroupId));
 
         TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
-        doReturn(tabGroupId).when(mockData).getTabGroupId();
-        doReturn(titleA).when(mockData).getTitle();
-        doReturn(TabGroupColorId.GREY).when(mockData).getColor();
-        doReturn(false).when(mockData).isCollapsed();
+        when(mockData.getTabGroupId()).thenReturn(tabGroupId);
+        when(mockData.getTitle()).thenReturn(titleA);
+        when(mockData.getColor()).thenReturn(TabGroupColorId.GREY);
+        when(mockData.isCollapsed()).thenReturn(false);
 
         TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
 
@@ -1891,10 +1896,10 @@ public class TabCollectionTabModelImplTest {
         final boolean collapsed = true;
 
         TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
-        doReturn(tabGroupId).when(mockData).getTabGroupId();
-        doReturn(title).when(mockData).getTitle();
-        doReturn(color).when(mockData).getColor();
-        doReturn(collapsed).when(mockData).isCollapsed();
+        when(mockData.getTabGroupId()).thenReturn(tabGroupId);
+        when(mockData.getTitle()).thenReturn(title);
+        when(mockData.getColor()).thenReturn(color);
+        when(mockData.isCollapsed()).thenReturn(collapsed);
 
         TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
 
@@ -1949,7 +1954,8 @@ public class TabCollectionTabModelImplTest {
                     String title = "Test title";
                     mCollectionModel.setTabGroupTitle(groupId, title);
                     mCollectionModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
-                    mCollectionModel.setTabGroupCollapsed(groupId, true, false);
+                    mCollectionModel.setTabGroupCollapsed(
+                            groupId, /* isCollapsed= */ true, /* animate= */ false);
 
                     assertEquals(title, TabGroupVisualDataStore.getTabGroupTitle(groupId));
                     assertEquals(
@@ -2377,7 +2383,8 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.mergeTabsToGroup(tab0.getId(), tab1.getId(), false);
+                    mCollectionModel.mergeTabsToGroup(
+                            tab0.getId(), tab1.getId(), /* skipUpdateTabModel= */ false);
 
                     assertNotNull(tab1.getTabGroupId());
                     assertEquals(tab1.getTabGroupId(), tab0.getTabGroupId());
@@ -2401,7 +2408,8 @@ public class TabCollectionTabModelImplTest {
                     Token groupId = tab1.getTabGroupId();
                     assertNotNull(groupId);
 
-                    mCollectionModel.mergeTabsToGroup(tab0.getId(), tab1.getId(), false);
+                    mCollectionModel.mergeTabsToGroup(
+                            tab0.getId(), tab1.getId(), /* skipUpdateTabModel= */ false);
 
                     assertEquals(groupId, tab0.getTabGroupId());
                     assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
@@ -2424,7 +2432,8 @@ public class TabCollectionTabModelImplTest {
                     Token groupId = tab0.getTabGroupId();
                     assertNotNull(groupId);
 
-                    mCollectionModel.mergeTabsToGroup(tab0.getId(), tab2.getId(), false);
+                    mCollectionModel.mergeTabsToGroup(
+                            tab0.getId(), tab2.getId(), /* skipUpdateTabModel= */ false);
 
                     assertEquals(groupId, tab2.getTabGroupId());
                     assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
@@ -2822,7 +2831,6 @@ public class TabCollectionTabModelImplTest {
         AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
         AtomicReference<Token> groupId1Ref = new AtomicReference<>();
         CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
-        final String group1Title = "Group 1 Title";
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2831,7 +2839,7 @@ public class TabCollectionTabModelImplTest {
                     Token groupId1 = tab0.getTabGroupId();
                     groupId1Ref.set(groupId1);
                     assertNotNull(groupId1);
-                    mCollectionModel.setTabGroupTitle(groupId1, group1Title);
+                    mCollectionModel.setTabGroupTitle(groupId1, GROUP_1_TITLE);
 
                     // Create group 2 with tab1.
                     mCollectionModel.createSingleTabGroup(tab1);
@@ -2857,7 +2865,7 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.removeTabGroupObserver(observer);
 
                     // Group 1 is now detached. Its title should still be available.
-                    assertEquals(group1Title, mCollectionModel.getTabGroupTitle(groupId1));
+                    assertEquals(GROUP_1_TITLE, mCollectionModel.getTabGroupTitle(groupId1));
                 });
 
         showUndoSnackbarHelper.waitForOnly();
@@ -2869,6 +2877,152 @@ public class TabCollectionTabModelImplTest {
 
                     mCollectionModel.undoGroupOperationExpired(undoGroupMetadataRef.get());
                     assertFalse(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupSnackbarController_ThrottlingExpiresDetachedGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        AtomicReference<Token> groupId1Ref = new AtomicReference<>();
+        AtomicReference<Token> groupId2Ref = new AtomicReference<>();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    createSingleTabGroupWithTitle(tab0, GROUP_1_TITLE, groupId1Ref);
+                    createSingleTabGroupWithTitle(tab1, GROUP_2_TITLE, groupId2Ref);
+                    createSingleTabGroupWithTitle(tab2, /* title= */ null, /* groupIdRef= */ null);
+
+                    // Instantiate UndoGroupSnackbarController and start throttling.
+                    UndoGroupSnackbarController controller =
+                            new UndoGroupSnackbarController(
+                                    mActivityTestRule.getActivity(),
+                                    mTabModelSelector,
+                                    mActivityTestRule.getActivity().getSnackbarManager());
+                    try {
+                        controller.startThrottling();
+
+                        // 1. Merge group 1 into group 2 (undoable operation).
+                        mCollectionModel.mergeListOfTabsToGroup(
+                                List.of(tab0),
+                                tab1,
+                                TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        assertTrue(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+
+                        // 2. Merge group 2 into group 3 while throttled.
+                        // Replacing pending metadata while throttled must automatically expire
+                        // group 1.
+                        mCollectionModel.mergeListOfTabsToGroup(
+                                List.of(tab0, tab1),
+                                tab2,
+                                TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        assertFalse(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+                        assertTrue(mCollectionModel.detachedTabGroupExists(groupId2Ref.get()));
+                    } finally {
+                        // 3. Destroying the controller while throttled must expire group 2.
+                        controller.destroy();
+                    }
+                    assertFalse(mCollectionModel.detachedTabGroupExists(groupId2Ref.get()));
+
+                    // Verify tab0 and tab1 remain permanently merged in group 3.
+                    assertEquals(tab2.getTabGroupId(), tab0.getTabGroupId());
+                    assertEquals(tab2.getTabGroupId(), tab1.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupSnackbarController_DismissSnackbars_ExpiresDetachedGroup()
+            throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        AtomicReference<Token> groupId1Ref = new AtomicReference<>();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    createSingleTabGroupWithTitle(tab0, GROUP_1_TITLE, groupId1Ref);
+                    createSingleTabGroupWithTitle(tab1, /* title= */ null, /* groupIdRef= */ null);
+
+                    // Instantiate UndoGroupSnackbarController and start throttling.
+                    UndoGroupSnackbarController controller =
+                            new UndoGroupSnackbarController(
+                                    mActivityTestRule.getActivity(),
+                                    mTabModelSelector,
+                                    mActivityTestRule.getActivity().getSnackbarManager());
+                    try {
+                        controller.startThrottling();
+
+                        // Merge group 1 into group 2 (undoable operation).
+                        mCollectionModel.mergeListOfTabsToGroup(
+                                List.of(tab0),
+                                tab1,
+                                TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        assertTrue(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+
+                        // Moving a tab out of the group triggers willMoveTabOutOfGroup ->
+                        // dismissSnackbars().
+                        // This must automatically expire the pending detached group 1.
+                        mCollectionModel.moveTabOutOfGroupInDirection(
+                                tab0.getId(), /* trailing= */ true);
+                        assertFalse(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+
+                        // Verify tab0 was permanently moved out of the group and tab1 remains in
+                        // group 2.
+                        assertNull(tab0.getTabGroupId());
+                        assertNotNull(tab1.getTabGroupId());
+                    } finally {
+                        controller.destroy();
+                    }
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupSnackbarController_StopThrottling_ShowsSnackbar() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+
+        AtomicReference<Token> groupId1Ref = new AtomicReference<>();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    createSingleTabGroupWithTitle(tab0, GROUP_1_TITLE, groupId1Ref);
+                    createSingleTabGroupWithTitle(tab1, /* title= */ null, /* groupIdRef= */ null);
+
+                    // Instantiate UndoGroupSnackbarController and start throttling.
+                    UndoGroupSnackbarController controller =
+                            new UndoGroupSnackbarController(
+                                    mActivityTestRule.getActivity(),
+                                    mTabModelSelector,
+                                    mActivityTestRule.getActivity().getSnackbarManager());
+                    try {
+                        int token = controller.startThrottling();
+
+                        // Merge group 1 into group 2 (undoable operation).
+                        mCollectionModel.mergeListOfTabsToGroup(
+                                List.of(tab0),
+                                tab1,
+                                TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        assertTrue(mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+
+                        // Stop throttling. The snackbar should be shown and the detached group
+                        // must NOT be expired.
+                        controller.stopThrottling(token);
+                        assertTrue(
+                                "Detached group must remain alive when un-throttled so the user can"
+                                        + " undo.",
+                                mCollectionModel.detachedTabGroupExists(groupId1Ref.get()));
+                    } finally {
+                        controller.destroy();
+                    }
                 });
     }
 
@@ -3123,6 +3277,20 @@ public class TabCollectionTabModelImplTest {
                                     TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
                                     parentTab);
                 });
+    }
+
+    private Token createSingleTabGroupWithTitle(
+            Tab tab, @Nullable String title, @Nullable AtomicReference<Token> groupIdRef) {
+        mCollectionModel.createSingleTabGroup(tab);
+        Token groupId = tab.getTabGroupId();
+        assertNotNull("Tab group ID must not be null after creation.", groupId);
+        if (title != null) {
+            mCollectionModel.setTabGroupTitle(groupId, title);
+        }
+        if (groupIdRef != null) {
+            groupIdRef.set(groupId);
+        }
+        return groupId;
     }
 
     private void verifyPinOrUnpin(Tab changedTab, boolean isPinned, boolean willMove)
@@ -3448,7 +3616,7 @@ public class TabCollectionTabModelImplTest {
                     TabTestUtils.setLastNavigationCommittedTimestampMillis(tab4, 10);
 
                     assertEquals(
-                            Arrays.asList(tab2, tab4),
+                            List.of(tab2, tab4),
                             mCollectionModel.getTabsNavigatedInTimeWindow(10, 100));
                 });
     }
@@ -4388,7 +4556,9 @@ public class TabCollectionTabModelImplTest {
 
         // Set the tab group collapsed state.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mCollectionModel.setTabGroupCollapsed(tabGroupId.get(), true));
+                () ->
+                        mCollectionModel.setTabGroupCollapsed(
+                                tabGroupId.get(), /* isCollapsed= */ true));
 
         // The callback is called.
         onTabGroupVisualsChanged.waitForNext();

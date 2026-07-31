@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -143,6 +144,7 @@ public class VerticalTabListCoordinator {
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
     private final @Nullable TabHoverCardListener mTabHoverCardListener;
     private final @Nullable ViewStub mTabHoverCardViewStub;
+    private final @Nullable UndoBarThrottle mUndoBarThrottle;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
@@ -226,7 +228,8 @@ public class VerticalTabListCoordinator {
             SettableNonNullObservableSupplier<Integer> verticalTabsWidthSupplier,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
             @Nullable ViewStub tabHoverCardViewStub,
-            Supplier<TabContentManager> tabContentManagerSupplier) {
+            Supplier<TabContentManager> tabContentManagerSupplier,
+            @Nullable UndoBarThrottle undoBarThrottle) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mTabModelSelector = tabModelSelector;
@@ -237,6 +240,7 @@ public class VerticalTabListCoordinator {
         mDataSharingTabManager = dataSharingTabManager;
         mTabHoverCardViewStub = tabHoverCardViewStub;
         mTabHoverCardListener = this::showOrHideTabHoverCard;
+        mUndoBarThrottle = undoBarThrottle;
         mRailCollapseStateSupplier = ObservableSuppliers.createNonNull(RailCollapseState.EXPANDED);
         mModelList = new TabListModel();
 
@@ -869,7 +873,8 @@ public class VerticalTabListCoordinator {
                 new VerticalTabListItemTouchHelperCallback(
                         activity,
                         modelList,
-                        tabModelSelector.getCurrentTabModelSupplier().asNonNull());
+                        tabModelSelector.getCurrentTabModelSupplier().asNonNull(),
+                        mUndoBarThrottle);
         if (mMainTouchHelperCallback == null) {
             mMainTouchHelperCallback = touchHelperCallback;
         }
