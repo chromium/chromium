@@ -9,6 +9,7 @@ import("//ios/chrome/test/earl_grey2/chrome_ios_eg2_test.gni")
 group("all_tests") {
   testonly = true
   deps = [
+    ":ios_chrome_all_eg2tests_module",
     ":ios_chrome_autofill_automation_eg2tests_module",
     ":ios_chrome_bookmarks_eg2tests_module",
     ":ios_chrome_device_check_eg2tests_module",
@@ -36,22 +37,217 @@ chrome_ios_eg2_test_app_host("ios_chrome_multitasking_eg2tests") {
   eg_main_application_delegate = "MultitaskingTestApplicationDelegate"
 }
 
+_autofill_automation_eg2tests_deps =
+    [ "//ios/chrome/browser/autofill/model/automation:eg2_tests" ]
+
+_bookmarks_eg2tests_deps = [
+  "//ios/chrome/browser/bookmarks/editor/test:eg2_tests",
+  "//ios/chrome/browser/bookmarks/folder_chooser/test:eg2_tests",
+  "//ios/chrome/browser/bookmarks/test:eg2_tests",
+  "//ios/chrome/browser/bookmarks/ui_bundled/home:eg2_tests",
+]
+
+_integration_eg2tests_deps = [
+  "//ios/chrome/browser/autofill/atmemory/test:eg2_tests",
+  "//ios/chrome/browser/autofill/manual_fill/test:eg2_tests",
+  "//ios/chrome/browser/autofill/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/autofill/ui_bundled/branding:eg2_tests",
+  "//ios/chrome/browser/content_suggestions/tab_resumption/test:eg2_tests",
+  "//ios/chrome/browser/content_suggestions/test:eg2_tests",
+  "//ios/chrome/browser/context_menu/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/default_browser/promo/non_modal/test:eg2_tests",
+  "//ios/chrome/browser/device_sharing/model:eg2_tests",
+  "//ios/chrome/browser/feature_engagement/model:eg2_tests",
+  "//ios/chrome/browser/find_in_page/model:eg2_tests",
+  "//ios/chrome/browser/https_upgrades/model:eg2_tests",
+  "//ios/chrome/browser/incognito_reauth/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/integration_tests:eg2_tests",
+  "//ios/chrome/browser/metrics/model:eg2_tests",
+  "//ios/chrome/browser/net/model:eg2_tests",
+  "//ios/chrome/browser/ntp_tiles/model:eg2_tests",
+  "//ios/chrome/browser/optimization_guide/model:eg2_tests",
+  "//ios/chrome/browser/passwords/model:eg2_tests",
+  "//ios/chrome/browser/policy/model:eg2_tests",
+  "//ios/chrome/browser/policy_url_blocking/model:eg2_tests",
+  "//ios/chrome/browser/prerender/model:eg2_tests",
+  "//ios/chrome/browser/push_notification/test:eg2_tests",
+  "//ios/chrome/browser/safari_data_import/test:eg2_tests",
+  "//ios/chrome/browser/safe_browsing/model:eg2_tests",
+  "//ios/chrome/browser/snapshots/model:eg2_tests",
+  "//ios/chrome/browser/ssl/model:eg2_tests",
+  "//ios/chrome/browser/supervised_user/model:eg2_tests",
+  "//ios/chrome/browser/sync/model/prefs:eg2_tests",
+  "//ios/chrome/browser/sync/test:eg2_tests",
+  "//ios/chrome/browser/tips_notifications/eg_test:eg2_tests",
+  "//ios/chrome/browser/variations/model:eg2_tests",
+  "//ios/chrome/browser/webauthn/test:eg2_tests",
+]
+
+_settings_eg2tests_deps = [
+  "//ios/chrome/browser/settings/autofill/autofill_ai/test:eg2_tests",
+  "//ios/chrome/browser/settings/autofill/autofill_and_passwords/test:eg2_tests",
+  "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_browsing_data/test:eg2_tests",
+  "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_other_data/test:eg2_tests",
+  "//ios/chrome/browser/settings/clear_browsing_data/test:eg2_tests",
+  "//ios/chrome/browser/settings/google_services/test:eg2_tests",
+  "//ios/chrome/browser/settings/manage_sync/test:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/autofill:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/content_settings:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/language:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/notifications:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/notifications/tracking_price:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/password:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/privacy:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/privacy/incognito:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/safety_check:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/sync:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/tabs:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs:eg2_tests",
+]
+
+_signin_eg2tests_deps = [
+  "//ios/chrome/browser/authentication/account_menu/test:eg2_tests",
+  "//ios/chrome/browser/authentication/age_mismatch_signout/coordinator:eg2_tests",
+  "//ios/chrome/browser/authentication/consistency_promo_signin/test:eg2_tests",
+  "//ios/chrome/browser/authentication/two_screens_signin/test:eg2_tests",
+  "//ios/chrome/browser/authentication/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/test:eg2_tests",
+  "//ios/chrome/browser/authentication/ui_bundled/signin:eg2_tests",
+  "//ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin:eg2_tests",
+  "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:eg2_tests",
+  "//ios/chrome/browser/post_restore_signin/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/shared/ui/util/identity_snackbar:eg2_tests",
+  "//ios/chrome/browser/signin/model:eg2_tests",
+]
+
+_smoke_eg2tests_deps = [ "//ios/chrome/test/earl_grey2:eg2_tests" ]
+
+_ui_eg2tests_deps = [
+  "//ios/chrome/app/application_delegate:eg2_tests",
+  "//ios/chrome/browser/assistant/eg_tests:eg2_tests",
+  "//ios/chrome/browser/autofill/authentication/test:eg2_tests",
+  "//ios/chrome/browser/autofill/autofill_ai/test:eg2_tests",
+  "//ios/chrome/browser/autofill/form_input_accessory/test:eg2_tests",
+  "//ios/chrome/browser/autofill/payments/test:eg2_tests",
+  "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:eg2_tests",
+  "//ios/chrome/browser/autofill/ui_bundled/progress_dialog:eg2_tests",
+  "//ios/chrome/browser/bring_android_tabs/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/browser_view/test:eg2_tests",
+  "//ios/chrome/browser/bubble/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/cobrowse/ui:eg2_tests",
+  "//ios/chrome/browser/composebox/eg_tests:eg2_tests",
+  "//ios/chrome/browser/composebox/eg_tests/inttest:eg2_tests",
+  "//ios/chrome/browser/content_suggestions/app_bundle_promo/test:eg2_tests",
+  "//ios/chrome/browser/content_suggestions/price_tracking_promo/test:eg2_tests",
+  "//ios/chrome/browser/content_suggestions/safety_check/test:eg2_tests",
+  "//ios/chrome/browser/content_suggestions/set_up_list/test:eg2_tests",
+  "//ios/chrome/browser/contextual_panel/ui:eg2_tests",
+  "//ios/chrome/browser/credential_exchange/test:eg2_tests",
+  "//ios/chrome/browser/default_browser/promo/post_restore/test:eg2_tests",
+  "//ios/chrome/browser/dialogs/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/download/ui:eg2_tests",
+  "//ios/chrome/browser/drive_file_picker/test:eg2_tests",
+  "//ios/chrome/browser/enterprise/data_controls/test:eg2_tests",
+  "//ios/chrome/browser/file_upload_panel/test:eg2_tests",
+  "//ios/chrome/browser/first_run/animated_lens/test:eg2_tests",
+  "//ios/chrome/browser/first_run/best_features/test:eg2_tests",
+  "//ios/chrome/browser/first_run/default_browser/test:eg2_tests",
+  "//ios/chrome/browser/first_run/omnibox_position/test:eg2_tests",
+  "//ios/chrome/browser/first_run/test:eg2_tests",
+  "//ios/chrome/browser/fullscreen/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/history/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/home_customization/test:eg2_tests",
+  "//ios/chrome/browser/incognito_interstitial/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/infobars/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/intelligence/actor/tools/test:eg2_tests",
+  "//ios/chrome/browser/intelligence/bwg/ui:eg2_tests",
+  "//ios/chrome/browser/intelligence/proto_wrappers:eg2_tests",
+  "//ios/chrome/browser/keyboard/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/lens_overlay/ui:eg2_tests",
+  "//ios/chrome/browser/link_to_text/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/location_bar/badge/ui:eg2_tests",
+  "//ios/chrome/browser/ntp/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/omnibox/eg_tests:eg2_tests",
+  "//ios/chrome/browser/omnibox/eg_tests/inttest:eg2_tests",
+  "//ios/chrome/browser/overscroll_actions/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/page_info/test",
+  "//ios/chrome/browser/passwords/bottom_sheet/test:eg2_tests",
+  "//ios/chrome/browser/passwords/password_breach/test:eg2_tests",
+  "//ios/chrome/browser/passwords/password_suggestion/test:eg2_tests",
+  "//ios/chrome/browser/permissions/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/phone_number/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/policy/ui_bundled/idle:eg2_tests",
+  "//ios/chrome/browser/popup_menu/overflow_menu/test:eg2_tests",
+  "//ios/chrome/browser/popup_menu/test:eg2_tests",
+  "//ios/chrome/browser/price_notifications/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/qr_scanner/test:eg2_tests",
+  "//ios/chrome/browser/reader_mode/ui:eg2_tests",
+  "//ios/chrome/browser/reading_list/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/recent_tabs/test:eg2_tests",
+  "//ios/chrome/browser/sad_tab/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/safe_mode/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/save_to_drive/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/save_to_photos/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/search_engine_choice/coordinator:eg2_tests",
+  "//ios/chrome/browser/search_with/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/send_tab_to_self/test:eg2_tests",
+  "//ios/chrome/browser/settings/ui_bundled/address_bar_preference:eg2_tests",
+  "//ios/chrome/browser/shared/ui/util:eg2_tests",
+  "//ios/chrome/browser/sharing/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/sharing/ui_bundled/activity_services:eg2_tests",
+  "//ios/chrome/browser/side_swipe/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/snackbar/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/start_surface/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/tab_switcher/tab_strip/test:eg2_tests",
+  "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:eg2_tests",
+  "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:eg2_tests",
+  "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/tests:eg2_tests",
+  "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:eg2_tests",
+  "//ios/chrome/browser/toolbar/legacy/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/toolbar/tab_group/test:eg2_tests",
+  "//ios/chrome/browser/toolbar/test:eg2_tests",
+  "//ios/chrome/browser/unit_conversion/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/webui/ui_bundled:eg2_tests",
+  "//ios/chrome/browser/webui/ui_bundled/interstitials:eg2_tests",
+  "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals:eg2_tests",
+  "//ios/chrome/browser/webui/ui_bundled/private_ai_internals:eg2_tests",
+]
+if (target_environment == "device") {
+  _ui_eg2tests_deps +=
+      [ "//ios/chrome/browser/picture_in_picture/test:eg2_tests" ]
+}
+
+_variations_smoke_eg2tests_deps =
+    [ "//ios/chrome/test/variations_smoke_test:eg2_tests" ]
+
+_web_eg2tests_deps = [ "//ios/chrome/browser/web/model:eg2_tests" ]
+
+chrome_ios_eg2_test("ios_chrome_all_eg2tests_module") {
+  xcode_test_application_name = "ios_chrome_eg2tests"
+
+  deps = _autofill_automation_eg2tests_deps + _bookmarks_eg2tests_deps +
+         _integration_eg2tests_deps + _settings_eg2tests_deps +
+         _signin_eg2tests_deps + _smoke_eg2tests_deps + _ui_eg2tests_deps +
+         _web_eg2tests_deps
+  data_deps = [ ":ios_chrome_eg2tests" ]
+}
+
 chrome_ios_eg2_test("ios_chrome_autofill_automation_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/browser/autofill/model/automation:eg2_tests" ]
+  deps = _autofill_automation_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
 chrome_ios_eg2_test("ios_chrome_bookmarks_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [
-    "//ios/chrome/browser/bookmarks/editor/test:eg2_tests",
-    "//ios/chrome/browser/bookmarks/folder_chooser/test:eg2_tests",
-    "//ios/chrome/browser/bookmarks/test:eg2_tests",
-    "//ios/chrome/browser/bookmarks/ui_bundled/home:eg2_tests",
-  ]
+  deps = _bookmarks_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
@@ -80,41 +276,7 @@ chrome_ios_eg2_test("ios_chrome_flaky_eg2tests_module") {
 chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [
-    "//ios/chrome/browser/autofill/atmemory/test:eg2_tests",
-    "//ios/chrome/browser/autofill/manual_fill/test:eg2_tests",
-    "//ios/chrome/browser/autofill/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/autofill/ui_bundled/branding:eg2_tests",
-    "//ios/chrome/browser/content_suggestions/tab_resumption/test:eg2_tests",
-    "//ios/chrome/browser/content_suggestions/test:eg2_tests",
-    "//ios/chrome/browser/context_menu/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/default_browser/promo/non_modal/test:eg2_tests",
-    "//ios/chrome/browser/device_sharing/model:eg2_tests",
-    "//ios/chrome/browser/feature_engagement/model:eg2_tests",
-    "//ios/chrome/browser/find_in_page/model:eg2_tests",
-    "//ios/chrome/browser/https_upgrades/model:eg2_tests",
-    "//ios/chrome/browser/incognito_reauth/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/integration_tests:eg2_tests",
-    "//ios/chrome/browser/metrics/model:eg2_tests",
-    "//ios/chrome/browser/net/model:eg2_tests",
-    "//ios/chrome/browser/ntp_tiles/model:eg2_tests",
-    "//ios/chrome/browser/optimization_guide/model:eg2_tests",
-    "//ios/chrome/browser/passwords/model:eg2_tests",
-    "//ios/chrome/browser/policy/model:eg2_tests",
-    "//ios/chrome/browser/policy_url_blocking/model:eg2_tests",
-    "//ios/chrome/browser/prerender/model:eg2_tests",
-    "//ios/chrome/browser/push_notification/test:eg2_tests",
-    "//ios/chrome/browser/safari_data_import/test:eg2_tests",
-    "//ios/chrome/browser/safe_browsing/model:eg2_tests",
-    "//ios/chrome/browser/snapshots/model:eg2_tests",
-    "//ios/chrome/browser/ssl/model:eg2_tests",
-    "//ios/chrome/browser/supervised_user/model:eg2_tests",
-    "//ios/chrome/browser/sync/model/prefs:eg2_tests",
-    "//ios/chrome/browser/sync/test:eg2_tests",
-    "//ios/chrome/browser/tips_notifications/eg_test:eg2_tests",
-    "//ios/chrome/browser/variations/model:eg2_tests",
-    "//ios/chrome/browser/webauthn/test:eg2_tests",
-  ]
+  deps = _integration_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
@@ -136,167 +298,35 @@ chrome_ios_eg2_test("ios_chrome_multitasking_eg2tests_module") {
 chrome_ios_eg2_test("ios_chrome_smoke_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/test/earl_grey2:eg2_tests" ]
+  deps = _smoke_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
 chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [
-    "//ios/chrome/browser/settings/autofill/autofill_ai/test:eg2_tests",
-    "//ios/chrome/browser/settings/autofill/autofill_and_passwords/test:eg2_tests",
-    "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_browsing_data/test:eg2_tests",
-    "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_other_data/test:eg2_tests",
-    "//ios/chrome/browser/settings/clear_browsing_data/test:eg2_tests",
-    "//ios/chrome/browser/settings/google_services/test:eg2_tests",
-    "//ios/chrome/browser/settings/manage_sync/test:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/autofill:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/content_settings:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/language:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/notifications:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/notifications/tracking_price:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/password:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/privacy:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/privacy/incognito:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/safety_check:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/sync:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/tabs:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs:eg2_tests",
-  ]
+  deps = _settings_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
 chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [
-    "//ios/chrome/browser/authentication/account_menu/test:eg2_tests",
-    "//ios/chrome/browser/authentication/age_mismatch_signout/coordinator:eg2_tests",
-    "//ios/chrome/browser/authentication/consistency_promo_signin/test:eg2_tests",
-    "//ios/chrome/browser/authentication/two_screens_signin/test:eg2_tests",
-    "//ios/chrome/browser/authentication/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/test:eg2_tests",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:eg2_tests",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin:eg2_tests",
-    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:eg2_tests",
-    "//ios/chrome/browser/post_restore_signin/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/shared/ui/util/identity_snackbar:eg2_tests",
-    "//ios/chrome/browser/signin/model:eg2_tests",
-  ]
+  deps = _signin_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
 chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [
-    "//ios/chrome/app/application_delegate:eg2_tests",
-    "//ios/chrome/browser/assistant/eg_tests:eg2_tests",
-    "//ios/chrome/browser/autofill/authentication/test:eg2_tests",
-    "//ios/chrome/browser/autofill/autofill_ai/test:eg2_tests",
-    "//ios/chrome/browser/autofill/form_input_accessory/test:eg2_tests",
-    "//ios/chrome/browser/autofill/payments/test:eg2_tests",
-    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:eg2_tests",
-    "//ios/chrome/browser/autofill/ui_bundled/progress_dialog:eg2_tests",
-    "//ios/chrome/browser/bring_android_tabs/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/browser_view/test:eg2_tests",
-    "//ios/chrome/browser/bubble/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/cobrowse/ui:eg2_tests",
-    "//ios/chrome/browser/composebox/eg_tests:eg2_tests",
-    "//ios/chrome/browser/composebox/eg_tests/inttest:eg2_tests",
-    "//ios/chrome/browser/content_suggestions/app_bundle_promo/test:eg2_tests",
-    "//ios/chrome/browser/content_suggestions/price_tracking_promo/test:eg2_tests",
-    "//ios/chrome/browser/content_suggestions/safety_check/test:eg2_tests",
-    "//ios/chrome/browser/content_suggestions/set_up_list/test:eg2_tests",
-    "//ios/chrome/browser/contextual_panel/ui:eg2_tests",
-    "//ios/chrome/browser/credential_exchange/test:eg2_tests",
-    "//ios/chrome/browser/default_browser/promo/post_restore/test:eg2_tests",
-    "//ios/chrome/browser/dialogs/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/download/ui:eg2_tests",
-    "//ios/chrome/browser/drive_file_picker/test:eg2_tests",
-    "//ios/chrome/browser/enterprise/data_controls/test:eg2_tests",
-    "//ios/chrome/browser/file_upload_panel/test:eg2_tests",
-    "//ios/chrome/browser/first_run/animated_lens/test:eg2_tests",
-    "//ios/chrome/browser/first_run/best_features/test:eg2_tests",
-    "//ios/chrome/browser/first_run/default_browser/test:eg2_tests",
-    "//ios/chrome/browser/first_run/omnibox_position/test:eg2_tests",
-    "//ios/chrome/browser/first_run/test:eg2_tests",
-    "//ios/chrome/browser/fullscreen/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/history/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/home_customization/test:eg2_tests",
-    "//ios/chrome/browser/incognito_interstitial/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/infobars/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/intelligence/actor/tools/test:eg2_tests",
-    "//ios/chrome/browser/intelligence/bwg/ui:eg2_tests",
-    "//ios/chrome/browser/intelligence/proto_wrappers:eg2_tests",
-    "//ios/chrome/browser/keyboard/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/lens_overlay/ui:eg2_tests",
-    "//ios/chrome/browser/link_to_text/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/location_bar/badge/ui:eg2_tests",
-    "//ios/chrome/browser/ntp/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/omnibox/eg_tests:eg2_tests",
-    "//ios/chrome/browser/omnibox/eg_tests/inttest:eg2_tests",
-    "//ios/chrome/browser/overscroll_actions/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/page_info/test",
-    "//ios/chrome/browser/passwords/bottom_sheet/test:eg2_tests",
-    "//ios/chrome/browser/passwords/password_breach/test:eg2_tests",
-    "//ios/chrome/browser/passwords/password_suggestion/test:eg2_tests",
-    "//ios/chrome/browser/permissions/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/phone_number/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/policy/ui_bundled/idle:eg2_tests",
-    "//ios/chrome/browser/popup_menu/overflow_menu/test:eg2_tests",
-    "//ios/chrome/browser/popup_menu/test:eg2_tests",
-    "//ios/chrome/browser/price_notifications/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/qr_scanner/test:eg2_tests",
-    "//ios/chrome/browser/reader_mode/ui:eg2_tests",
-    "//ios/chrome/browser/reading_list/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/recent_tabs/test:eg2_tests",
-    "//ios/chrome/browser/sad_tab/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/safe_mode/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/save_to_drive/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/save_to_photos/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/search_engine_choice/coordinator:eg2_tests",
-    "//ios/chrome/browser/search_with/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/send_tab_to_self/test:eg2_tests",
-    "//ios/chrome/browser/settings/ui_bundled/address_bar_preference:eg2_tests",
-    "//ios/chrome/browser/shared/ui/util:eg2_tests",
-    "//ios/chrome/browser/sharing/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/sharing/ui_bundled/activity_services:eg2_tests",
-    "//ios/chrome/browser/side_swipe/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/snackbar/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/start_surface/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/tab_switcher/tab_strip/test:eg2_tests",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:eg2_tests",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs:eg2_tests",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/tests:eg2_tests",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:eg2_tests",
-    "//ios/chrome/browser/toolbar/legacy/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/toolbar/tab_group/test:eg2_tests",
-    "//ios/chrome/browser/toolbar/test:eg2_tests",
-    "//ios/chrome/browser/unit_conversion/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/webui/ui_bundled:eg2_tests",
-    "//ios/chrome/browser/webui/ui_bundled/interstitials:eg2_tests",
-    "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals:eg2_tests",
-    "//ios/chrome/browser/webui/ui_bundled/private_ai_internals:eg2_tests",
-  ]
-
-  if (target_environment == "device") {
-    deps += [ "//ios/chrome/browser/picture_in_picture/test:eg2_tests" ]
-  }
-
+  deps = _ui_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
 chrome_ios_eg2_test("ios_chrome_variations_smoke_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/test/variations_smoke_test:eg2_tests" ]
+  deps = _variations_smoke_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 
   # Current seed to be injected in variations smoke test.
@@ -318,7 +348,7 @@ chrome_ios_eg2_test("ios_chrome_variations_smoke_eg2tests_module") {
 chrome_ios_eg2_test("ios_chrome_web_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/browser/web/model:eg2_tests" ]
+  deps = _web_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
