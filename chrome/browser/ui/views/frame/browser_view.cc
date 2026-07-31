@@ -280,9 +280,6 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/version_info/channel.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
-#include "components/webapps/browser/banners/installable_web_app_check_result.h"
-#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/desktop_capture_pip_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -1994,13 +1991,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   infobar_container_->ChangeInfoBarManager(
       infobars::ContentInfoBarManager::FromWebContents(new_contents));
 
-  auto* app_banner_manager =
-      webapps::AppBannerManager::FromWebContents(new_contents);
-  // May be null in unit tests.
-  if (app_banner_manager) {
-    ObserveAppBannerManager(app_banner_manager);
-  }
-
   // When switching tabs within a split, we want to layout to be done
   // asynchronously in order to ensure the input events are triggered at the
   // expected position.
@@ -2106,7 +2096,6 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
 
   GetActiveContentsWebView()->SetWebContents(nullptr);
   infobar_container_->ChangeInfoBarManager(nullptr);
-  app_banner_manager_observation_.Reset();
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
@@ -5836,12 +5825,6 @@ bool BrowserView::FindCommandIdForAccelerator(
   return true;
 }
 
-void BrowserView::ObserveAppBannerManager(
-    webapps::AppBannerManager* new_manager) {
-  app_banner_manager_observation_.Reset();
-  app_banner_manager_observation_.Observe(new_manager);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ExclusiveAccessContext implementation:
 Profile* BrowserView::GetProfile() const {
@@ -5890,12 +5873,6 @@ void BrowserView::OnImmersiveModeControllerDestroyed() {
 
   vertical_tabs_enable_state_lock_.reset();
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// BrowserView, webapps::AppBannerManager::Observer implementation:
-void BrowserView::OnInstallableWebAppStatusUpdated(
-    webapps::InstallableWebAppCheckResult result,
-    const std::optional<webapps::WebAppBannerData>& data) {}
 
 void BrowserView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   UpdateAccessibleNameForRootView();

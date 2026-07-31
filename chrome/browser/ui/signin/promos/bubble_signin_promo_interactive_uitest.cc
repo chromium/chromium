@@ -72,6 +72,7 @@
 #include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/window/dialog_client_view.h"
 

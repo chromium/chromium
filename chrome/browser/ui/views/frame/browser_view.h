@@ -44,7 +44,6 @@
 #include "components/infobars/core/infobar_container.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/viz/common/frame_timing_details.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/desktop_capture_pip_utils.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/permission_controller.h"
@@ -120,11 +119,6 @@ namespace views {
 class WebView;
 }  // namespace views
 
-namespace webapps {
-enum class InstallableWebAppCheckResult;
-struct WebAppBannerData;
-}  // namespace webapps
-
 class CustomFloatingCorner;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,7 +136,6 @@ class BrowserView : public BrowserWindow,
                     public views::ClientView,
                     public infobars::InfoBarContainer::Delegate,
                     public ImmersiveModeController::Observer,
-                    public webapps::AppBannerManager::Observer,
                     public views::FocusChangeListener,
                     public BookmarkBarController::Delegate {
   METADATA_HEADER(BrowserView, views::ClientView)
@@ -734,11 +727,6 @@ class BrowserView : public BrowserWindow,
   void OnImmersiveFullscreenExited() override;
   void OnImmersiveModeControllerDestroyed() override;
 
-  // webapps::AppBannerManager::Observer:
-  void OnInstallableWebAppStatusUpdated(
-      webapps::InstallableWebAppCheckResult result,
-      const std::optional<webapps::WebAppBannerData>& data) override;
-
   // views::FocusChangeListener
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
@@ -985,9 +973,6 @@ class BrowserView : public BrowserWindow,
   // set to the chrome command id defined in //chrome/app/chrome_command_ids.h.
   bool FindCommandIdForAccelerator(const ui::Accelerator& accelerator,
                                    int* command_id) const;
-
-  // Updates AppBannerManager::Observer to observe |new_manager| exclusively.
-  void ObserveAppBannerManager(webapps::AppBannerManager* new_manager);
 
   // Called by GetAccessibleWindowTitle, split out to make it testable.
   std::u16string GetAccessibleWindowTitleForChannelAndProfile(
@@ -1308,10 +1293,6 @@ class BrowserView : public BrowserWindow,
   // on a particular display, this closure will be called after fullscreen is
   // exited to restore the original pre-fullscreen bounds of the window.
   base::OnceClosure restore_pre_fullscreen_bounds_callback_;
-
-  base::ScopedObservation<webapps::AppBannerManager,
-                          webapps::AppBannerManager::Observer>
-      app_banner_manager_observation_{this};
 
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
       focus_manager_observation_{this};
