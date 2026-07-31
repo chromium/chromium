@@ -19,6 +19,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -364,5 +365,34 @@ public class LocationBarDragDropHandlerTest {
         when(desc.getMimeType(1)).thenReturn("application/pdf");
 
         assertEquals(contentUri, mHandler.findUriToLoad(mContext, clipData, desc));
+    }
+
+    @Test
+    public void testOnDrag_Drop_BrowsableIntent() {
+        DragEvent event = mock(DragEvent.class);
+        ClipData clipData = mock(ClipData.class);
+        ClipData.Item item = mock(ClipData.Item.class);
+        Activity activity = mock(Activity.class);
+        Intent intent = mock(Intent.class);
+
+        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(event.getClipData()).thenReturn(clipData);
+        when(clipData.getItemCount()).thenReturn(1);
+        when(clipData.getItemAt(0)).thenReturn(item);
+
+        when(item.getUri()).thenReturn(null);
+        when(item.getIntent()).thenReturn(intent);
+        when(intent.hasCategory(Intent.CATEGORY_BROWSABLE)).thenReturn(true);
+        Uri webUri = Uri.parse("https://www.example.com");
+        when(intent.getData()).thenReturn(webUri);
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        View view = new View(mContext);
+        assertTrue(mHandler.onDrag(view, event));
+
+        verify(mTab, never()).addObserver(any());
+        verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals("https://www.example.com", mLoadUrlParamsCaptor.getValue().url);
     }
 }

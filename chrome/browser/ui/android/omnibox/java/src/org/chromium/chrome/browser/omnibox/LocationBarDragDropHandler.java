@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -224,6 +225,16 @@ public class LocationBarDragDropHandler implements OnDragListener {
     Uri findUriToLoad(Context context, ClipData clipData, @Nullable ClipDescription desc) {
         for (int i = 0; i < clipData.getItemCount(); i++) {
             ClipData.Item item = clipData.getItemAt(i);
+
+            // Detect URL drops first.
+            Intent intent = item.getIntent();
+            if (intent != null && intent.hasCategory(Intent.CATEGORY_BROWSABLE)) {
+                Uri uri = intent.getData();
+                if (uri != null) {
+                    return uri;
+                }
+            }
+
             Uri uri = item.getUri();
             if (uri == null) continue;
 
