@@ -84,6 +84,7 @@ source_set("impl") {
     "//chrome/browser/translate",
     "//chrome/browser/ui:accelerator_table",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:tab_dialogs",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/exclusive_access",

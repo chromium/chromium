@@ -26,6 +26,7 @@ if (!is_android) {
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/preloading:prefs",
       "//chrome/browser/search",
+      "//chrome/browser/ui:tab_dialogs",
       "//chrome/browser/ui:tab_modal_confirm_dialog",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/location_bar",

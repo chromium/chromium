@@ -482,6 +482,19 @@ source_set("crypto_module_password_dialog") {
   }
 }
 
+source_set("tab_dialogs") {
+  public = [ "tab_dialogs.h" ]
+  sources = [ "tab_dialogs.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+  deps = [ "//content/public/browser" ]
+  if (enable_extensions_core) {
+    public_deps += [ "//extensions/common" ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -492,8 +505,6 @@ static_library("ui") {
   sources = [
     "idle_bubble.h",
     "screen_capture_notification_ui.h",
-    "tab_dialogs.cc",
-    "tab_dialogs.h",
     "tab_helpers.cc",
     "tab_helpers.h",
     "tab_ui_helper.cc",
@@ -518,6 +529,7 @@ static_library("ui") {
     ":crypto_module_password_dialog",
     ":enterprise_startup_dialog",
     ":simple_message_box_headers",
+    ":tab_dialogs",
     ":tab_modal_confirm_dialog",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
@@ -3969,8 +3981,6 @@ static_library("ui") {
       "views/ssl_client_certificate_selector.h",
       "views/sub_apps_permission_explanation.cc",
       "views/sub_apps_permission_explanation.h",
-      "views/tab_dialogs_views.cc",
-      "views/tab_dialogs_views.h",
       "views/tab_icon_view.cc",
       "views/tab_icon_view.h",
       "views/tab_search_bubble_host.cc",
@@ -5038,6 +5048,7 @@ static_library("ui") {
   if (toolkit_views) {
     deps += [
       "//chrome/browser/ui/views:hung_renderer_view",
+      "//chrome/browser/ui/views:tab_dialogs_impl",
       "//chrome/browser/ui/views/frame:top_controls_slide_controller",
     ]
   }
