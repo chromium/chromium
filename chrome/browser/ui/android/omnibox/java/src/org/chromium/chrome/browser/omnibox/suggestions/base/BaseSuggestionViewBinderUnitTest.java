@@ -333,7 +333,7 @@ public class BaseSuggestionViewBinderUnitTest {
         // LayerDrawable, whose bottom element represents the color.
         var defaultDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
 
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        setColorScheme(BrandedColorScheme.INCOGNITO);
         var lightModeDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
         assertNotSame(defaultDrawable, lightModeDrawable);
 
@@ -344,7 +344,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
 
         // Lastly, observe change when changing the color scheme to something else.
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        setColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertNotSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
     }
 
@@ -354,7 +354,7 @@ public class BaseSuggestionViewBinderUnitTest {
         // LayerDrawable, whose bottom element represents the color.
         var defaultDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
 
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        setColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         var lightModeDrawable = BaseSuggestionViewBinder.sFocusableDrawableState;
         assertNotSame(defaultDrawable, lightModeDrawable);
 
@@ -365,7 +365,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
 
         // Lastly, observe change when changing the color scheme to something else.
-        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        setColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertNotSame(lightModeDrawable, BaseSuggestionViewBinder.sFocusableDrawableState);
     }
 
@@ -561,6 +561,11 @@ public class BaseSuggestionViewBinderUnitTest {
     public void topPadding() {
         mModel.set(BaseSuggestionViewProperties.TOP_PADDING, 13);
         assertEquals(13, mBaseView.getPaddingTop());
+    }
+
+    private void setColorScheme(@BrandedColorScheme int scheme) {
+        mResourceProvider.setBrandedColorScheme(scheme);
+        mModel.set(SuggestionCommonProperties.COLOR_SCHEME, scheme);
     }
 
     private static class TestBaseSuggestionViewBinder<T extends View>

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -63,10 +64,11 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             int position) {
         super.populateModel(input, suggestion, model, position);
 
+        OmniboxResourceProvider resourceProvider = mUiContext.resourceProvider;
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, suggestion.isSearchSuggestion());
-        model.set(
-                SuggestionViewProperties.TEXT_LINE_1_TEXT,
-                new SuggestionSpannable(suggestion.getDescription()));
+        SuggestionSpannable textLine1 = new SuggestionSpannable(suggestion.getDescription());
+        applyTextColor(textLine1, resourceProvider.getSuggestionPrimaryTextColor());
+        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);
 
         setupContentField(suggestion, model, /* showContent= */ false);
     }
@@ -85,8 +87,18 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     private void setupContentField(
             AutocompleteMatch suggestion, PropertyModel model, boolean showContent) {
+        OmniboxResourceProvider resourceProvider = mUiContext.resourceProvider;
         String displayText = showContent ? suggestion.getDisplayText() : "";
-        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(displayText));
+        SuggestionSpannable textLine2 = new SuggestionSpannable(displayText);
+        if (showContent) {
+            @ColorInt
+            int color2 =
+                    suggestion.isSearchSuggestion()
+                            ? resourceProvider.getSuggestionSecondaryTextColor()
+                            : resourceProvider.getSuggestionUrlTextColor();
+            applyTextColor(textLine2, color2);
+        }
+        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, textLine2);
 
         updateSuggestionIcon(suggestion, model, showContent);
         updateActionButton(suggestion, model, showContent);

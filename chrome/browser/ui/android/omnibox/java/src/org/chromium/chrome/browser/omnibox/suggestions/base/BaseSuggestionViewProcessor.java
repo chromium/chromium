@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spannable;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -392,5 +395,21 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         }
                     });
         }
+    }
+
+    /**
+     * Applies text color to a target spannable string.
+     *
+     * @param text Target spannable string to apply color to.
+     * @param color Target color integer.
+     */
+    protected static void applyTextColor(@Nullable Spannable text, @ColorInt int color) {
+        if (TextUtils.isEmpty(text)) return;
+
+        text.setSpan(
+                new ForegroundColorSpan(color),
+                /* start= */ 0,
+                /* end= */ text.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 }

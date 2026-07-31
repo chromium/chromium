@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -125,7 +126,9 @@ public final class EditUrlSuggestionProcessorUnitTest {
                 ((ClipboardImpl) Clipboard.getInstance())
                         .overrideClipboardManagerForTesting(mClipboardManager);
 
-        mContext = ContextUtils.getApplicationContext();
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mMatch =
                 new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
                         .setIsSearch(false)
