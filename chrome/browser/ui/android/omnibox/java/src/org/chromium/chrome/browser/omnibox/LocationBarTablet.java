@@ -56,7 +56,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private final GradientDrawable mOuterRect;
     private final GradientDrawable mInnerRect;
     private final InsetDrawable mInsetStandbyBorder;
-    private LayerDrawable mUnfocusedDrawable;
+    private final LocationBarBackgroundDrawable mLocationBarBackground;
     private final LayerDrawable mHoverDrawable;
 
     private View mLocationBarIcon;
@@ -152,6 +152,19 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                                         getContext(),
                                         R.drawable.modern_toolbar_text_box_background_highlight));
         mHoverDrawable.mutate();
+
+        float strokeWidth = resources.getDimension(R.dimen.fusebox_glif_stroke_width);
+        float blurStrokeWidth = resources.getDimension(R.dimen.fusebox_glif_blur_stroke_width);
+        mLocationBarBackground =
+                new LocationBarBackgroundDrawable(
+                        context,
+                        mModernToolbarBackgroundCornerRadius,
+                        strokeWidth,
+                        blurStrokeWidth);
+        int verticalInset =
+                resources.getDimensionPixelSize(R.dimen.modern_toolbar_background_vertical_offset);
+        mLocationBarBackground.setInsets(0, verticalInset, 0, verticalInset);
+
         mInsetStandbyBorder =
                 (InsetDrawable)
                         assumeNonNull(
@@ -165,8 +178,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mUnfocusedDrawable = (LayerDrawable) getBackground();
-        mUnfocusedDrawable.mutate();
+        setBackground(mLocationBarBackground);
 
         mLocationBarIcon = findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = findViewById(R.id.bookmark_button);
@@ -498,23 +510,24 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                             context, mBrandedColorScheme));
         }
 
-        GradientDrawable unfocusedRect =
-                (GradientDrawable) mUnfocusedDrawable.findDrawableByLayerId(R.id.unfocused_bg);
-        if (unfocusedRect != null) {
-            if (mShowStandbyRing) {
-                unfocusedRect.setColor(
-                        OmniboxResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor(
-                                context, mBrandedColorScheme));
-            } else {
-                final @ColorInt int color = mLocationBarDataProvider.getPrimaryColor();
-                final @ColorInt int textBoxColor =
-                        ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                                context,
-                                color,
-                                mBrandedColorScheme == BrandedColorScheme.INCOGNITO,
-                                /* isCustomTab= */ false);
-                unfocusedRect.setColor(textBoxColor);
-            }
+        updateBackgroundColor();
+    }
+
+    private void updateBackgroundColor() {
+        Context context = getContext();
+        if (mShowStandbyRing) {
+            mLocationBarBackground.setBackgroundColor(
+                    OmniboxResourceProvider.getTabletToolbarTextBoxStandbyBackgroundColor(
+                            context, mBrandedColorScheme));
+        } else {
+            final @ColorInt int color = mLocationBarDataProvider.getPrimaryColor();
+            final @ColorInt int textBoxColor =
+                    ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
+                            context,
+                            color,
+                            mBrandedColorScheme == BrandedColorScheme.INCOGNITO,
+                            /* isCustomTab= */ false);
+            mLocationBarBackground.setBackgroundColor(textBoxColor);
         }
     }
 
@@ -608,7 +621,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mShowStandbyRing = showStandbyRing;
         updateLayoutAndBackground();
         updateForeground();
-        updateVisualsForState(mBrandedColorScheme);
+        updateBackgroundColor();
     }
 
     private void updateForeground() {
@@ -681,7 +694,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             updateForeground();
             // Reset our background to reflect non-zero suggestion count, which is the typical
             // state. Not setting this risks visual glitches when returning to the fusebox.
-            setBackground(mUnfocusedDrawable);
+            setBackground(mLocationBarBackground);
         }
 
         adjustBackgroundForSuggestions();

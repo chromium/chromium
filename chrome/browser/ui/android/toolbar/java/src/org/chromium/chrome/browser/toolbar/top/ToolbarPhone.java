@@ -47,10 +47,10 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -220,9 +220,6 @@ public class ToolbarPhone extends ToolbarLayout
      * and we no longer need to manually draw the Drawable to the canvas.
      */
     private View mActiveLocationBarBackgroundView;
-
-    private Drawable mActiveLocationBarBackground;
-    private @Nullable GradientDrawable mNtpFakeboxBackground;
 
     protected boolean mForceDrawLocationBarBackground;
 
@@ -459,7 +456,12 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBarBackgroundVerticalInset =
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
         mLocationBarBackground = createModernLocationBarBackground(getContext());
-        setActiveLocationBarBackground(mLocationBarBackground);
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            mActiveLocationBarBackgroundView.setBackground(mLocationBarBackground);
+            updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
+        } else {
+            mLocationBarBackground.setCallback(this);
+        }
         if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             mLocationBar
                     .getContainerView()
@@ -493,20 +495,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
     }
 
-    private void setActiveLocationBarBackground(Drawable background) {
-        mActiveLocationBarBackground = background;
-        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
-            mActiveLocationBarBackgroundView.setBackground(mActiveLocationBarBackground);
-            updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
-        } else {
-            // With the refactor enabled, the drawable belongs to a different view
-            // (mActiveLocationBarBackgroundView) that handles its invalidations. Otherwise, we need
-            // to manually handle its invalidations since it's not registered as our background
-            // drawable.
-            mLocationBarBackground.setCallback(this);
-        }
-    }
-
     private void updateBackgroundHairline(boolean urlHasFocus, boolean shouldShowRainbowOutline) {
         if (!urlHasFocus) {
             mLocationBarBackground.setHairlineBehavior(HairlineBehavior.NONE);
@@ -519,8 +507,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void invalidateDrawable(Drawable who) {
-        if (who == mLocationBarBackground
-                && mActiveLocationBarBackground == mLocationBarBackground) {
+        if (who == mLocationBarBackground) {
             invalidate();
         } else {
             super.invalidateDrawable(who);
@@ -560,31 +547,22 @@ public class ToolbarPhone extends ToolbarLayout
         return drawable;
     }
 
-    private static GradientDrawable createNtpFakeboxBackground(Context context) {
-        GradientDrawable drawable =
-                (GradientDrawable)
-                        AppCompatResources.getDrawable(
-                                context, R.drawable.home_surface_search_box_background);
-        assert drawable != null;
-        drawable.mutate();
-        return drawable;
-    }
-
     private void updateBackground(final boolean hasFocus) {
         if (hasFocus) {
             mDropdownListScrolled = false;
-            setActiveLocationBarBackground(mLocationBarBackground);
         } else if (isLocationBarShownInNtp()) {
             updateToNtpBackground();
         }
     }
 
-    // Replace location bar background with NTB fakebox background.
+    // Update location bar background to match NTP fakebox.
     private void updateToNtpBackground() {
-        if (mNtpFakeboxBackground == null) {
-            mNtpFakeboxBackground = createNtpFakeboxBackground(getContext());
-        }
-        setActiveLocationBarBackground(mNtpFakeboxBackground);
+        mLocationBarBackground.setBackgroundColor(
+                getContext().getColor(R.color.color_primary_with_alpha_15));
+        mLocationBarBackground.setCornerRadius(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.home_surface_search_box_background_radius));
+        mLocationBarBackground.setHairlineBehavior(HairlineBehavior.NONE);
     }
 
     /** Set the background color of the location bar to appropriately match the theme color. */
@@ -598,9 +576,12 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateModernLocationBarCorners() {
-        int nonFocusedRadius =
-                getResources()
-                        .getDimensionPixelSize(R.dimen.modern_toolbar_background_corner_radius);
+        @DimenRes
+        int nonFocusedRadiusRes =
+                isLocationBarShownInNtp()
+                        ? R.dimen.home_surface_search_box_background_radius
+                        : R.dimen.modern_toolbar_background_corner_radius;
+        int nonFocusedRadius = getResources().getDimensionPixelSize(nonFocusedRadiusRes);
         int focusedRadius =
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius);
@@ -1019,7 +1000,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     protected boolean verifyDrawable(Drawable who) {
-        return super.verifyDrawable(who) || who == mActiveLocationBarBackground;
+        return super.verifyDrawable(who) || who == mLocationBarBackground;
     }
 
     private void onNtpScrollChanged(float scrollFraction) {
@@ -1490,7 +1471,6 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBarNtpOffsetLeft = 0;
         mLocationBarNtpOffsetRight = 0;
         mRefactoredNtpStartingOffset = 0;
-        setActiveLocationBarBackground(mLocationBarBackground);
         mNtpSearchBoxTranslation.set(0, 0);
         mLocationBar.getPhoneCoordinator().setTranslationY(0);
         mLocationBar.getPhoneCoordinator().setTranslationX(0);
@@ -1843,13 +1823,13 @@ public class ToolbarPhone extends ToolbarLayout
             // If the animation refactor is enabled, the background will instead be drawn by an
             // Android view hosting the background drawable.
             if (shouldDrawLocationBarBackground()) {
-                mActiveLocationBarBackground.setBounds(
+                mLocationBarBackground.setBounds(
                         mLocationBarBackgroundBounds.left + mLocationBarBackgroundNtpOffset.left,
                         mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top,
                         mLocationBarBackgroundBounds.right + mLocationBarBackgroundNtpOffset.right,
                         mLocationBarBackgroundBounds.bottom
                                 + mLocationBarBackgroundNtpOffset.bottom);
-                mActiveLocationBarBackground.draw(canvas);
+                mLocationBarBackground.draw(canvas);
             }
 
             float locationBarClipLeft =
@@ -2546,12 +2526,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private @Nullable GradientDrawable getActiveLocationBarGradientDrawable() {
-        if (mActiveLocationBarBackground == mLocationBarBackground) {
-            return mLocationBarBackground.getBackgroundGradient();
-        } else if (mActiveLocationBarBackground == mNtpFakeboxBackground) {
-            return mNtpFakeboxBackground;
-        }
-        return null;
+        return mLocationBarBackground != null
+                ? mLocationBarBackground.getBackgroundGradient()
+                : null;
     }
 
     private class BackgroundDrawableTransition extends Transition {

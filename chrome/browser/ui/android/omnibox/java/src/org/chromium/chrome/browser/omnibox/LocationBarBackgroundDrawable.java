@@ -101,7 +101,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
      * @param strokePx The stroke width in pixels.
      */
     public LocationBarBackgroundDrawable(
-            Context context, float cornerRadiusPx, float strokePx, float blurStrokePx) {
+            Context context, @Px float cornerRadiusPx, @Px float strokePx, @Px float blurStrokePx) {
         this(
                 (GradientDrawable)
                         assumeNonNull(
@@ -126,9 +126,9 @@ public class LocationBarBackgroundDrawable extends Drawable {
      */
     public LocationBarBackgroundDrawable(
             GradientDrawable backgroundGradient,
-            float cornerRadiusPx,
-            float strokePx,
-            float blurStrokePx,
+            @Px float cornerRadiusPx,
+            @Px float strokePx,
+            @Px float blurStrokePx,
             int[] colors,
             float[] positions) {
         mBackgroundGradient = backgroundGradient;
