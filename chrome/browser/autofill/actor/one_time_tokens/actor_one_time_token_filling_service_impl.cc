@@ -21,6 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
@@ -44,6 +45,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/tab_interface.h"
@@ -279,10 +281,12 @@ void ActorOneTimeTokenFillingServiceImpl::SubscribeForOneTimeToken() {
   // The subscription comes after the cache is retrieved from the
   // service so it's obviously not null.
   CHECK(service);
-  // Subscribe to OneTimeTokenService with 1-minute timeout.
+  // Subscribe to OneTimeTokenService with configurable period.
+  base::TimeDelta subscription_period =
+      one_time_tokens::features::kGmailOtpSubscriptionPeriodParam.Get();
   subscription_ = service->Subscribe(
       one_time_tokens::OneTimeTokenSource::kGmail,
-      base::Time::Now() + base::Minutes(1),
+      base::Time::Now() + subscription_period,
       base::BindRepeating(
           &ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived,
           retrieve_otp_weak_ptr_factory_.GetWeakPtr()),

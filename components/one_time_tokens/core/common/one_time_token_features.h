@@ -16,6 +16,10 @@ namespace one_time_tokens::features {
 COMPONENT_EXPORT(ONE_TIME_TOKENS)
 BASE_DECLARE_FEATURE(kGmailOtpRetrievalService);
 
+COMPONENT_EXPORT(ONE_TIME_TOKENS)
+extern const base::FeatureParam<base::TimeDelta>
+    kGmailOtpSubscriptionPeriodParam;
+
 }  // namespace one_time_tokens::features
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_COMMON_ONE_TIME_TOKEN_FEATURES_H_

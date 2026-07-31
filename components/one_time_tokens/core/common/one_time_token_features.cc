@@ -12,4 +12,8 @@ namespace one_time_tokens::features {
 // TODO(crbug.com/452607505): Clean up when launched.
 BASE_FEATURE(kGmailOtpRetrievalService, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kGmailOtpSubscriptionPeriodParam{
+    &kGmailOtpRetrievalService, /*name=*/"subscription_period",
+    /*default_value=*/base::Minutes(1)};
+
 }  // namespace one_time_tokens::features
