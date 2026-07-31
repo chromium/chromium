@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "services/viz/public/cpp/crash_keys.h"
 
 namespace mojo {
 
@@ -47,9 +48,13 @@ bool StructTraits<viz::mojom::ContentFrameIntervalInfoDataView,
     Read(viz::mojom::ContentFrameIntervalInfoDataView info,
          viz::ContentFrameIntervalInfo* out) {
   if (!info.ReadType(&out->type)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read ContentFrameIntervalInfo::type");
     return false;
   }
   if (!info.ReadFrameInterval(&out->frame_interval)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read ContentFrameIntervalInfo::frame_interval");
     return false;
   }
   out->duplicate_count = info.duplicate_count();
@@ -61,6 +66,8 @@ bool StructTraits<viz::mojom::FrameIntervalInputsDataView,
     Read(viz::mojom::FrameIntervalInputsDataView inputs,
          viz::FrameIntervalInputs* out) {
   if (!inputs.ReadFrameTime(&out->frame_time)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read FrameIntervalInputs::frame_time");
     return false;
   }
   out->has_user_input = inputs.has_user_input();
@@ -68,9 +75,13 @@ bool StructTraits<viz::mojom::FrameIntervalInputsDataView,
   out->major_scroll_speed_in_pixels_per_second =
       inputs.major_scroll_speed_in_pixels_per_second();
   if (out->major_scroll_speed_in_pixels_per_second < 0.f) {
+    viz::SetDeserializationCrashKeyString(
+        "Invalid major_scroll_speed_in_pixels_per_second");
     return false;
   }
   if (!inputs.ReadContentIntervalInfo(&out->content_interval_info)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read FrameIntervalInputs::content_interval_info");
     return false;
   }
   out->has_only_content_frame_interval_updates =

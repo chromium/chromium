@@ -36,8 +36,11 @@ bool StructTraits<
     viz::mojom::HitTestRegionListDataView,
     viz::HitTestRegionList>::Read(viz::mojom::HitTestRegionListDataView data,
                                   viz::HitTestRegionList* out) {
-  if (!data.ReadRegions(&out->regions))
+  if (!data.ReadRegions(&out->regions)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read HitTestRegionList::regions");
     return false;
+  }
   if (!data.ReadBounds(&out->bounds)) {
     viz::SetDeserializationCrashKeyString(
         "Failed read HitTestRegionList::bounds");

@@ -11,6 +11,7 @@ include_rules = [
   "+services/shape_detection",
   "+services/tracing/public/cpp",
   "+services/viz/privileged/mojom",
+  "+services/viz/public/cpp",
   "+services/viz/service",
   "+services/webnn/public/cpp",
   "+sandbox",

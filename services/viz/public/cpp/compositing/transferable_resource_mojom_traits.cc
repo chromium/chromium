@@ -13,6 +13,7 @@
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
+#include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
@@ -25,8 +26,19 @@ bool StructTraits<viz::mojom::MetadataOverrideDataView,
     Read(viz::mojom::MetadataOverrideDataView data,
          viz::TransferableResource::MetadataOverride* out) {
   out->is_overlay_candidate = data.is_overlay_candidate();
-  if (!data.ReadColorSpace(&out->color_space) ||
-      !data.ReadOrigin(&out->origin) || !data.ReadAlphaType(&out->alpha_type)) {
+  if (!data.ReadColorSpace(&out->color_space)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::MetadataOverride::color_space");
+    return false;
+  }
+  if (!data.ReadOrigin(&out->origin)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::MetadataOverride::origin");
+    return false;
+  }
+  if (!data.ReadAlphaType(&out->alpha_type)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::MetadataOverride::alpha_type");
     return false;
   }
   return true;
@@ -160,16 +172,45 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   gpu::ExportedSharedImage exported_shared_image;
   viz::TransferableResource::MetadataOverride metadata_override;
 
-  if (!data.ReadSharedImage(&exported_shared_image) ||
-      !data.ReadSyncToken(&sync_token) ||
-      !data.ReadMetadataOverride(&metadata_override) ||
-      !data.ReadHdrMetadata(&out->hdr_metadata) || !data.ReadId(&id) ||
-      !data.ReadSynchronizationType(&out->synchronization_type) ||
-      !data.ReadResourceSource(&out->resource_source)) {
+  if (!data.ReadSharedImage(&exported_shared_image)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::shared_image");
+    return false;
+  }
+  if (!data.ReadSyncToken(&sync_token)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::sync_token");
+    return false;
+  }
+  if (!data.ReadMetadataOverride(&metadata_override)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::metadata_override");
+    return false;
+  }
+  if (!data.ReadHdrMetadata(&out->hdr_metadata)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::hdr_metadata");
+    return false;
+  }
+  if (!data.ReadId(&id)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::id");
+    return false;
+  }
+  if (!data.ReadSynchronizationType(&out->synchronization_type)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::synchronization_type");
+    return false;
+  }
+  if (!data.ReadResourceSource(&out->resource_source)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::resource_source");
     return false;
   }
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadYcbcrInfo(&out->ycbcr_info)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TransferableResource::ycbcr_info");
     return false;
   }
 #endif

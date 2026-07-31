@@ -21,8 +21,11 @@ bool RenderPassExists(viz::CompositorRenderPassId pass_id,
 // static
 bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
     Read(viz::mojom::CompositorFrameDataView data, viz::CompositorFrame* out) {
-  if (!data.ReadPasses(&out->render_pass_list))
+  if (!data.ReadPasses(&out->render_pass_list)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorFrame::render_pass_list");
     return false;
+  }
 
   if (out->render_pass_list.empty()) {
     viz::SetDeserializationCrashKeyString(
@@ -35,8 +38,11 @@ bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
     return false;
   }
 
-  if (!data.ReadMetadata(&out->metadata))
+  if (!data.ReadMetadata(&out->metadata)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read CompositorFrame::metadata");
     return false;
+  }
 
   // Ensure that all render passes referenced by shared elements are present in
   // the CompositorFrame.
@@ -53,6 +59,8 @@ bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
 
       if (!RenderPassExists(shared_element.render_pass_id,
                             out->render_pass_list)) {
+        viz::SetDeserializationCrashKeyString(
+            "Shared element render pass not found");
         return false;
       }
     }
@@ -63,6 +71,8 @@ bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
   gfx::Rect compositor_frame_bounds(out->size_in_pixels());
   for (const auto& crop_id_and_bounds : out->metadata.capture_bounds.bounds()) {
     if (!compositor_frame_bounds.Contains(crop_id_and_bounds.second)) {
+      viz::SetDeserializationCrashKeyString(
+          "Capture bounds out of frame bounds");
       return false;
     }
   }

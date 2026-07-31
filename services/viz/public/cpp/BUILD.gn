@@ -2,14 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("crash_keys") {
+component("crash_keys") {
   sources = [
     "crash_keys.cc",
     "crash_keys.h",
   ]
 
+  defines = [ "IS_VIZ_CRASH_KEYS_IMPL" ]
+
   deps = [
     "//base",
-    "//components/crash/core//common:crash_key",
+    "//components/crash/core/common:crash_key",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "crash_keys_unittest.cc" ]
+
+  deps = [
+    ":crash_keys",
+    "//base/test:test_support",
+    "//components/crash/core/common:crash_buildflags",
+    "//components/crash/core/common:crash_key",
+    "//testing/gtest",
   ]
 }

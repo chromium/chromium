@@ -43,6 +43,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
+#include "services/viz/public/cpp/crash_keys.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -69,6 +70,7 @@ void HandleBadMessage(const std::string& error) {
   LOG(ERROR) << "Mojo error in GPU process: " << error;
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
+  viz::ClearDeserializationCrashKeys();
 }
 
 ChildThreadImpl::Options GetOptions(

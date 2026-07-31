@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h"
 
+#include "services/viz/public/cpp/crash_keys.h"
 #include "services/viz/public/mojom/compositing/trees_in_viz_timing.mojom.h"
 
 namespace mojo {
@@ -13,17 +14,34 @@ using Traits =
 // static
 bool Traits::Read(viz::mojom::TreesInVizTimingDataView data,
                   viz::TreesInVizTiming* out) {
-  bool success =
-      data.ReadStartUpdateDisplayTree(&out->start_update_display_tree) &&
-      data.ReadStartPrepareToDraw(&out->start_prepare_to_draw) &&
-      data.ReadStartDrawLayers(&out->start_draw_layers) &&
-      data.ReadSubmitCompositorFrame(&out->submit_compositor_frame);
-  if (!success) {
+  if (!data.ReadStartUpdateDisplayTree(&out->start_update_display_tree)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TreesInVizTiming::start_update_display_tree");
     return false;
   }
-  return out->start_update_display_tree <= out->start_prepare_to_draw &&
-         out->start_prepare_to_draw <= out->start_draw_layers &&
-         out->start_draw_layers <= out->submit_compositor_frame;
+  if (!data.ReadStartPrepareToDraw(&out->start_prepare_to_draw)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TreesInVizTiming::start_prepare_to_draw");
+    return false;
+  }
+  if (!data.ReadStartDrawLayers(&out->start_draw_layers)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TreesInVizTiming::start_draw_layers");
+    return false;
+  }
+  if (!data.ReadSubmitCompositorFrame(&out->submit_compositor_frame)) {
+    viz::SetDeserializationCrashKeyString(
+        "Failed read TreesInVizTiming::submit_compositor_frame");
+    return false;
+  }
+  if (!(out->start_update_display_tree <= out->start_prepare_to_draw &&
+        out->start_prepare_to_draw <= out->start_draw_layers &&
+        out->start_draw_layers <= out->submit_compositor_frame)) {
+    viz::SetDeserializationCrashKeyString(
+        "Invalid timestamps in TreesInVizTiming");
+    return false;
+  }
+  return true;
 }
 
 }  // namespace mojo
