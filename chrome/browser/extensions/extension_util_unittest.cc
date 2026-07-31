@@ -221,8 +221,9 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
             policy_provider()});
     signin_profile_ = testing_profile_manager()->CreateTestingProfile(
         chrome::kInitialProfile, /*prefs=*/nullptr,
-        base::UTF8ToUTF16(chrome::kInitialProfile), 0,
-        TestingProfile::TestingFactories(),
+        base::UTF8ToUTF16(
+            base::FilePath::StringViewType(chrome::kInitialProfile)),
+        0, TestingProfile::TestingFactories(),
         /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
         std::move(policy_service));
     signin_profile_prefs_ = signin_profile_->GetTestingPrefService();

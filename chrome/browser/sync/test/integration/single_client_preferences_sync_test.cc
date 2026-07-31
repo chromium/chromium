@@ -1768,8 +1768,8 @@ class SingleClientTrackedPreferencesSyncTestWithAttack
   }
 
   void AttackTrackedSyncablePreference() {
-    const auto& filename = IsProtectionEnforced()
-                               ? chrome::kSecurePreferencesFilename
+    const base::FilePath::StringViewType filename =
+        IsProtectionEnforced() ? chrome::kSecurePreferencesFilename
                                : chrome::kPreferencesFilename;
 
     base::FilePath user_data_dir;
