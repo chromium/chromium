@@ -628,8 +628,10 @@ DownloadInterruptReason QuarantineFileResultToReason(
 }  // namespace
 
 // static
-GURL BaseFile::GetEffectiveAuthorityURL(const GURL& source_url,
-                                        const GURL& referrer_url) {
+GURL BaseFile::GetEffectiveAuthorityURL(
+    const GURL& source_url,
+    const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator) {
   if (source_url.is_valid()) {
     // http{,s} has an authority and are supported.
     if (source_url.SchemeIsHTTPOrHTTPS())
@@ -649,6 +651,16 @@ GURL BaseFile::GetEffectiveAuthorityURL(const GURL& source_url,
 
     if (source_url.SchemeIs(url::kBlobScheme))
       return url::Origin::Create(source_url).GetURL();
+  }
+
+  // The request initiator is validated by the browser process, so prefer it
+  // over the referrer (which may have been supplied by the renderer) when the
+  // source URL itself doesn't carry a usable authority. If an initiator was
+  // provided but isn't HTTP/S (e.g. it is opaque), the referrer from the same
+  // requesting context won't be a more reliable signal, so skip it as well.
+  if (request_initiator) {
+    GURL initiator_url = request_initiator->GetURL();
+    return initiator_url.SchemeIsHTTPOrHTTPS() ? initiator_url : GURL();
   }
 
   if (referrer_url.is_valid() && referrer_url.SchemeIsHTTPOrHTTPS())
@@ -682,7 +694,8 @@ void BaseFile::AnnotateWithSourceInformation(
     const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     OnAnnotationDoneCallback on_annotation_done_callback) {
-  GURL authority_url = GetEffectiveAuthorityURL(source_url, referrer_url);
+  GURL authority_url =
+      GetEffectiveAuthorityURL(source_url, referrer_url, request_initiator);
   if (!remote_quarantine) {
 #if BUILDFLAG(IS_WIN)
     quarantine::mojom::QuarantineFileResult result =

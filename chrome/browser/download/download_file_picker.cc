@@ -92,7 +92,8 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
 #endif
 
   GURL caller = download::BaseFile::GetEffectiveAuthorityURL(
-      download_item_->GetURL(), download_item_->GetReferrerUrl());
+      download_item_->GetURL(), download_item_->GetReferrerUrl(),
+      download_item_->GetRequestInitiator());
   // Blob URLs are not set as referrer of downloads of them. If the download url
   // itself has no authority part, their is no authority url. For dlp we want to
   // use the blob's origin in that case.

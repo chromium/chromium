@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -40,12 +41,18 @@ namespace download {
 // Detach().
 class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
  public:
-  // Given a source and a referrer, determines the "safest" URL that can be used
-  // to determine the authority of the download source. Returns an empty URL if
-  // no HTTP/S URL can be determined for the <|source_url|, |referrer_url|>
-  // pair.
-  static GURL GetEffectiveAuthorityURL(const GURL& source_url,
-                                       const GURL& referrer_url);
+  // Given a source URL, referrer, and the request initiator origin, determines
+  // the "safest" URL that can be used to determine the authority of the
+  // download source. Returns an empty URL if no HTTP/S URL can be determined
+  // from the inputs.
+  //
+  // When `source_url` itself does not carry a usable authority (e.g. data:),
+  // the browser-validated `request_initiator` is preferred over the
+  // `referrer_url`, which originates from the renderer.
+  static GURL GetEffectiveAuthorityURL(
+      const GURL& source_url,
+      const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator);
 
   // May be constructed on any thread.  All other routines (including
   // destruction) must occur on the same sequence.

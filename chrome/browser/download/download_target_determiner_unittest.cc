@@ -473,6 +473,8 @@ DownloadTargetDeterminerTest::CreateActiveDownloadItem(
       .WillByDefault(Return(test_case.mime_type));
   ON_CALL(*item, GetReferrerUrl())
       .WillByDefault(ReturnRefOfCopy(download_url));
+  ON_CALL(*item, GetRequestInitiator())
+      .WillByDefault(ReturnRefOfCopy(std::optional<url::Origin>()));
   ON_CALL(*item, GetState())
       .WillByDefault(Return(DownloadItem::IN_PROGRESS));
   ON_CALL(*item, GetTargetDisposition())

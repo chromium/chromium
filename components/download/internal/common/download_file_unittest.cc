@@ -1346,6 +1346,49 @@ TEST_F(DownloadFileTest, PropagatesUrlAndInitiatorToQuarantine) {
   DestroyDownloadFile(0);
 }
 
+// When the download source has no authority of its own (e.g. a data: URL), the
+// browser-validated request initiator should be reported to the quarantine
+// service as the source rather than the renderer-supplied referrer.
+TEST_F(DownloadFileTest, DataUrlSourcePassesInitiatorToQuarantine) {
+  ASSERT_TRUE(CreateDownloadFile(true));
+  base::FilePath initial_path(download_file_->FullPath());
+  base::FilePath path_1(initial_path.InsertBeforeExtensionASCII("_1"));
+
+  const url::Origin initiator =
+      url::Origin::Create(GURL("https://initiator.example.com/"));
+
+  EXPECT_CALL(quarantine_,
+              QuarantineFile(_, GURL("https://initiator.example.com/"),
+                             GURL("https://referrer.example.com/"),
+                             Eq(initiator), _, _))
+      .WillOnce(WithArg<5>(
+          [](quarantine::mojom::Quarantine::QuarantineFileCallback callback) {
+            std::move(callback).Run(
+                quarantine::mojom::QuarantineFileResult::OK);
+          }));
+
+  mojo::Receiver<quarantine::mojom::Quarantine> receiver(&quarantine_);
+  base::RunLoop loop_runner;
+  DownloadInterruptReason result_reason = DOWNLOAD_INTERRUPT_REASON_NONE;
+  download_file_->RenameAndAnnotate(
+      path_1, "12345678-ABCD-1234-DCBA-123456789ABC",
+      GURL("data:application/octet-stream;base64,SGVsbG8="),
+      GURL("https://referrer.example.com/"), initiator,
+      receiver.BindNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](base::OnceClosure quit, DownloadInterruptReason* out,
+             DownloadInterruptReason reason, const base::FilePath&) {
+            *out = reason;
+            std::move(quit).Run();
+          },
+          loop_runner.QuitClosure(), &result_reason));
+  loop_runner.Run();
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, result_reason);
+
+  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);
+  DestroyDownloadFile(0);
+}
+
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class DownloadFileTestWithObfuscation : public DownloadFileTest {
  protected:

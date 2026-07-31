@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -23,6 +24,8 @@
 #include "crypto/hash.h"
 #include "crypto/secure_hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
@@ -922,6 +925,56 @@ TEST_F(BaseFileTest, TruncateToZeroResetsHash) {
 
   // Verification that the hash state was correctly reset.
   EXPECT_EQ(expected_hash, actual_hash);
+}
+
+TEST_F(BaseFileTest, GetEffectiveAuthorityURL) {
+  const GURL kHttpSource("https://source.example.com/a");
+  const GURL kHttpReferrer("https://referrer.example.com/b");
+  const GURL kDataSource("data:text/plain,hi");
+  const url::Origin kHttpInitiator =
+      url::Origin::Create(GURL("https://initiator.example.com/"));
+  const url::Origin kOpaqueInitiator;
+
+  // An HTTP/S source URL is authoritative on its own.
+  EXPECT_EQ(kHttpSource, BaseFile::GetEffectiveAuthorityURL(
+                             kHttpSource, kHttpReferrer, kHttpInitiator));
+  EXPECT_EQ(kHttpSource, BaseFile::GetEffectiveAuthorityURL(
+                             kHttpSource, kHttpReferrer, std::nullopt));
+
+  // file:, ftp: and blob: sources are also used directly.
+  EXPECT_EQ(GURL("file:///tmp/a"),
+            BaseFile::GetEffectiveAuthorityURL(GURL("file:///tmp/a"),
+                                               kHttpReferrer, kHttpInitiator));
+  EXPECT_EQ(GURL("ftp://host/a"),
+            BaseFile::GetEffectiveAuthorityURL(GURL("ftp://host/a"),
+                                               kHttpReferrer, kHttpInitiator));
+  EXPECT_EQ(GURL("https://blob.example.com/"),
+            BaseFile::GetEffectiveAuthorityURL(
+                GURL("blob:https://blob.example.com/"
+                     "550e8400-e29b-41d4-a716-446655440000"),
+                kHttpReferrer, kHttpInitiator));
+
+  // data: sources have no authority. The browser-validated request initiator
+  // is preferred over the renderer-supplied referrer.
+  EXPECT_EQ(GURL("https://initiator.example.com/"),
+            BaseFile::GetEffectiveAuthorityURL(kDataSource, kHttpReferrer,
+                                               kHttpInitiator));
+
+  // If the initiator is opaque (or otherwise non-HTTP/S), the referrer from
+  // the same context is not a more reliable signal, so the result is empty.
+  EXPECT_EQ(GURL(), BaseFile::GetEffectiveAuthorityURL(
+                        kDataSource, kHttpReferrer, kOpaqueInitiator));
+
+  // When no initiator is available (e.g. browser-initiated downloads), fall
+  // back to the referrer.
+  EXPECT_EQ(kHttpReferrer, BaseFile::GetEffectiveAuthorityURL(
+                               kDataSource, kHttpReferrer, std::nullopt));
+  EXPECT_EQ(kHttpReferrer, BaseFile::GetEffectiveAuthorityURL(
+                               GURL(), kHttpReferrer, std::nullopt));
+
+  // Nothing usable.
+  EXPECT_EQ(GURL(),
+            BaseFile::GetEffectiveAuthorityURL(GURL(), GURL(), std::nullopt));
 }
 
 }  // namespace download
