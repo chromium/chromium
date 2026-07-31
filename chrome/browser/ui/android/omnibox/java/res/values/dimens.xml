@@ -107,6 +107,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_header_height">40dp</dimen>
     <dimen name="omnibox_suggestion_content_height">56dp</dimen>
     <dimen name="omnibox_suggestion_content_height_desktop">40dp</dimen>
+    <dimen name="omnibox_suggestion_content_height_desktop_multiline">48dp</dimen>
     <dimen name="omnibox_suggestion_minimum_content_height">48dp</dimen>
     <dimen name="omnibox_suggestion_minimum_content_height_multiline">
         52dp

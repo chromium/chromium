@@ -301,6 +301,7 @@ android_library("java") {
     "//components/signin/public/android:java",
     "//components/tab_groups:tab_groups_java",
     "//components/ukm/android:java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//components/webapps/browser/android:java",
     "//content/public/android:content_java",

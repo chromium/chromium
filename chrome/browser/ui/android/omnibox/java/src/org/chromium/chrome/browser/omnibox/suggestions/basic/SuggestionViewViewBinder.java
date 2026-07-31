@@ -37,8 +37,6 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
         } else if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
             TextView tv = view.findViewById(R.id.line_1);
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
-            int minHeight = mResourceProvider.getSuggestionMinHeight(tv.getLineCount());
-            view.setMinimumHeight(minHeight);
         } else if (propertyKey == SuggestionViewProperties.IS_SEARCH_SUGGESTION) {
             // https://crbug.com/40084252: ensure URLs are always composed LTR and that their
             // components are not re-ordered.
@@ -52,8 +50,10 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
             if (!TextUtils.isEmpty(span)) {
                 tv.setText(span);
                 tv.setVisibility(View.VISIBLE);
+                view.setMinimumHeight(mResourceProvider.getSuggestionMinHeight(2));
             } else {
                 tv.setVisibility(View.GONE);
+                view.setMinimumHeight(mResourceProvider.getSuggestionMinHeight(1));
             }
         } else if (propertyKey == SuggestionViewProperties.ALLOW_WRAP_AROUND) {
             final boolean allowWrapAround = model.get(SuggestionViewProperties.ALLOW_WRAP_AROUND);

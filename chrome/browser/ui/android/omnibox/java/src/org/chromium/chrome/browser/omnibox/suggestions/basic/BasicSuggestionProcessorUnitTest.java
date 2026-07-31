@@ -57,6 +57,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.DocumentType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
@@ -645,5 +646,42 @@ public class BasicSuggestionProcessorUnitTest {
                 "Gemini, AI Mode. Conversation. 3 of 4 in the group AI Suggestions.";
         assertEquals(
                 expectedAnnouncement, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    @SmallTest
+    public void desktopLayoutExemption_TabSearch() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.HISTORY_URL, "Google")
+                        .setIsSearch(false)
+                        .setUrl(new GURL("https://www.google.com/search?q=test"))
+                        .setDisplayText("google.com/search?q=test")
+                        .build();
+
+        // 1. For a standard URL suggestion, desktop platform forces a single-line layout.
+        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        // TEXT_LINE_2_TEXT should be null as it got concatenated into TEXT_LINE_1_TEXT.
+        assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+        assertTrue(
+                mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT)
+                        .toString()
+                        .contains("google.com/search?q=test"));
+
+        // 2. For Tab Search suggestion, it is exempt and maintains a 2-line layout.
+        mInput.setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE);
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        // TEXT_LINE_2_TEXT is NOT null and matches the URL text.
+        assertNotNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+        assertEquals(
+                "google.com/search?q=test",
+                mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
     }
 }

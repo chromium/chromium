@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.DocumentType;
@@ -195,6 +196,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         final boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         final boolean isDocumentSuggestion =
                 suggestion.getType() == OmniboxSuggestionType.DOCUMENT_SUGGESTION;
+        final boolean isTabSearch =
+                input.getPageClassification()
+                        == PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE;
         SuggestionSpannable textLine2 = null;
         boolean urlHighlighted = false;
         @ColorInt int textLine2Color = 0;
@@ -221,7 +225,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyTextColor(textLine1, mUiContext.resourceProvider.getSuggestionPrimaryTextColor());
         applyTextColor(textLine2, textLine2Color);
 
-        if (OmniboxCapabilities.isDesktopPlatform() && !TextUtils.isEmpty(textLine2)) {
+        // Tab search on desktop is exempt from the standard single-line desktop layout.
+        if (!isTabSearch
+                && OmniboxCapabilities.isDesktopPlatform()
+                && !TextUtils.isEmpty(textLine2)) {
             // Separate text and url with an emdash on Desktop. Desktop shows URLs as a single line.
             var separator =
                     mUiContext.resourceProvider.getString(

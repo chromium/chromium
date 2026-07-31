@@ -1196,7 +1196,9 @@ public class OmniboxResourceProvider {
     public static int getSuggestionMinHeight(Resources resources, int lineCount) {
         if (OmniboxCapabilities.isDesktopPlatform()) {
             return resources.getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_content_height_desktop);
+                    lineCount > 1
+                            ? R.dimen.omnibox_suggestion_content_height_desktop_multiline
+                            : R.dimen.omnibox_suggestion_content_height_desktop);
         }
         return resources.getDimensionPixelSize(
                 lineCount > 1
