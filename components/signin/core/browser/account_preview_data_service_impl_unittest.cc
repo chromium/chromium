@@ -944,4 +944,70 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshWithNoAccounts) {
   }
 }
 
+TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshTimingParam) {
+  base::test::ScopedFeatureList custom_feature_list;
+  custom_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewData,
+      {{switches::kAccountPreviewDataPeriodicRefreshTiming.name, "18h"}});
+
+  // Destroy existing service so it can be re-created with the custom param.
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
+
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  // Fast forward 17 hours: timer shouldn't fire yet.
+  task_environment_.FastForwardBy(base::Hours(17));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+
+  // Fast forward 1 more hour (total 18 hours): timer fires.
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       PeriodicRefreshTimingParamClampedToMinimum) {
+  base::test::ScopedFeatureList custom_feature_list;
+  // Set parameter to 10 minutes, which is less than the 12 hour minimum.
+  custom_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewData,
+      {{switches::kAccountPreviewDataPeriodicRefreshTiming.name, "10m"}});
+
+  // Destroy existing service so it can be re-created with the custom param.
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
+
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  // Fast forward 11 hours: timer shouldn't fire (clamped to 12 hours minimum).
+  task_environment_.FastForwardBy(base::Hours(11));
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+
+  // Fast forward 1 more hour (total 12 hours): timer fires.
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+}
+
 }  // namespace signin

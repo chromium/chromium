@@ -283,6 +283,9 @@ BASE_DECLARE_FEATURE(kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewData);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<base::TimeDelta>
+    kAccountPreviewDataPeriodicRefreshTiming;
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewEntityPreviews);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccount);

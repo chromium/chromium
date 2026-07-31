@@ -29,6 +29,8 @@ namespace {
 constexpr char kPreferredAccountDictGaiaIdKey[] = "gaia_id";
 constexpr char kPreferredAccountDictDataTypesKey[] = "data_types";
 
+constexpr base::TimeDelta kMinPeriodicRefreshInterval = base::Hours(12);
+
 void RecordNonPeriodicFetchesUntilNextPeriodicRefresh(int count) {
   base::UmaHistogramCounts100(
       "Signin.AccountPreview.NonPeriodicFetchesUntilNextPeriodicRefresh",
@@ -379,7 +381,9 @@ void AccountPreviewDataServiceImpl::ResetTimer() {
 
 void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
   repeating_timer_ = std::make_unique<PersistentRepeatingTimer>(
-      pref_service_, prefs::kAccountPreviewDataLastUpdatePref, base::Hours(24),
+      pref_service_, prefs::kAccountPreviewDataLastUpdatePref,
+      std::max(switches::kAccountPreviewDataPeriodicRefreshTiming.Get(),
+               kMinPeriodicRefreshInterval),
       base::BindRepeating(
           &AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData,
           weak_ptr_factory_.GetWeakPtr()));
