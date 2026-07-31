@@ -721,8 +721,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_FALSE(bubble_observer.IsSavePromptAvailable());
 }
 
+// TODO(crbug.com/500570908): Flaky on linux-rel-cft and mac-rel-cft.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       OfferToSaveNonPrimaryAccountCredential) {
+                       DISABLED_OfferToSaveNonPrimaryAccountCredential) {
   // Disable signin interception, because it suppresses the password bubble.
   // See PasswordManagerBrowserTestWithSigninInterception for tests with
   // interception enabled.
