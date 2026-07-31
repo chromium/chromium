@@ -5,12 +5,16 @@
 #include "chrome/browser/ash/login/smart_lock/smart_lock_notification_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/user.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
@@ -51,16 +55,21 @@ class SmartLockNotificationControllerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
     notification_controller_ =
         std::make_unique<testing::StrictMock<TestableNotificationController>>(
             profile());
   }
 
+  const message_center::Notification* GetNotification(
+      const std::string& notification_id) {
+    const user_manager::User& user = CHECK_DEREF(
+        BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+        CreateUserScopedNotificationId(notification_id, user.username_hash()));
+  }
+
   std::unique_ptr<testing::StrictMock<TestableNotificationController>>
       notification_controller_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
 TEST_F(SmartLockNotificationControllerTest,
@@ -68,8 +77,8 @@ TEST_F(SmartLockNotificationControllerTest,
   const char kNotificationId[] = "easyunlock_notification_ids.chromebook_added";
 
   notification_controller_->ShowChromebookAddedNotification();
-  std::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kNotificationId);
+  const message_center::Notification* notification =
+      GetNotification(kNotificationId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(1u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
@@ -87,8 +96,8 @@ TEST_F(SmartLockNotificationControllerTest, TestShowPairingChangeNotification) {
   const char kNotificationId[] = "easyunlock_notification_ids.pairing_change";
 
   notification_controller_->ShowPairingChangeNotification();
-  std::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kNotificationId);
+  const message_center::Notification* notification =
+      GetNotification(kNotificationId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(2u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
@@ -111,8 +120,8 @@ TEST_F(SmartLockNotificationControllerTest,
       "easyunlock_notification_ids.pairing_change_applied";
 
   notification_controller_->ShowPairingChangeAppliedNotification(kPhoneName);
-  std::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kNotificationId);
+  const message_center::Notification* notification =
+      GetNotification(kNotificationId);
   ASSERT_TRUE(notification);
   ASSERT_EQ(1u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
@@ -136,11 +145,11 @@ TEST_F(SmartLockNotificationControllerTest,
       "easyunlock_notification_ids.pairing_change_applied";
 
   notification_controller_->ShowPairingChangeNotification();
-  EXPECT_TRUE(display_service_->GetNotification(kPairingChangeId));
+  EXPECT_TRUE(GetNotification(kPairingChangeId));
 
   notification_controller_->ShowPairingChangeAppliedNotification(kPhoneName);
-  EXPECT_FALSE(display_service_->GetNotification(kPairingChangeId));
-  EXPECT_TRUE(display_service_->GetNotification(kPairingAppliedId));
+  EXPECT_FALSE(GetNotification(kPairingChangeId));
+  EXPECT_TRUE(GetNotification(kPairingAppliedId));
 }
 
 }  // namespace

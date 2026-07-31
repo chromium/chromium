@@ -47,7 +47,6 @@ static_library("smart_lock") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
-    "//chrome/browser/notifications",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -68,6 +67,7 @@ static_library("smart_lock") {
     "//extensions/browser",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/message_center",
   ]
 }
 
@@ -84,6 +84,7 @@ source_set("unit_tests") {
   deps = [
     ":smart_lock",
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -94,6 +95,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/multidevice",
@@ -120,6 +122,7 @@ source_set("unit_tests") {
     "//ui/display",
     "//ui/display:test_support",
     "//ui/display/util",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/views:test_support",
   ]
