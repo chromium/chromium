@@ -28,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/base/l10n/l10n_util.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/glic/android/jni_headers/GlicSidePanelComponentProvider_jni.h"
@@ -112,6 +113,8 @@ void GlicSidePanelCoordinatorDesktopAndroid::CreateAndRegisterEntry() {
       base::BindRepeating(
           &GlicSidePanelCoordinatorDesktopAndroid::GetPreferredWidth,
           base::Unretained(this)));
+  entry->SetProperty(kSidePanelTitleKey,
+                     l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
   entry->set_should_show_header(false);
   entry->set_should_show_ephemerally_in_toolbar(false);
   entry->AddObserver(this);
