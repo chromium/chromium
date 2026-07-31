@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
+#include "third_party/blink/public/mojom/dom/dom_node_id.mojom.h"
 
 class BrowserWindowInterface;
 
@@ -64,6 +65,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   void RemoveBookmark(RemoveBookmarkCallback callback) override;
   void OpenPage(const std::string& query,
                 OpenPageCallback callback) override;
+  void SetText(int32_t dom_node_id,
+               const std::string& text,
+               SetTextCallback callback) override;
   void InvokeGlic(const std::string& prompt,
                   InvokeGlicCallback callback) override;
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;

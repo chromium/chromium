@@ -114,7 +114,7 @@ interface AiOverlayTools {
   AddBookmark()
       => result<mojo_base.mojom.Empty, string>;
 
-  // Remove the bookmark for the current active tab.
+  // Remove bookmark for the current active tab.
   RemoveBookmark()
       => result<mojo_base.mojom.Empty, string>;
 
@@ -128,6 +128,13 @@ interface AiOverlayTools {
   OpenPage(string query)
       => result<string, string>;
 
+  // Replace text in an input field, textarea, or editable element on the page.
+  //
+  // dom_node_id: The numeric DOM node ID of the target field from the Page
+  // Content Summary (e.g. 101).
+  // text: The text to set into the element.
+  SetText(int32 dom_node_id, string text)
+      => result<mojo_base.mojom.Empty, string>;
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
   // video, or long text. Prefer direct voice replies for quick (<1s) tasks.
