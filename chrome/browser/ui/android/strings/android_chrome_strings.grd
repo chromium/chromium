@@ -7815,6 +7815,38 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GRACEFUL_SHUTDOWN_TITLE" desc="Title of the notification shown when Chrome is finishing shutting down.">
         Finishing shut down
       </message>
+
+      <!-- Enterprise Signals Disclaimer strings -->
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_TITLE" desc="Title of the enterprise signals disclaimer dialog.">
+        Your work secured on Chrome
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_DESCRIPTION" desc="Description of the enterprise signals disclaimer dialog.">
+        To secure your work on Chrome, your organization will be able to view or manage certain information when you’re signed-in to Chrome. Learn more
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_TITLE" desc="Title of the profile information section in the enterprise signals disclaimer dialog.">
+        Profile information
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_PROFILE_INFORMATION_DETAILS" desc="Details of the profile information section in the enterprise signals disclaimer dialog.">
+        Your organization may need to see and manage browsing data in your work profile, such as your browsing history and passwords
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_DEVICE_INFORMATION_TITLE" desc="Title of the device information section in the enterprise signals disclaimer dialog.">
+        Device information
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_DEVICE_INFORMATION_DETAILS" desc="Details of the device information section in the enterprise signals disclaimer dialog.">
+        To make sure this device can be used safely, your organization may need to see information about its operating system, browser, settings, and what software is installed on the device
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_ACCEPT_BUTTON_TEXT" desc="Accept button text of the enterprise signals disclaimer dialog.">
+        Got it
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_CANCEL_BUTTON_TEXT" desc="Cancel button text of the enterprise signals disclaimer dialog.">
+        Sign out
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_SHEET_FULL_HEIGHT" desc="Accessibility string read when the Enterprise Signals Disclaimer bottom sheet is opened at full height.">
+        Enterprise signals disclaimer bottom sheet opened at full height
+      </message>
+      <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_SHEET_CLOSED" desc="Accessibility string read when the Enterprise Signals Disclaimer bottom sheet is closed.">
+        Enterprise signals disclaimer bottom sheet is closed
+      </message>
     </messages>
   </release>
 </grit>

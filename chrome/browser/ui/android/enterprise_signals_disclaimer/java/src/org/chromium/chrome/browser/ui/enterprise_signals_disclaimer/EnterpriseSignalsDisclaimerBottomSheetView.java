@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -205,27 +206,19 @@ class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        // TODO(b/512836948): Add a localised string once the dialog is complete.
-        return "";
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(b/512836948): Add a localised string once the dialog is complete.
-        return R.string.bottom_sheet_accessibility_description;
+        // Half height is not supported.
+        return Resources.ID_NULL;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        // TODO(b/512836948): Add a localised string once the dialog is complete.
-        return R.string.bottom_sheet_accessibility_description;
+        return R.string.enterprise_signals_disclaimer_sheet_full_height;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        // TODO(b/512836948): Add a localised string once the dialog is complete.
-        return R.string.bottom_sheet_accessibility_description;
+        return R.string.enterprise_signals_disclaimer_sheet_closed;
     }
 
     private void styleContainmentCard(
