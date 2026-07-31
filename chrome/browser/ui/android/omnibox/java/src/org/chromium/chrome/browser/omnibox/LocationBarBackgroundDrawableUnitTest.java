@@ -81,6 +81,22 @@ public class LocationBarBackgroundDrawableUnitTest {
     }
 
     @Test
+    public void testDraw_withStandbyHairline() {
+        mDrawable.setHairlineBehavior(HairlineBehavior.SOLID);
+        assertEquals(HairlineBehavior.SOLID, mDrawable.getHairlineBehaviorForTesting());
+
+        mDrawable.setStandbyColor(Color.GREEN);
+        assertEquals(Color.GREEN, mDrawable.getStandbyPaintForTesting().getColor());
+
+        mDrawable.draw(mCanvas);
+        verify(mGradientDrawable).draw(mCanvas);
+        verify(mCanvas)
+                .drawPath(mDrawable.getPathForTesting(), mDrawable.getStandbyPaintForTesting());
+        verify(mCanvas, never())
+                .drawPath(mDrawable.getBlurPathForTesting(), mDrawable.getBlurPaintForTesting());
+    }
+
+    @Test
     public void testDraw_withoutHairline() {
         mDrawable.setHairlineBehavior(HairlineBehavior.NONE);
         assertEquals(HairlineBehavior.NONE, mDrawable.getHairlineBehaviorForTesting());

@@ -50,11 +50,13 @@ public class LocationBarBackgroundDrawable extends Drawable {
     @IntDef({
         LocationBarBackgroundDrawable.HairlineBehavior.NONE,
         LocationBarBackgroundDrawable.HairlineBehavior.RAINBOW,
+        LocationBarBackgroundDrawable.HairlineBehavior.SOLID,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface HairlineBehavior {
         int NONE = 0;
         int RAINBOW = 1;
+        int SOLID = 2;
     }
 
     private final FloatProperty<LocationBarBackgroundDrawable> mBlurProperty =
@@ -80,7 +82,8 @@ public class LocationBarBackgroundDrawable extends Drawable {
     private final GradientDrawable mBackgroundGradient;
     private final Paint mRainbowBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mRainbowBorderBlurPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Path mRainbowPath = new Path();
+    private final Paint mStandbyBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Path mHairlinePath = new Path();
     private final Path mRainbowBlurPath = new Path();
     private final Rect mInsets = new Rect();
     private final Rect mEffectiveBounds = new Rect();
@@ -143,6 +146,8 @@ public class LocationBarBackgroundDrawable extends Drawable {
         mRainbowBorderPaint.setStrokeWidth(mStrokePx);
         mRainbowBorderBlurPaint.setStyle(Style.STROKE);
         mRainbowBorderBlurPaint.setStrokeWidth(mBlurStrokePx);
+        mStandbyBorderPaint.setStyle(Style.STROKE);
+        mStandbyBorderPaint.setStrokeWidth(mStrokePx);
         RotationProperty<LocationBarBackgroundDrawable> rotationProperty =
                 new RotationProperty<>(
                         mRainbowBorderPaint,
@@ -192,8 +197,8 @@ public class LocationBarBackgroundDrawable extends Drawable {
 
         RectF boundsAsFloatRect = new RectF(mEffectiveBounds);
         // Rebuild path.
-        mRainbowPath.reset();
-        mRainbowPath.addRoundRect(
+        mHairlinePath.reset();
+        mHairlinePath.addRoundRect(
                 boundsAsFloatRect, mCornerRadiusPx, mCornerRadiusPx, Path.Direction.CW);
 
         boundsAsFloatRect.inset(mStrokePx, mStrokePx);
@@ -223,10 +228,13 @@ public class LocationBarBackgroundDrawable extends Drawable {
                 canvas.save();
                 // Clip anything outside the border path to avoid the blur path from drawing outside
                 // the border, which it would otherwise do.
-                canvas.clipPath(mRainbowPath);
-                canvas.drawPath(mRainbowPath, mRainbowBorderPaint);
+                canvas.clipPath(mHairlinePath);
+                canvas.drawPath(mHairlinePath, mRainbowBorderPaint);
                 canvas.drawPath(mRainbowBlurPath, mRainbowBorderBlurPaint);
                 canvas.restore();
+                break;
+            case HairlineBehavior.SOLID:
+                canvas.drawPath(mHairlinePath, mStandbyBorderPaint);
                 break;
             case HairlineBehavior.NONE:
             default:
@@ -280,6 +288,17 @@ public class LocationBarBackgroundDrawable extends Drawable {
         invalidateSelf();
     }
 
+    /**
+     * Sets the color of the standby border.
+     *
+     * @param color The color to set.
+     */
+    public void setStandbyColor(@ColorInt int color) {
+        if (mStandbyBorderPaint.getColor() == color) return;
+        mStandbyBorderPaint.setColor(color);
+        invalidateSelf();
+    }
+
     public GradientDrawable getBackgroundGradient() {
         return mBackgroundGradient;
     }
@@ -328,7 +347,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
     }
 
     Path getPathForTesting() {
-        return mRainbowPath;
+        return mHairlinePath;
     }
 
     Paint getPaintForTesting() {
@@ -337,5 +356,9 @@ public class LocationBarBackgroundDrawable extends Drawable {
 
     Paint getBlurPaintForTesting() {
         return mRainbowBorderBlurPaint;
+    }
+
+    Paint getStandbyPaintForTesting() {
+        return mStandbyBorderPaint;
     }
 }

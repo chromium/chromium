@@ -396,7 +396,6 @@ android_resources("java_resources") {
     "java/res/drawable/inset_navattach_item_background.xml",
     "java/res/drawable/logo_partly_cloudy.xml",
     "java/res/drawable/logo_translate_round.xml",
-    "java/res/drawable/modern_toolbar_text_box_standby_border.xml",
     "java/res/drawable/navattach_item_background.xml",
     "java/res/drawable/north_east_24dp.xml",
     "java/res/drawable/north_west_24dp.xml",
