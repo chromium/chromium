@@ -8,9 +8,11 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_button
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ContextualEntrypointButton', () => {
@@ -467,6 +469,49 @@ suite('ContextualEntrypointButton', () => {
 
       const tabs = (entrypointButton as any).getTabs_();
       assertEquals(0, tabs.length);
+    });
+  });
+
+  suite('AriaLabel', () => {
+    let pluralStringProxy: TestPluralStringProxy;
+
+    setup(() => {
+      pluralStringProxy = new TestPluralStringProxy();
+      pluralStringProxy.text = 'Sharing 1 tab';
+      PluralStringProxyImpl.setInstance(pluralStringProxy);
+    });
+
+    test('default aria-label with no tabs attached', async () => {
+      const testElement = createEntrypointButton();
+      await microtasksFinished();
+
+      const entrypoint = $$(testElement, '#entrypoint');
+      assertTrue(!!entrypoint);
+      assertEquals(
+          testElement.i18n('addContextTitle'),
+          entrypoint.getAttribute('aria-label'));
+    });
+
+    test('aria-label includes plural string when tabs attached', async () => {
+      const testElement = createEntrypointButton();
+      testElement.sharedTabs = [
+        {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example1.com',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        },
+      ];
+      await microtasksFinished();
+      await testElement.updateComplete;
+
+      const entrypoint = $$(testElement, '#entrypoint');
+      assertTrue(!!entrypoint);
+      assertEquals(
+          `${testElement.i18n('addContextTitle')}, Sharing 1 tab`,
+          entrypoint.getAttribute('aria-label'));
     });
   });
 });
