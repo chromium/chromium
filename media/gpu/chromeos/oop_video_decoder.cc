@@ -961,13 +961,6 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     Stop();
     return;
   }
-  if (!frame->metadata().allow_overlay) {
-    // All decoded frames should be eligible for overlay promotion at this stage
-    // in the pipeline.
-    VLOGF(2) << "Unexpectedly received a frame with allow_overlay = false";
-    Stop();
-    return;
-  }
   if (!frame->metadata().read_lock_fences_enabled) {
     // The remote decoder should expect that frames are returned only when they
     // are no longer needed by the client.
@@ -1005,7 +998,6 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   //
   // The rest of the fields are left as default.
   VideoFrameMetadata metadata_to_propagate;
-  metadata_to_propagate.allow_overlay = true;
   metadata_to_propagate.end_of_stream = false;
   metadata_to_propagate.read_lock_fences_enabled = true;
   metadata_to_propagate.protected_video = frame->metadata().protected_video;

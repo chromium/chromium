@@ -267,7 +267,6 @@ void OOPVideoDecoderService::OnVideoFrameDecoded(
   DCHECK(release_token.has_value());
 
   // The mojo traits have been coded assuming these conditions.
-  CHECK(frame->metadata().allow_overlay);
   CHECK(!frame->metadata().end_of_stream);
   CHECK(frame->metadata().power_efficient);
   CHECK(!frame->HasMappableSharedImage());
