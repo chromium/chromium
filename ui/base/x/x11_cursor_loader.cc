@@ -33,6 +33,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
@@ -153,9 +154,7 @@ base::FilePath CanonicalizePath(base::FilePath path) {
 }
 
 bool IsValidCursorThemeName(const std::string& theme) {
-  base::FilePath theme_path(theme);
-  return !theme.empty() && theme != "." && !theme_path.IsAbsolute() &&
-         !theme_path.ReferencesParent() && theme_path.BaseName() == theme_path;
+  return ui::IsValidCursorThemeName(theme);
 }
 
 scoped_refptr<base::RefCountedMemory> ReadCursorFromThemeImpl(

@@ -4,8 +4,10 @@
 
 #include "ui/base/cursor/cursor.h"
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -69,6 +71,28 @@ TEST(CursorTest, ClampHotspot) {
       Cursor::NewCustom(gfx::test::CreateBitmap(5, 7), gfx::Point(100, 100));
   EXPECT_EQ(gfx::Point(4, 6), cursor.custom_hotspot());
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST(CursorTest, IsValidCursorThemeName) {
+  EXPECT_TRUE(IsValidCursorThemeName("Adwaita"));
+  EXPECT_TRUE(IsValidCursorThemeName("DMZ-White"));
+  EXPECT_FALSE(IsValidCursorThemeName(""));
+  EXPECT_FALSE(IsValidCursorThemeName("."));
+  EXPECT_FALSE(IsValidCursorThemeName("../invalid"));
+  EXPECT_FALSE(IsValidCursorThemeName("/absolute/invalid"));
+  EXPECT_FALSE(IsValidCursorThemeName("sub/dir"));
+  EXPECT_FALSE(IsValidCursorThemeName("../../../../tmp/evil"));
+}
+
+TEST(CursorTest, IsValidCursorThemeSize) {
+  EXPECT_TRUE(IsValidCursorThemeSize(16));
+  EXPECT_TRUE(IsValidCursorThemeSize(24));
+  EXPECT_TRUE(IsValidCursorThemeSize(512));
+  EXPECT_FALSE(IsValidCursorThemeSize(0));
+  EXPECT_FALSE(IsValidCursorThemeSize(-1));
+  EXPECT_FALSE(IsValidCursorThemeSize(513));
+}
+#endif
 
 }  // namespace
 }  // namespace ui
