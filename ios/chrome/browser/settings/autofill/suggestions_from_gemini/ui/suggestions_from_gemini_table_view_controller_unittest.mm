@@ -36,8 +36,9 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestInitialization) {
   CreateController();
   CheckController();
 
-  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(2, NumberOfSections());
   EXPECT_EQ(2, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
 
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
@@ -65,6 +66,17 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestInitialization) {
       item.detailText);
   EXPECT_EQ(TableViewDetailTextCellAccessorySymbolExternalLink,
             item.accessorySymbol);
+
+  TableViewDetailTextItem* helpImproveItem =
+      base::apple::ObjCCastStrict<TableViewDetailTextItem>(
+          GetTableViewItem(1, 0));
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(
+          IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE),
+      helpImproveItem.text);
+  EXPECT_EQ(nil, helpImproveItem.detailText);
+  EXPECT_EQ(UITableViewCellAccessoryDisclosureIndicator,
+            helpImproveItem.accessoryType);
 }
 
 // Tests that setting the switch state via the consumer interface updates the
@@ -112,6 +124,14 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestMutatorInteraction) {
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
   [geminiController tableView:geminiController.tableView
       didSelectRowAtIndexPath:indexPath];
+  EXPECT_OCMOCK_VERIFY(mockMutator);
+
+  // Verify selecting Help Improve row triggers mutator.
+  OCMExpect([mockMutator didSelectHelpImprove]);
+  NSIndexPath* helpImproveIndexPath = [NSIndexPath indexPathForRow:0
+                                                         inSection:1];
+  [geminiController tableView:geminiController.tableView
+      didSelectRowAtIndexPath:helpImproveIndexPath];
   EXPECT_OCMOCK_VERIFY(mockMutator);
 }
 

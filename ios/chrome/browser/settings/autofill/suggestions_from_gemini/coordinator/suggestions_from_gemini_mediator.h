@@ -16,8 +16,12 @@
 // Delegate for SuggestionsFromGeminiMediator.
 @protocol SuggestionsFromGeminiMediatorDelegate <NSObject>
 
-// Tells the delegate to open the Gemini connected apps management page.
-- (void)suggestionsFromGeminiMediatorOpenConnectedApps:
+// Tells the delegate that the user selected the Connected Apps option.
+- (void)suggestionsFromGeminiMediatorDidSelectConnectedApps:
+    (SuggestionsFromGeminiMediator*)mediator;
+
+// Tells the delegate that the user selected the Help Improve option.
+- (void)suggestionsFromGeminiMediatorDidSelectHelpImprove:
     (SuggestionsFromGeminiMediator*)mediator;
 
 @end

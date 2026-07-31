@@ -17,6 +17,10 @@
 // apps.
 - (void)didSelectManageConnectedApps;
 
+// Informs the mutator that the user tapped on the Help improve enhanced
+// autofill.
+- (void)didSelectHelpImprove;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_SUGGESTIONS_FROM_GEMINI_UI_SUGGESTIONS_FROM_GEMINI_MUTATOR_H_

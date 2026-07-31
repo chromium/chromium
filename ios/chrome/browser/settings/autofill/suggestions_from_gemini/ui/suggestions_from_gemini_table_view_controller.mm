@@ -17,11 +17,13 @@ namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSuggestionsFromGemini = kSectionIdentifierEnumZero,
+  SectionIdentifierHelpImprove,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFindAndFillSwitch = kItemTypeEnumZero,
   ItemTypeManageConnectedApps,
+  ItemTypeHelpImprove,
 };
 
 }  // namespace
@@ -34,15 +36,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
-  if (self) {
-    self.title = l10n_util::GetNSString(
-        IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE);
-  }
   return self;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.title =
+      l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE);
   [self loadModel];
 }
 
@@ -60,6 +60,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [model addItem:[self manageConnectedAppsItem]
       toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+
+  [model addSectionWithIdentifier:SectionIdentifierHelpImprove];
+
+  [model addItem:[self helpImproveItem]
+      toSectionWithIdentifier:SectionIdentifierHelpImprove];
 }
 
 #pragma mark - SuggestionsFromGeminiConsumer
@@ -103,6 +108,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       return;
     case ItemTypeFindAndFillSwitch:
       [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+      return;
+    case ItemTypeHelpImprove:
+      [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+      [self.mutator didSelectHelpImprove];
       return;
   }
   NOTREACHED();
@@ -179,6 +188,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.accessorySymbol = TableViewDetailTextCellAccessorySymbolExternalLink;
   item.accessibilityTraits |= UIAccessibilityTraitLink;
   return item;
+}
+
+// Returns a configured detail text item for the "Help improve enhanced
+// autofill" subpage row.
+- (TableViewDetailTextItem*)helpImproveItem {
+  TableViewDetailTextItem* helpImproveItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeHelpImprove];
+  helpImproveItem.text = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE);
+  helpImproveItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  helpImproveItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  return helpImproveItem;
 }
 
 @end

@@ -81,8 +81,17 @@ TEST_F(SuggestionsFromGeminiMediatorTest, TestPrefChangeUpdatesConsumer) {
 TEST_F(SuggestionsFromGeminiMediatorTest,
        TestSelectManageConnectedAppsTriggersDelegate) {
   OCMExpect([mock_delegate_
-      suggestionsFromGeminiMediatorOpenConnectedApps:mediator_]);
+      suggestionsFromGeminiMediatorDidSelectConnectedApps:mediator_]);
   [mediator_ didSelectManageConnectedApps];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests that tapping help improve triggers delegate.
+TEST_F(SuggestionsFromGeminiMediatorTest,
+       TestSelectHelpImproveTriggersDelegate) {
+  OCMExpect([mock_delegate_
+      suggestionsFromGeminiMediatorDidSelectHelpImprove:mediator_]);
+  [mediator_ didSelectHelpImprove];
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 

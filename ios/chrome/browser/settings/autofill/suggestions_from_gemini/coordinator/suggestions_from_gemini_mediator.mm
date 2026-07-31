@@ -50,7 +50,11 @@
 }
 
 - (void)didSelectManageConnectedApps {
-  [self.delegate suggestionsFromGeminiMediatorOpenConnectedApps:self];
+  [self.delegate suggestionsFromGeminiMediatorDidSelectConnectedApps:self];
+}
+
+- (void)didSelectHelpImprove {
+  [self.delegate suggestionsFromGeminiMediatorDidSelectHelpImprove:self];
 }
 
 #pragma mark - BooleanObserver

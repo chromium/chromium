@@ -7,6 +7,7 @@
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_help_improve_table_view_controller.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -71,7 +72,7 @@
 
 #pragma mark - SuggestionsFromGeminiMediatorDelegate
 
-- (void)suggestionsFromGeminiMediatorOpenConnectedApps:
+- (void)suggestionsFromGeminiMediatorDidSelectConnectedApps:
     (SuggestionsFromGeminiMediator*)mediator {
   OpenNewTabCommand* command =
       [[OpenNewTabCommand alloc] initWithURL:GURL(kGeminiExtensionsURL)
@@ -82,6 +83,13 @@
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler closePresentedViewsAndOpenURL:command];
+}
+
+- (void)suggestionsFromGeminiMediatorDidSelectHelpImprove:
+    (SuggestionsFromGeminiMediator*)mediator {
+  SuggestionsFromGeminiHelpImproveTableViewController* viewController =
+      [[SuggestionsFromGeminiHelpImproveTableViewController alloc] init];
+  [_baseNavigationController pushViewController:viewController animated:YES];
 }
 
 @end

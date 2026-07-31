@@ -71,7 +71,7 @@ TEST_F(SuggestionsFromGeminiCoordinatorTest, TestManageConnectedAppsOpensUrl) {
         return cmd.URL == GURL(kGeminiExtensionsURL);
       }]]);
 
-  [coordinator_ suggestionsFromGeminiMediatorOpenConnectedApps:nil];
+  [coordinator_ suggestionsFromGeminiMediatorDidSelectConnectedApps:nil];
 
   EXPECT_OCMOCK_VERIFY(mockSceneCommandsHandler);
 }

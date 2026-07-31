@@ -5,27 +5,36 @@
 source_set("ui") {
   sources = [
     "suggestions_from_gemini_consumer.h",
+    "suggestions_from_gemini_help_improve_table_view_controller.h",
+    "suggestions_from_gemini_help_improve_table_view_controller.mm",
     "suggestions_from_gemini_mutator.h",
     "suggestions_from_gemini_table_view_controller.h",
     "suggestions_from_gemini_table_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "suggestions_from_gemini_table_view_controller_unittest.mm" ]
+  sources = [
+    "suggestions_from_gemini_help_improve_table_view_controller_unittest.mm",
+    "suggestions_from_gemini_table_view_controller_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base/test:test_support",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",

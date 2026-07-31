@@ -5967,6 +5967,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PERSONALIZE_GOOGLE_SERVICES_WAA_TITLE" desc="This string is found on a link in Chrome’s Advanced Sync settings. When the user taps it, the link takes the user to “Web &amp; App Activity” in the Google Account’s Activity Controls. The link is on a subpage from Chrome’s Advanced Sync settings. This text should match the branded term “Web &amp; App Activity” in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=77d3b75.">
         Web &amp; App activity
       </message>
+      <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE" desc="Title of the subpage explaining how users can help improve enhanced autofill settings. [iOS only]">
+        Help improve enhanced autofill
+      </message>
       <message name="IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY" desc="Subtext or description beneath the 'Manage Connected Apps' entry point, explaining its purpose. 'Gemini' is a proper product name and must remain unlocalized. [iOS only]">
         Choose which apps Gemini connects to
       </message>
