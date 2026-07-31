@@ -8,7 +8,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -144,6 +146,7 @@ public class BookmarkManagerCoordinator
     private final ModalDialogManager mModalDialogManager;
     private final ModelList mModelList;
     private final @Nullable BackPressManager mBackPressManager;
+    private final ComponentCallbacks mComponentCallbacks;
     private @Nullable BookmarkDesktopNavigationCoordinator mDesktopNavigationCoordinator;
 
     // TODO(https://crbug.com/475144764): Investigate whether activity can be replaced by a Context.
@@ -219,6 +222,17 @@ public class BookmarkManagerCoordinator
                         dragReorderableRecyclerViewAdapter,
                         /* recyclerView= */ null,
                         edgeToEdgePadAdjusterGenerator);
+        if (isDesktopLayoutEnabled) {
+            int padding =
+                    activity.getResources()
+                            .getDimensionPixelSize(R.dimen.bookmark_desktop_content_padding);
+            mRecyclerView.setPaddingRelative(
+                    padding,
+                    mRecyclerView.getPaddingTop(),
+                    padding,
+                    mRecyclerView.getPaddingBottom());
+            mRecyclerView.setClipToPadding(false);
+        }
 
         // Disable everything except move animations. Switching between folders should be as
         // seamless as possible without flickering caused by these animations. While dragging
@@ -259,7 +273,9 @@ public class BookmarkManagerCoordinator
                         bookmarkManagerOpener,
                         mSnackbarManager,
                         /* nextFocusableView= */ mMainView.findViewById(R.id.list_content));
-        mSelectableListLayout.configureWideDisplayStyle();
+        if (!isDesktopLayoutEnabled) {
+            mSelectableListLayout.configureWideDisplayStyle();
+        }
 
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
@@ -375,12 +391,36 @@ public class BookmarkManagerCoordinator
         } else {
             mBackPressManager = null;
         }
+
+        mComponentCallbacks =
+                new ComponentCallbacks() {
+                    @Override
+                    public void onConfigurationChanged(Configuration newConfig) {
+                        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+                            int padding =
+                                    mContext.getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen.bookmark_desktop_content_padding);
+                            mRecyclerView.setPaddingRelative(
+                                    padding,
+                                    mRecyclerView.getPaddingTop(),
+                                    padding,
+                                    mRecyclerView.getPaddingBottom());
+                            mBookmarkToolbarCoordinator.onConfigurationChanged(newConfig);
+                        }
+                    }
+
+                    @Override
+                    public void onLowMemory() {}
+                };
+        mContext.registerComponentCallbacks(mComponentCallbacks);
     }
 
     // Public API implementation.
 
     /** Destroys and cleans up itself. This must be called after done using this class. */
     public void onDestroyed() {
+        mContext.unregisterComponentCallbacks(mComponentCallbacks);
         RecordUserAction.record("MobileBookmarkManagerClose");
         mMainView.removeOnAttachStateChangeListener(this);
         mSelectableListLayout.onDestroyed();
@@ -658,6 +698,10 @@ public class BookmarkManagerCoordinator
 
     @Nullable BackPressManager getBackPressManagerForTesting() {
         return mBackPressManager;
+    }
+
+    ComponentCallbacks getComponentCallbacksForTesting() {
+        return mComponentCallbacks;
     }
 
     @SuppressLint("ClickableViewAccessibility")

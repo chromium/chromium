@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -248,5 +250,109 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(desktopCoordinator.getView());
         assertNotNull(desktopCoordinator.getView().findViewById(R.id.navigation_pane));
         desktopCoordinator.onDestroyed();
+    }
+
+    private void recreateCoordinatorForDesktop() {
+        mCoordinator.onDestroyed();
+        DeviceInfo.setIsDesktopForTesting(true);
+        mCoordinator =
+                new BookmarkManagerCoordinator(
+                        mWindowAndroid,
+                        mActivity,
+                        /* isDialogUi= */ false,
+                        mSnackbarManager,
+                        () -> mBottomSheetController,
+                        mActivityResultTracker,
+                        mProfile,
+                        mBookmarkUiPrefs,
+                        mBookmarkOpener,
+                        mBookmarkManagerOpener,
+                        mPriceDropNotificationManager,
+                        /* edgeToEdgePadAdjusterGenerator= */ null,
+                        /* backPressManager= */ null);
+        mActivity.setContentView(mCoordinator.getView());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+    }
+
+    private void assertPaddingDp(int expectedDp) {
+        RecyclerView recyclerView = mCoordinator.getRecyclerViewForTesting();
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        int expectedPx = Math.round(expectedDp * density);
+        assertEquals("Padding start mismatch", expectedPx, recyclerView.getPaddingStart());
+        assertEquals("Padding end mismatch", expectedPx, recyclerView.getPaddingEnd());
+    }
+
+    @Test
+    @Config(qualifiers = "w700dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    public void testDesktopPadding_small() {
+        recreateCoordinatorForDesktop();
+        assertPaddingDp(24);
+    }
+
+    @Test
+    @Config(qualifiers = "w800dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    public void testDesktopPadding_medium() {
+        recreateCoordinatorForDesktop();
+        assertPaddingDp(48);
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    public void testDesktopPadding_large() {
+        recreateCoordinatorForDesktop();
+        assertPaddingDp(72);
+    }
+
+    @Test
+    @Config(qualifiers = "w1200dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    public void testDesktopPadding_extraLarge() {
+        recreateCoordinatorForDesktop();
+        assertPaddingDp(90);
+    }
+
+    @Test
+    @Config(qualifiers = "w800dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT})
+    public void testDesktopPadding_resize() {
+        recreateCoordinatorForDesktop();
+
+        RecyclerView recyclerView = mCoordinator.getRecyclerViewForTesting();
+        recyclerView.setVisibility(View.VISIBLE);
+
+        // Force initial layout with 800x1000
+        mCoordinator
+                .getView()
+                .measure(
+                        View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        mCoordinator.getView().layout(0, 0, 800, 1000);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertPaddingDp(48); // Initial padding for w800dp
+
+        // Change screen width to 1200dp using Robolectric helper
+        RuntimeEnvironment.setQualifiers("w1200dp-h1000dp");
+
+        // Manually trigger the callback since Robolectric doesn't auto-dispatch it for
+        // ComponentCallbacks
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(null);
+
+        // The padding should update immediately
+        assertPaddingDp(90);
+
+        // Force a layout pass with the new size to ensure layout works with new padding
+        mCoordinator
+                .getView()
+                .measure(
+                        View.MeasureSpec.makeMeasureSpec(1200, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        mCoordinator.getView().layout(0, 0, 1200, 1000);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertPaddingDp(90); // Should remain 90dp
     }
 }

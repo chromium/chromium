@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.view.View;
 
@@ -60,6 +61,8 @@ public class BookmarkToolbarCoordinator {
                                 null,
                                 isDialogUi);
         mToolbar.setNormalBackgroundColor(Color.TRANSPARENT);
+        updateToolbarPadding(context);
+
         mToolbar.initializeSearchView(
                 searchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
 
@@ -87,6 +90,27 @@ public class BookmarkToolbarCoordinator {
                 Clipboard.getInstance());
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateToolbarPadding(mToolbar.getContext());
+    }
+
+    private void updateToolbarPadding(Context context) {
+        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            return;
+        }
+        int padding =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.bookmark_desktop_content_padding);
+        int paddingStartOffset =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_wide_display_start_offset);
+        int expectedStart = padding + paddingStartOffset;
+        if (mToolbar.getPaddingStart() != expectedStart || mToolbar.getPaddingEnd() != padding) {
+            mToolbar.setPaddingRelative(
+                    expectedStart, mToolbar.getPaddingTop(), padding, mToolbar.getPaddingBottom());
+        }
     }
 
     // Testing methods

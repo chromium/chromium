@@ -224,6 +224,7 @@ found in the LICENSE file.
     <dimen name="bookmark_desktop_navigation_header_bottom_margin">36dp</dimen>
     <dimen
         name="bookmark_desktop_navigation_list_horizontal_padding">24dp</dimen>
+    <dimen name="bookmark_desktop_content_padding">24dp</dimen>
 
      <!-- Improved bookmark row properties. -->
      <!-- The size of the start image for compact rows. -->
