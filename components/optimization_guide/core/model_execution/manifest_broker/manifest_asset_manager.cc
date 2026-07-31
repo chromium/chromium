@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -498,6 +499,19 @@ bool ManifestAssetManager::ShouldInstall(
   if (!component) {
     return false;
   }
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // In Chrome for Testing the normal component update mechanism is disabled, so
+  // the only components that are installed are the ones listed in the Chrome
+  // for Testing configuration file as Required Components, see
+  // 'docs/chrome_for_testing/chrome_for_testing_configuration.md'.
+  //
+  // The required components are installed before the browser starts, so here we
+  // unconditionally allow installation of all on-demand components present in
+  // the manifest and the actual filtering is done in
+  // RequiredComponentsController, see
+  // components/component_updater/required_components_controller.h.
+  return true;
+#else
   if (context.requested_version() == component->target_version()) {
     // The component is either downloading or already installed.
     return true;
@@ -518,6 +532,7 @@ bool ManifestAssetManager::ShouldInstall(
   }
   return disk_space_status_.CanSupportProactiveDownload() &&
          background_download_assets_by_id_.contains(context.asset_id());
+#endif
 }
 
 void ManifestAssetManager::UpdateRegistrations() {

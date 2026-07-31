@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -301,8 +302,20 @@ void Manifest::Load(
     const base::FilePath& directory,
     DeviceCategory device_category,
     base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback) {
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Chrome for Testing blocks browser startup until all required components
+  // are installed. However, BEST_EFFORT tasks are not allowed to run until
+  // after startup completion (see `scoped_best_effort_execution_fence_` in
+  // content/browser/browser_main_loop.h).
+  //
+  // Therefore use USER_VISIBLE task priority to prevent browser startup
+  // deadlock when loading required model manifests in Chrome for Testing.
+  constexpr base::TaskPriority kTaskPriority = base::TaskPriority::USER_VISIBLE;
+#else
+  constexpr base::TaskPriority kTaskPriority = base::TaskPriority::BEST_EFFORT;
+#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), kTaskPriority},
       base::BindOnce(&ReadManifestFile, directory, device_category),
       std::move(callback));
 }

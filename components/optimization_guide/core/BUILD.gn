@@ -428,6 +428,7 @@ if (build_with_model_execution) {
       ":features",
       ":ondevice",
       "//base",
+      "//build:branding_buildflags",
       "//components/component_updater",
       "//components/crx_file",
       "//components/optimization_guide/core:features",

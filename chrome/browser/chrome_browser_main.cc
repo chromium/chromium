@@ -348,6 +348,7 @@
 #if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/chrome_for_testing/chrome_browser_main_extra_parts_cft.h"
 #include "chrome/browser/chrome_for_testing/config.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "components/component_updater/component_updater_service.h"
 #endif
 
@@ -2085,9 +2086,14 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
-  // Delay browser startup until all components required by the Chrome for
-  // Testing configuration are installed and up to date.
   if (g_browser_process->component_updater()) {
+    // Initialize OptimizationGuideGlobalState early so that ManifestMonitor is
+    // available to parse the Optimization Guide manifest and register any
+    // required on-device model components during startup blocking.
+    optimization_guide::OptimizationGuideGlobalState::CreateOrGet();
+
+    // Delay browser startup until all components required by the Chrome for
+    // Testing configuration are installed and up to date.
     g_browser_process->component_updater()->EnsureRequiredComponentsReady(
         chrome_for_testing::GetRequiredComponentsUpdateTimeout());
   }

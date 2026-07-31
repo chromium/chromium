@@ -27,6 +27,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -114,6 +115,14 @@ base::FilePath GetComponentInstallDirectory() {
 void GetComponentFreeDiskSpace(
     const base::FilePath& path,
     base::OnceCallback<void(std::optional<base::ByteSize>)> callback) {
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // In Chrome for Testing, the components we will use are explicitly specified
+  // in configuration and are already on disk. Reporting max free space here
+  // will suppress attempts to save space by uninstalling or preventing
+  // installation of model components.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), base::ByteSize::Max()));
+#else
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(),
@@ -132,6 +141,7 @@ void GetComponentFreeDiskSpace(
           },
           path),
       std::move(callback));
+#endif
 }
 
 // Legacy Installer policy for the On-Device Base Model.
