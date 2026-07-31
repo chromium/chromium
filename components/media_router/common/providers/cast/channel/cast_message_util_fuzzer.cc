@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/providers/cast/channel/fuzz_proto/fuzzer_inputs.pb.h"
+#include "components/media_router/common/providers/cast/channel/fuzz_proto/fuzzer_inputs_fuzzable.pb.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 using cast_util::EnumToString;
@@ -64,7 +66,13 @@ std::vector<T> MakeVector(const Field& field) {
 
 }  // namespace
 
-DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
+DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastMessageUtilInputs&
+                        fuzzable_input_union) {
+  std::string serialized;
+  CHECK(fuzzable_input_union.SerializeToString(&serialized));
+  CastMessageUtilInputs input_union;
+  CHECK(input_union.ParseFromString(serialized));
+
   // TODO(crbug.com/40555657): Add test for CreateAuthChallengeMessage()
   switch (input_union.input_case()) {
     case CastMessageUtilInputs::kCreateLaunchRequestInput: {
