@@ -81,9 +81,29 @@ ContextHubService::ContextHubService(
       tab_group_store_(std::move(tab_group_store)),
       auto_todos_store_(std::move(auto_todos_store)) {
   CHECK(memory_bank_);
+  if (auto_todos_store_) {
+    auto_todos_store_->AddObserver(this);
+  }
 }
 
-ContextHubService::~ContextHubService() = default;
+ContextHubService::~ContextHubService() {
+  if (auto_todos_store_) {
+    auto_todos_store_->RemoveObserver(this);
+  }
+}
+
+void ContextHubService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ContextHubService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ContextHubService::OnAutoTodosChanged(
+    base::span<const AutoTodoEntry> entries) {
+  observers_.Notify(&Observer::OnAutoTodosChanged, entries);
+}
 
 void ContextHubService::GenerateAutoTodos(AutoTodosCallback callback) {
   personal_context::proto::AutoTodosRequest request_metadata;

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
+#include "base/observer_list.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 
@@ -23,6 +24,8 @@ class InMemoryAutoTodosStore : public AutoTodosStore {
   ~InMemoryAutoTodosStore() override;
 
   // AutoTodosStore:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void AddOrUpdateItem(AutoTodoEntry item, OperationCallback callback) override;
   void DeleteItem(const std::string& id, OperationCallback callback) override;
   void DeleteItemByTabId(int64_t tab_id, OperationCallback callback) override;
@@ -30,6 +33,10 @@ class InMemoryAutoTodosStore : public AutoTodosStore {
   void GetAllItems(GetAllItemsCallback callback) const override;
 
  private:
+  void NotifyAutoTodosChanged();
+
+  base::ObserverList<Observer> observers_;
+
   base::LRUCache<std::string, AutoTodoEntry> entries_;
   int64_t next_item_id_ = 1;
 };

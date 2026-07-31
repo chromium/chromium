@@ -6,13 +6,26 @@
 
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
+#include "base/containers/span.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace context_hub {
+
+using ::testing::_;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
+
+class MockStoreObserver : public AutoTodosStore::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnAutoTodosChanged,
+              (base::span<const AutoTodoEntry>),
+              (override));
+};
 
 class InMemoryAutoTodosStoreTest : public ::testing::Test {
  protected:
@@ -125,6 +138,86 @@ TEST_F(InMemoryAutoTodosStoreTest, ClearStore) {
   base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
   store_.GetAllItems(get_future.GetCallback());
   EXPECT_TRUE(get_future.Get().empty());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnAdd) {
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+
+  AutoTodoEntry item;
+  item.id = "todo_1";
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(SizeIs(1)));
+  base::test::TestFuture<bool> add_future;
+  store_.AddOrUpdateItem(item, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnDelete) {
+  AutoTodoEntry item;
+  item.id = "todo_1";
+  store_.AddOrUpdateItem(item, base::DoNothing());
+
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
+  base::test::TestFuture<bool> del_future;
+  store_.DeleteItem("todo_1", del_future.GetCallback());
+  EXPECT_TRUE(del_future.Get());
+
+  // Delete non-existent item should not notify.
+  EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+  base::test::TestFuture<bool> del_fail_future;
+  store_.DeleteItem("non_existent", del_fail_future.GetCallback());
+  EXPECT_FALSE(del_fail_future.Get());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnDeleteByTabId) {
+  AutoTodoEntry tp_item;
+  tp_item.id = "tp_1";
+  tp_item.data = ThirdPartyData{.tab_id = 42};
+  store_.AddOrUpdateItem(tp_item, base::DoNothing());
+
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
+  base::test::TestFuture<bool> del_tab_future;
+  store_.DeleteItemByTabId(42, del_tab_future.GetCallback());
+  EXPECT_TRUE(del_tab_future.Get());
+
+  // Delete non-existent tab ID should not notify.
+  EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+  base::test::TestFuture<bool> del_tab_fail_future;
+  store_.DeleteItemByTabId(999, del_tab_fail_future.GetCallback());
+  EXPECT_FALSE(del_tab_fail_future.Get());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ObserverNotifiedOnClear) {
+  AutoTodoEntry item;
+  item.id = "todo_1";
+  store_.AddOrUpdateItem(item, base::DoNothing());
+
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
+  base::test::TestFuture<void> clear_future;
+  store_.Clear(clear_future.GetCallback());
+  EXPECT_TRUE(clear_future.Wait());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest, ObserverNotNotifiedAfterRemoval) {
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+  store_.RemoveObserver(&observer);
+
+  AutoTodoEntry item;
+  item.id = "todo_1";
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
+  store_.AddOrUpdateItem(item, base::DoNothing());
 }
 
 }  // namespace context_hub

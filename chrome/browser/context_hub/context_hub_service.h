@@ -15,7 +15,9 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
@@ -37,12 +39,16 @@ class PersonalContextService;
 
 namespace context_hub {
 
-class AutoTodosStore;
 class TabGroupStore;
 class ContextHubBackend;
 
-class ContextHubService : public KeyedService {
+class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) {}
+  };
+
   ContextHubService(
       personal_context::PersonalContextService* personal_context_service,
       optimization_guide::RemoteModelExecutor*
@@ -55,6 +61,12 @@ class ContextHubService : public KeyedService {
   ContextHubService(const ContextHubService&) = delete;
   ContextHubService& operator=(const ContextHubService&) = delete;
   ~ContextHubService() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // AutoTodosStore::Observer:
+  void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) override;
 
   using AutoTodosCallback = base::OnceCallback<void(
       std::optional<personal_context::proto::AutoTodosResponse>)>;
@@ -189,6 +201,8 @@ class ContextHubService : public KeyedService {
   std::unique_ptr<TabGroupStore> tab_group_store_;
 
   std::unique_ptr<AutoTodosStore> auto_todos_store_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ContextHubService> weak_factory_{this};
 };

@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 
 namespace context_hub {
@@ -17,11 +19,20 @@ namespace context_hub {
 // Abstract base class interface for AutoTodosStore.
 class AutoTodosStore {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnAutoTodosChanged(
+        base::span<const AutoTodoEntry> entries) = 0;
+  };
+
   virtual ~AutoTodosStore() = default;
 
   using OperationCallback = base::OnceCallback<void(bool success)>;
   using GetAllItemsCallback =
       base::OnceCallback<void(std::vector<AutoTodoEntry>)>;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Adds or updates a single item in the store.
   // If `item.id` is empty, a unique ID will be assigned.

@@ -19,6 +19,23 @@ constexpr size_t kMaxEntries = 150;
 InMemoryAutoTodosStore::InMemoryAutoTodosStore() : entries_(kMaxEntries) {}
 InMemoryAutoTodosStore::~InMemoryAutoTodosStore() = default;
 
+void InMemoryAutoTodosStore::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void InMemoryAutoTodosStore::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void InMemoryAutoTodosStore::NotifyAutoTodosChanged() {
+  std::vector<AutoTodoEntry> result;
+  result.reserve(entries_.size());
+  for (const auto& [id, entry] : entries_) {
+    result.push_back(entry);
+  }
+  observers_.Notify(&Observer::OnAutoTodosChanged, result);
+}
+
 void InMemoryAutoTodosStore::AddOrUpdateItem(AutoTodoEntry item,
                                              OperationCallback callback) {
   if (item.id.empty()) {
@@ -26,6 +43,7 @@ void InMemoryAutoTodosStore::AddOrUpdateItem(AutoTodoEntry item,
   }
   std::string id = item.id;
   entries_.Put(id, std::move(item));
+  NotifyAutoTodosChanged();
   if (callback) {
     std::move(callback).Run(true);
   }
@@ -41,6 +59,7 @@ void InMemoryAutoTodosStore::DeleteItem(const std::string& id,
     return;
   }
   entries_.Erase(it);
+  NotifyAutoTodosChanged();
   if (callback) {
     std::move(callback).Run(true);
   }
@@ -61,6 +80,9 @@ void InMemoryAutoTodosStore::DeleteItemByTabId(int64_t tab_id,
     }
     ++it;
   }
+  if (deleted) {
+    NotifyAutoTodosChanged();
+  }
   if (callback) {
     std::move(callback).Run(deleted);
   }
@@ -69,6 +91,7 @@ void InMemoryAutoTodosStore::DeleteItemByTabId(int64_t tab_id,
 void InMemoryAutoTodosStore::Clear(base::OnceClosure callback) {
   entries_.Clear();
   next_item_id_ = 1;
+  NotifyAutoTodosChanged();
   if (callback) {
     std::move(callback).Run();
   }
