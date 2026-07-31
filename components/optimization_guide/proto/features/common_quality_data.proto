@@ -1225,6 +1225,7 @@ message TabGroup {
   string group_id = 3 [features = { field_presence: EXPLICIT }];
 }
 
+// Next ID: 6
 message Tab {
   // A unique identifier for the tab.
   int64 tab_id = 1 [features = { field_presence: EXPLICIT }];
@@ -1237,6 +1238,9 @@ message Tab {
 
   // The page context of the tab.
   PageContext page_context = 4 [features = { field_presence: EXPLICIT }];
+
+  // Timestamp of when the tab was last active (in milliseconds since epoch).
+  int64 last_active_timestamp_ms = 5 [features = { field_presence: EXPLICIT }];
 }
 
 // The site engagement information for a single site.

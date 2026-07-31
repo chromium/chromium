@@ -109,6 +109,10 @@ message ContextHubResponse {
     // The response for a request of type
     // CONTEXT_HUB_REQUEST_TYPE_MEMORY_BANK_CHAT.
     MemoryBankChatResponse memory_bank_chat_response = 2;
+
+    // The response for a request of type
+    // CONTEXT_HUB_REQUEST_TYPE_BROWSER_BASED_TODOS.
+    BrowserBasedTodosResponse browser_based_todos_response = 3;
   }
 }
 
@@ -135,6 +139,32 @@ message MemoryBankChatResponse {
   string text_response = 1 [features = { field_presence: EXPLICIT }];
 }
 
+// Holds the output data for a request of type
+// CONTEXT_HUB_REQUEST_TYPE_BROWSER_BASED_TODOS.
+message BrowserBasedTodosResponse {
+  // The tab id of the tab that the todo is for.
+  int64 tab_id = 1 [features = { field_presence: EXPLICIT }];
+
+  GroupType group_type = 2 [features = { field_presence: EXPLICIT }];
+
+  // The title of the todo.
+  string todo_title = 3 [features = { field_presence: EXPLICIT }];
+
+  // The description of the todo.
+  string todo_description = 4 [features = { field_presence: EXPLICIT }];
+
+  // The type of specialty group the todo belongs to.
+  enum GroupType {
+    GROUP_TYPE_UNSPECIFIED = 0;
+
+    GROUP_TYPE_READING_LIST = 1;
+
+    GROUP_TYPE_NUDGE_TO_CLOSE = 2;
+
+    GROUP_TYPE_UNFINISHED = 3;
+  }
+}
+
 enum ContextHubRequestType {
   CONTEXT_HUB_REQUEST_TYPE_UNSPECIFIED = 0;
 
@@ -143,6 +173,9 @@ enum ContextHubRequestType {
 
   // For the memory bank chat feature.
   CONTEXT_HUB_REQUEST_TYPE_MEMORY_BANK_CHAT = 2;
+
+  // For the generation of browser-based todos.
+  CONTEXT_HUB_REQUEST_TYPE_BROWSER_BASED_TODOS = 3;
 }
 
 // Type of entry in the memory bank.
