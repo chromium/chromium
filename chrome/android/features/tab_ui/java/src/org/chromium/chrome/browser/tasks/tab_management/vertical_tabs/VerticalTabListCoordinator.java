@@ -26,11 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -133,8 +131,7 @@ public class VerticalTabListCoordinator {
     private final VerticalTabGroupSpineDecoration mSpineDecoration;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private final NonNullObservableSupplier<Boolean> mVerticalTabsActiveSupplier;
-    private final SettableNonNullObservableSupplier<@RailCollapseState Integer>
-            mRailCollapseStateSupplier;
+    private final VerticalTabRailCollapseController mCollapseController;
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
     private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
@@ -148,17 +145,11 @@ public class VerticalTabListCoordinator {
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
-    private @Nullable RailCollapseListener mRailCollapseListener;
     private @Nullable TabHoverCardView mTabHoverCardView;
     private @Nullable Token mLastDraggedGroupId;
     private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
 
     private boolean mIsActive;
-
-    /** Listener for collapse state changes. */
-    interface RailCollapseListener {
-        void onRailCollapseStateChangeRequested(@RailCollapseState int targetState);
-    }
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
@@ -241,7 +232,7 @@ public class VerticalTabListCoordinator {
         mTabHoverCardViewStub = tabHoverCardViewStub;
         mTabHoverCardListener = this::showOrHideTabHoverCard;
         mUndoBarThrottle = undoBarThrottle;
-        mRailCollapseStateSupplier = ObservableSuppliers.createNonNull(RailCollapseState.EXPANDED);
+        mCollapseController = new VerticalTabRailCollapseController(this::setRailCollapseState);
         mModelList = new TabListModel();
 
         if (tabHoverCardViewStub != null) {
@@ -436,7 +427,7 @@ public class VerticalTabListCoordinator {
                     @Override
                     public @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                             getRailCollapseStateSupplier() {
-                        return mRailCollapseStateSupplier;
+                        return mCollapseController.getRailCollapseStateSupplier();
                     }
 
                     @Override
@@ -445,7 +436,6 @@ public class VerticalTabListCoordinator {
                     }
                 };
 
-        // TODO(crbug.com/527641177): Persist rail collapse state in SharedPreferences.
         mContainerModel =
                 new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
                         .with(
@@ -467,12 +457,16 @@ public class VerticalTabListCoordinator {
                                 v -> handleNewTabButtonClick())
                         .with(
                                 VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
-                                v -> toggleCollapseState())
+                                v -> mCollapseController.toggleCollapseState())
                         .with(
                                 VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER,
-                                this::expandOrCollapseOnHover)
-                        .with(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED, true)
-                        .with(VerticalTabListProperties.COLLAPSE_STATE, RailCollapseState.EXPANDED)
+                                mCollapseController::expandOrCollapseOnHover)
+                        .with(
+                                VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED,
+                                mCollapseController.isCollapseButtonEnabled())
+                        .with(
+                                VerticalTabListProperties.COLLAPSE_STATE,
+                                mCollapseController.getRailCollapseStateByUser())
                         .build();
         PropertyModelChangeProcessor.create(
                 mContainerModel, mContainerView, VerticalTabListViewBinder::bind);
@@ -678,17 +672,13 @@ public class VerticalTabListCoordinator {
             mContainerView.removeOnLayoutChangeListener(mContainerLayoutChangeListener);
         }
 
-        mRailCollapseListener = null;
+        mCollapseController.destroy();
         mLastDraggedGroupId = null;
     }
 
-    /**
-     * Sets the listener to be notified when the rail's collapsed state changes.
-     *
-     * @param listener The listener to receive collapse state change events.
-     */
-    public void setCollapseListener(@Nullable RailCollapseListener listener) {
-        mRailCollapseListener = listener;
+    /** Returns the {@link VerticalTabRailCollapseController} for managing rail collapse state. */
+    VerticalTabRailCollapseController getCollapseController() {
+        return mCollapseController;
     }
 
     /**
@@ -703,7 +693,7 @@ public class VerticalTabListCoordinator {
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
         mPinnedLayoutManager.setSpanCount(
                 railCollapseState == RailCollapseState.COLLAPSED ? 1 : getSpanCount());
-        mRailCollapseStateSupplier.set(railCollapseState);
+        mCollapseController.setRailCollapseState(railCollapseState);
     }
 
     /**
@@ -713,6 +703,7 @@ public class VerticalTabListCoordinator {
      */
     void setCollapseButtonEnabled(boolean enabled) {
         mContainerModel.set(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED, enabled);
+        mCollapseController.setCollapseButtonEnabled(enabled);
     }
 
     private void setActive(boolean isActive) {
@@ -800,44 +791,6 @@ public class VerticalTabListCoordinator {
         } else {
             mPinnedTabsRecyclerView.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void requestRailCollapseStateChange(@RailCollapseState int targetState) {
-        if (mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE) == targetState) return;
-
-        if (mRailCollapseListener != null) {
-            mRailCollapseListener.onRailCollapseStateChangeRequested(targetState);
-        } else {
-            setRailCollapseState(targetState);
-        }
-    }
-
-    private void toggleCollapseState() {
-        if (!mContainerModel.get(VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED)) {
-            return;
-        }
-
-        @RailCollapseState
-        int currentState = mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE);
-        @RailCollapseState
-        int targetState =
-                currentState == RailCollapseState.EXPANDED
-                        ? RailCollapseState.COLLAPSED
-                        : RailCollapseState.EXPANDED;
-        RecordHistogram.recordBooleanHistogram(
-                "Android.VerticalTabs.RailCollapsed", targetState == RailCollapseState.COLLAPSED);
-        requestRailCollapseStateChange(targetState);
-    }
-
-    private void expandOrCollapseOnHover(@RailCollapseState int targetState) {
-        @RailCollapseState
-        int currentState = mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE);
-        if (currentState != RailCollapseState.EXPANDED_FOR_HOVERING
-                && currentState != RailCollapseState.COLLAPSED) {
-            return;
-        }
-
-        requestRailCollapseStateChange(targetState);
     }
 
     private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
@@ -1500,10 +1453,6 @@ public class VerticalTabListCoordinator {
     /** Returns the active tab switcher drag handlers for testing. */
     List<TabSwitcherDragHandler> getTabSwitcherDragHandlersForTesting() {
         return mTabSwitcherDragHandlers;
-    }
-
-    NonNullObservableSupplier<@RailCollapseState Integer> getRailCollapseStateSupplierForTesting() {
-        return mRailCollapseStateSupplier;
     }
 
     @Nullable TabHoverCardListener getTabHoverCardListenerForTesting() {

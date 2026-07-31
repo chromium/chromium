@@ -102,7 +102,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardHelper.TabHoverCardListener;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.RailCollapseListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -175,7 +174,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private TabSwitcherDragHandler mPinnedTabSwitcherDragHandler;
     @Mock private UndoBarThrottle mUndoBarThrottle;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
-    @Mock private RailCollapseListener mMockRailCollapseListener;
+    @Mock private VerticalTabRailCollapseController.RailCollapseListener mMockRailCollapseListener;
     @Mock private ViewStub mTabHoverCardViewStub;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabHoverCardView mTabHoverCardView;
@@ -1098,9 +1097,6 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testCollapseListenerAndModelToggle() {
         createCoordinator();
 
-        // Mock listener.
-        mCoordinator.setCollapseListener(mMockRailCollapseListener);
-
         ViewGroup view = (ViewGroup) mCoordinator.getView();
         View collapseButton = view.findViewById(R.id.collapse_button);
         assertNotNull(collapseButton);
@@ -1123,7 +1119,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Verify listener requested collapse, but model is NOT updated yet (deferred).
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
         assertEquals(
                 RailCollapseState.EXPANDED,
                 mCoordinator
@@ -1151,7 +1147,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Verify listener requested expand, but model is still collapsed.
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED);
+                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED);
         assertEquals(
                 RailCollapseState.COLLAPSED,
                 mCoordinator
@@ -1172,28 +1168,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testSetRailCollapseState_UpdatesRailCollapseStateSupplier() {
-        createCoordinator();
-        assertEquals(
-                RailCollapseState.EXPANDED,
-                (int) mCoordinator.getRailCollapseStateSupplierForTesting().get());
-
-        mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
-        assertEquals(
-                RailCollapseState.COLLAPSED,
-                (int) mCoordinator.getRailCollapseStateSupplierForTesting().get());
-
-        mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED);
-        assertEquals(
-                RailCollapseState.EXPANDED,
-                (int) mCoordinator.getRailCollapseStateSupplierForTesting().get());
-    }
-
-    @Test
-    @SmallTest
     public void testSetCollapseButtonEnabled() {
         createCoordinator();
-        mCoordinator.setCollapseListener(mMockRailCollapseListener);
 
         View collapseButton = mCoordinator.getView().findViewById(R.id.collapse_button);
         assertTrue(
@@ -1211,7 +1187,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Attempting click when disabled should be ignored.
         collapseButton.performClick();
-        verify(mMockRailCollapseListener, never()).onRailCollapseStateChangeRequested(anyInt());
+        verify(mMockRailCollapseListener, never())
+                .onRailCollapseStateChangeRequestedByUser(anyInt());
 
         mCoordinator.setCollapseButtonEnabled(true);
         assertTrue(
@@ -1224,11 +1201,10 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testExpandOrCollapseOnHover() {
+    public void testExpandOrCollapseOnHover_DispatchesHoverEventsToController() {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
         createCoordinator();
-        mCoordinator.setCollapseListener(mMockRailCollapseListener);
         mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
 
         View containerView = mCoordinator.getView();
@@ -1240,7 +1216,7 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverEnter);
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequested(RailCollapseState.EXPANDED_FOR_HOVERING);
+                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.EXPANDED_FOR_HOVERING);
 
         // 2. Mouse hover exit (outside container bounds) -> requests COLLAPSED.
         mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
@@ -1249,7 +1225,7 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverExit.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverExit);
         verify(mMockRailCollapseListener)
-                .onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+                .onRailCollapseStateChangeRequestedByUser(RailCollapseState.COLLAPSED);
     }
 
     @Test
@@ -1491,6 +1467,8 @@ public class VerticalTabListCoordinatorUnitTest {
                         mTabHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle);
+
+        mCoordinator.getCollapseController().setRailCollapseListener(mMockRailCollapseListener);
     }
 
     /** Helper method to create a basic mock {@link Tab} with initialized state and URL. */
