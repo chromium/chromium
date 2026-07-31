@@ -4,6 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,6 +33,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab2);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
+const DeepQuery kPopupSearchbox = {"omnibox-full-app",
+                                   "omnibox-popup-searchbox"};
 const DeepQuery kWebUIInput = {"omnibox-full-app", "omnibox-popup-searchbox",
                                "cr-searchbox-input", "#input"};
 const DeepQuery kFirstSuggestionMatch = {
@@ -47,10 +50,9 @@ class FullWebUIOmniboxInteractiveTest
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
   FullWebUIOmniboxInteractiveTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{omnibox::internal::kWebUIOmniboxPopup, {}},
-         {omnibox::kWebUIOmniboxFullPopup, {}}},
-        {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kWebUIOmniboxFullPopup},
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup});
   }
   ~FullWebUIOmniboxInteractiveTest() override = default;
 
@@ -87,21 +89,21 @@ class FullWebUIOmniboxInteractiveTest
   }
 
   auto InputWebUIText(const std::string& text) {
-    return Steps(InSameContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
-                                           base::StringPrintf(R"(el => {
+    return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
+                                          base::StringPrintf(R"(el => {
                const fullText = '%s';
                for (let i = 0; i < fullText.length; i++) {
                  el.value = fullText.substring(0, i + 1);
                  el.dispatchEvent(new Event('input'));
                }
              })",
-                                                              text.c_str()))),
+                                                             text.c_str()))),
                  InAnyContext(WaitForWebUIInputValue(text)));
   }
 
   auto ClearWebUIText() {
-    return Steps(InSameContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
-                                           R"(el => {
+    return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
+                                          R"(el => {
                el.value = '';
                el.dispatchEvent(new Event('input'));
              })")),
@@ -158,6 +160,8 @@ class FullWebUIOmniboxInteractiveTest
                  WaitForPopupTransitionLockout());
   }
 
+  // TODO(b/504668292): Tests that use this seem to flake. This needs to be
+  // reworked.
   auto ClickWebPageBody(ui::ElementIdentifier tab_id) {
     return Steps(FocusWebContents(tab_id),
                  ExecuteJsAt(tab_id, DeepQuery{"body"}, "el => el.focus()"),
@@ -242,6 +246,25 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
       WaitForWebUIInputValue("suggestion-1"),
       // Verify the WebUI input has keyboard focus.
       CheckWebUIInputFocus(true));
+}
+
+// Verifies that clicking outside on the webpage body closes the WebUI
+// suggestions dropdown.
+// TODO(b/504668292): Re-enable after de-flaking tests that use
+// `ClickWebPageBody()`.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       DISABLED_ClickOutsideClosesDropdown) {
+  RunTestSequence(
+      // Open Tab 1 and focus Omnibox to open WebUI popup with suggestions.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      // Click on the webpage body to blur the Omnibox.
+      ClickWebPageBody(kTab1),
+      // Verify dropdown matches list closed.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"));
 }
 
 // Verifies that clicking outside on the webpage body while an active user draft
@@ -391,4 +414,111 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ClickMatch) {
       InSameContext(ClickElement(kPopupWebView, kFirstSuggestionMatch)),
       // Verify navigation occurs.
       WaitForGoogleSearch(kTab1, {{"q", "suggestion-1"}}));
+}
+
+// Verifies ESC key staged unwinding parity across all 4 stages:
+// Stage 1: Revert temporary text (kRevertTemporaryText)
+// Stage 2: Close open suggestion popup (kClosePopup)
+// Stage 3: Clear user input / revert to active page URL (kClearUserInput)
+// Stage 4: Clear focus / blur Omnibox (kBlur)
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      // Open Tab 1 at permanent URL chrome://version/ and focus Omnibox.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // Replace the permanent URL with "a" and select the first suggestion.
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      WaitForWebUIInputValue("suggestion-1"), CheckWebUIInputFocus(true),
+
+      // Stage 1: Send ESC to revert temporary text back to "a".
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForWebUIInputValue("a"),
+      // Verify popup frame remains visible.
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckWebUIInputFocus(true), Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "Omnibox.Escape", /*sample=*/1 /* kRevertTemporaryText */, 1);
+      }),
+
+      // Stage 2: Send ESC to close open suggestion popup while retaining typed
+      // text.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForWebUIInputValue("a"),
+      // Verify dropdown suggestion list is no longer visible.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      CheckWebUIInputFocus(true), Do([&]() {
+        histogram_tester.ExpectBucketCount("Omnibox.Escape",
+                                           /*sample=*/2 /* kClosePopup */, 1);
+      }),
+
+      // Stage 3: Send ESC to clear user input draft and restore permanent page
+      // URL.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      // Wait for input value to revert to permanent page URL.
+      WaitForWebUIInputValue("chrome://version"), CheckWebUIInputFocus(true),
+      Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "Omnibox.Escape", /*sample=*/3 /* kClearUserInput */, 1);
+      }),
+
+      // Stage 4: Send ESC to blur Omnibox focus.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      // Wait for popup frame to hide and Omnibox to lose focus.
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false), Do([&]() {
+        histogram_tester.ExpectBucketCount("Omnibox.Escape",
+                                           /*sample=*/5 /* kBlur */, 1);
+      }));
+}
+
+// Verifies ESC key Stage 3 clears user input and closes the popup UI when
+// the permanent URL is empty (on NTP) and input is empty.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       EscapeStagedUnwinding_EmptyPermanentUrl) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      // Open Tab 1 at NTP (empty permanent URL) and focus Omnibox.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      // Type "a" into the WebUI input field.
+      InputWebUIText("a"),
+      // Wait for suggestion-1 match to appear.
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+
+      // Stage 2: Send ESC to close open suggestion popup while retaining typed
+      // text "a".
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      CheckWebUIInputFocus(true), Do([&]() {
+        histogram_tester.ExpectBucketCount("Omnibox.Escape",
+                                           /*sample=*/2 /* kClosePopup */, 1);
+      }),
+
+      // Stage 3: Send ESC to clear typed draft "a" and restore empty URL (NTP).
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForWebUIInputValue(""), CheckWebUIInputFocus(true), Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "Omnibox.Escape", /*sample=*/3 /* kClearUserInput */, 1);
+      }),
+
+      // Stage 4: Send ESC on clean input to blur Omnibox and close UI.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      // Wait for popup frame to hide and Omnibox to lose focus.
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false), Do([&]() {
+        histogram_tester.ExpectBucketCount("Omnibox.Escape",
+                                           /*sample=*/5 /* kBlur */, 1);
+      }));
 }

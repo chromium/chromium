@@ -66,6 +66,7 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // WebUIContentsWrapper::Host:
   void CloseUI() override;
   void ShowUI() override;
+  void OnPreHandleEscapeKey() override;
   void ShowCustomContextMenu(
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model) override;

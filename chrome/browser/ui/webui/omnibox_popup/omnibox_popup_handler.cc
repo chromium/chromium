@@ -33,6 +33,17 @@ void OmniboxPopupHandler::CloseUI() {
   if (embedder_) {
     embedder_->CloseUI();
   }
+  // Transfer focus from the location bar to the active web tab DOM and notify
+  // the edit model that focus was killed so internal focus state and metrics
+  // trackers are updated.
+  if (controller_) {
+    if (controller_->client()) {
+      controller_->client()->FocusWebContents();
+    }
+    if (controller_->edit_model()) {
+      controller_->edit_model()->OnKillFocus();
+    }
+  }
 }
 
 void OmniboxPopupHandler::OnSelectionChanged(const gfx::Range& selection,
