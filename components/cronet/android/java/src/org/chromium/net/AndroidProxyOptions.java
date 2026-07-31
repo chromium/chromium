@@ -14,9 +14,10 @@ import org.chromium.build.annotations.NullMarked;
 import java.util.ArrayList;
 import java.util.List;
 
+/** @hide */
 @NullMarked
 public final class AndroidProxyOptions {
-
+    /** @hide */
     public static void apply(
             HttpEngine.Builder backend, org.chromium.net.ProxyOptions proxyOptions) {
         // When Cronet is being built in the Android repo, HttpEngine is always up to date. This
