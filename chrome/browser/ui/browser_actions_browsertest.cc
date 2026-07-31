@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   auto& action_manager = actions::ActionManager::GetForTesting();
 
   std::vector<actions::ActionId> browser_action_ids = {
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, CycleTabs) {
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
                        CheckBrowserActionsEnabledState) {
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   auto& action_manager = actions::ActionManager::GetForTesting();
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);

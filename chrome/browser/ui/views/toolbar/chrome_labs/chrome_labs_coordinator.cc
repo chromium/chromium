@@ -46,7 +46,7 @@ ChromeLabsCoordinator::ChromeLabsCoordinator(Browser* browser)
       PinnedToolbarActionsModel::Get(browser->GetProfile()));
 
   chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
-      kActionShowChromeLabs, BrowserActions::From(browser)->root_action_item());
+      kActionShowChromeLabs, browser->browser_actions()->root_action_item());
   CHECK(chrome_labs_action_item_);
 
   MaybeInstallDotIndicator();

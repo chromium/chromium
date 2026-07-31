@@ -121,7 +121,7 @@ class CommentsSidePanelCoordinatorInteractiveUiTest
   actions::ActionItem* GetActionItemForCommentsSidePanel() {
     return actions::ActionManager::Get().FindAction(
         kActionSidePanelShowComments,
-        BrowserActions::From(browser())->root_action_item());
+        browser()->GetActions()->root_action_item());
   }
 
  private:

@@ -132,9 +132,9 @@ void ZoomViewController::UpdateBubbleVisibility(bool prefer_to_show_bubble,
 
 bool ZoomViewController::IsBubbleVisible() const {
   auto* action_item = actions::ActionManager::Get().FindAction(
-      kActionShowZoomBubble,
-      BrowserActions::From(tab_interface_->GetBrowserWindowInterface())
-          ->root_action_item());
+      kActionShowZoomBubble, tab_interface_->GetBrowserWindowInterface()
+                                 ->GetActions()
+                                 ->root_action_item());
   return action_item->GetIsShowingBubble();
 }
 

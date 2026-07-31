@@ -316,12 +316,12 @@ bool GetEffectivePinState(Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID)
 void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
                                     bool eligible) {
-  if (!browser_window || !BrowserActions::From(browser_window)) {
+  if (!browser_window || !browser_window->GetActions()) {
     return;
   }
 
   actions::ActionItem* const scope_action =
-      BrowserActions::From(browser_window)->root_action_item();
+      browser_window->GetActions()->root_action_item();
   if (!scope_action) {
     return;
   }

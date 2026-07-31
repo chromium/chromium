@@ -98,10 +98,10 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
       },
       bubble));
 
-  if (BrowserActions::From(browser)->root_action_item()) {
+  if (browser->GetActions()->root_action_item()) {
     if (auto* passwords_action_item = actions::ActionManager::Get().FindAction(
             kActionShowPasswordsBubbleOrPage,
-            BrowserActions::From(browser)->root_action_item())) {
+            browser->GetActions()->root_action_item())) {
       bool should_suppress_next_button_trigger =
           g_manage_passwords_bubble_->ShouldCloseOnDeactivate();
       passwords_action_item->SetIsShowingBubble(
@@ -248,10 +248,10 @@ PasswordBubbleViewBase::PasswordBubbleViewBase(
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {
   CHECK(this != g_manage_passwords_bubble_);
   // It is possible in tests for |browser_| not to exist.
-  if (browser_ && BrowserActions::From(browser_)->root_action_item()) {
+  if (browser_ && browser_->GetActions()->root_action_item()) {
     if (auto* passwords_action_item = actions::ActionManager::Get().FindAction(
             kActionShowPasswordsBubbleOrPage,
-            BrowserActions::From(browser_)->root_action_item())) {
+            browser_->GetActions()->root_action_item())) {
       passwords_action_item->SetIsShowingBubble(false);
     }
   }

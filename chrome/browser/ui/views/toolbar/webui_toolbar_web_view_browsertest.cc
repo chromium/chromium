@@ -5466,8 +5466,7 @@ class WebUIPinnedToolbarActionsBrowserTest
       SetPinnableProperty(mapping.first, true);
       if (actions::ActionItem* action_item =
               actions::ActionManager::Get().FindAction(
-                  mapping.first,
-                  BrowserActions::From(browser())->root_action_item())) {
+                  mapping.first, browser()->GetActions()->root_action_item())) {
         action_item->SetVisible(true);
       }
     }
@@ -5540,7 +5539,7 @@ class WebUIPinnedToolbarActionsBrowserTest
 
   void SetPinnableProperty(actions::ActionId id, bool pinnable) {
     actions::ActionManager::Get()
-        .FindAction(id, BrowserActions::From(browser())->root_action_item())
+        .FindAction(id, browser()->GetActions()->root_action_item())
         ->SetProperty(
             actions::kActionItemPinnableKey,
             static_cast<int>(pinnable
@@ -5763,8 +5762,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
   auto* web_contents = GetWebContents();
   auto* action_item = static_cast<actions::StatefulImageActionItem*>(
       actions::ActionManager::Get().FindAction(
-          kActionRouteMedia,
-          BrowserActions::From(browser())->root_action_item()));
+          kActionRouteMedia, browser()->GetActions()->root_action_item()));
 
   struct Test {
     base::raw_ref<const gfx::VectorIcon> icon;
@@ -5829,8 +5827,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   auto* web_contents = GetWebContents();
   auto* action_item = static_cast<actions::StatefulImageActionItem*>(
       actions::ActionManager::Get().FindAction(
-          kActionRouteMedia,
-          BrowserActions::From(browser())->root_action_item()));
+          kActionRouteMedia, browser()->GetActions()->root_action_item()));
   action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled()
           ? vector_icons::kPasswordManagerIcon
@@ -5891,7 +5888,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, InvokeActions) {
 
   for (const auto& [action_id, mojom_action] : kActionMappings) {
     auto* action_item = actions::ActionManager::Get().FindAction(
-        action_id, BrowserActions::From(browser())->root_action_item());
+        action_id, browser()->GetActions()->root_action_item());
     ASSERT_TRUE(action_item);
     action_item->SetEnabled(true);
     bool invoked = false;
@@ -6047,7 +6044,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
       [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
 
   auto* action_item = actions::ActionManager::Get().FindAction(
-      action_id, BrowserActions::From(browser())->root_action_item());
+      action_id, browser()->GetActions()->root_action_item());
   ASSERT_TRUE(action_item);
 
   // Disable the action.
@@ -6126,15 +6123,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 
   // Set activated.
   actions::ActionManager::Get()
-      .FindAction(action_id,
-                  BrowserActions::From(browser())->root_action_item())
+      .FindAction(action_id, browser()->GetActions()->root_action_item())
       ->SetProperty(kActionItemUnderlineIndicatorKey, true);
   verify_activated(true);
 
   // Set not activated.
   actions::ActionManager::Get()
-      .FindAction(action_id,
-                  BrowserActions::From(browser())->root_action_item())
+      .FindAction(action_id, browser()->GetActions()->root_action_item())
       ->SetProperty(kActionItemUnderlineIndicatorKey, false);
   verify_activated(false);
 }
@@ -6186,7 +6181,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
       toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
 
   auto* action_item = actions::ActionManager::Get().FindAction(
-      action_id, BrowserActions::From(browser())->root_action_item());
+      action_id, browser()->GetActions()->root_action_item());
   ASSERT_TRUE(action_item);
 
   // Pin it so it renders.
@@ -6372,7 +6367,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   auto invoke_pin_unpin = [&](actions::ActionId pin_unpin_action) {
     actions::ActionManager::Get()
         .FindAction(pin_unpin_action,
-                    BrowserActions::From(browser())->root_action_item())
+                    browser()->GetActions()->root_action_item())
         ->InvokeAction(actions::ActionInvocationContext::Builder()
                            .SetProperty(kActionIdKey, action_id)
                            .Build());

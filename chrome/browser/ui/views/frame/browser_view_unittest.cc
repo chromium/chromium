@@ -145,7 +145,7 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
 
   // Test action item creation.
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
   EXPECT_GE(

@@ -40,8 +40,7 @@ class CommandActionUpdaterBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Find the existing kActionBack action.
-    actions::ActionItem* root =
-        BrowserActions::From(browser())->root_action_item();
+    actions::ActionItem* root = browser()->GetActions()->root_action_item();
     ASSERT_TRUE(root);
     action_item_ = actions::ActionManager::Get().FindAction(kActionBack, root);
     ASSERT_TRUE(action_item_);
@@ -205,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CommandActionUpdaterBrowserTest,
     ExecuteToggleVerticalTabsCollapsePreservesKeyboardShortcutSource) {
-  actions::ActionItem* root = BrowserActions::From(browser())->root_action_item();
+  actions::ActionItem* root = browser()->GetActions()->root_action_item();
   ASSERT_TRUE(root);
   actions::ActionItem* toggle_action = actions::ActionManager::Get().FindAction(
       kActionToggleCollapseVertical, root);

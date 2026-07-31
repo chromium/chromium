@@ -450,7 +450,7 @@ DownloadToolbarUIController::DownloadToolbarUIController(
           *this) {
   Browser* const browser = browser_view_->browser();
   action_item_ = actions::ActionManager::Get().FindAction(
-      kActionShowDownloads, BrowserActions::From(browser)->root_action_item());
+      kActionShowDownloads, browser->browser_actions()->root_action_item());
   CHECK(action_item_);
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
   action_item_->SetTooltipText(tooltip_texts_.at(0));

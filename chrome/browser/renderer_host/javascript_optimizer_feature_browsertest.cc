@@ -1362,7 +1362,7 @@ class JavascriptOptimizerOmnibarIconBrowserTest
 
     actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
         kActionShowJsOptimizationsIcon,
-        BrowserActions::From(browser())->root_action_item());
+        browser()->browser_actions()->root_action_item());
     return action_item && action_item->GetIsShowingBubble();
   }
 

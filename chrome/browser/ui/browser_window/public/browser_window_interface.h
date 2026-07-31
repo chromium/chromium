@@ -40,6 +40,7 @@ class WebContentsModalDialogHost;
 }  // namespace web_modal
 
 class Browser;
+class BrowserActions;
 class BrowserWindowFeatures;
 class DesktopBrowserWindowCapabilities;
 class GURL;
@@ -318,6 +319,10 @@ class BrowserWindowInterface : public content::PageNavigator {
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
   virtual base::CallbackListSubscription RegisterDidBecomeInactive(
       DidBecomeInactiveCallback callback) = 0;
+
+  // This class manages actions that a user can take that are scoped to a
+  // browser window (e.g. most of the 3-dot menu actions).
+  virtual BrowserActions* GetActions() = 0;
 
   // This is used by features that need to operate on most or all tabs in the
   // browser window. Do not use this method to find a specific tab.

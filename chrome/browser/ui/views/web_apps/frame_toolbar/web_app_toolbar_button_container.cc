@@ -204,9 +204,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
   std::vector<actions::ActionItem*> page_action_items = {};
   actions::ActionItem* root_action_item =
-      BrowserActions::From(browser_view_->browser())->root_action_item();
-  for (actions::ActionId action_id :
-       app_controller->GetTitleBarPageActions()) {
+      browser_view_->browser()->browser_actions()->root_action_item();
+  for (actions::ActionId action_id : app_controller->GetTitleBarPageActions()) {
     if (actions::ActionItem* item = actions::ActionManager::Get().FindAction(
             action_id, root_action_item)) {
       page_action_items.emplace_back(item);

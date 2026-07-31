@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   ASSERT_TRUE(side_panel_extension);
 
   // Check if ActionItem is created.
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* action_item =
       GetActionItemForExtension(side_panel_extension.get(), browser_actions);
   EXPECT_EQ(action_item->GetText(),
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   SidePanelRegistry* const first_global_registry =
       SidePanelRegistry::From(browser());
   EXPECT_TRUE(first_global_registry->GetEntryForKey(extension_key));
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* browser_one_action_item =
       GetActionItemForExtension(extension.get(), browser_actions);
   EXPECT_EQ(browser_one_action_item->GetText(),
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   // registered for the new window's global SidePanelRegistry.
   Browser* second_browser = CreateBrowser(browser()->GetProfile());
   BrowserActions* browser_actions_second_browser =
-      BrowserActions::From(second_browser);
+      second_browser->browser_actions();
 
   SidePanelRegistry* const second_global_registry =
       SidePanelRegistry::From(second_browser);
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
   ASSERT_TRUE(extension);
 
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* action_item =
       GetActionItemForExtension(extension.get(), browser_actions);
 
@@ -1245,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   ASSERT_TRUE(extension);
 
   // Check if ActionItem is created.
-  BrowserActions* browser_actions = BrowserActions::From(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* action_item =
       GetActionItemForExtension(extension.get(), browser_actions);
   EXPECT_EQ(action_item->GetText(), base::UTF8ToUTF16(extension->short_name()));

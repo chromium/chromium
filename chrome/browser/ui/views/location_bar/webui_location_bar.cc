@@ -91,8 +91,7 @@ WebUILocationBar::WebUILocationBar(Browser* browser,
       delegate_(delegate),
       content_setting_image_control_(this),
       page_action_control_(
-          browser ? BrowserActions::From(browser)->root_action_item()
-                  : nullptr) {
+          browser ? browser->browser_actions()->root_action_item() : nullptr) {
   permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
   permission_dashboard_controller_ =
       std::make_unique<PermissionDashboardController>(

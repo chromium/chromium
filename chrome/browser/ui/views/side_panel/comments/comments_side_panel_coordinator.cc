@@ -210,8 +210,7 @@ void CommentsSidePanelCoordinator::UpdateSidePanelTitle(
                 IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE);
 
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      kActionSidePanelShowComments,
-      BrowserActions::From(browser_)->root_action_item());
+      kActionSidePanelShowComments, browser_->GetActions()->root_action_item());
 
   if (title != action_item->GetText()) {
     action_item->SetText(title);

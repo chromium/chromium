@@ -611,7 +611,7 @@ std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {
 
 std::vector<actions::ActionId> GetActivePageActionIds(
     BrowserWindowInterface& bwi) {
-  auto* browser_actions = BrowserActions::From(&bwi);
+  auto* browser_actions = bwi.GetActions();
   if (!browser_actions) {
     return {};
   }
@@ -633,7 +633,7 @@ std::vector<actions::ActionId> GetActivePageActionIds(
 
 std::vector<actions::ActionItem*> GetActivePageActionItems(
     BrowserWindowInterface& bwi) {
-  auto* browser_actions = BrowserActions::From(&bwi);
+  auto* browser_actions = bwi.GetActions();
   if (!browser_actions) {
     return {};
   }

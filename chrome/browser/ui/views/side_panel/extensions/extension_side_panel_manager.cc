@@ -95,7 +95,7 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
 
   actions::ActionId extension_action_id =
       GetOrCreateActionIdForExtension(extension);
-  BrowserActions* browser_actions = BrowserActions::From(browser_);
+  BrowserActions* browser_actions = browser_->GetActions();
   actions::ActionItem* extension_action_item =
       actions::ActionManager::Get().FindAction(
           extension_action_id, browser_actions->root_action_item());
@@ -134,7 +134,7 @@ void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
     const Extension* extension) {
   if (browser_ && extension->permissions_data()->HasAPIPermission(
                       mojom::APIPermissionID::kSidePanel)) {
-    BrowserActions* browser_actions = BrowserActions::From(browser_);
+    BrowserActions* browser_actions = browser_->GetActions();
     std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(
             SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())

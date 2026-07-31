@@ -154,7 +154,7 @@ bool ShouldShowShoppingCollectionFootnote(Profile* profile,
 actions::ActionItem& GetBookmarkActionItem(BrowserWindowInterface* bwi) {
   CHECK(bwi);
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      kActionBookmarkThisTab, BrowserActions::From(bwi)->root_action_item());
+      kActionBookmarkThisTab, bwi->GetActions()->root_action_item());
   CHECK(action_item);
   return *action_item;
 }

@@ -157,18 +157,19 @@ class HistoryClustersSidePanelContextMenu
         break;
       }
       case IDC_CUT:
-        InvokeAction(actions::kActionCut,
-                     BrowserActions::From(GetBrowserWindowInterface(interface_))
-                         ->root_action_item());
+        InvokeAction(actions::kActionCut, GetBrowserWindowInterface(interface_)
+                                              ->GetActions()
+                                              ->root_action_item());
         break;
       case IDC_COPY:
-        InvokeAction(actions::kActionCopy,
-                     BrowserActions::From(GetBrowserWindowInterface(interface_))
-                         ->root_action_item());
+        InvokeAction(actions::kActionCopy, GetBrowserWindowInterface(interface_)
+                                               ->GetActions()
+                                               ->root_action_item());
         break;
       case IDC_PASTE:
         InvokeAction(actions::kActionPaste,
-                     BrowserActions::From(GetBrowserWindowInterface(interface_))
+                     GetBrowserWindowInterface(interface_)
+                         ->GetActions()
                          ->root_action_item());
         break;
       default:

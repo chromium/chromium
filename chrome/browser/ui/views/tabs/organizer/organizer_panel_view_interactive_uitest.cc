@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, RestoresFocusOnClose) {
       Do([this]() {
         actions::ActionManager::Get()
             .FindAction(kActionToggleOrganizerPanel,
-                        BrowserActions::From(browser())->root_action_item())
+                        browser()->GetActions()->root_action_item())
             ->InvokeAction();
       }),
       WaitForShow(kOrganizerPanelViewElementId),
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelInteractiveUiTest, RestoresFocusOnClose) {
       Do([this]() {
         actions::ActionManager::Get()
             .FindAction(kActionToggleOrganizerPanel,
-                        BrowserActions::From(browser())->root_action_item())
+                        browser()->GetActions()->root_action_item())
             ->InvokeAction();
       }),
       // Verify focus is restored to the omnibox.

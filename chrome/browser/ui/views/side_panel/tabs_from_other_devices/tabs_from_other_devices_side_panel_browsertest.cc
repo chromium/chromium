@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest,
 
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionSidePanelShowTabsFromOtherDevices,
-      BrowserActions::From(browser())->root_action_item());
+      browser()->browser_actions()->root_action_item());
   EXPECT_NE(action_item, nullptr);
   EXPECT_TRUE(action_item->GetVisible());
   EXPECT_EQ(action_item->GetProperty(actions::kActionItemPinnableKey),

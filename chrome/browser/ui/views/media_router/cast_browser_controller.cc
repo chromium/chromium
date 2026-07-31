@@ -84,8 +84,7 @@ void CastBrowserController::OnFreezeInfoChanged() {
 void CastBrowserController::UpdateIcon() {
   auto* action_item = static_cast<actions::StatefulImageActionItem*>(
       actions::ActionManager::Get().FindAction(
-          kActionRouteMedia,
-          BrowserActions::From(browser_)->root_action_item()));
+          kActionRouteMedia, browser_->GetActions()->root_action_item()));
   const gfx::VectorIcon* new_icon = nullptr;
   bool active = false;
 

@@ -114,7 +114,7 @@ TabStripComboButton::~TabStripComboButton() {
 }
 
 void TabStripComboButton::UpdateButtonsVisibility() {
-  if (!browser_ || !BrowserActions::From(browser_)) {
+  if (!browser_ || !browser_->GetActions()) {
     return;
   }
   auto update_button_visibility = [&](actions::ActionItem* action_item,
@@ -210,11 +210,11 @@ TabStripComboButton::CreateFlatEdgeButtonFor(actions::ActionId action_id,
   button->SetShouldShowLabel(context_ == Context::kVerticalTabStrip);
   button->SetExpansionOrientation(orientation_);
   button->set_context_menu_controller(this);
-  if (!browser_ || !BrowserActions::From(browser_)) {
+  if (!browser_ || !browser_->GetActions()) {
     return button;
   }
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      action_id, BrowserActions::From(browser_)->root_action_item());
+      action_id, browser_->GetActions()->root_action_item());
   CHECK(action_item);
   action_view_controller_->CreateActionViewRelationship(
       button.get(), action_item->GetAsWeakPtr());
@@ -431,12 +431,12 @@ bool TabStripComboButton::IsTabSearchPinned() {
 
 actions::ActionItem* TabStripComboButton::GetStartButtonActionItem() {
   return actions::ActionManager::Get().FindAction(
-      kActionTabGroupsMenu, BrowserActions::From(browser_)->root_action_item());
+      kActionTabGroupsMenu, browser_->GetActions()->root_action_item());
 }
 
 actions::ActionItem* TabStripComboButton::GetEndButtonActionItem() {
   return actions::ActionManager::Get().FindAction(
-      kActionTabSearch, BrowserActions::From(browser_)->root_action_item());
+      kActionTabSearch, browser_->GetActions()->root_action_item());
 }
 
 void TabStripComboButton::AnimationProgressed(const gfx::Animation* animation) {

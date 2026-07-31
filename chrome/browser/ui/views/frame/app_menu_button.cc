@@ -119,7 +119,7 @@ void AppMenuButton::RunActionMenu(
     int run_flags) {
   action_menu_.reset();
   auto action_manager = std::make_unique<AppMenuActionManager>(
-      BrowserActions::From(browser_window_interface)->root_action_item());
+      browser_window_interface->GetActions()->root_action_item());
   action_manager->Initialize();
 
   action_menu_ = std::make_unique<ActionAppMenu>(

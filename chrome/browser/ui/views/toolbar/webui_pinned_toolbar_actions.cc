@@ -168,7 +168,7 @@ WebUIPinnedToolbarActions::PinnedActionIds() const {
 actions::ActionItem* WebUIPinnedToolbarActions::GetActionItemFor(
     actions::ActionId id) {
   return actions::ActionManager::Get().FindAction(
-      id, BrowserActions::From(delegate_->GetBrowser())->root_action_item());
+      id, delegate_->GetBrowser()->GetActions()->root_action_item());
 }
 
 bool WebUIPinnedToolbarActions::IsOverflowed(actions::ActionId id) {

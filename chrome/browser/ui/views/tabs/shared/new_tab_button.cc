@@ -36,9 +36,9 @@ NewTabButton::NewTabButton(BrowserWindowInterface* browser,
   layer()->SetFillsBoundsOpaquely(false);
 
   CHECK(browser_);
-  CHECK(BrowserActions::From(browser_));
+  CHECK(browser_->GetActions());
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      kActionNewTab, BrowserActions::From(browser_)->root_action_item());
+      kActionNewTab, browser_->GetActions()->root_action_item());
   CHECK(action_item);
   action_view_controller_->CreateActionViewRelationship(
       this, action_item->GetAsWeakPtr());

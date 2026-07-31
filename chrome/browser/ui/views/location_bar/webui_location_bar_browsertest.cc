@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, AllPageActionsPresent) {
     }
     // Enable and make the action item visible.
     actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-        action_id, BrowserActions::From(browser())->root_action_item());
+        action_id, browser()->GetActions()->root_action_item());
     if (action_item) {
       action_item->SetVisible(true);
       action_item->SetEnabled(true);

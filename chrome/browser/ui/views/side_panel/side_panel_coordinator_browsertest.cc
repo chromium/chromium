@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionSidePanelShowBookmarks,
-      BrowserActions::From(browser())->root_action_item());
+      browser()->GetActions()->root_action_item());
 
   // Update the action item text.
   const std::u16string new_title = u"New Bookmarks title";

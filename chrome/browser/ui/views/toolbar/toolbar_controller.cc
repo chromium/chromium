@@ -273,7 +273,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
   };
 
   // Support actions items.
-  const auto* const browser_actions = BrowserActions::From(browser);
+  const auto* const browser_actions = browser->browser_actions();
   if (browser_actions) {
     auto* root_item = browser_actions->root_action_item();
     if (root_item) {

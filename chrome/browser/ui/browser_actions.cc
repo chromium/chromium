@@ -401,23 +401,8 @@ void ExecOpenLink(BrowserWindowInterface* bwi,
 
 }  // namespace
 
-DEFINE_USER_DATA(BrowserActions);
-
-// static
-BrowserActions* BrowserActions::From(BrowserWindowInterface* browser) {
-  return Get(browser->GetUnownedUserDataHost());
-}
-
-// static
-const BrowserActions* BrowserActions::From(
-    const BrowserWindowInterface* browser) {
-  return Get(browser->GetUnownedUserDataHost());
-}
-
 BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
-    : bwi_(CHECK_DEREF(bwi)),
-      profile_(CHECK_DEREF(bwi->GetProfile())),
-      scoped_unowned_user_data_(bwi->GetUnownedUserDataHost(), *this) {}
+    : bwi_(CHECK_DEREF(bwi)), profile_(CHECK_DEREF(bwi->GetProfile())) {}
 
 BrowserActions::~BrowserActions() {
   browser_action_prefs_listener_.reset();

@@ -134,8 +134,7 @@ void AiOverlayDialogPageHandler::GetMockAudioData(
 void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
   if (!overlay_action_item_) {
     overlay_action_item_ = actions::ActionManager::Get().FindAction(
-        kActionShowAiOverlayDialog,
-        BrowserActions::From(browser_)->root_action_item());
+        kActionShowAiOverlayDialog, browser_->GetActions()->root_action_item());
   }
 
   if (overlay_action_item_) {

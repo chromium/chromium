@@ -254,7 +254,7 @@ void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
 
 actions::ActionItem* FindAction(actions::ActionId action_id, Browser* browser) {
   actions::ActionItem* const root_action_item =
-      BrowserActions::From(browser)->root_action_item();
+      browser->GetActions()->root_action_item();
   if (!root_action_item) {
     return nullptr;
   }
@@ -1050,15 +1050,15 @@ void BrowserCommandController::HandleCommandWithDisposition(
     // Clipboard commands
     case IDC_CUT:
       InvokeAction(actions::kActionCut,
-                   BrowserActions::From(browser_)->root_action_item());
+                   browser_->GetActions()->root_action_item());
       break;
     case IDC_COPY:
       InvokeAction(actions::kActionCopy,
-                   BrowserActions::From(browser_)->root_action_item());
+                   browser_->GetActions()->root_action_item());
       break;
     case IDC_PASTE:
       InvokeAction(actions::kActionPaste,
-                   BrowserActions::From(browser_)->root_action_item());
+                   browser_->GetActions()->root_action_item());
       break;
 
     // Find-in-page
@@ -2725,7 +2725,7 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
 
   if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
     actions::ActionItem* const root_action_item =
-        BrowserActions::From(browser_)->root_action_item();
+        browser_->GetActions()->root_action_item();
     if (root_action_item) {
       if (auto* const action = actions::ActionManager::Get().FindAction(
               kActionSidePanelShowGlic, root_action_item)) {
@@ -2751,7 +2751,7 @@ std::unique_ptr<CommandUpdater>
 BrowserCommandController::CreateCommandUpdater() {
   if (base::FeatureList::IsEnabled(features::kUseActionsForBrowserCommands)) {
     return std::make_unique<CommandActionUpdater>(
-        BrowserActions::From(browser_)->root_action_item());
+        browser_->GetActions()->root_action_item());
   }
   return std::make_unique<CommandUpdaterImpl>(this);
 }

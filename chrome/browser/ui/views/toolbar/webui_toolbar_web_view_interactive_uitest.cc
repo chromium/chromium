@@ -148,7 +148,7 @@ class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {
 
     // Set tested actions as pinnable.
     auto* action_item = actions::ActionManager::Get().FindAction(
-        kActionPrint, BrowserActions::From(browser())->root_action_item());
+        kActionPrint, browser()->GetActions()->root_action_item());
     if (action_item) {
       action_item->SetProperty(
           actions::kActionItemPinnableKey,
@@ -156,7 +156,7 @@ class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {
     }
     action_item = actions::ActionManager::Get().FindAction(
         kActionSidePanelShowBookmarks,
-        BrowserActions::From(browser())->root_action_item());
+        browser()->GetActions()->root_action_item());
     if (action_item) {
       action_item->SetProperty(
           actions::kActionItemPinnableKey,

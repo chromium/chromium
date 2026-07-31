@@ -1263,10 +1263,10 @@ void ContextualTasksSidePanelCoordinator::OnEligibilityChange(
     task_id_to_web_contents_cache_.clear();
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (browser_window_ && BrowserActions::From(browser_window_)) {
+  if (browser_window_ && browser_window_->GetActions()) {
     if (auto* action_item = actions::ActionManager::Get().FindAction(
             kActionSidePanelShowContextualTasks,
-            BrowserActions::From(browser_window_)->root_action_item())) {
+            browser_window_->GetActions()->root_action_item())) {
       action_item->SetVisible(is_eligible);
     }
   }

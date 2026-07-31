@@ -465,7 +465,7 @@ actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
     return nullptr;
   }
   return actions::ActionManager::Get().FindAction(
-      id, BrowserActions::From(browser_view_->browser())->root_action_item());
+      id, browser_view_->browser()->browser_actions()->root_action_item());
 }
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
