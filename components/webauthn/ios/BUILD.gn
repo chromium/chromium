@@ -37,6 +37,7 @@ source_set("ios") {
     "//components/webauthn/core/browser:client_data",
     "//components/webauthn/core/browser:common_utils",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:signal_api_utils",
     "//device/fido",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -58,6 +59,7 @@ static_library("test_support") {
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:signal_api_utils",
     "//components/webauthn/ios",
     "//ios/web/public/test/fakes",
   ]
@@ -127,6 +129,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:signal_api_utils",
     "//components/webauthn/core/browser:test_support",
     "//device/fido/public",
     "//ios/web/public/test",

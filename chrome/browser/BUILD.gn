@@ -2917,6 +2917,7 @@ source_set("browser") {
     "//components/webapps/common",
     "//components/webapps/common:mojo_bindings",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:signal_api_utils",
     "//components/webdata/common",
     "//components/webdata_services",
     "//components/webid",
@@ -3379,6 +3380,7 @@ source_set("browser") {
       "//components/webauthn/content/browser",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",
+      "//components/webauthn/core/browser:signal_api_utils",
       "//services/device/public/cpp/hid",
       "//services/screen_ai",
       "//services/screen_ai/public/cpp:utilities",
@@ -4037,6 +4039,7 @@ source_set("browser") {
       "//components/user_manager:multi_user",
       "//components/webapk:proto",
       "//components/webauthn/core/browser:passkey_model",
+      "//components/webauthn/core/browser:signal_api_utils",
       "//device/fido",
       "//device/vr/public/mojom:isolated_xr_service",
 

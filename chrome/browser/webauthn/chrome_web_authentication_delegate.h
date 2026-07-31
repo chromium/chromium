@@ -24,45 +24,6 @@
 class ChromeWebAuthenticationDelegate final
     : public ChromeWebAuthenticationDelegateBase {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(SignalUnknownCredentialResult)
-  enum class SignalUnknownCredentialResult {
-    kPasskeyNotFound = 0,
-    kPasskeyRemoved = 1,
-    kPasskeyHidden = 2,
-    kQuotaExceeded = 3,
-    kPasskeyAlreadyHidden = 4,
-    kMaxValue = kPasskeyAlreadyHidden,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalUnknownCredentialResultEnum)
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(SignalAllAcceptedCredentialsResult)
-  enum class SignalAllAcceptedCredentialsResult {
-    kNoPasskeyChanged = 0,
-    kPasskeyRemoved = 1,
-    kPasskeyHidden = 2,
-    kPasskeyRestored = 3,
-    kQuotaExceeded = 4,
-    kMaxValue = kQuotaExceeded,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalAllAcceptedCredentialsResultEnum)
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(SignalCurrentUserDetailsResult)
-  enum class SignalCurrentUserDetailsResult {
-    kQuotaExceeded = 0,
-    kPasskeyUpdated = 1,
-    kPasskeyNotUpdated = 2,
-    kMaxValue = kPasskeyNotUpdated,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:SignalCurrentUserDetailsResultEnum)
 
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn

@@ -74,6 +74,21 @@ source_set("passkey_model") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("signal_api_utils") {
+  sources = [
+    "signal_api_utils.cc",
+    "signal_api_utils.h",
+  ]
+  deps = [
+    ":browser",
+    ":passkey_model",
+    "//base",
+    "//components/device_event_log",
+    "//components/sync/protocol",
+    "//url",
+  ]
+}
+
 source_set("client_data") {
   sources = [
     "client_data_json.cc",
@@ -130,7 +145,10 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "passkey_model_utils_unittest.cc" ]
+    sources += [
+      "passkey_model_utils_unittest.cc",
+      "signal_api_utils_unittest.cc",
+    ]
     if (use_blink) {
       sources += [
         "passkey_change_quota_tracker_unittest.cc",
@@ -143,6 +161,8 @@ source_set("unit_tests") {
     }
     deps += [
       ":passkey_model",
+      ":signal_api_utils",
+      ":test_support",
       "//components/sync/protocol",
       "//crypto",
       "//testing/gmock",

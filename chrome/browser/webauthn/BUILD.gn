@@ -280,6 +280,7 @@ source_set("chrome_web_authentication_delegate") {
       "//components/device_event_log",
       "//components/webapps/isolated_web_apps:scheme",
       "//components/webauthn/core/browser",
+      "//components/webauthn/core/browser:signal_api_utils",
     ]
 
     if (is_chromeos) {
@@ -435,6 +436,7 @@ source_set("unit_tests") {
     "//components/webauthn/content/browser",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:passkey_model",
+    "//components/webauthn/core/browser:signal_api_utils",
     "//components/webauthn/core/browser:test_support",
     "//content/test:test_support",
     "//device/fido",
@@ -545,6 +547,7 @@ if (!is_android) {
       "//components/trusted_vault:test_support",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",
+      "//components/webauthn/core/browser:signal_api_utils",
       "//components/webauthn/core/browser:test_support",
       "//content/test:test_support",
       "//crypto:test_support",
@@ -612,6 +615,7 @@ if (!is_android) {
         "//chrome/test:test_support_ui",
         "//components/sync_device_info:test_support",
         "//components/webauthn/core/browser",
+        "//components/webauthn/core/browser:signal_api_utils",
         "//components/webauthn/core/browser:test_support",
         "//content/test:test_support",
         "//crypto:test_support",

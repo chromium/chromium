@@ -4,6 +4,8 @@
 
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
+#include <tuple>
+
 #import "base/check_deref.h"
 #import "base/containers/span.h"
 #import "base/debug/dump_without_crashing.h"
@@ -21,6 +23,7 @@
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/core/browser/remote_validation.h"
+#import "components/webauthn/core/browser/signal_api_utils.h"
 #import "components/webauthn/core/browser/webauthn_security_utils.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
@@ -389,26 +392,9 @@ void PasskeyTabHelper::HandleSignalUnknownCredentialEvent(
 void PasskeyTabHelper::HandleSignalUnknownCredential(
     const url::Origin& origin,
     SignalUnknownCredentialParams params) {
-  PasskeyChangeQuotaTracker* quota_tracker =
-      PasskeyChangeQuotaTracker::GetInstance();
-  if (!quota_tracker->CanMakeChange(origin)) {
-    return;
-  }
-
-  std::string credential_id(params.credential_id.begin(),
-                            params.credential_id.end());
-  std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
-      passkey_model_->GetPasskey(
-          params.rp_id, credential_id,
-          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
-  if (!credential_specifics || credential_specifics->hidden()) {
-    return;
-  }
-
-  passkey_model_->HidePasskey(credential_id, base::Time::Now());
-  quota_tracker->TrackChange(origin);
-  // TODO(crbug.com/460487030): Display UI confirmation.
-  // TODO(crbug.com/460487030): Log metrics.
+  // TODO(crbug.com/540328660): Use the result to display appropriate UI.
+  std::ignore = webauthn::UpdatePasskeyModelForSignalUnknownCredential(
+      origin, params.rp_id, params.credential_id, *passkey_model_);
 }
 
 void PasskeyTabHelper::HandleSignalCurrentUserDetailsEvent(
@@ -434,33 +420,10 @@ void PasskeyTabHelper::HandleSignalCurrentUserDetailsEvent(
 void PasskeyTabHelper::HandleSignalCurrentUserDetails(
     const url::Origin& origin,
     SignalCurrentUserDetailsParams params) {
-  PasskeyChangeQuotaTracker* quota_tracker =
-      PasskeyChangeQuotaTracker::GetInstance();
-  if (!quota_tracker->CanMakeChange(origin)) {
-    return;
-  }
-
-  bool passkey_updated = false;
-  for (const auto& passkey : passkey_model_->GetPasskeys(
-           params.rp_id,
-           webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
-    if (base::as_byte_span(passkey.user_id()) == params.user_id &&
-        (passkey.user_name() != params.name ||
-         passkey.user_display_name() != params.display_name)) {
-      if (passkey_model_->UpdatePasskey(
-              passkey.credential_id(),
-              {.user_name = params.name,
-               .user_display_name = params.display_name},
-              /*updated_by_user=*/false)) {
-        passkey_updated = true;
-      }
-    }
-  }
-
-  if (passkey_updated) {
-    quota_tracker->TrackChange(origin);
-  }
-  // TODO(crbug.com/460487030): Log metrics.
+  // TODO(crbug.com/540328660): Use the result to display appropriate UI.
+  std::ignore = webauthn::UpdatePasskeyModelForSignalCurrentUserDetails(
+      origin, params.rp_id, params.user_id, params.name, params.display_name,
+      *passkey_model_);
 }
 
 void PasskeyTabHelper::HandleSignalAllAcceptedCredentialsEvent(
@@ -486,38 +449,10 @@ void PasskeyTabHelper::HandleSignalAllAcceptedCredentialsEvent(
 void PasskeyTabHelper::HandleSignalAllAcceptedCredentials(
     const url::Origin& origin,
     SignalAllAcceptedCredentialsParams params) {
-  PasskeyChangeQuotaTracker* quota_tracker =
-      PasskeyChangeQuotaTracker::GetInstance();
-  if (!quota_tracker->CanMakeChange(origin)) {
-    return;
-  }
-
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeys(params.rp_id,
-                                  PasskeyModel::ShadowedCredentials::kExclude);
-  const auto passkey_it =
-      std::ranges::find_if(passkeys, [&params](const auto& passkey) {
-        return base::as_byte_span(passkey.user_id()) == params.user_id;
-      });
-  if (passkey_it == passkeys.end()) {
-    return;
-  }
-
-  bool passkey_in_list =
-      std::ranges::contains(params.all_accepted_credential_ids,
-                            base::as_byte_span(passkey_it->credential_id()));
-  if ((passkey_in_list && !passkey_it->hidden()) ||
-      (!passkey_in_list && passkey_it->hidden())) {
-    return;
-  }
-
-  if (passkey_in_list) {
-    passkey_model_->UnhidePasskey(passkey_it->credential_id());
-  } else {
-    passkey_model_->HidePasskey(passkey_it->credential_id(), base::Time::Now());
-  }
-  quota_tracker->TrackChange(origin);
-  // TODO(crbug.com/460487030): Log metrics.
+  // TODO(crbug.com/540328660): Use the result to display appropriate UI.
+  std::ignore = webauthn::UpdatePasskeyModelForSignalAllAcceptedCredentials(
+      origin, params.rp_id, params.user_id, params.all_accepted_credential_ids,
+      *passkey_model_);
 }
 
 void PasskeyTabHelper::HandleCreateRequestedEvent(

@@ -29,6 +29,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/signal_api_utils.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -419,9 +420,7 @@ TEST_F(ChromeWebAuthenticationDelegateTest, UpdatePasskey) {
                                 kUserName1, kUserDisplayName1);
     histogram_tester.ExpectUniqueSample(
         "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
-            kPasskeyNotUpdated,
-        1);
+        webauthn::SignalCurrentUserDetailsResult::kPasskeyNotUpdated, 1);
   }
   {
     // Setting a different username/display name should result in an update.
@@ -430,9 +429,7 @@ TEST_F(ChromeWebAuthenticationDelegateTest, UpdatePasskey) {
                                 kUserName2, kUserDisplayName2);
     histogram_tester.ExpectUniqueSample(
         "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
-            kPasskeyUpdated,
-        1);
+        webauthn::SignalCurrentUserDetailsResult::kPasskeyUpdated, 1);
     sync_pb::WebauthnCredentialSpecifics passkey = *passkey_model->GetPasskey(
         kRpId, kCredentialId1, ShadowedCredentials::kExclude);
     EXPECT_EQ(kUserName2, passkey.user_name());
@@ -455,9 +452,7 @@ TEST_F(ChromeWebAuthenticationDelegateTest, UpdatePasskey) {
     EXPECT_NE(kUserDisplayName1, passkey.user_display_name());
     histogram_tester.ExpectUniqueSample(
         "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
-            kQuotaExceeded,
-        1);
+        webauthn::SignalCurrentUserDetailsResult::kQuotaExceeded, 1);
   }
 }
 
@@ -515,9 +510,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest, Unrecognized_Found) {
 
   histogram_tester_->ExpectUniqueSample(
       "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-          kPasskeyHidden,
-      1);
+      webauthn::SignalUnknownCredentialResult::kPasskeyHidden, 1);
 }
 
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
@@ -531,9 +524,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
 
   histogram_tester_->ExpectUniqueSample(
       "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-          kPasskeyAlreadyHidden,
-      1);
+      webauthn::SignalUnknownCredentialResult::kPasskeyAlreadyHidden, 1);
 
   // Check that the quota does not apply if no change happens.
   for (int i = 0; i < webauthn::PasskeyChangeQuotaTracker::kMaxTokensPerRP;
@@ -547,9 +538,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
   EXPECT_TRUE(GetPasskey(kCredentialId1).hidden());
   histogram_tester_->ExpectBucketCount(
       "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-          kQuotaExceeded,
-      0);
+      webauthn::SignalUnknownCredentialResult::kQuotaExceeded, 0);
 }
 
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
@@ -558,9 +547,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                 ToByteVector(kCredentialId1), kRpId);
   histogram_tester_->ExpectUniqueSample(
       "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-          kPasskeyNotFound,
-      1);
+      webauthn::SignalUnknownCredentialResult::kPasskeyNotFound, 1);
 }
 
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
@@ -577,9 +564,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                 ToByteVector(kCredentialId1), kRpId);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-          kQuotaExceeded,
-      1);
+      webauthn::SignalUnknownCredentialResult::kQuotaExceeded, 1);
 }
 
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
@@ -594,9 +579,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                          ToByteVector(kUserId), credentials);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-          kPasskeyHidden,
-      1);
+      webauthn::SignalAllAcceptedCredentialsResult::kPasskeyHidden, 1);
   // The originally active passkey should be hidden.
   EXPECT_TRUE(GetPasskey(kCredentialId1).hidden());
 }
@@ -613,9 +596,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                          ToByteVector(kUserId), credentials);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-          kPasskeyRestored,
-      1);
+      webauthn::SignalAllAcceptedCredentialsResult::kPasskeyRestored, 1);
   // The passkey should have been restored.
   EXPECT_FALSE(GetPasskey(kCredentialId1).hidden());
 }
@@ -632,9 +613,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                          ToByteVector(kUserId), credentials);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-          kNoPasskeyChanged,
-      1);
+      webauthn::SignalAllAcceptedCredentialsResult::kNoPasskeyChanged, 1);
   // The passkey should still be visible.
   EXPECT_FALSE(GetPasskey(kCredentialId1).hidden());
 }
@@ -652,9 +631,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                          credentials);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-          kNoPasskeyChanged,
-      1);
+      webauthn::SignalAllAcceptedCredentialsResult::kNoPasskeyChanged, 1);
 }
 
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
@@ -670,9 +647,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                          credentials);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-          kNoPasskeyChanged,
-      1);
+      webauthn::SignalAllAcceptedCredentialsResult::kNoPasskeyChanged, 1);
 }
 
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
@@ -697,9 +672,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
                                          ToByteVector(kUserId), credentials);
   histogram_tester.ExpectUniqueSample(
       "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-          kQuotaExceeded,
-      1);
+      webauthn::SignalAllAcceptedCredentialsResult::kQuotaExceeded, 1);
   EXPECT_FALSE(GetPasskey(kCredentialId1).hidden());
 }
 

@@ -49,6 +49,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/signal_api_utils.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -85,25 +86,6 @@
 
 namespace {
 
-void LogSignalUnknownCredential(
-    ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult result) {
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey", result);
-}
-
-void LogSignalAllAcceptedCredentials(
-    ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult
-        result) {
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-      result);
-}
-
-void LogSignalCurrentUserDetailsUpdated(
-    ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult result) {
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey", result);
-}
 
 // Returns true iff |relying_party_id| is listed in the
 // SecurityKeyPermitAttestation policy.
@@ -186,61 +168,26 @@ void HideAndRestorePasskeys(
     const std::string& relying_party_id,
     const std::vector<uint8_t>& user_id,
     const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
-  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
-      webauthn::PasskeyChangeQuotaTracker::GetInstance();
-  if (!quota_tracker->CanMakeChange(origin)) {
-    LogSignalAllAcceptedCredentials(
-        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-            kQuotaExceeded);
-    FIDO_LOG(ERROR) << "Dropping all accepted credentials request from "
-                    << origin << ": quota exceeded.";
-    return;
-  }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_store->GetPasskeys(
-          relying_party_id,
-          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
-  const auto passkey_it =
-      std::ranges::find_if(passkeys, [&user_id](const auto& passkey) {
-        return base::as_byte_span(passkey.user_id()) == user_id;
-      });
-  if (passkey_it == passkeys.end()) {
-    LogSignalAllAcceptedCredentials(
-        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-            kNoPasskeyChanged);
-    return;
-  }
-  bool passkey_in_list =
-      std::ranges::contains(all_accepted_credentials_ids,
-                            base::as_byte_span(passkey_it->credential_id()));
-  if ((passkey_in_list && !passkey_it->hidden()) ||
-      (!passkey_in_list && passkey_it->hidden())) {
-    LogSignalAllAcceptedCredentials(
-        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-            kNoPasskeyChanged);
+
+  webauthn::SignalAllAcceptedCredentialsResult result =
+      webauthn::UpdatePasskeyModelForSignalAllAcceptedCredentials(
+          origin, relying_party_id, user_id, all_accepted_credentials_ids,
+          *passkey_store);
+
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents);
+  if (!manage_passwords_ui_controller) {
     return;
   }
 
-  if (passkey_in_list) {
-    passkey_store->UnhidePasskey(passkey_it->credential_id());
-  } else {
-    passkey_store->HidePasskey(passkey_it->credential_id(), base::Time::Now());
-  }
-  quota_tracker->TrackChange(origin);
-  LogSignalAllAcceptedCredentials(
-      passkey_in_list ? ChromeWebAuthenticationDelegate::
-                            SignalAllAcceptedCredentialsResult::kPasskeyRestored
-                      : ChromeWebAuthenticationDelegate::
-                            SignalAllAcceptedCredentialsResult::kPasskeyHidden);
-  PasswordsClientUIDelegate* manage_passwords_ui_controller =
-      PasswordsClientUIDelegateFromWebContents(web_contents);
-  if (passkey_in_list && manage_passwords_ui_controller) {
+  if (result ==
+      webauthn::SignalAllAcceptedCredentialsResult::kPasskeyRestored) {
     manage_passwords_ui_controller->OnPasskeyUpdated(relying_party_id);
-  }
-  if (!passkey_in_list && manage_passwords_ui_controller) {
+  } else if (result ==
+             webauthn::SignalAllAcceptedCredentialsResult::kPasskeyHidden) {
     manage_passwords_ui_controller->OnPasskeyNotAccepted(relying_party_id);
   }
 }
@@ -392,39 +339,16 @@ void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
     const url::Origin& origin,
     const std::vector<uint8_t>& passkey_credential_id,
     const std::string& relying_party_id) {
-  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
-      webauthn::PasskeyChangeQuotaTracker::GetInstance();
-  if (!quota_tracker->CanMakeChange(origin)) {
-    LogSignalUnknownCredential(SignalUnknownCredentialResult::kQuotaExceeded);
-    FIDO_LOG(ERROR) << "Dropping removal request from " << origin
-                    << ": quota exceeded.";
-    return;
-  }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  std::string credential_id(passkey_credential_id.begin(),
-                            passkey_credential_id.end());
-  std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
-      passkey_store->GetPasskey(
-          relying_party_id, credential_id,
-          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
-  if (!credential_specifics) {
-    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyNotFound);
-    return;
-  }
-  if (credential_specifics->hidden()) {
-    LogSignalUnknownCredential(
-        SignalUnknownCredentialResult::kPasskeyAlreadyHidden);
-    return;
-  }
-  quota_tracker->TrackChange(origin);
-  passkey_store->HidePasskey(std::move(credential_id),
-                             /*hidden_time=*/base::Time::Now());
-  LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyHidden);
+
+  bool passkey_hidden = webauthn::UpdatePasskeyModelForSignalUnknownCredential(
+      origin, relying_party_id, passkey_credential_id, *passkey_store);
+
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents);
-  if (manage_passwords_ui_controller) {
+  if (manage_passwords_ui_controller && passkey_hidden) {
     manage_passwords_ui_controller->OnPasskeyDeleted();
   }
 }
@@ -446,45 +370,20 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
     std::vector<uint8_t>& user_id,
     const std::string& name,
     const std::string& display_name) {
-  webauthn::PasskeyChangeQuotaTracker* quota_tracker =
-      webauthn::PasskeyChangeQuotaTracker::GetInstance();
-  if (!quota_tracker->CanMakeChange(origin)) {
-    LogSignalCurrentUserDetailsUpdated(
-        SignalCurrentUserDetailsResult::kQuotaExceeded);
-    FIDO_LOG(ERROR) << "Dropping update request from " << origin
-                    << ": quota exceeded.";
-    return;
-  }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  bool is_passkey_updated = false;
-  for (const auto& passkey : passkey_store->GetPasskeys(
-           relying_party_id,
-           webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
-    if (base::as_byte_span(passkey.user_id()) == user_id &&
-        (passkey.user_name() != name ||
-         passkey.user_display_name() != display_name)) {
-      if (passkey_store->UpdatePasskey(
-              passkey.credential_id(),
-              {.user_name = name, .user_display_name = display_name},
-              /*updated_by_user=*/false)) {
-        is_passkey_updated = true;
-      }
-    }
+
+  bool passkey_updated =
+      webauthn::UpdatePasskeyModelForSignalCurrentUserDetails(
+          origin, relying_party_id, user_id, name, display_name,
+          *passkey_store);
+
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents);
+  if (manage_passwords_ui_controller && passkey_updated) {
+    manage_passwords_ui_controller->OnPasskeyUpdated(relying_party_id);
   }
-  if (is_passkey_updated) {
-    FIDO_LOG(EVENT) << "Updating passkey user details for " << origin;
-    quota_tracker->TrackChange(origin);
-    PasswordsClientUIDelegate* manage_passwords_ui_controller =
-        PasswordsClientUIDelegateFromWebContents(web_contents);
-    if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyUpdated(relying_party_id);
-    }
-  }
-  LogSignalCurrentUserDetailsUpdated(
-      is_passkey_updated ? SignalCurrentUserDetailsResult::kPasskeyUpdated
-                         : SignalCurrentUserDetailsResult::kPasskeyNotUpdated);
 }
 
 #if BUILDFLAG(IS_MAC)
