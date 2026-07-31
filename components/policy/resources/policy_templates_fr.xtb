@@ -3749,15 +3749,6 @@ Si cette règle est définie sur "2 - BlockPartitioning", le partitionnement du 
 Utilisez <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> pour désactiver le partitionnement du stockage tiers pour des origines de premier niveau spécifiques. Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
 Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utiliser la méthode requestStorageAccess à la place : https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Vous pouvez faire part de vos retours sur https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Cette règle ne s'applique qu'au trafic du navigateur. Le trafic Play Store, la navigation Web des applications Android et les autres types de trafic de l'utilisateur (comme le trafic des VM Linux ou les tâches d'impression) respectent toujours les restrictions imposées par le VPN permanent. Cette règle n'est appliquée que lorsque le VPN n'est pas connecté et uniquement pour le trafic du navigateur de l'utilisateur. Lorsque cette règle est appliquée, le trafic système peut également contourner le VPN permanent pour effectuer des tâches comme des récupérations de règles et la synchronisation de l'horloge système.
-
-Utilisez cette règle pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou non.
-
-Si la règle <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> est définie, qu'un VPN permanent est configuré et que le VPN permanent n'est pas connecté, la navigation vers tous les hôtes est bloquée, à l'exception de ceux autorisés par <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dans cet état de l'appareil, <ph name="URL_BLOCKLIST_POLICY_NAME" /> et <ph name="URL_ALLOWLIST_POLICY_NAME" /> sont ignorées. Lorsque le VPN permanent se connecte, les règles <ph name="URL_BLOCKLIST_POLICY_NAME" /> et <ph name="URL_ALLOWLIST_POLICY_NAME" /> sont appliquées, et la règle <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> est ignorée.
-
-Cette règle est limitée à 1 000 entrées.
-
-Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'est autorisée tant que le VPN permanent en mode strict est actif et que le VPN n'est pas connecté.</translation>
 <translation id="3405997282295704902">Ne pas autoriser les utilisateurs à se servir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Ne pas demander à l'utilisateur (les téléchargements débutent immédiatement)</translation>
 <translation id="3410534959501660670">Paramètres de la fonctionnalité Capture de texte</translation>
@@ -12513,6 +12504,15 @@ Si cette règle est activée, le nouveau comportement sera utilisé.
 Si elle est désactivée, l'ancien comportement sera utilisé.
 
 Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tout comme le reste des utilisateurs de Chromium.</translation>
+<translation id="8954797065581717017">Avertissement : La configuration de cette règle assouplit le verrouillage du VPN permanent avant que le VPN ne se connecte. Le filtrage au niveau de l'URL n'est garanti que pour le trafic du navigateur Chrome et ne s'applique pas aux applications système internes ni aux autres types de trafic. Lorsque cette règle est appliquée, le trafic système peut également contourner le VPN permanent pour effectuer des tâches comme des récupérations de règles et la synchronisation de l'horloge système.
+
+Utilisez cette règle pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou non.
+
+Si la règle <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> est définie, qu'un VPN permanent est configuré et que le VPN permanent n'est pas connecté, la navigation vers tous les hôtes est bloquée, à l'exception de ceux autorisés par <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dans cet état de l'appareil, <ph name="URL_BLOCKLIST_POLICY_NAME" /> et <ph name="URL_ALLOWLIST_POLICY_NAME" /> sont ignorées. Lorsque le VPN permanent se connecte, les règles <ph name="URL_BLOCKLIST_POLICY_NAME" /> et <ph name="URL_ALLOWLIST_POLICY_NAME" /> sont appliquées, et la règle <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> est ignorée.
+
+Cette règle est limitée à 1 000 entrées.
+
+Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'est autorisée tant que le VPN permanent en mode strict est actif et que le VPN n'est pas connecté.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
 <translation id="8963464192296208229">Les paramètres F11 utilisent le raccourci qui contient la touche de modification Alt</translation>

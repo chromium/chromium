@@ -3746,15 +3746,6 @@ Als je dit beleid instelt op 2 - BlockPartitioning, wordt partitionering van ops
 Gebruik <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> om partitionering van opslag door derden uit te zetten voor specifieke oorsprongen op het hoogste niveau. Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioning voor meer informatie over partitionering van opslag door derden.
 
 Dit is verwijderd in Chrome 145. We raden je aan in plaats daarvan de methode requestStorageAccess te gebruiken: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Je kunt feedback geven op https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Dit beleid is alleen van toepassing op browserverkeer: de Play Store, webnavigatie in Android-apps en ander gebruikersverkeer (zoals Linux VM-verkeer of afdruktaken) voldoen nog steeds aan de beperkingen die worden opgelegd door het Always-on VPN. Dit beleid wordt alleen afgedwongen als het VPN niet is verbonden en alleen voor browserverkeer van gebruikers. Als dit beleid wordt afgedwongen, kan systeemverkeer het Always-on VPN ook overslaan om taken uit te voeren zoals beleid ophalen en de systeemklok synchroniseren.
-
-Gebruik dit beleid om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden te openen met de indeling die wordt gespecificeerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format. Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan.
-
-Als het <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> is ingesteld, is er een Always-on VPN ingesteld en is het Always-on VPN niet verbonden. Navigatie naar alle hosts wordt geblokkeerd, behalve naar hosts die zijn toegestaan door het beleid <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. In deze apparaatstatus worden de beleidsregels <ph name="URL_BLOCKLIST_POLICY_NAME" /> en <ph name="URL_ALLOWLIST_POLICY_NAME" /> genegeerd. Als een Always-on VPN verbinding maakt, worden de beleidsregels <ph name="URL_BLOCKLIST_POLICY_NAME" /> en <ph name="URL_ALLOWLIST_POLICY_NAME" /> toegepast en wordt het beleid <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> genegeerd.
-
-Dit beleid is beperkt tot 1000 items.
-
-Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-on VPN met strikte modus actief is en het VPN geen verbinding heeft.</translation>
 <translation id="3405997282295704902">Niet toestaan dat gebruikers <ph name="PRODUCT_NAME" /> gebruiken</translation>
 <translation id="3406122462682235653">De gebruiker niet vragen (downloads beginnen meteen)</translation>
 <translation id="3410534959501660670">Instellingen voor de functie Tekst vastleggen</translation>
@@ -12466,6 +12457,15 @@ Als je dit beleid toepast, wordt het nieuwe gedrag gebruikt.
 Als je dit beleid niet toepast, wordt het oude gedrag gebruikt.
 
 Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de rest van de Chromium-gebruikers.</translation>
+<translation id="8954797065581717017">Waarschuwing: Als je dit beleid instelt, wordt lockdown van het Always-on VPN opgeheven voordat het VPN verbinding maakt. Filteren op URL-niveau is alleen gegarandeerd voor Chrome-browserverkeer en is niet van toepassing op interne systeem-apps of andere typen verkeer. Als dit beleid wordt afgedwongen, kan systeemverkeer het Always-on VPN ook overslaan om taken uit te voeren zoals beleid ophalen en de systeemklok synchroniseren.
+
+Gebruik dit beleid om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden te openen met de indeling die wordt gespecificeerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format. Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan.
+
+Als het <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> is ingesteld, is er een Always-on VPN ingesteld en is het Always-on VPN niet verbonden. Navigatie naar alle hosts wordt geblokkeerd, behalve naar hosts die zijn toegestaan door het beleid <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. In deze apparaatstatus worden de beleidsregels <ph name="URL_BLOCKLIST_POLICY_NAME" /> en <ph name="URL_ALLOWLIST_POLICY_NAME" /> genegeerd. Als een Always-on VPN verbinding maakt, worden de beleidsregels <ph name="URL_BLOCKLIST_POLICY_NAME" /> en <ph name="URL_ALLOWLIST_POLICY_NAME" /> toegepast en wordt het beleid <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> genegeerd.
+
+Dit beleid is beperkt tot 1000 items.
+
+Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-on VPN met strikte modus actief is en het VPN geen verbinding heeft.</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
 <translation id="8963464192296208229">De instellingen voor F11 gebruiken de sneltoets met de functietoets Alt</translation>

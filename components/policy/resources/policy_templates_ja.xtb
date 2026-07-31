@@ -3633,15 +3633,6 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 特定の最上位のオリジンに対してサードパーティのストレージ パーティションを無効にするには、<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> を使用します。サードパーティのストレージ パーティションについて詳しくは、https://developers.google.com/privacy-sandbox/cookies/storage-partitioning をご覧ください。
 
 このメソッドは Chrome 145 で削除されたため、代わりに requestStorageAccess メソッドを使用することをおすすめします。詳しくは、https://developer.mozilla.org/ja/docs/Web/API/Document/requestStorageAccess をご参照ください。フィードバックは https://crbug.com/425248669 で送信できます。</translation>
-<translation id="3405361833556012520">このポリシーはブラウザのトラフィック（Google Play ストア、Android アプリのウェブ ナビゲーション、その他 Linux VM トラフィックや印刷ジョブなどのユーザー トラフィック）にのみ適用され、常時接続 VPN による制限は引き続き適用されます。このポリシーは、VPN に接続されていないときに、ユーザーのブラウザ トラフィックにのみ適用されます。このポリシーを適用した場合、システム トラフィックは常時接続 VPN をバイパスして、ポリシーの取得やシステム クロックの同期などのタスクを実行することもできます。
-
-このポリシーは、特定のスキームや、他のドメインのサブドメイン、ポート、特定のパスに例外を設定する場合に使用します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。
-
-<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> を設定した場合、常時接続 VPN が設定済みで、接続されていないときは、すべてのホストへのナビゲーションがブロックされます（ただし、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーで許可されているホストを除きます）。このデバイス状態では、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> は無視されます。常時接続 VPN に接続されているときは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーが適用され、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーは無視されます。
-
-このポリシーで指定できる URL は最大 1,000 件です。
-
-このポリシーを未設定のままにした場合、厳格モードの常時接続 VPN が有効で接続されていないとき、ブラウザ ナビゲーションはブロックされます。</translation>
 <translation id="3405997282295704902">ユーザーに <ph name="PRODUCT_NAME" /> の使用を許可しない</translation>
 <translation id="3406122462682235653">ユーザーに確認しない（すぐにダウンロードを開始する）</translation>
 <translation id="3410534959501660670">テキスト キャプチャ機能の設定</translation>
@@ -12102,6 +12093,15 @@ URL がリスト内の複数のパターンに一致する場合は、一致す�
 このポリシーを無効に設定した場合は、従来の動作が使用されます。
 
 このポリシーを未設定のままにした場合は、他の Chromium ユーザーと同じように新しい動作が使用されます。</translation>
+<translation id="8954797065581717017">警告: このポリシーを設定すると、VPN 接続前に常時接続 VPN のロックダウンが緩和されます。URL レベルのフィルタリングは Chrome ブラウザのトラフィックに対してのみ保証され、内部システム アプリケーションや他のトラフィック タイプには適用されません。このポリシーを適用した場合、システム トラフィックは常時接続 VPN をバイパスして、ポリシーの取得やシステム クロックの同期などのタスクを実行することもできます。
+
+このポリシーは、特定のスキームや、他のドメインのサブドメイン、ポート、特定のパスに例外を設定する場合に使用します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> を設定した場合、常時接続 VPN が設定済みで、接続されていないときは、すべてのホストへのナビゲーションがブロックされます（ただし、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーで許可されているホストを除きます）。このデバイス状態では、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> は無視されます。常時接続 VPN に接続されているときは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーが適用され、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーは無視されます。
+
+このポリシーで指定できる URL は最大 1,000 件です。
+
+このポリシーを未設定のままにした場合、厳格モードの常時接続 VPN が有効で接続されていないとき、ブラウザ ナビゲーションはブロックされます。</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>
 <translation id="8963464192296208229">F11 の設定で Alt 修飾キーを含むショートカットを使用する</translation>

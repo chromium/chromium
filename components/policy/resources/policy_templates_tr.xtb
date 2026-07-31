@@ -3833,15 +3833,6 @@ Bu politika, 2 - BlockPartitioning değerine ayarlanırsa üçüncü taraf depol
 Belirli üst düzey kaynaklar için üçüncü taraf depolama bölümlendirmesini devre dışı bırakmak istiyorsanız <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> politikasını kullanın. Üçüncü taraf depolama bölümlendirmesi hakkında ayrıntılı bilgi için https://developers.google.com/privacy-sandbox/cookies/storage-partitioning adresine göz atabilirsiniz.
 
 Bu API, Chrome 145'te kaldırıldığından bunun yerine requestStorageAccess yönteminin kullanılması önerilir: https://developer.mozilla.org/tr/docs/Web/API/Document/requestStorageAccess. Geri bildirimlerinizi https://crbug.com/425248669 adresinden gönderebilirsiniz.</translation>
-<translation id="3405361833556012520">Bu politika yalnızca tarayıcı trafiği için geçerlidir. Play Store, Android uygulamaları web'de gezinme ve yazdırma işleri ya da Linux sanal makine trafiği gibi diğer kullanıcı trafiği, Her zaman açık VPN kısıtlamalarına uymaya devam eder. Bu politika yalnızca VPN bağlı değilken ve yalnızca kullanıcı tarayıcısı trafiği için uygulanır. Bu politika uygulanırken sistem trafiği, politika getirme ve sistem saatini senkronize etme gibi görevleri yerine getirmek için Her zaman açık VPN'i de atlayabilir.
-
-Bu politikayı, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler.
-
-<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ayarlanır, Her zaman açık VPN yapılandırılır ve Her zaman açık VPN bağlanmazsa <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> politikası tarafından izin verilenler dışında tüm ana makinelerde gezinme engellenir. Bu cihaz durumunda <ph name="URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="URL_ALLOWLIST_POLICY_NAME" /> yoksayılır. Her zaman açık VPN bağlandığında <ph name="URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları uygulanır, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> politikası ise yoksayılır.
-
-Bu politika 1.000 giriş ile sınırlıdır.
-
-Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açık VPN etkinken ve VPN bağlı değilken tarayıcıda gezinmeyi engeller.</translation>
 <translation id="3405997282295704902">Kullanıcıların <ph name="PRODUCT_NAME" /> kullanmasına izin verme</translation>
 <translation id="3406122462682235653">Kullanıcıya sorma (indirme işlemleri hemen başlar)</translation>
 <translation id="3410534959501660670">Metin yakalama özelliğinin ayarları</translation>
@@ -12764,6 +12755,15 @@ Bu politika etkinleştirilirse yeni davranış kullanılır.
 Bu politika devre dışı bırakılırsa eski davranış kullanılır.
 
 Bu politika ayarlanmazsa yeni davranış diğer Chromium kullanıcılarında olduğu gibi kullanılır.</translation>
+<translation id="8954797065581717017">Uyarı: Bu politika yapılandırıldığında VPN bağlanmadan önce her zaman açık VPN kilidi gevşetilir. URL düzeyinde filtreleme yalnızca Chrome tarayıcı trafiği için garanti edilir ve dahili sistem uygulamaları ya da diğer trafik türleri için geçerli değildir. Bu politika uygulanırken sistem trafiği, politika getirme ve sistem saatini senkronize etme gibi görevleri yerine getirmek için Her zaman açık VPN'i de atlayabilir.
+
+Bu politikayı, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini en spesifik filtre belirler.
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ayarlanır, Her zaman açık VPN yapılandırılır ve Her zaman açık VPN bağlanmazsa <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> politikası tarafından izin verilenler dışında tüm ana makinelerde gezinme engellenir. Bu cihaz durumunda <ph name="URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="URL_ALLOWLIST_POLICY_NAME" /> yoksayılır. Her zaman açık VPN bağlandığında <ph name="URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları uygulanır, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> politikası ise yoksayılır.
+
+Bu politika 1.000 giriş ile sınırlıdır.
+
+Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açık VPN etkinken ve VPN bağlı değilken tarayıcıda gezinmeyi engeller.</translation>
 <translation id="8955719471735800169">Başa dön</translation>
 <translation id="8956312248048980644">Varsayılan olarak kaynak içeren veya kaynaklarla ilişkili aracı kümelemeye izin verir.</translation>
 <translation id="8963464192296208229">F11 ayarları, alt tuşu değiştiriciyi içeren kısayolu kullanır</translation>

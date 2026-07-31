@@ -3768,15 +3768,6 @@ Nếu bạn đặt chính sách này thành 2 – BlockPartitioning (Chặn phâ
 Hãy sử dụng <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> để vô hiệu hoá tính năng phân vùng bộ nhớ của bên thứ ba cho những nguồn gốc cấp cao nhất cụ thể. Vui lòng truy cập vào https://developers.google.com/privacy-sandbox/cookies/storage-partitioning để biết thông tin chi tiết về tính năng phân vùng bộ nhớ của bên thứ ba.
 
 Tính năng này đã bị loại bỏ trong Chrome 145. Bạn nên sử dụng phương thức thay thế là requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Bạn có thể gửi ý kiến phản hồi tại https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Chính sách này chỉ áp dụng cho lưu lượng truy cập trên trình duyệt; thao tác trên trang web trong ứng dụng Android, Cửa hàng Play và lưu lượng truy cập khác của người dùng như lưu lượng truy cập máy ảo Linux hoặc lệnh in. Chính sách này vẫn tuân thủ các quy định hạn chế áp dụng cho VPN luôn bật. Chính sách này chỉ thực thi khi VPN không được kết nối và chỉ áp dụng cho lưu lượng truy cập trên trình duyệt của người dùng. Khi chính sách này thực thi, lưu lượng truy cập hệ thống cũng có thể bỏ qua VPN luôn bật để thực hiện các nhiệm vụ như tìm nạp chính sách và đồng bộ hoá đồng hồ hệ thống.
-
-Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số tên giao thức, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại https://support.google.com/chrome/a?p=url_blocklist_filter_format. Bộ lọc cụ thể nhất sẽ quyết định liệu một URL bị chặn hay được cho phép.
-
-Nếu bạn đặt <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />, chính sách này sẽ định cấu hình một VPN luôn bật. Khi không kết nối VPN luôn bật, thì việc điều hướng đến tất cả máy chủ sẽ bị chặn, ngoại trừ những máy chủ được chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> cho phép. Ở trạng thái này của thiết bị, <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua. Khi kết nối VPN luôn bật, các chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được áp dụng và chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.
-
-Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi thao tác trên trình duyệt trong khi VPN luôn bật đang hoạt động ở chế độ nghiêm ngặt và không kết nối VPN.</translation>
 <translation id="3405997282295704902">Không cho phép người dùng sử dụng <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Không hỏi người dùng (bắt đầu tải xuống ngay)</translation>
 <translation id="3410534959501660670">Chế độ cài đặt cho tính năng Chụp văn bản</translation>
@@ -12729,6 +12720,15 @@ Nếu chính sách này đang bật thì thao tác mới sẽ được sử dụ
 Nếu chính sách này đang tắt thì thao tác cũ sẽ được sử dụng.
 
 Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được sử dụng giống như thao tác của những người dùng Chromium còn lại.</translation>
+<translation id="8954797065581717017">Cảnh báo: Nếu bạn định cấu hình chính sách này, thì chế độ khoá VPN luôn bật sẽ được nới lỏng trước khi VPN kết nối. Tính năng lọc ở cấp URL chỉ được đảm bảo đối với lưu lượng truy cập từ trình duyệt Chrome và không áp dụng cho các ứng dụng hệ thống nội bộ hoặc các loại lưu lượng truy cập khác. Khi chính sách này thực thi, lưu lượng truy cập hệ thống cũng có thể bỏ qua VPN luôn bật để thực hiện các nhiệm vụ như tìm nạp chính sách và đồng bộ hoá đồng hồ hệ thống.
+
+Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số tên giao thức, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại https://support.google.com/chrome/a?p=url_blocklist_filter_format. Bộ lọc cụ thể nhất sẽ quyết định liệu một URL bị chặn hay được cho phép.
+
+Nếu bạn đặt <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />, chính sách này sẽ định cấu hình một VPN luôn bật. Khi không kết nối VPN luôn bật, thì việc điều hướng đến tất cả máy chủ lưu trữ sẽ bị chặn, ngoại trừ những máy chủ được chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> cho phép. Ở trạng thái này của thiết bị, <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua. Khi kết nối VPN luôn bật, các chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được áp dụng và chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.
+
+Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi thao tác trên trình duyệt trong khi VPN luôn bật đang hoạt động ở chế độ nghiêm ngặt và không kết nối VPN.</translation>
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8956312248048980644">Cho phép phân nhóm tác nhân theo khoá nguồn gốc theo mặc định.</translation>
 <translation id="8963464192296208229">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ alt</translation>

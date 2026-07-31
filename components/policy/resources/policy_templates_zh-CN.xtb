@@ -3733,15 +3733,6 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 使用 <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> 为特定顶级源停用第三方存储分区。如需详细了解第三方存储分区，请访问 https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。
 
 此方法已在 Chrome 145 中移除，建议改用 requestStorageAccess 方法：https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess。您可以在 https://crbug.com/425248669 上提供反馈。</translation>
-<translation id="3405361833556012520">此政策仅适用于浏览器流量。Play 商店流量、Android 应用网页导航流量和其他用户流量（例如 Linux 虚拟机流量或打印任务）仍需满足由始终开启的 VPN 施加的限制。此政策仅在未连接 VPN 时才会执行，而且仅对用户浏览器流量有效。即使是在执行此政策的情况下，系统流量也可以绕过始终开启的 VPN，执行政策提取和系统时钟同步等任务。
-
-您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。某个网址是否会遭到屏蔽取决于最具体的过滤条件。
-
-如果设置了 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 并配置了始终开启的 VPN，但是未连接始终开启的 VPN，系统会阻止导航到所有主机（<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允许的主机除外）。在此设备状态下，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 会被忽略。当连接始终开启的 VPN 时，系统会使用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策，而 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策会被忽略。
-
-此政策最多只能包含 1,000 个条目。
-
-如果未设置此政策，当在严格模式下激活始终开启的 VPN，而且未连接 VPN 时，系统会阻止所有浏览器导航。</translation>
 <translation id="3405997282295704902">不允许用户使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">不询问用户（直接开始下载）</translation>
 <translation id="3410534959501660670">提取文本功能的设置</translation>
@@ -12405,6 +12396,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 如果此政策已停用，系统将会使用旧行为。
 
 如果此政策未设置，系统则会像其余 Chromium 用户一样使用新行为。</translation>
+<translation id="8954797065581717017">警告：配置此政策会放宽 VPN 连接前的始终开启的 VPN 锁定状态。网址级过滤仅适用于 Chrome 浏览器流量，不适用于内部系统应用或其他流量类型。即使是在执行此政策的情况下，系统流量也可以绕过始终开启的 VPN，执行政策提取和系统时钟同步等任务。
+
+您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。某个网址是否会遭到屏蔽取决于最具体的过滤条件。
+
+如果设置了 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 并配置了始终开启的 VPN，但是未连接始终开启的 VPN，系统会阻止导航到所有主机（<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允许的主机除外）。在此设备状态下，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 会被忽略。当连接始终开启的 VPN 时，系统会使用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策，而 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策会被忽略。
+
+此政策最多只能包含 1,000 个条目。
+
+如果未设置此政策，那么当“始终开启的 VPN”处于严格模式且 VPN 未连接时，系统将禁止任何浏览器导航。</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
 <translation id="8963464192296208229">F11 设置使用包含 Alt 辅助键的快捷键</translation>

@@ -3757,15 +3757,6 @@ Si se le asigna el valor 2 (BlockPartitioning), la partición del almacenamiento
 Usa <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> para inhabilitar la partición del almacenamiento de terceros en orígenes de nivel superior específicos. Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
 Se eliminó en Chrome 145 y se recomienda usar el método requestStorageAccess en su lugar: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puedes dejar comentarios en https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Esta política solo se aplica al tráfico del navegador. Play Store, la navegación web de las aplicaciones Android y otros tipos de tráfico de usuarios, como el tráfico de las VMs de Linux o los trabajos de impresión, seguirán respetando las restricciones impuestas por la función VPN siempre activada. Esta política solo se aplicará cuando la VPN no esté conectada y únicamente para el tráfico del navegador del usuario. Cuando se aplique esta política, el tráfico del sistema también podrá eludir la función VPN siempre activada para realizar tareas como recoger datos de políticas y sincronizar el reloj del sistema.
-
-Utiliza esta política para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida.
-
-Si se define <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />, se configurará una VPN siempre activada y esta no estará conectada, por lo que se bloqueará la navegación a todos los hosts, excepto a los que permita la política <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Cuando un dispositivo esté en ese estado, se ignorarán las políticas <ph name="URL_BLOCKLIST_POLICY_NAME" /> y <ph name="URL_ALLOWLIST_POLICY_NAME" />. Cuando la VPN siempre activada esté conectada, se aplicarán las políticas <ph name="URL_BLOCKLIST_POLICY_NAME" /> y <ph name="URL_ALLOWLIST_POLICY_NAME" />, y se ignorará la política <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />.
-
-Esta política está limitada a 1000 entradas.
-
-Si no se define esta política, no se podrá navegar en el navegador mientras la VPN siempre activada en modo Estricto esté activada y no esté conectada.</translation>
 <translation id="3405997282295704902">No permitir que los usuarios usen <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">No preguntar al usuario (las descargas se inician inmediatamente)</translation>
 <translation id="3410534959501660670">Configuración de la función Captura de texto</translation>
@@ -12581,6 +12572,15 @@ Si esta política se habilita, se usará el nuevo comportamiento.
 Si se inhabilita, se usará el comportamiento anterior.
 
 Si la política no se establece, se usará el nuevo comportamiento, tal como sucede con el resto de los usuarios de Chromium.</translation>
+<translation id="8954797065581717017">Advertencia: Si se configura esta política, se relajará el bloqueo de seguridad de VPN siempre activada antes de que se conecte la VPN. El filtrado a nivel de URL solo está garantizado para el tráfico del navegador Chrome y no se aplica a las aplicaciones del sistema interno ni a otros tipos de tráfico. Cuando se implemente esta política, el tráfico del sistema también podrá eludir la función VPN siempre activada para realizar tareas como recoger datos de políticas y sincronizar el reloj del sistema.
+
+Utiliza esta política para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida.
+
+Si se define <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />, se configurará una VPN siempre activada y esta no estará conectada, por lo que se bloqueará la navegación a todos los hosts, excepto a los que permita la política <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Cuando un dispositivo esté en ese estado, se ignorarán las políticas <ph name="URL_BLOCKLIST_POLICY_NAME" /> y <ph name="URL_ALLOWLIST_POLICY_NAME" />. Cuando la VPN siempre activada esté conectada, se aplicarán las políticas <ph name="URL_BLOCKLIST_POLICY_NAME" /> y <ph name="URL_ALLOWLIST_POLICY_NAME" />, y se ignorará la política <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />.
+
+Esta política está limitada a 1000 entradas.
+
+Si no se define esta política, no se podrá navegar en el navegador mientras la VPN siempre activada en modo Estricto esté activada y no esté conectada.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
 <translation id="8963464192296208229">Los ajustes de F11 usan la combinación de teclas que incluye la tecla modificadora Alt</translation>

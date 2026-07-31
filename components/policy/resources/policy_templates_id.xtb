@@ -3899,15 +3899,6 @@ Jika kebijakan ini disetel ke nilai 2 - BlockPartitioning, partisi penyimpanan p
 Gunakan <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> untuk menonaktifkan partisi penyimpanan pihak ketiga bagi origin tingkat teratas tertentu. Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
 Metode ini akan dihapus di Chrome 145, dan sebaiknya Anda menggunakan metode requestStorageAccess sebagai gantinya: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Masukan dapat diberikan di https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Kebijakan ini hanya berlaku untuk traffic browser. Play Store, navigasi web aplikasi Android, dan traffic pengguna lainnya seperti traffic VM Linux atau tugas pencetakan masih mematuhi batasan yang diberlakukan oleh VPN Selalu Aktif. Kebijakan ini hanya diterapkan saat VPN tidak terhubung dan hanya untuk traffic browser pengguna. Meskipun kebijakan ini diterapkan, traffic sistem juga dapat tidak menggunakan VPN Selalu Aktif untuk melakukan tugas seperti pengambilan kebijakan dan sinkronisasi jam sistem.
-
-Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan.
-
-Jika <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> disetel, VPN Selalu Aktif dikonfigurasi, dan VPN Selalu Aktif tidak terhubung, navigasi ke semua host akan diblokir, kecuali yang diizinkan oleh kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dalam status perangkat ini, <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diabaikan. Jika VPN Selalu Aktif terhubung, kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diterapkan dan kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> diabaikan.
-
-Kebijakan ini terbatas untuk 1.000 entri.
-
-Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="3405997282295704902">Jangan izinkan pengguna menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Jangan tanya pengguna (download langsung dimulai)</translation>
 <translation id="3410534959501660670">Setelan untuk fitur Pengambilan Teks</translation>
@@ -13058,6 +13049,15 @@ Jika kebijakan ini diaktifkan, perilaku baru akan digunakan.
 Jika kebijakan ini dinonaktifkan, perilaku lama akan digunakan.
 
 Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna Chromium lainnya.</translation>
+<translation id="8954797065581717017">Peringatan: Mengonfigurasi kebijakan ini akan melonggarkan penguncian VPN Selalu Aktif sebelum VPN terhubung. Pemfilteran tingkat URL hanya dijamin untuk traffic browser Chrome dan tidak berlaku untuk aplikasi sistem internal atau jenis traffic lainnya. Meskipun kebijakan ini diterapkan, traffic sistem juga dapat tidak menggunakan VPN Selalu Aktif untuk melakukan tugas seperti pengambilan kebijakan dan sinkronisasi jam sistem.
+
+Gunakan kebijakan ini untuk membuat pengecualian bagi skema tertentu, subdomain dari domain lain, port, atau jalur spesifik, menggunakan format yang ditentukan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan.
+
+Jika <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> disetel, VPN Selalu Aktif dikonfigurasi, dan VPN Selalu Aktif tidak terhubung, navigasi ke semua host akan diblokir, kecuali yang diizinkan oleh kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dalam status perangkat ini, <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diabaikan. Jika VPN Selalu Aktif terhubung, kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan diterapkan dan kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> akan diabaikan.
+
+Kebijakan ini terbatas untuk 1.000 entri.
+
+Jika kebijakan ini tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
 <translation id="8963464192296208229">Setelan F11 menggunakan pintasan yang berisi tombol pengubah alt</translation>

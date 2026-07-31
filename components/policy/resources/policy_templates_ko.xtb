@@ -3783,15 +3783,6 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />를 사용하여 특정 최상위 출처에 대한 서드 파티 저장용량 파티셔닝을 사용 중지합니다. 서드 파티 저장용량 파티셔닝에 관한 자세한 내용은 https://developers.google.com/privacy-sandbox/cookies/storage-partitioning 페이지를 참고하세요.
 
 이 정책은 Chrome 145에서 삭제되었으므로 requestStorageAccess 메서드를 사용하는 것이 좋습니다(https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess). https://crbug.com/425248669에 의견을 남길 수 있습니다.</translation>
-<translation id="3405361833556012520">이 정책은 브라우저 트래픽에만 적용됩니다. Play 스토어, Android 앱의 웹 탐색, 기타 사용자 트래픽(예: Linux VM 트래픽 또는 인쇄 작업)은 상시 사용 설정 VPN에서 부과하는 제한사항을 여전히 준수합니다. 이 정책은 VPN이 연결되지 않은 상태에서 사용자 브라우저 트래픽에 대해서만 시행됩니다. 이 정책이 시행되는 동안 시스템 트래픽은 상시 사용 설정 VPN을 우회하여 정책 가져오기 및 시스템 시계 동기화와 같은 작업을 수행할 수도 있습니다.
-
-이 정책을 사용하면 https://support.google.com/chrome/a?p=url_blocklist_filter_format에 지정된 형식을 통해 특정 스키마, 다른 도메인의 하위 도메인, 포트 또는 특정 경로에 대한 예외 목록을 열 수 있습니다. 가장 구체적인 필터에 따라 URL 차단 또는 허용 여부가 결정됩니다.
-
-<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책이 설정되어 있으면 상시 사용 설정 VPN이 구성되고, 상시 사용 설정 VPN이 연결되지 않으며, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책에서 허용하는 호스트를 제외한 모든 호스트로의 이동이 차단됩니다. 이 기기 상태에서 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다. 상시 사용 설정 VPN이 연결되면, <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책이 적용되고 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다.
-
-정책의 항목은 1,000개로 제한됩니다.
-
-정책을 설정하지 않으면 엄격 모드에서 상시 사용 설정 VPN이 활성화되고 VPN이 연결되지 않은 동안 브라우저 탐색이 차단됩니다.</translation>
 <translation id="3405997282295704902">사용자가 <ph name="PRODUCT_NAME" />을(를) 사용하도록 허용 안함</translation>
 <translation id="3406122462682235653">사용자에게 확인하지 않음(다운로드 즉시 시작)</translation>
 <translation id="3410534959501660670">텍스트 캡처 기능 설정</translation>
@@ -12739,6 +12730,15 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 정책을 사용 중지하면 이전 동작이 사용됩니다.
 
 정책이 설정되지 않으면 다른 Chromium 사용자와 마찬가지로 새 동작이 사용됩니다.</translation>
+<translation id="8954797065581717017">경고: 이 정책을 구성하면 VPN이 연결되기 전에 상시 사용 설정 VPN 잠금이 완화됩니다. URL 레벨 필터링은 Chrome 브라우저 트래픽에만 보장되며 내부 시스템 애플리케이션 또는 기타 트래픽 유형에는 적용되지 않습니다. 이 정책이 시행되는 동안 시스템 트래픽은 상시 사용 설정 VPN을 우회하여 정책 가져오기 및 시스템 시계 동기화와 같은 작업을 수행할 수도 있습니다.
+
+이 정책을 사용하면 https://support.google.com/chrome/a?p=url_blocklist_filter_format에 지정된 형식을 통해 특정 스키마, 다른 도메인의 하위 도메인, 포트 또는 특정 경로에 대한 예외 목록을 열 수 있습니다. 가장 구체적인 필터에 따라 URL 차단 또는 허용 여부가 결정됩니다.
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책이 설정되어 있으면 상시 사용 설정 VPN이 구성되고, 상시 사용 설정 VPN이 연결되지 않으며, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책에서 허용하는 호스트를 제외한 모든 호스트로의 이동이 차단됩니다. 이 기기 상태에서 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다. 상시 사용 설정 VPN이 연결되면, <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책이 적용되고 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다.
+
+정책의 항목은 1,000개로 제한됩니다.
+
+정책을 설정하지 않으면 엄격 모드에서 상시 사용 설정 VPN이 활성화되고 VPN이 연결되지 않은 동안 브라우저 탐색이 차단됩니다.</translation>
 <translation id="8955719471735800169">맨위로</translation>
 <translation id="8956312248048980644">기본적으로 출처 관련 에이전트 클러스터링을 허용합니다.</translation>
 <translation id="8963464192296208229">F11 설정은 Alt 수정자가 포함된 단축키를 사용합니다.</translation>

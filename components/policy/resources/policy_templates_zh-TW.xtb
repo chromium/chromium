@@ -3653,15 +3653,6 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 你可以使用 <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> 停用特定頂層來源的第三方儲存空間分區。如要進一步瞭解第三方儲存空間分區，請參閱 https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。
 
 這項政策已於 Chrome 145 中移除，建議改用 requestStorageAccess 方法：https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess。如要提供意見，請前往 https://crbug.com/425248669。</translation>
-<translation id="3405361833556012520">這項政策僅適用於瀏覽器流量。Play 商店、Android 應用程式網頁瀏覽和其他使用者流量 (例如 Linux VM 流量或列印工作) 仍會適用「永久連線 VPN」所設定的限制。這項政策只會在未連上 VPN 的情況強制執行，而且只適用於使用者的瀏覽器流量。這項政策強制執行時，系統流量也可以略過「永久連線 VPN」，執行擷取政策和同步處理系統時鐘等工作。
-
-請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。
-
-設定 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 後，如果「永久連線 VPN」已完成設定但未連線，系統將封鎖與所有主機的連線 (<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允許的連線除外)。在這個裝置狀態中，系統會忽略 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" />。「永久連線 VPN」連線時，系統會套用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策並忽略 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策。
-
-這項政策最多只能有 1,000 個項目。
-
-如果不設定這項政策，只要「永久連線 VPN」處於嚴格模式，但裝置未連上該 VPN，系統將禁止瀏覽器開啟網頁。</translation>
 <translation id="3405997282295704902">不允許使用者使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">不詢問使用者 (立即開始下載)</translation>
 <translation id="3410534959501660670">文字擷取功能的設定</translation>
@@ -12203,6 +12194,15 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 如果停用這項政策，系統將使用舊行為。
 
 如果不設定這項政策，系統將如同其他 Chromium 使用者一樣使用新行為。</translation>
+<translation id="8954797065581717017">警告：設定這項政策會放寬 VPN 連線前的「永久連線 VPN」鎖定狀態。網址層級篩選功能僅適用於 Chrome 瀏覽器流量，不適用於內部系統應用程式或其他流量類型。這項政策強制執行時，系統流量也可以略過「永久連線的 VPN」，執行擷取政策和同步處理系統時鐘等工作。
+
+請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。
+
+設定 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 後，如果「永久連線的 VPN」已完成設定但未連線，系統將封鎖與所有主機的連線 (<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允許的連線除外)。在這個裝置狀態中，系統會忽略 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" />。「永久連線的 VPN」連線時，系統會套用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策並忽略 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策。
+
+這項政策最多只能輸入 1,000 個項目。
+
+如果不設定這項政策，只要「永久連線的 VPN」處於嚴格模式，但裝置未連上該 VPN，系統將禁止瀏覽器開啟網頁。</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
 <translation id="8963464192296208229">F11 設定採用含有 Alt 輔助鍵的快速鍵</translation>

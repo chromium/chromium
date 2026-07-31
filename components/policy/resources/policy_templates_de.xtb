@@ -3750,15 +3750,6 @@ Ist diese Richtlinie auf „2 – BlockPartitioning“ gesetzt, wird die Dritta
 Mit „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ kannst du die Drittanbieter-Speicherpartitionierung für bestimmte Ursprünge der obersten Ebene deaktivieren. Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.
 
 Diese Richtlinie wurde in Chrome-Version 145 entfernt. Es wird empfohlen, stattdessen die Methode „requestStorageAccess“ zu verwenden: https://developer.mozilla.org/de/docs/Web/API/Document/requestStorageAccess. Unter https://crbug.com/425248669 kannst du Feedback geben.</translation>
-<translation id="3405361833556012520">Diese Richtlinie gilt nur für Webtraffic. Für den Play Store, die Webnavigation von Android-Apps und anderen Nutzertraffic wie Linux-VM-Traffic oder Druckaufträge gelten weiterhin die Einschränkungen, die vom durchgehend aktiven VPN auferlegt werden. Die Richtlinie wird nur erzwungen, solange das VPN nicht verbunden ist, und gilt nur für den Webtraffic von Nutzern. Während die Richtlinie erzwungen wird, kann der Systemtraffic das durchgehend aktive VPN umgehen, um bestimmte Aufgaben wie das Abrufen von Richtlinien oder das Synchronisieren der Systemzeit auszuführen.
-
-Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist.
-
-Wenn „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ festgelegt, ein durchgehend aktives VPN konfiguriert und dieses VPN nicht verbunden ist, wird die Navigation zu allen Hosts blockiert. Eine Ausnahme bilden solche Hosts, die gemäß der Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ zulässig sind. Bei diesem Gerätestatus werden „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ ignoriert. Wenn eine Verbindung zum durchgehend aktiven VPN hergestellt wird, werden die Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ angewendet und die Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ wird ignoriert.
-
-Diese Richtlinie ist auf 1.000 Einträge beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhindert, wenn für das durchgehend aktive VPN der strikte Modus aktiviert und das VPN nicht verbunden ist.</translation>
 <translation id="3405997282295704902">Nutzern nicht erlauben, <ph name="PRODUCT_NAME" /> zu verwenden</translation>
 <translation id="3406122462682235653">Nutzer nicht fragen (Downloads werden sofort gestartet)</translation>
 <translation id="3410534959501660670">Einstellungen für die Funktion „Texterfassung“</translation>
@@ -12496,6 +12487,15 @@ Wenn diese Richtlinie aktiviert ist, wird das neue Verhalten verwendet.
 Ist die Richtlinie deaktiviert, wird das alte Verhalten verwendet.
 
 Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chromium-Nutzern das neue Verhalten verwendet.</translation>
+<translation id="8954797065581717017">Warnung: Wenn du diese Richtlinie konfigurierst, wird die durchgehend aktive VPN-Sperrung aufgehoben, bevor die VPN-Verbindung hergestellt wird. Die Filterung auf URL-Ebene ist nur für Chrome-Browserzugriffe garantiert und gilt nicht für interne Systemanwendungen oder andere Zugriffstypen. Während die Richtlinie erzwungen wird, können die Systemzugriffe das durchgehend aktive VPN umgehen, um bestimmte Aufgaben wie das Abrufen von Richtlinien oder das Synchronisieren der Systemzeit auszuführen.
+
+Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist.
+
+Wenn „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ festgelegt, ein durchgehend aktives VPN konfiguriert und dieses VPN nicht verbunden ist, wird die Navigation zu allen Hosts blockiert. Eine Ausnahme bilden solche Hosts, die gemäß der Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ zulässig sind. Bei diesem Gerätestatus werden „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ ignoriert. Wenn eine Verbindung zum durchgehend aktiven VPN hergestellt wird, werden die Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ angewendet und die Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ wird ignoriert.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhindert, wenn für das durchgehend aktive VPN der strikte Modus aktiviert und das VPN nicht verbunden ist.</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
 <translation id="8963464192296208229">In den Einstellungen von F11 wird die Tastenkombination verwendet, die den Alt-Modifikator enthält</translation>
