@@ -179,23 +179,19 @@ bool AutofillBubbleControllerBase::MaySetUpBubble() {
 #if BUILDFLAG(IS_ANDROID)
   return true;
 #else  // BUILDFLAG(IS_ANDROID)
-  if (!IsBubbleManagerEnabled()) {
-    return true;
-  }
   auto* manager = BubbleManager::GetForWebContents(web_contents());
-  return manager && !manager->HasConflictingPendingBubble(GetBubbleType());
+  return !manager || !manager->HasConflictingPendingBubble(GetBubbleType());
 #endif
 }
 
 void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (IsBubbleManagerEnabled()) {
-    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->RequestShowController(*this, force_show);
-    }
+  if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+    manager->RequestShowController(*this, force_show);
     return;
   }
 #endif
+
   ShowBubble();
 }
 

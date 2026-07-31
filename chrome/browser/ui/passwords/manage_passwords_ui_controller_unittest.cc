@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
