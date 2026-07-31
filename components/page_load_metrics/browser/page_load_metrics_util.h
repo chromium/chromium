@@ -18,12 +18,10 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "url/gurl.h"
 
-// LINT.IfChange(page_load_histogram)
 // 10 ms to 10 minutes, with 100 buckets.
 #define PAGE_LOAD_HISTOGRAM(name, sample)                             \
   base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(10), \
                                 base::Minutes(10), 100)
-// LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java:page_load_histogram)
 
 // 1 ms to 10 minutes, with 100 buckets.
 // Used for metrics where we want to avoid sub-10ms values being rounded
