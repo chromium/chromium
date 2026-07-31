@@ -75,6 +75,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
     // leaving
     // only the page action icon visible inside the location bar / omnibox.
     kCollapsedInOmniboxAfterReopen,
+    // The cue bubble was hidden because the tab became inactive or not in
+    // focus, and we expect it to be reshown when the tab becomes active again.
+    kTabHidden,
   };
 
   // Holds the suggestion details and presentation state for the current tab.
@@ -93,6 +96,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
     // Callbacks to notify the core about user interactions with this
     // suggestion.
     MultistepFilterUiDelegate::SuggestionUiCallbacks callbacks;
+
+    // Stores the state before it was temporarily hidden due to tab switch.
+    std::optional<SuggestionViewState> state_before_tab_hide;
   };
 
   static FilterUiController* From(tabs::TabInterface* tab);

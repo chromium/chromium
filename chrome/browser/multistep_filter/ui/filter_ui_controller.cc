@@ -38,6 +38,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,6 +66,8 @@ constexpr std::string_view ViewStateToString(SuggestionViewState state) {
       return "reopened_from_omnibox";
     case SuggestionViewState::kCollapsedInOmniboxAfterReopen:
       return "collapsed_in_omnibox_after_reopen";
+    case SuggestionViewState::kTabHidden:
+      return "tab_hidden";
   }
 }
 
@@ -236,6 +239,7 @@ void FilterUiController::OnActionInvoked() {
       ApplySuggestion();
       break;
     case SuggestionViewState::kInactive:
+    case SuggestionViewState::kTabHidden:
       NOTREACHED();
     case SuggestionViewState::kCollapsedInOmnibox:
     case SuggestionViewState::kCollapsedInOmniboxAfterReopen:
@@ -464,9 +468,19 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
             l10n_util::GetStringUTF16(IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT));
       }
       suggestion_state_->view_state = SuggestionViewState::kReopenedFromOmnibox;
+      LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
+                           /*ui_shown=*/true, /*reason=*/"reopened");
       if (suggestion_state_->callbacks.on_suggestion_reopened) {
         std::move(suggestion_state_->callbacks.on_suggestion_reopened).Run();
       }
+      break;
+    case SuggestionViewState::kTabHidden:
+      suggestion_state_->view_state =
+          suggestion_state_->state_before_tab_hide.value_or(
+              SuggestionViewState::kShowingInitialCue);
+      suggestion_state_->state_before_tab_hide.reset();
+      LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
+                           /*ui_shown=*/true, /*reason=*/"tab_restored");
       break;
     case SuggestionViewState::kShowingInitialCue:
     case SuggestionViewState::kReopenedFromOmnibox:
@@ -481,10 +495,20 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
     return;
   }
 
+  bool is_tab_hidden =
+      tab().GetContents() &&
+      tab().GetContents()->GetVisibility() != content::Visibility::VISIBLE;
+  if (is_tab_hidden) {
+    suggestion_state_->state_before_tab_hide = suggestion_state_->view_state;
+    suggestion_state_->view_state = SuggestionViewState::kTabHidden;
+    return;
+  }
+
   constexpr SuggestionUserDecision kDecision = SuggestionUserDecision::kIgnored;
   switch (suggestion_state_->view_state) {
     case SuggestionViewState::kShowingInitialCue:
-      LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
+      LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
+                           /*ui_shown=*/false, /*reason=*/"collapsed");
       suggestion_state_->view_state = SuggestionViewState::kCollapsedInOmnibox;
       ClosePromo(kDecision);
       if (page_action_controller_) {
@@ -494,7 +518,8 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
       }
       break;
     case SuggestionViewState::kReopenedFromOmnibox:
-      LogSuggestionUiDecision(log_router_, *suggestion_state_, kDecision);
+      LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
+                           /*ui_shown=*/false, /*reason=*/"collapsed");
       suggestion_state_->view_state =
           SuggestionViewState::kCollapsedInOmniboxAfterReopen;
       if (page_action_controller_) {
@@ -506,6 +531,7 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
     case SuggestionViewState::kInactive:
     case SuggestionViewState::kCollapsedInOmnibox:
     case SuggestionViewState::kCollapsedInOmniboxAfterReopen:
+    case SuggestionViewState::kTabHidden:
       NOTREACHED();
   }
 }

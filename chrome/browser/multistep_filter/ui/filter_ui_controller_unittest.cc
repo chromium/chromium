@@ -716,7 +716,89 @@ TEST_F(
   EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
 }
 
+// === Group 8: Tab Visibility Transitions ===
 
+// Tests the state transition when the tab is hidden and shown again, starting
+// from the ShowingInitialCue state.
+TEST_F(FilterUiControllerTest, OnPageActionAnchoredMessageHiddenWhenTabHidden) {
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion, {});
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kShowingInitialCue);
+
+  web_contents()->WasHidden();
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kTabHidden);
+  EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
+
+  web_contents()->WasShown();
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kShowingInitialCue);
+  EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
+}
+
+// Tests the state transition when the tab is hidden and shown again, starting
+// from the ReopenedFromOmnibox state.
+TEST_F(FilterUiControllerTest,
+       OnPageActionAnchoredMessageHiddenWhenTabHiddenFromReopenedState) {
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion, {});
+  // Transition: Inactive -> ShowingInitialCue -> CollapsedInOmnibox ->
+  // ReopenedFromOmnibox
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+  controller_->OnActionInvoked();
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kReopenedFromOmnibox);
+
+  web_contents()->WasHidden();
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kTabHidden);
+  EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->state_before_tab_hide,
+            FilterUiController::SuggestionViewState::kReopenedFromOmnibox);
+
+  web_contents()->WasShown();
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kReopenedFromOmnibox);
+  EXPECT_FALSE(test_api(*controller_)
+                   .suggestion_state()
+                   ->state_before_tab_hide.has_value());
+}
+
+// Tests that if the tab is hidden while the cue is collapsed, it remains
+// collapsed when the tab becomes active again.
+TEST_F(FilterUiControllerTest, TabHiddenWhenCueCollapsed) {
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion, {});
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kCollapsedInOmnibox);
+
+  web_contents()->WasHidden();
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kCollapsedInOmnibox);
+  EXPECT_FALSE(test_api(*controller_)
+                   .suggestion_state()
+                   ->state_before_tab_hide.has_value());
+
+  web_contents()->WasShown();
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kCollapsedInOmnibox);
+  EXPECT_FALSE(test_api(*controller_)
+                   .suggestion_state()
+                   ->state_before_tab_hide.has_value());
+}
 
 }  // namespace
 
