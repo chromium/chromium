@@ -134,6 +134,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLanesRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt,
       GridLanesDataVector* out_grid_lanes = nullptr);
+  void PlaceGridLanesItemsForFragmentation(
+      const GridLanesDataVector& grid_lanes,
+      const GridLayoutSubtree& layout_subtree);
 
   // Iterates through and lays out each item in `grid_lanes_items`. If
   // `placement_phase` is kCalculateBaselines, this method measures items and
@@ -336,7 +339,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const LogicalSize& containing_size,
       const LogicalSize& fixed_available_size,
       LayoutResultCacheSlot result_cache_slot,
-      const GridLayoutSubtree* opt_layout_subtree = nullptr) const;
+      const GridLayoutSubtree* opt_layout_subtree = nullptr,
+      bool min_block_size_should_encompass_intrinsic_size = false,
+      std::optional<LayoutUnit> opt_child_block_offset = std::nullopt) const;
 
   // Return the inline contribution of `grid_lanes_item` calculated to either
   // the min-width or the max-width based on `sizing_constraint`.

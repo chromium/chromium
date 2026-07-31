@@ -223,6 +223,8 @@ blink_core_sources_layout = [
   "grid_lanes/grid_lanes_gap_accumulator.cc",
   "grid_lanes/grid_lanes_gap_accumulator.h",
   "grid_lanes/grid_lanes_item_group.h",
+  "grid_lanes/grid_lanes_item_iterator.cc",
+  "grid_lanes/grid_lanes_item_iterator.h",
   "grid_lanes/grid_lanes_layout_algorithm.cc",
   "grid_lanes/grid_lanes_layout_algorithm.h",
   "grid_lanes/grid_lanes_node.cc",

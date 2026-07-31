@@ -80,6 +80,7 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
 
+  bool has_seen_all_children = false;
   HeapVector<Member<GridLanesItemData>> item_data;
 };
 
