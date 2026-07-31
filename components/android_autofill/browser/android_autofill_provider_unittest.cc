@@ -1100,14 +1100,21 @@ class AndroidAutofillProviderWithCredManMultiFrameTest
   }
 
   void FocusSubFrameFormField(const FormFieldData& field) {
+    // TODO(crbug.com/537704721): This is a hack to make the tests happy.
+    // Otherwise, the tests rely on a particular, unrealistic order of events.
+    // So either the tests or the production code are wrong.
+    test_api(autofill_provider())
+        .StartNewSession(&android_autofill_manager(), sub_frame_webauthn_form_,
+                         field);
+
+    android_autofill_manager().OnFocusOnFormField(
+        sub_frame_webauthn_form_, field.global_id(),
+        AutofillManagerTestApi::pass_key());
     keyboard_suppressor().OnBeforeAskForValuesToFill(
         android_autofill_manager(), sub_frame_webauthn_form_.global_id(),
         field.global_id(), sub_frame_webauthn_form_);
     android_autofill_manager().OnAskForValuesToFillTest(
         sub_frame_webauthn_form_, field.global_id());
-    android_autofill_manager().OnFocusOnFormField(
-        sub_frame_webauthn_form_, field.global_id(),
-        AutofillManagerTestApi::pass_key());
   }
 
   const FormData& sub_frame_test_form() const {
@@ -1147,11 +1154,14 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   android_autofill_manager().OnFormsSeen({test_form()}, {},
                                          AutofillManagerTestApi::pass_key());
   // Focus main frame field to start session and set origin to foo.com.
-  android_autofill_manager().OnAskForValuesToFillTest(
-      test_form(), non_webauthn_password_field().global_id());
+  test_api(autofill_provider())
+      .StartNewSession(&android_autofill_manager(), test_form(),
+                       non_webauthn_password_field());
   android_autofill_manager().OnFocusOnFormField(
       test_form(), non_webauthn_password_field().global_id(),
       AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnAskForValuesToFillTest(
+      test_form(), non_webauthn_password_field().global_id());
   ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             url::Origin::Create(GURL("https://foo.com")));
 
@@ -1208,11 +1218,14 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
                                          AutofillManagerTestApi::pass_key());
 
   // 1. Start session on foo_field (origin https://foo.com).
-  android_autofill_manager().OnAskForValuesToFillTest(multi_frame_form,
-                                                      foo_field.global_id());
+  test_api(autofill_provider())
+      .StartNewSession(&android_autofill_manager(), multi_frame_form,
+                       foo_field);
   android_autofill_manager().OnFocusOnFormField(
       multi_frame_form, foo_field.global_id(),
       AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnAskForValuesToFillTest(multi_frame_form,
+                                                      foo_field.global_id());
   ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             foo_origin);
 
@@ -1457,10 +1470,12 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
 
   // Victim frame queries and focuses, starting session and triggering CredMan
   // sheet.
-  android_autofill_manager().OnAskForValuesToFillTest(form,
-                                                      victim_field.global_id());
+  test_api(autofill_provider())
+      .StartNewSession(&android_autofill_manager(), form, victim_field);
   android_autofill_manager().OnFocusOnFormField(
       form, victim_field.global_id(), AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnAskForValuesToFillTest(form,
+                                                      victim_field.global_id());
   ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
   ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             victim_origin);
