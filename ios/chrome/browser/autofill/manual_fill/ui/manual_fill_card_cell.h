@@ -35,7 +35,7 @@
 
 @end
 
-// Cell to display a Card where the username and password are interactable
+// Cell to display a Credit Card where the card details are interactable
 // and send the data to the delegate.
 @interface ManualFillCardCell : LegacyTableViewCell
 

@@ -63,7 +63,7 @@ enum class ManualFillCredentialType {
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
-// Updates the cell with the `credential`. If the user iteracts with it, the
+// Updates the cell with the `credential`. If the user interacts with it, the
 // `contentInjector` will be notified. `menuActions` are the UIActions that
 // should be available from the cell's overflow menu button. `cellIndex`
 // indicates the index (0-based) at which the password represented by this cell

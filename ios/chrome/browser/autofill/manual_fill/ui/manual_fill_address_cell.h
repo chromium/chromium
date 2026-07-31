@@ -35,8 +35,8 @@
 
 @end
 
-// Cell to display an Address into parts that are interactable
-// and sendable the data to the delegate.
+// Cell to display an Address where the fields are interactable
+// and send data to the delegate.
 @interface ManualFillAddressCell : LegacyTableViewCell
 
 // Updates the cell with an `address`, a `contentInjector` to be notified and

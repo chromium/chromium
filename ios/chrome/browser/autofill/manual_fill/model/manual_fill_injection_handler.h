@@ -10,7 +10,7 @@
 #import "base/functional/callback_forward.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 #import "ios/web/public/web_state.h"
-#include "url/origin.h"
+#import "url/origin.h"
 
 @class ReauthenticationModule;
 @protocol FormSuggestionClient;

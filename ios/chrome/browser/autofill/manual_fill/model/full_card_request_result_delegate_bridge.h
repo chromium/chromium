@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 
 namespace web {
