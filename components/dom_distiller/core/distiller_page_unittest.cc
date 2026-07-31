@@ -15,6 +15,7 @@
 #include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/extraction_utils.h"
+#include "components/dom_distiller/core/readability_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "url/gurl.h"
@@ -307,6 +308,17 @@ TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
       DistillationParseResult::kContentTooShort, 1);
 }
 #endif
+
+// Test that the readability script options are injected correctly.
+TEST_F(DistillerPageTest, ReadabilityScriptOptionsHandling) {
+  ReadabilityOptions custom_options;
+  std::string default_script = GetReadabilityDistillerScript(custom_options);
+  EXPECT_NE(std::string::npos, default_script.find("})(undefined);"));
+
+  custom_options.allowed_video_regex = "youtube|vimeo";
+  std::string custom_script = GetReadabilityDistillerScript(custom_options);
+  EXPECT_NE(std::string::npos, custom_script.find("})(\"youtube|vimeo\");"));
+}
 
 }  // namespace
 

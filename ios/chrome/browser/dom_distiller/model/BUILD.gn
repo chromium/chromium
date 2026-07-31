@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "constants.h",
+    "constants.mm",
     "distiller_service.h",
     "distiller_service.mm",
     "distiller_service_factory.h",

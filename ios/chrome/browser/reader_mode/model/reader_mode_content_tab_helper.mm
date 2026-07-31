@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
+#import "base/no_destructor.h"
 #import "components/translate/core/browser/translate_manager.h"
+#import "ios/chrome/browser/dom_distiller/model/constants.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -17,6 +20,25 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 #import "net/base/apple/url_conversions.h"
+#import "third_party/re2/src/re2/re2.h"
+
+namespace {
+
+// Checks if the given URL's host matches the Reader Mode allowed iframe sources
+// regex, meaning the iframe is trusted and can be loaded within a reader page.
+bool IsIframeHostAllowed(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+  // Wrap the shared regex in anchors for strict host matching.
+  static const base::NoDestructor<std::string> anchored_regex(
+      std::string("^") + kReadabilityAllowedVideoRegex + "$");
+  static const base::NoDestructor<re2::RE2> allowed_iframe_pattern(
+      *anchored_regex, re2::RE2::CannedOptions(re2::RE2::Quiet));
+  return re2::RE2::FullMatch(url.host(), *allowed_iframe_pattern);
+}
+
+}  // namespace
 
 ReaderModeContentTabHelper::ReaderModeContentTabHelper(web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state) {
@@ -104,17 +126,27 @@ void ReaderModeContentTabHelper::ShouldAllowRequest(
     RequestInfo request_info,
     PolicyDecisionCallback callback) {
   const GURL request_url = net::GURLWithNSURL(request.URL);
-  if ((request_url.EqualsIgnoringRef(content_url_) &&
-       !content_url_request_allowed_) ||
-      !request_info.target_frame_is_main) {
-    // If the requested URL is the content and was not already allowed,
-    // or if the request does not target the main frame, then allow it.
+
+  if (!request_info.target_frame_is_main) {
+    if (IsIframeHostAllowed(request_url) &&
+        request_url.SchemeIsCryptographic()) {
+      std::move(callback).Run(PolicyDecision::Allow());
+    } else {
+      std::move(callback).Run(PolicyDecision::Cancel());
+    }
+    return;
+  }
+
+  if (request_url.EqualsIgnoringRef(content_url_) &&
+      !content_url_request_allowed_) {
+    // If the requested URL is the content and was not already allowed, allow
+    // it.
     content_url_request_allowed_ = true;
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
-  // If the requested URL is NOT the content URL or it has been allowed already,
-  // cancel the request
+  // If the requested URL is NOT the content URL or it has been allowed
+  // already, cancel the request.
   std::move(callback).Run(PolicyDecision::Cancel());
   if (delegate_) {
     delegate_->ReaderModeContentDidCancelRequest(this, request, request_info);

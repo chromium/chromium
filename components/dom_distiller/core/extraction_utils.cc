@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/dom_distiller/core/readability_options.h"
 #include "components/grit/components_resources.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "third_party/dom_distiller_js/dom_distiller_json_converter.h"
@@ -24,6 +25,7 @@ namespace {
 const char* kOptionsPlaceholder = "$$OPTIONS";
 const char* kMinScorePlaceholder = "$$MIN_SCORE_PLACEHOLDER";
 const char* kMinContentLengthPlaceholder = "$$MIN_CONTENT_LENGTH_PLACEHOLDER";
+const char* kAllowedVideoRegexPlaceholder = "$$ALLOWED_VIDEO_REGEX";
 
 void ReplaceScriptPlaceholder(std::string& script,
                               const char* placeholder,
@@ -52,11 +54,23 @@ std::string GetDistillerScriptWithOptions(
   return script;
 }
 
-std::string GetReadabilityDistillerScript() {
+std::string GetReadabilityDistillerScript(const ReadabilityOptions& options) {
   std::string script =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_READABILITY_DISTILLER_JS);
   CHECK(!script.empty());
+
+  std::string allowed_regex_json;
+  if (options.allowed_video_regex.has_value()) {
+    if (!base::JSONWriter::Write(base::Value(*options.allowed_video_regex),
+                                 &allowed_regex_json)) {
+      NOTREACHED();
+    }
+  } else {
+    allowed_regex_json = "undefined";
+  }
+  ReplaceScriptPlaceholder(script, kAllowedVideoRegexPlaceholder,
+                           allowed_regex_json);
   return script;
 }
 

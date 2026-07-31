@@ -104,6 +104,7 @@ source_set("model") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/re2",
   ]
   public_deps = [ "//base" ]
 }

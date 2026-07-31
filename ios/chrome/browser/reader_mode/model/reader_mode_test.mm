@@ -16,6 +16,7 @@
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
+#import "ios/chrome/browser/dom_distiller/model/constants.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
@@ -164,8 +166,10 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
 
   // Set up the fake web frame to return a custom result after executing
   // the Readability Javascript.
+  dom_distiller::ReadabilityOptions options;
+  options.allowed_video_regex = kReadabilityAllowedVideoRegex;
   std::u16string readability_script =
-      base::UTF8ToUTF16(dom_distiller::GetReadabilityDistillerScript());
+      base::UTF8ToUTF16(dom_distiller::GetReadabilityDistillerScript(options));
   base::DictValue readability_result;
   readability_result.Set("content", distilled_content);
   readability_result.Set("title", "fake title");

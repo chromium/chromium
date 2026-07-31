@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 
 #import "components/dom_distiller/core/distiller.h"
+#import "components/dom_distiller/core/distiller_options.h"
 #import "components/dom_distiller/core/distiller_url_fetcher.h"
+#import "ios/chrome/browser/dom_distiller/model/constants.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -34,9 +36,10 @@ std::unique_ptr<KeyedService> DistillerServiceFactory::BuildServiceInstanceFor(
       std::make_unique<dom_distiller::DistillerURLFetcherFactory>(
           profile->GetSharedURLLoaderFactory());
 
-  dom_distiller::proto::DomDistillerOptions options;
+  dom_distiller::DistillerOptions options;
+  options.readability.allowed_video_regex = kReadabilityAllowedVideoRegex;
   return std::make_unique<DistillerService>(
       std::make_unique<dom_distiller::DistillerFactoryImpl>(
-          std::move(distiller_url_fetcher_factory), options),
+          std::move(distiller_url_fetcher_factory), std::move(options)),
       profile->GetPrefs());
 }

@@ -150,22 +150,29 @@ TEST_F(ReaderModeContentTabHelperTest, AllowsContentURLRequestOnce) {
   EXPECT_NSEQ(non_content_request, delegate_->last_canceled_request());
 }
 
-// Tests that non-main frame URL requests are always allowed. This is a
-// regression test for crbug.com/426443192.
-TEST_F(ReaderModeContentTabHelperTest, AllowsContentURLRequestForNonMainFrame) {
-  NSURL* non_content_url = [NSURL URLWithString:@"https://test2.url/"];
-  NSURLRequest* non_content_request =
-      [NSURLRequest requestWithURL:non_content_url];
+// Tests that non-main frame URL requests are allowed if they are in the trusted
+// allowlist, and canceled otherwise.
+TEST_F(ReaderModeContentTabHelperTest, AllowsTrustedNonMainFrameRequestsOnly) {
+  NSURL* trusted_url =
+      [NSURL URLWithString:@"https://www.youtube.com/embed/123"];
+  NSURLRequest* trusted_request = [NSURLRequest requestWithURL:trusted_url];
   web::WebStatePolicyDecider::RequestInfo non_main_frame_request_info(
       ui::PAGE_TRANSITION_FIRST, /*target_frame_is_main=*/false, false, false,
       false, false);
 
-  // Non-main frame URLs should always be allowed.
   std::optional<web::WebStatePolicyDecider::PolicyDecision> policy_decision =
-      GetContentRequestPolicyDecision(non_content_request,
+      GetContentRequestPolicyDecision(trusted_request,
                                       non_main_frame_request_info);
   EXPECT_TRUE(policy_decision);
   EXPECT_TRUE(policy_decision->ShouldAllowNavigation());
+
+  NSURL* untrusted_url = [NSURL URLWithString:@"https://test2.url/"];
+  NSURLRequest* untrusted_request = [NSURLRequest requestWithURL:untrusted_url];
+
+  policy_decision = GetContentRequestPolicyDecision(
+      untrusted_request, non_main_frame_request_info);
+  EXPECT_TRUE(policy_decision);
+  EXPECT_TRUE(policy_decision->ShouldCancelNavigation());
 }
 
 // Tests that the delegate is notified only when the loaded page URL matches the

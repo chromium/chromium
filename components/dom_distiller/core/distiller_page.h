@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "components/dom_distiller/core/distiller_options.h"
 #include "components/dom_distiller/core/dom_distiller_constants.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "ui/gfx/geometry/size.h"
@@ -53,6 +54,9 @@ class DistillerPage {
   // fails. May be called when the distiller is idle. Callers can assume that,
   // for a given |url| and |options|, any DistillerPage implementation will
   // extract the same content.
+  void DistillPage(const GURL& url,
+                   const DistillerOptions& options,
+                   DistillerPageCallback callback);
   void DistillPage(const GURL& url,
                    const proto::DomDistillerOptions options,
                    DistillerPageCallback callback);
