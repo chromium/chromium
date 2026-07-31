@@ -322,6 +322,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     base::OnceCallback<void(uint64_t)> callback) {
   CHECK(((remove_mask &
           ~content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS &
+          ~content::BrowsingDataRemover::DATA_TYPE_LOGICAL_CLEAR &
           ~constants::FILTERABLE_DATA_TYPES) == 0) ||
         filter_builder->MatchesAllOriginsAndDomains());
   TRACE_EVENT0("browsing_data",

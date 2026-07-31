@@ -1582,8 +1582,47 @@ class MockNetworkContext : public network::TestNetworkContext {
       ClearTrustTokenData,
       void(network::mojom::ClearDataFilterPtr,
            network::mojom::NetworkContext::ClearTrustTokenDataCallback));
+  MOCK_METHOD4(ClearHttpCache,
+               void(base::Time,
+                    base::Time,
+                    network::mojom::ClearDataFilterPtr,
+                    network::mojom::NetworkContext::ClearHttpCacheCallback));
+  MOCK_METHOD4(
+      ClearHttpCacheLogically,
+      void(base::Time,
+           base::Time,
+           network::mojom::ClearDataFilterPtr,
+           network::mojom::NetworkContext::ClearHttpCacheLogicallyCallback));
 };
 }  // namespace
+
+TEST_F(BrowsingDataRemoverImplTest, ClearsHttpCacheLogically) {
+  MockNetworkContext context;
+  set_network_context_override(&context);
+
+  EXPECT_CALL(context, ClearHttpCacheLogically(_, _, _, _))
+      .WillOnce(RunOnceClosure<3>());
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_CACHE |
+          BrowsingDataRemover::DATA_TYPE_LOGICAL_CLEAR,
+      /*include_protected_origins=*/false);
+  set_network_context_override(nullptr);
+}
+
+TEST_F(BrowsingDataRemoverImplTest, ClearsHttpCachePhysicallyByDefault) {
+  MockNetworkContext context;
+  set_network_context_override(&context);
+
+  EXPECT_CALL(context, ClearHttpCache(_, _, _, _))
+      .WillOnce(RunOnceClosure<3>());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                BrowsingDataRemover::DATA_TYPE_CACHE,
+                                /*include_protected_origins=*/false);
+  set_network_context_override(nullptr);
+}
 
 TEST_F(BrowsingDataRemoverImplTest, ClearsTrustTokens) {
   MockNetworkContext context;
@@ -1604,7 +1643,8 @@ TEST_F(BrowsingDataRemoverImplTest, PreservesTrustTokens) {
   // When DATA_TYPE_TRUST_TOKENS isn't cleared, Trust Tokens state shouldn't be.
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
-      BrowsingDataRemover::DATA_TYPE_CACHE,  // arbitrary non-Trust Tokens type
+      BrowsingDataRemover::DATA_TYPE_DOWNLOADS,  // arbitrary non-Trust Tokens
+                                                 // type
       /*include_protected_origins=*/false);
 
   // (The strict mock will fail the test if its mocked method is called.)

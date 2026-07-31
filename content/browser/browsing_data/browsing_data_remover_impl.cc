@@ -547,9 +547,15 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     // The clearing of the HTTP cache happens in the network service process
     // when enabled. Note that we've deprecated the concept of a media cache,
     // and are now using a single cache for both purposes.
-    network_context->ClearHttpCache(
-        delete_begin, delete_end, filter_builder->BuildNetworkServiceFilter(),
-        CreateTaskCompletionClosureForMojo(TracingDataType::kHttpCache));
+    if (remove_mask & DATA_TYPE_LOGICAL_CLEAR) {
+      network_context->ClearHttpCacheLogically(
+          delete_begin, delete_end, filter_builder->BuildNetworkServiceFilter(),
+          CreateTaskCompletionClosureForMojo(TracingDataType::kHttpCache));
+    } else {
+      network_context->ClearHttpCache(
+          delete_begin, delete_end, filter_builder->BuildNetworkServiceFilter(),
+          CreateTaskCompletionClosureForMojo(TracingDataType::kHttpCache));
+    }
 
     if (base::FeatureList::IsEnabled(
             features::kCodeCacheDeletionWithoutFilter)) {

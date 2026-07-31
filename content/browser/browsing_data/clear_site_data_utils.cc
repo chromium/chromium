@@ -141,6 +141,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
     if (clear_site_data_types_.Has(ClearSiteDataType::kCache)) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_LOGICAL_CLEAR;
     }
 
     if (clear_site_data_types_.Has(ClearSiteDataType::kPrefetchCache)) {
