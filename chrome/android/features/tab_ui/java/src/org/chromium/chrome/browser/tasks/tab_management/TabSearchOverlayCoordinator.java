@@ -32,6 +32,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -51,13 +52,21 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
 import org.chromium.chrome.browser.searchwidget.SearchBoxDataProvider;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
@@ -84,6 +93,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     private final @Nullable EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     private final BackPressManager mBackPressManager;
     private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     // Recursion guard to prevent event dispatch loops when forwarding scrim scroll/drag events
     // to the underlying compositor view hierarchy.
     private boolean mIsForwardingScroll;
@@ -126,7 +136,8 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             BackPressManager backPressManager,
-            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         mActivity = activity;
         mParentContainer = parentContainer;
         mWindowAndroid = windowAndroid;
@@ -138,6 +149,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
         mBackPressManager = backPressManager;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
 
         mModel = TabSearchOverlayProperties.createDefaultModel();
@@ -375,7 +387,41 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     }
 
     private void bringTabGroupToFront(String tabGroupId) {
-        IntentHandler.bringTabGroupToFront(tabGroupId);
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+
+        TabGroupSyncService syncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (syncService == null) return;
+
+        SavedTabGroup syncGroup = syncService.getGroup(tabGroupId);
+        if (syncGroup == null || syncGroup.syncId == null) return;
+
+        // If the group is not yet open locally, materialize/open it first.
+        if (syncGroup.localId == null) {
+            TabGroupUiActionHandler handler = mTabGroupUiActionHandlerSupplier.get();
+            if (handler == null) return;
+
+            handler.openTabGroup(syncGroup.syncId);
+            // Re-fetch the synced group to obtain the newly mapped local group ID.
+            syncGroup = syncService.getGroup(tabGroupId);
+            if (syncGroup == null || syncGroup.localId == null) return;
+        }
+
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector == null) return;
+
+        // Find the last active tab ID inside this local group (or the first tab if last active
+        // cannot be determined).
+        TabModel model = selector.getModel(mSearchBoxDataProvider.isIncognito());
+        int tabId = model.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
+        // Select the active tab inside the local TabModel to focus on the group.
+        int index = TabModelUtils.getTabIndexById(model, tabId);
+        if (index != TabModel.INVALID_TAB_INDEX) {
+            model.setIndex(index, TabSelectionType.FROM_USER);
+        }
+
         hide();
     }
 
