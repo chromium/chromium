@@ -64,8 +64,7 @@
                  phoneNumber:(NSString*)phoneNumber
                 emailAddress:(NSString*)emailAddress NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use `initWithFirstName:middleNameOrInitial:lastName:
-// line1:line2:zip:city:state:country:`.
+// Unavailable. Use designated initializer instead.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

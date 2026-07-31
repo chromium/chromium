@@ -80,8 +80,7 @@
                      canFillDirectly:(BOOL)canFillDirecly
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Please use `initWithGuid:network:bankName:cardholder:number:
-// obfuscatedNumber:expirationYear:expirationMonth:`.
+// Unavailable. Use designated initializer instead.
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
