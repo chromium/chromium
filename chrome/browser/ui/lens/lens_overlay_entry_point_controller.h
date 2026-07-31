@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -29,10 +30,6 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-namespace views {
-class View;
-}  // namespace views
-
 namespace lens {
 
 // Per-browser-window class responsible for keeping Lens Overlay entry points in
@@ -40,8 +37,7 @@ namespace lens {
 // LensOverlayController, since LensOverlayController exist per tab, while entry
 // points are per browser window.
 class LensOverlayEntryPointController : public TemplateURLServiceObserver,
-                                        public views::FocusChangeListener,
-                                        public views::ViewObserver {
+                                        public LocationBar::Observer {
  public:
   DECLARE_USER_DATA(LensOverlayEntryPointController);
   static LensOverlayEntryPointController* From(
@@ -57,7 +53,7 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
   // This class does nothing if not initialized. IsEnabled returns false.
   void Initialize(BrowserWindowInterface* browser_window_interface,
                   CommandUpdater* command_updater,
-                  views::View* location_bar);
+                  LocationBar* location_bar);
 
   // Whether the entry points should be enabled. Enabled means the Lens Overlay
   // functionality is available.
@@ -86,6 +82,10 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
   static void InvokeAction(tabs::TabInterface* active_tab,
                            const actions::ActionInvocationContext& context);
 
+  const LocationBar* location_bar() const {
+    return location_bar_observation_.GetSource();
+  }
+
  private:
   // Called when the browser window's fullscreen state changes.
   void OnFullscreenStateChanged();
@@ -94,12 +94,8 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
-  // views::FocusChangeListener
-  void OnDidChangeFocus(views::View* before, views::View* now) override;
-
-  // views::ViewObserver
-  void OnViewAddedToWidget(views::View* view) override;
-  void OnViewRemovedFromWidget(views::View* view) override;
+  // LocationBar::Observer:
+  void OnLocationBarFocusChanged() override;
 
   // Updates the Lens Overlay page action state.
   void UpdatePageActionState();
@@ -112,8 +108,8 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
   bool IsOverlayActive() const;
 
   // Observer to check for focus changes.
-  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
-      focus_manager_observation_{this};
+  base::ScopedObservation<LocationBar, LocationBar::Observer>
+      location_bar_observation_{this};
 
   // Subscription to be notified when the browser window enters fullscreen.
   base::CallbackListSubscription fullscreen_subscription_;
@@ -131,8 +127,6 @@ class LensOverlayEntryPointController : public TemplateURLServiceObserver,
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  raw_ptr<views::View> location_bar_;
 
   // Optimization guide decider used for determining EDU action chip
   // eligibility.

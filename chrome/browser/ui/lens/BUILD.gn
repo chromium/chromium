@@ -73,6 +73,7 @@ source_set("lens") {
     "//chrome/browser/ui/desktop_to_mobile_promos:service",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",

@@ -302,14 +302,8 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   DCHECK(browser_view->browser());
   DCHECK(browser_view->GetIsNormalType());
   DCHECK(browser_view->browser()->tab_strip_model());
-
-  // TODO(crbug.com/474059135): If WebUILocationBar ship on ChromeOS,
-  // this will need adjustment.
-  if (browser_view->GetLocationBarView()) {
-    DCHECK(browser_view->GetLocationBarView()->omnibox_view());
-
-    observed_omni_box_ = browser_view->GetLocationBarView()->omnibox_view();
-    observed_omni_box_->AddObserver(this);
+  if (LocationBar* location_bar = browser_view->GetLocationBar()) {
+    observed_location_bar_.Observe(location_bar);
   }
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
@@ -329,10 +323,6 @@ TopControlsSlideControllerChromeOS::~TopControlsSlideControllerChromeOS() {
   OnEnabledStateChanged(false);
 
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
-
-  if (observed_omni_box_) {
-    observed_omni_box_->RemoveObserver(this);
-  }
 }
 
 bool TopControlsSlideControllerChromeOS::IsEnabled() const {
@@ -591,22 +581,7 @@ void TopControlsSlideControllerChromeOS::OnDisplayMetricsChanged(
   OnEnabledStateChanged(false);
 }
 
-void TopControlsSlideControllerChromeOS::OnViewIsDeleting(
-    views::View* observed_view) {
-  DCHECK_EQ(observed_view, observed_omni_box_);
-  observed_omni_box_ = nullptr;
-  UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
-}
-
-void TopControlsSlideControllerChromeOS::OnViewFocused(
-    views::View* observed_view) {
-  DCHECK_EQ(observed_view, observed_omni_box_);
-  UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
-}
-
-void TopControlsSlideControllerChromeOS::OnViewBlurred(
-    views::View* observed_view) {
-  DCHECK_EQ(observed_view, observed_omni_box_);
+void TopControlsSlideControllerChromeOS::OnLocationBarFocusChanged() {
   UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
 }
 
@@ -619,10 +594,12 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
     return;
   }
 
+  auto* location_bar = observed_location_bar_.GetSource();
+
   // If the omnibox is focused, then the top controls should be constrained to
   // remain fully shown until the omnibox is blurred.
   const cc::BrowserControlsState constraints_state =
-      observed_omni_box_ && observed_omni_box_->HasFocus()
+      location_bar && location_bar->IsFocusWithin()
           ? cc::BrowserControlsState::kShown
           : GetBrowserControlsStateConstraints(web_contents);
 

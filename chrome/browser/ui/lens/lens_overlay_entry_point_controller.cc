@@ -128,12 +128,10 @@ LensOverlayEntryPointController::LensOverlayEntryPointController(
 void LensOverlayEntryPointController::Initialize(
     BrowserWindowInterface* browser_window_interface,
     CommandUpdater* command_updater,
-    views::View* location_bar) {
+    LocationBar* location_bar) {
   browser_window_interface_ = browser_window_interface;
-  location_bar_ = location_bar;
-  if (location_bar_) {
-    focus_manager_observation_.Observe(location_bar_->GetFocusManager());
-    location_bar_->AddObserver(this);
+  if (location_bar) {
+    location_bar_observation_.Observe(location_bar);
   }
 
   pref_change_registrar_.Init(
@@ -175,12 +173,7 @@ void LensOverlayEntryPointController::Initialize(
   }
 }
 
-LensOverlayEntryPointController::~LensOverlayEntryPointController() {
-  // Initialize may not have been called (e.g. for non-normal browser windows).
-  if (location_bar_) {
-    location_bar_->RemoveObserver(this);
-  }
-}
+LensOverlayEntryPointController::~LensOverlayEntryPointController() = default;
 
 bool LensOverlayEntryPointController::IsEnabled() const {
   // This class is initialized if and only if it is subscribed.
@@ -312,20 +305,7 @@ void LensOverlayEntryPointController::InvokeAction(
   }
 }
 
-void LensOverlayEntryPointController::OnViewAddedToWidget(views::View* view) {
-  CHECK(location_bar_);
-  focus_manager_observation_.Observe(location_bar_->GetFocusManager());
-}
-
-void LensOverlayEntryPointController::OnViewRemovedFromWidget(
-    views::View* view) {
-  CHECK(location_bar_);
-  CHECK(location_bar_->GetFocusManager());
-  focus_manager_observation_.Reset();
-}
-
-void LensOverlayEntryPointController::OnDidChangeFocus(views::View* before,
-                                                       views::View* now) {
+void LensOverlayEntryPointController::OnLocationBarFocusChanged() {
   UpdatePageActionState();
 
   // `tab_interface` can be null early during browser startup.
@@ -366,7 +346,7 @@ actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
 
 void LensOverlayEntryPointController::UpdatePageActionState() {
   // This may not have been initialized (e.g. for non-normal browser types).
-  if (!location_bar_) {
+  if (!location_bar()) {
     return;
   }
   CHECK(browser_window_interface_);
@@ -469,8 +449,7 @@ bool LensOverlayEntryPointController::ShouldShowPageAction(
   }
 
   if (!features::IsOmniboxEntrypointAlwaysVisible() &&
-      !location_bar_->Contains(
-          location_bar_->GetFocusManager()->GetFocusedView())) {
+      !location_bar()->IsFocusWithin()) {
     return false;
   }
 

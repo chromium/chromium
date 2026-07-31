@@ -221,6 +221,8 @@ void WebUILocationBar::SetFocusWithin(bool focused) {
 
   // Focus state affects whether AI mode button is visible or not.
   RefreshAiModePageAction();
+
+  NotifyFocusChanged();
 }
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,

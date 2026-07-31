@@ -287,10 +287,6 @@ BASE_DECLARE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection);
 // Feature for the promotion banner on the top of chrome://management page
 BASE_DECLARE_FEATURE(kEnableManagementPromotionBanner);
 
-// Gates the optimization to cache LocationBarView in
-// LensOverlayHomeworkPageActionController.
-BASE_DECLARE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization);
-
 // Enables the anchored message bubble to close when deactivated (e.g. when
 // losing focus).
 BASE_DECLARE_FEATURE(kPageActionAnchoredMessageEasyDismiss);

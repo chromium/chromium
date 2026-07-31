@@ -66,6 +66,7 @@ class LocationBar {
     ~Observer() override;
 
     virtual void OnLocationBarBoundsChanged();
+    virtual void OnLocationBarFocusChanged();
   };
 
   explicit LocationBar(CommandUpdater* command_updater);
@@ -223,6 +224,7 @@ class LocationBar {
   virtual ~LocationBar();
 
   void NotifyBoundsChanged();
+  void NotifyFocusChanged();
 
  private:
   NavigationParams navigation_params_;

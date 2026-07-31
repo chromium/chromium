@@ -10,7 +10,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "ui/display/display_observer.h"
@@ -38,7 +40,7 @@ class TopControlsSlideTabObserver;
 class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
                                            public TabStripModelObserver,
                                            public display::DisplayObserver,
-                                           public views::ViewObserver {
+                                           public LocationBar::Observer {
  public:
   explicit TopControlsSlideControllerChromeOS(BrowserView* browser_view);
 
@@ -74,10 +76,8 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
                                uint32_t changed_metrics) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override;
-  void OnViewFocused(views::View* observed_view) override;
-  void OnViewBlurred(views::View* observed_view) override;
+  // LocationBar::Observer:
+  void OnLocationBarFocusChanged() override;
 
   // Instructs the renderer of |web_contents| to show the top controls, and also
   // updates its shown state constraints based on the current status of
@@ -136,7 +136,8 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
 
   // The omnibox can be focused via a keyboard shortcut, in which case, we have
   // to show the top controls, and keep them shown until it's blurred.
-  raw_ptr<views::View> observed_omni_box_ = nullptr;
+  base::ScopedObservation<LocationBar, LocationBar::Observer>
+      observed_location_bar_{this};
 
   // Represents the per-browser (as opposed to per-tab) shown ratio of the top
   // controls that is currently applied.

@@ -944,13 +944,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     // Cannot be in Init since needs to listen to the fullscreen controller
     // and location bar view which are initialized after Init.
     if (lens::features::IsLensOverlayEnabled()) {
-      views::View* location_bar = nullptr;
+      LocationBar* location_bar = nullptr;
       // TODO(crbug.com/360163254): We should really be using
       // Browser::GetBrowserView, which always returns a non-null BrowserView
       // in production, but this crashes during unittests using
       // BrowserWithTestWindowTest; these should eventually be refactored.
       if (browser_view) {
-        location_bar = browser_view->GetLocationBarView();
+        location_bar = browser_view->GetLocationBar();
       }
       lens_overlay_entry_point_controller_->Initialize(
           browser, browser_command_controller_.get(), location_bar);
