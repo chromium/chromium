@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/device_attester.h"
+// TODO(b/540811203): Move to components/ once test dependencies (like
+// MockDeviceTrustKeyManager) are extracted from chrome/.
+
+#include "components/enterprise/device_trust/core/attestation/device_attester.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"

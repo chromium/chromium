@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/profile_attester.h"
+// TODO(b/540811203): Move to components/ once Profile test dependencies (like
+// TestingProfile) are decoupled from chrome/.
+
+#include "components/enterprise/device_trust/core/attestation/profile_attester.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"

@@ -21,6 +21,23 @@ source_set("attestation") {
     "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
     "//third_party/abseil-cpp:absl",
   ]
+
+  deps = []
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    public += [ "profile_attester.h" ]
+    sources += [ "profile_attester.cc" ]
+    deps += [
+      "//components/enterprise/browser/identifiers",
+      "//components/policy/core/common",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    public += [ "device_attester.h" ]
+    sources += [ "device_attester.cc" ]
+    deps += [ "//components/enterprise" ]
+  }
 }
 
 source_set("types") {

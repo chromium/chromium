@@ -260,7 +260,6 @@ source_set("enterprise") {
       "connectors/device_trust/attestation/browser/browser_attestation_service.h",
       "connectors/device_trust/attestation/browser/crypto_utility.h",
       "connectors/device_trust/attestation/browser/google_keys.h",
-      "connectors/device_trust/attestation/browser/profile_attester.h",
       "connectors/device_trust/device_trust_connector_service.h",
       "connectors/device_trust/device_trust_connector_service_factory.h",
       "connectors/device_trust/device_trust_service.h",
@@ -321,7 +320,6 @@ source_set("enterprise") {
 
   if (is_linux || is_win || is_mac) {
     public += [
-      "connectors/device_trust/attestation/browser/device_attester.h",
       "connectors/device_trust/browser/signing_key_policy_observer.h",
       "connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
       "idle/dialog_manager.h",
@@ -754,7 +752,6 @@ source_set("impl") {
       "connectors/device_trust/attestation/browser/browser_attestation_service.cc",
       "connectors/device_trust/attestation/browser/crypto_utility.cc",
       "connectors/device_trust/attestation/browser/google_keys.cc",
-      "connectors/device_trust/attestation/browser/profile_attester.cc",
       "connectors/device_trust/device_trust_connector_service.cc",
       "connectors/device_trust/device_trust_connector_service_factory.cc",
       "connectors/device_trust/device_trust_service.cc",
@@ -838,7 +835,6 @@ source_set("impl") {
 
   if (is_linux || is_win || is_mac) {
     sources += [
-      "connectors/device_trust/attestation/browser/device_attester.cc",
       "connectors/device_trust/browser/signing_key_policy_observer.cc",
       "connectors/device_trust/signals/decorators/browser/browser_signals_decorator.cc",
       "idle/dialog_manager.cc",
