@@ -1349,4 +1349,42 @@ suite('ComposeboxVoiceSearch', () => {
         assertEquals('0px', window.getComputedStyle(input).paddingBottom);
         assertEquals('static', window.getComputedStyle(bottomActions).position);
       });
+
+  test('voice search text elements inherit composebox font size', async () => {
+    await createComposeboxElement();
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+    composeboxElement.style.setProperty('--cr-composebox-font-size', '14px');
+
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    voiceSearchElement.liveTranscriptEnabled = true;
+    await microtasksFinished();
+    await voiceSearchElement.updateComplete;
+
+    const input =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
+    const errorContainer =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#error-container')!;
+
+    const aimInput =
+        composeboxElement.shadowRoot.querySelector('cr-composebox-input')!
+            .shadowRoot.querySelector<HTMLElement>('#input')!;
+
+    let aimFontSize = window.getComputedStyle(aimInput).fontSize;
+
+    assertEquals(aimFontSize, window.getComputedStyle(input).fontSize);
+    assertEquals(aimFontSize, window.getComputedStyle(errorContainer).fontSize);
+
+    // Verify dynamic updates.
+    composeboxElement.style.setProperty('--cr-composebox-font-size', '20px');
+    await microtasksFinished();
+    await voiceSearchElement.updateComplete;
+
+    aimFontSize = window.getComputedStyle(aimInput).fontSize;
+
+    assertEquals(aimFontSize, window.getComputedStyle(input).fontSize);
+    assertEquals(aimFontSize, window.getComputedStyle(errorContainer).fontSize);
+  });
 });

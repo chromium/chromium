@@ -426,6 +426,7 @@ ntp-lens-upload-dialog {
   border-radius: 28px;
   bottom: auto;
   box-shadow: var(--cr-searchbox-shadow);
+  font-family: inherit;
   height: 128px;
   inset-inline-start: anchor(start);
   margin: 0;
