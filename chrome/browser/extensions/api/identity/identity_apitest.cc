@@ -53,7 +53,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/test/browser_event_waiter.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/pref_names.h"
@@ -112,7 +115,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -3605,6 +3607,13 @@ class LaunchWebAuthFlowFunctionTest : public AsyncExtensionBrowserTest {
     command_line->AppendSwitch(switches::kDisableBackgroundNetworking);
   }
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  void CloseBrowserSynchronously(BrowserWindowInterface* browser) {
+    BrowserEventWaiter waiter(BrowserEventWaiter::Event::CLOSED, browser);
+    browser->GetWindow()->Close();
+  }
+#endif
+
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
@@ -3806,9 +3815,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
 }
-// TODO(crbug.com/485789514): Implement synchronous browser closing to enable
-// these two tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
   std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
   GURL auth_url(https_server->GetURL("/interaction_required.html"));
@@ -3825,14 +3832,22 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
 
   url_observer.Wait();
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // On Android, wait for the window to be created.
+  base::test::TestFuture<void> future;
+  WebAuthFlow* flow = function->GetWebAuthFlowForTesting();
+  flow->SetPopupDisplayedCallbackForTesting(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+#endif
+
   BrowserWindowInterface* popup_browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           function->GetWebAuthFlowForTesting()->web_contents());
-  TabStripModel* tabs = popup_browser->GetTabStripModel();
-  EXPECT_NE(browser(), popup_browser);
-  ASSERT_EQ(tabs->GetActiveWebContents()->GetURL(), auth_url);
+  TabListInterface* tabs = TabListInterface::From(popup_browser);
+  EXPECT_NE(browser_window_interface(), popup_browser);
+  ASSERT_EQ(tabs->GetActiveTab()->GetContents()->GetURL(), auth_url);
   // Close the opened auth web contents.
-  tabs->CloseWebContentsAt(tabs->active_index(), 0);
+  tabs->GetActiveTab()->Close();
 
   EXPECT_EQ(std::string(errors::kUserRejected), WaitForError(function.get()));
   histogram_tester()->ExpectUniqueSample(
@@ -3840,7 +3855,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
       IdentityLaunchWebAuthFlowFunction::Error::kUserRejected, 1);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, CloseBrowser) {
   std::unique_ptr<net::EmbeddedTestServer> https_server =
       std::make_unique<net::EmbeddedTestServer>(
@@ -3858,7 +3873,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, CloseBrowser) {
   std::string args =
       "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
   RunFunctionAsync(function.get(), args);
-  CloseBrowserSynchronously(browser());
+  CloseBrowserSynchronously(browser_window_interface());
 
   // The ongoing navigation to auth_url will be skipped if the profile shutdown
   // has already started, hence the error message below will reflect a shutdown
@@ -3907,9 +3922,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, DestroyProfile) {
   EXPECT_EQ(std::string(errors::kBrowserContextShutDown),
             func_runner.WaitForError(function.get()));
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Regression test for http://b/290733700.
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
