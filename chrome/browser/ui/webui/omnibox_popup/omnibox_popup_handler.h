@@ -50,6 +50,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
       omnibox_popup::mojom::OmniboxEscapeAction action) override;
   void OnInputCleared(uint32_t sequence_number) override;
   void RequestInputState() override;
+  void OpenAimPopup(bool via_keyboard) override;
 
   // omnibox_popup::mojom::Page:
   void OnShow();

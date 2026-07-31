@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "ui/base/models/menu_model.h"
 
 OmniboxPopupHandler::OmniboxPopupHandler(
@@ -135,4 +136,13 @@ void OmniboxPopupHandler::SetFocus(bool is_focused) {
 void OmniboxPopupHandler::LogEscapeAction(
     omnibox_popup::mojom::OmniboxEscapeAction action) {
   base::UmaHistogramEnumeration("Omnibox.Escape", action);
+}
+
+void OmniboxPopupHandler::OpenAimPopup(bool via_keyboard) {
+  if (controller_) {
+    controller_->edit_model()->OpenSelection(
+        OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
+                              OmniboxPopupSelection::FOCUSED_BUTTON_AIM),
+        via_keyboard);
+  }
 }

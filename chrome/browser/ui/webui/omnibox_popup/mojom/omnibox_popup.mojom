@@ -72,6 +72,10 @@ interface PageHandler {
 
   // Requests the current native input state (text, selection, focus) from C++.
   RequestInputState();
+
+  // Opens the AIM (AI Mode) popup. `via_keyboard` is true if triggered via
+  // keyboard.
+  OpenAimPopup(bool via_keyboard);
 };
 
 // The WebUI page for the Omnibox Popup.

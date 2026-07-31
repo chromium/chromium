@@ -1067,4 +1067,52 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertTrue(searchbox.hasSecondarySide);
    assertTrue(matchesEl.hasAttribute('has-secondary-side'));
  });
+
+ test('OpensAimPopupWhenComposeButtonClicked', async () => {
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     sequenceId: 456,
+     input: 'test',
+     matches: [createSearchMatchForTesting()],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   const composeButton = searchbox.$.composeButton;
+   assertTrue(!!composeButton);
+   composeButton.$.composeButton.dispatchEvent(new MouseEvent('click', {
+     bubbles: true,
+     composed: true,
+     detail: 1,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.dropdownIsVisible);
+   const viaKeyboard = await handler.whenCalled('openAimPopup');
+   assertFalse(viaKeyboard);
+ });
+
+ test('OpensAimPopupWhenComposeButtonKeyboardActivated', async () => {
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     sequenceId: 789,
+     input: 'test',
+     matches: [createSearchMatchForTesting()],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   const composeButton = searchbox.$.composeButton;
+   assertTrue(!!composeButton);
+   composeButton.$.composeButton.dispatchEvent(new MouseEvent('click', {
+     bubbles: true,
+     composed: true,
+     detail: 0,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.dropdownIsVisible);
+   const viaKeyboard = await handler.whenCalled('openAimPopup');
+   assertTrue(viaKeyboard);
+ });
 });
