@@ -219,6 +219,109 @@ suite('SettingsMenu', function() {
     assertEquals(
         routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
   });
+
+  test('navMenuItemClickActions', async function() {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      isGuest: false,
+    });
+    resetRouterForTesting();
+    createSettingsMenu();
+    await microtasksFinished();
+
+    const testCases = [
+      {
+        selector: '#people',
+        action: 'SettingsMenu_PeopleClicked',
+        route: routes.PEOPLE,
+      },
+      {
+        selector: '#autofill',
+        action: 'SettingsMenu_AutofillClicked',
+        route: routes.YOUR_SAVED_INFO,
+      },
+      {
+        selector: '#privacy',
+        action: 'SettingsMenu_PrivacyClicked',
+        route: routes.PRIVACY,
+      },
+      {
+        selector: '#performance',
+        action: 'SettingsMenu_PerformanceClicked',
+        route: routes.PERFORMANCE,
+      },
+      {
+        selector: '#ai',
+        action: 'SettingsMenu_AiPageEntryPointClicked',
+        route: routes.AI,
+      },
+      {
+        selector: '#appearance',
+        action: 'SettingsMenu_AppearanceClicked',
+        route: routes.APPEARANCE,
+      },
+      {
+        selector: '#search',
+        action: 'SettingsMenu_SearchClicked',
+        route: routes.SEARCH,
+      },
+      {
+        selector: '#onStartup',
+        action: 'SettingsMenu_OnStartupClicked',
+        route: routes.ON_STARTUP,
+      },
+      {
+        selector: '#languages',
+        action: 'SettingsMenu_LanguagesClicked',
+        route: routes.LANGUAGES,
+      },
+      {
+        selector: '#downloads',
+        action: 'SettingsMenu_DownloadsClicked',
+        route: routes.DOWNLOADS,
+      },
+      {
+        selector: '#accessibility',
+        action: 'SettingsMenu_AccessibilityClicked',
+        route: routes.ACCESSIBILITY,
+      },
+      {
+        selector: '#reset',
+        action: 'SettingsMenu_ResetClicked',
+        route: routes.RESET,
+      },
+      {
+        selector: '#about-menu',
+        action: 'SettingsMenu_AboutClicked',
+        route: routes.ABOUT,
+      },
+      // <if expr="not is_chromeos">
+      {
+        selector: '#defaultBrowser',
+        action: 'SettingsMenu_DefaultBrowserClicked',
+        route: routes.DEFAULT_BROWSER,
+      },
+      {
+        selector: '#system',
+        action: 'SettingsMenu_SystemClicked',
+        route: routes.SYSTEM,
+      },
+      // </if>
+    ];
+
+    for (const testCase of testCases) {
+      metricsBrowserProxy.resetResolver('recordAction');
+
+      const navItem = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+          testCase.selector);
+      assertTrue(!!navItem);
+      navItem.click();
+
+      const action = await metricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(testCase.action, action);
+      assertEquals(testCase.route, Router.getInstance().getCurrentRoute());
+    }
+  });
 });
 
 suite('SettingsMenuAutofill', () => {

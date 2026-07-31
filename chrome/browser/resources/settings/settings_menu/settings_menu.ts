@@ -44,6 +44,24 @@ export interface SettingsMenuElement {
   };
 }
 
+const pathToActionMap: Map<string, string> = new Map([
+  ['/people', 'SettingsMenu_PeopleClicked'],
+  ['/autofill', 'SettingsMenu_AutofillClicked'],
+  ['/privacy', 'SettingsMenu_PrivacyClicked'],
+  ['/performance', 'SettingsMenu_PerformanceClicked'],
+  ['/ai', 'SettingsMenu_AiPageEntryPointClicked'],
+  ['/appearance', 'SettingsMenu_AppearanceClicked'],
+  ['/search', 'SettingsMenu_SearchClicked'],
+  ['/defaultBrowser', 'SettingsMenu_DefaultBrowserClicked'],
+  ['/onStartup', 'SettingsMenu_OnStartupClicked'],
+  ['/languages', 'SettingsMenu_LanguagesClicked'],
+  ['/downloads', 'SettingsMenu_DownloadsClicked'],
+  ['/accessibility', 'SettingsMenu_AccessibilityClicked'],
+  ['/system', 'SettingsMenu_SystemClicked'],
+  ['/reset', 'SettingsMenu_ResetClicked'],
+  ['/help', 'SettingsMenu_AboutClicked'],
+]);
+
 const SettingsMenuElementBase = RouteObserverMixin(PolymerElement);
 
 export class SettingsMenuElement extends SettingsMenuElementBase {
@@ -129,6 +147,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const path = event.detail.selected;
     this.setSelectedPath_(path);
 
+    const action = pathToActionMap.get(path);
+    if (action) {
+      this.metricsBrowserProxy_.recordAction(action);
+    }
+
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, `settings-menu encountered invalid path '${path}'`);
     Router.getInstance().navigateTo(
@@ -144,11 +167,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
         'Autofill.YourSavedInfoSettingsPage.VisitReferrer',
         AutofillSettingsReferrer.SETTINGS_MENU);
-  }
-
-  private onAiPageClick_() {
-    this.metricsBrowserProxy_.recordAction(
-        'SettingsMenu_AiPageEntryPointClicked');
   }
 
   private hideBottomMenuSeparator_(): boolean {

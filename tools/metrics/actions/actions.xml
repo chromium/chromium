@@ -44885,6 +44885,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SettingsMenu_AboutClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;About Chrome&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_AccessibilityClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Accessibility&quot; item in the settings menu.
+  </description>
+</action>
+
 <action name="SettingsMenu_AiPageEntryPointClicked">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
@@ -44895,11 +44909,97 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SettingsMenu_AppearanceClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Appearance&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_AutofillClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Autofill and passwords&quot; item in the settings
+    menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_DefaultBrowserClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Default browser&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_DownloadsClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Downloads&quot; item in the settings menu.
+  </description>
+</action>
+
 <action name="SettingsMenu_ExtensionsLinkClicked">
   <owner>aee@chromium.org</owner>
   <description>
     The user clicked the &quot;Extensions&quot; external link in the settings
     menu (drawer).
+  </description>
+</action>
+
+<action name="SettingsMenu_LanguagesClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Languages&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_OnStartupClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;On startup&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_PeopleClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;You and Google&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_PerformanceClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Performance&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_PrivacyClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Privacy and security&quot; item in the settings
+    menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_ResetClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Reset settings&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_SearchClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;Search engine&quot; item in the settings menu.
+  </description>
+</action>
+
+<action name="SettingsMenu_SystemClicked">
+  <owner>mickeyburks@google.com</owner>
+  <description>
+    The user clicked the &quot;System&quot; item in the settings menu.
   </description>
 </action>
 
