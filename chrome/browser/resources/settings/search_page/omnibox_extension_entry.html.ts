@@ -9,14 +9,14 @@ import type {SettingsOmniboxExtensionEntryElement} from './omnibox_extension_ent
 export function getHtml(this: SettingsOmniboxExtensionEntryElement) {
   return html`
 <!--_html_template_start_-->
-<div class="list-item" focus-row-container>
+<div class="list-item">
   <div class="name-column">
     <site-favicon .faviconUrl="${this.engine.iconURL || ''}"></site-favicon>
     <span>${this.engine.displayName}</span>
   </div>
   <div class="keyword-column">${this.engine.keyword}</div>
   <cr-icon-button class="icon-more-vert" @click="${this.onDotsClick_}"
-      title="$i18n{moreActions}" focus-row-control focus-type="menu">
+      title="$i18n{moreActions}">
   </cr-icon-button>
   <cr-action-menu role-description="$i18n{menu}">
     <button class="dropdown-item" @click="${this.onManageClick_}"

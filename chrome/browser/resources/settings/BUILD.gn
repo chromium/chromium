@@ -487,6 +487,7 @@ build_webui("build") {
     "search_page/search_engine_icon.css",
     "search_page/search_engine_list_dialog.css",
     "search_page/search_engines_list.css",
+    "search_page/search_engines_page.css",
     "search_page/site_shortcuts_page.css",
     "settings_page/settings_section.css",
     "settings_page/settings_subpage.css",

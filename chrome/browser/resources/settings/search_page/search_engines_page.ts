@@ -7,10 +7,6 @@
  * containing search engines settings.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/js/cr.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../simple_confirmation_dialog.js';
@@ -18,25 +14,21 @@ import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
-import {routes} from '../route.js';
-import type {Route} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
-import {getTemplate} from './search_engines_page.html.js';
+import {getCss} from './search_engines_page.css.js';
+import {getHtml} from './search_engines_page.html.js';
 
 type SearchEngineEditEvent = CustomEvent<{
   engine: SearchEngine,
@@ -50,13 +42,14 @@ type SearchEngineDeleteEvent = CustomEvent<{
 
 export interface SettingsSearchEnginesPageElement {
   $: {
-    extensions: IronListElement,
     keyboardShortcutSettingGroup: SettingsRadioGroupElement,
   };
 }
 
-const SettingsSearchEnginesPageElementBase = SettingsViewMixin(
-    GlobalScrollTargetMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+export type SearchEnginesPageElement = SettingsSearchEnginesPageElement;
+
+const SettingsSearchEnginesPageElementBase =
+    SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {
@@ -64,107 +57,92 @@ export class SettingsSearchEnginesPageElement extends
     return 'settings-search-engines-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      defaultEngines: Array,
-      activeEngines: Array,
-      otherEngines: Array,
-      extensions: Array,
+      defaultEngines: {type: Array},
+      activeEngines: {type: Array},
+      otherEngines: {type: Array},
+      extensions: {type: Array},
 
-      /**
-       * Needed by GlobalScrollTargetMixin.
-       */
-      subpageRoute: {
-        type: Object,
-        value: routes.SEARCH_ENGINES,
-      },
-
-      showExtensionsList_: {
-        type: Boolean,
-        computed: 'computeShowExtensionsList_(extensions)',
-      },
+      showExtensionsList_: {type: Boolean},
 
       /** Filters out all search engines that do not match. */
-      filter_: {
-        type: String,
-        value: '',
-      },
+      filter_: {type: String},
 
-      matchingDefaultEngines_: {
-        type: Array,
-        computed: 'computeMatchingEngines_(defaultEngines, filter_)',
-      },
+      matchingDefaultEngines_: {type: Array},
+      matchingActiveEngines_: {type: Array},
+      matchingOtherEngines_: {type: Array},
+      matchingExtensions_: {type: Array},
 
-      matchingActiveEngines_: {
-        type: Array,
-        computed: 'computeMatchingEngines_(activeEngines, filter_)',
-      },
-
-      matchingOtherEngines_: {
-        type: Array,
-        computed: 'computeMatchingEngines_(otherEngines, filter_)',
-      },
-
-      matchingExtensions_: {
-        type: Array,
-        computed: 'computeMatchingEngines_(extensions, filter_)',
-      },
-
-      omniboxExtensionlastFocused_: Object,
-      omniboxExtensionListBlurred_: Boolean,
-
-      dialogModel_: {
-        type: Object,
-        value: null,
-      },
-
-      dialogAnchorElement_: {
-        type: Object,
-        value: null,
-      },
-
-      showEditDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showDeleteConfirmationDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      dialogModel_: {type: Object},
+      dialogAnchorElement_: {type: Object},
+      showEditDialog_: {type: Boolean},
+      showDeleteConfirmationDialog_: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return ['extensionsChanged_(extensions, showExtensionsList_)'];
-  }
+  accessor defaultEngines: SearchEngine[] = [];
+  accessor activeEngines: SearchEngine[] = [];
+  accessor otherEngines: SearchEngine[] = [];
+  accessor extensions: SearchEngine[] = [];
+  protected accessor showExtensionsList_: boolean = false;
+  protected accessor filter_: string = '';
+  protected accessor matchingDefaultEngines_: SearchEngine[] = [];
+  protected accessor matchingActiveEngines_: SearchEngine[] = [];
+  protected accessor matchingOtherEngines_: SearchEngine[] = [];
+  protected accessor matchingExtensions_: SearchEngine[] = [];
+  protected accessor dialogModel_: SearchEngine|null = null;
+  protected accessor dialogAnchorElement_: HTMLElement|null = null;
+  protected accessor showEditDialog_: boolean = false;
+  protected accessor showDeleteConfirmationDialog_: boolean = false;
 
-  declare defaultEngines: SearchEngine[];
-  declare activeEngines: SearchEngine[];
-  declare otherEngines: SearchEngine[];
-  declare extensions: SearchEngine[];
-  declare subpageRoute: Route;
-  declare private showExtensionsList_: boolean;
-  declare private filter_: string;
-  declare private matchingDefaultEngines_: SearchEngine[];
-  declare private matchingActiveEngines_: SearchEngine[];
-  declare private matchingOtherEngines_: SearchEngine[];
-  declare private matchingExtensions_: SearchEngine[];
-  declare private omniboxExtensionlastFocused_: HTMLElement;
-  declare private omniboxExtensionListBlurred_: boolean;
-  declare private dialogModel_: SearchEngine|null;
-  declare private dialogAnchorElement_: HTMLElement|null;
-  declare private showEditDialog_: boolean;
-  declare private showDeleteConfirmationDialog_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('defaultEngines') ||
+        changedPrivateProperties.has('filter_')) {
+      this.matchingDefaultEngines_ =
+          this.computeMatchingEngines_(this.defaultEngines);
+    }
+
+    if (changedProperties.has('activeEngines') ||
+        changedPrivateProperties.has('filter_')) {
+      this.matchingActiveEngines_ =
+          this.computeMatchingEngines_(this.activeEngines);
+    }
+
+    if (changedProperties.has('otherEngines') ||
+        changedPrivateProperties.has('filter_')) {
+      this.matchingOtherEngines_ =
+          this.computeMatchingEngines_(this.otherEngines);
+    }
+
+    if (changedProperties.has('extensions') ||
+        changedPrivateProperties.has('filter_')) {
+      this.matchingExtensions_ = this.computeMatchingEngines_(this.extensions);
+    }
+
+    if (changedProperties.has('extensions')) {
+      this.showExtensionsList_ = this.extensions.length > 0;
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
 
     this.browserProxy_.getSearchEnginesList().then(
         this.enginesChanged_.bind(this));
@@ -178,6 +156,35 @@ export class SettingsSearchEnginesPageElement extends
     this.addEventListener(
         'delete-search-engine',
         e => this.onDeleteSearchEngine_(e as SearchEngineDeleteEvent));
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    // Restore focus to the last element if the previous last element was
+    // deleted while it was focused.
+    if (changedPrivateProperties.has('matchingExtensions_')) {
+      const previousExtensions = changedPrivateProperties.get(
+                                     'matchingExtensions_') as SearchEngine[] |
+          undefined;
+      if (previousExtensions &&
+          this.matchingExtensions_.length < previousExtensions.length) {
+        const focused = this.shadowRoot.querySelector(
+            'settings-omnibox-extension-entry:focus-within');
+        if (!focused) {
+          const toFocus = this.shadowRoot.querySelector<HTMLElement>(
+              'settings-omnibox-extension-entry:last-of-type');
+          toFocus?.focus();
+        }
+      }
+    }
+  }
+
+  protected onSearchChanged_(e: CustomEvent<string>) {
+    this.filter_ = e.detail;
   }
 
   private openEditDialog_(
@@ -194,7 +201,7 @@ export class SettingsSearchEnginesPageElement extends
     this.showDeleteConfirmationDialog_ = true;
   }
 
-  private getDeleteConfirmationBodyText_(searchEngine: SearchEngine|null):
+  protected getDeleteConfirmationBodyText_(searchEngine: SearchEngine|null):
       string {
     if (searchEngine && searchEngine.isManaged) {
       return this.i18n('searchEnginesDeleteConfirmationDescriptionForPolicy');
@@ -202,17 +209,16 @@ export class SettingsSearchEnginesPageElement extends
     return this.i18n('searchEnginesDeleteConfirmationDescription');
   }
 
-
-  private onCloseEditDialog_() {
+  protected onEditDialogClose_() {
     this.showEditDialog_ = false;
     focusWithoutInk(this.dialogAnchorElement_ as HTMLElement);
     this.dialogModel_ = null;
     this.dialogAnchorElement_ = null;
   }
 
-  private onCloseDeleteConfirmationDialog_() {
+  protected onDeleteConfirmationDialogClose_() {
     const dialog =
-        this.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+        this.shadowRoot.querySelector('settings-simple-confirmation-dialog');
     assert(dialog);
     const confirmed = dialog.wasConfirmed();
     this.showDeleteConfirmationDialog_ = false;
@@ -234,12 +240,6 @@ export class SettingsSearchEnginesPageElement extends
     this.openDeleteConfirmationDialog_(e.detail.engine, e.detail.anchorElement);
   }
 
-  private extensionsChanged_() {
-    if (this.showExtensionsList_ && this.$.extensions) {
-      this.$.extensions.notifyResize();
-    }
-  }
-
   private enginesChanged_(searchEnginesInfo: SearchEnginesInfo) {
     this.defaultEngines = searchEnginesInfo.defaults;
     this.activeEngines = searchEnginesInfo.actives;
@@ -247,16 +247,12 @@ export class SettingsSearchEnginesPageElement extends
     this.extensions = searchEnginesInfo.extensions;
   }
 
-  private onAddSearchEngineClick_(e: Event) {
+  protected onAddSearchEngineClick_(e: Event) {
     e.preventDefault();
     this.browserProxy_.recordSearchEnginesPageHistogram(
         SearchEnginesInteractions.ADD_SEARCH_ENGINE);
     this.openEditDialog_(
-        null, this.shadowRoot!.querySelector('#addSearchEngine')!);
-  }
-
-  private computeShowExtensionsList_(): boolean {
-    return this.extensions.length > 0;
+        null, this.shadowRoot.querySelector('#addSearchEngine')!);
   }
 
   /**
@@ -279,12 +275,12 @@ export class SettingsSearchEnginesPageElement extends
    * @param filteredList The filtered list.
    * @return Whether to show the "no results" message.
    */
-  private showNoResultsMessage_(
+  protected showNoResultsMessage_(
       list: SearchEngine[], filteredList: SearchEngine[]): boolean {
     return list.length > 0 && filteredList.length === 0;
   }
 
-  private onKeyboardShortcutSettingChange_() {
+  protected onKeyboardShortcutSettingChange_() {
     const spaceEnabled =
         this.$.keyboardShortcutSettingGroup.selected === 'true';
 
@@ -296,7 +292,7 @@ export class SettingsSearchEnginesPageElement extends
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

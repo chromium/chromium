@@ -6,7 +6,6 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
 import type {SearchEnginesInfo} from 'chrome://settings/settings.js';
 import {loadTimeData, PrefsBrowserProxy, PrefService, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
@@ -132,6 +131,7 @@ suite('SearchEnginePageTests', function() {
     page = document.createElement('settings-search-engines-page');
     document.body.appendChild(page);
     await browserProxy.whenCalled('getSearchEnginesList');
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -142,10 +142,8 @@ suite('SearchEnginePageTests', function() {
   // startup.
   test('Initialization', function() {
     searchEnginesLists =
-        page.shadowRoot!.querySelectorAll('settings-search-engines-list');
+        page.shadowRoot.querySelectorAll('settings-search-engines-list');
     assertEquals(3, searchEnginesLists.length);
-
-    flush();
   });
 
   test('DefaultsList', function() {
@@ -248,7 +246,7 @@ suite('SearchEnginePageTests', function() {
     assertFalse(radioGroup.hidden);
 
     const radioButtons =
-        page.shadowRoot!.querySelectorAll('controlled-radio-button');
+        page.shadowRoot.querySelectorAll('controlled-radio-button');
     assertEquals(2, radioButtons.length);
     assertEquals('true', radioButtons.item(0).name);
     assertEquals('false', radioButtons.item(1).name);
@@ -273,15 +271,16 @@ suite('SearchEnginePageTests', function() {
 
   // Test that the "no other search engines" message is shown/hidden as
   // expected.
-  test('NoOtherSearchEnginesMessage', function() {
+  test('NoOtherSearchEnginesMessage', async function() {
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
       others: [],
       extensions: [],
     });
+    await microtasksFinished();
 
-    const message = page.shadowRoot!.querySelector('#noOtherEngines');
+    const message = page.shadowRoot.querySelector('#noOtherEngines');
     assertTrue(!!message);
     assertFalse(message.hasAttribute('hidden'));
 
@@ -291,6 +290,7 @@ suite('SearchEnginePageTests', function() {
       others: [createSampleSearchEngine()],
       extensions: [],
     });
+    await microtasksFinished();
     assertTrue(message.hasAttribute('hidden'));
   });
 
@@ -298,15 +298,15 @@ suite('SearchEnginePageTests', function() {
   // button is tapped.
   test('AddSearchEngineDialog', async function() {
     assertFalse(
-        !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
+        !!page.shadowRoot.querySelector('settings-search-engine-edit-dialog'));
     const addSearchEngineButton =
-        page.shadowRoot!.querySelector<HTMLButtonElement>('#addSearchEngine')!;
+        page.shadowRoot.querySelector<HTMLButtonElement>('#addSearchEngine')!;
     assertTrue(!!addSearchEngineButton);
 
     addSearchEngineButton.click();
-    flush();
+    await microtasksFinished();
     assertTrue(
-        !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
+        !!page.shadowRoot.querySelector('settings-search-engine-edit-dialog'));
 
     const interaction =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
@@ -320,13 +320,14 @@ suite('SearchEnginePageTests', function() {
       composed: true,
       detail: {
         engine,
-        anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
+        anchorElement: page.shadowRoot.querySelector('#addSearchEngine')!,
       },
     }));
+    await microtasksFinished();
     const id = await browserProxy.whenCalled('searchEngineEditStarted');
     assertEquals(engine.id, id);
     const dialog =
-        page.shadowRoot!.querySelector('settings-search-engine-edit-dialog')!;
+        page.shadowRoot.querySelector('settings-search-engine-edit-dialog')!;
     assertTrue(!!dialog);
     const policySubtitleContainer =
         dialog.shadowRoot.querySelector('#policySubtitleContainer');
@@ -355,8 +356,8 @@ suite('SearchEnginePageTests', function() {
     // use that for lookup.
     function getListItems(listIndex: number) {
       const list = listIndex === 3 /* extensions */ ?
-          page.shadowRoot!.querySelector('iron-list')!.items :
-          page.shadowRoot!
+          page.shadowRoot.querySelectorAll('settings-omnibox-extension-entry') :
+          page.shadowRoot
               .querySelectorAll('settings-search-engines-list')[listIndex]!
               .shadowRoot.querySelectorAll('settings-search-engine-entry');
 
@@ -366,13 +367,13 @@ suite('SearchEnginePageTests', function() {
     function assertSearchResults(
         defaultsCount: number, activesCount: number, othersCount: number,
         extensionsCount: number) {
-      assertEquals(defaultsCount, getListItems(0)!.length);
-      assertEquals(activesCount, getListItems(1)!.length);
-      assertEquals(othersCount, getListItems(2)!.length);
-      assertEquals(extensionsCount, getListItems(3)!.length);
+      assertEquals(defaultsCount, getListItems(0).length);
+      assertEquals(activesCount, getListItems(1).length);
+      assertEquals(othersCount, getListItems(2).length);
+      assertEquals(extensionsCount, getListItems(3).length);
 
       const noResultsElements = Array.from(
-          page.shadowRoot!.querySelectorAll<HTMLElement>('.no-search-results'));
+          page.shadowRoot.querySelectorAll<HTMLElement>('.no-search-results'));
       assertEquals(defaultsCount > 0, noResultsElements[0]!.hidden);
       assertEquals(othersCount > 0, noResultsElements[2]!.hidden);
       assertEquals(extensionsCount > 0, noResultsElements[3]!.hidden);
@@ -380,55 +381,60 @@ suite('SearchEnginePageTests', function() {
 
     assertSearchResults(4, 3, 7, 1);
 
-    const subpage = page.shadowRoot!.querySelector('settings-subpage');
+    const subpage = page.shadowRoot.querySelector('settings-subpage');
     assertTrue(!!subpage);
 
     // Search by name
-    subpage.searchTerm = searchEnginesInfo.defaults[0]!.name;
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue(
+        searchEnginesInfo.defaults[0]!.name);
     await microtasksFinished();
     assertSearchResults(1, 0, 0, 0);
 
     // Search by displayName
-    subpage.searchTerm = searchEnginesInfo.others[0]!.displayName;
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue(
+        searchEnginesInfo.others[0]!.displayName);
     await microtasksFinished();
     assertSearchResults(0, 0, 1, 0);
 
     // Search by keyword
-    subpage.searchTerm = searchEnginesInfo.others[1]!.keyword;
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue(
+        searchEnginesInfo.others[1]!.keyword);
     await microtasksFinished();
     assertSearchResults(0, 0, 1, 0);
 
     // Search by URL
-    subpage.searchTerm = 'search?';
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue('search?');
     await microtasksFinished();
     assertSearchResults(4, 3, 7, 0);
 
     // Test case where none of the sublists have results.
-    subpage.searchTerm = 'does not exist';
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue(
+        'does not exist');
     await microtasksFinished();
     assertSearchResults(0, 0, 0, 0);
 
     // Test case where an 'extension' search engine matches.
-    subpage.searchTerm = 'extension';
+    subpage.shadowRoot.querySelector('cr-search-field')!.setValue('extension');
     await microtasksFinished();
     assertSearchResults(0, 0, 0, 1);
   });
 
   // Test that the "no other search engines" message is shown/hidden as
   // expected.
-  test('NoSearchEnginesMessages', function() {
+  test('NoSearchEnginesMessages', async function() {
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
       others: [],
       extensions: [],
     });
+    await microtasksFinished();
 
-    const messageActive = page.shadowRoot!.querySelector('#noActiveEngines');
+    const messageActive = page.shadowRoot.querySelector('#noActiveEngines');
     assertTrue(!!messageActive);
     assertFalse(messageActive.hasAttribute('hidden'));
 
-    const messageOther = page.shadowRoot!.querySelector('#noOtherEngines');
+    const messageOther = page.shadowRoot.querySelector('#noOtherEngines');
     assertTrue(!!messageOther);
     assertFalse(messageOther.hasAttribute('hidden'));
 
@@ -438,6 +444,7 @@ suite('SearchEnginePageTests', function() {
       others: [createSampleSearchEngine()],
       extensions: [],
     });
+    await microtasksFinished();
     assertTrue(messageActive.hasAttribute('hidden'));
     assertTrue(messageOther.hasAttribute('hidden'));
   });

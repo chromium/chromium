@@ -13,7 +13,6 @@ import '../site_favicon.js';
 import type {ExtensionControlBrowserProxy} from '/shared/settings/extension_control_browser_proxy.js';
 import {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -28,10 +27,7 @@ export interface SettingsOmniboxExtensionEntryElement {
   };
 }
 
-const SettingsOmniboxExtensionEntryElementBase = FocusRowMixinLit(CrLitElement);
-
-export class SettingsOmniboxExtensionEntryElement extends
-    SettingsOmniboxExtensionEntryElementBase {
+export class SettingsOmniboxExtensionEntryElement extends CrLitElement {
   static get is() {
     return 'settings-omnibox-extension-entry';
   }
