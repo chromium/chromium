@@ -297,7 +297,7 @@ BASE_FEATURE_PARAM(size_t,
                    "count",
                    10);
 
-BASE_FEATURE(kExtensionServiceWorkerVoter, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kExtensionServiceWorkerVoter, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // A feature to use ABOVE_NORMAL_PRIORITY_CLASS for Browser on Windows by
