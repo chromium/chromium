@@ -10,7 +10,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -26,7 +25,6 @@ namespace private_verification_tokens {
 
 namespace {
 
-static constexpr char kKeyTableName[] = "keys";
 static constexpr char kTokenTableName[] = "tokens";
 
 class PrivateVerificationTokensStoreTest : public testing::Test {
@@ -48,13 +46,8 @@ class PrivateVerificationTokensStoreTest : public testing::Test {
 
   void StoreInDatabase(
       const base::FilePath& path,
-      const std::map<url::Origin, PrivateVerificationTokensPublicKey>& keys,
       const std::map<url::Origin, std::vector<PrivateVerificationTokensToken>>&
           tokens) {
-    std::vector<PrivateVerificationTokensPublicKey> kk;
-    for (const auto& k : keys) {
-      kk.push_back(k.second);
-    }
     std::vector<PrivateVerificationTokensToken> tt;
     for (const auto& tv : tokens) {
       for (const auto& tvt : tv.second) {
@@ -64,32 +57,18 @@ class PrivateVerificationTokensStoreTest : public testing::Test {
     std::unique_ptr<PrivateVerificationTokensDatabase> database =
         PrivateVerificationTokensDatabase::Create(path);
     ASSERT_THAT(database, testing::NotNull());
-    database->StoreKeys(std::move(kk));
     database->StoreTokens(std::move(tt));
     database.reset();
   }
 
-  // Creates a fixed keys and tokens map.
-  void CreateTestData(
-      std::map<url::Origin, PrivateVerificationTokensPublicKey>& keys,
-      std::map<url::Origin, std::vector<PrivateVerificationTokensToken>>&
-          tokens) {
+  // Creates a fixed tokens map.
+  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>>
+  CreateTestData() {
     const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
     const url::Origin a_origin = url::Origin::Create(GURL("https://a.com"));
     const url::Origin b_origin = url::Origin::Create(GURL("https://b.tri"));
     const url::Origin c_origin = url::Origin::Create(GURL("https://c.eee"));
-    keys = {
-        {a_origin,
-         PrivateVerificationTokensPublicKey(a_origin, {1, 2, 3}, expiration,
-                                            /*version=*/1)},
-        {b_origin,
-         PrivateVerificationTokensPublicKey(b_origin, {4, 5, 6}, expiration,
-                                            /*version=*/2)},
-        {c_origin,
-         PrivateVerificationTokensPublicKey(c_origin, {7, 8, 9}, expiration,
-                                            /*version=*/2)},
-    };
-    tokens = {
+    return {
         {a_origin,
          // has 2 tokens
          std::vector<PrivateVerificationTokensToken>{
@@ -161,12 +140,10 @@ TEST_F(PrivateVerificationTokensStoreTest, Create_Unused_NoFileCreated) {
                                              future.GetCallback());
   ASSERT_THAT(store, testing::NotNull());
   EXPECT_EQ(store->tokens().size(), 0u);
-  EXPECT_EQ(store->public_keys().size(), 0u);
   // wait for cache to be initialized
   EXPECT_TRUE(future.Wait());
   // starting db file is empty, waiting should not change cache
   EXPECT_EQ(store->tokens().size(), 0u);
-  EXPECT_EQ(store->public_keys().size(), 0u);
   store.reset();
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_FALSE(base::PathExists(database_path));
@@ -175,11 +152,9 @@ TEST_F(PrivateVerificationTokensStoreTest, Create_Unused_NoFileCreated) {
 TEST_F(PrivateVerificationTokensStoreTest,
        CreateSuccess_InitializeFromExistingDatabaseFile) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
-  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens;
-  // creates 3 distinct etld, 5 tokens
-  CreateTestData(keys, tokens);
-  StoreInDatabase(database_path, keys, tokens);
+  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens =
+      CreateTestData();
+  StoreInDatabase(database_path, tokens);
   ASSERT_FALSE(database_path.empty());
 
   base::test::TestFuture<void> future;
@@ -189,12 +164,10 @@ TEST_F(PrivateVerificationTokensStoreTest,
   ASSERT_THAT(store, testing::NotNull());
   // check cache before wait
   EXPECT_EQ(store->tokens().size(), 0u);
-  EXPECT_EQ(store->public_keys().size(), 0u);
   // wait for cache to be initialized
   EXPECT_TRUE(future.Wait());
   // verify cache size after wait
   EXPECT_EQ(store->tokens().size(), 3u);
-  EXPECT_EQ(store->public_keys().size(), 3u);
 
   const url::Origin a_origin = url::Origin::Create(GURL("https://a.com"));
   const url::Origin b_origin = url::Origin::Create(GURL("https://b.tri"));
@@ -207,11 +180,6 @@ TEST_F(PrivateVerificationTokensStoreTest,
               testing::Contains(store->tokens().at(b_origin).token));
   EXPECT_EQ(tokens.at(c_origin)[0], store->tokens().at(c_origin).token);
 
-  // verify keys in cache
-  EXPECT_EQ(keys.at(a_origin), store->public_keys().at(a_origin));
-  EXPECT_EQ(keys.at(b_origin), store->public_keys().at(b_origin));
-  EXPECT_EQ(keys.at(c_origin), store->public_keys().at(c_origin));
-
   store.reset();
   base::ThreadPoolInstance::Get()->FlushForTesting();
   // re-read database and check
@@ -219,15 +187,13 @@ TEST_F(PrivateVerificationTokensStoreTest,
   EXPECT_TRUE(database.Open(database_path));
   // Verify that all stored tokens remain in the database.
   VerifyTableRowCount(database, kTokenTableName, 5u);
-  VerifyTableRowCount(database, kKeyTableName, 3u);
 }
 
 TEST_F(PrivateVerificationTokensStoreTest, DeleteAllTokens_Success) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
-  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens;
-  CreateTestData(keys, tokens);
-  StoreInDatabase(database_path, keys, tokens);
+  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens =
+      CreateTestData();
+  StoreInDatabase(database_path, tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 3u);
@@ -249,26 +215,14 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteAllTokens_Success) {
   sql::Database database(sql::test::kTestTag);
   EXPECT_TRUE(database.Open(database_path));
   VerifyTableRowCount(database, kTokenTableName, 0u);
-  // Keys should still be there.
-  VerifyTableRowCount(database, kKeyTableName, 3u);
 }
 
 TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeOnly) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
 
   const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
   base::Time t1 = base::Time::UnixEpoch() + base::Seconds(10);
   base::Time t2 = base::Time::UnixEpoch() + base::Seconds(20);
-
-  keys = {
-      {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
-                                          /*version=*/1)},
-      {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
-                                          /*version=*/2)},
-  };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
       {kOriginA,
@@ -281,7 +235,7 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeOnly) {
                                        /*creation_time=*/t2)}},
   };
 
-  StoreInDatabase(database_path, keys, tokens);
+  StoreInDatabase(database_path, tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 2u);
@@ -312,10 +266,9 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeOnly) {
 TEST_F(PrivateVerificationTokensStoreTest,
        DeleteTokens_EmptyOriginVectorTerminatesEarly) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
-  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens;
-  CreateTestData(keys, tokens);
-  StoreInDatabase(database_path, keys, tokens);
+  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens =
+      CreateTestData();
+  StoreInDatabase(database_path, tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 3u);
@@ -342,20 +295,10 @@ TEST_F(PrivateVerificationTokensStoreTest,
 
 TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_OriginOnly) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
 
   const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
   base::Time t1 = base::Time::UnixEpoch() + base::Seconds(10);
   base::Time t2 = base::Time::UnixEpoch() + base::Seconds(20);
-
-  keys = {
-      {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
-                                          /*version=*/1)},
-      {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
-                                          /*version=*/2)},
-  };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
       {kOriginA,
@@ -368,7 +311,7 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_OriginOnly) {
                                        /*creation_time=*/t2)}},
   };
 
-  StoreInDatabase(database_path, keys, tokens);
+  StoreInDatabase(database_path, tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 2u);
@@ -399,20 +342,10 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_OriginOnly) {
 
 TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeAndOrigin) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
 
   const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
   base::Time t1 = base::Time::UnixEpoch() + base::Seconds(10);
   base::Time t2 = base::Time::UnixEpoch() + base::Seconds(20);
-
-  keys = {
-      {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
-                                          /*version=*/1)},
-      {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
-                                          /*version=*/2)},
-  };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
       {kOriginA,
@@ -425,7 +358,7 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeAndOrigin) {
                                        /*creation_time=*/t2)}},
   };
 
-  StoreInDatabase(database_path, keys, tokens);
+  StoreInDatabase(database_path, tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 2u);
@@ -457,24 +390,11 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeAndOrigin) {
 
 TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_MultipleOrigins) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
 
   const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
   base::Time t1 = base::Time::UnixEpoch() + base::Seconds(10);
   base::Time t2 = base::Time::UnixEpoch() + base::Seconds(20);
   base::Time t3 = base::Time::UnixEpoch() + base::Seconds(30);
-
-  keys = {
-      {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
-                                          /*version=*/1)},
-      {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
-                                          /*version=*/2)},
-      {kOriginCEee,
-       PrivateVerificationTokensPublicKey(kOriginCEee, {7, 8, 9}, expiration,
-                                          /*version=*/3)},
-  };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
       {kOriginA,
@@ -491,7 +411,7 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_MultipleOrigins) {
                                        /*creation_time=*/t3)}},
   };
 
-  StoreInDatabase(database_path, keys, tokens);
+  StoreInDatabase(database_path, tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 3u);
@@ -523,25 +443,11 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_MultipleOrigins) {
 
 TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeRange) {
   const base::FilePath database_path = DbPath(TempDir());
-  std::map<url::Origin, PrivateVerificationTokensPublicKey> keys;
-  std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens;
 
   const auto expiration = base::Time::UnixEpoch() + base::Seconds(27);
   base::Time t1 = base::Time::UnixEpoch() + base::Seconds(10);
   base::Time t2 = base::Time::UnixEpoch() + base::Seconds(20);
   base::Time t3 = base::Time::UnixEpoch() + base::Seconds(30);
-
-  keys = {
-      {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
-                                          /*version=*/1)},
-      {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
-                                          /*version=*/2)},
-      {kOriginCEee,
-       PrivateVerificationTokensPublicKey(kOriginCEee, {7, 8, 9}, expiration,
-                                          /*version=*/3)},
-  };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>>
       test_tokens = {
@@ -561,7 +467,7 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeRange) {
                                            /*creation_time=*/t3)}},
       };
 
-  StoreInDatabase(database_path, keys, test_tokens);
+  StoreInDatabase(database_path, test_tokens);
 
   CreateStore(database_path);
   ASSERT_EQ(store()->tokens().size(), 3u);

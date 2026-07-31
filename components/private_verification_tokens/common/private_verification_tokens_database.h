@@ -17,7 +17,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "sql/database.h"
 #include "url/origin.h"
@@ -75,18 +74,6 @@ class PrivateVerificationTokensDatabase {
       PrivateVerificationTokensDatabase&&) = delete;
 
   ~PrivateVerificationTokensDatabase();
-
-  // Store given keys in the database.
-  bool StoreKeys(const std::vector<PrivateVerificationTokensPublicKey>& keys);
-
-  // Remove all Keys for the given issuer.
-  bool RemoveKeysFor(const url::Origin& issuer);
-
-  // Remove the key with the given key_id for the specified issuer.
-  bool RemoveKey(const url::Origin& issuer, uint32_t key_id);
-
-  // Get all keys stored.
-  std::vector<PrivateVerificationTokensPublicKey> GetKeys();
 
   // Store given tokens in the database.
   bool StoreTokens(const std::vector<PrivateVerificationTokensToken>& tokens);

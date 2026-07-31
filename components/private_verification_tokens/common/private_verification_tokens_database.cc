@@ -30,7 +30,7 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
 
 static constexpr char kDatabaseTag[] = "PrivateVerificationTokens";
 
@@ -67,30 +67,6 @@ static constexpr char kSetTokenRedeemedSql[] =
 
 static constexpr char kDeleteRedeemedTokensSql[] =
     "DELETE FROM tokens WHERE redeemed = 1";
-
-static constexpr char kCreatePublicKeyTableSql[] =
-  "CREATE TABLE IF NOT EXISTS keys("
-      "issuer TEXT NOT NULL,"
-      "public_key BLOB NOT NULL,"
-      "key_id INTEGER NOT NULL,"
-      "expiration INTEGER NOT NULL,"
-      "version INTEGER NOT NULL,"
-      "PRIMARY KEY(issuer, key_id))";
-
-static constexpr char kInsertPublicKeySql[] =
-  "INSERT OR REPLACE INTO keys("
-      "issuer,public_key,key_id,expiration,version) "
-      "VALUES(?,?,?,?,?)";
-
-static constexpr char kGetAllKeysSql[] =
-    "SELECT issuer,public_key,key_id,expiration,version "
-    "FROM keys";
-
-static constexpr char kDeleteKeysForSql[] =
-    "DELETE FROM keys WHERE issuer = ?";
-
-static constexpr char kDeleteKeySql[] =
-    "DELETE FROM keys WHERE issuer = ? AND key_id = ?";
 
 // SQLite in Chromium has a limit of 32k placeholders per query. We use
 // anywhere between 0-2 placeholders for the time range, plus one for
@@ -356,87 +332,6 @@ bool PrivateVerificationTokensDatabase::SetRedeemed(int64_t token_id) {
   return statement.Run();
 }
 
-bool PrivateVerificationTokensDatabase::StoreKeys(
-    const std::vector<PrivateVerificationTokensPublicKey>& keys) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!EnsureDBInitialized()) {
-    return false;
-  }
-
-  sql::Transaction transaction(database_.get());
-  if (!transaction.Begin()) {
-    return false;
-  }
-
-  sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kInsertPublicKeySql));
-  DCHECK(statement.is_valid());
-  for (auto const& pk : keys) {
-    statement.Reset(true);
-    statement.BindString(0, pk.issuer().Serialize());
-    statement.BindBlob(1, pk.public_key());
-    statement.BindInt64(2, pk.key_id());
-    statement.BindInt64(
-        3, (pk.expiration() - base::Time::UnixEpoch()).InSeconds());
-    statement.BindInt64(4, pk.version());
-    if (!statement.Run()) {
-      return false;
-    }
-  }
-
-  return transaction.Commit();
-}
-
-std::vector<PrivateVerificationTokensPublicKey>
-PrivateVerificationTokensDatabase::GetKeys() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!EnsureDBInitialized()) {
-    return {};
-  }
-  sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kGetAllKeysSql));
-  DCHECK(statement.is_valid());
-  std::vector<PrivateVerificationTokensPublicKey> keys;
-  while (statement.Step()) {
-    std::string issuer_str = statement.ColumnString(0);
-    std::vector<uint8_t> public_key = statement.ColumnBlobAsVector(1);
-    int64_t expiration = statement.ColumnInt64(3);
-    uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(4));
-    url::Origin issuer = url::Origin::Create(GURL(issuer_str));
-    keys.emplace_back(std::move(issuer), std::move(public_key),
-                      base::Time::UnixEpoch() + base::Seconds(expiration),
-                      version);
-  }
-  return keys;
-}
-
-bool PrivateVerificationTokensDatabase::RemoveKeysFor(
-    const url::Origin& issuer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!EnsureDBInitialized()) {
-    return false;
-  }
-  sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteKeysForSql));
-  DCHECK(statement.is_valid());
-  statement.BindString(0, issuer.Serialize());
-  return statement.Run();
-}
-
-bool PrivateVerificationTokensDatabase::RemoveKey(const url::Origin& issuer,
-                                                  uint32_t key_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!EnsureDBInitialized()) {
-    return false;
-  }
-  sql::Statement statement(
-      database_->GetCachedStatement(SQL_FROM_HERE, kDeleteKeySql));
-  DCHECK(statement.is_valid());
-  statement.BindString(0, issuer.Serialize());
-  statement.BindInt64(1, key_id);
-  return statement.Run();
-}
-
 bool PrivateVerificationTokensDatabase::EnsureDBInitialized() {
   if (database_->is_open()) {
     return true;
@@ -506,8 +401,7 @@ bool PrivateVerificationTokensDatabase::InitializeSchema(bool is_retry) {
 }
 
 bool PrivateVerificationTokensDatabase::CreateSchema() {
-  return database_->Execute(kCreatePublicKeyTableSql) &&
-         database_->Execute(kCreateTokensTableSql);
+  return database_->Execute(kCreateTokensTableSql);
 }
 
 void PrivateVerificationTokensDatabase::DatabaseErrorCallback(
