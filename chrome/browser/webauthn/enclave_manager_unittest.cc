@@ -3249,7 +3249,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   UseFailingUVKeySupport();
   EnclaveManager::EnableInvariantChecksForTesting(false);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> unenroll_future;
   auto ui_request = std::make_unique<enclave::CredentialRequest>();
   ui_request->signing_callback = manager_.IdentityKeySigningCallback();
   ui_request->wrapped_secret =
@@ -3265,15 +3265,14 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
       manager_.UserVerifyingKeyCreationCallback();
   ui_request->unregister_callback =
       base::BindOnce(&EnclaveManager::Unenroll, manager_.GetWeakPtr(),
-                     base::BindLambdaForTesting(
-                         [&run_loop](bool) { run_loop.QuitWhenIdle(); }));
+                     unenroll_future.GetCallback());
 
   GetAssertionResponseExpectation expected_response;
   expected_response.result = device::GetAssertionStatus::kEnclaveError;
   expected_response.size = 0;
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr, expected_response,
               std::move(ui_request));
-  run_loop.Run();
+  EXPECT_TRUE(unenroll_future.Wait());
 
   EXPECT_FALSE(manager_.IsRegistered());
 }
@@ -3343,7 +3342,7 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
       base::MakeRefCounted<crypto::RefCountedUserVerifyingSigningKey>(
           std::move(key_temp));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> unenroll_future;
   auto ui_request = std::make_unique<enclave::CredentialRequest>();
   ui_request->signing_callback =
       manager_.UserVerifyingKeySigningCallback(/*options=*/{});
@@ -3357,15 +3356,14 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
       device::enclave::UserPresentAndVerifiedBits::kPresentAndVerified;
   ui_request->unregister_callback =
       base::BindOnce(&EnclaveManager::Unenroll, manager_.GetWeakPtr(),
-                     base::BindLambdaForTesting(
-                         [&run_loop](bool) { run_loop.QuitWhenIdle(); }));
+                     unenroll_future.GetCallback());
 
   GetAssertionResponseExpectation expected_response;
   expected_response.result = device::GetAssertionStatus::kEnclaveError;
   expected_response.size = 0;
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr, expected_response,
               std::move(ui_request));
-  run_loop.Run();
+  EXPECT_TRUE(unenroll_future.Wait());
 
   EXPECT_FALSE(manager_.IsRegistered());
   histogram_tester.ExpectBucketCount(
