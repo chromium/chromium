@@ -1796,6 +1796,14 @@ inline constexpr char kFacilitatedPaymentsEnableA2APaymentDescription[] =
     "payment link is detected. Users can choose the payment app they want to "
     "use and be redirected to the chosen app to complete the payment flow";
 
+inline constexpr char kForceAiSubscriptionTierName[] =
+    "Force AI Subscription Tier";
+inline constexpr char kForceAiSubscriptionTierDescription[] =
+    "Overrides the AI subscription tier for the profile to a specific tier.";
+inline constexpr char kForceAiSubscriptionTier1[] = "Tier 1";
+inline constexpr char kForceAiSubscriptionTier2[] = "Tier 2";
+inline constexpr char kForceAiSubscriptionTier3[] = "Tier 3";
+
 inline constexpr char kForceColorProfileSRGB[] = "sRGB";
 inline constexpr char kForceColorProfileP3[] = "Display P3 D65";
 inline constexpr char kForceColorProfileRec2020[] = "ITU-R BT.2020";
@@ -1853,6 +1861,12 @@ inline constexpr char kEnableAccountPreviewPreferredAccountName[] =
     "Enable Account Preview Preferred Account";
 inline constexpr char kEnableAccountPreviewPreferredAccountDescription[] =
     "Controls whether computing and storing the preferred account is enabled.";
+
+inline constexpr char kEnableAiSubscriptionAvatarRingName[] =
+    "Enable AI Subscription Avatar Ring";
+inline constexpr char kEnableAiSubscriptionAvatarRingDescription[] =
+    "Enables the AI subscription level decorative ring around the user's "
+    "avatar.";
 
 inline constexpr char kEnableClientCertificateProvisioningOnAndroidName[] =
     "Enable client certificate provisioning on Android";

@@ -3118,6 +3118,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "enable-ai-subscription-avatar-ring",
+    "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-android-document-picture-in-picture",
     "owners": [
       "kkaplon@google.com",
@@ -5103,6 +5108,11 @@
     "name": "focus-follows-cursor",
     "owners": [ "dandersson@chromium.org", "tclaiborne@chromium.org" ],
     "expiry_milestone": 200
+  },
+  {
+    "name": "force-ai-subscription-tier",
+    "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "force-color-profile",

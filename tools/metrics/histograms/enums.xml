@@ -10439,6 +10439,7 @@ from previous Chrome versions.
   <int value="-1297664593" label="SafetyHubMagicStack:enabled"/>
   <int value="-1297627303" label="UnthrottleAsyncTouchMoves:disabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
+  <int value="-1295518976" label="EnableAiSubscriptionAvatarRing:enabled"/>
   <int value="-1295310553"
       label="OmniboxRemoveSuggestionHeaderChevron:enabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
@@ -13364,6 +13365,7 @@ from previous Chrome versions.
   <int value="-363237269" label="OmniboxNumWebZpsMostVisitedUrls:disabled"/>
   <int value="-363145046" label="LegacyTechReportTopLevelUrl:disabled"/>
   <int value="-362821234" label="ExperimentalUi:enabled"/>
+  <int value="-362579873" label="force-ai-subscription-tier"/>
   <int value="-362022976" label="disable-quirks-client"/>
   <int value="-361948582" label="material-security-verbose"/>
   <int value="-361767063" label="FedCmLoginHint:disabled"/>
@@ -18615,6 +18617,7 @@ from previous Chrome versions.
   <int value="1293335347" label="HandleMdmErrorsForDasherAccounts:enabled"/>
   <int value="1293473298" label="PageInfoAboutThisSiteNewIcon:disabled"/>
   <int value="1293697921" label="RequestDesktopSiteExceptions:enabled"/>
+  <int value="1293870742" label="EnableAiSubscriptionAvatarRing:disabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
   <int value="1294306055" label="FeedInteractiveRefresh:disabled"/>
   <int value="1295005331" label="SupportPepperVideoDecoderDevAPI:enabled"/>
