@@ -34,17 +34,37 @@ source_set("unit_tests") {
     "audio_segment_queue_unittest.cc",
     "chunking/text_chunker_unittest.cc",
     "decoded_audio_segment_unittest.cc",
+    "mock_read_aloud_playback_controller_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
   ]
   deps = [
+    ":mock_playback_controller",
     ":readaloud",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:mojo_bindings",
     "//media",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("mock_playback_controller") {
+  testonly = true
+
+  sources = [
+    "mock_read_aloud_playback_controller.cc",
+    "mock_read_aloud_playback_controller.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common:mojo_bindings",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
   ]
 }
