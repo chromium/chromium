@@ -15,8 +15,8 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/glic/GlicInstanceHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtils.java",
-    "java/src/org/chromium/chrome/browser/glic/GlicNudgeDelegateBridge.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSidePanelComponentProvider.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSplitButtonDelegateBridge.java",
   ]
 }
 
@@ -98,8 +98,8 @@ android_library("common_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/GlicButtonDelegate.java",
     "java/src/org/chromium/chrome/browser/glic/GlicButtonStateController.java",
-    "java/src/org/chromium/chrome/browser/glic/GlicNudgeDelegate.java",
-    "java/src/org/chromium/chrome/browser/glic/GlicNudgeDelegateBridge.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSplitButtonDelegate.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicSplitButtonDelegateBridge.java",
   ]
   srcjar_deps = [ ":java_enums_srcjar" ]
   deps = [

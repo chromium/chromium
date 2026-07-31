@@ -72,7 +72,7 @@ source_set("impl") {
     ]
   } else {
     sources += [
-      "glic_nudge_delegate_android.cc",
+      "glic_split_button_delegate_android.cc",
       "glic_toast.cc",
     ]
   }

@@ -13,20 +13,20 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 
-/** JNI Bridge to dispatch native C++ Glic nudge requests to the active tab strip. */
+/** JNI Bridge to dispatch native C++ GlicSplitButtonDelegate requests and UI events. */
 @JNINamespace("glic")
 @NullMarked
-public class GlicNudgeDelegateBridge implements ChromeAndroidTaskFeature {
-    private final GlicNudgeDelegate mDelegate;
+public class GlicSplitButtonDelegateBridge implements ChromeAndroidTaskFeature {
+    private final GlicSplitButtonDelegate mDelegate;
     private long mNativePtr;
 
-    public GlicNudgeDelegateBridge(GlicNudgeDelegate delegate) {
+    public GlicSplitButtonDelegateBridge(GlicSplitButtonDelegate delegate) {
         mDelegate = delegate;
     }
 
     public void destroy() {
         if (mNativePtr != 0) {
-            GlicNudgeDelegateBridgeJni.get().destroy(mNativePtr);
+            GlicSplitButtonDelegateBridgeJni.get().destroy(mNativePtr);
             mNativePtr = 0;
         }
     }
@@ -35,7 +35,7 @@ public class GlicNudgeDelegateBridge implements ChromeAndroidTaskFeature {
     public void onAddedToTask(InitInfo initInfo) {
         long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
         if (nativeBrowserWindowPtr == 0) return;
-        mNativePtr = GlicNudgeDelegateBridgeJni.get().create(nativeBrowserWindowPtr, this);
+        mNativePtr = GlicSplitButtonDelegateBridgeJni.get().create(nativeBrowserWindowPtr, this);
     }
 
     @Override
@@ -62,17 +62,17 @@ public class GlicNudgeDelegateBridge implements ChromeAndroidTaskFeature {
     /** Notifies native side of user nudge activity. */
     public void onNudgeActivity(@GlicNudgeActivity int event) {
         if (mNativePtr != 0) {
-            GlicNudgeDelegateBridgeJni.get().onNudgeActivity(mNativePtr, event);
+            GlicSplitButtonDelegateBridgeJni.get().onNudgeActivity(mNativePtr, event);
         }
     }
 
     @NativeMethods
     public interface Natives {
-        long create(long browserWindowInterfacePtr, GlicNudgeDelegateBridge delegate);
+        long create(long browserWindowInterfacePtr, GlicSplitButtonDelegateBridge delegate);
 
-        void destroy(long nativeGlicNudgeDelegateAndroid);
+        void destroy(long nativeGlicSplitButtonDelegateAndroid);
 
         void onNudgeActivity(
-                long nativeGlicNudgeDelegateAndroid, @JniType("GlicNudgeActivity") int event);
+                long nativeGlicSplitButtonDelegateAndroid, @JniType("GlicNudgeActivity") int event);
     }
 }

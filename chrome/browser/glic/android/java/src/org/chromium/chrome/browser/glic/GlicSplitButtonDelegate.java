@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.glic;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Java equivalent of the C++ GlicNudgeDelegate to handle tab strip Glic nudges. */
+/**
+ * Java equivalent of the C++ GlicSplitButtonDelegate for managing Glic split button UI states,
+ * nudges, and related entry points.
+ */
 @NullMarked
-public interface GlicNudgeDelegate {
+public interface GlicSplitButtonDelegate {
 
     /**
      * Called to trigger/show the Glic nudge UI.
