@@ -252,10 +252,6 @@ TEST_F(DefaultSearchExtensionControlledControllerTest,
 
 TEST_F(DefaultSearchExtensionControlledControllerTest,
        ShouldRequestConfirmationFalseForSimpleOverrideExtension) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      extensions_features::kSearchEngineUnconditionalDialog);
-
   // Use the Simple extension helper (no extra permissions).
   auto extension =
       AddSimpleEnabledExtension(&profile_, "Simple Extension", kExtensionId);
