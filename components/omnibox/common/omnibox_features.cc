@@ -591,6 +591,8 @@ const base::FeatureParam<bool> kAskGLensIcon{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensIcon", false};
 const base::FeatureParam<bool> kAskGLensSearchHintText{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensSearchHintText", false};
+const base::FeatureParam<bool> kAskGComposeboxLensChip{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGComposeboxLensChip", false};
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

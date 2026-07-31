@@ -210,6 +210,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                            Lens_AutocompleteController_Start);
   FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest,
                            OpenAutocompleteMatch_KeyboardModifiers);
+  FRIEND_TEST_ALL_PREFIXES(WebuiOmniboxHandlerTest, OpenLensSearch);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            QueryAutocomplete_SetsLensInputs);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,

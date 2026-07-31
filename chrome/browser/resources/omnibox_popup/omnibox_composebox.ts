@@ -13,8 +13,9 @@ import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_components/composebox/composebox_lens_search.js';
 
-import {ComposeboxFile, mapUploadErrorToProcessFilesError, ProcessFilesError, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, mapUploadErrorToProcessFilesError, ProcessFilesError, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -72,6 +73,12 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       },
       entrypointName: {type: String, reflect: true},
       enableCarouselScrolling: {type: Boolean},
+      askGComposeboxLensChipEnabled_: {type: Boolean},
+      // TODO(b/539981162): Consolidate the different lens buttons once
+      // behaviors are solidified, and we can tell how they can be merged.
+      isLensSearchChipShown_: {type: Boolean},
+      isContentSharingEnabled_: {type: Boolean},
+      isLensSearchEligible_: {type: Boolean},
     };
   }
 
@@ -81,9 +88,30 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override accessor animationState: GlowAnimationState =
       GlowAnimationState.NONE;
   protected accessor expanding_: boolean = true;
+  protected accessor askGComposeboxLensChipEnabled_: boolean =
+      getLoadTimeBoolean('askGComposeboxLensChipEnabled', false);
+  protected accessor isLensSearchChipShown_: boolean = false;
+  protected accessor isContentSharingEnabled_: boolean = false;
+  protected accessor isLensSearchEligible_: boolean = false;
+
+  protected onLensSearchClick_(e: Event) {
+    e.stopPropagation();
+    this.getSearchboxHandler().openLensSearch();
+  }
+
+  // Reset Lens search eligibility when the popup is hidden. This prevents the
+  // cached WebUI from briefly flashing the Lens chip from a previous eligible
+  // page when the popup is reopened on an ineligible page (e.g. NTP).
+  private onVisibilityChange_ = () => {
+    if (document.visibilityState === 'hidden') {
+      this.isLensSearchEligible_ = false;
+    }
+  };
+
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
+  private listenerIds_: number[] = [];
 
   constructor() {
     super();
@@ -96,16 +124,51 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override connectedCallback() {
     super.connectedCallback();
     this.animationState = GlowAnimationState.EXPANDING;
+
+    this.listenerIds_ = [
+      this.searchboxCallbackRouter_.updateContentSharingPolicy.addListener(
+          (enabled: boolean) => {
+            this.isContentSharingEnabled_ = enabled;
+          }),
+      this.searchboxCallbackRouter_.updateLensSearchEligibility.addListener(
+          (eligible: boolean) => {
+            this.isLensSearchEligible_ = eligible;
+          }),
+    ];
+
+    document.addEventListener('visibilitychange', this.onVisibilityChange_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    for (const listenerId of this.listenerIds_) {
+      this.searchboxCallbackRouter_.removeListener(listenerId);
+    }
+    this.listenerIds_ = [];
+    document.removeEventListener('visibilitychange', this.onVisibilityChange_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('inputState') ||
-        changedProperties.has('webuiOmniboxSimplificationEnabled')) {
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('inputState') ||
+        changedPrivateProperties.has('webuiOmniboxSimplificationEnabled')) {
       const inToolMode = this.inputState?.activeTool !== ToolMode.kUnspecified;
       this.applyContextButtonBackground =
           this.webuiOmniboxSimplificationEnabled && !inToolMode;
+    }
+
+    if (changedPrivateProperties.has('input') ||
+        changedPrivateProperties.has('files') ||
+        changedPrivateProperties.has('inputState') ||
+        changedPrivateProperties.has('isContentSharingEnabled_') ||
+        changedPrivateProperties.has('isLensSearchEligible_')) {
+      this.isLensSearchChipShown_ = this.askGComposeboxLensChipEnabled_ &&
+          this.isContentSharingEnabled_ && this.isLensSearchEligible_ &&
+          !this.hasContent();
     }
   }
 

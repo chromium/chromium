@@ -131,6 +131,14 @@ GURL TestOmniboxClient::GetNavigationEntryURL() const {
   return location_bar_model_.GetURL();
 }
 
+const GURL& TestOmniboxClient::GetURL() const {
+  return url_;
+}
+
+void TestOmniboxClient::SetURL(const GURL& url) {
+  url_ = url;
+}
+
 metrics::OmniboxEventProto::PageClassification
 TestOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return location_bar_model_.GetPageClassification(is_prefetch);

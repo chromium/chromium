@@ -269,6 +269,8 @@ extern const base::FeatureParam<bool> kAskGCurrentTabChip;
 extern const base::FeatureParam<bool> kAskGLensIcon;
 // Whether to use alternate text for Lens chip.
 extern const base::FeatureParam<bool> kAskGLensSearchHintText;
+// Whether to show the lens chip in omnibox composebox.
+extern const base::FeatureParam<bool> kAskGComposeboxLensChip;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

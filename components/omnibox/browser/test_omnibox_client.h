@@ -53,6 +53,8 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   std::u16string GetFormattedFullURL() const override;
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
+  const GURL& GetURL() const override;
+  void SetURL(const GURL& url);
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
@@ -123,6 +125,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   WindowOpenDisposition last_log_disposition_;
+  GURL url_;
   base::WeakPtrFactory<TestOmniboxClient> weak_factory_{this};
 };
 
