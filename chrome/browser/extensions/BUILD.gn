@@ -2430,6 +2430,7 @@ source_set("browser_tests") {
     "extension_geolocation_apitest.cc",
     "extension_icon_source_apitest.cc",
     "extension_incognito_apitest.cc",
+    "extension_inspection_browsertest.cc",
     "extension_install_prompt_browsertest.cc",
     "extension_keybinding_browsertest.cc",
     "extension_modules_apitest.cc",
