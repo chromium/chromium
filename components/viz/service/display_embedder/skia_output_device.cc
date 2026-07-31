@@ -139,10 +139,16 @@ void SkiaOutputDevice::Submit(
   } else {
     auto* graphite_shared_context = context_state->graphite_shared_context();
     CHECK(graphite_shared_context);
-    const base::TimeTicks start_time = base::TimeTicks::Now();
+
+    const bool should_record_metric = base::ShouldRecordSubsampledMetric(0.01);
+    base::TimeTicks start_time;
+    if (should_record_metric) {
+      start_time = base::TimeTicks::Now();
+    }
+
     graphite_shared_context->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
                                              : skgpu::graphite::SyncToCpu::kNo);
-    if (base::ShouldRecordSubsampledMetric(0.01)) {
+    if (should_record_metric) {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "GPU.Graphite.SkiaOutputDeviceSubmitDurationUs",
           base::TimeTicks::Now() - start_time, base::Microseconds(1),

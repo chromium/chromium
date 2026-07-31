@@ -389,9 +389,13 @@ bool GraphiteSharedContext::SubmitImpl(
       IsThreadSafe() && base::SingleThreadTaskRunner::HasCurrentDefault()
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
           : nullptr;
-
-  const base::TimeTicks start_time = base::TimeTicks::Now();
   bool success = false;
+
+  const bool shoud_record_metric = base::ShouldRecordSubsampledMetric(0.01);
+  base::TimeTicks start_time;
+  if (shoud_record_metric) {
+    start_time = base::TimeTicks::Now();
+  }
 
   // Ensure fFinishedProc is called on the original thread if there is only one
   // graphite::Context.
@@ -407,7 +411,7 @@ bool GraphiteSharedContext::SubmitImpl(
     success = graphite_context_->submit(submit_info);
   }
 
-  if (base::ShouldRecordSubsampledMetric(0.01)) {
+  if (shoud_record_metric) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "GPU.Graphite.SubmitDurationUs", base::TimeTicks::Now() - start_time,
         base::Microseconds(1), base::Seconds(1), 50);
