@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 
-#include <iosfwd>
 #include <optional>
 
 #include "base/component_export.h"
@@ -117,9 +116,6 @@ using WindowInfoPtr = std::unique_ptr<WindowInfo>;
 COMPONENT_EXPORT(APP_TYPES)
 ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
     LaunchSource launch_source);
-
-COMPONENT_EXPORT(APP_TYPES)
-std::ostream& operator<<(std::ostream& out, LaunchSource launch_source);
 
 }  // namespace apps
 
