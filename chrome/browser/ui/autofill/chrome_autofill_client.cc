@@ -792,16 +792,10 @@ void ChromeAutofillClient::ShowAutofillSettings(
 #if BUILDFLAG(IS_ANDROID)
   switch (suggestion_type) {
     case SuggestionType::kManageAddress:
-      base::UmaHistogramEnumeration(
-          "Autofill.AddressesSettingsPage.VisitReferrer",
-          autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
       ShowAutofillProfileSettings(web_contents());
       return;
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
-      base::UmaHistogramEnumeration(
-          "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
-          autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
       ShowAutofillCreditCardSettings(web_contents());
       return;
     case SuggestionType::kManageAutofillAi:
@@ -821,9 +815,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
     switch (suggestion_type) {
       case SuggestionType::kManageAddress:
         base::UmaHistogramEnumeration(
-            "Autofill.AddressesSettingsPage.VisitReferrer",
+            "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
-        chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
+        chrome::ShowSettingsSubPage(browser, chrome::kContactInfoSubPage);
         return;
       case SuggestionType::kManageAutofillAi:
         base::UmaHistogramEnumeration(
@@ -852,7 +846,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case SuggestionType::kManageCreditCard:
       case SuggestionType::kManageIban:
         base::UmaHistogramEnumeration(
-            "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
+            "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
@@ -864,6 +858,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
         ShowSingletonTab(browser, GURL(kValuableManagementUrl));
         return;
       case SuggestionType::kManageEnhancedAutofill:
+        base::UmaHistogramEnumeration(
+            "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+            autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
         chrome::ShowSettingsSubPage(browser,
                                     chrome::kSuggestionsFromGeminiSubPage);
         return;

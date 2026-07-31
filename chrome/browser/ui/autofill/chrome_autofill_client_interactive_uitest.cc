@@ -249,18 +249,18 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
   base::HistogramTester histogram_tester;
   client()->ShowAutofillSettings(SuggestionType::kManageAddress);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.AddressesSettingsPage.VisitReferrer",
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
       autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
 
   client()->ShowAutofillSettings(SuggestionType::kManageCreditCard);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
-      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 2);
 
   client()->ShowAutofillSettings(SuggestionType::kManageIban);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
-      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 2);
+      "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 3);
 }
 
 // Tests that calling ShowAutofillSettings() with
