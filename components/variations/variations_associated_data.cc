@@ -16,6 +16,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
+#include "components/variations/hashing.h"
 
 namespace variations {
 namespace {
@@ -106,6 +107,17 @@ class GroupMapAccessor {
       return EMPTY_ID;
     }
     return it->second.id;
+  }
+
+  bool HasIDForTrial(IDCollectionKey key, uint32_t trial_name_hash) {
+    base::AutoLock scoped_lock(lock_);
+    GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
+    for (const auto& [active_group_id, entry] : *group_to_id_map) {
+      if (active_group_id.name == trial_name_hash) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void ClearAllMapsForTesting() {
@@ -199,6 +211,11 @@ VariationID GetGoogleVariationID(
     std::optional<base::Time> current_time) {
   return GroupMapAccessor::GetInstance()->GetID(key, active_group_id,
                                                 current_time);
+}
+
+bool HasGoogleVariationID(IDCollectionKey key, std::string_view trial_name) {
+  uint32_t trial_name_hash = HashName(trial_name);
+  return GroupMapAccessor::GetInstance()->HasIDForTrial(key, trial_name_hash);
 }
 
 base::Time GetNextTimeWindowEvent(base::Time current_time) {

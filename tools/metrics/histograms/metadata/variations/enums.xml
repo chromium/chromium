@@ -133,6 +133,12 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Validation Failed">
     Validation of the applied state failed.
   </int>
+  <int value="17" label="Runtime Experiment Has Google Web ID">
+    The runtime mutable experiment has a Google web experiment ID.
+  </int>
+  <int value="18" label="Overridden Trial Has Google Web ID">
+    The trial being overridden has a Google web experiment ID.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/variations/metrics.h:VariationsApplyRuntimeMutableChangesResult) -->

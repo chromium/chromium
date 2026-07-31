@@ -43,6 +43,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
@@ -1567,6 +1568,97 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
     ASSERT_TRUE(override.has_value());
     EXPECT_EQ(override->group_name, "Disabled50");
     EXPECT_EQ(override->overridden_trial, trial);
+  }
+}
+
+// Verifies that runtime experiments with Google web experiment IDs are not
+// applied.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_RuntimeExperimentHasGoogleWebId) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    seed.mutable_study(0)->mutable_experiment(0)->set_google_web_experiment_id(
+        12345);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kRuntimeExperimentHasGoogleWebId, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    seed.mutable_study(0)
+        ->mutable_experiment(0)
+        ->set_google_web_trigger_experiment_id(12345);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kRuntimeExperimentHasGoogleWebId, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
+  }
+}
+
+// Verifies that overriding a trial with Google web experiment IDs is not
+// allowed (even if the variation ID was set on an unselected group in that
+// trial).
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_OverriddenTrialHasGoogleWebId) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("MyTrial", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureA.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Associate a Google web VariationID with an unselected group in "MyTrial".
+  AssociateGoogleVariationIDForTesting(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                       "MyTrial", "UnselectedGroup", 12345);
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kApplyRuntimeMutableChangesResultMetric,
+        ApplyRuntimeMutableChangesResult::kOverriddenTrialHasGoogleWebId, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                     ->GetRuntimeOverride("MyStudy")
+                     .has_value());
   }
 }
 

@@ -53,6 +53,7 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/sticky_activation_manager.h"
 #include "components/variations/study_filtering.h"
+#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_seed_simulator.h"
@@ -73,6 +74,21 @@
 
 namespace variations {
 namespace {
+
+// Returns true if the trial specified by `trial_name` has any Google web
+// experiment IDs.
+// Note: This iterates through all values of `IDCollectionKey`, which includes
+// `GOOGLE_APP`. Although `GOOGLE_APP` is not technically a Google web ID, for
+// simplicity, trials specifying `GOOGLE_APP` variation IDs are also excluded
+// from runtime mutability.
+bool TrialHasGoogleWebExperimentId(std::string_view trial_name) {
+  for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+    if (HasGoogleVariationID(static_cast<IDCollectionKey>(i), trial_name)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Constants used for encrypting the if-none-match header if we are retrieving a
 // seed over http.
@@ -1148,6 +1164,13 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
     return kNotPermanentConsistency;
   }
 
+  // TODO(crbug.com/482450020): Support runtime mutability for Google web
+  // studies. For now, disallow applying a runtime experiment if it has a
+  // Google web experiment ID.
+  if (VariationsSeedProcessor::HasGoogleWebExperimentId(experiment)) {
+    return kRuntimeExperimentHasGoogleWebId;
+  }
+
   // If the runtime mutable experiment has already been applied, don't need to
   // apply it again.
   if (RuntimeMutableExperimentAlreadyApplied(study, experiment)) {
@@ -1214,6 +1237,13 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
 
     if (feature_names != associated_features) {
       return kControllingTrialHasOtherFeatures;
+    }
+
+    // TODO(crbug.com/482450020): Support runtime mutability for Google web
+    // studies. For now, disallow overriding a trial that has Google web
+    // experiment IDs.
+    if (TrialHasGoogleWebExperimentId(controlling_trial_name)) {
+      return kOverriddenTrialHasGoogleWebId;
     }
   }
 

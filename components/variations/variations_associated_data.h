@@ -162,6 +162,11 @@ VariationID GetGoogleVariationID(
     ActiveGroupId active_group_id,
     std::optional<base::Time> current_time = std::nullopt);
 
+// Returns true if there is any VariationID associated with `trial_name` for
+// collection `key` (regardless of group name).
+COMPONENT_EXPORT(VARIATIONS)
+bool HasGoogleVariationID(IDCollectionKey key, std::string_view trial_name);
+
 // Returns the next time after the given time that a time window will start or
 // end for a VariationID.
 COMPONENT_EXPORT(VARIATIONS)
