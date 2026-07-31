@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/virtual_document_path.h"
 #include "base/test/android/content_uri_test_utils.h"
 #endif
 
@@ -610,6 +611,68 @@ TEST(FileEnumerator, GetInfoRecursive) {
         << "File " << file.path.value() << " was not returned";
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(FileEnumerator, VirtualDocumentPath) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  FilePath dir = temp_dir.GetPath().AppendUTF8("subdir");
+  ASSERT_TRUE(CreateDirectory(dir));
+  FilePath file1 = temp_dir.GetPath().AppendUTF8("file1.txt");
+  ASSERT_TRUE(WriteFile(file1, "hello"));
+  FilePath file2 = dir.AppendUTF8("file2.txt");
+  ASSERT_TRUE(WriteFile(file2, "world"));
+
+  std::optional<FilePath> content_tree_uri =
+      test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          temp_dir.GetPath());
+  ASSERT_TRUE(content_tree_uri.has_value());
+
+  std::optional<FilePath> virtual_doc_path =
+      ResolveToVirtualDocumentPath(*content_tree_uri);
+  ASSERT_TRUE(virtual_doc_path.has_value());
+  EXPECT_TRUE(virtual_doc_path->IsVirtualDocumentPath());
+
+  // Non-recursive enumeration: expect virtual document paths for immediate
+  // children.
+  {
+    std::vector<FilePath> results;
+    FileEnumerator enumerator(
+        *virtual_doc_path, /*recursive=*/false,
+        FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+    for (FilePath path = enumerator.Next(); !path.empty();
+         path = enumerator.Next()) {
+      EXPECT_TRUE(path.IsVirtualDocumentPath());
+      EXPECT_TRUE(virtual_doc_path->IsParent(path));
+      results.push_back(path);
+    }
+    EXPECT_THAT(results,
+                UnorderedElementsAre(virtual_doc_path->AppendUTF8("file1.txt"),
+                                     virtual_doc_path->AppendUTF8("subdir")));
+  }
+
+  // Recursive enumeration: expect virtual document paths for all nested items.
+  {
+    std::vector<FilePath> results;
+    FileEnumerator enumerator(
+        *virtual_doc_path, /*recursive=*/true,
+        FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+    for (FilePath path = enumerator.Next(); !path.empty();
+         path = enumerator.Next()) {
+      EXPECT_TRUE(path.IsVirtualDocumentPath());
+      EXPECT_TRUE(virtual_doc_path->IsParent(path));
+      results.push_back(path);
+    }
+    EXPECT_THAT(
+        results,
+        UnorderedElementsAre(
+            virtual_doc_path->AppendUTF8("file1.txt"),
+            virtual_doc_path->AppendUTF8("subdir"),
+            virtual_doc_path->AppendUTF8("subdir").AppendUTF8("file2.txt")));
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_FUCHSIA)
 // FileEnumerator::GetInfo does not work correctly with INCLUDE_DOT_DOT.
