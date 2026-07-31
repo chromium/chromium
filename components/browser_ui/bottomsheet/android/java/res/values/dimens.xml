@@ -15,4 +15,5 @@ found in the LICENSE file.
     <dimen name="bottom_sheet_narrow_width_threshold">680dp</dimen>
     <dimen name="bottom_sheet_desktop_bottom_margin">24dp</dimen>
     <dimen name="bottom_sheet_large_form_factor_width">480dp</dimen>
+    <dimen name="bottom_sheet_large_form_factor_edge_gap">16dp</dimen>
 </resources>

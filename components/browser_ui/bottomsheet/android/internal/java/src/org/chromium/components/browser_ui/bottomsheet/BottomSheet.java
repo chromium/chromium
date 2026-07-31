@@ -727,7 +727,7 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMaxOffsetPx() {
-        return getFullRatio() * getMaxContentHeight();
+        return getFullRatio() * getMaxSheetHeight();
     }
 
     /**
@@ -1029,18 +1029,19 @@ class BottomSheet extends FrameLayout
                     : "The peek mode can't wrap content.";
             int peekHeight = mSheetContent.getPeekHeight();
             assert peekHeight > 0 : "Custom peek height must be positive.";
-            // If the container height is smaller than the custom peek height (e.g. when entering
-            // Picture-in-Picture mode where the window shrinks dynamically), we cap the peek height
-            // to the container height instead of throwing an AssertionError. This gracefully allows
-            // the bottom sheet to occupy the full tiny window rather than crashing the app.
-            if (peekHeight > mContainerHeight) {
+            // If the max sheet height is smaller than the custom peek height (e.g. when entering
+            // Picture-in-Picture mode where the window shrinks dynamically, or LFF desktop modes
+            // where top gaps exist), we cap the peek height to the max sheet height instead of
+            // throwing an AssertionError. This gracefully allows the bottom sheet to occupy the
+            // max allowed size rather than crashing the app.
+            if (peekHeight > getMaxSheetHeight()) {
                 Log.w(
                         TAG,
-                        "Custom peek height (%d) exceeds container height (%d), capping to"
-                                + " container height.",
+                        "Custom peek height (%d) exceeds max sheet height (%d), capping to"
+                                + " max sheet height.",
                         peekHeight,
-                        mContainerHeight);
-                peekHeight = mContainerHeight;
+                        getMaxSheetHeight());
+                peekHeight = getMaxSheetHeight();
             }
             return peekHeight;
         }
@@ -1064,7 +1065,7 @@ class BottomSheet extends FrameLayout
                                 MeasureSpec.makeMeasureSpec(
                                         getMaxSheetWidth(), MeasureSpec.EXACTLY),
                                 MeasureSpec.makeMeasureSpec(
-                                        getMaxContentHeight(), MeasureSpec.AT_MOST));
+                                        getMaxSheetHeight(), MeasureSpec.AT_MOST));
                         toolbarHeight = toolbarView.getMeasuredHeight();
                     }
                 }
@@ -1107,7 +1108,7 @@ class BottomSheet extends FrameLayout
 
         if (isFullHeightWrapContent()) {
             ensureContentDesiredHeightIsComputed();
-            return Math.min(getMaxContentHeight(), mContentDesiredHeight) / getMaxContentHeight();
+            return Math.min(getMaxSheetHeight(), mContentDesiredHeight) / getMaxSheetHeight();
         } else if (isFullHeightResizeContent()) {
             return MAX_HEIGHT_RATIO;
         }
@@ -1342,13 +1343,21 @@ class BottomSheet extends FrameLayout
             ensureContentDesiredHeightIsComputed();
         }
 
-        return getRatioForState(state) * getMaxContentHeight();
+        return getRatioForState(state) * getMaxSheetHeight();
     }
 
     /**
-     * @return The max possible height that the content can be.
+     * @return The max possible height that the sheet can be.
      */
-    private int getMaxContentHeight() {
+    private int getMaxSheetHeight() {
+        if (isLargeFormFactorUiEnabled()) {
+            // Clamp the height to leave an empty gap at the top of the window equal to the
+            // desktop bottom margin (24dp).
+            int topGap =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+            return Math.max(0, mContainerHeight - getContainerBottomMargin() - topGap);
+        }
         return mContainerHeight;
     }
 
@@ -1365,8 +1374,17 @@ class BottomSheet extends FrameLayout
     public int getMaxSheetWidth() {
         if (!mAlwaysFullWidth) {
             if (isLargeFormFactorUiEnabled()) {
-                return getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width);
+                int width =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.bottom_sheet_large_form_factor_width);
+                // Clamp the sheet's width to ensure a dedicated 16dp horizontal gap from the edge
+                // of the window when it becomes constrained.
+                int edgeGap =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.bottom_sheet_large_form_factor_edge_gap);
+                return Math.max(0, Math.min(width, mContainerWidth - 2 * edgeGap));
             }
             int narrowWidthThreshold =
                     getResources()
@@ -1405,7 +1423,7 @@ class BottomSheet extends FrameLayout
                 .getContentView()
                 .measure(
                         MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(getMaxContentHeight(), MeasureSpec.AT_MOST));
+                        MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
         mContentDesiredHeight = mSheetContent.getContentView().getMeasuredHeight();
     }
 

@@ -850,6 +850,68 @@ public class BottomSheetUnitTest {
     }
 
     @Test
+    public void testLargeFormFactorUi_DimensionsClamped() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+
+        // Use a container smaller than the LFF sheet width to force clamping
+        int narrowContainerWidth = 300;
+        int shortContainerHeight = 300;
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+
+        // Remeasure the container to a small size
+        mSheetContainer.measure(
+                View.MeasureSpec.makeMeasureSpec(narrowContainerWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(shortContainerHeight, View.MeasureSpec.EXACTLY));
+        mSheetContainer.layout(0, 0, narrowContainerWidth, shortContainerHeight);
+
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        doReturn(true).when(mSheetContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        sheet.showContent(mSheetContent);
+
+        int edgeGap =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_edge_gap);
+        int topGap =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+
+        assertEquals(
+                "Max width should be clamped to ensure horizontal gaps for LFF.",
+                Math.max(0, narrowContainerWidth - 2 * edgeGap),
+                sheet.getMaxSheetWidth());
+
+        sheet.setSheetState(SheetState.FULL, false);
+
+        assertEquals(
+                "Max height should be clamped to ensure a top gap for LFF.",
+                Math.max(0, shortContainerHeight - sheet.getContainerBottomMargin() - topGap),
+                (int) sheet.getCurrentOffsetPx());
+    }
+
+    @Test
     public void testLargeFormFactorUi_CloseButtonVisibility_NonModal() {
         BottomSheet sheet =
                 (BottomSheet)
