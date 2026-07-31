@@ -119,7 +119,6 @@ int SpecificityForType(FieldType type) {
   // The priority of other types is arbitrary, but deterministic.
   return 100 + type;
 }
-
 // Fills `distinguishing_fields` with a list of fields to use when creating
 // labels that can help to distinguish between two profiles. Draws fields from
 // `suggested_fields` if it is non-NULL; otherwise returns a default list.
@@ -134,7 +133,7 @@ void GetFieldsForDistinguishingProfiles(
   std::vector<FieldType> default_fields;
   if (!suggested_fields) {
     default_fields.append_range(
-        AutofillProfile::kDefaultDistinguishingFieldsForLabels);
+        AutofillProfile::DefaultDistinguishingFieldsForLabels());
     if (excluded_fields.empty()) {
       distinguishing_fields->swap(default_fields);
       return;
@@ -831,6 +830,31 @@ void AutofillProfile::OnProfileCountryUpdate(
   }
 
   name_.OnCountryChange(new_country_code);
+}
+
+// static
+base::span<const FieldType>
+AutofillProfile::DefaultDistinguishingFieldsForLabels() {
+  static constexpr auto kDefaultDistinguishingFieldsForLabelsOld =
+      std::to_array<FieldType>(
+          {NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+           ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
+           ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
+           ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
+           COMPANY_NAME});
+  static constexpr auto kDefaultDistinguishingFieldsForLabelsNew =
+      std::to_array<FieldType>({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                                ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                                ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
+                                ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS,
+                                PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME});
+  return base::FeatureList::IsEnabled(
+             features::kAutofillFixLabelGenerationForStreetAddress)
+             ? base::span<const FieldType>(
+                   kDefaultDistinguishingFieldsForLabelsNew)
+             : base::span<const FieldType>(
+                   kDefaultDistinguishingFieldsForLabelsOld);
 }
 
 // static

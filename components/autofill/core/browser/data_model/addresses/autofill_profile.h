@@ -101,13 +101,7 @@ class AutofillProfile : public FormGroup {
   // one.
   // TODO(crbug.com/380273791): Change this into a FieldTypeSet once the
   // priority is not decided by the order of these entries anymore.
-  static constexpr auto kDefaultDistinguishingFieldsForLabels =
-      std::to_array<FieldType>(
-          {NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
-           ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
-           ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
-           ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
-           COMPANY_NAME});
+  static base::span<const FieldType> DefaultDistinguishingFieldsForLabels();
 
   // All FieldTypes stored for an AutofillProfile in the local_addresses or
   // contact_info table (depending on the profile source) in AutofillTable.

@@ -145,7 +145,11 @@ TEST_F(AutofillProfileTest, PreviewSummaryString) {
                                        .with_phone("16505678910")
                                        .Build());
   std::u16string summary1a = GetSuggestionLabel(&profile1a);
-  EXPECT_EQ(summary1a, u"123 Zoo St., unit 5");
+  EXPECT_EQ(summary1a,
+            base::FeatureList::IsEnabled(
+                features::kAutofillFixLabelGenerationForStreetAddress)
+                ? u"123 Zoo St., unit 5, Hollywood"
+                : u"123 Zoo St., unit 5");
 
   // Case 2: "<lastname>"
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -213,7 +217,10 @@ TEST_F(AutofillProfileTest, PreviewSummaryString) {
                                       .with_phone("16505678910")
                                       .Build());
   std::u16string summary5 = GetSuggestionLabel(&profile5);
-  EXPECT_EQ(summary5, u"Marion Mitchell, 123 Zoo St.");
+  EXPECT_EQ(summary5, base::FeatureList::IsEnabled(
+                          features::kAutofillFixLabelGenerationForStreetAddress)
+                          ? u"Marion Mitchell, 123 Zoo St., unit 5"
+                          : u"Marion Mitchell, 123 Zoo St.");
 
   // Case 6: "<firstname> <lastname>"
   AutofillProfile profile6(i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -249,7 +256,10 @@ TEST_F(AutofillProfileTest, PreviewSummaryString) {
                                       .with_phone("16505678910")
                                       .Build());
   std::u16string summary7 = GetSuggestionLabel(&profile7);
-  EXPECT_EQ(summary7, u"Marion Mitchell Morrison, 123 Zoo St.");
+  EXPECT_EQ(summary7, base::FeatureList::IsEnabled(
+                          features::kAutofillFixLabelGenerationForStreetAddress)
+                          ? u"Marion Mitchell Morrison, 123 Zoo St., unit 5"
+                          : u"Marion Mitchell Morrison, 123 Zoo St.");
 
   // Case 7a: "<firstname> <lastname>, <address>" - same as #7, except for
   // e-mail.
@@ -276,9 +286,18 @@ TEST_F(AutofillProfileTest, PreviewSummaryString) {
   ASSERT_EQ(profiles.size(), labels.size());
   summary7 = labels[0];
   std::u16string summary7a = labels[1];
-  EXPECT_EQ(summary7,
-            u"Marion Mitchell Morrison, 123 Zoo St., johnwayne@me.xyz");
-  EXPECT_EQ(summary7a, u"Marion Mitchell Morrison, 123 Zoo St., marion@me.xyz");
+  EXPECT_EQ(
+      summary7,
+      base::FeatureList::IsEnabled(
+          features::kAutofillFixLabelGenerationForStreetAddress)
+          ? u"Marion Mitchell Morrison, 123 Zoo St., unit 5, johnwayne@me.xyz"
+          : u"Marion Mitchell Morrison, 123 Zoo St., johnwayne@me.xyz");
+  EXPECT_EQ(
+      summary7a,
+      base::FeatureList::IsEnabled(
+          features::kAutofillFixLabelGenerationForStreetAddress)
+          ? u"Marion Mitchell Morrison, 123 Zoo St., unit 5, marion@me.xyz"
+          : u"Marion Mitchell Morrison, 123 Zoo St., marion@me.xyz");
 }
 
 TEST_F(AutofillProfileTest, AdjustInferredLabels) {
@@ -525,7 +544,7 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   profiles.back()->set_language_code("ko_Latn");
   profiles.back()->SetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Yeoksam-Dong",
                            "en-US");
-  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+  static constexpr auto kExpectedLabelsOld = std::to_array<std::u16string_view>(
       {u"", u"Park Jae-sang", u"Park Jae-sang, Gangnam Finance Center",
        u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro",
        u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong",
@@ -545,14 +564,42 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
        u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
        u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
        u"park@yeleul.com, +82-2-531-9000"});
+  static constexpr auto kExpectedLabelsNew = std::to_array<std::u16string_view>(
+      {u"", u"Park Jae-sang",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
+       u"Gangnam-Gu",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
+       u"Gangnam-Gu, Seoul",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
+       u"Gangnam-Gu, Seoul, 135-984",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
+       u"park@yeleul.com",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
+       u"park@yeleul.com, +82-2-531-9000",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
+       u"park@yeleul.com, +82-2-531-9000"});
+  base::span<const std::u16string_view> expected_labels =
+      base::FeatureList::IsEnabled(
+          features::kAutofillFixLabelGenerationForStreetAddress)
+          ? kExpectedLabelsNew
+          : kExpectedLabelsOld;
 
-  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
+  for (size_t i = 0; i < expected_labels.size(); ++i) {
     std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US");
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(kExpectedLabels[i], labels.back());
+    EXPECT_EQ(expected_labels[i], labels.back());
   }
 }
 
@@ -574,7 +621,7 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
                            .with_phone("+81-3-6384-9000")
                            .Build());
   profiles.back()->set_language_code("ja_Latn");
-  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+  static constexpr auto kExpectedLabelsOld = std::to_array<std::u16string_view>(
       {u"", u"Miku Hatsune", u"Miku Hatsune, Roppongi Hills Mori Tower",
        u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku",
        u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
@@ -589,14 +636,36 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
        u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com",
        u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
        u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com, +81-3-6384-9000"});
+  static constexpr auto kExpectedLabelsNew = std::to_array<std::u16string_view>(
+      {u"", u"Miku Hatsune",
+       u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku",
+       u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
+       u"Tokyo",
+       u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
+       u"Tokyo, 106-6126",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com, +81-3-6384-9000",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com, +81-3-6384-9000"});
+  base::span<const std::u16string_view> expected_labels =
+      base::FeatureList::IsEnabled(
+          features::kAutofillFixLabelGenerationForStreetAddress)
+          ? kExpectedLabelsNew
+          : kExpectedLabelsOld;
 
-  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
+  for (size_t i = 0; i < expected_labels.size(); ++i) {
     std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US");
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(kExpectedLabels[i], labels.back());
+    EXPECT_EQ(expected_labels[i], labels.back());
   }
 }
 
@@ -618,7 +687,7 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
                            .with_phone("03-6384-9000")
                            .Build());
   profiles.back()->set_language_code("ja_JP");
-  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+  static constexpr auto kExpectedLabelsOld = std::to_array<std::u16string_view>(
       {u"", u"初音ミク", u"港区六本木ヒルズ森タワー初音ミク",
        u"港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
        u"東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
@@ -632,14 +701,35 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
        u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
        u"Japan, "
        u"miku@rei.com, 03-6384-9000"});
+  static constexpr auto kExpectedLabelsNew = std::to_array<std::u16string_view>(
+      {u"", u"初音ミク", u"港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
+       u"東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan, "
+       u"miku@rei.com",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan, "
+       u"miku@rei.com, 03-6384-9000",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan, "
+       u"miku@rei.com, 03-6384-9000"});
+  base::span<const std::u16string_view> expected_labels =
+      base::FeatureList::IsEnabled(
+          features::kAutofillFixLabelGenerationForStreetAddress)
+          ? kExpectedLabelsNew
+          : kExpectedLabelsOld;
 
-  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
+  for (size_t i = 0; i < expected_labels.size(); ++i) {
     std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US");
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(kExpectedLabels[i], labels.back());
+    EXPECT_EQ(expected_labels[i], labels.back());
   }
 }
 
