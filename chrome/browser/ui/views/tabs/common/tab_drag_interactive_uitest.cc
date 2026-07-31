@@ -1081,6 +1081,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
         ASSERT_NE(nullptr, controller);
         EXPECT_TRUE(controller->IsCollapsed());
         EXPECT_EQ(kInitialWidth, controller->GetUncollapsedWidth());
+        EXPECT_EQ(1, new_browser.GetTabStripModel()->count());
+        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
       }));
 }
 

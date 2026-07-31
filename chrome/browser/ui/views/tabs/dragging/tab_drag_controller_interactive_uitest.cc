@@ -3653,9 +3653,6 @@ IN_PROC_BROWSER_TEST_P(VerticalTabsFullscreenDragTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
-// TODO(crbug.com/508647866): Create a Tab Dragging Test Case to Verify that
-// Vertical Tabs Detach Preserves State.
-
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     VerticalTabsFullscreenDragTest,
