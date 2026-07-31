@@ -1,7 +1,0 @@
-Tests that Elements properly populate and select after immediate updates crbug.com/829884
-
-BEFORE: children: null, childNodeCount: 2
-AFTER: children: null, childNodeCount: 3
-AFTER EXPAND: TreeElement childCount: 3
-Selected element:'BODY'
-

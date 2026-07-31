@@ -1,7 +1,0 @@
-Verify that dirty fileSystem uiSourceCodes are bound to network.
-
-Binding created: {
-       network: http://127.0.0.1:8000/devtools/persistence/resources/foo.js
-    fileSystem: file:///var/www/devtools/persistence/resources/foo.js
-}
-

@@ -5330,8 +5330,6 @@ crbug.com/1084256 [ Win11-arm64 ] http/tests/misc/insert-iframe-into-xml-documen
 
 crbug.com/1071189 [ Debug Linux ] editing/selection/programmatic-selection-on-mac-is-directionless.html [ Pass Timeout ]
 
-# Sheriff 2020-05-27
-crbug.com/333787228 http/tests/devtools/elements/styles/stylesheet-tracking.js [ Failure Pass Timeout ]
 
 # Sheriff 2020-05-29
 crbug.com/1084637 compositing/video/video-reflection.html [ Failure Pass ]
@@ -5711,7 +5709,6 @@ crbug.com/1210687 [ Mac ] http/tests/permissions/chromium/test-request-worker.ht
 crbug.com/1210687 external/wpt/html/user-activation/propagation-crossorigin.sub.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-06-03
-crbug.com/40770317 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failure Pass ]
 
 # CSS Highlight API painting issues related to general CSS highlight
 # pseudo-elements painting
@@ -6238,7 +6235,6 @@ crbug.com/1369642 [ Mac13 ] external/wpt/encoding/unsupported-labels.window.html
 crbug.com/1459038 [ Linux ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
 
 # Unblock live-edit disabling
-crbug.com/417884172 http/tests/devtools/persistence/persistence-sync-content-nodejs.js [ Failure Pass ]
 crbug.com/417884172 inspector-protocol/debugger/setScriptSource.js [ Failure Pass ]
 
 # These tests are optional and not reliably supported in Chrome.
@@ -6940,7 +6936,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/profiler/heap-snapshot-containment-sorting.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/dark-color-scheme/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Failure Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/persistence/persistence-tabbed-editor-tabs-order.js [ Skip Timeout ]
 [ Debug Mac13 ] fast/dom/shadow/selections-in-shadow.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Skip Timeout ]
 # TODO(crbug.com/508429093): Uncomment after the bug gets fixed.
@@ -6982,7 +6977,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/fetch/metadata/generated/element-embed.https.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/fast/events/pinch/pinch-zoom-pan-position-fixed.html [ Skip Timeout ]
 [ Debug Mac13 ] fullscreen/anonymous-block-merge-crash.html [ Failure ]
-[ Debug Mac13 ] http/tests/devtools/cache-storage/cache-entry-deletion.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-behavior/main-frame-scroll.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-source-lines-inline.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/printing/page-count-layout-overflow.html [ Skip Timeout ]
@@ -8364,12 +8358,10 @@ crbug.com/333639341 [ Fuchsia ] fast/writing-mode/english-lr-text.html [ Failure
 
 # Temporarily disable tests to land frontend changes
 crbug.com/325441197 http/tests/devtools/elements/elements-panel-limited-children.js [ Failure Pass ]
-crbug.com/325441197 http/tests/devtools/elements/inspect-limited-children.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/a11y-axe-core/sources/global-listeners-sidebar-a11y-test.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listener-sidebar-custom-framework.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listener-sidebar-jquery1.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listener-sidebar-jquery2.js [ Failure Pass ]
-crbug.com/325441197 http/tests/devtools/elements/event-listener-sidebar-remove.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listener-sidebar.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listeners-about-blank.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/elements/event-listeners-framework-with-service-worker.js [ Failure Pass ]
@@ -8947,12 +8939,10 @@ crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-in-child-of-head.t
 crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=DeleteKey&lineBreak=br [ Failure ]
 crbug.com/446773671 [ Mac ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/031.html [ Failure ]
 
-crbug.com/414630818 http/tests/devtools/coverage/coverage-repeated-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-repeated.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-suspended-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-suspended.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view-css-import.js [ Failure Pass ]
-crbug.com/414630818 http/tests/devtools/coverage/coverage-view-filter-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view-filter.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view-per-function.js [ Failure Pass ]
 crbug.com/414630818 http/tests/devtools/coverage/coverage-view.js [ Failure Pass ]
@@ -8988,9 +8978,6 @@ crbug.com/453203283 [ Mac ] virtual/threaded/external/wpt/css/css-backgrounds/ba
 # Gardener 2025-10-17
 crbug.com/301364727 http/tests/devtools/a11y-axe-core/elements/main-tool-test.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/a11y-axe-core/sources/watch-expression-a11y-test.js [ Failure Pass ]
-crbug.com/301364727 http/tests/devtools/elements/styles-1/empty-background-url.js [ Failure Pass ]
-crbug.com/301364727 http/tests/devtools/elements/styles-4/do-not-rebuild-styles-on-every-change.js [ Failure Pass ]
-crbug.com/301364727 http/tests/devtools/elements/styles-4/styles-live-locations-leak.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/elements/styles/undo-set-selector-text.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/sources/debugger-ui/error-in-watch-expressions.js [ Failure Pass ]
 
@@ -9075,7 +9062,6 @@ crbug.com/453103188 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js
 
 crbug.com/41187256 http/tests/devtools/console/console-functions.js [ Failure Pass ]
 crbug.com/41187256 http/tests/devtools/console/console-dir.js [ Failure Pass ]
-crbug.com/41187256 http/tests/devtools/console/console-big-array.js [ Failure Pass ]
 crbug.com/41187256 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
 
 # Started to fail on Linux, previously was flaky on all platforms (crbug.com/387374119)
@@ -9130,7 +9116,6 @@ crbug.com/40281140 [ Win11-arm64 ] external/wpt/mediacapture-record/MediaRecorde
 crbug.com/477530170 http/tests/devtools/console/console-revoke-error-in-worker.js [ Failure Pass ]
 
 # Temporarily disable due to moving IgnoreListManager
-http/tests/devtools/console/console-linkify-message-location.js [ Failure Pass ]
 http/tests/devtools/bindings/ignore-listed-sourcemap-detach.js [ Failure Pass ]
 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-by-source-code.js [ Failure Pass ]
 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-patterns.js [ Failure Pass ]
@@ -9164,7 +9149,6 @@ crbug.com/486315292 external/wpt/geolocation/enabled-on-self-origin-by-permissio
 crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 
 
-crbug.com/522127452 http/tests/devtools/console/console-format-array-prototype.js [ Failure Pass ]
 crbug.com/407751340 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
 
 # Gardener 2026-03-03: Flaky on multiple Mac bots
@@ -9174,7 +9158,6 @@ crbug.com/489297473 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/co
 
 # Temporary to allow crrev.com/c/7575525 to land in DevTools before roll and re-enable.
 crbug.com/351662727 http/tests/devtools/elements/navigate-styles-sidebar-with-arrow-keys.js [ Failure Pass ]
-crbug.com/351662727 http/tests/devtools/elements/styles-4/styles-grid-template.js [ Failure Pass ]
 
 # Gardener 2026-03-06
 
@@ -9225,7 +9208,6 @@ crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/n
 crbug.com/502777858 [ Linux ] external/wpt/largest-contentful-paint/multiple-image-same-src.html [ Failure Pass ]
 
 crbug.com/407751293 http/tests/devtools/device-mode/device-mode-switching-devices.js [ Failure Pass ]
-crbug.com/407751293 http/tests/devtools/device-mode/device-mode-toolbar.js [ Failure Pass ]
 
 # Gardener 2026-04-16
 # Skipped on Mac because native overlay scrollbars can hide before the second
@@ -9233,7 +9215,6 @@ crbug.com/407751293 http/tests/devtools/device-mode/device-mode-toolbar.js [ Fai
 # where classic scrollbars are used. see crbug.com/501810437.
 crbug.com/501810437 [ Mac ] external/wpt/inert/inert-scrollbar-hittest.html [ Skip Timeout ]
 
-crbug.com/407751340 http/tests/devtools/elements/styles-2/metrics-box-sizing.js [ Failure Pass ]
 
 
 # Gardener 2026-04-17
@@ -9349,7 +9330,6 @@ crbug.com/525007363 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 crbug.com/524086652 [ Mac15-arm64 Release ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Failure Pass ]
 crbug.com/524086652 [ Mac26-arm64 Release ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Failure Pass ]
 
-crbug.com/407750537 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass ]
 
 # TODO(crbug.com/466779634): Flaky. Reenable it.
 crbug.com/466779634 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]

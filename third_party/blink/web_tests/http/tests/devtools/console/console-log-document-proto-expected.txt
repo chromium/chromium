@@ -1,4 +1,0 @@
-Test that console.dir(document.__proto__) won't result in an exception when the message is formatted in the inspector.Bug 27169.
-
-console-log-document-proto.js:16 HTMLDocument
-

@@ -1,9 +1,0 @@
-Verify that automapping is capable of mapping file:// urls.
-
-Binding created: {
-       network: file:///usr/local/node/app.js
-    fileSystem: file:///usr/local/node/app.js
-    exactMatch: false
-}
-Mapping has stabilized.
-
