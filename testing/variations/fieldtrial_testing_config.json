@@ -3096,6 +3096,25 @@
             ]
         }
     ],
+    "AutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableWalletBrandingV2": [
         {
             "platforms": [
