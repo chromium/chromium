@@ -295,7 +295,8 @@ const IDNTestCase kIdnCases[] = {
     // Latin + U+30FC + Latin
     {"xn--abcdef-r64e.jp", u"abc\u30fcdef.jp", kUnsafe},
 
-    // U+30FB (・) is not allowed next to Latin, but allowed otherwise.
+    // U+30FB (・) is allowed only when adjacent to Hiragana, Katakana, or Han,
+    // and not at the end of a label.
     // U+30FB + Han
     {"xn--vekt920a.jp", u"\u30fb\u91ce.jp", kSafe},
     // Han + U+30FB + Han
@@ -304,6 +305,18 @@ const IDNTestCase kIdnCases[] = {
     {"xn--abcdef-k64e.jp", u"abc\u30fbdef.jp", kUnsafe},
     // U+30FB + Latin
     {"xn--abc-os4b.jp", u"\u30fbabc.jp", kUnsafe},
+    // digit + U+30FB + digit
+    {"xn--12-3n4a.jp", u"1\u30fb2.jp", kUnsafe},
+    // multiple digit + U+30FB groups
+    {"xn--19216801-rg5gdb.jp", u"192\u30fb168\u30fb0\u30fb1.jp", kUnsafe},
+    // hyphen + U+30FB + hyphen
+    {"xn--a--b-cx4c.jp", u"a-\u30fb-b.jp", kUnsafe},
+    // Cyrillic + U+30FB + Cyrillic
+    {"xn--80ac1155a.jp", u"\u0430\u30fb\u0431.jp", kUnsafe},
+    // Greek + U+30FB + Greek
+    {"xn--mxac2985a.jp", u"\u03b1\u30fb\u03b2.jp", kUnsafe},
+    // Han + U+30FB at the end of a label
+    {"xn--vek944n.jp", u"\u672c\u30fb.jp", kUnsafe},
 
     // U+30FD (ヽ) is allowed only after Katakana.
     // Katakana + U+30FD
