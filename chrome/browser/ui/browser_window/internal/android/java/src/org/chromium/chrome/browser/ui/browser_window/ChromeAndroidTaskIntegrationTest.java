@@ -1274,7 +1274,9 @@ public class ChromeAndroidTaskIntegrationTest {
                 () -> {
                     Set<Integer> newTaskIds = getTabbedActivityTaskIds();
                     Criteria.checkThat(newTaskIds.size(), Matchers.is(currentTaskIds.size()));
-                });
+                },
+                /* maxTimeoutMs= */ 10_000L,
+                /* checkIntervalMs= */ 1000L);
     }
 
     private static void assertBoundsCloseEnoughInDp(Rect expected, Rect actual) {
