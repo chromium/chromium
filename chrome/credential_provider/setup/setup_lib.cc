@@ -168,6 +168,10 @@ HRESULT DoInstall(const base::FilePath& installer_path,
   base::FilePath dest_path = gcp_path.Append(product_version);
   LOGFN(VERBOSE) << "Install to: " << dest_path;
 
+  // Ensure the ProgramData GCPW directory is created and secured with
+  // restrictive DACLs.
+  GetDataDirectory();
+
   // Make sure nothing under the destination directory is pending delete
   // after reboot, so that files installed now won't get deleted later.
   if (!RemoveFromMovesPendingReboot(dest_path)) {
