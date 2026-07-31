@@ -147,7 +147,14 @@ class BottomSheet extends FrameLayout
     private int mPreviousScreenHeight;
 
     /** The view that contains the sheet background glow color. */
-    private ShadowLayerView mShadowLayer;
+    private View mShadowLayer;
+
+    /**
+     * An alternative shadow layer used exclusively on large form factor devices when the current
+     * sheet content opts out of the new bottom sheet UI. This provides the standard mobile
+     * bottom-edge bleeder shadow instead of the full perimeter rectangle shadow.
+     */
+    private @Nullable View mFallbackShadowLayer;
 
     /** For detecting scroll and fling events on the bottom sheet. */
     private final BottomSheetSwipeDetector mGestureDetector;
@@ -402,6 +409,7 @@ class BottomSheet extends FrameLayout
         mKeyboardCurtain = findViewById(R.id.keyboard_curtain);
         mSheetBackground = findViewById(R.id.background);
         mShadowLayer = findViewById(R.id.shadow_layer);
+        mFallbackShadowLayer = findViewById(R.id.desktop_fallback_shadow);
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
@@ -1594,9 +1602,12 @@ class BottomSheet extends FrameLayout
         }
         // Update the color before notify the observers, as some might read the sheet bg color.
         if (isLargeFormFactorUiEnabled()) {
-            mSheetContainer.setClipChildren(true);
+            // This mode uses a custom shadow drawable that spans around all edges of the sheet.
+            // We disable child clipping in the container so this shadow doesn't get
+            // abruptly cut off at the bounding box of the sheet content.
+            mSheetContainer.setClipChildren(false);
             mSheetBackground.setBackgroundResource(R.drawable.bottom_sheet_desktop_background);
-            mShadowLayer.setVisibility(View.GONE);
+            mSheetBackground.setClipToOutline(true);
             setBottomMargin(0);
 
             // In this framework, "modal" implies the sheet uses a background scrim that blocks
@@ -1607,6 +1618,18 @@ class BottomSheet extends FrameLayout
             mCloseButton.setVisibility(showCloseButton ? View.VISIBLE : View.GONE);
             mCloseButton.setOnClickListener(
                     v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.CLOSE_BUTTON));
+            if (mFallbackShadowLayer != null) {
+                mFallbackShadowLayer.setVisibility(View.GONE);
+            }
+        } else if (mIsLargeFormFactor) {
+            mCloseButton.setVisibility(View.GONE);
+            if (mFallbackShadowLayer != null) {
+                mSheetBackground.setBackgroundResource(R.drawable.bottom_sheet_background);
+                mSheetBackground.setClipToOutline(false);
+                mFallbackShadowLayer.setVisibility(View.VISIBLE);
+                mShadowLayer.setBackgroundResource(0);
+                mShadowLayer.setPadding(0, 0, 0, 0);
+            }
         }
         updateBackgroundColor();
         updateBackgroundGlow();
@@ -1640,32 +1663,6 @@ class BottomSheet extends FrameLayout
                 mBottomSheetContentContainer.setLayoutParams(params);
             }
 
-            // On large form factors, the sheet floats rather than docking to the bottom edge.
-            // As such, the background and shadow must tightly wrap the exact height of the content
-            // rather than stretching to fill the parent container vertically.
-            if (isLargeFormFactorUiEnabled()) {
-                ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
-                if (bgParams != null && bgParams.height != targetHeight) {
-                    bgParams.height = targetHeight;
-                    mSheetBackground.setLayoutParams(bgParams);
-                }
-            } else {
-                // For standard form factors, the sheet docks to the bottom edge and extends below
-                // the viewport (e.g. into the navigation bar area). Therefore, the background and
-                // shadow must be allowed to stretch to fill the parent container fully.
-                ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
-                if (bgParams != null && bgParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    bgParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    mSheetBackground.setLayoutParams(bgParams);
-                }
-                ViewGroup.LayoutParams shadowParams = mShadowLayer.getLayoutParams();
-                if (shadowParams != null
-                        && shadowParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    shadowParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                    mShadowLayer.setLayoutParams(shadowParams);
-                }
-            }
-
             @Px int viewportBottomInset = getViewportBottomInset();
             if (mBottomSheetContentContainer.getPaddingBottom() != viewportBottomInset) {
                 mBottomSheetContentContainer.setPadding(
@@ -1674,6 +1671,14 @@ class BottomSheet extends FrameLayout
                         mBottomSheetContentContainer.getPaddingRight(),
                         viewportBottomInset);
             }
+        }
+
+        int targetBgHeight =
+                isLargeFormFactorUiEnabled() ? params.height : ViewGroup.LayoutParams.MATCH_PARENT;
+        ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
+        if (bgParams != null && bgParams.height != targetBgHeight) {
+            bgParams.height = targetBgHeight;
+            mSheetBackground.setLayoutParams(bgParams);
         }
 
         updateCurtainHeight();
@@ -1866,25 +1871,60 @@ class BottomSheet extends FrameLayout
             spec = DEFAULT_GLOW_SPEC;
         }
 
-        if (spec.equals(DEFAULT_GLOW_SPEC)) {
-            mShadowLayer.setBackgroundTintList(null);
-        } else {
-            mShadowLayer.setBackgroundTintList(ColorStateList.valueOf(spec.color));
-        }
+        // Use the fallback shadow layer if we are on a desktop device (where the fallback
+        // layer is inflated) but the current sheet has opted out of the new bottom sheet UI.
+        View shadowLayer =
+                (mFallbackShadowLayer != null && !isLargeFormFactorUiEnabled())
+                        ? mFallbackShadowLayer
+                        : mShadowLayer;
 
-        int size;
-        if (spec.size == GlowSpec.ShadowSize.LONG) {
-            size =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
-        } else {
-            size =
+        if (isLargeFormFactorUiEnabled()) {
+            mShadowLayer.setBackgroundResource(R.drawable.popup_bg_shadow_16dp);
+            int size =
                     getContext()
                             .getResources()
                             .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+            MarginLayoutParams lp = (MarginLayoutParams) mShadowLayer.getLayoutParams();
+            if (lp != null) {
+                // The shadow drawable actually holds visual pixels that extend outwards
+                // further than the sheet itself. By applying negative margins equivalent
+                // to the shadow dimension, we stretch the bounds of the shadow layer to
+                // accommodate drawing the shadow fully without shrinking the inner content.
+                lp.setMargins(-size, -size, -size, -size);
+                mShadowLayer.setLayoutParams(lp);
+            }
+        } else {
+            MarginLayoutParams lp = (MarginLayoutParams) mShadowLayer.getLayoutParams();
+            if (lp != null) {
+                lp.setMargins(0, 0, 0, 0);
+                mShadowLayer.setLayoutParams(lp);
+            }
+            if (mFallbackShadowLayer != null) {
+                mShadowLayer.setBackgroundResource(0);
+            }
+
+            if (spec.equals(DEFAULT_GLOW_SPEC)) {
+                shadowLayer.setBackgroundTintList(null);
+            } else {
+                shadowLayer.setBackgroundTintList(ColorStateList.valueOf(spec.color));
+            }
+            shadowLayer.setBackgroundResource(R.drawable.top_round_shadow);
+            int size;
+            if (spec.size == GlowSpec.ShadowSize.LONG) {
+                size =
+                        getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length_large);
+            } else {
+                size =
+                        getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+            }
+            if (shadowLayer instanceof ShadowLayerView) {
+                ((ShadowLayerView) shadowLayer).setShadowLength(size);
+            }
         }
-        mShadowLayer.setShadowLength(size);
     }
 
     private void ensureContentIsWrapped(boolean animate) {
@@ -1966,7 +2006,7 @@ class BottomSheet extends FrameLayout
         mSheetBackground = sheetBackground;
     }
 
-    void setShadowLayerForTesting(ShadowLayerView shadowLayer) {
+    void setShadowLayerForTesting(View shadowLayer) {
         mShadowLayer = shadowLayer;
     }
 

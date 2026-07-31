@@ -234,8 +234,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheetContainer.setVisibility(View.VISIBLE);
 
         var rootView = root.get();
-        LayoutInflater.from(rootView.getContext())
-                .inflate(R.layout.bottom_sheet, mBottomSheetContainer);
+        int layoutId = isLargeFormFactor() ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
+        LayoutInflater.from(rootView.getContext()).inflate(layoutId, mBottomSheetContainer);
         mBottomSheet = rootView.findViewById(R.id.bottom_sheet);
 
         mBottomSheet.init(

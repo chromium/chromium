@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.components.browser_ui.bottomsheet.BottomSheet
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:clipChildren="false" >
+
+    <view
+        class="org.chromium.components.browser_ui.bottomsheet.BottomSheet$ShadowLayerView"
+        android:id="@+id/desktop_fallback_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/top_round_shadow"
+        android:visibility="gone" />
+
+    <!-- The shadow_layer FrameLayout is intentionally kept to manipulate negative margins
+         around the background dynamically in Java for the new bottom sheet UI on desktop. -->
+    <FrameLayout
+        android:id="@+id/shadow_layer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="UselessParent" >
+
+        <FrameLayout
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToOutline="true"
+            android:background="@drawable/bottom_sheet_background" >
+
+            <View
+                android:id="@+id/keyboard_curtain"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_gravity="bottom"
+                android:background="@macro/default_bg_color"
+                android:importantForAccessibility="no" />
+
+            <org.chromium.components.browser_ui.bottomsheet.TouchRestrictingFrameLayout
+                android:importantForAccessibility="yes"
+                android:id="@+id/bottom_sheet_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/bottom_sheet_close_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="top|end"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/close"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/material_ic_close_24dp"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:importantForAccessibility="yes"
+                android:accessibilityTraversalBefore="@id/bottom_sheet_content"
+                android:id="@+id/bottom_sheet_control_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <view
+                    class="org.chromium.components.browser_ui.bottomsheet.TouchRestrictingFrameLayout"
+                    android:id="@+id/bottom_sheet_toolbar_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/bottom_sheet_snackbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|bottom" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+</org.chromium.components.browser_ui.bottomsheet.BottomSheet>

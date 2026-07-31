@@ -39,19 +39,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/bottom_sheet_close_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="top|end"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/close"
-        android:padding="12dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/material_ic_close_24dp"
-        android:visibility="gone" />
 
     <FrameLayout
         android:importantForAccessibility="yes"
