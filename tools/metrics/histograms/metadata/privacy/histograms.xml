@@ -191,7 +191,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <!-- expires-never: tracked as an important privacy metric. -->
 
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Whether third-party cookies are blocked in incognito mode or completely.

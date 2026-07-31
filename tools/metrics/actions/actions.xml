@@ -11918,7 +11918,6 @@ should be able to be added at any place in this file.
 <action name="CookieControls.Bubble.CookiesInUse">
   <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     &quot;Cookies in use&quot; dialog was opened from the cookie controls UI.
   </description>
@@ -11927,7 +11926,6 @@ should be able to be added at any place in this file.
 <action name="CookieControls.Bubble.NotWorking">
   <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     &quot;Site not working&quot; button was clicked in the cookie controls UI.
   </description>
@@ -11936,7 +11934,6 @@ should be able to be added at any place in this file.
 <action name="CookieControls.Bubble.Opened">
   <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>The cookie controls UI was opened.</description>
 </action>
 
@@ -11964,7 +11961,6 @@ should be able to be added at any place in this file.
 <action name="CookieControls.Bubble.TooltipShown">
   <obsolete>Obsolete as of 2024</obsolete>
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     The user looked at the tooltip inside the cookie controls bubble.
   </description>
@@ -11972,7 +11968,6 @@ should be able to be added at any place in this file.
 
 <action name="CookieControls.Bubble.TurnOff">
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     Cookie blocking was disabled for a site through the cookie controls UI.
   </description>
@@ -11980,7 +11975,6 @@ should be able to be added at any place in this file.
 
 <action name="CookieControls.Bubble.TurnOn">
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     Cookie blocking was enabled for a site through the cookie controls UI.
   </description>
@@ -12062,7 +12056,6 @@ should be able to be added at any place in this file.
 
 <action name="CookieControls.NTP.Disabled">
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     Third-party cookie blocking was disabled on the incognito NTP.
   </description>
@@ -12070,7 +12063,6 @@ should be able to be added at any place in this file.
 
 <action name="CookieControls.NTP.Enabled">
   <owner>dullweber@chromium.org</owner>
-  <owner>huanzhong@chromium.org</owner>
   <description>
     Third-party cookie blocking was enabled on the incognito NTP.
   </description>
