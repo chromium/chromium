@@ -52,7 +52,7 @@ void WaitableEvent::SignalImpl() {
   signal_estimate_.store(true, std::memory_order_relaxed);
   mach_msg_empty_send_t msg{};
   msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
-  msg.header.msgh_size = sizeof(&msg);
+  msg.header.msgh_size = sizeof(msg);
   msg.header.msgh_remote_port = send_right_.get();
   // If the event is already signaled, this will time out because the queue
   // has a length of one.
