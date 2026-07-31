@@ -880,8 +880,14 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
   ExpectScores(MediaEngagementService::Get(browser->GetProfile()), url, 1, 0);
 }
 
+// TODO(crbug.com/541174985): Flaky on LSAN builders.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_RestoredSession_Playback_MEI DISABLED_RestoredSession_Playback_MEI
+#else
+#define MAYBE_RestoredSession_Playback_MEI RestoredSession_Playback_MEI
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
-                       RestoredSession_Playback_MEI) {
+                       MAYBE_RestoredSession_Playback_MEI) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   LoadTestPageAndWaitForPlayAndAudible(url, false);
