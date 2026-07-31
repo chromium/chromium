@@ -754,12 +754,6 @@ inline constexpr char kEnableReadingListSignInPromoName[] =
 inline constexpr char kEnableReadingListSignInPromoDescription[] =
     "Enable the sign-in promo view in the reading list screen.";
 
-inline constexpr char kEnableScreenshotProtectionIOSName[] =
-    "Enable Screenshot Protection on iOS";
-inline constexpr char kEnableScreenshotProtectionIOSDescription[] =
-    "Prevents the content of the app from appearing in screenshots and screen "
-    "recordings.";
-
 inline constexpr char kEnableTraitCollectionRegistrationName[] =
     "Enable Customizable Trait Registration";
 inline constexpr char kEnableTraitCollectionRegistrationDescription[] =

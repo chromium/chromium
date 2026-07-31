@@ -95,7 +95,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/enterprise/connectors/device_trust:features",
     "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/enterprise/data_protection/model",
-    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/geolocation/model",

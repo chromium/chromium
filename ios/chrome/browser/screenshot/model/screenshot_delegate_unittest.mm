@@ -10,7 +10,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -257,21 +256,3 @@ TEST_F(ScreenshotDelegateTest, ScreenshotNotBlockedByDataProtection) {
   VerifyScreenshotBlocked(false);
 }
 
-// Tests that when the EnableScreenshotProtectionIOS feature is disabled,
-// screenshots are not blocked even if a policy would otherwise apply.
-TEST_F(ScreenshotDelegateTest, ScreenshotProtectionDisabledByFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableScreenshotProtectionIOS);
-
-  GURL url("https://protected.com");
-  auto web_state = CreateFakeWebState(url);
-
-  SetScreenshotBlockingPolicy(url);
-
-  // When the feature is disabled, DataProtectionTabHelper is not created.
-  ASSERT_EQ(DataProtectionTabHelper::FromWebState(web_state.get()), nullptr);
-
-  SetupMockTab(std::move(web_state));
-
-  VerifyScreenshotBlocked(false);
-}

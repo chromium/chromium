@@ -17,7 +17,6 @@
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/coordinator/data_protection_scene_agent.h"
-#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
@@ -348,12 +347,8 @@ TEST_F(SceneControllerTest, TestOpenQRScannerForShortcutItem) {
             [connection_information_ startupParameters].postOpeningAction);
 }
 
-// Tests that DataProtectionSceneAgent is added to the scene state when the
-// feature flag is enabled.
-TEST_F(SceneControllerTest, TestDataProtectionSceneAgentEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableScreenshotProtectionIOS);
-
+// Tests that DataProtectionSceneAgent is added to the scene state.
+TEST_F(SceneControllerTest, TestDataProtectionSceneAgent) {
   SceneState* scene_state = [[SceneState alloc] init];
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
@@ -365,25 +360,6 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentEnabled) {
                                         .identifier = "other-id"}];
 
   EXPECT_NE(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
-}
-
-// Tests that DataProtectionSceneAgent is not added to the scene state when the
-// feature flag is disabled.
-TEST_F(SceneControllerTest, TestDataProtectionSceneAgentDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableScreenshotProtectionIOS);
-
-  SceneState* scene_state = [[SceneState alloc] init];
-  SceneController* scene_controller =
-      [[SceneController alloc] initWithSceneState:scene_state];
-
-  EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
-
-  ProfileState* profile_state = CreateProfileState(ProfileInitStage::kFinal);
-  [scene_controller connectWithOptions:{.profile_state = profile_state,
-                                        .identifier = "other-id"}];
-
-  EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 }
 
 // Tests that the -prefs property of SceneState is set when the profile is
