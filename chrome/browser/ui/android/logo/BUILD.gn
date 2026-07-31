@@ -75,6 +75,7 @@ android_library("utils_java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/android:new_tab_page_utils_java",
     "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -118,6 +119,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/android:new_tab_page_utils_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/preferences:java",

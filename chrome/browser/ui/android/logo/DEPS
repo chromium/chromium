@@ -1,3 +1,4 @@
 include_rules = [
+"+chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java",
 "+components/image_fetcher/android",
 ]

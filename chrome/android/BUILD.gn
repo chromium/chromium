@@ -307,6 +307,7 @@ if (_is_default_toolchain) {
     deps = [
       ":chrome_app_java_resources",
       "//build/android:build_java",
+      "//chrome/browser/flags:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }

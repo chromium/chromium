@@ -26,8 +26,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -129,6 +132,24 @@ public class NewTabPageUtilUnitTest {
 
         testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(
                 /* isLff= */ true, expectedTileLayoutTopMargin);
+    }
+
+    @Test
+    public void testGetPaddingStyleForAurora() {
+        // Default should be DEFAULT.
+        assertEquals(PaddingStyle.DEFAULT, NewTabPageUtils.getPaddingStyleForAurora());
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", PaddingStyle.SMALL);
+        assertEquals(PaddingStyle.SMALL, NewTabPageUtils.getPaddingStyleForAurora());
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", PaddingStyle.MEDIUM);
+        assertEquals(PaddingStyle.MEDIUM, NewTabPageUtils.getPaddingStyleForAurora());
+
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA, "padding_style", PaddingStyle.LARGE);
+        assertEquals(PaddingStyle.LARGE, NewTabPageUtils.getPaddingStyleForAurora());
     }
 
     private void testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(

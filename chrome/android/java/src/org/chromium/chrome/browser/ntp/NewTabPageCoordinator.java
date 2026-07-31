@@ -997,7 +997,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             return LogoUtils.getTopMarginForDoodle(resources);
         }
 
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        return LogoUtils.getTopMarginForLogo(resources);
     }
 
     /**

@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,11 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class NewTabPageUtils {
     /** Padding style options for NTP Aurora. */
-    @IntDef({PaddingStyle.DEFAULT, PaddingStyle.TIGHT, PaddingStyle.MEDIUM, PaddingStyle.LARGE})
+    @IntDef({PaddingStyle.DEFAULT, PaddingStyle.SMALL, PaddingStyle.MEDIUM, PaddingStyle.LARGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PaddingStyle {
         int DEFAULT = 0;
-        int TIGHT = 1;
+        int SMALL = 1;
         int MEDIUM = 2;
         int LARGE = 3;
         int NUM_ENTRIES = 4;
@@ -50,5 +51,10 @@ public class NewTabPageUtils {
 
         marginLayoutParams.topMargin = topMargin;
         view.setLayoutParams(marginLayoutParams);
+    }
+
+    /** Returns the {@link PaddingStyle} for NTP Aurora. */
+    public static @PaddingStyle int getPaddingStyleForAurora() {
+        return ChromeFeatureList.sNtpAuroraPaddingStyle.getValue();
     }
 }

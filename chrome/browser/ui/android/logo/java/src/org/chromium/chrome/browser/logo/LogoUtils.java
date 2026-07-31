@@ -15,6 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.PaddingStyle;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,6 +38,20 @@ public class LogoUtils {
     /** Returns the top margin of the LogoView when the current logo is a google doodle. */
     public static int getTopMarginForDoodle(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.doodle_margin_top);
+    }
+
+    /** Returns the top margin of the default Google logo. */
+    public static int getTopMarginForLogo(Resources resources) {
+        switch (NewTabPageUtils.getPaddingStyleForAurora()) {
+            case PaddingStyle.SMALL:
+                return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_small);
+            case PaddingStyle.MEDIUM:
+                return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_medium);
+            case PaddingStyle.LARGE:
+                return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_large);
+            default:
+                return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        }
     }
 
     /** Returns the height of the LogoView when the current logo is a google doodle. */
@@ -84,7 +100,7 @@ public class LogoUtils {
         } else {
             return new int[] {
                 resources.getDimensionPixelSize(R.dimen.ntp_logo_height),
-                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top),
+                getTopMarginForLogo(resources),
             };
         }
         return new int[] {0, 0};
