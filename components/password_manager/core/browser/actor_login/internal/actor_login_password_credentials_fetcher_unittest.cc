@@ -220,7 +220,8 @@ class ActorLoginPasswordCredentialsFetcherTest : public ::testing::Test {
     cred.url = GURL(url);
     cred.signon_realm = cred.url.spec();
     cred.username_value = username;
-    cred.password_value = password;
+    cred.password_value =
+        password_manager::PasswordString(std::u16string(password));
     cred.match_type = match_type;
     return cred;
   }

@@ -510,7 +510,7 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
               concurrent_filling.CreateClosure());
     FillField(manager->GetDriver().get(), form_global_id,
               parsed_form->password_element_renderer_id,
-              stored_credential.password_value, FieldType::kPassword,
+              stored_credential.password_value.value(), FieldType::kPassword,
               concurrent_filling.CreateClosure());
   }
 

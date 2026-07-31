@@ -738,7 +738,7 @@ void VotesUploader::SetKnownValueFlag(
       // Username was not found, do nothing.
       return;
     }
-    known_password = match->password_value;
+    known_password = match->password_value.value();
   } else {
     known_password = pending_credentials.password_value;
   }

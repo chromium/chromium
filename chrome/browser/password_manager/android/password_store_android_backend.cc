@@ -476,7 +476,7 @@ void PasswordStoreAndroidBackend::AddLoginInternal(
     PasswordChangesOrErrorReply callback) {
   if (credential.blocked_by_user) {
     credential.username_value.clear();
-    credential.password_value.clear();
+    credential.password_value = password_manager::PasswordString();
   }
   JobId job_id =
       bridge_helper_->AddLogin(std::move(credential), std::move(account));
@@ -491,7 +491,7 @@ void PasswordStoreAndroidBackend::UpdateLoginInternal(
     PasswordChangesOrErrorReply callback) {
   if (credential.blocked_by_user) {
     credential.username_value.clear();
-    credential.password_value.clear();
+    credential.password_value = password_manager::PasswordString();
   }
   JobId job_id =
       bridge_helper_->UpdateLogin(std::move(credential), std::move(account));

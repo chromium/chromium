@@ -254,7 +254,7 @@ void RemoteActorCredentialSharingImpl::ProceedWithCredential(
           .Serialize();
   params.password_client_tag_hash = client_tag_hash;
   params.username = credential.username_value;
-  params.password = credential.password_value;
+  params.password = credential.password_value.value();
   params.time_to_live = kShareTimeToLive;
   params.agent_oauth_client_id = pending_request_->remote_actor_id;
 

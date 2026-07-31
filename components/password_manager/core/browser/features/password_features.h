@@ -222,6 +222,14 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 // that requestAnimationFrame() is not fired on a detached WebContents.
 BASE_DECLARE_FEATURE(kUseDetachedWidget);
 
+// Controls rollout of storing `PasswordString` password values encrypted in
+// memory via `crypto::ProcessBoundU16String`. When disabled, `PasswordString`
+// keeps the password as a plaintext `std::u16string`; when enabled, it uses
+// `crypto::ProcessBoundU16String`. The choice is captured at `PasswordString`
+// construction time.
+// TODO(crbug.com/513276101): Remove flag after rollout completes
+BASE_DECLARE_FEATURE(kUseProcessBoundPasswordString);
+
 // All features parameters in alphabetical order.
 
 }  // namespace password_manager::features

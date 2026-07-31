@@ -230,7 +230,7 @@ class PasswordManagerViewControllerTest
     cred.username_element = u"Email";
     cred.username_value = username_value;
     cred.password_element = u"Passwd";
-    cred.password_value = u"test";
+    cred.password_value = password_manager::PasswordString(u"test");
     cred.submit_element = u"signIn";
     cred.signon_realm = "http://www.example.com/";
     cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
@@ -252,7 +252,7 @@ class PasswordManagerViewControllerTest
     cred.username_element = u"Email";
     cred.username_value = u"test@egmail.com";
     cred.password_element = u"Passwd";
-    cred.password_value = u"test";
+    cred.password_value = password_manager::PasswordString(u"test");
     cred.submit_element = u"signIn";
     cred.signon_realm = "http://www.example2.com/";
     cred.scheme = password_manager::PasswordForm::Scheme::kHtml;

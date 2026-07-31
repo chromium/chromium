@@ -246,7 +246,7 @@ sync_pb::PasswordSpecificsData SpecificsDataFromStoredCredential(
   password_data.set_username_value(
       base::UTF16ToUTF8(credential.username_value));
   password_data.set_password_value(
-      base::UTF16ToUTF8(credential.password_value));
+      base::UTF16ToUTF8(credential.password_value.value()));
   password_data.set_date_last_used(
       credential.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_date_last_filled_windows_epoch_micros(
@@ -331,7 +331,8 @@ StoredCredential StoredCredentialFromSpecifics(
   cred.username_element = base::UTF8ToUTF16(password_data.username_element());
   cred.password_element = base::UTF8ToUTF16(password_data.password_element());
   cred.username_value = base::UTF8ToUTF16(password_data.username_value());
-  cred.password_value = base::UTF8ToUTF16(password_data.password_value());
+  cred.password_value = password_manager::PasswordString(
+      base::UTF8ToUTF16(password_data.password_value()));
   if (password_data.has_date_last_used()) {
     cred.date_last_used = ConvertToBaseTime(password_data.date_last_used());
   } else if (password_data.preferred()) {

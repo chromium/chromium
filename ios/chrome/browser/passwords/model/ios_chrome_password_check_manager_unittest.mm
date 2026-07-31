@@ -95,7 +95,8 @@ password_manager::StoredCredential MakeSavedPassword(
   cred.url = GURL(signon_realm);
   cred.signon_realm = std::string(signon_realm);
   cred.username_value = std::u16string(username);
-  cred.password_value = std::u16string(password);
+  cred.password_value =
+      password_manager::PasswordString(std::u16string(password));
   cred.in_store = PasswordForm::Store::kProfileStore;
   cred.password_issues =
       base::flat_map<InsecureType, password_manager::InsecurityMetadata>();

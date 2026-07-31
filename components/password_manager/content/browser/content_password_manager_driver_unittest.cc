@@ -212,7 +212,7 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   StoredCredential preferred_match;
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = u"test@gmail.com";
-  preferred_match.password_value = u"test";
+  preferred_match.password_value = password_manager::PasswordString(u"test");
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
   preferred_match.match_type = PasswordForm::MatchType::kExact;
@@ -221,7 +221,8 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   StoredCredential non_preferred_match;
   non_preferred_match.url = GURL("https://foo.com/");
   non_preferred_match.username_value = u"test1@gmail.com";
-  non_preferred_match.password_value = u"test1";
+  non_preferred_match.password_value =
+      password_manager::PasswordString(u"test1");
   non_preferred_match.signon_realm = "https://foo.com/";
   non_preferred_match.scheme = PasswordForm::Scheme::kHtml;
   non_preferred_match.match_type = PasswordForm::MatchType::kPSL;

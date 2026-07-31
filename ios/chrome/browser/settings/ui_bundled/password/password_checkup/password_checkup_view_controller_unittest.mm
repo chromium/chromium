@@ -152,7 +152,7 @@ class PasswordCheckupViewControllerTest
     cred.username_element = u"Email";
     cred.username_value = u"test@egmail.com";
     cred.password_element = u"Passwd";
-    cred.password_value = u"test";
+    cred.password_value = password_manager::PasswordString(u"test");
     cred.signon_realm = url;
     cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
     cred.in_store = password_manager::PasswordForm::Store::kProfileStore;
@@ -168,7 +168,7 @@ class PasswordCheckupViewControllerTest
     cred.username_element = u"Email";
     cred.username_value = u"test@egmail.com";
     cred.password_element = u"Passwd";
-    cred.password_value = u"test";
+    cred.password_value = password_manager::PasswordString(u"test");
     cred.signon_realm = url;
     cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
     cred.in_store = password_manager::PasswordForm::Store::kProfileStore;

@@ -35,7 +35,7 @@ NSData* ToNSData(const std::string& str) {
 password_manager::StoredCredential CreateStoredCredential() {
   password_manager::StoredCredential cred;
   cred.username_value = u"username";
-  cred.password_value = u"password";
+  cred.password_value = password_manager::PasswordString(u"password");
   cred.signon_realm = "http://www.example.com/";
   cred.url = GURL("http://www.example.com/");
   cred.date_created = base::Time::FromMillisecondsSinceUnixEpoch(987654321000);

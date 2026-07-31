@@ -871,7 +871,7 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
     }
   }
   std::u16string old_password = similar_saved_form
-                                    ? similar_saved_form->password_value
+                                    ? similar_saved_form->password_value.value()
                                     : std::u16string();
 
   Logger::StringID decision = StateToDecision(state);
@@ -927,7 +927,7 @@ std::u16string PasswordSaveManagerImpl::GetOldPassword(
     const PasswordForm& parsed_submitted_form) const {
   const StoredCredential* similar_saved_form =
       FindSimilarSavedFormAndComputeState(parsed_submitted_form).first;
-  return similar_saved_form ? similar_saved_form->password_value
+  return similar_saved_form ? similar_saved_form->password_value.value()
                             : std::u16string();
 }
 

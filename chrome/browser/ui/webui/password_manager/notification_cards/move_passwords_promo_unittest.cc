@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -76,7 +77,7 @@ class NotificationCardMovePasswordsTest
     password_manager::StoredCredential cred;
     cred.signon_realm = "https://example.com/";
     cred.username_value = u"username";
-    cred.password_value = u"password";
+    cred.password_value = password_manager::PasswordString(u"password");
     cred.in_store = store_type;
     profile_store_->AddLogin(std::move(cred));
     task_environment()->RunUntilIdle();

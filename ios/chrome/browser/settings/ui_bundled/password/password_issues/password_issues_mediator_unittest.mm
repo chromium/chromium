@@ -175,7 +175,8 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     password_manager::StoredCredential cred;
     cred.signon_realm = website;
     cred.username_value = base::ASCIIToUTF16(username);
-    cred.password_value = base::ASCIIToUTF16(password);
+    cred.password_value =
+        password_manager::PasswordString(base::ASCIIToUTF16(password));
     cred.url = GURL(website + "/login");
     cred.action = GURL(website + "/action");
     cred.username_element = u"email";

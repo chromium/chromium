@@ -75,7 +75,8 @@ StoredCredential CreateStoredCredential(
   cred.signon_realm = std::string(signon_realm);
   cred.url = GURL(signon_realm);
   cred.username_value = std::u16string(username);
-  cred.password_value = std::u16string(password);
+  cred.password_value =
+      password_manager::PasswordString(std::u16string(password));
   cred.date_last_used = base::Time::FromSecondsSinceUnixEpoch(1546300800);
   cred.date_created = base::Time::FromSecondsSinceUnixEpoch(1546300800);
   cred.in_store = store;

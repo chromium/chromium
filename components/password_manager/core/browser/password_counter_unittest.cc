@@ -24,7 +24,8 @@ password_manager::StoredCredential CreateTestPasswordForm(
   cred.url = GURL("https://example.com/login");
   cred.signon_realm = cred.url.GetWithEmptyPath().spec();
   cred.username_value = base::UTF8ToUTF16(username);
-  cred.password_value = base::UTF8ToUTF16(password);
+  cred.password_value =
+      password_manager::PasswordString(base::UTF8ToUTF16(password));
   return cred;
 }
 

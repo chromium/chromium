@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
 namespace password_manager {
@@ -20,6 +21,14 @@ EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
     std::u16string* plain_text) const {
   return encryptor_ && encryptor_->DecryptString16(cipher_text, plain_text)
+             ? EncryptionResult::kSuccess
+             : EncryptionResult::kServiceFailure;
+}
+
+EncryptionResult LoginDatabase::DecryptedString(
+    const std::string& cipher_text,
+    PasswordString* decrypted_text) const {
+  return DecryptStringToPasswordString(cipher_text, decrypted_text)
              ? EncryptionResult::kSuccess
              : EncryptionResult::kServiceFailure;
 }

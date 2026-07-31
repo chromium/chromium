@@ -37,7 +37,7 @@ StoredCredential CreateStoredCredential(bool with_backup) {
   StoredCredential cred;
   cred.signon_realm = "https://example.com";
   cred.username_value = u"username";
-  cred.password_value = u"password";
+  cred.password_value = password_manager::PasswordString(u"password");
   if (with_backup) {
     cred.notes.emplace_back(PasswordNote::kPasswordChangeBackupNoteName,
                             u"backup", base::Time::Now(), false);

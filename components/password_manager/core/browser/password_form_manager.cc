@@ -1465,7 +1465,8 @@ void PasswordFormManager::CalculateFillingAssistanceAndCorrectnessMetrics(
     if (!saved_form.username_value.empty()) {
       saved_usernames.emplace(saved_form.username_value, saved_form.in_store);
     }
-    saved_passwords.emplace(saved_form.password_value, saved_form.in_store);
+    saved_passwords.emplace(saved_form.password_value.value(),
+                            saved_form.in_store);
   }
 
   metrics_recorder_->CalculateFillingAssistanceMetric(

@@ -4,7 +4,8 @@
 
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
-#include "base/strings/string_util.h"
+#include <string>
+
 #include "components/os_crypt/async/common/encryptor.h"
 
 namespace password_manager {
@@ -40,6 +41,29 @@ EncryptionResult LoginDatabase::DecryptedString(
       encryptor_ && encryptor_->DecryptString16(cipher_text, plain_text);
   return result ? EncryptionResult::kSuccess
                 : EncryptionResult::kServiceFailure;
+}
+
+EncryptionResult LoginDatabase::DecryptedString(
+    const std::string& cipher_text,
+    PasswordString* decrypted_text) const {
+  // Unittests need to read sample database entries. If these entries had real
+  // passwords, their encoding would need to be different for every platform.
+  // To avoid the need for that, the entries have empty passwords.
+  // os_crypt_async on Windows does not recognise the empty string as a valid
+  // encrypted string. Changing that for all clients of os_crypt_async could
+  // have too broad an impact, therefore to allow platform-independent data
+  // files for LoginDatabase tests, the special handling of the empty string
+  // is added below instead.
+  // See also https://codereview.chromium.org/2291123008/#msg14 for a
+  // discussion.
+  if (cipher_text.empty()) {
+    *decrypted_text = {};
+    return EncryptionResult::kSuccess;
+  }
+
+  return DecryptStringToPasswordString(cipher_text, decrypted_text)
+             ? EncryptionResult::kSuccess
+             : EncryptionResult::kServiceFailure;
 }
 
 }  // namespace password_manager

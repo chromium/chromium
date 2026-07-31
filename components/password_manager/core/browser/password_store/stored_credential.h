@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -47,7 +48,7 @@ struct StoredCredential {
 
   // Values
   std::u16string username_value;
-  std::u16string password_value;
+  PasswordString password_value;
   AlternativeElementVector all_alternative_usernames;
 
   // Timestamps

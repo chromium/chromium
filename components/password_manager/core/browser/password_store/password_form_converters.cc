@@ -23,7 +23,7 @@ PasswordForm ToPasswordForm(const StoredCredential& cred) {
   form.username_element = cred.username_element;
   form.password_element = cred.password_element;
   form.username_value = cred.username_value;
-  form.password_value = cred.password_value;
+  form.password_value = cred.password_value.value();
   form.all_alternative_usernames = cred.all_alternative_usernames;
   form.date_created = cred.date_created;
   form.date_last_used = cred.date_last_used;
@@ -72,7 +72,7 @@ PasswordForm ToPasswordForm(StoredCredential&& cred) {
   form.username_element = std::move(cred.username_element);
   form.password_element = std::move(cred.password_element);
   form.username_value = std::move(cred.username_value);
-  form.password_value = std::move(cred.password_value);
+  form.password_value = cred.password_value.value();
   form.all_alternative_usernames = std::move(cred.all_alternative_usernames);
   form.date_created = cred.date_created;
   form.date_last_used = cred.date_last_used;
@@ -121,7 +121,8 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.username_element = std::move(form.username_element);
   cred.password_element = std::move(form.password_element);
   cred.username_value = std::move(form.username_value);
-  cred.password_value = std::move(form.password_value);
+  cred.password_value =
+      password_manager::PasswordString(std::move(form.password_value));
   cred.all_alternative_usernames = std::move(form.all_alternative_usernames);
   cred.date_created = form.date_created;
   cred.date_last_used = form.date_last_used;

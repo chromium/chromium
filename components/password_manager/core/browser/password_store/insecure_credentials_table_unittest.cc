@@ -43,7 +43,7 @@ StoredCredential TestForm() {
   cred.signon_realm = kTestDomain;
   cred.url = GURL(cred.signon_realm);
   cred.username_value = kUsername;
-  cred.password_value = u"1234";
+  cred.password_value = password_manager::PasswordString(u"1234");
   return cred;
 }
 

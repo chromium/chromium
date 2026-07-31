@@ -28,7 +28,8 @@ StoredCredential CreateStoredCredential(std::u16string username = u"username") {
   cred.signon_realm = "http://www.google.com";
   cred.url = GURL(cred.signon_realm);
   cred.username_value = username;
-  cred.password_value = u"superstrongpassword";
+  cred.password_value =
+      password_manager::PasswordString(u"superstrongpassword");
   return cred;
 }
 

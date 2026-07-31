@@ -52,7 +52,7 @@ using ::testing::Return;
 password_manager::StoredCredential CreateStoredCredential() {
   password_manager::StoredCredential cred;
   cred.username_value = u"test@egmail.com";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.signon_realm = "http://www.example.com/";
   cred.in_store = PasswordForm::Store::kProfileStore;
   return cred;

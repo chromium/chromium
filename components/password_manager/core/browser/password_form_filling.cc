@@ -28,6 +28,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/elide_url.h"
+#include "crypto/process_bound_string.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -331,7 +332,8 @@ PasswordFormFillData CreatePasswordFormFillData(
     CHECK_EQ(PasswordForm::Scheme::kHtml, preferred_match->scheme);
 
     result.preferred_login.username_value = preferred_match->username_value;
-    result.preferred_login.password_value = preferred_match->password_value;
+    result.preferred_login.password_value =
+        preferred_match->password_value.value();
     result.preferred_login.backup_password_value =
         preferred_match->GetPasswordBackup();
     result.preferred_login.uses_account_store =
@@ -347,16 +349,19 @@ PasswordFormFillData CreatePasswordFormFillData(
     }
   }
 
+  crypto::SecureU16String preferred_match_password_value =
+      preferred_match ? preferred_match->password_value.secure_value()
+                      : crypto::SecureU16String();
   // Add additional username/value pairs.
   for (const StoredCredential& match : matches) {
     if (preferred_match &&
         (match.username_value == preferred_match->username_value &&
-         match.password_value == preferred_match->password_value)) {
+         match.password_value == preferred_match_password_value)) {
       continue;
     }
     PasswordAndMetadata value;
     value.username_value = match.username_value;
-    value.password_value = match.password_value;
+    value.password_value = match.password_value.value();
     value.backup_password_value = match.GetPasswordBackup();
     value.uses_account_store = match.IsUsingAccountStore();
     value.is_grouped_affiliation =

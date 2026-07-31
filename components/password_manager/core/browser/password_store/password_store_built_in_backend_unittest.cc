@@ -473,7 +473,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
   backend->AddLoginAsync(CloneStoredCredential(cred), base::DoNothing());
   RunUntilIdle();
 
-  cred.password_value = u"a different password";
+  cred.password_value =
+      password_manager::PasswordString(u"a different password");
   const PasswordStoreChange update_change = PasswordStoreChange(
       PasswordStoreChange::UPDATE, CloneStoredCredential(cred),
       /*password_changed=*/true);
@@ -700,7 +701,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
   backend->AddLoginAsync(CloneStoredCredential(cred), base::DoNothing());
   RunUntilIdle();
 
-  cred.password_value = u"a different password";
+  cred.password_value =
+      password_manager::PasswordString(u"a different password");
   const PasswordStoreChange update_change = PasswordStoreChange(
       PasswordStoreChange::UPDATE, CloneStoredCredential(cred),
       /*password_changed=*/true);

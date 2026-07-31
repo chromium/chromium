@@ -254,7 +254,7 @@ TEST_F(ChangePasswordFormFillerTest, SucceededForExistingCredential) {
   EXPECT_TRUE(filling_future.Get().has_value());
   EXPECT_EQ(presaved_generated_password_form.username_value,
             existing_credential()->username_value);
-  EXPECT_EQ(presaved_generated_password_form.password_value,
+  EXPECT_EQ(presaved_generated_password_form.password_value.value(),
             existing_credential()->password_value);
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 

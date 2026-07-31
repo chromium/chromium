@@ -49,7 +49,8 @@ password_manager::StoredCredential CreateForm(const std::string& signon_realm,
   password_manager::StoredCredential cred;
   cred.signon_realm = signon_realm;
   cred.username_value = base::ASCIIToUTF16(username);
-  cred.password_value = base::ASCIIToUTF16(password);
+  cred.password_value =
+      password_manager::PasswordString(base::ASCIIToUTF16(password));
   return cred;
 }
 
@@ -57,7 +58,7 @@ void AddMetricsTestData(TestPasswordStore* store) {
   password_manager::StoredCredential credential;
   credential.url = GURL("http://example.com");
   credential.username_value = u"test1@gmail.com";
-  credential.password_value = u"test";
+  credential.password_value = password_manager::PasswordString(u"test");
   credential.signon_realm = "http://example.com/";
   credential.times_used_in_html_form = 0;
   store->AddLogin(password_manager::CloneStoredCredential(credential));
@@ -107,21 +108,21 @@ void AddMetricsTestData(TestPasswordStore* store) {
   credential.url = GURL("https://fifth.example.com/");
   credential.signon_realm = "https://fifth.example.com/";
   credential.username_value = u"";
-  credential.password_value = u"";
+  credential.password_value = password_manager::PasswordString(u"");
   credential.blocked_by_user = true;
   store->AddLogin(password_manager::CloneStoredCredential(credential));
 
   credential.url = GURL("https://sixth.example.com/");
   credential.signon_realm = "https://sixth.example.com/";
   credential.username_value = u"my_username";
-  credential.password_value = u"my_password";
+  credential.password_value = password_manager::PasswordString(u"my_password");
   credential.blocked_by_user = false;
   store->AddLogin(password_manager::CloneStoredCredential(credential));
 
   credential.url = GURL();
   credential.signon_realm = "android://hash@com.example.android/";
   credential.username_value = u"JohnDoe";
-  credential.password_value = u"my_password";
+  credential.password_value = password_manager::PasswordString(u"my_password");
   credential.blocked_by_user = false;
   store->AddLogin(password_manager::CloneStoredCredential(credential));
 
@@ -131,7 +132,7 @@ void AddMetricsTestData(TestPasswordStore* store) {
   credential.url = GURL("http://rsolomakhin.github.io/autofill/");
   credential.signon_realm = "http://rsolomakhin.github.io/";
   credential.username_value = u"";
-  credential.password_value = u"";
+  credential.password_value = password_manager::PasswordString(u"");
   credential.blocked_by_user = true;
   store->AddLogin(password_manager::CloneStoredCredential(credential));
 
@@ -1261,7 +1262,7 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
   credential.url = GURL("http://example1.com/");
   credential.username_element = u"userelem_1";
   credential.username_value = u"username_1";
-  credential.password_value = u"password_1";
+  credential.password_value = password_manager::PasswordString(u"password_1");
   profile_store->AddLogin(CloneStoredCredential(credential));
 
   // Different username -> no duplicate.
@@ -1280,7 +1281,7 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
   profile_store->AddLogin(CloneStoredCredential(credential));
   credential.blocked_by_user = true;
   credential.username_value = u"";
-  credential.password_value = u"";
+  credential.password_value = password_manager::PasswordString(u"");
   profile_store->AddLogin(CloneStoredCredential(credential));
 
   base::HistogramTester histogram_tester;
@@ -1379,17 +1380,17 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
   credential.username_element = u"userelem_1";
   credential.username_value = u"username_1";
   credential.password_element = u"passelem_1";
-  credential.password_value = u"password_1";
+  credential.password_value = password_manager::PasswordString(u"password_1");
   profile_store->AddLogin(CloneStoredCredential(credential));
   // Note: password_value is not part of the unique key, so we need to change
   // some other value to be able to insert the duplicate into the DB.
   credential.password_element = u"passelem_2";
-  credential.password_value = u"password_2";
+  credential.password_value = password_manager::PasswordString(u"password_2");
   profile_store->AddLogin(CloneStoredCredential(credential));
   // The number of "identical" credentials doesn't matter; we count the *sets*
   // of duplicates.
   credential.password_element = u"passelem_3";
-  credential.password_value = u"password_3";
+  credential.password_value = password_manager::PasswordString(u"password_3");
   profile_store->AddLogin(CloneStoredCredential(credential));
 
   base::HistogramTester histogram_tester;

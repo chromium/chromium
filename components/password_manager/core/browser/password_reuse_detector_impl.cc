@@ -399,7 +399,8 @@ void PasswordReuseDetectorImpl::AddPassword(const StoredCredential& cred) {
     return;
   }
 
-  uint64_t password_hash = CalculatePasswordHash(cred.password_value, salt_);
+  uint64_t password_hash =
+      CalculatePasswordHash(cred.password_value.secure_value(), salt_);
   password_hashes_with_matching_reused_credentials_[password_hash]
       .matching_credentials.insert(MatchingReusedCredential(
           cred.signon_realm, cred.url, cred.username_value, cred.in_store));
@@ -441,7 +442,8 @@ void PasswordReuseDetectorImpl::RemovePassword(const StoredCredential& cred) {
     }
   }
 
-  uint64_t password_hash = CalculatePasswordHash(cred.password_value, salt_);
+  uint64_t password_hash =
+      CalculatePasswordHash(cred.password_value.secure_value(), salt_);
   auto password_hash_iterator =
       password_hashes_with_matching_reused_credentials_.find(password_hash);
   if (password_hash_iterator ==

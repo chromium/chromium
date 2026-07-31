@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "crypto/process_bound_string.h"
+
 namespace password_manager {
+class PasswordString;
 
 // Result values for encryption/decryption actions.
 enum class EncryptionResult {
@@ -29,17 +32,27 @@ class EncryptDecryptInterface {
   // successful, or returning false and leaving cipher_text unchanged if
   // encryption fails (e.g., if the underlying OS encryption system is
   // temporarily unavailable).
+  // TODO(crbug.com/513276101): Clean up plain text variant after password notes
+  // are migrated to SecureU16String too.
   [[nodiscard]] virtual EncryptionResult EncryptedString(
       const std::u16string& plain_text,
+      std::string* cipher_text) const = 0;
+  [[nodiscard]] virtual EncryptionResult EncryptedString(
+      const crypto::SecureU16String& plain_text,
       std::string* cipher_text) const = 0;
 
   // Decrypts cipher_text, setting the value of plain_text and returning true if
   // successful, or returning false and leaving plain_text unchanged if
   // decryption fails (e.g., if the underlying OS encryption system is
   // temporarily unavailable).
+  // TODO(crbug.com/513276101): Clean up plain text variant after password notes
+  // are migrated to SecureU16String too.
   [[nodiscard]] virtual EncryptionResult DecryptedString(
       const std::string& cipher_text,
       std::u16string* plain_text) const = 0;
+  [[nodiscard]] virtual EncryptionResult DecryptedString(
+      const std::string& cipher_text,
+      PasswordString* plain_text) const = 0;
 };
 
 }  // namespace password_manager

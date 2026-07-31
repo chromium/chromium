@@ -631,7 +631,8 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
   StoredCredential preferred_match;
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
+  preferred_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
   preferred_match.match_type = PasswordForm::MatchType::kExact;
@@ -681,7 +682,8 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   StoredCredential preferred_match;
   preferred_match.url = GURL("https://mobile.foo.com/");
   preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
+  preferred_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.match_type = PasswordForm::MatchType::kPSL;
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
@@ -690,7 +692,8 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   StoredCredential exact_match;
   exact_match.url = GURL("https://foo.com/");
   exact_match.username_value = u"test1@gmail.com";
-  exact_match.password_value = kPreferredPassword;
+  exact_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   exact_match.signon_realm = "https://foo.com/";
   exact_match.scheme = PasswordForm::Scheme::kHtml;
   exact_match.match_type = PasswordForm::MatchType::kExact;
@@ -699,7 +702,8 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   StoredCredential public_suffix_match;
   public_suffix_match.url = GURL("https://foo.com/");
   public_suffix_match.username_value = u"test2@gmail.com";
-  public_suffix_match.password_value = kPreferredPassword;
+  public_suffix_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   public_suffix_match.match_type = PasswordForm::MatchType::kPSL;
   public_suffix_match.signon_realm = "https://foo.com/";
   public_suffix_match.scheme = PasswordForm::Scheme::kHtml;
@@ -753,7 +757,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   StoredCredential preferred_match;
   preferred_match.url = GURL("android://hash@foo.com/");
   preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
+  preferred_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "android://hash@foo.com/";
   preferred_match.match_type = PasswordForm::MatchType::kAffiliated;
 
@@ -761,7 +766,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   StoredCredential exact_match;
   exact_match.url = GURL("https://foo.com/");
   exact_match.username_value = u"test1@gmail.com";
-  exact_match.password_value = kPreferredPassword;
+  exact_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   exact_match.signon_realm = "https://foo.com/";
   exact_match.scheme = PasswordForm::Scheme::kHtml;
   exact_match.match_type = PasswordForm::MatchType::kExact;
@@ -771,7 +777,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   StoredCredential affiliated_match;
   affiliated_match.url = GURL("android://hash@foo1.com/");
   affiliated_match.username_value = u"test2@gmail.com";
-  affiliated_match.password_value = kPreferredPassword;
+  affiliated_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   affiliated_match.signon_realm = "https://foo1.com/";
   affiliated_match.scheme = PasswordForm::Scheme::kHtml;
   affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
@@ -817,7 +824,8 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   StoredCredential preferred_match;
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
+  preferred_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
   // Set renderer id related fields.
@@ -857,7 +865,8 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
   StoredCredential preferred_match;
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
+  preferred_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
   FormData form_data;
@@ -895,7 +904,8 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   StoredCredential affiliated_match;
   affiliated_match.url = GURL("android://hash@foo1.com/");
   affiliated_match.username_value = u"test2@gmail.com";
-  affiliated_match.password_value = kPreferredPassword;
+  affiliated_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   affiliated_match.match_type = PasswordForm::MatchType::kAffiliated;
   affiliated_match.app_display_name = "Foo";
   affiliated_match.signon_realm = "https://foo1.com/";
@@ -936,7 +946,8 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   StoredCredential additional_match;
   additional_match.url = GURL("https://foo.com/");
   additional_match.username_value = u"test2@gmail.com";
-  additional_match.password_value = kPreferredPassword;
+  additional_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   additional_match.signon_realm = "https://foo.com/";
   additional_match.scheme = PasswordForm::Scheme::kHtml;
   additional_match.match_type = PasswordForm::MatchType::kExact;
@@ -950,7 +961,8 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   StoredCredential preferred_match;
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = kPreferredUsername;
-  preferred_match.password_value = kPreferredPassword;
+  preferred_match.password_value =
+      password_manager::PasswordString(kPreferredPassword);
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
   preferred_match.match_type = PasswordForm::MatchType::kExact;

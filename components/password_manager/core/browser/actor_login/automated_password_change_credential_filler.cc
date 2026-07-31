@@ -45,7 +45,8 @@ const password_manager::StoredCredential*
 AutomatedPasswordChangeCredentialFiller::GetMatchingStoredCredential(
     const password_manager::PasswordFormManager& signin_form_manager) {
   automated_form_.username_value = username_;
-  automated_form_.password_value = password_;
+  automated_form_.password_value =
+      password_manager::PasswordString(std::u16string(password_));
   return &automated_form_;
 }
 

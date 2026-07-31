@@ -82,7 +82,7 @@ namespace password_manager {
 namespace {
 
 MATCHER_P(StoredCredentialPasswordIs, expected_password, "") {
-  return arg.password_value == expected_password;
+  return arg.password_value.value() == expected_password;
 }
 
 PasswordStoreChangeList AddChangeForForm(const PasswordForm& form) {
@@ -135,7 +135,7 @@ StoredCredential GenerateExampleStoredCredential() {
   cred.username_element = u"Email";
   cred.username_value = u"test@gmail.com";
   cred.password_element = u"Passwd";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.submit_element = u"signIn";
   cred.signon_realm = "http://www.google.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
@@ -438,7 +438,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
   EXPECT_THAT(std::move(result), ElementsAre(HasPrimaryKeyAndEquals(cred)));
 
   // RemoveLoginByPrimaryKey() doesn't decrypt or fill the password value.
-  cred.password_value.clear();
+  cred.password_value = password_manager::PasswordString(std::u16string());
 
   EXPECT_TRUE(db().RemoveLoginByPrimaryKey(primary_key, &change_list));
   EXPECT_EQ(RemoveChangeForForm(cred), change_list);
@@ -473,7 +473,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
   cred.username_element = u"username";
   cred.username_value = u"test@gmail.com";
   cred.password_element = u"password";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.submit_element = u"";
   cred.signon_realm = "https://foo.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
@@ -507,7 +507,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   cred.url = GURL("https://foo.com/");
   cred.action = GURL("https://foo.com/login");
   cred.username_value = u"test@gmail.com";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.signon_realm = "https://foo.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
 
@@ -516,7 +516,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   cred2.action = GURL("https://mobile.foo.com/login");
   cred2.signon_realm = "federation://mobile.foo.com/accounts.google.com";
   cred2.username_value = u"test1@gmail.com";
-  cred2.password_value = u"";
+  cred2.password_value = password_manager::PasswordString(u"");
   cred2.type = PasswordForm::Type::kApi;
   cred2.federation_origin =
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
@@ -602,7 +602,7 @@ TEST_P(LoginDatabaseSchemesTest, TestPublicSuffixDisabled) {
   non_html_auth.in_store = PasswordForm::Store::kProfileStore;
   non_html_auth.url = GURL("http://example.com");
   non_html_auth.username_value = u"test@gmail.com";
-  non_html_auth.password_value = u"test";
+  non_html_auth.password_value = password_manager::PasswordString(u"test");
   non_html_auth.signon_realm = "http://example.com/Realm";
   non_html_auth.scheme = GetParam();
 
@@ -643,7 +643,7 @@ TEST_P(LoginDatabaseSchemesTest, TestIPAddressMatches) {
   ip_cred.in_store = PasswordForm::Store::kProfileStore;
   ip_cred.url = GURL(origin);
   ip_cred.username_value = u"test@gmail.com";
-  ip_cred.password_value = u"test";
+  ip_cred.password_value = password_manager::PasswordString(u"test");
   ip_cred.signon_realm = origin;
   ip_cred.scheme = GetParam();
 
@@ -669,7 +669,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainGoogle) {
   StoredCredential cred;
   cred.url = GURL("https://accounts.google.com/");
   cred.username_value = u"test@gmail.com";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.signon_realm = "https://accounts.google.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
 
@@ -703,7 +703,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   cred.url = GURL("https://accounts.google.com/");
   cred.action = GURL("https://accounts.google.com/login");
   cred.username_value = u"test@gmail.com";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.signon_realm = "https://accounts.google.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
 
@@ -778,7 +778,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   cred.username_element = u"username";
   cred.username_value = u"test@gmail.com";
   cred.password_element = u"password";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.submit_element = u"";
   cred.signon_realm = "https://foo.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
@@ -803,7 +803,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   cred.username_element = u"email";
   cred.username_value = u"test@gmail.com";
   cred.password_element = u"password";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.submit_element = u"";
   cred.signon_realm = "https://baz.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
@@ -840,7 +840,7 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingRegexp) {
   cred.username_element = u"username";
   cred.username_value = u"test@gmail.com";
   cred.password_element = u"password";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.submit_element = u"";
   cred.signon_realm = "http://foo.com/";
   cred.scheme = PasswordForm::Scheme::kHtml;
@@ -1221,7 +1221,8 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   incomplete_cred.url = GURL("http://accounts.google.com/LoginAuth");
   incomplete_cred.signon_realm = "http://accounts.google.com/";
   incomplete_cred.username_value = u"my_username";
-  incomplete_cred.password_value = u"my_password";
+  incomplete_cred.password_value =
+      password_manager::PasswordString(u"my_password");
   incomplete_cred.blocked_by_user = false;
   incomplete_cred.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(incomplete_cred),
@@ -1298,7 +1299,8 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   incomplete_cred.url = GURL("http://accounts.google.com/LoginAuth");
   incomplete_cred.signon_realm = "http://accounts.google.com/";
   incomplete_cred.username_value = u"my_username";
-  incomplete_cred.password_value = u"my_password";
+  incomplete_cred.password_value =
+      password_manager::PasswordString(u"my_password");
   incomplete_cred.blocked_by_user = false;
   incomplete_cred.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(incomplete_cred),
@@ -1333,7 +1335,8 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
       base::flat_map<InsecureType, InsecurityMetadata>();
 
   // Simulate the user changing their password.
-  complete_cred.password_value = u"new_password";
+  complete_cred.password_value =
+      password_manager::PasswordString(u"new_password");
   complete_cred.date_last_used = base::Time::Now();
   complete_cred.date_password_modified = base::Time::Now();
   EXPECT_EQ(UpdateChangeForForm(ToPasswordForm(complete_cred),
@@ -1358,7 +1361,7 @@ TEST_F(LoginDatabaseTest, DoubleAdd) {
   cred.url = GURL("http://accounts.google.com/LoginAuth");
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   cred.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(cred), db().AddLogin(CloneStoredCredential(cred)));
@@ -1377,7 +1380,7 @@ TEST_F(LoginDatabaseTest, AddWrongForm) {
   cred.url = GURL();
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   cred.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(PasswordStoreChangeList(),
@@ -1408,7 +1411,8 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
 
   // |AddLogin| will decrypt the encrypted password, so compare with that.
   StoredCredential cred_with_password = CloneStoredCredential(cred);
-  cred_with_password.password_value = u"my_encrypted_password";
+  cred_with_password.password_value =
+      password_manager::PasswordString(u"my_encrypted_password");
   EXPECT_EQ(AddChangeForForm(ToPasswordForm(cred_with_password)),
             db().AddLogin(CloneStoredCredential(cred)));
 
@@ -1417,7 +1421,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPassword) {
                              /*should_PSL_matching_apply=*/true, &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(cred.keychain_identifier, result[0].keychain_identifier);
-  EXPECT_EQ(u"my_encrypted_password", result[0].password_value);
+  EXPECT_EQ(u"my_encrypted_password", result[0].password_value.value());
 
   std::u16string decrypted;
   EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
@@ -1432,7 +1436,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithEncryptedPasswordAndValue) {
   cred.url = GURL("http://accounts.google.com/LoginAuth");
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password_value";
+  cred.password_value = password_manager::PasswordString(u"my_password_value");
   std::string keychain_identifier;
   EXPECT_TRUE(
       CreateKeychainIdentifier(u"my_encrypted_password", &keychain_identifier));
@@ -1459,13 +1463,13 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   cred.url = GURL("http://accounts.google.com/LoginAuth");
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   cred.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(cred), db().AddLogin(CloneStoredCredential(cred)));
 
   cred.action = GURL("http://accounts.google.com/login");
-  cred.password_value = u"my_new_password";
+  cred.password_value = password_manager::PasswordString(u"my_new_password");
   cred.all_alternative_usernames.emplace_back(
       AlternativeElement::Value(u"my_new_username"),
       autofill::FieldRendererId(),
@@ -1508,7 +1512,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   cred.url = GURL("http://accounts.google.com/LoginAuth");
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   cred.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(cred), db().AddLogin(CloneStoredCredential(cred)));
@@ -1550,7 +1554,7 @@ TEST_F(LoginDatabaseTest, RemoveWrongForm) {
   cred.url = GURL("http://accounts.google.com/LoginAuth");
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   cred.scheme = PasswordForm::Scheme::kHtml;
   // The form isn't in the database.
@@ -1570,7 +1574,7 @@ TEST_F(LoginDatabaseTest, RemoveInvalidForm) {
   cred.url = GURL("http://google.com/");
   cred.signon_realm = "http://accounts.google.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.in_store = PasswordForm::Store::kProfileStore;
   {
     LoginDatabase db(database_path, IsAccountStore(false));
@@ -1611,7 +1615,7 @@ void AddMetricsTestData(LoginDatabase* db) {
   StoredCredential cred;
   cred.url = GURL("http://example.com");
   cred.username_value = u"test1@gmail.com";
-  cred.password_value = u"test";
+  cred.password_value = password_manager::PasswordString(u"test");
   cred.signon_realm = "http://example.com/";
   cred.times_used_in_html_form = 0;
   EXPECT_EQ(AddChangeForForm(cred), db->AddLogin(CloneStoredCredential(cred)));
@@ -1646,21 +1650,21 @@ void AddMetricsTestData(LoginDatabase* db) {
 
   cred.url = GURL("https://fifth.example.com/");
   cred.signon_realm = "https://fifth.example.com/";
-  cred.password_value = u"";
+  cred.password_value = password_manager::PasswordString(u"");
   cred.blocked_by_user = true;
   EXPECT_EQ(AddChangeForForm(cred), db->AddLogin(CloneStoredCredential(cred)));
 
   cred.url = GURL("https://sixth.example.com/");
   cred.signon_realm = "https://sixth.example.com/";
   cred.username_value = u"my_username";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   EXPECT_EQ(AddChangeForForm(cred), db->AddLogin(CloneStoredCredential(cred)));
 
   cred.signon_realm = "android://hash@com.example.android/";
   cred.url = GURL(cred.signon_realm);
   cred.username_value = u"JohnDoe";
-  cred.password_value = u"my_password";
+  cred.password_value = password_manager::PasswordString(u"my_password");
   cred.blocked_by_user = false;
   EXPECT_EQ(AddChangeForForm(cred), db->AddLogin(CloneStoredCredential(cred)));
 
@@ -1989,7 +1993,7 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
                 /*encryptor=*/CreateEncryptor()));
     // Add obfuscated (new) entries.
     StoredCredential cred = GenerateExampleStoredCredential();
-    cred.password_value = k_obfuscated_pw16;
+    cred.password_value = password_manager::PasswordString(k_obfuscated_pw16);
     EXPECT_EQ(AddChangeForForm(cred), db.AddLogin(CloneStoredCredential(cred)));
     // Add plain-text (old) entries and rewrite the password on the disk.
     cred.username_value = u"other_username";
@@ -2318,7 +2322,8 @@ StoredCredential LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
   cred.username_element = unique_string16;
   cred.username_value = unique_string16;
   cred.password_element = unique_string16;
-  cred.password_value = unique_string16;
+  cred.password_value =
+      password_manager::PasswordString(std::u16string(unique_string16));
   cred.signon_realm = origin.DeprecatedGetOriginAsURL().spec();
   cred.blocked_by_user = blocklisted;
 
@@ -2940,7 +2945,7 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAdd) {
   cred.signon_realm = "http://www.example.com/";
   cred.action = GURL("http://www.example.com/action");
   cred.password_element = u"pwd";
-  cred.password_value = u"example";
+  cred.password_value = password_manager::PasswordString(u"example");
   password_manager::PasswordStoreChangeList changes =
       db().AddLogin(std::move(cred));
   ASSERT_EQ(1u, changes.size());
@@ -2959,11 +2964,11 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAddWithReplaceSemantics) {
   cred.signon_realm = "http://www.example.com/";
   cred.action = GURL("http://www.example.com/action");
   cred.password_element = u"pwd";
-  cred.password_value = u"example";
+  cred.password_value = password_manager::PasswordString(u"example");
 
   std::ignore = db().AddLogin(CloneStoredCredential(cred));
 
-  cred.password_value = u"secret";
+  cred.password_value = password_manager::PasswordString(u"secret");
 
   password_manager::PasswordStoreChangeList changes =
       db().AddLogin(CloneStoredCredential(cred));
@@ -2984,11 +2989,11 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordUpdate) {
   cred.signon_realm = "http://www.example.com/";
   cred.action = GURL("http://www.example.com/action");
   cred.password_element = u"pwd";
-  cred.password_value = u"example";
+  cred.password_value = password_manager::PasswordString(u"example");
 
   std::ignore = db().AddLogin(CloneStoredCredential(cred));
 
-  cred.password_value = u"secret";
+  cred.password_value = password_manager::PasswordString(u"secret");
 
   password_manager::PasswordStoreChangeList changes = db().UpdateLogin(cred);
   ASSERT_EQ(1u, changes.size());
@@ -3006,7 +3011,7 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   cred.signon_realm = "http://www.example.com/";
   cred.action = GURL("http://www.example.com/action");
   cred.password_element = u"pwd";
-  cred.password_value = u"example";
+  cred.password_value = password_manager::PasswordString(u"example");
   password_manager::PasswordStoreChangeList changes =
       db().AddLogin(CloneStoredCredential(cred));
   ASSERT_EQ(1u, changes.size());
@@ -3154,7 +3159,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginPasswordChangedClearsInsecureCredentials) {
       db().insecure_credentials_table().GetRows(FormPrimaryKey(primary_key)),
       ElementsAre(credential1));
 
-  cred.password_value = u"new_password";
+  cred.password_value = password_manager::PasswordString(u"new_password");
   cred.password_issues.clear();
 
   EXPECT_EQ(UpdateChangeForForm(cred, /*password_changed=*/true,
@@ -3353,7 +3358,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
 
   // Complete password_issues removal can usually only happen when the password
   // is changed.
-  cred.password_value = u"new_password";
+  cred.password_value = password_manager::PasswordString(u"new_password");
   cred.password_issues.clear();
   EXPECT_EQ(UpdateChangeForForm(cred, /*password_changed=*/true,
                                 /*insecure_changed=*/true),
@@ -3385,7 +3390,7 @@ TEST_F(LoginDatabaseTest,
 
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::UnorderedElementsAre(credential1, credential2));
-  cred.password_value = u"new_password";
+  cred.password_value = password_manager::PasswordString(u"new_password");
 
   PasswordStoreChangeList list;
   list.emplace_back(PasswordStoreChange::REMOVE, CloneStoredCredential(cred));
@@ -3406,7 +3411,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
   phished.insecure_type = InsecureType::kPhished;
   phished.trigger_notification_from_backend = TriggerBackendNotification(false);
 
-  cred.password_value = u"new_password";
+  cred.password_value = password_manager::PasswordString(u"new_password");
   cred.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(leaked.create_time, leaked.is_muted,
@@ -3449,7 +3454,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithNonEmptyInvalidURL) {
   cred.signon_realm = "invalid";
   cred.url = GURL(cred.signon_realm);
   cred.username_value = u"username";
-  cred.password_value = u"password";
+  cred.password_value = password_manager::PasswordString(u"password");
   auto error = AddCredentialError::kNone;
   EXPECT_THAT(db().AddLogin(std::move(cred), &error), IsEmpty());
   EXPECT_EQ(error, AddCredentialError::kConstraintViolation);

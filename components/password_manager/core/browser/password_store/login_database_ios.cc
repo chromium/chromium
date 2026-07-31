@@ -60,6 +60,14 @@ EncryptionResult LoginDatabase::DecryptedString(
                 : EncryptionResult::kServiceFailure;
 }
 
+EncryptionResult LoginDatabase::DecryptedString(
+    const std::string& cipher_text,
+    PasswordString* decrypted_text) const {
+  return DecryptStringToPasswordString(cipher_text, decrypted_text)
+             ? EncryptionResult::kSuccess
+             : EncryptionResult::kServiceFailure;
+}
+
 bool CreateKeychainIdentifier(const std::u16string& plain_text,
                               std::string* keychain_identifier) {
   if (plain_text.size() == 0) {

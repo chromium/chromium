@@ -82,7 +82,8 @@ StoredCredential GetForm(const std::string& domain,
   StoredCredential cred;
   cred.signon_realm = domain;
   cred.url = GURL(domain);
-  cred.password_value = ASCIIToUTF16(password);
+  cred.password_value =
+      password_manager::PasswordString(ASCIIToUTF16(password));
   cred.username_value = ASCIIToUTF16(username);
   cred.in_store = store;
   return cred;
@@ -654,7 +655,8 @@ TEST_F(PasswordReuseDetectorTest,
   account_store_form.signon_realm = "https://twitter.com";
   account_store_form.url = GURL(account_store_form.signon_realm);
   account_store_form.username_value = u"twitterUsername";
-  account_store_form.password_value = u"saved_password";
+  account_store_form.password_value =
+      password_manager::PasswordString(u"saved_password");
   account_store_form.in_store = PasswordForm::Store::kAccountStore;
   std::vector<StoredCredential> account_store_forms;
   account_store_forms.push_back(std::move(account_store_form));

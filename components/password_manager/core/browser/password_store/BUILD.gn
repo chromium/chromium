@@ -20,7 +20,10 @@ source_set("password_store_interface") {
     "stored_credential.cc",
     "stored_credential.h",
   ]
-  public_deps = [ "//components/password_manager/core/browser:password_form" ]
+  public_deps = [
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_string",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/core",

@@ -72,7 +72,8 @@ void ChangePasswordFormFiller::FillForm(
   const password_manager::StoredCredential* best_match =
       password_manager_util::FindCredentialByUsername(
           form_manager_->GetBestMatches(), username_);
-  stored_password_ = best_match ? best_match->password_value : login_password_;
+  stored_password_ =
+      best_match ? best_match->password_value.value() : login_password_;
 
   TriggerFilling(parsed_form, form_manager->GetDriver());
 }

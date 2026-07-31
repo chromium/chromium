@@ -202,7 +202,8 @@ ACTION_P2(InvokeConsumer, store, form) {
   cred.url = form.url;
   cred.signon_realm = form.signon_realm;
   cred.username_value = form.username_value;
-  cred.password_value = form.password_value;
+  cred.password_value =
+      password_manager::PasswordString(std::u16string(form.password_value));
   cred.scheme = form.scheme;
   cred.in_store = form.in_store;
   cred.match_type = form.match_type;

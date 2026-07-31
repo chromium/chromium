@@ -224,12 +224,30 @@ class LoginDatabase : public EncryptDecryptInterface {
 
  private:
   // EncryptDecryptInterface implementation.
+  // TODO(crbug.com/513276101): Clean up plain text variant after password notes
+  // are migrated to SecureU16String too.
   [[nodiscard]] EncryptionResult EncryptedString(
       const std::u16string& plain_text,
       std::string* cipher_text) const override;
+  [[nodiscard]] EncryptionResult EncryptedString(
+      const crypto::SecureU16String& plain_text,
+      std::string* cipher_text) const override;
+  // TODO(crbug.com/513276101): Clean up plain text variant after password notes
+  // are migrated to SecureU16String too.
   [[nodiscard]] EncryptionResult DecryptedString(
       const std::string& cipher_text,
       std::u16string* plain_text) const override;
+  [[nodiscard]] EncryptionResult DecryptedString(
+      const std::string& cipher_text,
+      PasswordString* plain_text) const override;
+
+  // Platform-agnostic tail shared by every platform implementation of the
+  // PasswordString overload of DecryptedString(). Runs the byte-oriented
+  // decrypt path, wraps the result into a PasswordString and securely zeroes
+  // intermediate buffers. Returns whether the underlying decryption succeeded.
+  [[nodiscard]] bool DecryptStringToPasswordString(
+      const std::string& cipher_text,
+      PasswordString* decrypted_text) const;
 
   struct PrimaryKeyAndPassword;
   class SyncMetadataStore : public PasswordStoreSync::MetadataStore {

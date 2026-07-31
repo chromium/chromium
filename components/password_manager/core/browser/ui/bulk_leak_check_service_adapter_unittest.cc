@@ -67,7 +67,8 @@ StoredCredential MakeSavedPassword(std::string_view signon_realm,
   StoredCredential cred;
   cred.signon_realm = std::string(signon_realm);
   cred.username_value = std::u16string(username);
-  cred.password_value = std::u16string(password);
+  cred.password_value =
+      password_manager::PasswordString(std::u16string(password));
   return cred;
 }
 

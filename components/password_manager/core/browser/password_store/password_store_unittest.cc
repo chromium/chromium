@@ -794,7 +794,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
   non_blocklisted_form.signon_realm = kTestWebRealm1;
   non_blocklisted_form.url = GURL(kTestWebOrigin1);
   non_blocklisted_form.username_value = u"username";
-  non_blocklisted_form.password_value = u"password";
+  non_blocklisted_form.password_value = PasswordString(u"password");
 
   store->AddLogin(CloneStoredCredential(blocklisted_form));
   store->AddLogin(CloneStoredCredential(non_blocklisted_form));
@@ -824,13 +824,13 @@ TEST_F(PasswordStoreTest, UpdateLoginWithPrimaryKey_PasswordChanges) {
   old_cred.signon_realm = kTestWebRealm1;
   old_cred.url = GURL(kTestWebOrigin1);
   old_cred.username_value = u"username";
-  old_cred.password_value = u"password";
+  old_cred.password_value = PasswordString(u"password");
   old_cred.password_issues = {{InsecureType::kLeaked, InsecurityMetadata()},
                               {InsecureType::kPhished, InsecurityMetadata()},
                               {InsecureType::kWeak, InsecurityMetadata()}};
 
   StoredCredential new_cred = CloneStoredCredential(old_cred);
-  new_cred.password_value = u"new_password";
+  new_cred.password_value = PasswordString(u"new_password");
 
   StoredCredential expected_new_cred = CloneStoredCredential(new_cred);
   expected_new_cred.password_issues.clear();
@@ -863,7 +863,7 @@ TEST_F(PasswordStoreTest, UpdateLoginWithPrimaryKey_UsernameChanges) {
   old_cred.signon_realm = kTestWebRealm1;
   old_cred.url = GURL(kTestWebOrigin1);
   old_cred.username_value = u"username";
-  old_cred.password_value = u"password";
+  old_cred.password_value = PasswordString(u"password");
   old_cred.password_issues = {{InsecureType::kLeaked, InsecurityMetadata()},
                               {InsecureType::kPhished, InsecurityMetadata()},
                               {InsecureType::kWeak, InsecurityMetadata()}};

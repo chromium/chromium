@@ -79,7 +79,7 @@ StoredCredential CreateFullStoredCredential() {
   cred.username_element = u"username";
   cred.password_element = u"password";
   cred.username_value = u"user";
-  cred.password_value = u"pass";
+  cred.password_value = password_manager::PasswordString(u"pass");
   cred.all_alternative_usernames = {
       AlternativeElement(AlternativeElement::Value(u"alt_user"))};
   cred.date_created = base::Time::FromTimeT(100);
