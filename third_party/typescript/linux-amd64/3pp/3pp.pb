@@ -12,8 +12,8 @@
 create {
   source {
     url {
-      download_url: "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.1-rc.tgz"
-      version: "7.0.1-rc"
+      download_url: "https://registry.npmjs.org/@typescript/typescript-linux-x64/-/typescript-linux-x64-7.0.2.tgz"
+      version: "7.0.2"
       extension: ".tgz"
     }
     unpack_archive: true
