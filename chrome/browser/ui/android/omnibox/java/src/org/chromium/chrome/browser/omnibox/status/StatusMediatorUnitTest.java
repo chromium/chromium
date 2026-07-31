@@ -412,9 +412,51 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testStatusIconAccessibility_tabSearchOverlay() {
+        // Test default behaviour first.
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        assertEquals(
+                R.string.accessibility_toolbar_view_site_info,
+                mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+
+        doReturn(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        assertEquals(
+                R.string.hub_search_status_view_back_button_icon_description,
+                mModel.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
+        assertEquals(Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+        assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
+        assertEquals(
+                R.string.accessibility_toolbar_exit_hub_search,
+                mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
     public void testStatusIcon_hubSearchWithExactMatchFaviconEnabled() {
         doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        assertEquals(
+                R.drawable.ic_arrow_back_24dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void testStatusIcon_tabSearchOverlayWithExactMatchFaviconEnabled() {
+        doReturn(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
         mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
@@ -445,8 +487,37 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testStatusIconOverride_tabSearchOverlay() {
+        doReturn(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.setDefaultStatusIconOverrideResId(R.drawable.ic_suggestion_magnifier);
+
+        assertEquals(
+                R.drawable.ic_suggestion_magnifier,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+        assertEquals(0, mModel.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
+        assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
+        assertEquals(
+                Resources.ID_NULL,
+                mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+    }
+
+    @Test
+    @SmallTest
     public void testWideIconTrue_hubSearch() {
         doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+
+        mMediator.beginInput(mFuseboxSessionState);
+        assertTrue(mModel.get(StatusProperties.USE_WIDE_STATUS_ICON));
+    }
+
+    @Test
+    @SmallTest
+    public void testWideIconTrue_tabSearchOverlay() {
+        doReturn(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
 
@@ -775,6 +846,19 @@ public final class StatusMediatorUnitTest {
     @SmallTest
     public void testStatusClickListener_withBackButtonPressListener() {
         doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        verify(mOnClickListener).onClick(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testStatusClickListener_withBackButtonPressListener_tabSearchOverlay() {
+        doReturn(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
         mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);

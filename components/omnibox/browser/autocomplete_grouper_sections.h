@@ -139,10 +139,24 @@ class AndroidHubZPSSection : public Section {
   explicit AndroidHubZPSSection(const omnibox::GroupConfigMap& group_configs);
 };
 
+// Android prefix section for Tab Search overlay (ZPS).
+class AndroidTabSearchZPSSection : public Section {
+ public:
+  explicit AndroidTabSearchZPSSection(
+      const omnibox::GroupConfigMap& group_configs);
+};
+
 // Android prefix section for Hub search (non-ZPS).
 class AndroidHubNonZPSSection : public Section {
  public:
   explicit AndroidHubNonZPSSection(
+      const omnibox::GroupConfigMap& group_configs);
+};
+
+// Android prefix section for Tab Search overlay (non-ZPS).
+class AndroidTabSearchNonZPSSection : public Section {
+ public:
+  explicit AndroidTabSearchNonZPSSection(
       const omnibox::GroupConfigMap& group_configs);
 };
 

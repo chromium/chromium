@@ -82,6 +82,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.search_engines.StarterPackId;
@@ -749,13 +750,15 @@ class AutocompleteMediator
 
         // Android hub and @tabs starter pack should always switch to tab if one is available.
         // TODO(crbug.com/369438026): Remove this block once switch-to-tab is the default action.
-        boolean isAndroidHub =
-                mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE;
+        boolean isAndroidHubOrTabSearch =
+                PageClassificationUtils.isHubOrTabSearch(
+                        mAutocompleteInput.getPageClassification());
         boolean isTabsResult = suggestion.getType() == OmniboxSuggestionType.OPEN_TAB;
         @Nullable SiteSearchData siteSearchData = mAutocompleteInput.getSiteSearchData();
         boolean isInTabsKeywordMode =
                 siteSearchData != null && siteSearchData.starterPackId == StarterPackId.TABS;
-        if ((isAndroidHub || isTabsResult || isInTabsKeywordMode) && suggestion.hasTabMatch()) {
+        if ((isAndroidHubOrTabSearch || isTabsResult || isInTabsKeywordMode)
+                && suggestion.hasTabMatch()) {
             // Consider switching to tab for all other suggestion types that are not tab groups.
             if (suggestion.getType() == OmniboxSuggestionType.TAB_GROUP) {
                 switchToTabGroup(suggestion);
@@ -1444,11 +1447,11 @@ class AutocompleteMediator
             final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
             cancelAutocompleteRequests();
 
-            if (mAutocompleteInput.getPageClassification()
-                    == PageClassification.ANDROID_HUB_VALUE) {
+            if (PageClassificationUtils.isHubOrTabSearch(
+                    mAutocompleteInput.getPageClassification())) {
                 RecordUserAction.record("HubSearch.KeyboardEnterPressed");
-                // For Hub Search, default behavior kicks off search by pressing enter, do not
-                // return.
+                // For Hub Search and Tab Search Overlay, default behavior kicks off search by
+                // pressing enter, do not return.
             }
 
             if (TextUtils.isEmpty(urlText)
@@ -1833,7 +1836,7 @@ class AutocompleteMediator
         if (!isInInputSession()) return;
         mListPropertyModel.set(
                 SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE,
-                mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE
+                PageClassificationUtils.isHubOrTabSearch(mAutocompleteInput.getPageClassification())
                         // The popover contains UI elements other than suggestions, e.g. the omnibox
                         // itself and must always remain visible.
                         || getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER);
@@ -2114,8 +2117,8 @@ class AutocompleteMediator
             // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
             // exiting hub search that dismisses the URL bar and suggestions list together.
             showSuggestionsContainer |=
-                    mAutocompleteInput.getPageClassification()
-                            == PageClassification.ANDROID_HUB_VALUE;
+                    PageClassificationUtils.isHubOrTabSearch(
+                            mAutocompleteInput.getPageClassification());
 
             if (isTopResumedActivity) {
                 installAutocompleteObservers();

@@ -2565,7 +2565,7 @@ TEST_F(AutocompleteControllerTest,
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
-  // Include bookmarks and history as default providers for hub search.
+  // Regular Hub search (ANDROID_HUB) should run all 4 providers.
   std::set<AutocompleteProvider::Type> expected_provider_types = {
       AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_OPEN_TAB,
       AutocompleteProvider::TYPE_BOOKMARK,
@@ -2574,6 +2574,28 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
   controller_.input_ =
       AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
                         TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+}
+
+TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidTabSearchOverlay) {
+  // Tab Search Overlay allows search, open tabs, bookmarks, and history.
+  // Note: While AutocompleteController allows them to run, the individual
+  // providers (e.g. SearchProvider, BookmarkProvider) will filter themselves
+  // out in their Start() methods.
+  std::set<AutocompleteProvider::Type> expected_provider_types = {
+      AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_OPEN_TAB,
+      AutocompleteProvider::TYPE_BOOKMARK,
+      AutocompleteProvider::TYPE_HISTORY_QUICK};
+
+  AutocompleteInput input(
+      u"a", 1u, metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY,
+      TestSchemeClassifier());
+  controller_.input_ = input;
   for (auto& provider : controller_.providers()) {
     EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
               expected_provider_types.contains(provider->type()))

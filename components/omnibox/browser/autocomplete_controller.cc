@@ -1154,7 +1154,7 @@ bool AutocompleteController::ShouldRunProvider(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (omnibox::IsAndroidHub(input_.current_page_classification())) {
+  if (omnibox::IsAndroidHubOrTabSearch(input_.current_page_classification())) {
     return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
            provider->type() == AutocompleteProvider::TYPE_OPEN_TAB ||
            provider->type() == AutocompleteProvider::TYPE_BOOKMARK ||
@@ -1824,7 +1824,7 @@ void AutocompleteController::AttachActions() {
   // TabMatcher should run for ZPS for the Hub since open tab suggestions are
   // shown there.
   if (!input_.IsZeroSuggest() ||
-      omnibox::IsAndroidHub(input_.current_page_classification())) {
+      omnibox::IsAndroidHubOrTabSearch(input_.current_page_classification())) {
     // Do not look for matching tabs on Android unless we collected all the
     // suggestions. Tab matching is an expensive process with multiple JNI calls
     // involved. Run it only when all the suggestions are collected.

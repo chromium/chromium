@@ -572,6 +572,7 @@ public class OmniboxMetrics {
                 break;
 
             case PageClassification.ANDROID_HUB_VALUE:
+            case PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE:
                 suffix = "HUB";
                 break;
 

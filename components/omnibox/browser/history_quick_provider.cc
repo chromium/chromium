@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -96,11 +97,12 @@ void HistoryQuickProvider::DoAutocomplete() {
   size_t max_matches = autocomplete_input_.in_keyword_mode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
-  if (autocomplete_input_.current_page_classification() ==
-      metrics::OmniboxEventProto::ANDROID_HUB) {
+  if (omnibox::IsAndroidHubOrTabSearch(
+          autocomplete_input_.current_page_classification())) {
     // LINT.IfChange(HubHistoryMaxMatches)
     max_matches = kAndroidHubMaxMatches;
-    // LINT.ThenChange(//components/omnibox/browser/autocomplete_grouper_sections.cc:HubHistorySectionSlots)
+    // LINT.ThenChange(//components/omnibox/browser/autocomplete_grouper_sections.cc:HubHistorySectionSlots,
+    // //components/omnibox/browser/autocomplete_grouper_sections.cc:TabSearchHistorySectionSlots)
   }
 
   // Get the matching URLs from the DB.
@@ -121,8 +123,8 @@ void HistoryQuickProvider::DoAutocomplete() {
     // Set max_match_score to the score we'll assign this result.
     max_match_score = std::min(max_match_score, history_match.raw_score);
     auto match = QuickMatchToACMatch(history_match, max_match_score);
-    if (autocomplete_input_.current_page_classification() ==
-        PageClassification::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+    if (omnibox::IsAndroidHubOrTabSearch(
+            autocomplete_input_.current_page_classification())) {
       match.suggestion_group_id = omnibox::GROUP_MOBILE_HISTORY;
     }
 
@@ -131,8 +133,8 @@ void HistoryQuickProvider::DoAutocomplete() {
     max_match_score--;
   }
 
-  if (autocomplete_input_.current_page_classification() !=
-      PageClassification::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+  if (!omnibox::IsAndroidHubOrTabSearch(
+          autocomplete_input_.current_page_classification())) {
     // If ML scoring is enabled, mark all "extra" matches as
     // `culled_by_provider`. If ML scoring is disabled, this is effectively a
     // no-op as the matches will already be resized in the above call to

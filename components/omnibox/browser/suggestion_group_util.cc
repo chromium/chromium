@@ -40,6 +40,10 @@ base::LazyInstance<GroupConfigMap>::DestructorAtExit
     g_default_hub_typed_regular_groups = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<GroupConfigMap>::DestructorAtExit
     g_default_hub_typed_incognito_groups = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<GroupConfigMap>::DestructorAtExit
+    g_default_tab_search_overlay_regular_groups = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<GroupConfigMap>::DestructorAtExit
+    g_default_tab_search_overlay_incognito_groups = LAZY_INSTANCE_INITIALIZER;
 
 const GroupConfigMap& BuildDefaultGroups() {
   if (g_default_groups.Get().empty()) {
@@ -116,6 +120,34 @@ const GroupConfigMap& BuildDefaultHubTypedGroups(bool is_incognito) {
   return group_map;
 }
 
+const GroupConfigMap& BuildDefaultTabSearchOverlayGroups(bool is_incognito) {
+  auto& group_map = is_incognito
+                        ? g_default_tab_search_overlay_incognito_groups.Get()
+                        : g_default_tab_search_overlay_regular_groups.Get();
+  if (group_map.empty()) {
+    group_map = {
+        // clang-format off
+        {GROUP_MOBILE_OPEN_TABS,
+#if BUILDFLAG(IS_ANDROID)
+         !is_incognito
+             ? CreateGroup(SECTION_MOBILE_OPEN_TABS,
+                           GroupConfig_RenderType_DEFAULT_VERTICAL,
+                           IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER)
+             : CreateGroup(SECTION_MOBILE_OPEN_TABS)
+#else
+             CreateGroup(SECTION_MOBILE_OPEN_TABS)
+#endif
+        },
+        {GROUP_MOBILE_HISTORY,
+             CreateGroup(SECTION_MOBILE_HISTORY,
+                         GroupConfig_RenderType_DEFAULT_VERTICAL,
+                         IDS_OMNIBOX_HUB_HISTORY_HEADER)},
+        // clang-format on
+    };
+  }
+  return group_map;
+}
+
 }  // namespace
 
 const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
@@ -127,6 +159,10 @@ const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
       return input.IsZeroSuggest() || input.text().empty()
                  ? BuildDefaultHubZPSGroups()
                  : BuildDefaultHubTypedGroups(is_incognito);
+    case OEP::ANDROID_TAB_SEARCH_OVERLAY:
+      return input.IsZeroSuggest() || input.text().empty()
+                 ? BuildDefaultHubZPSGroups()
+                 : BuildDefaultTabSearchOverlayGroups(is_incognito);
     default:
       return BuildDefaultGroups();
   }
@@ -137,6 +173,8 @@ void ResetDefaultGroupsForTest() {
   g_default_hub_zps_groups.Get().clear();
   g_default_hub_typed_regular_groups.Get().clear();
   g_default_hub_typed_incognito_groups.Get().clear();
+  g_default_tab_search_overlay_regular_groups.Get().clear();
+  g_default_tab_search_overlay_incognito_groups.Get().clear();
 }
 
 GroupId GroupIdForNumber(int value) {

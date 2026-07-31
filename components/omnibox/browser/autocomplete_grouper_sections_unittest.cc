@@ -2560,4 +2560,74 @@ TEST(AutocompleteGrouperSectionsTest, AndroidComposeboxZpsSection) {
         {103, 102, 97, 101, 96});
   }
 }
+
+TEST(AutocompleteGrouperSectionsTest, AndroidHubZPSSection) {
+  PSections sections;
+  omnibox::GroupConfigMap group_configs;
+  sections.push_back(std::make_unique<AndroidHubZPSSection>(group_configs));
+  ACMatches matches;
+  for (int i = 0; i < 10; ++i) {
+    matches.push_back(CreateMatch(100 - i, omnibox::GROUP_MOBILE_OPEN_TABS));
+  }
+  auto out_matches = Section::GroupMatches(std::move(sections), matches);
+  VerifyMatches(out_matches, {100, 99, 98, 97, 96});
+}
+
+TEST(AutocompleteGrouperSectionsTest, AndroidTabSearchZPSSection) {
+  PSections sections;
+  omnibox::GroupConfigMap group_configs;
+  sections.push_back(
+      std::make_unique<AndroidTabSearchZPSSection>(group_configs));
+  ACMatches matches;
+  for (int i = 0; i < 40; ++i) {
+    matches.push_back(CreateMatch(100 - i, omnibox::GROUP_MOBILE_OPEN_TABS));
+  }
+  auto out_matches = Section::GroupMatches(std::move(sections), matches);
+
+  std::vector<int> expected_relevances;
+  for (int i = 0; i < 35; ++i) {
+    expected_relevances.push_back(100 - i);
+  }
+  VerifyMatches(out_matches, expected_relevances);
+}
+
+TEST(AutocompleteGrouperSectionsTest, AndroidHubNonZPSSection) {
+  PSections sections;
+  omnibox::GroupConfigMap group_configs;
+  sections.push_back(std::make_unique<AndroidHubNonZPSSection>(group_configs));
+  ACMatches matches = {
+      CreateMatch(100, omnibox::GROUP_MOBILE_OPEN_TABS),
+      CreateMatch(99, omnibox::GROUP_MOBILE_BOOKMARKS),
+      CreateMatch(98, omnibox::GROUP_MOBILE_HISTORY),
+      CreateMatch(97, omnibox::GROUP_SEARCH),
+  };
+  auto out_matches = Section::GroupMatches(std::move(sections), matches);
+  VerifyMatches(out_matches, {100, 99, 98, 97});
+}
+
+TEST(AutocompleteGrouperSectionsTest, AndroidTabSearchNonZPSSection) {
+  PSections sections;
+  omnibox::GroupConfigMap group_configs;
+  sections.push_back(
+      std::make_unique<AndroidTabSearchNonZPSSection>(group_configs));
+  ACMatches matches;
+  // AndroidTabSearchNonZPSSection allows up to 30 open tabs and 5 history
+  // matches.
+  for (int i = 0; i < 35; ++i) {
+    matches.push_back(CreateMatch(100 - i, omnibox::GROUP_MOBILE_OPEN_TABS));
+  }
+  for (int i = 0; i < 10; ++i) {
+    matches.push_back(CreateMatch(65 - i, omnibox::GROUP_MOBILE_HISTORY));
+  }
+  auto out_matches = Section::GroupMatches(std::move(sections), matches);
+
+  std::vector<int> expected_relevances;
+  for (int i = 0; i < 30; ++i) {
+    expected_relevances.push_back(100 - i);
+  }
+  for (int i = 0; i < 5; ++i) {
+    expected_relevances.push_back(65 - i);
+  }
+  VerifyMatches(out_matches, expected_relevances);
+}
 #endif

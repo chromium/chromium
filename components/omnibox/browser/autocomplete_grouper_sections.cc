@@ -256,6 +256,17 @@ AndroidHubZPSSection::AndroidHubZPSSection(
               },
               group_configs) {}
 
+AndroidTabSearchZPSSection::AndroidTabSearchZPSSection(
+    const omnibox::GroupConfigMap& group_configs)
+    : Section(35,
+              {
+                  Group(35,
+                        {
+                            {omnibox::GROUP_MOBILE_OPEN_TABS, 35},
+                        }),
+              },
+              group_configs) {}
+
 AndroidHubNonZPSSection::AndroidHubNonZPSSection(
     const omnibox::GroupConfigMap& group_configs)
     : Section(
@@ -285,6 +296,27 @@ AndroidHubNonZPSSection::AndroidHubNonZPSSection(
                         {omnibox::GROUP_SEARCH, 5},
                     },
                     /*is_zps=*/false),
+          },
+          group_configs) {}
+
+AndroidTabSearchNonZPSSection::AndroidTabSearchNonZPSSection(
+    const omnibox::GroupConfigMap& group_configs)
+    : Section(
+          35,
+          {
+              // Reserve most of the spots for open tabs.
+              Group(30,
+                    {
+                        {omnibox::GROUP_MOBILE_OPEN_TABS, 30},
+                    },
+                    /*is_zps=*/false),
+              // LINT.IfChange(TabSearchHistorySectionSlots)
+              Group(5,
+                    {
+                        {omnibox::GROUP_MOBILE_HISTORY, 5},
+                    },
+                    /*is_zps=*/false),
+              // LINT.ThenChange(//components/omnibox/browser/history_quick_provider.cc:HubHistoryMaxMatches)
           },
           group_configs) {}
 

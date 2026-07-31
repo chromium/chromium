@@ -30,12 +30,12 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
@@ -269,8 +269,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     (eventTime) -> onSuggestionTouchDownEvent(suggestion, position, eventTime));
         }
 
-        // Action chips should not be provided in the hub.
-        if (input.getPageClassification() != PageClassification.ANDROID_HUB_VALUE
+        // Action chips should not be provided in the hub or tab search overlay.
+        if (!PageClassificationUtils.isHubOrTabSearch(input.getPageClassification())
                 && allowOmniboxActions()) {
             mActionChipsProcessor.populateModel(suggestion, model, position);
         }
@@ -282,8 +282,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             fetchImage(model, suggestion.getImageUrl());
         }
 
-        // Action button should not be provided in the hub.
-        if (input.getPageClassification() != PageClassification.ANDROID_HUB_VALUE) {
+        // Action button should not be provided in the hub or tab search overlay.
+        if (!PageClassificationUtils.isHubOrTabSearch(input.getPageClassification())) {
             addActionButtonIfAvailable(suggestion, model, position);
         }
     }

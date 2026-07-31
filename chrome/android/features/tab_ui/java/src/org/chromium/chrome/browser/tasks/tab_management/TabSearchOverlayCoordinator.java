@@ -146,7 +146,8 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mModel.set(TabSearchOverlayProperties.ON_CLOSE_CLICK, (v) -> hide());
 
         mSearchBoxDataProvider = new SearchBoxDataProvider();
-        mSearchBoxDataProvider.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+        mSearchBoxDataProvider.setPageClassification(
+                PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE);
 
         mProfileObserver = this::onProfileChanged;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);

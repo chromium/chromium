@@ -1992,10 +1992,45 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void propagateOmniboxSessionStateChange_tabSearchOverlayContainerVisible() {
+        var session =
+                createSession(
+                        new GURL("https://abc.xyz"),
+                        "title",
+                        PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE);
+
+        mMediator.beginInput(session);
+        assertTrue(mListModel.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
+
+        mMediator.endInput();
+
+        var session2 =
+                createSession(new GURL("https://abc.xyz"), "title", PageClassification.BLANK_VALUE);
+        mMediator.beginInput(session2);
+        assertFalse(mListModel.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
+    }
+
+    @Test
     public void onTopResumedActivityChanged_hubSearchContainerVisible() {
         var session =
                 createSession(
                         new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB_VALUE);
+
+        mMediator.beginInput(session);
+        mMediator.onTopResumedActivityChanged(true);
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
+
+        mMediator.onTopResumedActivityChanged(false);
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_tabSearchOverlayContainerVisible() {
+        var session =
+                createSession(
+                        new GURL("https://abc.xyz"),
+                        "title",
+                        PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE);
 
         mMediator.beginInput(session);
         mMediator.onTopResumedActivityChanged(true);

@@ -251,6 +251,12 @@ void SearchProvider::Start(const AutocompleteInput& input,
   matches_.clear();
   smart_compose_inline_hint_.clear();
 
+  // Tab search does not support search suggestions.
+  if (input.current_page_classification() ==
+      metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY) {
+    return;
+  }
+
 #if !BUILDFLAG(IS_IOS)
   if (auto* geo_service = client()->GetGeolocationHeaderService()) {
     geo_service->PrimeLocation();

@@ -27,6 +27,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -183,8 +184,8 @@ public class FuseboxSessionState implements UserData {
                         != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
                 && mAutocompleteInput.getPageClassification()
                         != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE
-                && mAutocompleteInput.getPageClassification()
-                        != PageClassification.ANDROID_HUB_VALUE) {
+                && !PageClassificationUtils.isHubOrTabSearch(
+                        mAutocompleteInput.getPageClassification())) {
             mAutocompleteInput
                     .setUserText(mAutocompleteInput.getInitialUserText())
                     .setSelection(
