@@ -66,8 +66,6 @@ class HTMLSink : public UnderlyingSinkBase {
       }
     }
 
-    // TODO(nrosenthal): use an inert document to avoid pre-sanitization side
-    // effects.
     CustomElementRegistry* registry = context_element->customElementRegistry();
 
     target->GetDocument().setAllowDeclarativeShadowRoots(true);

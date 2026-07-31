@@ -1366,6 +1366,13 @@ Element* HTMLConstructionSite::CreateElement(
            ? static_cast<const QualifiedName&>(
                  html_names::TagToQualifiedName(token->GetHTMLTag()))
            : QualifiedName(g_null_atom, token->GetName(), namespace_uri));
+
+  // TODO(nrosenthal): make this explicit in the HTML standard.
+  Document& creation_document = (sanitizer_ && document.IsActive() &&
+                                 !sanitizer_->IsElementAllowed(tag_name))
+                                    ? document.EnsureTemplateDocument()
+                                    : document;
+
   // "5. Let is be the value of the "is" attribute in the given token ..." etc.
   const Attribute* is_attribute = token->GetAttributeItem(html_names::kIsAttr);
   // If sanitizer_ is set and if santizer_ would not allow the "is" attribute,
@@ -1462,7 +1469,7 @@ Element* HTMLConstructionSite::CreateElement(
     // only partially construct themselves when created by the parser, but since
     // this is a custom element, we need a fully-constructed element here.
     element = definition->CreateElement(
-        document, tag_name,
+        creation_document, tag_name,
         GetCreateElementFlags().SetCreatedByParser(false, nullptr));
 
     // "8. Append each attribute in the given token to element." We don't use
@@ -1478,7 +1485,7 @@ Element* HTMLConstructionSite::CreateElement(
   } else {
     if (definition) {
       DCHECK(GetCreateElementFlags().IsAsyncCustomElements());
-      element = definition->CreateElement(document, tag_name,
+      element = definition->CreateElement(creation_document, tag_name,
                                           GetCreateElementFlags());
     } else {
       CreateElementFlags flags = GetCreateElementFlags();
@@ -1491,7 +1498,7 @@ Element* HTMLConstructionSite::CreateElement(
         flags.SetAlreadyStarted(true);
       }
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, flags, is,
+          creation_document, tag_name, flags, is,
           CustomElementRegistryAssignment::ResolveNullableRegistry(
               registry,
               CustomElementRegistryAssignment::NullRegistryFallback::kWait));
