@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 
 namespace actor {
 
@@ -129,6 +130,13 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
   InitializePendingResult();
   auto* frame = target_document_.AsRenderFrameHostIfValid();
   CHECK(frame);
+
+  // Provide transient user activation to the frame for the tool invocation.
+  if (base::FeatureList::IsEnabled(
+          actor::kActorScriptToolTransientUserActivation)) {
+    frame->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kActorWebMCP);
+  }
 
   AggregatedJournalRenderFrameBinder::EnsureBound(journal(), *frame);
 

@@ -134,6 +134,7 @@ BASE_DECLARE_FEATURE(kActorObservePageContentDefault);
 
 BASE_DECLARE_FEATURE(kActorScriptToolSkipScreenshot);
 BASE_DECLARE_FEATURE(kActorScriptToolSkipPageContent);
+BASE_DECLARE_FEATURE(kActorScriptToolTransientUserActivation);
 
 // Guards the new Actor Task invocation source completion metrics.
 BASE_DECLARE_FEATURE(kActorRecordInvocationSourceCompletionMetrics);

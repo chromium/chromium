@@ -42,7 +42,8 @@ class ActorToolsTestScriptTool : public ActorToolsTest,
   ActorToolsTestScriptTool() {
     std::vector<base::test::FeatureRef> enabled_features = {
         blink::features::kWebMCP, blink::features::kDevToolsWebMCPSupport,
-        actor::kGlicActorEnableScriptTools};
+        actor::kGlicActorEnableScriptTools,
+        actor::kActorScriptToolTransientUserActivation};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (GetParam()) {
@@ -447,6 +448,33 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Histograms) {
   histogram_tester.ExpectBucketCount(
       "Actor.Tools.ScriptTool.ActionResultCode",
       mojom::ActionResultCode::kScriptToolInvalidName, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, HasTransientUserActivation) {
+  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    document.modelContext.registerTool({
+      execute: async () => {
+        let hasUserActivation = navigator.userActivation.isActive;
+        return hasUserActivation ? "true" : "false";
+      },
+      name: 'check_activation',
+      description: 'test',
+      inputSchema: { type: 'object', properties: {} }
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "check_activation", "{}");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+
+  ASSERT_TRUE(IsOk(*result.Get()[0].result));
+
+  auto results = result.Get();
+  EXPECT_EQ(results[0].result->script_tool_response->result, "true");
 }
 
 IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationFailed) {

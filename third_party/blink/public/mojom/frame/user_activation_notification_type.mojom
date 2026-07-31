@@ -68,5 +68,8 @@ enum UserActivationNotificationType {
   // An extension messaging API caused the notification call, where the script
   // context of neither the sender nor the receiver of the message is
   // privileged.
-  kExtensionMessagingNeitherPrivileged
+  kExtensionMessagingNeitherPrivileged,
+
+  // WebMCP tool invocations triggered by the actor stack in chrome.
+  kActorWebMCP,
 };
