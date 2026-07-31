@@ -137,6 +137,18 @@ export function getHtml(this: SettingsSystemPageElement) {
     </relaunch-confirmation-dialog>
   ` : ''}
 </settings-section>
+
+<if expr="_google_chrome">
+<!-- TODO(crbug.com/540473927): Remove this section-->
+  <settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
+      class="cr-centered-card-container">
+    <cr-link-row id="onDeviceAiLink"
+        label="$i18n{onDeviceAiEnabledLabel}"
+        sub-label="$i18n{onDeviceAiLinkSubtitle}"
+        @click="${this.onOnDeviceAiLinkClick_}">
+    </cr-link-row>
+  </settings-section>
+</if>
 <!--_html_template_end_-->`;
   // clang-format on
 }
