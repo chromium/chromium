@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -13,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -76,9 +78,14 @@ class BookmarkBarPopup {
             @Nullable OnTouchListener touchInterceptor) {
         dismiss();
 
+        Context listContext =
+                isIncognito
+                        ? new ContextThemeWrapper(
+                                mActivity, R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito)
+                        : mActivity;
         BasicListMenu popupListMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(
-                        mActivity,
+                        listContext,
                         menuModel,
                         (model, view) -> {
                             OnClickListener clickListener =
