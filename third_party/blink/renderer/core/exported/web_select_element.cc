@@ -53,7 +53,19 @@ void WebSelectElement::SetAutofillOption(WebOptionElement* option,
   if (!Focused()) {
     DispatchFocusEvent();
   }
-  Unwrap<HTMLSelectElement>()->SetAutofillOption(*option, autofill_state);
+  // The focus event above may have run script which modified the contents of
+  // this select element. If `option` is no longer associated with this select,
+  // fall back to selecting by `option`'s value, which re-resolves the option
+  // element in the updated DOM. This mirrors
+  // autofill::form_util::FillFormField(), which fills by value when it cannot
+  // find an option element to select. See crbug.com/535975677.
+  HTMLSelectElement* select = Unwrap<HTMLSelectElement>();
+  HTMLOptionElement* option_element = *option;
+  if (option_element->OwnerSelectElement() == select) {
+    select->SetAutofillOption(option_element, autofill_state);
+  } else {
+    select->SetAutofillValue(option_element->value(), autofill_state);
+  }
   if (!Focused()) {
     DispatchBlurEvent();
   }

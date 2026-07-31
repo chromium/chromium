@@ -6386,6 +6386,89 @@ TEST_F(FormAutofillWithConstraintsTest, FillFormModifyValues) {
                                .is_autofilled_according_to_renderer = true})));
 }
 
+// Tests that when autofill fills a <select> whose options are replaced by a
+// JavaScript focus event handler, the detached option is not selected.
+//
+// Autofill resolves the <option> element to select and then fires a focus
+// event on the <select>. If the focus event handler replaces the select's
+// options (emulating a component which re-renders its options when focused),
+// autofill must not select the removed option, which would corrupt the
+// select's state (a detached option marked selected while the select reports
+// no selected option). Instead, it falls back to filling by value, which
+// selects the newly-created equivalent option.
+//
+// Regression test for crbug.com/535975677.
+TEST_F(FormAutofillUtilsTest, FillSelectWhoseOptionsAreReplacedOnFocus) {
+  LoadHTML(R"(<form name=TestForm action='http://example.test'>
+           <input id=firstname>
+           <select id=state name=state>
+             <option value=''>Select a state</option>
+             <option value=AL>Alabama</option>
+             <option value=CA>California</option>
+           </select>
+         </form>
+         <script>
+           const select = document.getElementById('state');
+           window.origOptions = [...select.options];
+           window.focusCount = 0;
+           select.addEventListener('focus', () => {
+             ++window.focusCount;
+             select.replaceChildren(...[...select.options].map((old) => {
+               const fresh = document.createElement('option');
+               fresh.value = old.value;
+               fresh.textContent = old.textContent;
+               return fresh;
+             }));
+           });
+         </script>)");
+
+  WebSelectElement select_element =
+      GetFormControlElementById(GetDocument(), "state")
+          .DynamicTo<WebSelectElement>();
+  ASSERT_TRUE(select_element);
+
+  FormData form = FindForm(select_element);
+  FormFieldData* state_field = test_api(form).FindFieldByNameForTest(u"state");
+  ASSERT_TRUE(state_field);
+  state_field->set_value(u"CA");
+  state_field->set_is_autofilled_according_to_renderer(true);
+
+  // Fill while the <select> is not focused, so that filling dispatches a
+  // focus event, whose handler replaces all options.
+  ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
+  std::vector<FormFieldData> fields_to_fill = {*state_field};
+  ApplyFieldsAction(GetDocument(), fields_to_fill,
+                    mojom::ActionPersistence::kFill);
+
+  // The focus event handler ran and replaced the options. If this fails
+  // because filling no longer dispatches focus events, this test needs to be
+  // revisited.
+  int focus_count = 0;
+  ASSERT_TRUE(
+      ExecuteJavaScriptAndReturnIntValue(u"window.focusCount", &focus_count));
+  ASSERT_GE(focus_count, 1);
+
+  // The fill must have selected the newly-created option, not the detached
+  // one.
+  EXPECT_EQ("CA", select_element.Value().Utf8());
+  EXPECT_TRUE(select_element.IsAutofilled());
+  // Note: the originally default-selected option ('Select a state') keeps its
+  // stale selected flag after being detached, so only check that autofill did
+  // not additionally mark the detached CA option as selected.
+  int selection_state = -1;
+  ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      uR"(window.origOptions.find((o) => o.value === 'CA').selected
+              ? 1
+              : window.origOptions.includes(
+                    document.getElementById('state').selectedOptions[0])
+                    ? 2
+                    : 3)",
+      &selection_state));
+  EXPECT_EQ(3, selection_state)
+      << "1 = the detached CA option was marked selected; "
+      << "2 = an original option is selected (options were not replaced)";
+}
+
 // Similar to test case `FillFormModifyValues`.
 TEST_F(FormAutofillWithConstraintsTest, FillFormModifyInitiatingValue) {
   LoadHTML(R"(<form name=TestForm action='http://abc.com'>

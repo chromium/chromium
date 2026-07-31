@@ -32,7 +32,10 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
 
   VectorOf<Node> nodes;
   if (option) {
-    CHECK(!option->OwnerSelectElement()->IsMultiple());
+    // The owner select may be null if the option was removed from its select
+    // after the caller resolved it.
+    HTMLSelectElement* owner_select = option->OwnerSelectElement();
+    CHECK(!owner_select || !owner_select->IsMultiple());
     for (Node& child : NodeTraversal::ChildrenOf(*option)) {
       nodes.push_back(child.cloneNode(/*deep=*/true));
     }

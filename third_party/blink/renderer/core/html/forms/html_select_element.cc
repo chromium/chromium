@@ -326,6 +326,14 @@ void HTMLSelectElement::SelectOptionByValue(const String& value,
 void HTMLSelectElement::SelectOptionByElement(HTMLOptionElement* option,
                                               bool send_events,
                                               WebAutofillState autofill_state) {
+  // Callers from outside of blink, such as autofill, may pass in an option
+  // which script has since removed from this select. Selecting it would
+  // corrupt this select's selection state, e.g. by marking a detached option
+  // as selected while SelectedOption() returns nullptr. See
+  // crbug.com/535975677.
+  if (option && option->OwnerSelectElement() != this) {
+    return;
+  }
   HTMLOptionElement* previous_selected_option = SelectedOption();
   SetSuggestedOption(nullptr);
   SelectOptionFlags flags = kDeselectOtherOptionsFlag | kMakeOptionDirtyFlag;
@@ -372,6 +380,10 @@ void HTMLSelectElement::SetSuggestedValue(const String& value) {
 }
 
 void HTMLSelectElement::SetSuggestedOption(HTMLOptionElement* option) {
+  // See the equivalent check in SelectOptionByElement().
+  if (option && option->OwnerSelectElement() != this) {
+    return;
+  }
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       IsCanvasOrInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
