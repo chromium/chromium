@@ -192,6 +192,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Whether third-party cookies are blocked in incognito mode or completely.
     Recorded at the Profile startup. In case that &quot;Block all cookies&quot;
@@ -211,6 +212,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
   <owner>arabm@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Horizontal metric to show CBD usage across various surfaces. Recorded when
     the user deletes browsing data from one of these surfaces or when the
@@ -463,6 +465,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
   <owner>mkwst@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Whether the Do Not Track setting is enabled. Recorded at the profile open,
     only for regular profiles (not Incognito, Guest, etc.).
@@ -537,6 +540,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <owner>mkwst@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Whether the third party cookie blocking setting is enabled. Recorded at the
     Profile startup.
@@ -556,7 +560,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     expires_after="2026-10-25">
   <owner>msramek@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Recorded when we attempt to show a Privacy Guide NTP promotion as instructed
     by the server. True if the conditions to do so are met.
