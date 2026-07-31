@@ -8,7 +8,9 @@
 #include <glib-object.h>
 
 #include <array>
+#include <optional>
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/native_theme/os_settings_provider.h"
@@ -29,13 +31,20 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
   ui::NativeTheme::PreferredColorScheme PreferredColorScheme() const override;
   ui::NativeTheme::PreferredContrast PreferredContrast() const override;
   bool PrefersOverlayScrollbars() const override;
+  std::optional<SkColor> AccentColor() const override;
   base::TimeDelta CaretBlinkInterval() const override;
+
+  // Sets the system accent color (sourced from the xdg-desktop-portal and
+  // pushed in via GtkUi::SetAccentColor) and notifies observers.
+  void SetAccentColor(std::optional<SkColor> accent_color);
 
  private:
   ScopedGSignal ConnectSignal(const gchar* name);
 
   // Trampoline that invokes `NotifyOnSettingsChanged()`.
   void OnSignal(GtkSettings*, GtkParamSpec*);
+
+  std::optional<SkColor> accent_color_;
 
   // Have to explicitly give template params instead of using `std::to_array()`,
   // since CTAD is banned in non-static member declarations :(

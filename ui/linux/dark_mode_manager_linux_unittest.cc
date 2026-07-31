@@ -128,6 +128,18 @@ class DarkModeManagerLinuxTest : public testing::Test {
     EXPECT_CALL(*mock_linux_ui_, GetNativeTheme())
         .WillOnce(Return(native_theme));
 
+    // In production, each toolkit's `SetAccentColor()` routes the accent color
+    // through its `OsSettingsProvider`, which is what drives
+    // `NativeTheme::user_color()` via `UpdateVariablesForToolkitSettings()`.
+    // Emulate that here so the `user_color()` assertions below exercise the
+    // provider path rather than a direct write from the manager.
+    ON_CALL(*mock_linux_ui_, SetAccentColor(_))
+        .WillByDefault([this](std::optional<SkColor> color) {
+          if (color.has_value()) {
+            os_settings_provider_.SetAccentColor(color.value());
+          }
+        });
+
     enable_portal_accent_color_.InitAndEnableFeature(
         features::kUsePortalAccentColor);
 

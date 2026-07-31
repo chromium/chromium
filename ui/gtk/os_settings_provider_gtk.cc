@@ -76,6 +76,19 @@ base::TimeDelta OsSettingsProviderGtk::CaretBlinkInterval() const {
                       : base::TimeDelta();
 }
 
+std::optional<SkColor> OsSettingsProviderGtk::AccentColor() const {
+  return accent_color_;
+}
+
+void OsSettingsProviderGtk::SetAccentColor(
+    std::optional<SkColor> accent_color) {
+  if (accent_color_ == accent_color) {
+    return;
+  }
+  accent_color_ = accent_color;
+  NotifyOnSettingsChanged();
+}
+
 ScopedGSignal OsSettingsProviderGtk::ConnectSignal(const gchar* name) {
   return ScopedGSignal(gtk_settings_get_default(), name,
                        base::BindRepeating(&OsSettingsProviderGtk::OnSignal,

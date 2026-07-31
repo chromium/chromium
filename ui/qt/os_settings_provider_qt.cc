@@ -35,4 +35,16 @@ base::TimeDelta OsSettingsProviderQt::CaretBlinkInterval() const {
   return base::Milliseconds(shim_->GetCursorBlinkIntervalMs());
 }
 
+std::optional<SkColor> OsSettingsProviderQt::AccentColor() const {
+  return accent_color_;
+}
+
+void OsSettingsProviderQt::SetAccentColor(std::optional<SkColor> accent_color) {
+  if (accent_color_ == accent_color) {
+    return;
+  }
+  accent_color_ = accent_color;
+  NotifyOnSettingsChanged();
+}
+
 }  // namespace qt

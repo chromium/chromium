@@ -227,13 +227,15 @@ void DarkModeManagerLinux::SetAccentColor(dbus_utils::Variant variant) {
     accent_color = SkColorSetRGB(r * 255, g * 255, b * 255);
   }
 
+  // Push the accent color into the toolkit UI. Each toolkit routes it through
+  // its `OsSettingsProvider` (`OsSettingsProviderGtk`/`OsSettingsProviderQt`),
+  // which updates `NativeTheme::user_color()` via
+  // `UpdateVariablesForToolkitSettings()` and notifies observers. Writing
+  // `user_color` directly here would race with that provider-sourced write and
+  // could be clobbered back to `nullopt` (crbug.com/536445418).
   for (ui::LinuxUiTheme* linux_ui_theme : *linux_ui_themes_) {
     linux_ui_theme->SetAccentColor(accent_color);
   }
-
-  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_user_color(accent_color);
-  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace ui

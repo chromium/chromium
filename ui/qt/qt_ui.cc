@@ -511,7 +511,11 @@ void QtUi::SetDarkTheme(bool dark) {
 DISABLE_CFI_VCALL
 void QtUi::SetAccentColor(std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
-  native_theme_->NotifyOnNativeThemeUpdated();
+  // Route the accent color through the OS settings provider. This updates
+  // `NativeTheme::user_color()` (via `UpdateVariablesForToolkitSettings()`) and
+  // notifies all observing native themes, which re-runs the native color mixer
+  // above using the freshly-set `accent_color_`.
+  os_settings_provider_->SetAccentColor(accent_color);
 }
 
 DISABLE_CFI_VCALL
