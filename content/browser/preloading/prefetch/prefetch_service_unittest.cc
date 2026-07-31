@@ -52,6 +52,7 @@
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -62,6 +63,7 @@
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
+#include "content/test/test_web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_internal_info.h"
 #include "net/base/proxy_chain.h"
@@ -2869,6 +2871,31 @@ TEST_P(PrefetchServiceTest, NonDefaultStoragePartition) {
 
   NavigateInitiatedByRenderer(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+}
+
+TEST_P(PrefetchServiceTest, NonDefaultStoragePartitionReferringFrame) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  const StoragePartitionConfig kGuestPartitionConfig =
+      StoragePartitionConfig::Create(browser_context(), "someapp",
+                                     "somepartition", /*in_memory=*/false);
+  scoped_refptr<SiteInstance> guest_site_instance =
+      SiteInstance::CreateForGuest(browser_context(), kGuestPartitionConfig);
+  SetContents(TestWebContents::Create(browser_context(), guest_site_instance));
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kImmediate));
+
+  EXPECT_EQ(RequestCount(), 0);
+
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition, 1);
+  ExpectPrefetchNotEligible(PreloadingEligibility::kNonDefaultStoragePartition);
 }
 
 TEST_P(PrefetchServiceTest, StreamingURLLoaderSuccessCase) {
