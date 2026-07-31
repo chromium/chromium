@@ -214,6 +214,11 @@ TEST(Keypair, RoundtripEcP256PrivateKey) {
   // Also try importing with junk at the end, which should fail.
   ec_der.push_back(0);
   EXPECT_FALSE(PrivateKey::FromEcP256PrivateKey(ec_der));
+
+  // And try going to/from a private scalar as well.
+  auto scalar = key.ToEcP256PrivateScalar();
+  imported = PrivateKey::FromEcP256PrivateScalar(scalar);
+  EXPECT_EQ(key.ToUncompressedX962Point(), imported->ToUncompressedX962Point());
 }
 
 TEST(Keypair, HardcodedEcP256PrivateKeys) {

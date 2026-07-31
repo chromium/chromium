@@ -79,6 +79,11 @@ class CRYPTO_EXPORT PrivateKey {
   static std::optional<PrivateKey> FromEcP256PrivateKey(
       base::span<const uint8_t> key);
 
+  // Imports a "raw" EC P-256 private scalar, from a big-endian encoded
+  // bignum. This can fail if the given scalar is not of the right order.
+  static std::optional<PrivateKey> FromEcP256PrivateScalar(
+      base::span<const uint8_t> key);
+
   // Imports an RFC 8032-encoded Ed25519 private key.
   //
   // The encoding used doesn't allow for importing to fail (all input bit
@@ -114,6 +119,10 @@ class CRYPTO_EXPORT PrivateKey {
   // because existing clients don't use them. If you need those fields, please
   // talk to an owner of this class.
   std::vector<uint8_t> ToEcP256PrivateKey() const;
+
+  // Exports an EC P-256 private key as a private scalar value, encoded as a
+  // big-endian bignum. It is illegal to call this if !IsEcP256().
+  std::array<uint8_t, 32> ToEcP256PrivateScalar() const;
 
   // Exports an Ed25519 private key in RFC 8032 format. It is illegal to call
   // this if !IsEd25519().

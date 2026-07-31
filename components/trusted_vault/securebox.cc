@@ -15,9 +15,12 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "crypto/kdf.h"
+#include "crypto/kex.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
@@ -34,7 +37,6 @@ const size_t kP256FieldBytes = 32;
 const size_t kAES128KeyLength = 16;
 const size_t kNonceLength = 12;
 const size_t kTagLength = 16;
-const size_t kECPrivateKeyLength = 32;
 const size_t kECPointLength = 65;
 const size_t kVersionLength = 2;
 const uint8_t kSecureBoxVersion[] = {0x02, 0};
@@ -59,78 +61,23 @@ std::vector<uint8_t> ConcatBytes(
   return result;
 }
 
-// Creates public EC_KEY from |public_key_bytes|. Returns nullptr if
-// |public_key_bytes| does not represent a X9.62 formatted NIST P-256 point.
-bssl::UniquePtr<EC_KEY> ECPublicKeyFromBytes(
-    base::span<const uint8_t> public_key_bytes,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  if (public_key_bytes.size() != kECPointLength) {
-    // |public_key_bytes| doesn't represent a valid NIST P-256 point.
-    return nullptr;
-  }
-
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  DCHECK(ec_key);
-
-  bssl::UniquePtr<EC_POINT> point(
-      EC_POINT_new(EC_KEY_get0_group(ec_key.get())));
-  DCHECK(point);
-
-  if (!EC_POINT_oct2point(EC_KEY_get0_group(ec_key.get()), point.get(),
-                          public_key_bytes.data(), kECPointLength,
-                          /*ctx=*/nullptr) ||
-      !EC_KEY_set_public_key(ec_key.get(), point.get()) ||
-      !EC_KEY_check_key(ec_key.get())) {
-    // |public_key_bytes| doesn't represent a valid NIST P-256 point.
-    return nullptr;
-  }
-
-  return ec_key;
-}
-
-// Writes |key| point into |output| using X9.62 format.
-std::vector<uint8_t> ECPublicKeyToBytes(
-    const EC_KEY* key,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  std::vector<uint8_t> result(kECPointLength);
-  int export_length = EC_POINT_point2oct(
-      EC_KEY_get0_group(key), EC_KEY_get0_public_key(key),
-      POINT_CONVERSION_UNCOMPRESSED, result.data(), kECPointLength, nullptr);
-  DCHECK_EQ(export_length, static_cast<int>(kECPointLength));
-  return result;
-}
-
-bssl::UniquePtr<EC_KEY> GenerateECKey(
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  DCHECK(ec_key);
-
-  int generate_key_result = EC_KEY_generate_key(ec_key.get());
-  DCHECK(generate_key_result);
-  return ec_key;
-}
-
-// Computes a 16-byte shared AES-GCM secret. If |private_key| is not null, first
-// computes the EC-DH secret. Appends the |shared_secret|, and computes HKDF of
-// that. |public_key| and |private_key| might be null, but if either of them is
-// not null, other must be not null as well. |shared_secret| may be empty.
+// Computes a 16-byte shared AES-GCM secret. If |private_key| is not nullopt,
+// first computes the EC-DH secret. Appends the |shared_secret|, and computes
+// HKDF of that. |public_key| and |private_key| might be nullopt, but if either
+// of them is not nullopt, other must be not nullopt as well. |shared_secret|
+// may be empty.
 std::array<uint8_t, kAES128KeyLength> SecureBoxComputeSecret(
-    const EC_KEY* private_key,
-    const EC_POINT* public_key,
-    base::span<const uint8_t> shared_secret,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  DCHECK_EQ(!!private_key, !!public_key);
+    std::optional<crypto::keypair::PrivateKey> private_key,
+    std::optional<crypto::keypair::PublicKey> public_key,
+    base::span<const uint8_t> shared_secret) {
+  DCHECK_EQ(private_key.has_value(), public_key.has_value());
   std::vector<uint8_t> dh_secret;
   std::string hkdf_info;
   if (private_key) {
     hkdf_info = kHkdfInfoWithPublicKey;
     dh_secret.resize(kP256FieldBytes);
-    int dh_secret_length = ECDH_compute_key(dh_secret.data(), kP256FieldBytes,
-                                            public_key, private_key,
-                                            /*kdf=*/nullptr);
-    CHECK_EQ(dh_secret_length, static_cast<int>(kP256FieldBytes));
+    crypto::kex::EcdhP256(*public_key, *private_key,
+                          base::span<uint8_t, kP256FieldBytes>(dh_secret));
   } else {
     hkdf_info = kHkdfInfoWithoutPublicKey;
   }
@@ -205,53 +152,19 @@ std::optional<std::vector<uint8_t>> SecureBoxAesGcmDecrypt(
   return result;
 }
 
-// Creates NIST P-256 EC_KEY given NIST P-256 point multiplier in padded
-// big-endian format. Returns nullptr if P-256 key can't be derived using
-// |key_bytes| or its format is incorrect.
-bssl::UniquePtr<EC_KEY> ImportECPrivateKey(
-    base::span<const uint8_t> key_bytes,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  if (key_bytes.size() != kECPrivateKeyLength) {
-    return nullptr;
-  }
-
-  bssl::UniquePtr<EC_KEY> private_ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  DCHECK(private_ec_key);
-
-  bssl::UniquePtr<BIGNUM> private_key(
-      BN_bin2bn(key_bytes.data(), kECPrivateKeyLength, /*ret=*/nullptr));
-  if (!private_key ||
-      !EC_KEY_set_private_key(private_ec_key.get(), private_key.get())) {
-    return nullptr;
-  }
-
-  const EC_GROUP* group = EC_KEY_get0_group(private_ec_key.get());
-  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(group));
-  if (!EC_POINT_mul(EC_KEY_get0_group(private_ec_key.get()), point.get(),
-                    private_key.get(), /*q=*/nullptr, /*m=*/nullptr,
-                    /*ctx=*/nullptr) ||
-      !EC_KEY_set_public_key(private_ec_key.get(), point.get()) ||
-      !EC_KEY_check_key(private_ec_key.get())) {
-    return nullptr;
-  }
-
-  return private_ec_key;
-}
-
-// |our_key_pair| and |their_public_key| might be null, but if either of them is
-// not null, other must be not null as well. |shared_secret|, |header| and
-// |payload| may be empty.
+// |our_key_pair| and |their_public_key| might be nullopt, but if either of them
+// is not nullopt, other must be not nullopt as well. |shared_secret|, |header|
+// and |payload| may be empty.
 std::vector<uint8_t> SecureBoxEncryptImpl(
-    const EC_KEY* our_key_pair,
-    const EC_POINT* their_public_key,
+    std::optional<crypto::keypair::PrivateKey> our_key_pair,
+    std::optional<crypto::keypair::PublicKey> their_public_key,
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> payload,
     const crypto::OpenSSLErrStackTracer& err_tracer) {
-  DCHECK_EQ(!!our_key_pair, !!their_public_key);
-  std::array<uint8_t, kAES128KeyLength> secret = SecureBoxComputeSecret(
-      our_key_pair, their_public_key, shared_secret, err_tracer);
+  DCHECK_EQ(our_key_pair.has_value(), their_public_key.has_value());
+  std::array<uint8_t, kAES128KeyLength> secret =
+      SecureBoxComputeSecret(our_key_pair, their_public_key, shared_secret);
 
   std::vector<uint8_t> nonce = crypto::RandBytesAsVector(kNonceLength);
   std::vector<uint8_t> ciphertext =
@@ -259,24 +172,24 @@ std::vector<uint8_t> SecureBoxEncryptImpl(
 
   std::vector<uint8_t> encoded_our_public_key;
   if (our_key_pair) {
-    encoded_our_public_key = ECPublicKeyToBytes(our_key_pair, err_tracer);
+    encoded_our_public_key = our_key_pair->ToUncompressedX962Point();
   }
 
   return ConcatBytes(
       {kSecureBoxVersion, encoded_our_public_key, nonce, ciphertext});
 }
 
-// |our_private_key| may be null. |shared_secret|, |header| and |payload| may be
+// |our_key_pair| may be nullopt. |shared_secret|, |header| and |payload| may be
 // empty. Returns nullopt if decryption failed.
 std::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
-    const EC_KEY* our_private_key,
+    std::optional<crypto::keypair::PrivateKey> our_key_pair,
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload) {
   const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   size_t min_payload_size = kVersionLength + kNonceLength;
-  if (our_private_key) {
+  if (our_key_pair) {
     min_payload_size += kECPointLength;
   }
 
@@ -287,21 +200,18 @@ std::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
   }
 
   size_t offset = kVersionLength;
-  bssl::UniquePtr<EC_KEY> their_ec_public_key;
-  const EC_POINT* their_ec_public_key_point = nullptr;
-  if (our_private_key) {
-    their_ec_public_key = ECPublicKeyFromBytes(
-        encrypted_payload.subspan(offset, kECPointLength), err_tracer);
-    if (!their_ec_public_key) {
+  std::optional<crypto::keypair::PublicKey> their_public_key;
+  if (our_key_pair) {
+    their_public_key = crypto::keypair::PublicKey::FromEcP256Point(
+        encrypted_payload.subspan(offset, kECPointLength));
+    if (!their_public_key) {
       return std::nullopt;
     }
-    their_ec_public_key_point =
-        EC_KEY_get0_public_key(their_ec_public_key.get());
     offset += kECPointLength;
   }
 
-  std::array<uint8_t, kAES128KeyLength> secret_key = SecureBoxComputeSecret(
-      our_private_key, their_ec_public_key_point, shared_secret, err_tracer);
+  std::array<uint8_t, kAES128KeyLength> secret_key =
+      SecureBoxComputeSecret(our_key_pair, their_public_key, shared_secret);
 
   base::span<const uint8_t> nonce =
       encrypted_payload.subspan(offset, kNonceLength);
@@ -320,8 +230,8 @@ std::vector<uint8_t> SecureBoxSymmetricEncrypt(
     base::span<const uint8_t> header,
     base::span<const uint8_t> payload) {
   const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  return SecureBoxEncryptImpl(/*our_key_pair=*/nullptr,
-                              /*their_public_key=*/nullptr, shared_secret,
+  return SecureBoxEncryptImpl(/*our_key_pair=*/std::nullopt,
+                              /*their_public_key=*/std::nullopt, shared_secret,
                               header, payload, err_tracer);
 }
 
@@ -329,43 +239,35 @@ std::optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload) {
-  return SecureBoxDecryptImpl(/*our_private_key=*/nullptr, shared_secret,
+  return SecureBoxDecryptImpl(/*our_key_pair=*/std::nullopt, shared_secret,
                               header, encrypted_payload);
 }
 
 // static
 std::unique_ptr<SecureBoxPublicKey> SecureBoxPublicKey::CreateByImport(
     base::span<const uint8_t> key_bytes) {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  bssl::UniquePtr<EC_KEY> ec_key = ECPublicKeyFromBytes(key_bytes, err_tracer);
-  if (!ec_key) {
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromEcP256Point(key_bytes);
+  if (!key) {
     return nullptr;
   }
-  return base::WrapUnique(
-      new SecureBoxPublicKey(std::move(ec_key), err_tracer));
+
+  return base::WrapUnique(new SecureBoxPublicKey(*key));
 }
 
-// static
-std::unique_ptr<SecureBoxPublicKey> SecureBoxPublicKey::CreateInternal(
-    bssl::UniquePtr<EC_KEY> key,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  return base::WrapUnique(new SecureBoxPublicKey(std::move(key), err_tracer));
-}
+SecureBoxPublicKey::SecureBoxPublicKey(crypto::keypair::PublicKey key,
+                                       base::PassKey<SecureBoxKeyPair>)
+    : SecureBoxPublicKey(key) {}
 
-SecureBoxPublicKey::SecureBoxPublicKey(
-    bssl::UniquePtr<EC_KEY> key,
-    const crypto::OpenSSLErrStackTracer& err_tracer)
-    : key_(std::move(key)) {
-  DCHECK(EC_KEY_check_key(key_.get()));
-  DCHECK_EQ(EC_GROUP_get_curve_name(EC_KEY_get0_group(key_.get())),
-            NID_X9_62_prime256v1);
+SecureBoxPublicKey::SecureBoxPublicKey(crypto::keypair::PublicKey key)
+    : key_(key) {
+  CHECK(key_.IsEcP256());
 }
 
 SecureBoxPublicKey::~SecureBoxPublicKey() = default;
 
 std::vector<uint8_t> SecureBoxPublicKey::ExportToBytes() const {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  return ECPublicKeyToBytes(key_.get(), err_tracer);
+  return key_.ToUncompressedX962Point();
 }
 
 std::vector<uint8_t> SecureBoxPublicKey::Encrypt(
@@ -374,103 +276,67 @@ std::vector<uint8_t> SecureBoxPublicKey::Encrypt(
     base::span<const uint8_t> payload) const {
   const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  bssl::UniquePtr<EC_KEY> our_key_pair = GenerateECKey(err_tracer);
-  return SecureBoxEncryptImpl(our_key_pair.get(),
-                              EC_KEY_get0_public_key(key_.get()), shared_secret,
-                              header, payload, err_tracer);
+  const crypto::keypair::PrivateKey our_key_pair =
+      crypto::keypair::PrivateKey::GenerateEcP256();
+  return SecureBoxEncryptImpl(our_key_pair, key_, shared_secret, header,
+                              payload, err_tracer);
 }
 
 // static
 std::unique_ptr<SecureBoxPrivateKey> SecureBoxPrivateKey::CreateByImport(
     base::span<const uint8_t> key_bytes) {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  bssl::UniquePtr<EC_KEY> private_ec_key =
-      ImportECPrivateKey(key_bytes, err_tracer);
-  if (!private_ec_key) {
+  std::optional<crypto::keypair::PrivateKey> key =
+      crypto::keypair::PrivateKey::FromEcP256PrivateScalar(key_bytes);
+  if (!key) {
     return nullptr;
   }
-  return base::WrapUnique(
-      new SecureBoxPrivateKey(std::move(private_ec_key), err_tracer));
+  return base::WrapUnique(new SecureBoxPrivateKey(*key));
 }
 
-// static
-std::unique_ptr<SecureBoxPrivateKey> SecureBoxPrivateKey::CreateInternal(
-    bssl::UniquePtr<EC_KEY> key,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  return base::WrapUnique(new SecureBoxPrivateKey(std::move(key), err_tracer));
-}
+SecureBoxPrivateKey::SecureBoxPrivateKey(crypto::keypair::PrivateKey key,
+                                         base::PassKey<SecureBoxKeyPair>)
+    : SecureBoxPrivateKey(key) {}
 
-SecureBoxPrivateKey::SecureBoxPrivateKey(
-    bssl::UniquePtr<EC_KEY> key,
-    const crypto::OpenSSLErrStackTracer& error_tracer)
-    : key_(std::move(key)) {
-  DCHECK(EC_KEY_get0_private_key(key_.get()));
-  DCHECK(EC_KEY_check_key(key_.get()));
-  DCHECK_EQ(EC_GROUP_get_curve_name(EC_KEY_get0_group(key_.get())),
-            NID_X9_62_prime256v1);
+SecureBoxPrivateKey::SecureBoxPrivateKey(crypto::keypair::PrivateKey key)
+    : key_(key) {
+  CHECK(key_.IsEcP256());
 }
 
 SecureBoxPrivateKey::~SecureBoxPrivateKey() = default;
 
 std::vector<uint8_t> SecureBoxPrivateKey::ExportToBytes() const {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  std::vector<uint8_t> result(kECPrivateKeyLength);
-  int bn2bin_result =
-      BN_bn2bin_padded(result.data(), kECPrivateKeyLength,
-                       /*in=*/EC_KEY_get0_private_key(key_.get()));
-  DCHECK(bn2bin_result);
-  return result;
+  return base::ToVector(key_.ToEcP256PrivateScalar());
 }
 
 std::optional<std::vector<uint8_t>> SecureBoxPrivateKey::Decrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload) const {
-  return SecureBoxDecryptImpl(key_.get(), shared_secret, header,
-                              encrypted_payload);
+  return SecureBoxDecryptImpl(key_, shared_secret, header, encrypted_payload);
 }
 
 // static
 std::unique_ptr<SecureBoxKeyPair> SecureBoxKeyPair::GenerateRandom() {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
   return base::WrapUnique(
-      new SecureBoxKeyPair(GenerateECKey(err_tracer), err_tracer));
+      new SecureBoxKeyPair(crypto::keypair::PrivateKey::GenerateEcP256()));
 }
 
 // static
 std::unique_ptr<SecureBoxKeyPair> SecureBoxKeyPair::CreateByPrivateKeyImport(
     base::span<const uint8_t> private_key_bytes) {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  bssl::UniquePtr<EC_KEY> private_key =
-      ImportECPrivateKey(private_key_bytes, err_tracer);
-  if (!private_key) {
+  std::optional<crypto::keypair::PrivateKey> key =
+      crypto::keypair::PrivateKey::FromEcP256PrivateScalar(private_key_bytes);
+  if (!key) {
     return nullptr;
   }
-  return base::WrapUnique(
-      new SecureBoxKeyPair(std::move(private_key), err_tracer));
+
+  return base::WrapUnique(new SecureBoxKeyPair(*key));
 }
 
-SecureBoxKeyPair::SecureBoxKeyPair(
-    bssl::UniquePtr<EC_KEY> private_ec_key,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  DCHECK(private_ec_key);
-  bssl::UniquePtr<EC_KEY> public_ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  EC_KEY_set_public_key(public_ec_key.get(),
-                        EC_KEY_get0_public_key(private_ec_key.get()));
-
-  private_key_ = SecureBoxPrivateKey::CreateInternal(std::move(private_ec_key),
-                                                     err_tracer);
-  DCHECK(private_key_);
-
-  public_key_ =
-      SecureBoxPublicKey::CreateInternal(std::move(public_ec_key), err_tracer);
-  DCHECK(public_key_);
-}
+SecureBoxKeyPair::SecureBoxKeyPair(crypto::keypair::PrivateKey private_key)
+    : private_key_(private_key, base::PassKey<SecureBoxKeyPair>()),
+      public_key_(crypto::keypair::PublicKey::FromPrivateKey(private_key),
+                  base::PassKey<SecureBoxKeyPair>()) {}
 
 SecureBoxKeyPair::~SecureBoxKeyPair() = default;
 

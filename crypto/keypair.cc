@@ -203,6 +203,18 @@ std::optional<PrivateKey> PrivateKey::FromEcP256PrivateKey(
 }
 
 // static
+std::optional<PrivateKey> PrivateKey::FromEcP256PrivateScalar(
+    base::span<const uint8_t> key) {
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_from_ec_private_scalar(
+      EVP_pkey_ec_p256(), key.data(), key.size()));
+  if (!pkey) {
+    return std::nullopt;
+  }
+
+  return PrivateKey(std::move(pkey));
+}
+
+// static
 PrivateKey PrivateKey::FromEd25519PrivateKey(
     base::span<const uint8_t, 32> key) {
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_from_raw_private_key(
@@ -251,6 +263,16 @@ std::vector<uint8_t> PrivateKey::ToEcP256PrivateKey() const {
   CHECK(EC_KEY_marshal_private_key(cbb.get(), ec,
                                    EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY));
   return CBBToVector(cbb.get());
+}
+
+std::array<uint8_t, 32> PrivateKey::ToEcP256PrivateScalar() const {
+  CHECK(IsEcP256());
+  std::array<uint8_t, 32> result;
+  EC_KEY* ec = EVP_PKEY_get0_EC_KEY(key_.get());
+  int out = BN_bn2bin_padded(result.data(), std::size(result),
+                             EC_KEY_get0_private_key(ec));
+  CHECK(out);
+  return result;
 }
 
 std::array<uint8_t, 32> PrivateKey::ToEd25519PrivateKey() const {
