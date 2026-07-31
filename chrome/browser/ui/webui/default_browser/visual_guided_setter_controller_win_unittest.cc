@@ -126,6 +126,11 @@ class TestVisualGuidedSetterControllerWin
   void SetChromeWindowActive(bool active) { chrome_window_active_ = active; }
   void SetDpiCompatible(bool compatible) { dpi_compatible_ = compatible; }
 
+  void CloseSettingsWindow() override { close_settings_window_called_ = true; }
+  bool close_settings_window_called() const {
+    return close_settings_window_called_;
+  }
+
   const std::vector<gfx::Rect>& applied_rects() const { return applied_rects_; }
   void clear_applied_rects() { applied_rects_.clear(); }
 
@@ -186,6 +191,7 @@ class TestVisualGuidedSetterControllerWin
   bool settings_window_closed_ = false;
   bool chrome_window_active_ = true;
   bool dpi_compatible_ = true;
+  bool close_settings_window_called_ = false;
   std::vector<gfx::Rect> applied_rects_;
   std::vector<HWND> applied_z_orders_;
   base::OnceClosure run_loop_quit_closure_;
@@ -255,9 +261,6 @@ TEST_F(VisualGuidedSetterControllerWinTest, StartFindsSettingsWindow) {
   EXPECT_GT(controller_->applied_rects().size(), 0u);
 
   controller_->Stop();
-  histograms.ExpectUniqueSample(
-      "DefaultBrowser.VisualGuide.Outcome",
-      TestVisualGuidedSetterControllerWin::Outcome::kSuccess, 1);
 }
 
 TEST_F(VisualGuidedSetterControllerWinTest, FindSettingsTimeout) {
@@ -576,6 +579,7 @@ TEST_F(VisualGuidedSetterControllerWinTest,
 // controller and tears down docking.
 TEST_F(VisualGuidedSetterControllerWinTest,
        PrimaryPageChangedStopsControllerWhenNavigatedAway) {
+  base::HistogramTester histograms;
   content::WebContentsTester::For(web_contents_.get())
       ->SetLastCommittedURL(GURL("https://www.google.com"));
 
@@ -587,7 +591,11 @@ TEST_F(VisualGuidedSetterControllerWinTest,
 
   controller_->PrimaryPageChanged(web_contents_->GetPrimaryPage());
 
+  EXPECT_TRUE(controller_->close_settings_window_called());
   EXPECT_FALSE(controller_->is_running());
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSuccess, 1);
 }
 
 // Verifies that returning to a tab does not resume layout observation if the

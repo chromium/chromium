@@ -106,6 +106,8 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   virtual std::unique_ptr<SettingsWindowFinderWin> CreateSettingsWindowFinder();
   virtual bool IsDpiCompatibleForDocking(HWND hwnd,
                                          const gfx::Rect& target_rect) const;
+  virtual void CloseSettingsWindow();
+  virtual bool IsValidSettingsProcess(HWND hwnd) const;
 
  private:
   // views::WidgetObserver:
@@ -153,6 +155,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   raw_ptr<views::Widget> parent_widget_ = nullptr;
   HWND chrome_hwnd_ = nullptr;
   HWND settings_hwnd_ = nullptr;
+  DWORD settings_pid_ = 0;
 
   std::unique_ptr<GuidedSetterOverlayWindowWin> overlay_;
 

@@ -51,6 +51,7 @@ source_set("default_browser") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
+    "//components/tabs:public",
     "//ui/base",
     "//ui/base/unowned_user_data",
     "//ui/message_center/public/cpp",
