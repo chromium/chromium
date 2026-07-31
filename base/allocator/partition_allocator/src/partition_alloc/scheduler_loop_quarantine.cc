@@ -390,7 +390,8 @@ SchedulerLoopQuarantineBranch<thread_bound, for_sanitized_objects>::
     size_t slot_size = 0;
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-    allocator_root_->RetagSlotIfNeeded(slot_start.Untag(), slot_size);
+    allocator_root_->RetagSlotIfNeeded(
+        slot_start.Untag(), BucketIndexLookup::GetBucketSize(bucket_index));
     slot_start = slot_start.Untag().Tag();
 #endif
     if constexpr (!kThreadBound) {

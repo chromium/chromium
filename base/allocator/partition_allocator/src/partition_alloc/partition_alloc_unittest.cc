@@ -1682,6 +1682,42 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // We don't check anything about ptr3, but we do clean it up to avoid DCHECKs.
   allocator.root()->Free(ptr3);
 }
+
+TEST_P(PartitionAllocTest, MTEProtectsFreedPtrViaSchedulerLoopQuarantine) {
+  base::CPU cpu;
+  if (!cpu.has_mte()) {
+    // This test won't pass on systems without MTE.
+    GTEST_SKIP();
+  }
+
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  ASSERT_TRUE(GetMemoryTaggingModeForCurrentThread() !=
+              TagViolationReportingMode::kDisabled)
+      << "Test was built with MTE enabled and the CPU supports it, but MTE is "
+         "currently disabled in the device.";
+
+  internal::ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(
+      allocator.root());
+
+  size_t alloc_size = 64 - ExtraAllocSize(allocator);
+  uint64_t* ptr1 =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  EXPECT_TRUE(ptr1);
+
+  allocator.root()->Free<FreeFlags::kSchedulerLoopQuarantine>(ptr1);
+  EXPECT_TRUE(branch.IsQuarantined(ptr1));
+  branch.Purge();
+
+  // When we reallocate after purging from quarantine, we expect the same memory
+  // slot to be reused but with a different MTE tag.
+  uint64_t* ptr2 =
+      static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
+  PA_EXPECT_PTR_EQ(ptr1, ptr2);
+  EXPECT_NE(ptr1, ptr2);
+
+  allocator.root()->Free(ptr2);
+}
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
