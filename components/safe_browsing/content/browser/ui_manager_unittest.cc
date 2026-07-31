@@ -284,6 +284,14 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
                                       SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   }
 
+  void RemoveAllowlistUrlSetThreatType(const GURL& url,
+                                       bool from_pending_only,
+                                       SBThreatType threat_type) {
+    ui_manager_->RemoveAllowlistUrlSetThreatType(
+        url, /*navigation_id=*/std::nullopt, web_contents(), from_pending_only,
+        threat_type);
+  }
+
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const char* url,
       const SBThreatType threat_type =
@@ -748,6 +756,72 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistViewSource) {
   content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
   EXPECT_TRUE(IsAllowlistedForMalware(view_source_url));
   EXPECT_FALSE(IsAllowlistedForMalware(kBadURL));
+}
+
+TEST_F(SafeBrowsingUIManagerTest, RemoveAllowlistUrlSetThreatType_Pending) {
+  const GURL url("https://suspicious.com");
+  ui_manager()->AddToAllowlistUrlSet(
+      url, /*navigation_id=*/std::nullopt, web_contents(), /*is_pending=*/true,
+      SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  SBThreatType threat_type;
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/false,
+      &threat_type));
+  EXPECT_EQ(threat_type, SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  // Calling RemoveAllowlistUrlSetThreatType with a non-matching threat type
+  // (e.g. SB_THREAT_TYPE_URL_MALWARE) does not remove the entry.
+  RemoveAllowlistUrlSetThreatType(url, /*from_pending_only=*/true,
+                                  SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/false,
+      &threat_type));
+
+  // Calling RemoveAllowlistUrlSetThreatType with the matching threat type
+  // removes it.
+  RemoveAllowlistUrlSetThreatType(
+      url, /*from_pending_only=*/true,
+      SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/false,
+      &threat_type));
+}
+
+TEST_F(SafeBrowsingUIManagerTest, RemoveAllowlistUrlSetThreatType_NonPending) {
+  const GURL url("https://suspicious.com");
+  ui_manager()->AddToAllowlistUrlSet(
+      url, /*navigation_id=*/std::nullopt, web_contents(), /*is_pending=*/false,
+      SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  SBThreatType threat_type;
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/true,
+      &threat_type));
+  EXPECT_EQ(threat_type, SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  // Calling with from_pending_only=true does not remove a non-pending entry.
+  RemoveAllowlistUrlSetThreatType(
+      url, /*from_pending_only=*/true,
+      SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/true,
+      &threat_type));
+
+  // Non-matching threat type does not remove the non-pending entry.
+  RemoveAllowlistUrlSetThreatType(url, /*from_pending_only=*/false,
+                                  SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/true,
+      &threat_type));
+
+  // Matching threat type with from_pending_only=false removes it.
+  RemoveAllowlistUrlSetThreatType(
+      url, /*from_pending_only=*/false,
+      SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      url, /*entry=*/nullptr, web_contents(), /*allowlist_only=*/true,
+      &threat_type));
 }
 
 }  // namespace safe_browsing

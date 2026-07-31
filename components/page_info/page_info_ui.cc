@@ -460,6 +460,11 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                        IDS_PAGE_INFO_ENTERPRISE_BLOCK_SUMMARY,
                                        IDS_PAGE_INFO_ENTERPRISE_BLOCK_DETAILS,
                                        SecurityDescriptionType::SAFE_BROWSING);
+    case PageInfo::SAFE_BROWSING_STATUS_WARNABLE_SUSPICIOUS_SITE:
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_SUSPICIOUS_SITE_SUMMARY,
+                                       IDS_PAGE_INFO_SUSPICIOUS_SITE_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
   }
 
   std::unique_ptr<SecurityDescription> safety_tip_security_desc =

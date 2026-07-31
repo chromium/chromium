@@ -31,6 +31,9 @@ class HistoryService;
 
 namespace safe_browsing {
 
+class SafeBrowsingUIManagerTest;
+class SuspiciousSiteControllerAndroid;
+
 typedef unsigned ThreatSeverity;
 
 // Construction needs to happen on the main thread.
@@ -176,6 +179,9 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
  protected:
   friend class ChromePasswordProtectionService;
+  friend class SafeBrowsingUIManagerTest;
+  friend class SuspiciousSiteControllerAndroid;
+
   virtual ~BaseUIManager();
 
   // Removes |allowlist_url| associated with the |navigation_id| from the
@@ -184,6 +190,16 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
                              const std::optional<int64_t> navigation_id,
                              content::WebContents* web_contents,
                              bool from_pending_only);
+
+  // Removes |allowlist_url| associated with the |navigation_id| and matching
+  // |threat_type| from the allowlist for |web_contents|. Called on the UI
+  // thread.
+  void RemoveAllowlistUrlSetThreatType(
+      const GURL& allowlist_url,
+      const std::optional<int64_t> navigation_id,
+      content::WebContents* web_contents,
+      bool from_pending_only,
+      SBThreatType threat_type);
 
   // Ensures that |web_contents| has its allowlist set in its userdata
   static void EnsureAllowlistCreated(content::WebContents* web_contents);
@@ -195,6 +211,12 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
  private:
   friend class base::RefCountedThreadSafe<BaseUIManager>;
+
+  void RemoveAllowlistUrlSetInternal(const GURL& allowlist_url,
+                                     const std::optional<int64_t> navigation_id,
+                                     content::WebContents* web_contents,
+                                     bool from_pending_only,
+                                     std::optional<SBThreatType> threat_type);
 
   // Stores unsafe resources so they can be fetched from a navigation throttle
   // in the committed interstitials flow. Implemented as a pair vector since

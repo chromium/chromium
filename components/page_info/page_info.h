@@ -114,6 +114,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
     SAFE_BROWSING_STATUS_BILLING,
     SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN,
     SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK,
+    SAFE_BROWSING_STATUS_WARNABLE_SUSPICIOUS_SITE,
   };
 
   // Events for UMA. Do not reorder or change! Exposed in header so enum is
@@ -241,8 +242,12 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // Handles opening the connection help center page and records the event.
   void OpenConnectionHelpCenterPage(const ui::Event& event);
 
-  // Handles opening the Safe Browsing help center page.
-  void OpenSafeBrowsingHelpCenterPage(const ui::Event& event);
+  // Handles opening the Safe Browsing help center page and records the event.
+  void OpenSafeBrowsingHelpCenterPage(const ui::Event* event = nullptr);
+
+  // Notifies delegate of Suspicious Site Warning user actions.
+  void OnSuspiciousSiteBackToSafety();
+  void OnSuspiciousSiteMarkAsSafe();
 
   // Handles opening the settings page for a permission.
   void OpenContentSettingsExceptions(ContentSettingsType content_settings_type);

@@ -19,6 +19,18 @@
   <message name="IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if the current website has been flagged as unsafe.">
     Dangerous site
   </message>
+  <message name="IDS_PAGE_INFO_SUSPICIOUS_SITE_SUMMARY" desc="Title of the page info bubble for a suspicious site (e.g. associated with phishing or malware).">
+    Be careful on this site
+  </message>
+  <message name="IDS_PAGE_INFO_SUSPICIOUS_SITE_DETAILS" desc="Description of the page info bubble for a suspicious site.">
+    Chrome has detected details that are common on sites associated with phishing, malware, or scams. <ph name="BEGIN_LINK">&lt;link&gt;<ex>&lt;link&gt;</ex></ph>Learn more<ph name="END_LINK">&lt;/link&gt;<ex>&lt;/link&gt;</ex></ph>
+  </message>
+  <message name="IDS_PAGE_INFO_SUSPICIOUS_SITE_BUTTON_MARK_AS_SAFE" desc="Button text to mark a suspicious site as safe." formatter_data="android_java">
+    Mark as safe
+  </message>
+  <message name="IDS_PAGE_INFO_SUSPICIOUS_SITE_BUTTON_BACK_TO_SAFETY" desc="Button text to leave a suspicious site." formatter_data="android_java">
+    Back to safety
+  </message>
 
   <!-- Internal page summary strings -->
   <!-- Note: IDS_PAGE_INFO_INTERNAL_PAGE would be here, but it is in components_{chromium,google_chrome}_strings.grd because it uses the browser name. -->

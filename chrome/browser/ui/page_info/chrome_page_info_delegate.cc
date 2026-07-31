@@ -26,6 +26,9 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/android/suspicious_site_controller_android.h"
+#endif
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -52,7 +55,9 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/events/event.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/grit/branded_strings.h"
@@ -393,17 +398,6 @@ void ChromePageInfoDelegate::OpenSafetyTipHelpCenterPage() {
   OpenHelpCenterFromSafetyTip(web_contents_);
 }
 
-void ChromePageInfoDelegate::OpenSafeBrowsingHelpCenterPage(
-    const ui::Event& event) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(
-          GURL(chrome::kSafeBrowsingHelpCenterURL), content::Referrer(),
-          ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-          ui::PAGE_TRANSITION_LINK, false),
-      /*navigation_handle_callback=*/{});
-}
-
 void ChromePageInfoDelegate::OpenContentSettingsExceptions(
     ContentSettingsType content_settings_type) {
   if (content_settings_type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
@@ -432,6 +426,38 @@ void ChromePageInfoDelegate::OnUIClosing() {
   }
 }
 #endif
+
+void ChromePageInfoDelegate::OpenSafeBrowsingHelpCenterPage(
+    const ui::Event* event) {
+  int event_flags = event ? event->flags() : 0;
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          GURL(chrome::kSafeBrowsingHelpCenterURL), content::Referrer(),
+          ui::DispositionFromEventFlags(
+              event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
+          ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
+}
+
+void ChromePageInfoDelegate::OnSuspiciousSiteBackToSafety() {
+#if BUILDFLAG(IS_ANDROID)
+  if (auto* ssc =
+          safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
+              web_contents_)) {
+    ssc->OnGoBackButtonClicked();
+  }
+#endif
+}
+
+void ChromePageInfoDelegate::OnSuspiciousSiteMarkAsSafe() {
+#if BUILDFLAG(IS_ANDROID)
+  if (auto* ssc =
+          safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
+              web_contents_)) {
+    ssc->OnContinueButtonClicked();
+  }
+#endif
+}
 
 std::u16string ChromePageInfoDelegate::GetSubjectName(const GURL& url) {
   CHECK(web_contents_);

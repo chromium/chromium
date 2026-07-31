@@ -55,3 +55,22 @@ TEST(PageInfoUITest, PermissionStateToUIString) {
       PageInfoUI::PermissionStateToUIString(&delegate, permission_info));
 }
 #endif
+
+TEST(PageInfoUITest, GetSecurityDescriptionWarnableSuspiciousSite) {
+  PageInfoUI::IdentityInfo identity_info;
+  identity_info.safe_browsing_status =
+      PageInfo::SAFE_BROWSING_STATUS_WARNABLE_SUSPICIOUS_SITE;
+
+  PageInfoUI page_info_ui;
+  std::unique_ptr<PageInfoUI::SecurityDescription> description =
+      page_info_ui.GetSecurityDescription(identity_info);
+
+  ASSERT_NE(description, nullptr);
+  EXPECT_EQ(description->summary_style, PageInfoUI::SecuritySummaryColor::RED);
+  EXPECT_EQ(description->summary,
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_SUSPICIOUS_SITE_SUMMARY));
+  EXPECT_EQ(description->details,
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_SUSPICIOUS_SITE_DETAILS));
+  EXPECT_EQ(description->type,
+            PageInfoUI::SecurityDescriptionType::SAFE_BROWSING);
+}

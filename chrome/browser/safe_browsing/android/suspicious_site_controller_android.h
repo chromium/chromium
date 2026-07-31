@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
+#include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/modal_dialog_wrapper.h"
@@ -34,14 +35,7 @@ class SuspiciousSiteControllerAndroid
       public content::WebContentsUserData<SuspiciousSiteControllerAndroid>,
       public AsyncCheckTracker::Observer {
  public:
-  // LINT.IfChange(WarningOutcome)
-  enum class WarningOutcome {
-    kBypassed = 0,
-    kAdhered = 1,
-    kDismissedBySystem = 2,
-    kMaxValue = kDismissedBySystem,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SuspiciousSiteWarningOutcome)
+  using WarningOutcome = safe_browsing::SuspiciousSiteWarningOutcome;
 
   SuspiciousSiteControllerAndroid(const SuspiciousSiteControllerAndroid&) =
       delete;
@@ -109,14 +103,14 @@ class SuspiciousSiteControllerAndroid
   // Tracks whether the dialog has been shown on screen.
   bool has_shown_ = false;
 
-  // Tracks whether the final warning outcome has been recorded to UMA.
-  bool warning_outcome_logged_ = false;
-
-  // Tracks if the dialog was dismissed by a system action.
-  bool dismissed_by_system_ = false;
+  // Tracks the warning outcome decision as the user interacts with the warning.
+  WarningOutcome warning_outcome_ = WarningOutcome::kUnknown;
 
   // Tracks if this controller is observing AsyncCheckTracker.
   bool is_observing_async_check_tracker_ = false;
+
+  // The suspicious URL currently added to the allowlist for this warning.
+  GURL current_suspicious_url_;
 
   // View bridge for the Android modal dialog.
   std::unique_ptr<SuspiciousSiteDialogViewAndroid> dialog_view_;

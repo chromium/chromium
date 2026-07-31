@@ -222,6 +222,9 @@ ChromeSecurityStateTabHelper::GetMaliciousContentStatus() {
         return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
       case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
         return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN;
+      case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
+        return security_state::
+            MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE;
       case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
       case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
       case SB_THREAT_TYPE_URL_BINARY_MALWARE:
@@ -236,7 +239,6 @@ ChromeSecurityStateTabHelper::GetMaliciousContentStatus() {
       case SB_THREAT_TYPE_APK_DOWNLOAD:
       case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       case SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
-      case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
         // These threat types are not currently associated with
         // interstitials, and thus resources with these threat types are
         // not ever whitelisted or pending whitelisting.

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <!-- Red Shield Background -->
+    <path
+        android:fillColor="@color/default_red"
+        android:pathData="M480,880Q341,845 250.5,720.5T160,444V200L480,80L800,200V444Q800,596 709.5,720.5T480,880Z" />
+    <!-- White Question Mark Dot -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M480,680Q497,680 509.5,667.5T522,638Q522,621 509.5,608.5T480,596Q463,596 450.5,608.5T438,638Q438,655 450.5,667.5T480,680Z" />
+    <!-- White Question Mark Curve -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M451,552H511V530Q511,519 516,509Q522,495 532,485.5T553,466Q570,449 582.5,428T595,382Q595,337 560.5,308.5T480,280Q440,280 408.5,303T366,364L420,386Q426,366 442.5,352T480,338Q502,338 518.5,351T535,384Q535,401 524.5,415.5T501,442Q489,453 477,464.5T458,491Q451,505 451,520V552Z" />
+</vector>

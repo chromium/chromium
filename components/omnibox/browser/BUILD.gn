@@ -624,6 +624,7 @@ if (is_android) {
       "android/java/res/drawable/omnibox_dangerous.xml",
       "android/java/res/drawable/omnibox_no_encryption.xml",
       "android/java/res/drawable/omnibox_not_secure_warning.xml",
+      "android/java/res/drawable/shield_question.xml",
       "android/java/res/values-sw600dp/dimens.xml",
       "android/java/res/values/colors.xml",
       "android/java/res/values/dimens.xml",
@@ -655,6 +656,7 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//chrome/browser/flags:java",
+      "//components/browser_ui/styles/android:java_resources",
       "//components/embedder_support/android:util_java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

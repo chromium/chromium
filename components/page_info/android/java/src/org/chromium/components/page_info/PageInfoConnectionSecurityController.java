@@ -93,6 +93,7 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
         rowParams.visible = summary != null;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
+        mMainController.updateConnectionWrapperVisibility();
     }
 
     /** Called by PageInfoController to show the security info directly within the PageInfo UI. */

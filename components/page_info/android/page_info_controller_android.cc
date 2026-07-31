@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
@@ -26,7 +27,6 @@
 #include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/features.h"
 #include "components/security_state/core/security_state.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -36,7 +36,10 @@
 #include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/events/event.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/page_info/android/jni_headers/PageInfoController_jni.h"
@@ -109,6 +112,10 @@ void PageInfoControllerAndroid::SetIdentityInfo(
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
       GetSecurityDescription(identity_info);
 
+  is_suspicious_site_ =
+      (identity_info.safe_browsing_status ==
+       PageInfo::SAFE_BROWSING_STATUS_WARNABLE_SUSPICIOUS_SITE);
+
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
     if (PageInfo::IsFileOrInternalPage(url_)) {
       // On Desktop, when PageInfo::IsFileOrInternalPage returns true, an
@@ -117,6 +124,14 @@ void PageInfoControllerAndroid::SetIdentityInfo(
       // string.
       Java_PageInfoController_showConnectionSecurityInfo(env,
                                                          controller_jobject_);
+    } else if (is_suspicious_site_) {
+      // Have the controller set security description and configure suspicious
+      // site UI directly.
+      Java_PageInfoController_setSecurityDescription(
+          env, controller_jobject_,
+          ConvertUTF16ToJavaString(env, security_description->summary),
+          ConvertUTF16ToJavaString(env, security_description->details),
+          is_suspicious_site_);
     } else if (security_description->summary_style ==
                SecuritySummaryColor::GREEN) {
       // Have the controller set up the button that will show the connection
@@ -136,7 +151,41 @@ void PageInfoControllerAndroid::SetIdentityInfo(
   Java_PageInfoController_setSecurityDescription(
       env, controller_jobject_,
       ConvertUTF16ToJavaString(env, security_description->summary),
-      ConvertUTF16ToJavaString(env, security_description->details));
+      ConvertUTF16ToJavaString(env, security_description->details),
+      is_suspicious_site_);
+}
+
+void PageInfoControllerAndroid::OnSuspiciousSiteBackToSafety(JNIEnv* env) {
+  if (presenter_) {
+    presenter_->OnSuspiciousSiteBackToSafety();
+  }
+}
+
+void PageInfoControllerAndroid::OnSuspiciousSiteMarkAsSafe(JNIEnv* env) {
+  if (presenter_) {
+    presenter_->OnSuspiciousSiteMarkAsSafe();
+  }
+}
+
+void PageInfoControllerAndroid::OpenUrl(
+    JNIEnv* env,
+    const base::android::JavaRef<jstring>& jurl) {
+  if (web_contents_) {
+    GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
+    if (!url.is_valid()) {
+      return;
+    }
+    content::OpenURLParams params(url, content::Referrer(),
+                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  ui::PAGE_TRANSITION_LINK,
+                                  /*is_renderer_initiated=*/false);
+    web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
+}
+
+void PageInfoControllerAndroid::SetIsSuspiciousSite(JNIEnv* env,
+                                                    bool is_suspicious_site) {
+  is_suspicious_site_ = is_suspicious_site;
 }
 
 void PageInfoControllerAndroid::SetPageFeatureInfo(

@@ -8,11 +8,14 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/android/safe_browsing/suspicious_site_dialog_view_android.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -64,13 +67,24 @@ SuspiciousSiteControllerAndroid::~SuspiciousSiteControllerAndroid() {
     }
   }
 
-  // If the object is destroyed before explicitly bypassing (e.g. the user
-  // navigates away or closes the tab), record adherence to the warning.
-  if (has_shown_ && !warning_outcome_logged_) {
+  // If the dialog was shown, log the tracked warning outcome directly.
+  if (has_shown_) {
     base::UmaHistogramEnumeration(
-        "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
-        dismissed_by_system_ ? WarningOutcome::kDismissedBySystem
-                             : WarningOutcome::kAdhered);
+        "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome", warning_outcome_);
+  }
+
+  // Remove the active suspicious site entry from AllowlistUrlSet when this
+  // controller is destroyed (e.g. when navigating away or closing the tab) so
+  // that the security state is restored.
+  if (!current_suspicious_url_.is_empty() && web_contents()) {
+    SafeBrowsingService* sb_service =
+        g_browser_process->safe_browsing_service();
+    if (sb_service && sb_service->ui_manager()) {
+      sb_service->ui_manager()->RemoveAllowlistUrlSetThreatType(
+          current_suspicious_url_, navigation_id_, web_contents(),
+          /*from_pending_only=*/true,
+          SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+    }
   }
 }
 
@@ -78,8 +92,7 @@ SuspiciousSiteControllerAndroid::~SuspiciousSiteControllerAndroid() {
 void SuspiciousSiteControllerAndroid::ShowForWebContents(
     content::WebContents* web_contents,
     int64_t navigation_id) {
-  if (auto* existing_controller = FromWebContents(web_contents)) {
-    existing_controller->dismissed_by_system_ = true;
+  if (FromWebContents(web_contents)) {
     web_contents->RemoveUserData(UserDataKey());
   }
   CreateForWebContents(web_contents);
@@ -196,7 +209,7 @@ void SuspiciousSiteControllerAndroid::MaybeShowDialog() {
 }
 
 void SuspiciousSiteControllerAndroid::ShowDialog() {
-  if (*GetShownCallback()) {
+  if (GetShownCallback() && !GetShownCallback()->is_null()) {
     std::move(*GetShownCallback()).Run();
   }
 
@@ -208,6 +221,27 @@ void SuspiciousSiteControllerAndroid::ShowDialog() {
   }
 
   has_shown_ = true;
+  SafeBrowsingService* sb_service = g_browser_process->safe_browsing_service();
+  if (sb_service && sb_service->ui_manager()) {
+    // If a previous suspicious site URL was registered for this tab, clear it
+    // first before setting the new one.
+    if (!current_suspicious_url_.is_empty()) {
+      sb_service->ui_manager()->RemoveAllowlistUrlSetThreatType(
+          current_suspicious_url_, navigation_id_, web_contents(),
+          /*from_pending_only=*/true,
+          SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+    }
+    // Add the suspicious site URL to AllowlistUrlSet with pending=true.
+    // AllowlistUrlSet stores the threat type for WebContents, enabling
+    // ChromeSecurityStateTabHelper to return
+    // MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE so the red warning icon
+    // remains active in the Omnibox and Page Info even if the dialog is closed.
+    current_suspicious_url_ = web_contents()->GetLastCommittedURL();
+    sb_service->ui_manager()->AddToAllowlistUrlSet(
+        current_suspicious_url_, navigation_id_, web_contents(),
+        /*is_pending=*/true,
+        SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+  }
   dialog_view_.reset();
   dialog_view_ = std::make_unique<SuspiciousSiteDialogViewAndroid>(*this);
   // TODO(crbug.com/532598569): Investigate if destroying an existing dialog,
@@ -217,14 +251,12 @@ void SuspiciousSiteControllerAndroid::ShowDialog() {
 
 void SuspiciousSiteControllerAndroid::CloseDialog(
     ui::ModalDialogWrapper::DismissalCause dismissal_cause) {
-  if (*GetDismissedCallback()) {
+  if (GetDismissedCallback() && !GetDismissedCallback()->is_null()) {
     std::move(*GetDismissedCallback()).Run();
   }
 
   if (dismissal_cause ==
-          ui::ModalDialogWrapper::DismissalCause::NAVIGATE_BACK ||
-      dismissal_cause ==
-          ui::ModalDialogWrapper::DismissalCause::TOUCH_OUTSIDE) {
+      ui::ModalDialogWrapper::DismissalCause::NAVIGATE_BACK) {
     OnGoBackButtonClicked();
   } else if (dismissal_cause ==
                  ui::ModalDialogWrapper::DismissalCause::NAVIGATE ||
@@ -236,21 +268,24 @@ void SuspiciousSiteControllerAndroid::CloseDialog(
                                     DIALOG_INTERACTION_DEFERRED) {
     is_suspended_ = true;
     dialog_view_.reset();
+  } else if (dismissal_cause ==
+                 ui::ModalDialogWrapper::DismissalCause::TOUCH_OUTSIDE ||
+             dismissal_cause == ui::ModalDialogWrapper::DismissalCause::
+                                    POSITIVE_BUTTON_CLICKED ||
+             dismissal_cause ==
+                 ui::ModalDialogWrapper::DismissalCause::ACTION_ON_CONTENT) {
+    warning_outcome_ = WarningOutcome::kBypassed;
+    is_suspended_ = false;
+    dialog_view_.reset();
   } else {
     is_suspended_ = false;
-    dismissed_by_system_ = true;
     dialog_view_.reset();
-    // NOTE: Calling RemoveUserData synchronously destroys this object, so there
-    // must be no member accesses after this point.
-    web_contents()->RemoveUserData(UserDataKey());
   }
 }
 
 void SuspiciousSiteControllerAndroid::OnGoBackButtonClicked() {
-  warning_outcome_logged_ = true;
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
-      WarningOutcome::kAdhered);
+  has_shown_ = true;
+  warning_outcome_ = WarningOutcome::kAdhered;
   dialog_view_.reset();
 
   content::WebContents* contents = web_contents();
@@ -269,10 +304,8 @@ void SuspiciousSiteControllerAndroid::OnGoBackButtonClicked() {
 }
 
 void SuspiciousSiteControllerAndroid::OnContinueButtonClicked() {
-  warning_outcome_logged_ = true;
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
-      WarningOutcome::kBypassed);
+  has_shown_ = true;
+  warning_outcome_ = WarningOutcome::kBypassed;
   dialog_view_.reset();
   if (web_contents()->GetBrowserContext()) {
     Profile* profile =

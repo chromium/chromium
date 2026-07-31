@@ -959,12 +959,13 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SuspiciousSiteWarningOutcome) -->
 
 <enum name="SuspiciousSiteWarningOutcome">
-  <int value="0" label="Bypassed"/>
-  <int value="1" label="Adhered"/>
-  <int value="2" label="DismissedBySystem"/>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Bypassed"/>
+  <int value="2" label="Adhered"/>
+  <int value="3" label="DismissedBySystem"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/suspicious_site_controller_android.h:WarningOutcome) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h:SuspiciousSiteWarningOutcome) -->
 
 <!-- LINT.IfChange(SyncedEsbOutcome) -->
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
    Copyright 2020 The Chromium Authors
-
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file.
 -->
@@ -26,11 +25,59 @@
             android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
-        <org.chromium.components.page_info.PageInfoRowView
-            android:id="@+id/page_info_connection_row"
+        <LinearLayout
+            android:id="@+id/page_info_connection_wrapper"
             android:visibility="gone"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+            <org.chromium.components.page_info.PageInfoRowView
+                android:id="@+id/page_info_connection_row"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"/>
+            <LinearLayout
+                android:id="@+id/page_info_suspicious_site_buttons_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="start"
+                android:visibility="gone"
+                android:layout_marginStart=
+                    "@dimen/page_info_subcontent_margin_start"
+                android:layout_marginTop="8dp"
+                android:paddingStart="@dimen/page_info_popup_padding_sides"
+                android:paddingEnd="@dimen/page_info_popup_padding_sides"
+                android:paddingBottom="@dimen/page_info_popup_padding_vertical">
+
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/page_info_mark_as_safe_button"
+                    android:text=
+                        "@string/page_info_suspicious_site_button_mark_as_safe"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    style="@style/FilledTonalButton"/>
+
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/page_info_back_to_safety_button"
+                    android:text=
+                    "@string/page_info_suspicious_site_button_back_to_safety"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    style="@style/FilledButton"/>
+            </LinearLayout>
+        </LinearLayout>
         <org.chromium.components.page_info.PageInfoRowView
             android:id="@+id/page_info_cookies_row"
             android:visibility="gone"

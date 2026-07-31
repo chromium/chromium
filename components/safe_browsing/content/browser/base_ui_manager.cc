@@ -222,6 +222,7 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       return 3;
     case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
       return 4;
     case SB_THREAT_TYPE_BILLING:
       return 15;
@@ -236,7 +237,6 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
     case SB_THREAT_TYPE_APK_DOWNLOAD:
     case SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
-    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
       NOTREACHED();
   }
 }
@@ -683,20 +683,39 @@ void BaseUIManager::RemoveAllowlistUrlSet(
     const std::optional<int64_t> navigation_id,
     WebContents* web_contents,
     bool from_pending_only) {
+  RemoveAllowlistUrlSetInternal(allowlist_url, navigation_id, web_contents,
+                                from_pending_only,
+                                /*threat_type=*/std::nullopt);
+}
+
+void BaseUIManager::RemoveAllowlistUrlSetThreatType(
+    const GURL& allowlist_url,
+    const std::optional<int64_t> navigation_id,
+    WebContents* web_contents,
+    bool from_pending_only,
+    SBThreatType threat_type) {
+  RemoveAllowlistUrlSetInternal(allowlist_url, navigation_id, web_contents,
+                                from_pending_only, threat_type);
+}
+
+void BaseUIManager::RemoveAllowlistUrlSetInternal(
+    const GURL& allowlist_url,
+    const std::optional<int64_t> navigation_id,
+    WebContents* web_contents,
+    bool from_pending_only,
+    std::optional<SBThreatType> threat_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // A WebContents might not exist if the tab has been closed.
-  if (!web_contents)
+  if (!web_contents || allowlist_url.is_empty()) {
     return;
+  }
 
   // Use |web_contents| rather than |resource.web_contents_getter|
   // here. By this point, a "Back" navigation could have already been
   // committed, so the page loading |resource| might be gone and
   // |web_contents_getter| may no longer be valid.
   AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
-
-  if (allowlist_url.is_empty())
-    return;
 
   // Note that this function does not DCHECK that |allowlist_url|
   // appears in the pending allowlist. In the common case, it's expected
@@ -709,12 +728,21 @@ void BaseUIManager::RemoveAllowlistUrlSet(
   // remove the main-frame URL from the pending allowlist, so the
   // main-frame URL will have already been removed when the subsequent
   // blocking pages are dismissed.
-  if (site_list && site_list->ContainsPending(allowlist_url, nullptr)) {
+  // Only remove the entry if |threat_type| is not specified or if the stored
+  // threat type matches |threat_type|. This prevents accidentally removing an
+  // entry belonging to a different threat type (e.g., a severe interstitial).
+  SBThreatType existing_threat_type;
+  if (site_list &&
+      site_list->ContainsPending(allowlist_url, &existing_threat_type) &&
+      (!threat_type.has_value() ||
+       existing_threat_type == threat_type.value())) {
     site_list->RemovePending(allowlist_url, navigation_id);
   }
 
   if (!from_pending_only && site_list &&
-      site_list->Contains(allowlist_url, nullptr)) {
+      site_list->Contains(allowlist_url, &existing_threat_type) &&
+      (!threat_type.has_value() ||
+       existing_threat_type == threat_type.value())) {
     site_list->Remove(allowlist_url);
   }
 

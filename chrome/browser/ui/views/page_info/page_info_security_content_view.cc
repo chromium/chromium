@@ -281,7 +281,7 @@ void PageInfoSecurityContentView::SecurityDetailsClicked(
     presenter_->OpenSafetyTipHelpCenterPage();
   } else if (security_description_type_ ==
              SecurityDescriptionType::SAFE_BROWSING) {
-    presenter_->OpenSafeBrowsingHelpCenterPage(event);
+    presenter_->OpenSafeBrowsingHelpCenterPage(&event);
   } else {
     presenter_->OpenConnectionHelpCenterPage(event);
   }
