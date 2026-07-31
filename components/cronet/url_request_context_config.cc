@@ -29,6 +29,8 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mapped_host_resolver.h"
+#include "net/dns/public/insecure_dns_mode.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/stale_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
@@ -843,25 +845,20 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       host_resolver_rules_enable || disable_ipv6_on_wifi || is_network_bound ||
       https_svcb_options) {
     net::HostResolver::ManagerOptions host_resolver_manager_options;
-    host_resolver_manager_options.insecure_dns_client_enabled =
-        async_dns_enable;
+    host_resolver_manager_options.insecure_dns_mode =
+        async_dns_enable ? net::InsecureDnsMode::kEnabledBuiltIn
+                         : net::InsecureDnsMode::kDisabled;
     host_resolver_manager_options.check_ipv6_on_wifi = !disable_ipv6_on_wifi;
     if (https_svcb_options) {
       host_resolver_manager_options.https_svcb_options = https_svcb_options;
     }
 
     if (enable_platform_dns) {
-      // Using the platform DNS APIs requires:
-      // 1. Enabling the built-in DNS client
-      //    (insecure_dns_client_enabled = true)
-      // 2. Disabling DoH queries, these do not yet use the platform DNS APIs
-      //    (secure_dns_mode = net::SecureDnsMode::kOff)
-      // 3. Make HostResolverManager use the platform DNS APIs
-      //    (insecure_dns_via_platform_apis_enabled = true)
-      host_resolver_manager_options.insecure_dns_client_enabled = true;
-      host_resolver_manager_options.insecure_dns_via_platform_apis_enabled =
-          true;
+      host_resolver_manager_options.insecure_dns_mode =
+          net::InsecureDnsMode::kEnabledPlatform;
       net::DnsConfigOverrides overrides;
+      // Disabling DoH queries, we only want to use the built-in resolver to
+      // direct queries to the system resolver via platform DNS APIs.
       overrides.secure_dns_mode = net::SecureDnsMode::kOff;
       host_resolver_manager_options.dns_config_overrides = overrides;
     }

@@ -2251,7 +2251,7 @@ void NetworkContext::CreateHostResolver(
     // different overrides.  But since this is only used for special cases for
     // now, much easier to create entirely separate net::HostResolver instances.
     net::HostResolver::ManagerOptions options;
-    options.insecure_dns_client_enabled = true;
+    options.insecure_dns_mode = net::InsecureDnsMode::kEnabledBuiltIn;
     // Assume additional types are unnecessary for these special cases.
     options.additional_types_via_insecure_dns_enabled = false;
     options.dns_config_overrides = config_overrides.value();

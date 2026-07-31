@@ -22,8 +22,8 @@ class NetLog;
 //
 // By default uses a mocked out system resolver, though can be configured to use
 // the built-in async resolver (Built in DNS stub resolver) with a fuzzed set
-// of UDP/TCP sockets by setting ManagerOptions.insecure_dns_client_enabled to
-// true or calling SetInsecureDnsClientEnabled on the underlying
+// of UDP/TCP sockets by setting ManagerOptions.insecure_dns_mode to
+// kEnabledBuiltIn or calling SetInsecureDnsClientEnabled on the underlying
 // HostResolverManager.
 //
 // To make behavior most deterministic, it is recommended that tests and fuzzers

@@ -482,20 +482,14 @@ HostResolverManager::HostResolverManager(
   UpdateConnectionType(connection_type);
 
 #if defined(ENABLE_BUILT_IN_DNS)
-  InsecureDnsMode initial_insecure_dns_mode = InsecureDnsMode::kDisabled;
-  if (options.insecure_dns_client_enabled) {
-    initial_insecure_dns_mode = options.insecure_dns_via_platform_apis_enabled
-                                    ? InsecureDnsMode::kEnabledPlatform
-                                    : InsecureDnsMode::kEnabledBuiltIn;
-  }
-  CHECK((initial_insecure_dns_mode != InsecureDnsMode::kEnabledPlatform &&
-         initial_insecure_dns_mode !=
+  CHECK((options.insecure_dns_mode != InsecureDnsMode::kEnabledPlatform &&
+         options.insecure_dns_mode !=
              InsecureDnsMode::kEnabledPlatformNoSystem) ||
         features::IsDnsPlatformSupported());
 
   dns_client_ = DnsClient::CreateClient(net_log_);
   dns_client_->SetInsecureEnabled(
-      initial_insecure_dns_mode,
+      options.insecure_dns_mode,
       options.additional_types_via_insecure_dns_enabled);
   dns_client_->SetConfigOverrides(options.dns_config_overrides);
 #else

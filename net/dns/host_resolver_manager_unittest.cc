@@ -498,7 +498,7 @@ void HostResolverManagerTest::CreateResolverWithOptionsAndParams(
     bool is_async,
     bool ipv4_reachable) {
   // Use HostResolverManagerDnsTest if enabling DNS client.
-  DCHECK(!options.insecure_dns_client_enabled);
+  DCHECK_EQ(options.insecure_dns_mode, InsecureDnsMode::kDisabled);
 
   DestroyResolver();
 
@@ -4675,7 +4675,7 @@ void HostResolverManagerDnsTest::TearDown() {
 HostResolver::ManagerOptions HostResolverManagerDnsTest::DefaultOptions() {
   HostResolver::ManagerOptions options =
       HostResolverManagerTest::DefaultOptions();
-  options.insecure_dns_client_enabled = true;
+  options.insecure_dns_mode = InsecureDnsMode::kEnabledBuiltIn;
   options.additional_types_via_insecure_dns_enabled = true;
   return options;
 }
@@ -4695,17 +4695,9 @@ void HostResolverManagerDnsTest::CreateResolverWithOptionsAndParams(
       std::make_unique<MockDnsClient>(DnsConfig(), CreateDefaultDnsRules());
   mock_dns_client_ = dns_client.get();
   resolver_->SetDnsClientForTesting(std::move(dns_client));
-  InsecureDnsMode mode;
-  if (options.insecure_dns_client_enabled &&
-      options.insecure_dns_via_platform_apis_enabled) {
-    mode = InsecureDnsMode::kEnabledPlatform;
-  } else if (options.insecure_dns_client_enabled) {
-    mode = InsecureDnsMode::kEnabledBuiltIn;
-  } else {
-    mode = InsecureDnsMode::kDisabled;
-  }
   resolver_->SetInsecureDnsClientEnabled(
-      mode, options.additional_types_via_insecure_dns_enabled);
+      options.insecure_dns_mode,
+      options.additional_types_via_insecure_dns_enabled);
   resolver_->set_host_resolver_system_params_for_test(params);
   resolver_->RegisterResolveContext(resolve_context_.get());
 }
@@ -8043,7 +8035,7 @@ TEST_F(HostResolverManagerDnsTest, DnsCallsWithDisabledDnsClient) {
 TEST_F(HostResolverManagerDnsTest,
        DnsCallsWithDisabledDnsClient_DisabledAtConstruction) {
   HostResolver::ManagerOptions options = DefaultOptions();
-  options.insecure_dns_client_enabled = false;
+  options.insecure_dns_mode = InsecureDnsMode::kDisabled;
   CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
                                      true /* ipv6_reachable */);
   ChangeDnsConfig(CreateValidDnsConfig());

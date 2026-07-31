@@ -498,7 +498,7 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
   auto manager_options = std::move(options).value_or(ManagerOptions());
   // Support the use of the built-in resolver when possible.
   bool is_builtin_resolver_supported =
-      manager_options.insecure_dns_client_enabled &&
+      manager_options.insecure_dns_mode != InsecureDnsMode::kDisabled &&
       base::android::android_info::sdk_int() >=
           base::android::android_info::SDK_VERSION_P;
   if (is_builtin_resolver_supported) {
@@ -533,7 +533,9 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
     }
   }
 
-  manager_options.insecure_dns_client_enabled = is_builtin_resolver_supported;
+  if (!is_builtin_resolver_supported) {
+    manager_options.insecure_dns_mode = InsecureDnsMode::kDisabled;
+  }
   return std::make_unique<ContextHostResolver>(
       HostResolverManager::CreateNetworkBoundHostResolverManager(
           manager_options, target_network, net_log),

@@ -32,6 +32,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolution_details.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -347,23 +348,10 @@ class NET_EXPORT HostResolver {
     size_t max_system_retry_attempts =
         HostResolverSystemTask::Params::kDefaultRetryAttempts;
 
-    // Initial setting for whether the insecure portion of the built-in
-    // asynchronous DnsClient is enabled or disabled. See HostResolverManager::
-    // SetInsecureDnsClientEnabled() for details.
-    bool insecure_dns_client_enabled = false;
-
-    // Initial setting for whether TaskType::DNS_PLATFORM must be used instead
-    // of TaskType::DNS. Requires `insecure_dns_client_enabled` to be true to
-    // have any effect (otherwise TaskType::DNS won't be used in the first
-    // place). See HostResolverManager::SetInsecureDnsClientEnabled() for
-    // details.
-    // Before setting this to true one must ensure that the platform DNS APIs
-    // are supported on the current device
-    // (via net::features::IsDnsPlatformSupported()).
-    // This exists as a separate option to let different Chromium-based products
-    // make different choices. It cannot be a build flag because embedders can
-    // build in the same way but want different behavior.
-    bool insecure_dns_via_platform_apis_enabled = false;
+    // Initial setting for the mode of operation of the insecure portion of the
+    // built-in DNS client. See
+    // HostResolverManager::SetInsecureDnsClientEnabled() for details.
+    InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
 
     // Initial setting for whether additional DNS types (e.g. HTTPS) may be
     // queried when using the built-in resolver for insecure DNS.
