@@ -14,7 +14,7 @@
                   formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
                  fieldRendererID:(autofill::FieldRendererId)fieldRendererID
-                       fieldType:(NSString*)fieldType
+                       fieldType:(FieldType)fieldType
                             type:(ActivityType)type
                       typedValue:(NSString*)typedValue
                          frameID:(NSString*)frameID
@@ -25,7 +25,7 @@
     _formRendererID = formRendererID;
     _fieldIdentifier = [fieldIdentifier copy];
     _fieldRendererID = fieldRendererID;
-    _fieldType = [fieldType copy];
+    _fieldType = fieldType;
     _type = type;
     _typedValue = [typedValue copy];
     _frameID = [frameID copy];

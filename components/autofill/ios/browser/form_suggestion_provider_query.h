@@ -11,13 +11,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 
 using ActivityType = autofill::FormActivityParams::ActivityType;
-
-namespace {
-// The "password" field type does not explicitly mean that the field contains a
-// password, it means that the field obfuscates its information instead of
-// showing it plainly.
-NSString* const kObfuscatedFieldType = @"password";
-}  // namespace
+using FieldType = autofill::FormActivityParams::FieldType;
 
 // A class containing the data necessary for FormSuggestionProvider to
 // find and retrieve user-selectable suggestions for an input field of
@@ -40,7 +34,7 @@ NSString* const kObfuscatedFieldType = @"password";
 @property(readonly, nonatomic) autofill::FieldRendererId fieldRendererID;
 
 // HTML input field type (i.e. 'text', 'password').
-@property(readonly, nonatomic, copy) NSString* fieldType;
+@property(readonly, nonatomic, assign) FieldType fieldType;
 
 // Type of form activity that initiates the query.
 @property(readonly, nonatomic, assign) ActivityType type;
@@ -59,7 +53,7 @@ NSString* const kObfuscatedFieldType = @"password";
                   formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
                  fieldRendererID:(autofill::FieldRendererId)fieldRendererID
-                       fieldType:(NSString*)fieldType
+                       fieldType:(FieldType)fieldType
                             type:(ActivityType)type
                       typedValue:(NSString*)typedValue
                          frameID:(NSString*)frameID

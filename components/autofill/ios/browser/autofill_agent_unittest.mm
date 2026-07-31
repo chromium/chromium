@@ -447,7 +447,7 @@ TEST_F(AutofillAgentTest,
         formRendererID:FormRendererId(1)
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
-             fieldType:@"text"
+             fieldType:FieldType::kText
                   type:ActivityType::kFocus
             typedValue:@""
                frameID:base::SysUTF8ToNSString(kTestFrameId)
@@ -687,7 +687,7 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_ClearForm) {
         formRendererID:FormRendererId(1)
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
-             fieldType:@"text"
+             fieldType:FieldType::kText
                   type:ActivityType::kFocus
             typedValue:@""
                frameID:base::SysUTF8ToNSString(kTestFrameId)
@@ -746,7 +746,7 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_ClearFormWithGPay) {
         formRendererID:FormRendererId(1)
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
-             fieldType:@"text"
+             fieldType:FieldType::kText
                   type:ActivityType::kFocus
             typedValue:@""
                frameID:base::SysUTF8ToNSString(kTestFrameId)

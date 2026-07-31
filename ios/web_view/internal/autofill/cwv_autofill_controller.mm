@@ -78,6 +78,7 @@ using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
 using ActivityType = autofill::FormActivityParams::ActivityType;
+using FieldType = autofill::FormActivityParams::FieldType;
 using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
 NSErrorDomain const CWVAutofillErrorDomain =
@@ -358,7 +359,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 
 - (void)fetchSuggestionsForFormWithName:(NSString*)formName
                         fieldIdentifier:(NSString*)fieldIdentifier
-                              fieldType:(NSString*)fieldType
+                              fieldType:(NSInteger)fieldType
                                 frameID:(NSString*)frameID
                       completionHandler:
                           (void (^)(NSArray<CWVAutofillSuggestion*>* _Nonnull))
@@ -400,7 +401,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
         formRendererID:targetFormRendererID
        fieldIdentifier:fieldIdentifier
        fieldRendererID:targetFieldRendererID
-             fieldType:fieldType
+             fieldType:(FieldType)fieldType
                   type:_lastFormActivityType
             typedValue:_lastFormActivityTypedValue
                frameID:frameID
@@ -989,7 +990,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   NSString* nsFieldIdentifier =
       base::SysUTF8ToNSString(params.field_identifier);
   _lastFormActivityFieldRendererID = params.field_renderer_id;
-  NSString* nsFieldType = base::SysUTF8ToNSString(params.field_type);
+  FieldType fieldType = params.field_type;
   NSString* nsFrameID = base::SysUTF8ToNSString(frame_id);
   NSString* nsValue = base::SysUTF8ToNSString(params.value);
   BOOL userInitiated = params.has_user_gesture;
@@ -1008,7 +1009,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                                                     :value:userInitiated:)]) {
       [_delegate autofillController:self
           didFocusOnFieldWithIdentifier:nsFieldIdentifier
-                              fieldType:nsFieldType
+                              fieldType:(NSInteger)fieldType
                                formName:nsFormName
                                 frameID:nsFrameID
                                   value:nsValue
@@ -1024,7 +1025,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                                                     :value:userInitiated:)]) {
       [_delegate autofillController:self
           didInputInFieldWithIdentifier:nsFieldIdentifier
-                              fieldType:nsFieldType
+                              fieldType:(NSInteger)fieldType
                                formName:nsFormName
                                 frameID:nsFrameID
                                   value:nsValue
@@ -1037,7 +1038,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                                                    :value:userInitiated:)]) {
       [_delegate autofillController:self
           didBlurOnFieldWithIdentifier:nsFieldIdentifier
-                             fieldType:nsFieldType
+                             fieldType:(NSInteger)fieldType
                               formName:nsFormName
                                frameID:nsFrameID
                                  value:nsValue

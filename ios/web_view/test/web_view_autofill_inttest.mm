@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/public/cwv_global_state.h"
@@ -26,6 +27,7 @@
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using FieldType = autofill::FormActivityParams::FieldType;
 
 @interface CWVAutofillController (Testing)
 - (void)setForceSubmittedByUserForTesting:(BOOL)force;
@@ -159,7 +161,7 @@ class WebViewAutofillTest : public WebViewInttestBase {
     [autofill_controller_
         fetchSuggestionsForFormWithName:kTestFormName
                         fieldIdentifier:kTestAddressFieldID
-                              fieldType:kTestFieldType
+                              fieldType:(NSInteger)FieldType::kText
                                 frameID:main_frame_id
                       completionHandler:^(
                           NSArray<CWVAutofillSuggestion*>* suggestions) {
@@ -205,7 +207,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   [[autofill_controller_delegate_ expect]
                  autofillController:autofill_controller_
       didFocusOnFieldWithIdentifier:kTestAddressFieldID
-                          fieldType:kTestFieldType
+                          fieldType:(NSInteger)FieldType::kText
                            formName:kTestFormName
                             frameID:[OCMArg any]
                               value:kTestAddressFieldValue
@@ -225,7 +227,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   [[autofill_controller_delegate_ expect]
                 autofillController:autofill_controller_
       didBlurOnFieldWithIdentifier:kTestAddressFieldID
-                         fieldType:kTestFieldType
+                         fieldType:(NSInteger)FieldType::kText
                           formName:kTestFormName
                            frameID:[OCMArg any]
                              value:kTestAddressFieldValue
@@ -243,7 +245,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   [[autofill_controller_delegate_ expect]
                  autofillController:autofill_controller_
       didInputInFieldWithIdentifier:kTestAddressFieldID
-                          fieldType:kTestFieldType
+                          fieldType:(NSInteger)FieldType::kText
                            formName:kTestFormName
                             frameID:[OCMArg any]
                               value:kTestAddressFieldValue
@@ -319,7 +321,7 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
   [[autofill_controller_delegate_ expect]
                  autofillController:autofill_controller_
       didFocusOnFieldWithIdentifier:kTestAddressFieldID
-                          fieldType:kTestFieldType
+                          fieldType:(NSInteger)FieldType::kText
                            formName:kTestFormName
                             frameID:[OCMArg checkWithBlock:^BOOL(id frameId) {
                               main_frame_id = frameId;

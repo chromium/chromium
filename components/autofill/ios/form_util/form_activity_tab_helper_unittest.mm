@@ -344,7 +344,8 @@ TEST_F(FormActivityTabHelperTest,
             observer_->form_activity_info()->sender_frame_id);
   EXPECT_EQ("form-name",
             observer_->form_activity_info()->form_activity.form_name);
-  EXPECT_EQ("text", observer_->form_activity_info()->form_activity.field_type);
+  EXPECT_EQ(FormActivityParams::FieldType::kText,
+            observer_->form_activity_info()->form_activity.field_type);
   EXPECT_EQ(FormActivityParams::ActivityType::kFocus,
             observer_->form_activity_info()->form_activity.type);
   EXPECT_EQ("", observer_->form_activity_info()->form_activity.value);

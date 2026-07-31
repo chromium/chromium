@@ -71,6 +71,7 @@
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
 using ActivityType = autofill::FormActivityParams::ActivityType;
+using FieldType = autofill::FormActivityParams::FieldType;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -233,11 +234,12 @@ class CWVAutofillControllerTest : public web::WebTest {
           }
         };
 
-    [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
-                                          fieldIdentifier:kTestFieldIdentifier
-                                                fieldType:@""
-                                                  frameID:frame_id_
-                                        completionHandler:completion_block];
+    [autofill_controller_
+        fetchSuggestionsForFormWithName:kTestFormName
+                        fieldIdentifier:kTestFieldIdentifier
+                              fieldType:(NSInteger)FieldType::kUnknown
+                                frameID:frame_id_
+                      completionHandler:completion_block];
 
     EXPECT_TRUE(suggestions_future.Wait());
   }
@@ -296,11 +298,12 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
     EXPECT_NSEQ(kTestFormName, autofillSuggestion.formName);
     fetch_completion_was_called = YES;
   };
-  [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
-                                        fieldIdentifier:kTestFieldIdentifier
-                                              fieldType:@""
-                                                frameID:frame_id_
-                                      completionHandler:fetch_completion];
+  [autofill_controller_
+      fetchSuggestionsForFormWithName:kTestFormName
+                      fieldIdentifier:kTestFieldIdentifier
+                            fieldType:(NSInteger)FieldType::kUnknown
+                              frameID:frame_id_
+                    completionHandler:fetch_completion];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
                                           /*run_message_loop=*/true, ^bool {
@@ -348,11 +351,12 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
     EXPECT_NSEQ(kTestFormName, autofillSuggestion.formName);
     fetch_completion_was_called = YES;
   };
-  [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
-                                        fieldIdentifier:kTestFieldIdentifier
-                                              fieldType:@""
-                                                frameID:frame_id_
-                                      completionHandler:fetch_completion];
+  [autofill_controller_
+      fetchSuggestionsForFormWithName:kTestFormName
+                      fieldIdentifier:kTestFieldIdentifier
+                            fieldType:(NSInteger)FieldType::kUnknown
+                              frameID:frame_id_
+                    completionHandler:fetch_completion];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout,
                                           /*run_message_loop=*/true, ^bool {
@@ -436,7 +440,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestionAfterFocusShift) {
   [autofill_controller_
       fetchSuggestionsForFormWithName:kTestFormName
                       fieldIdentifier:kTestFieldIdentifier
-                            fieldType:@""
+                            fieldType:(NSInteger)FieldType::kUnknown
                               frameID:frame_id_1
                     completionHandler:^(
                         NSArray<CWVAutofillSuggestion*>* suggestions) {
@@ -561,7 +565,7 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
 
   [[delegate expect] autofillController:autofill_controller_
           didFocusOnFieldWithIdentifier:kTestFieldIdentifier
-                              fieldType:@""
+                              fieldType:(NSInteger)FieldType::kUnknown
                                formName:kTestFormName
                                 frameID:frame_id_
                                   value:kTestFieldValue
@@ -588,7 +592,7 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
 
   [[delegate expect] autofillController:autofill_controller_
           didInputInFieldWithIdentifier:kTestFieldIdentifier
-                              fieldType:@""
+                              fieldType:(NSInteger)FieldType::kUnknown
                                formName:kTestFormName
                                 frameID:frame_id_
                                   value:kTestFieldValue
@@ -614,7 +618,7 @@ TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
 
   [[delegate expect] autofillController:autofill_controller_
           didInputInFieldWithIdentifier:kTestFieldIdentifier
-                              fieldType:@""
+                              fieldType:(NSInteger)FieldType::kUnknown
                                formName:kTestFormName
                                 frameID:frame_id_
                                   value:kTestFieldValue
@@ -639,7 +643,7 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
 
   [[delegate expect] autofillController:autofill_controller_
            didBlurOnFieldWithIdentifier:kTestFieldIdentifier
-                              fieldType:@""
+                              fieldType:(NSInteger)FieldType::kUnknown
                                formName:kTestFormName
                                 frameID:frame_id_
                                   value:kTestFieldValue
@@ -1296,11 +1300,12 @@ TEST_F(CWVAutofillControllerTest, WebStateDestroyedDuringFetch) {
   id fetch_completion = ^(NSArray<CWVAutofillSuggestion*>* suggestions) {
     fetch_completion_was_called = YES;
   };
-  [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
-                                        fieldIdentifier:kTestFieldIdentifier
-                                              fieldType:@""
-                                                frameID:frame_id_
-                                      completionHandler:fetch_completion];
+  [autofill_controller_
+      fetchSuggestionsForFormWithName:kTestFormName
+                      fieldIdentifier:kTestFieldIdentifier
+                            fieldType:(NSInteger)FieldType::kUnknown
+                              frameID:frame_id_
+                    completionHandler:fetch_completion];
 
   // Verify that suggestionsAvailable was captured.
   ASSERT_TRUE(suggestionsAvailable);

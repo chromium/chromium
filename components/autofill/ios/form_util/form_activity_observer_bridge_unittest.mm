@@ -127,7 +127,7 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   autofill::FormActivityParams params;
   auto sender_frame = web::FakeWebFrame::Create("sender_frame", true);
   params.form_name = "form-name";
-  params.field_type = "field-type";
+  params.field_type = autofill::FormActivityParams::FieldType::kText;
   params.type = autofill::FormActivityParams::ActivityType::kFocus;
   params.value = "value";
   params.input_missing = true;
@@ -183,6 +183,7 @@ TEST_F(FormActivityObserverBridgeTest, DestructionOrder) {
 namespace autofill {
 
 using ActivityType = FormActivityParams::ActivityType;
+using FieldType = FormActivityParams::FieldType;
 
 namespace {
 
@@ -195,6 +196,12 @@ constexpr char kActivityTypeKeyUp[] = "keyup";
 constexpr char kActivityTypeUnknown[] = "unknown";
 constexpr char kActivityTypeUnknownType[] = "unknown_type";
 
+constexpr char kFieldTypeText[] = "text";
+constexpr char kFieldTypePassword[] = "password";
+constexpr char kFieldTypeSelectOne[] = "select-one";
+constexpr char kFieldTypeUnknown[] = "unknown";
+constexpr char kFieldTypeUnknownField[] = "unknown_field";
+
 }  // namespace
 
 class FormActivityParamsTest : public PlatformTest {
@@ -204,6 +211,12 @@ class FormActivityParamsTest : public PlatformTest {
   }
   const char* ActivityTypeToString(ActivityType type) {
     return FormActivityParams::ActivityTypeToString(type);
+  }
+  FieldType StringToFieldType(std::string_view type) {
+    return FormActivityParams::StringToFieldType(type);
+  }
+  const char* FieldTypeToString(FieldType type) {
+    return FormActivityParams::FieldTypeToString(type);
   }
 };
 
@@ -228,6 +241,18 @@ TEST_F(FormActivityParamsTest, ActivityTypeConversions) {
   EXPECT_STREQ(kActivityTypeKeyUp, ActivityTypeToString(ActivityType::kKeyUp));
   EXPECT_STREQ(kActivityTypeUnknown,
                ActivityTypeToString(ActivityType::kUnknown));
+}
+
+TEST_F(FormActivityParamsTest, FieldTypeConversions) {
+  EXPECT_EQ(FieldType::kText, StringToFieldType(kFieldTypeText));
+  EXPECT_EQ(FieldType::kObfuscated, StringToFieldType(kFieldTypePassword));
+  EXPECT_EQ(FieldType::kSelectOne, StringToFieldType(kFieldTypeSelectOne));
+  EXPECT_EQ(FieldType::kUnknown, StringToFieldType(kFieldTypeUnknownField));
+
+  EXPECT_STREQ(kFieldTypeText, FieldTypeToString(FieldType::kText));
+  EXPECT_STREQ(kFieldTypePassword, FieldTypeToString(FieldType::kObfuscated));
+  EXPECT_STREQ(kFieldTypeSelectOne, FieldTypeToString(FieldType::kSelectOne));
+  EXPECT_STREQ(kFieldTypeUnknown, FieldTypeToString(FieldType::kUnknown));
 }
 
 }  // namespace autofill

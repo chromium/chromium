@@ -98,7 +98,7 @@ typedef void (^ProceduralBlock)(void);
 // |userInitiated| is YES if field was focused as a result of user interaction.
 - (void)autofillController:(CWVAutofillController*)autofillController
     didFocusOnFieldWithIdentifier:(NSString*)fieldIdentifier
-                        fieldType:(NSString*)fieldType
+                        fieldType:(NSInteger)fieldType
                          formName:(NSString*)formName
                           frameID:(NSString*)frameID
                             value:(NSString*)value
@@ -109,7 +109,7 @@ typedef void (^ProceduralBlock)(void);
 // interaction.
 - (void)autofillController:(CWVAutofillController*)autofillController
     didInputInFieldWithIdentifier:(NSString*)fieldIdentifier
-                        fieldType:(NSString*)fieldType
+                        fieldType:(NSInteger)fieldType
                          formName:(NSString*)formName
                           frameID:(NSString*)frameID
                             value:(NSString*)value
@@ -119,7 +119,7 @@ typedef void (^ProceduralBlock)(void);
 // |userInitiated| is YES if field was blurred as a result of user interaction.
 - (void)autofillController:(CWVAutofillController*)autofillController
     didBlurOnFieldWithIdentifier:(NSString*)fieldIdentifier
-                       fieldType:(NSString*)fieldType
+                       fieldType:(NSInteger)fieldType
                         formName:(NSString*)formName
                          frameID:(NSString*)frameID
                            value:(NSString*)value

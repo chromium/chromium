@@ -934,7 +934,9 @@ bool HasGuid(const Suggestion::Payload& payload) {
   // We are only interested in 'input' events in order to notify the autofill
   // manager for metrics purposes.
   if (params.type != ActivityType::kInput ||
-      (params.field_type != "text" && params.field_type != "password")) {
+      (params.field_type != autofill::FormActivityParams::FieldType::kText &&
+       params.field_type !=
+           autofill::FormActivityParams::FieldType::kObfuscated)) {
     return;
   }
 

@@ -718,9 +718,11 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     _webAuthnDelegate = delegate ? delegate->AsWeakPtr() : nullptr;
   }
   if (_activeFieldIsObfuscated !=
-      (params.field_type == autofill::kObfuscatedFieldType)) {
+      (params.field_type ==
+       autofill::FormActivityParams::FieldType::kObfuscated)) {
     _activeFieldIsObfuscated =
-        params.field_type == autofill::kObfuscatedFieldType;
+        params.field_type ==
+        autofill::FormActivityParams::FieldType::kObfuscated;
     [self postActionsToConsumer];
   }
 }

@@ -460,7 +460,7 @@ bool ShouldTriggerSubmission(
 
 - (BOOL)isPasswordFieldOnForm:(FormSuggestionProviderQuery*)formQuery
                      webFrame:(web::WebFrame*)webFrame {
-  if (![formQuery.fieldType isEqualToString:kObfuscatedFieldType]) {
+  if (formQuery.fieldType != FieldType::kObfuscated) {
     return NO;
   }
 

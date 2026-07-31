@@ -57,7 +57,6 @@ constexpr char kFillDataUsername[] = "john.doe@gmail.com";
 constexpr char kFillDataPassword[] = "super!secret";
 constexpr char16_t kFillDataBackupPassword[] = u"backup_password";
 NSString* const kTestFrameID = @"mainframe";
-NSString* const kTextFieldType = @"text";
 
 NSString* NSFrameId(web::WebFrame* frame) {
   return SysUTF8ToNSString(frame->GetFrameId());
@@ -119,7 +118,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
       autofill::FormRendererId formRendererID,
       NSString* fieldIdentifier,
       autofill::FieldRendererId fieldRendererID,
-      NSString* fieldType,
+      FieldType fieldType,
       NSString* frameID) {
     return [[FormSuggestionProviderQuery alloc]
         initWithFormName:@"form1"
@@ -138,11 +137,11 @@ class PasswordSuggestionHelperTest : public PlatformTest {
       autofill::FieldRendererId fieldRendererID,
       NSString* frameID) {
     return BuildQuery(formRendererID, @"password1", fieldRendererID,
-                      kObfuscatedFieldType, frameID);
+                      FieldType::kObfuscated, frameID);
   }
 
   FormSuggestionProviderQuery* BuildQuery(NSString* fieldIdentifier,
-                                          NSString* fieldType,
+                                          FieldType fieldType,
                                           NSString* frameID) {
     return BuildQuery(autofill::test::MakeFormRendererId(), fieldIdentifier,
                       autofill::test::MakeFieldRendererId(), fieldType,
@@ -167,7 +166,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
 TEST_F(PasswordSuggestionHelperTest,
        CheckIfSuggestions_WithFillDataImmediately_OnPasswordField) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"pwd1", kObfuscatedFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"pwd1", FieldType::kObfuscated, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.fieldRendererID;
@@ -205,7 +204,7 @@ TEST_F(PasswordSuggestionHelperTest,
 TEST_F(PasswordSuggestionHelperTest,
        CheckIfSuggestions_WithFillDataImmediately_OnUsernameField) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = query.fieldRendererID;
   FieldRendererId password1_renderer_id = autofill::test::MakeFieldRendererId();
@@ -251,7 +250,7 @@ TEST_F(PasswordSuggestionHelperTest,
   };
 
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"pwd1", kObfuscatedFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"pwd1", FieldType::kObfuscated, NSFrameId(main_frame_));
   OCMExpect([delegate_
       suggestionHelperShouldTriggerFormExtraction:helper_
                                           inFrame:main_frame_]);
@@ -289,7 +288,7 @@ TEST_F(PasswordSuggestionHelperTest,
   };
 
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"pwd1", kObfuscatedFieldType, kTestFrameID);
+      BuildQuery(@"pwd1", FieldType::kObfuscated, kTestFrameID);
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.fieldRendererID;
@@ -343,7 +342,7 @@ TEST_F(PasswordSuggestionHelperTest,
   };
 
   FormSuggestionProviderQuery* query1 =
-      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query1.formRendererID;
   FormRendererId form2_renderer_id = autofill::test::MakeFormRendererId();
   FieldRendererId username1_renderer_id = query1.fieldRendererID;
@@ -691,7 +690,7 @@ TEST_F(PasswordSuggestionHelperTest,
 // Tests retrieving suggestions on username field in form when available.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = query.fieldRendererID;
   FieldRendererId password1_renderer_id = autofill::test::MakeFieldRendererId();
@@ -717,7 +716,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
 // Tests retrieving suggestions on password field in form when available.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.fieldRendererID;
@@ -746,7 +745,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
 TEST_F(PasswordSuggestionHelperTest,
        RetrieveSuggestions_OnPasswordField_UsingPasswordFormCache) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
   FormRendererId form_renderer_id(query.formRendererID);
   FieldRendererId password_renderer_id(query.fieldRendererID);
 
@@ -782,7 +781,7 @@ TEST_F(PasswordSuggestionHelperTest,
 // field.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnSingleUsernameForm) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = query.fieldRendererID;
   FieldRendererId password1_renderer_id = FieldRendererId();
@@ -808,7 +807,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnSingleUsernameForm) {
 // Tests retrieving suggestions for form when there are no suggestions.
 TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_Empty) {
   FormSuggestionProviderQuery* form1_query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
 
   // Create a 2nd form with the same username field id but a different form id.
   FormRendererId form2_renderer_id = autofill::test::MakeFormRendererId();
@@ -834,7 +833,7 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_Empty) {
 // Tests getting password fill data when in stateless mode.
 TEST_F(PasswordSuggestionHelperTest, GetPasswordFillData_Stateless) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = query.fieldRendererID;
   FieldRendererId password1_renderer_id = autofill::test::MakeFieldRendererId();
@@ -919,7 +918,7 @@ TEST_F(PasswordSuggestionHelperTest,
 // Tests getting fill data for a backup credential when in stateless mode.
 TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateless) {
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"username", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form_renderer_id = query.formRendererID;
   FieldRendererId username_renderer_id = query.fieldRendererID;
   FieldRendererId password_renderer_id = autofill::test::MakeFieldRendererId();
@@ -966,7 +965,7 @@ TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateful) {
       password_manager::features::kIOSStatelessFillDataFlow);
 
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form_renderer_id = query.formRendererID;
   FieldRendererId username_renderer_id = query.fieldRendererID;
   FieldRendererId password_renderer_id = autofill::test::MakeFieldRendererId();
@@ -1006,7 +1005,7 @@ TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateful) {
 // Tests that the helper is correctly reset.
 TEST_F(PasswordSuggestionHelperTest, ResetForNewPage) {
   FormSuggestionProviderQuery* main_frame_query =
-      BuildQuery(@"username1", kTextFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = main_frame_query.formRendererID;
   FieldRendererId username1_renderer_id = main_frame_query.fieldRendererID;
   FieldRendererId password1_renderer_id = autofill::test::MakeFieldRendererId();
@@ -1022,7 +1021,7 @@ TEST_F(PasswordSuggestionHelperTest, ResetForNewPage) {
   };
   {
     FormSuggestionProviderQuery* iframe_query =
-        BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(frame1_ptr));
+        BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(frame1_ptr));
     [helper_ checkIfSuggestionsAvailableForForm:iframe_query
                               completionHandler:completion];
   }
@@ -1076,7 +1075,7 @@ TEST_F(PasswordSuggestionHelperTest,
       password_manager::features::kIOSPasswordAutoSubmission);
 
   FormSuggestionProviderQuery* query =
-      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
+      BuildQuery(@"password1", FieldType::kObfuscated, NSFrameId(main_frame_));
   FormRendererId form1_renderer_id = query.formRendererID;
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = query.fieldRendererID;

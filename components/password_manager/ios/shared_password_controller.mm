@@ -107,6 +107,7 @@ using password_manager::PasswordManagerInterface;
 using password_manager::WebAuthnCredentialsDelegate;
 using password_manager::metrics_util::LogPasswordDropdownShown;
 using password_manager::metrics_util::PasswordDropdownState;
+using FieldType = autofill::FormActivityParams::FieldType;
 
 namespace {
 
@@ -976,13 +977,13 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
 - (BOOL)canGeneratePasswordForForm:(FormRendererId)formIdentifier
                    fieldIdentifier:(FieldRendererId)fieldIdentifier
-                         fieldType:(NSString*)fieldType
+                         fieldType:(FieldType)fieldType
                            inFrame:(web::WebFrame*)frame {
   if (![_driverHelper PasswordGenerationHelper:frame]->IsGenerationEnabled(
           /*log_debug_data*/ true)) {
     return NO;
   }
-  if (![fieldType isEqualToString:kObfuscatedFieldType]) {
+  if (fieldType != FieldType::kObfuscated) {
     return NO;
   }
   const PasswordFormGenerationData* generationData =

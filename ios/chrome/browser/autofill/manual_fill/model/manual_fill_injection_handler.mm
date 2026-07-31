@@ -324,7 +324,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   _lastFocusedElementParams = params;
   self.lastFocusedElementSecure =
       autofill::IsContextSecureForWebState(webState);
-  self.lastFocusedElementPasswordField = params.field_type == "password";
+  self.lastFocusedElementPasswordField =
+      params.field_type == autofill::FormActivityParams::FieldType::kObfuscated;
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
   if (!GURL::SchemeIsCryptographic(frame->GetSecurityOrigin().scheme())) {
