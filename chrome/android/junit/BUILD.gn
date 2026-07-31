@@ -68,6 +68,7 @@ if (is_android) {
       "//chrome/android:chrome_java",
       "//chrome/android:chrome_unit_test_util_java",
       "//chrome/android:delegate_public_impl_java",
+      "//chrome/android:new_tab_page_utils_java",
       "//chrome/android:screenshot_provider_java",
       "//chrome/android:usage_stats_proto_java",
       "//chrome/android/features/keyboard_accessory:internal_java",

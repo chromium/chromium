@@ -300,6 +300,17 @@ if (_is_default_toolchain) {
     ]
   }
 
+  android_library("new_tab_page_utils_java") {
+    resources_package = "org.chromium.chrome"
+    sources =
+        [ "java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java" ]
+    deps = [
+      ":chrome_app_java_resources",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
   android_library("chrome_java") {
     deps = [
       ":base_module_java",
@@ -307,6 +318,7 @@ if (_is_default_toolchain) {
       ":chrome_public_apk_template_resources",
       ":google_api_keys_java",
       ":java_overlay_resources",
+      ":new_tab_page_utils_java",
       ":screenshot_provider_java",
       ":usage_stats_proto_java",
       ":xr_java",
