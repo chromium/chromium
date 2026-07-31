@@ -23,7 +23,8 @@ export function getHtml(this: TodoItemElement) {
           <p class="description">${this.description}</p>
         </div>
         <div class="todo-actions" @click="${this.onActionsClick_}">
-          <cr-button @click="${this.onOpenTabClick_}">Open tab</cr-button>
+          <cr-button class="tonal-button"
+              @click="${this.onOpenTabClick_}">Open tab</cr-button>
           <cr-icon-button id="thumbsUp"
               iron-icon="${this.getThumbsUpIcon_()}"
               title="Like"

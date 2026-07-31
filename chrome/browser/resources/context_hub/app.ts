@@ -9,15 +9,29 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {browserProxyFactory} from './context_hub.mojom-webui.js';
-import type {AutoTodoItem} from './context_hub.mojom-webui.js';
 
 export type ViewType = 'ai-taskbox'|'memory-banks'|'tab-groups';
+
+const VALID_VIEWS: Set<ViewType> =
+    new Set(['ai-taskbox', 'memory-banks', 'tab-groups']);
+const STORAGE_KEY = 'context_hub_current_view';
+
+// Page refresh should restore the current view.
+function getInitialView(): ViewType {
+  const hash = window.location.hash.slice(1) as ViewType;
+  if (VALID_VIEWS.has(hash)) {
+    return hash;
+  }
+  const stored = localStorage.getItem(STORAGE_KEY) as ViewType;
+  if (stored && VALID_VIEWS.has(stored)) {
+    return stored;
+  }
+  return 'ai-taskbox';
+}
 
 export class ContextHubAppElement extends CrLitElement {
   static get is() {
@@ -35,25 +49,32 @@ export class ContextHubAppElement extends CrLitElement {
   static override get properties() {
     return {
       currentView_: {type: String},
-      todos_: {type: Array},
     };
   }
 
-  protected accessor currentView_: ViewType = 'ai-taskbox';
-  protected accessor todos_: AutoTodoItem[]|null = null;
+  protected accessor currentView_: ViewType = getInitialView();
 
   override connectedCallback() {
     super.connectedCallback();
-    if (loadTimeData.getBoolean('kAutoTodos')) {
-      browserProxyFactory.getInstance().handler.generateAutoTodos().then(
-          ({todos}) => {
-            this.todos_ = todos;
-          });
-    }
+    window.addEventListener('hashchange', this.onHashChange_);
   }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('hashchange', this.onHashChange_);
+  }
+
+  private onHashChange_ = () => {
+    const hash = window.location.hash.slice(1) as ViewType;
+    if (VALID_VIEWS.has(hash) && this.currentView_ !== hash) {
+      this.currentView_ = hash;
+    }
+  };
 
   protected onSelectedChanged_(e: CustomEvent<{value: ViewType}>) {
     this.currentView_ = e.detail.value;
+    window.location.hash = this.currentView_;
+    localStorage.setItem(STORAGE_KEY, this.currentView_);
   }
 
   protected onSelectorClick_(e: MouseEvent) {

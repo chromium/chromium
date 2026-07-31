@@ -22,15 +22,15 @@ export function getHtml(this: ContextHubAppElement) {
                 selected="${this.currentView_}"
                 @selected-changed="${this.onSelectedChanged_}"
                 @click="${this.onSelectorClick_}">
-                <a role="menuitem" href="#" data-route="ai-taskbox" class="cr-nav-menu-item">
+                <a role="menuitem" href="#ai-taskbox" data-route="ai-taskbox" class="cr-nav-menu-item">
                     <cr-icon icon="cr:extension"></cr-icon>
                     AI Taskbox
                 </a>
-                <a role="menuitem" href="#" data-route="memory-banks" class="cr-nav-menu-item">
+                <a role="menuitem" href="#memory-banks" data-route="memory-banks" class="cr-nav-menu-item">
                     <cr-icon icon="cr:history"></cr-icon>
                     Memory banks
                 </a>
-                <a role="menuitem" href="#" data-route="tab-groups" class="cr-nav-menu-item">
+                <a role="menuitem" href="#tab-groups" data-route="tab-groups" class="cr-nav-menu-item">
                     <cr-icon icon="cr:domain"></cr-icon>
                     Tab groups
                 </a>
@@ -42,7 +42,7 @@ export function getHtml(this: ContextHubAppElement) {
     <div class="content-area">
         ${
       this.currentView_ === 'ai-taskbox' ? html`
-          <ai-taskbox .todos="${this.todos_}"></ai-taskbox>
+          <ai-taskbox></ai-taskbox>
         ` :
                                            ''}
         ${

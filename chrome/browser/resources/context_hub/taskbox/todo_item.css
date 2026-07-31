@@ -12,7 +12,8 @@
   display: block;
   background-color: var(--cr-card-background-color, #FFF);
   border-radius: var(--cr-card-border-radius, 16px);
-  border: 1px solid #F1F5F9;
+  border: none;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -39,6 +40,7 @@ cr-expand-button {
   flex-direction: column;
   align-items: flex-start;
   flex: 1;
+  min-width: 0;
 }
 
 .todo-info h3 {
@@ -59,6 +61,7 @@ cr-expand-button {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .expanded-content {

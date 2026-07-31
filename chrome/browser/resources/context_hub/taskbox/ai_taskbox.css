@@ -9,13 +9,42 @@
 
 :host {
   display: block;
-  max-width: 1000px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 h1 {
   font-size: 28px;
   font-weight: 600;
-  margin: 0 0 24px 0;
+  margin: 0;
+}
+
+.columns-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.todo-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: 20px;
 }
 
 h2 {
@@ -24,19 +53,24 @@ h2 {
   margin: 0;
 }
 
-section {
-  margin-bottom: 40px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
 .todo-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.placeholder-card {
+  padding: 32px 20px;
+  border-radius: var(--cr-card-border-radius, 16px);
+  border: none;
+  box-shadow: none;
+  background-color: var(--cr-card-background-color, #FFF);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.placeholder-text {
+  color: var(--cr-secondary-text-color, #64748B);
+  font-size: 14px;
+  margin: 0;
 }
