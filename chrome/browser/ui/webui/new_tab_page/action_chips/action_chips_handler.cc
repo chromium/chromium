@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/common/pref_names.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -118,12 +117,14 @@ ActionChipsHandler::ActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page,
     Profile* profile,
     content::WebUI* web_ui,
-    std::unique_ptr<ActionChipsGenerator> action_chips_generator)
+    std::unique_ptr<ActionChipsGenerator> action_chips_generator,
+    GetSessionHandleCallback get_session_handle_callback)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
       web_ui_(web_ui),
-      action_chips_generator_(std::move(action_chips_generator)) {
+      action_chips_generator_(std::move(action_chips_generator)),
+      get_session_handle_callback_(std::move(get_session_handle_callback)) {
 #if !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = web_ui_->GetWebContents();
   auto* browser_window_interface =
@@ -170,14 +171,9 @@ void ActionChipsHandler::StartActionChipsRetrieval() {
 }
 
 void ActionChipsHandler::ActivateMetricsFunnel(const std::string& funnel_name) {
-  auto* controller = web_ui_->GetController();
-  NewTabPageUI* ntp_ui =
-      controller ? controller->GetAs<NewTabPageUI>() : nullptr;
-  if (!ntp_ui) {
-    return;
-  }
-
-  auto* session_handle = ntp_ui->GetOrCreateContextualSessionHandle();
+  auto* session_handle = get_session_handle_callback_
+                             ? get_session_handle_callback_.Run()
+                             : nullptr;
   if (!session_handle) {
     return;
   }

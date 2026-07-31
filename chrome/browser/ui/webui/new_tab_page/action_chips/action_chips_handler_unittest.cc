@@ -118,7 +118,8 @@ class FakeActionChipsHandler : public ActionChipsHandler {
                            std::move(pending_page),
                            profile,
                            web_ui,
-                           std::move(action_chips_generator)) {}
+                           std::move(action_chips_generator),
+                           base::NullCallback()) {}
 };
 
 struct TabInfoFields {
