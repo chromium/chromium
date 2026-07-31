@@ -830,6 +830,37 @@ TEST_F(BaseFileTest, WriteDataToSparseFile) {
   ExpectHashValue(kHashOfTestData1To3, base_file_->Finish());
 }
 
+// Open an existing file as a sparse file. The size on disk is larger than the
+// total number of bytes written by the time the download finishes. The
+// trailing bytes should be discarded so that the renamed file matches the
+// reported hash.
+TEST_F(BaseFileTest, ExistingSparseFileTooLong) {
+  base::FilePath file_path = temp_dir_.GetPath().AppendASCII("existing");
+  std::string contents;
+  contents.append(kTestData1);
+  contents.resize(kTestData1.size() + kTestData2.size() + kTestData3.size() +
+                      kTestData4.size(),
+                  'x');
+  ASSERT_TRUE(base::WriteFile(file_path, contents));
+
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
+            base_file_->Initialize(file_path, base::FilePath(), base::File(),
+                                   kTestData1.size(), std::string(),
+                                   std::unique_ptr<crypto::SecureHash>(), true,
+                                   &kTestDataBytesWasted));
+  base_file_->WriteDataToFile(kTestData1.size(),
+                              base::as_byte_span(kTestData2));
+  base_file_->WriteDataToFile(kTestData1.size() + kTestData2.size(),
+                              base::as_byte_span(kTestData3));
+  ExpectHashValue(kHashOfTestData1To3, base_file_->Finish());
+
+  base::FilePath new_path(temp_dir_.GetPath().AppendASCII("NewFile"));
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, base_file_->Rename(new_path));
+  set_expected_data(base::JoinString({kTestData1, kTestData2, kTestData3}, ""));
+  base_file_->Detach();
+  expect_file_survives_ = true;
+}
+
 // Test that validating data in a file works.
 TEST_F(BaseFileTest, ValidateDataInFile) {
   ASSERT_TRUE(InitializeFile());

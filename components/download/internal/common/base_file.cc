@@ -348,12 +348,24 @@ void BaseFile::Cancel() {
   Detach();
 }
 
-std::unique_ptr<crypto::SecureHash> BaseFile::Finish() {
+std::unique_ptr<crypto::SecureHash> BaseFile::Finish(int64_t expected_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(qinmin): verify that all the holes have been filled.
-  if (is_sparse_file_)
+  if (is_sparse_file_) {
+    // Determine the target physical size to truncate to.
+    // If expected_size is provided (> 0), use that; otherwise fall back to
+    // bytes_so_far_.
+    int64_t target_size = (expected_size > 0) ? expected_size : bytes_so_far_;
+
+    // Calculate hash over the logical prefix
     CalculatePartialHash(std::string());
+
+    // Truncate trailing unverified bytes past the target size
+    if (file_.IsValid() && file_.GetLength() > target_size) {
+      file_.SetLength(target_size);
+    }
+  }
   Close();
   return std::move(secure_hash_);
 }

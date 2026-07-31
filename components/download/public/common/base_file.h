@@ -153,7 +153,10 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // Returns the SecureHash object representing the state of the hash function
   // at the end of the operation. If |is_sparse_file_| is true, calling this
   // will cause |secure_hash_| to get calculated.
-  std::unique_ptr<crypto::SecureHash> Finish();
+  //
+  // |expected_size|: The expected final size of the file in bytes. If non-zero,
+  //     BaseFile will verify that the file size matches this value.
+  std::unique_ptr<crypto::SecureHash> Finish(int64_t expected_size = 0);
 
   // Callback used with AnnotateWithSourceInformation.
   // Created by DownloadFileImpl::RenameWithRetryInternal
