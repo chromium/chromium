@@ -1441,6 +1441,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the merchant site is set as the initiator for the web payment"
                         + " handler modal dialog popup."),
         Flag.baseFeature("EnableUdpGro", "Utilizes GRO over recvmmsg for readMultiple."),
+        Flag.baseFeature(
+                "StructuredHeadersInRust",
+                "Enables the Rust-based structured headers parser instead of C++."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
