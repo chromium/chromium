@@ -17,7 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/rand_util.h"
-#include "base/threading/thread_checker.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/types/pass_key.h"
@@ -139,26 +139,32 @@ class BASE_EXPORT LockMetricsRecorder {
   };
 
  private:
+  bool CalledOnValidThread() const {
+    return bound_thread_ref_ == base::PlatformThread::CurrentRef();
+  }
+
   constexpr static double kSamplingRatio = 0.001;
 
   static void ReportLockHistogram(TimeDelta sample,
                                   base::HistogramBase* histogram_pointer);
 
-  bool iterating_in_progress_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool iterating_in_progress_ = false;
 
-  raw_ptr<base::HistogramBase> base_lock_histogram_
-      GUARDED_BY_CONTEXT(thread_checker_) = nullptr;
-  raw_ptr<base::HistogramBase> partition_alloc_lock_histogram_
-      GUARDED_BY_CONTEXT(thread_checker_) = nullptr;
+  raw_ptr<base::HistogramBase> base_lock_histogram_ = nullptr;
+  raw_ptr<base::HistogramBase> partition_alloc_lock_histogram_ = nullptr;
 
-  RingBuffer<LockMetricSample, kMaxSamples> unified_sample_buffer_
-      GUARDED_BY_CONTEXT(thread_checker_);
+  RingBuffer<LockMetricSample, kMaxSamples> unified_sample_buffer_;
 
   // Include the subsampler in the thread-local data to avoid reallocations
   // when the subsampler is created and destroyed.
-  MetricsSubSampler subsampler_ GUARDED_BY_CONTEXT(thread_checker_);
+  MetricsSubSampler subsampler_;
 
-  THREAD_CHECKER(thread_checker_);
+  // The thread ref of the thread that created this object.
+  //
+  // Note: `DCHECK_CALLED_ON_VALID_THREAD` cannot be used as it may allocate
+  // memory and cause infinite recursion depending on TLS teardown order.
+  const base::PlatformThreadRef bound_thread_ref_ =
+      base::PlatformThread::CurrentRef();
 };
 
 }  // namespace base

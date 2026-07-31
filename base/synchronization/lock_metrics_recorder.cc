@@ -129,19 +129,19 @@ void LockMetricsRecorder::ReportLockHistogram(
 }
 
 bool LockMetricsRecorder::ShouldRecordLockAcquisitionTime() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(CalledOnValidThread());
   return !iterating_in_progress_ && subsampler_.ShouldSample(kSamplingRatio);
 }
 
 void LockMetricsRecorder::RecordLockAcquisitionTime(
     const LockMetricSample& sample) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(CalledOnValidThread());
   unified_sample_buffer_.SaveToBuffer(sample);
 }
 
 void LockMetricsRecorder::ForEachSample(
     FunctionRef<void(const LockMetricSample&)> f) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(CalledOnValidThread());
   CHECK(!iterating_in_progress_);
   // Set the `iterating_in_progress_` flag to true to prevent reentrancy due to
   // any lock contention during the recording of the histogram. This keeps the
@@ -156,7 +156,7 @@ void LockMetricsRecorder::ForEachSample(
 }
 
 void LockMetricsRecorder::ReportLockAcquisitionTimes() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(CalledOnValidThread());
 
   if (iterating_in_progress_) {
     return;
