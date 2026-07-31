@@ -403,9 +403,6 @@ void aom_hadamard_lp_8x8_dual_c(const int16_t *src_diff, ptrdiff_t src_stride, i
 void aom_hadamard_lp_8x8_dual_neon(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 #define aom_hadamard_lp_8x8_dual aom_hadamard_lp_8x8_dual_neon
 
-int64_t aom_highbd_calc_variance_stat_c(const uint16_t *src, int stride, int bw, int bh);
-#define aom_highbd_calc_variance_stat aom_highbd_calc_variance_stat_c
-
 void aom_ifft16x16_float_c(const float *input, float *temp, float *output);
 #define aom_ifft16x16_float aom_ifft16x16_float_c
 

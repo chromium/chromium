@@ -445,10 +445,6 @@ void aom_hadamard_lp_8x8_dual_sse2(const int16_t *src_diff, ptrdiff_t src_stride
 void aom_hadamard_lp_8x8_dual_avx2(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 RTCD_EXTERN void (*aom_hadamard_lp_8x8_dual)(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 
-int64_t aom_highbd_calc_variance_stat_c(const uint16_t *src, int stride, int bw, int bh);
-int64_t aom_highbd_calc_variance_stat_avx2(const uint16_t *src, int stride, int bw, int bh);
-RTCD_EXTERN int64_t (*aom_highbd_calc_variance_stat)(const uint16_t *src, int stride, int bw, int bh);
-
 void aom_ifft16x16_float_c(const float *input, float *temp, float *output);
 void aom_ifft16x16_float_sse2(const float *input, float *temp, float *output);
 void aom_ifft16x16_float_avx2(const float *input, float *temp, float *output);
@@ -1794,8 +1790,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_avx2;
     aom_hadamard_lp_8x8_dual = aom_hadamard_lp_8x8_dual_sse2;
     if (flags & HAS_AVX2) aom_hadamard_lp_8x8_dual = aom_hadamard_lp_8x8_dual_avx2;
-    aom_highbd_calc_variance_stat = aom_highbd_calc_variance_stat_c;
-    if (flags & HAS_AVX2) aom_highbd_calc_variance_stat = aom_highbd_calc_variance_stat_avx2;
     aom_ifft16x16_float = aom_ifft16x16_float_sse2;
     if (flags & HAS_AVX2) aom_ifft16x16_float = aom_ifft16x16_float_avx2;
     aom_ifft32x32_float = aom_ifft32x32_float_sse2;
