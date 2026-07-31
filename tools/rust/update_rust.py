@@ -37,13 +37,13 @@ sys.path.append(
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 RUST_REVISION = 'b998449636a48e2c4a362809085b600a0174e1f2'
-RUST_SUB_REVISION = 5
+RUST_SUB_REVISION = 6
 
 # The revision of Crubit to use from https://github.com/google/crubit
 #
 # If changing the CRUBIT_REVISION but not the RUST_REVISION, bump the
 # RUST_SUB_REVISION to generate a unique package name.
-CRUBIT_REVISION = 'de30c70a405bd60f09168cfa596150bad1eb9ce9'
+CRUBIT_REVISION = '12b60aff50f64ba5964514e21af3c6d409915d93'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
