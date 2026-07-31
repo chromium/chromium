@@ -66,6 +66,7 @@
 
 namespace partition_alloc::internal {
 
+template <bool>
 class BatchFreeQueue;
 class PartitionRootEnumerator;
 struct SlotSpanMetadata;
@@ -353,7 +354,7 @@ class alignas(internal::kPartitionCachelineSize)
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes_ = 0;
   internal::SchedulerLoopQuarantineRoot scheduler_loop_quarantine_root_;
   internal::GlobalSchedulerLoopQuarantineBranch scheduler_loop_quarantine_;
-  internal::GlobalSchedulerLoopQuarantineBranch
+  internal::SanitizedObjectSchedulerLoopQuarantineBranch
       scheduler_loop_quarantine_for_advanced_memory_safety_checks_;
 
   static constexpr internal::base::TimeDelta kMaxPurgeDuration =
@@ -912,6 +913,11 @@ class alignas(internal::kPartitionCachelineSize)
   PA_ALWAYS_INLINE internal::SchedulerLoopQuarantineRoot&
   GetSchedulerLoopQuarantineRoot();
 
+  PA_ALWAYS_INLINE void SchedulerLoopQuarantine(
+      internal::SlotStart slot_start,
+      SlotSpanMetadata* slot_span,
+      const internal::BucketSizeDetails& size_details);
+
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,
                                    size_t size,
@@ -945,11 +951,12 @@ class alignas(internal::kPartitionCachelineSize)
   std::atomic<uint64_t> intended_leak_size_;
 
   friend class internal::ThreadCache;
+  template <bool>
   friend class internal::BatchFreeQueue;
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   friend class internal::InSlotMetadata;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  template <bool>
+  template <bool, bool>
   friend class internal::SchedulerLoopQuarantineBranch;
 };
 

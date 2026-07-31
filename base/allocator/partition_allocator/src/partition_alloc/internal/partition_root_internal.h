@@ -695,20 +695,20 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
 
   // memset() can be really expensive.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-  internal::DebugMemset(slot_start.ToObject(), internal::kFreedByte,
-                        slot_span->GetUtilizedSlotSize());
+  if constexpr (
+      ContainsFlags(
+          flags,
+          FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks)) {
+    internal::DebugMemset(slot_start.ToObject(), internal::kFreedByte,
+                          GetSlotUsableSize(size_details, slot_span));
+  } else {
+    internal::DebugMemset(slot_start.ToObject(), internal::kFreedByte,
+                          slot_span->GetUtilizedSlotSize());
+  }
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
-    internal::ThreadCache* thread_cache = GetThreadCache();
-    if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
-      thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
-          slot_start, slot_span, size_details);
-    } else {
-      scheduler_loop_quarantine_.Quarantine(slot_start, slot_span,
-                                            size_details);
-    }
-    return;
+    return SchedulerLoopQuarantine(slot_start, slot_span, size_details);
   } else if constexpr (
       ContainsFlags(
           flags,
@@ -794,14 +794,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
   // `FreeFlags::kSchedulerLoopQuarantine` was used for the original `Free()`
   // call. Send the allocation to yet another quarantine.
   if (metadata->PopQuarantineRequest()) {
-    internal::ThreadCache* thread_cache = root->GetThreadCache();
-    if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
-      thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
-          slot_start.Tag(), slot_span, size_details);
-    } else {
-      root->scheduler_loop_quarantine_.Quarantine(slot_start.Tag(), slot_span,
-                                                  size_details);
-    }
+    root->SchedulerLoopQuarantine(slot_start.Tag(), slot_span, size_details);
   } else {
     root->RawFreeWithThreadCache(slot_start.Tag(), size_details, slot_span);
   }
@@ -1803,6 +1796,19 @@ bool PartitionRoot::IsSchedulerLoopQuarantineTarget(
         size_details);
   } else {
     return scheduler_loop_quarantine_.IsQuarantineTarget(size_details);
+  }
+}
+
+void PartitionRoot::SchedulerLoopQuarantine(
+    internal::SlotStart slot_start,
+    SlotSpanMetadata* slot_span,
+    const internal::BucketSizeDetails& size_details) {
+  internal::ThreadCache* thread_cache = GetThreadCache();
+  if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
+    thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
+        slot_start, slot_span, size_details);
+  } else {
+    scheduler_loop_quarantine_.Quarantine(slot_start, slot_span, size_details);
   }
 }
 

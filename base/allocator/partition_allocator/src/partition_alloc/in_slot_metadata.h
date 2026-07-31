@@ -308,7 +308,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     return alive;
   }
 
-  PA_ALWAYS_INLINE bool HasNonZeroRefsForTesting() {
+  PA_ALWAYS_INLINE bool HasNonZeroRefs() {
     static constexpr CountType mask = kPtrCountMask | kUnprotectedPtrCountMask;
     return (count_.load(std::memory_order_acquire) & mask) != 0;
   }
