@@ -397,6 +397,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoAuthenticator"
+    enum="Boolean" expires_after="2027-07-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether the SPC fallback UX was triggered by a missing
+    authenticator. Recorded right before the SPC app is created with
+    `is_error_dialog` set to true.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Fallback.NoCredential"
+    enum="Boolean" expires_after="2027-07-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether the SPC fallback UX was triggered by a missing credential.
+    Recorded right before the SPC app is created with `is_error_dialog` set to
+    true.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.UserVerifyingPlatformAuthenticatorAvailable"
+    enum="Boolean" expires_after="2027-07-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether a user verifying platform authenticator is available for
+    SPC. If the UVPA is not available, the SPC fallback UX will be triggered.
+    Recorded in the callback after checking if the authenticator is a UVPA. Note
+    that this does NOT get recorded if the internal authenticator could not be
+    created.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.Show.TryShowOutcome"
     enum="PaymentRequestTryShowOutcome" expires_after="2026-12-27">
   <owner>smcgruer@chromium.org</owner>

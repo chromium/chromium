@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -50,7 +51,13 @@
 namespace payments {
 namespace {
 
-
+constexpr char kUserVerifyingPlatformAuthenticatorAvailableHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation."
+    "UserVerifyingPlatformAuthenticatorAvailable";
+constexpr char kFallbackNoAuthenticatorHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation.Fallback.NoAuthenticator";
+constexpr char kFallbackNoCredentialHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation.Fallback.NoCredential";
 
 struct IconInfo {
   GURL url;
@@ -121,6 +128,9 @@ void SecurePaymentConfirmationAppFactory::
   if (!request->delegate || !request->delegate->GetWebContents()) {
     return;
   }
+
+  base::UmaHistogramBoolean(
+      kUserVerifyingPlatformAuthenticatorAvailableHistogramName, is_available);
 
   if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
@@ -364,6 +374,10 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   }
 
   if (!request->authenticator || !request->credential) {
+    base::UmaHistogramBoolean(kFallbackNoAuthenticatorHistogramName,
+                              !request->authenticator);
+    base::UmaHistogramBoolean(kFallbackNoCredentialHistogramName,
+                              !request->credential);
     // In the case of no authenticator or credentials, we still create the
     // SecurePaymentConfirmationApp, which holds the information to be shown
     // in the fallback UX.
