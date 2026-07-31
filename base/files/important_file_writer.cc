@@ -443,7 +443,7 @@ void ImportantFileWriter::ScheduleWrite(DataSerializer* serializer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(serializer);
-  serializer_.emplace<DataSerializer*>(serializer);
+  serializer_.emplace<raw_ptr<DataSerializer>>(serializer);
 
   if (!timer().IsRunning()) {
     timer().Start(
@@ -457,7 +457,7 @@ void ImportantFileWriter::ScheduleWriteWithBackgroundDataSerializer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(serializer);
-  serializer_.emplace<BackgroundDataSerializer*>(serializer);
+  serializer_.emplace<raw_ptr<BackgroundDataSerializer>>(serializer);
 
   if (!timer().IsRunning()) {
     timer().Start(
@@ -473,9 +473,9 @@ void ImportantFileWriter::DoScheduledWrite() {
   const TimeTicks serialization_start = TimeTicks::Now();
   BackgroundDataProducerCallback data_producer_for_background_sequence;
 
-  if (std::holds_alternative<DataSerializer*>(serializer_)) {
+  if (std::holds_alternative<raw_ptr<DataSerializer>>(serializer_)) {
     std::optional<std::string> data;
-    data = std::get<DataSerializer*>(serializer_)->SerializeData();
+    data = std::get<raw_ptr<DataSerializer>>(serializer_)->SerializeData();
     if (!data) {
       DLOG(WARNING) << "Failed to serialize data to be saved in "
                     << path_.value();
@@ -496,7 +496,7 @@ void ImportantFileWriter::DoScheduledWrite() {
         std::move(data).value());
   } else {
     data_producer_for_background_sequence =
-        std::get<BackgroundDataSerializer*>(serializer_)
+        std::get<raw_ptr<BackgroundDataSerializer>>(serializer_)
             ->GetSerializedDataProducerForBackgroundSequence();
 
     DCHECK(data_producer_for_background_sequence);

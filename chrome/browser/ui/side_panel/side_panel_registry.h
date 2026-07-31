@@ -86,7 +86,9 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 
-  const std::variant<tabs::TabInterface*, BrowserWindowInterface*> owner_;
+  const std::variant<raw_ptr<tabs::TabInterface>,
+                     raw_ptr<BrowserWindowInterface>>
+      owner_;
 
   std::optional<SidePanelEntryKey> deregistering_entry_key_;
 

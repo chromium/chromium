@@ -31,6 +31,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -314,6 +315,9 @@ DenseSet<FieldFillingSkipReason> GetIgnorableSkipReasons(
 
 // Like FillingPayload, but may carry additional data needed for filling.
 struct FormFiller::AugmentedFillingPayload {
+  STACK_ALLOCATED();
+
+ public:
   using EntityPayload = std::pair<const EntityInstance*,
                                   std::vector<AutofillFieldWithAttributeType>>;
   using Variant = std::variant<const AutofillProfile*,

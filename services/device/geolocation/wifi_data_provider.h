@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -56,7 +57,7 @@ class WifiDataProvider : public base::RefCountedThreadSafe<WifiDataProvider> {
   friend class base::RefCountedThreadSafe<WifiDataProvider>;
   virtual ~WifiDataProvider();
 
-  typedef std::set<WifiDataUpdateCallback*> CallbackSet;
+  using CallbackSet = std::set<raw_ptr<WifiDataUpdateCallback>, std::less<>>;
 
   // Runs all callbacks via a posted task, so we can unwind callstack here and
   // avoid client reentrancy.

@@ -149,7 +149,7 @@ class FocusedTabData {
   FocusedTabData(const FocusedTabData& src) = delete;
   FocusedTabData& operator=(const FocusedTabData& src) = delete;
   bool is_focus() const {
-    return std::holds_alternative<tabs::TabInterface*>(data_);
+    return std::holds_alternative<raw_ptr<tabs::TabInterface>>(data_);
   }
 
   // Returns the focused tab or nullptr.
@@ -163,7 +163,7 @@ class FocusedTabData {
   tabs::TabInterface* unfocused_tab() const { return unfocused_tab_.get(); }
 
  private:
-  std::variant<tabs::TabInterface*, std::string> data_;
+  std::variant<raw_ptr<tabs::TabInterface>, std::string> data_;
 
   // Only see if `data_` is string variant.
   raw_ptr<tabs::TabInterface> unfocused_tab_;

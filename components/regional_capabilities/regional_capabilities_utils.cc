@@ -73,8 +73,7 @@ constexpr MigratingEngines ComputeMigratedEnginesMapping(
     base::span<const raw_ptr<const PrepopulatedEngine>> all_engines) {
   MigratingEngines migrating_engines;
 
-  for (const auto& engine_ref : all_engines) {
-    const PrepopulatedEngine* engine = engine_ref.get();
+  for (const PrepopulatedEngine* engine : all_engines) {
     if (engine->migrate_to_id == 0) {
       continue;
     }

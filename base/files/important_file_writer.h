@@ -213,7 +213,9 @@ class BASE_EXPORT ImportantFileWriter {
   raw_ptr<OneShotTimer> timer_override_ = nullptr;
 
   // Serializer which will provide the data to be saved.
-  std::variant<std::monostate, DataSerializer*, BackgroundDataSerializer*>
+  std::variant<std::monostate,
+               raw_ptr<DataSerializer>,
+               raw_ptr<BackgroundDataSerializer>>
       serializer_;
 
   // Time delta after which scheduled data will be written to disk.

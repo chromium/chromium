@@ -122,7 +122,9 @@ class PageContentAnnotationsResult {
   PageContentAnnotationsResult();
 
   // The page content annotation of this result.
-  std::variant<void* /*Unknown*/, ContentVisibilityScore, std::vector<Category>>
+  std::variant<std::monostate /*Unknown*/,
+               ContentVisibilityScore,
+               std::vector<Category>>
       result_;
 };
 

@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -109,8 +110,9 @@ class POLICY_EXPORT ManagementStatusProvider {
   // complete.
   friend class ManagementService;
 
-  std::variant<PrefService*, scoped_refptr<PersistentPrefStore>> cache_ =
-      nullptr;
+  std::variant<raw_ptr<PrefService, DanglingUntriaged>,
+               scoped_refptr<PersistentPrefStore>>
+      cache_;
   const std::string cache_pref_name_;
   base::WeakPtrFactory<ManagementStatusProvider> weak_factory_{this};
 };

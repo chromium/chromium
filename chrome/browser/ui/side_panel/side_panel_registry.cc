@@ -150,13 +150,13 @@ void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
 
 const tabs::TabInterface& SidePanelRegistry::GetTabInterface() const {
   CHECK_EQ(SidePanelEntryScope::ScopeType::kTab, get_scope_type());
-  return *std::get<tabs::TabInterface*>(owner_);
+  return *std::get<raw_ptr<tabs::TabInterface>>(owner_);
 }
 
 const BrowserWindowInterface& SidePanelRegistry::GetBrowserWindowInterface()
     const {
   return get_scope_type() == SidePanelEntryScope::ScopeType::kTab
-             ? *std::get<tabs::TabInterface*>(owner_)
+             ? *std::get<raw_ptr<tabs::TabInterface>>(owner_)
                     ->GetBrowserWindowInterface()
-             : *std::get<BrowserWindowInterface*>(owner_);
+             : *std::get<raw_ptr<BrowserWindowInterface>>(owner_);
 }

@@ -429,20 +429,24 @@ class RenderFrameHostOrProxy {
 
  private:
   RenderFrameProxyHost* GetProxy() {
-    if (auto** proxy = std::get_if<RenderFrameProxyHost*>(&frame_or_proxy_)) {
+    if (auto* proxy =
+            std::get_if<raw_ptr<RenderFrameProxyHost>>(&frame_or_proxy_)) {
       return *proxy;
     }
     return nullptr;
   }
 
   RenderFrameHostImpl* GetFrame() {
-    if (auto** frame = std::get_if<RenderFrameHostImpl*>(&frame_or_proxy_)) {
+    if (auto* frame =
+            std::get_if<raw_ptr<RenderFrameHostImpl>>(&frame_or_proxy_)) {
       return *frame;
     }
     return nullptr;
   }
 
-  std::variant<std::monostate, RenderFrameHostImpl*, RenderFrameProxyHost*>
+  std::variant<std::monostate,
+               raw_ptr<RenderFrameHostImpl>,
+               raw_ptr<RenderFrameProxyHost>>
       frame_or_proxy_;
 };
 
