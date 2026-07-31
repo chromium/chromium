@@ -1624,10 +1624,6 @@ void ContentBrowserClient::OnKeepaliveRequestStarted(BrowserContext*) {}
 
 void ContentBrowserClient::OnKeepaliveRequestFinished() {}
 
-void ContentBrowserClient::OnFetchKeepAliveRequestCreated(BrowserContext&) {}
-
-void ContentBrowserClient::OnFetchKeepAliveRequestDestroyed(BrowserContext&) {}
-
 #if BUILDFLAG(IS_MAC)
 bool ContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,

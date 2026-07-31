@@ -89,8 +89,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kSkillsDialog";
     case ProfileKeepAliveOrigin::kWebAppDatabaseCorruptionRecovery:
       return out << "kWebAppDatabaseCorruptionRecovery";
-    case ProfileKeepAliveOrigin::kFetchKeepAlive:
-      return out << "kFetchKeepAlive";
   }
   NOTREACHED();
 }

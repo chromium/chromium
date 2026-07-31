@@ -183,10 +183,7 @@ enum class ProfileKeepAliveOrigin {
   // Used during WebApp database cleanup from corruption
   kWebAppDatabaseCorruptionRecovery = 44,
 
-  // Fetch keepalive / fetchLater URLLoader.
-  kFetchKeepAlive = 45,
-
-  kMaxValue = kFetchKeepAlive,
+  kMaxValue = kWebAppDatabaseCorruptionRecovery,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml)
 
