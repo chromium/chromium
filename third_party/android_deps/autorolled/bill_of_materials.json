@@ -1882,12 +1882,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.83.0"
+        "version": "1.83.1"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.83.0"
+        "version": "1.83.1"
     },
     {
         "name": "rxandroid",
@@ -2112,7 +2112,7 @@
     {
         "name": "jspecify",
         "group": "org.jspecify",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "mockito-android",
