@@ -33,7 +33,7 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr size_t kReadFileChunkSize = 4096;
+constexpr size_t kReadFileChunkSize = 1024 * 1024;
 constexpr size_t kMaxUploadSizeMetricsKB = 500 * 1024;
 constexpr uint64_t kMaxHashComputeSizeBytes = 25ull * 1024 * 1024 * 1024;
 
