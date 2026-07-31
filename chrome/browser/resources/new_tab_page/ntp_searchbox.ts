@@ -368,7 +368,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
     if (this.cyclingPlaceholders) {
       waitForLazyRender().then(async () => {
-        const {config} = await this.pageHandler().getCyclingPlaceholderConfig();
+        const {config} = await this.pageHandler().getPlaceholderConfig();
         const texts = config.texts;
         if (texts.length < 2) {
           // Need at least 2 placeholders to cycle. If fewer, disable cycling

@@ -7515,15 +7515,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_CANVAS" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
         Create anything
       </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH_TOPIC" desc="One of the dynamically changing placeholder texts for the NTP searchbox. Only shown to users eligible for AI Mode.">
-        Research a topic
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_LEARN_SKILL" desc="One of the dynamically changing placeholder texts for the NTP searchbox. Only shown to users eligible for AI Mode.">
-        Learn a new skill
-      </message>
-      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_GET_ADVICE" desc="One of the dynamically changing placeholder texts for the NTP searchbox. Only shown to users eligible for AI Mode.">
-        Get advice
-      </message>
       <message name="IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TOOLTIP" desc="The tooltip for adding a custom link shortcut. (On the New Tab Page)">
         Add shortcut
       </message>

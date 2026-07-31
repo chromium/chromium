@@ -36,10 +36,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'deleteContext',
       'deleteTabContext',
       'executeAction',
-      'getCyclingPlaceholderConfig',
       'getDriveDisclaimerStatus',
       'getInputState',
       'getPageClassification',
+      'getPlaceholderConfig',
       'getRecentTabs',
       'getSmartTabSharingActive',
       'getTabPreview',
@@ -166,8 +166,8 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('toggleSuggestionGroupIdVisibility', {suggestionGroupId});
   }
 
-  getCyclingPlaceholderConfig(): Promise<{config: PlaceholderConfig}> {
-    this.methodCalled('getCyclingPlaceholderConfig');
+  getPlaceholderConfig(): Promise<{config: PlaceholderConfig}> {
+    this.methodCalled('getPlaceholderConfig');
     return Promise.resolve({
       config: {
         texts: [],

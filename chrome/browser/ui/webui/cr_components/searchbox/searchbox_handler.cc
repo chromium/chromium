@@ -1465,32 +1465,44 @@ void SearchboxHandler::ExecuteAction(uint8_t line,
   }
 }
 
-void SearchboxHandler::GetCyclingPlaceholderConfig(
-    GetCyclingPlaceholderConfigCallback callback) {
+void SearchboxHandler::GetPlaceholderConfig(
+    GetPlaceholderConfigCallback callback) {
   std::vector<std::u16string> placeholders;
 
+  // Try PEC API first to get the dynamic placeholder text.
   AimEligibilityService* service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
 
-  // Non-AI-gated: always first per UX spec.
-  placeholders.emplace_back(l10n_util::GetStringUTF16(
-      IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
+  const omnibox::SearchboxConfig* searchbox_config =
+      service ? service->GetSearchboxConfig() : nullptr;
 
-  // Evergreen placeholders, gated on AI Mode eligibility only.
-  if (service && service->IsAimEligible()) {
+  if (searchbox_config) {
+    // Non-tool-dependent: always first per UX spec.
     placeholders.emplace_back(l10n_util::GetStringUTF16(
-        IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH_TOPIC));
-    placeholders.emplace_back(l10n_util::GetStringUTF16(
-        IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_LEARN_SKILL));
-    placeholders.emplace_back(l10n_util::GetStringUTF16(
-        IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_GET_ADVICE));
-  }
+        IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
 
-  // Cycling requires at least 2 texts. If the user is not eligible, clear
-  // the placeholders to disable cycling and fall back to the static
-  // placeholder text.
-  if (placeholders.size() <= 1) {
-    placeholders.clear();
+    static constexpr auto kToolPlaceholderMap =
+        base::MakeFixedFlatMap<omnibox::ToolMode, int>({
+            {omnibox::TOOL_MODE_IMAGE_GEN,
+             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_IMAGE},
+            {omnibox::TOOL_MODE_DEEP_SEARCH,
+             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH},
+            {omnibox::TOOL_MODE_CANVAS,
+             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_CANVAS},
+        });
+
+    for (const auto& tool_config : searchbox_config->tool_configs()) {
+      auto it = kToolPlaceholderMap.find(tool_config.tool());
+      if (it != kToolPlaceholderMap.end()) {
+        placeholders.emplace_back(l10n_util::GetStringUTF16(it->second));
+      }
+    }
+
+    // If no tools are eligible, clear the placeholders to disable cycling and
+    // fall back to the static placeholder text.
+    if (placeholders.size() <= 1) {
+      placeholders.clear();
+    }
   }
 
   const auto placeholder_config = ntp_composebox::FeatureConfig::Get()
