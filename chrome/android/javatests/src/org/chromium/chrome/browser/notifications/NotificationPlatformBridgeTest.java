@@ -794,9 +794,7 @@ public class NotificationPlatformBridgeTest {
 
         // Wait for the `provisionally unsubscribed` notification to disappear.
         mNotificationTestRule.waitForNotificationCount(0);
-
-        // This should have caused notifications permission to become reset.
-        Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
+        waitForPermissionToBecomeDefault();
         checkThatShowNotificationIsDenied();
 
         // Validate histogram is logged correctly.
@@ -1136,6 +1134,7 @@ public class NotificationPlatformBridgeTest {
 
         // Wait for the `provisionally unsubscribed` notification to disappear.
         mNotificationTestRule.waitForNotificationCount(0);
+        waitForPermissionToBecomeDefault();
 
         // Validate histogram is logged correctly.
         histogramWatcher.assertExpected();
@@ -1347,6 +1346,7 @@ public class NotificationPlatformBridgeTest {
 
         // Wait for the `provisionally unsubscribed` notification to disappear.
         mNotificationTestRule.waitForNotificationCount(0);
+        waitForPermissionToBecomeDefault();
 
         // Validate nothing is logged.
         Assert.assertTrue(
@@ -1599,9 +1599,7 @@ public class NotificationPlatformBridgeTest {
 
         // Notification with "report" button should have been dismissed.
         mNotificationTestRule.waitForNotificationCount(0);
-
-        // This should have caused notifications permission to become reset.
-        Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
+        waitForPermissionToBecomeDefault();
         checkThatShowNotificationIsDenied();
 
         // Validate histogram is logged correctly.
@@ -1674,9 +1672,7 @@ public class NotificationPlatformBridgeTest {
 
         // Notification with "report" button should have been dismissed.
         mNotificationTestRule.waitForNotificationCount(0);
-
-        // This should have caused notifications permission to become reset.
-        Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
+        waitForPermissionToBecomeDefault();
         checkThatShowNotificationIsDenied();
 
         // Validate histogram is logged correctly.
@@ -1760,9 +1756,7 @@ public class NotificationPlatformBridgeTest {
 
         // Wait for the `provisionally unsubscribed` notification to disappear.
         mNotificationTestRule.waitForNotificationCount(0);
-
-        // This should have caused notifications permission to become reset.
-        Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
+        waitForPermissionToBecomeDefault();
         checkThatShowNotificationIsDenied();
 
         // Validate histogram is logged correctly.
@@ -1839,6 +1833,7 @@ public class NotificationPlatformBridgeTest {
 
         // Wait for the notification to be removed.
         mNotificationTestRule.waitForNotificationCount(0);
+        waitForPermissionToBecomeDefault();
 
         // Re-subscribe to notifications.
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1961,6 +1956,21 @@ public class NotificationPlatformBridgeTest {
                         + options
                         + "))"
                         + ".catch(sendToTest)");
+    }
+
+    private void waitForPermissionToBecomeDefault() {
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String permission = runJavaScript("Notification.permission");
+                        Criteria.checkThat(
+                                "Notification permission did not become default",
+                                permission,
+                                Matchers.equalTo("\"default\""));
+                    } catch (TimeoutException e) {
+                        throw new AssertionError("Failed to evaluate JavaScript", e);
+                    }
+                });
     }
 
     private String runJavaScript(String code) throws TimeoutException {
