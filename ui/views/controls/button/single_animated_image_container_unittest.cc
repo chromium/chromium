@@ -54,6 +54,10 @@ class SingleAnimatedImageContainerTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
+    if (!gfx::Animation::ShouldRenderRichAnimation()) {
+      GTEST_SKIP() << "Animation is disabled in OS.";
+    }
+
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(
         Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
