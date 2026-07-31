@@ -14,11 +14,18 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
 import {IconType} from '../action_chips.mojom-webui.js';
+import type {FuseboxAction} from '../fusebox_action.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
 import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
+
+export interface ActionChipClickDetail {
+  suggestion: string;
+  files: TabUpload[];
+  fuseboxAction?: FuseboxAction;
+}
 
 // Records a click metric for the given action chip icon type.
 function recordClick(iconType: IconType) {
@@ -253,12 +260,10 @@ export class ActionChipsElement extends CrLitElement {
       contextFiles.push(tabInfo);
     }
     this.fire('action-chip-click', {
-      text: chip.suggestion,
+      suggestion: chip.suggestion,
       files: contextFiles,
-      mode: chip.suggestTemplateInfo.fuseboxAction?.preselectedTool,
-      suggestInventory:
-          chip.suggestTemplateInfo.fuseboxAction?.preferredInventory,
-    });
+      fuseboxAction: chip.suggestTemplateInfo.fuseboxAction,
+    } as ActionChipClickDetail);
   }
 
   protected recentTabChipTitle_(chip: ActionChip) {
