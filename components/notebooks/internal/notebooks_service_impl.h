@@ -28,6 +28,8 @@ class NotebooksServiceImpl : public NotebooksService {
   NotebooksServiceImpl& operator=(const NotebooksServiceImpl&) = delete;
 
   // NotebooksService:
+  std::optional<Notebook> GetNotebook(const NotebookId& id) const override;
+  std::vector<Notebook> GetAllNotebooks() const override;
   bool IsEmptyForTesting() const override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
       override;

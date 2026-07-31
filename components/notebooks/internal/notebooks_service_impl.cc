@@ -15,6 +15,15 @@ NotebooksServiceImpl::NotebooksServiceImpl(
 
 NotebooksServiceImpl::~NotebooksServiceImpl() = default;
 
+std::optional<Notebook> NotebooksServiceImpl::GetNotebook(
+    const NotebookId& id) const {
+  return model_.GetNotebook(id);
+}
+
+std::vector<Notebook> NotebooksServiceImpl::GetAllNotebooks() const {
+  return model_.GetAllNotebooks();
+}
+
 bool NotebooksServiceImpl::IsEmptyForTesting() const {
   return false;
 }
@@ -23,4 +32,5 @@ base::WeakPtr<syncer::DataTypeControllerDelegate>
 NotebooksServiceImpl::GetSyncControllerDelegate() {
   return bridge_.change_processor()->GetControllerDelegate();
 }
+
 }  // namespace notebooks

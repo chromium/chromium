@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_NOTEBOOKS_PUBLIC_NOTEBOOKS_SERVICE_H_
 #define COMPONENTS_NOTEBOOKS_PUBLIC_NOTEBOOKS_SERVICE_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/notebooks/public/notebook.h"
+#include "components/notebooks/public/notebook_id.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -22,6 +27,10 @@ class NotebooksService : public KeyedService {
 
   NotebooksService(const NotebooksService&) = delete;
   NotebooksService& operator=(const NotebooksService&) = delete;
+
+  // Model read accessors.
+  virtual std::optional<Notebook> GetNotebook(const NotebookId& id) const = 0;
+  virtual std::vector<Notebook> GetAllNotebooks() const = 0;
 
   // Returns true if this is the empty/no-op implementation.
   virtual bool IsEmptyForTesting() const = 0;

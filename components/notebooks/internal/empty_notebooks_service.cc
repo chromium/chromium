@@ -12,6 +12,15 @@ EmptyNotebooksService::EmptyNotebooksService() = default;
 
 EmptyNotebooksService::~EmptyNotebooksService() = default;
 
+std::optional<Notebook> EmptyNotebooksService::GetNotebook(
+    const NotebookId& id) const {
+  return std::nullopt;
+}
+
+std::vector<Notebook> EmptyNotebooksService::GetAllNotebooks() const {
+  return {};
+}
+
 bool EmptyNotebooksService::IsEmptyForTesting() const {
   return true;
 }
@@ -20,4 +29,5 @@ base::WeakPtr<syncer::DataTypeControllerDelegate>
 EmptyNotebooksService::GetSyncControllerDelegate() {
   NOTREACHED();
 }
+
 }  // namespace notebooks
