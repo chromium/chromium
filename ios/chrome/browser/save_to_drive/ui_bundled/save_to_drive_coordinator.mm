@@ -405,6 +405,11 @@
   [_alertController dismissViewControllerAnimated:YES completion:nil];
   _alertController = nil;
   completion(proceed);
+  if (!proceed) {
+    id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+    [saveToDriveCommandsHandler hideSaveToDrive];
+  }
 }
 
 @end

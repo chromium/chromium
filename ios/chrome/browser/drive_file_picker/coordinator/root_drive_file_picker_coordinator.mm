@@ -555,6 +555,11 @@ void ConfirmChangeProfileWithCompletion(
                                          completion(proceed);
                                        }];
   _alertController = nil;
+  if (!proceed) {
+    id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
+    [driveFilePickerHandler hideDriveFilePicker];
+  }
 }
 
 // Called when user interrupted a download/upload.

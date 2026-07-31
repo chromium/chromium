@@ -858,11 +858,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                  chrome_test_util::AlertItemWithAccessibilityLabelId(
                      IDS_CANCEL)] performAction:grey_tap()];
 
-  // Check the alert disappeared but the sign-in promo (account picker) stays on
-  // screen.
+  // Check that the alert and the sign-in promo disappear.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:titleMatcher];
-  [[EarlGrey selectElementWithMatcher:SigninPromo()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:SigninPromo()];
 }
 
 // Tests that when the user is signed-out and has a managed account on device,
