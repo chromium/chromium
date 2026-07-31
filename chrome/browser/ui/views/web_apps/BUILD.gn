@@ -19,6 +19,30 @@ source_set("web_apps") {
     "//ui/views",
     "//url",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    public += [
+      "deprecated_apps_dialog_view.h",
+      "force_installed_deprecated_apps_dialog_view.h",
+      "force_installed_preinstalled_deprecated_app_dialog_view.h",
+    ]
+    sources += [
+      "deprecated_apps_dialog_view.cc",
+      "force_installed_deprecated_apps_dialog_view.cc",
+      "force_installed_preinstalled_deprecated_app_dialog_view.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/common",
+      "//components/constrained_window",
+      "//components/vector_icons",
+      "//components/web_modal",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
 }
 
 source_set("browser_tests") {
