@@ -79,11 +79,10 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver<Blob>* resolver,
       FontCache::Get().GetFontData(description, AtomicString(postscriptName),
                                    AlternateFontName::kLocalUniqueFace);
   if (!font_data) {
-    auto message = String::Format("The font %s could not be accessed.",
-                                  postscriptName.Latin1().c_str());
     ScriptState::Scope scope(resolver->GetScriptState());
     resolver->Reject(V8ThrowException::CreateTypeError(
-        resolver->GetScriptState()->GetIsolate(), message));
+        resolver->GetScriptState()->GetIsolate(),
+        StrCat({"The font ", postscriptName, " could not be accessed."})));
     return;
   }
 
@@ -99,11 +98,10 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver<Blob>* resolver,
     // TODO(https://crbug.com/1086840): openStream rarely fails, but it happens
     // sometimes. A potential remediation is to synthesize a font from tables
     // at the cost of memory and throughput.
-    auto message = String::Format("Font data for %s could not be accessed.",
-                                  postscriptName.Latin1().c_str());
     ScriptState::Scope scope(resolver->GetScriptState());
     resolver->Reject(V8ThrowException::CreateTypeError(
-        resolver->GetScriptState()->GetIsolate(), message));
+        resolver->GetScriptState()->GetIsolate(),
+        StrCat({"Font data for ", postscriptName, " could not be accessed."})));
     return;
   }
 
