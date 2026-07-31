@@ -23,6 +23,20 @@ class TestableScriptListTest(unittest.TestCase):
       print(issue.error_message())
     self.assertEqual(len(script_issues), 0)
 
+  def testPresubmitFlagForInteractiveScripts(self):
+    expected_presubmit_scripts = [
+        'tools/metrics/actions/extract_actions.py',
+        'tools/metrics/actions/pretty_print.py',
+        'tools/metrics/histograms/pretty_print.py',
+        'tools/metrics/private_metrics/pretty_print.py',
+        'tools/metrics/ukm/pretty_print.py',
+    ]
+    for script in tests_helpers._TESTABLE_SCRIPTS:
+      for expected_path in expected_presubmit_scripts:
+        if expected_path in str(script.file_path):
+          self.assertIn('--presubmit', script.cmd,
+                        f'{script.identifiable_name} must use --presubmit')
+
 
 class TestableScriptUtilTest(unittest.TestCase):
 

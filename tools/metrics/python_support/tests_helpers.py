@@ -72,9 +72,11 @@ class TestableScript:
 # line of defense against changing in dependencies causing failures of scripts.
 _TESTABLE_SCRIPTS: List[TestableScript] = [
     TestableScript.CreatePythonScript(
-        file_path=pathlib.Path('tools/metrics/actions/extract_actions.py')),
+        file_path=pathlib.Path('tools/metrics/actions/extract_actions.py'),
+        flags=['--presubmit']),
     TestableScript.CreatePythonScript(
-        file_path=pathlib.Path('tools/metrics/actions/pretty_print.py')),
+        file_path=pathlib.Path('tools/metrics/actions/pretty_print.py'),
+        flags=['--presubmit']),
     TestableScript.CreatePythonScript(
         file_path=pathlib.Path('tools/metrics/actions/print_action_names.py')),
     TestableScript.CreatePythonScript(
@@ -82,7 +84,10 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
         flags=['--output', _get_temp_path('merge_xml_test')]),
     TestableScript.CreatePythonScript(
         file_path=pathlib.Path('tools/metrics/histograms/pretty_print.py'),
-        flags=['tools/metrics/histograms/metadata/uma/histograms.xml']),
+        flags=[
+            '--presubmit',
+            'tools/metrics/histograms/metadata/uma/histograms.xml',
+        ]),
     TestableScript.CreatePythonScript(file_path=pathlib.Path(
         'tools/metrics/histograms/print_expanded_histograms.py')),
     TestableScript.CreatePythonScript(file_path=pathlib.Path(
@@ -96,13 +101,14 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
         flags=['tools/metrics/histograms/metadata/uma/histograms.xml']),
     TestableScript.CreatePythonScript(
         file_path=pathlib.Path('tools/metrics/private_metrics/pretty_print.py'),
-        flags=['tools/metrics/private_metrics/dwa.xml']),
+        flags=['--presubmit', 'tools/metrics/private_metrics/dwa.xml']),
     TestableScript.CreatePythonScript(
         file_path=pathlib.Path(
             'tools/metrics/private_metrics/validate_format.py'),
         flags=['tools/metrics/private_metrics/dwa.xml']),
     TestableScript.CreatePythonScript(
-        file_path=pathlib.Path('tools/metrics/ukm/pretty_print.py'), flags=[]),
+        file_path=pathlib.Path('tools/metrics/ukm/pretty_print.py'),
+        flags=['--presubmit']),
     TestableScript.CreatePythonScript(
         file_path=pathlib.Path('tools/metrics/ukm/validate_format.py')),
     # TODO(crbug.com/488367077): Fix this script.
