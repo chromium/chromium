@@ -402,8 +402,7 @@ ExternalTexture CreateExternalTexture(
 
   std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease =
       device->GetDawnControlClient()->LeaseWebGpuSharedImageWrapper(
-          format, natural_size, resource_color_space,
-          media_video_frame->hdr_metadata(), kPremul_SkAlphaType);
+          format, natural_size, resource_color_space, kPremul_SkAlphaType);
   if (!wrapper_lease) {
     return external_texture;
   }

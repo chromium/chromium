@@ -116,10 +116,9 @@ DawnControlClientHolder::LeaseWebGpuSharedImageWrapper(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
     SkAlphaType alpha_type) {
   return shared_image_wrapper_cache_.LeaseWebGpuSharedImageWrapper(
-      format, size, color_space, hdr_metadata, alpha_type);
+      format, size, color_space, alpha_type);
 }
 
 void DawnControlClientHolder::Flush() {

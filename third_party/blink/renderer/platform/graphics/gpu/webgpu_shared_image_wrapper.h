@@ -32,7 +32,6 @@
 
 namespace gfx {
 class ColorSpace;
-struct HDRMetadata;
 class Size;
 }  // namespace gfx
 
@@ -44,8 +43,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata);
+      const gfx::ColorSpace& color_space);
   ~WebGpuSharedImageWrapper();
 
   gfx::Size Size() const { return shared_image_->size(); }
@@ -60,7 +58,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
   // Temporarily public for WebGpuSharedImageWrapperLease migration.
-  const gfx::HDRMetadata hdr_metadata_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
   const scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken acquire_sync_token_;
@@ -73,7 +70,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
                            viz::SharedImageFormat,
                            SkAlphaType,
                            const gfx::ColorSpace&,
-                           const gfx::HDRMetadata&,
                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 };
 

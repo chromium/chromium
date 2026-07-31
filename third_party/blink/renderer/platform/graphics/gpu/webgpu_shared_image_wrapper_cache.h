@@ -19,7 +19,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/hdr_metadata.h"
 
 class SkPixmap;
 
@@ -114,7 +113,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperCache final
       viz::SharedImageFormat format,
       gfx::Size size,
       const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
       SkAlphaType alpha_type);
 
   // When the lease is destroyed, move the shared image wrapper to

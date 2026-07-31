@@ -78,8 +78,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       dawn_control_client->LeaseWebGpuSharedImageWrapper(
           image->GetSharedImageFormat(),
           gfx::Size(mailbox_texture_width, mailbox_texture_height),
-          image->GetColorSpace(), image->GetHdrMetadata(),
-          image->GetAlphaType());
+          image->GetColorSpace(), image->GetAlphaType());
 
   if (!wrapper_lease) {
     return nullptr;

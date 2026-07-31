@@ -94,8 +94,7 @@ std::unique_ptr<WebGpuSharedImageWrapper> WebGpuSharedImageWrapper::Create(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata) {
+    const gfx::ColorSpace& color_space) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
@@ -129,7 +128,7 @@ std::unique_ptr<WebGpuSharedImageWrapper> WebGpuSharedImageWrapper::Create(
 
   auto provider = base::WrapUnique(
       new WebGpuSharedImageWrapper(size, format, alpha_type, color_space,
-                                   hdr_metadata, context_provider_wrapper));
+                                   context_provider_wrapper));
 
   if (IsGpuContextLost(context_provider_wrapper.get())) {
     return nullptr;
@@ -142,10 +141,8 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : hdr_metadata_(hdr_metadata),
-      recorder_for_external_draws_(
+    : recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(size,
                                                        /*client=*/nullptr)),
       shared_image_(CreateClientSharedImage(format,
