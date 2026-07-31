@@ -184,6 +184,10 @@ void MultistepFilterService::OnHistoryDeletions(
     deleted_hosts.push_back(url_row.url().GetHost());
   }
 
+  if (!deletion_info.time_range().IsValid() && deleted_hosts.empty()) {
+    return;
+  }
+
   // If the time range is invalid (e.g., when specific URLs are deleted from
   // history), fall back to clearing the hosts for all time. Reusing the
   // existing parameterized query with minimum/maximum boundaries avoids the
