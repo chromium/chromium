@@ -1134,6 +1134,14 @@ bool IsFullscreenNextIAEnabled() {
   }
 }
 
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+  [self.toolbarCoordinator updateToolbarPositionForActiveBrowser];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
   self.visibilityState = BrowserViewVisibilityState::kNotInViewHierarchy;
   [self updateBroadcastState];
