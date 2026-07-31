@@ -37,6 +37,9 @@ public class BookmarkBarPopupCoordinator {
     private boolean mIsSwitchingContextMenu;
     private long mLastFolderTouchTime;
 
+    private @Nullable View mFolderAnchorView;
+    private @Nullable View mContextMenuAnchorView;
+
     public BookmarkBarPopupCoordinator(
             Activity activity,
             View bookmarkBarView,
@@ -57,13 +60,14 @@ public class BookmarkBarPopupCoordinator {
     public void showFolderItemsPopup(
             View anchorView, ModelList folderMenuModel, boolean isIncognito) {
         dismiss();
+        highlightFolderAnchor(anchorView);
         mFolderPopup.show(
                 anchorView,
                 /* offset= */ null,
                 folderMenuModel,
                 isIncognito,
                 this::dismiss,
-                this::dismissContextMenuPopup,
+                () -> onFolderPopupDismiss(anchorView),
                 (v, event) -> {
                     int action = event.getActionMasked();
                     if (action == MotionEvent.ACTION_DOWN
@@ -107,21 +111,60 @@ public class BookmarkBarPopupCoordinator {
             mIsSwitchingContextMenu = false;
         }
 
+        highlightContextMenuAnchor(anchorView);
         mContextMenuPopup.show(
                 anchorView,
                 offset,
                 contextMenuModel,
                 isIncognito,
                 this::dismiss,
-                () -> {
-                    if (!mIsSwitchingContextMenu
-                            && SystemClock.uptimeMillis() - mLastFolderTouchTime
-                                    > FOLDER_TOUCH_DISMISSAL_GRACE_PERIOD_MS) {
-                        dismissFolderPopup();
-                    }
-                },
+                () -> onContextMenuPopupDismiss(anchorView),
                 /* touchListener= */ null,
                 this::onPopupTouchIntercept);
+    }
+
+    private void highlightFolderAnchor(View anchorView) {
+        clearFolderAnchorHighlight();
+        mFolderAnchorView = anchorView;
+        anchorView.setSelected(true);
+    }
+
+    private void clearFolderAnchorHighlight() {
+        if (mFolderAnchorView != null) {
+            mFolderAnchorView.setSelected(false);
+            mFolderAnchorView = null;
+        }
+    }
+
+    private void highlightContextMenuAnchor(View anchorView) {
+        clearContextMenuAnchorHighlight();
+        mContextMenuAnchorView = anchorView;
+        anchorView.setSelected(true);
+    }
+
+    private void clearContextMenuAnchorHighlight() {
+        if (mContextMenuAnchorView != null) {
+            mContextMenuAnchorView.setSelected(false);
+            mContextMenuAnchorView = null;
+        }
+    }
+
+    private void onFolderPopupDismiss(View anchorView) {
+        if (mFolderAnchorView == anchorView) {
+            clearFolderAnchorHighlight();
+        }
+        dismissContextMenuPopup();
+    }
+
+    private void onContextMenuPopupDismiss(View anchorView) {
+        if (mContextMenuAnchorView == anchorView) {
+            clearContextMenuAnchorHighlight();
+        }
+        if (!mIsSwitchingContextMenu
+                && SystemClock.uptimeMillis() - mLastFolderTouchTime
+                        > FOLDER_TOUCH_DISMISSAL_GRACE_PERIOD_MS) {
+            dismissFolderPopup();
+        }
     }
 
     /**
