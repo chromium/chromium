@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -47,6 +48,7 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+    set_native_widget_type(NativeWidgetType::kDesktop);
     ChromeViewsTestBase::SetUp();
   }
 
@@ -318,8 +320,63 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->OnBrowserClosed(&mock_browser);
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, DraggableRegionsChangedDoesNotCrash) {
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DraggableRegionsChangedAndEventHandling) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget_delegate());
+
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+
+  auto drag_region = blink::mojom::DraggableRegion::New();
+  drag_region->bounds = gfx::Rect(0, 0, 800, 600);
+  drag_region->draggable = true;
+  regions.push_back(std::move(drag_region));
+
+  auto no_drag_input_region = blink::mojom::DraggableRegion::New();
+  no_drag_input_region->bounds = gfx::Rect(100, 30, 400, 50);
+  no_drag_input_region->draggable = false;
+  regions.push_back(std::move(no_drag_input_region));
+
+  ui_manager->DraggableRegionsChanged(regions, nullptr);
+
+  // Background point (draggable region) -> should NOT descend into child (claim
+  // for drag).
+  EXPECT_FALSE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(10, 10)));
+  EXPECT_FALSE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(600, 40)));
+
+  // Points inside search input (non-draggable region) -> SHOULD descend into
+  // child for button/input clicks.
+  EXPECT_TRUE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(200, 40)));
+  EXPECT_TRUE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(400, 50)));
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, EarlyDraggableRegionsChangedPreserved) {
   auto ui_manager = CreateUIManager();
   std::vector<blink::mojom::DraggableRegionPtr> regions;
+
+  auto drag_region = blink::mojom::DraggableRegion::New();
+  drag_region->bounds = gfx::Rect(0, 0, 800, 600);
+  drag_region->draggable = true;
+  regions.push_back(std::move(drag_region));
+
+  // Trigger region update BEFORE ShowUI / widget creation.
   ui_manager->DraggableRegionsChanged(regions, nullptr);
+
+  // Now create widget via ShowForProfile.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget_delegate());
+
+  // Cached region should be applied to widget_delegate_.
+  EXPECT_FALSE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(10, 10)));
 }

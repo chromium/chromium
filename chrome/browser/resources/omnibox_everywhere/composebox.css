@@ -12,6 +12,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  -webkit-app-region: drag;
   position: relative;
   border-radius: 28px;
   --input-bottom-spacing: 10px;
@@ -172,6 +173,21 @@ cr-composebox-submit::part(submit) {
   z-index: 100;
 }
 
-cr-composebox-input::part(input) {
+/* TODO(crbug.com/532200145): Refine the selectors. New interactive elements
+ * must be added to this list because the root container has
+ * '-webkit-app-region: drag' enabled; otherwise, clicks will be swallowed by
+ * the window drag handler. */
+cr-composebox-input::part(input),
+cr-composebox-submit::part(submit),
+cr-composebox-submit::part(submit-icon),
+#context,
+#contextEntrypoint,
+cr-composebox-contextual-entrypoint-and-menu,
+cr-composebox-contextual-entrypoint-button,
+cr-composebox-tool-chip,
+.searchbox-icon-button,
+#voiceSearchButton,
+#lensSearchButton,
+#profileIcon {
   -webkit-app-region: no-drag;
 }

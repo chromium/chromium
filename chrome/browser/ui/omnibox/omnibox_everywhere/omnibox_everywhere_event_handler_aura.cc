@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 
 #include "base/check.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -16,7 +17,7 @@ namespace omnibox_everywhere {
 
 namespace {
 
-gfx::Point GetEventScreenPoint(const ui::MouseEvent* event,
+gfx::Point GetEventScreenPoint(const ui::LocatedEvent* event,
                                views::Widget* widget) {
   views::View* root_view = widget->GetRootView();
   return root_view
@@ -26,32 +27,21 @@ gfx::Point GetEventScreenPoint(const ui::MouseEvent* event,
 
 }  // namespace
 
-OmniboxEverywhereEventHandler::OmniboxEverywhereEventHandler(
+OmniboxEverywhereEventHandlerAura::OmniboxEverywhereEventHandlerAura(
     OmniboxEverywhereUIManager& ui_manager)
     : ui_manager_(ui_manager) {}
 
-OmniboxEverywhereEventHandler::~OmniboxEverywhereEventHandler() = default;
+OmniboxEverywhereEventHandlerAura::~OmniboxEverywhereEventHandlerAura() =
+    default;
 
-void OmniboxEverywhereEventHandler::UpdateNoDragRegions(
-    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
-  SkRegion no_drag_regions;
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    if (!region->draggable) {
-      no_drag_regions.op(
-          SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
-                            region->bounds.width(), region->bounds.height()),
-          SkRegion::kUnion_Op);
-    }
-  }
-  no_drag_regions_ = no_drag_regions;
-}
-
-bool OmniboxEverywhereEventHandler::IsPointInDraggableRegion(
+bool OmniboxEverywhereEventHandlerAura::IsPointInDraggableRegion(
     const gfx::Point& point) const {
-  return !no_drag_regions_.contains(point.x(), point.y());
+  return ui_manager_->IsPointInDraggableRegion(point);
 }
 
-void OmniboxEverywhereEventHandler::OnMouseEvent(ui::MouseEvent* event) {
+// TODO(crbug.com/532200145): Support touch gesture dragging via
+// ui::GestureEvent (similar to WebUIBubbleEventHandlerAura).
+void OmniboxEverywhereEventHandlerAura::OnMouseEvent(ui::MouseEvent* event) {
   views::Widget* widget = ui_manager_->widget();
   if (!widget) {
     return;
@@ -62,7 +52,8 @@ void OmniboxEverywhereEventHandler::OnMouseEvent(ui::MouseEvent* event) {
       if (event->IsOnlyLeftMouseButton()) {
         gfx::Point cursor_screen = GetEventScreenPoint(event, widget);
         gfx::Point point_in_contents = cursor_screen;
-        if (views::View* contents_view = widget->GetContentsView()) {
+        if (views::View* contents_view =
+                ui_manager_->widget_delegate()->GetContentsView()) {
           views::View::ConvertPointFromScreen(contents_view,
                                               &point_in_contents);
           if (IsPointInDraggableRegion(point_in_contents)) {
