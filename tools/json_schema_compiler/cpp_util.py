@@ -31,16 +31,6 @@ GENERATED_BUNDLE_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITIONS IN
 // Generator run command:
 //   %s
 """
-GENERATED_FEATURE_MESSAGE = """// GENERATED FROM THE FEATURE DEFINITIONS IN
-//   %s
-// by tools/json_schema_compiler.
-// DO NOT EDIT.
-//
-// Generator run command:
-//   %s
-"""
-
-
 def GetGeneratedByCommandLine():
   return "python3 " + " ".join(sys.argv)
 
@@ -192,14 +182,6 @@ def CloseNamespace(cpp_namespace):
   for component in reversed(cpp_namespace.split('::')):
     c.Append('}  // namespace %s' % component)
   return c
-
-
-def FeatureNameToConstantName(feature_name):
-  # type: (str) -> str
-  """Returns a kName for a feature's name.
-  """
-  return ('k' + ''.join(word[0].upper() + word[1:]
-                        for word in feature_name.replace('.', ' ').split()))
 
 
 def UnixNameToConstantName(unix_name):

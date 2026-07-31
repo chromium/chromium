@@ -54,47 +54,6 @@ class Model(object):
     return namespace
 
 
-def CreateFeature(name, model):
-  if isinstance(model, dict):
-    return SimpleFeature(name, model)
-  return ComplexFeature(name, [SimpleFeature(name, child) for child in model])
-
-
-class ComplexFeature(object):
-  """A complex feature which may be made of several simple features.
-
-  Properties:
-  - |name| the name of the feature
-  - |unix_name| the unix_name of the feature
-  - |feature_list| a list of simple features which make up the feature
-  """
-
-  def __init__(self, feature_name, features):
-    self.name = feature_name
-    self.unix_name = UnixName(self.name)
-    self.feature_list = features
-
-
-class SimpleFeature(object):
-  """A simple feature, which can make up a complex feature, as specified in
-  files such as chrome/common/extensions/api/_permission_features.json.
-
-  Properties:
-  - |name| the name of the feature
-  - |unix_name| the unix_name of the feature
-  - |channel| the channel where the feature is released
-  - |extension_types| the types which can use the feature
-  - |allowlist| a list of extensions allowed to use the feature
-  """
-
-  def __init__(self, feature_name, feature_def):
-    self.name = feature_name
-    self.unix_name = UnixName(self.name)
-    self.channel = feature_def['channel']
-    self.extension_types = feature_def['extension_types']
-    self.allowlist = feature_def.get('allowlist')
-
-
 class Namespace(object):
   """An API namespace.
 
