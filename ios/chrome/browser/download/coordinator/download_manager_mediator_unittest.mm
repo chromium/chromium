@@ -386,6 +386,23 @@ TEST_F(DownloadManagerMediatorTest, SetGoogleDriveAppInstalled) {
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }
 
+// Tests that calling `UpdateConsumer()` rechecks whether Google Drive app is
+// installed.
+TEST_F(DownloadManagerMediatorTest,
+       UpdateConsumerRechecksGoogleDriveAppInstalled) {
+  mediator_.SetDownloadTask(task());
+  mediator_.SetConsumer(consumer_);
+
+  mediator_.SetGoogleDriveAppInstalled(YES);
+  EXPECT_FALSE(consumer_.installDriveButtonVisible);
+
+  mediator_.SetGoogleDriveAppInstalled(NO);
+  EXPECT_TRUE(consumer_.installDriveButtonVisible);
+
+  mediator_.SetGoogleDriveAppInstalled(YES);
+  EXPECT_FALSE(consumer_.installDriveButtonVisible);
+}
+
 // Tests the diplay origin logic.
 TEST_F(DownloadManagerMediatorTest, DisplayOrigin) {
   if (!base::ios::IsRunningOnOrLater(18, 2, 0)) {
