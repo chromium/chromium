@@ -2479,8 +2479,6 @@ inline LayoutStateScenePassKey PassKey() {
       GeminiBrowserAgent::FromBrowser(_regularBrowser.get());
   if (geminiBrowserAgent) {
     geminiBrowserAgent->DismissFloaty();
-  } else {
-    CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
   }
   if (completion) {
     completion();
@@ -2669,7 +2667,6 @@ inline LayoutStateScenePassKey PassKey() {
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(_regularBrowser.get());
   if (!geminiBrowserAgent) {
-    CHECK(geminiBrowserAgent, base::NotFatalUntil::M152);
     return;
   }
 
