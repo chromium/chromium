@@ -790,7 +790,7 @@
   {
     "name": "atmemory-context-menu-entry-point",
     "owners": [ "novakovica@google.com", "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 165
   },
   {
     "name": "audio-flexible-loopback-for-system-loopback",
@@ -840,7 +840,7 @@
       "tmartino@chromium.org",
       "bling-transactions@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 165
   },
   {
     "name": "autofill-ai-always-trigger-server-model",
@@ -1172,12 +1172,12 @@
   {
     "name": "autofill-throttle-doc-form-scans",
     "owners": ["vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 165
   },
   {
     "name": "autofill-throttle-filtered-doc-form-scan",
     "owners": ["vincb@google.com", "tmartino@google.com", "bling-transactions@google.com"],
-    "expiry_milestone": 136
+    "expiry_milestone": 165
   },
   {
     "name": "autofill-touch-to-fill-show-manual-fill-for-vcn-fix",
