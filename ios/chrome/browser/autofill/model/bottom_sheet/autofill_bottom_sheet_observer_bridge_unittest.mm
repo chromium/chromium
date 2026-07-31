@@ -12,6 +12,8 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 
+using ActivityType = autofill::FormActivityParams::ActivityType;
+
 @interface FakeAutofillBottomSheetObserving
     : NSObject <AutofillBottomSheetObserving>
 
@@ -65,11 +67,11 @@ TEST_F(AutofillBottomSheetObserverBridgeTest, TestShowPaymentsBottomSheet) {
   // Params values are empty.
   EXPECT_EQ("", [observer_ params].form_name);
   EXPECT_EQ("", [observer_ params].field_type);
-  EXPECT_EQ("", [observer_ params].type);
+  EXPECT_EQ(ActivityType::kUnknown, [observer_ params].type);
 
   std::string form_name = "form-name";
   std::string field_type = "text";
-  std::string type = "focus";
+  ActivityType type = ActivityType::kFocus;
 
   autofill::FormActivityParams params;
   params.form_name = form_name;

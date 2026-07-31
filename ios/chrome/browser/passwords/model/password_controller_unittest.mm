@@ -360,7 +360,7 @@ class PasswordControllerTest : public PlatformTest {
     WebFrame* frame =
         feature->GetWebFramesManager(web_state())->GetMainWebFrame();
     FormActivityParams params;
-    params.type = "form_changed";
+    params.type = FormActivityParams::ActivityType::kFormChanged;
     params.frame_id = frame->GetFrameId();
     [passwordController_.sharedPasswordController webState:web_state()
                                    didRegisterFormActivity:params
@@ -412,7 +412,7 @@ class PasswordControllerTest : public PlatformTest {
              fieldIdentifier:SysUTF8ToNSString(field_identifier)
              fieldRendererID:fieldRendererID
                    fieldType:@"not_important"
-                        type:@"input"
+                        type:FormActivityParams::ActivityType::kInput
                   typedValue:SysUTF8ToNSString(typed_value)
                      frameID:SysUTF8ToNSString(main_frame_id)
                 onlyPassword:NO];
@@ -613,7 +613,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
        fieldIdentifier:SysUTF8ToNSString(test_data.username_element)
        fieldRendererID:FieldRendererId(test_data.username_renderer_id)
              fieldType:@"text"
-                  type:@"focus"
+                  type:FormActivityParams::ActivityType::kFocus
             typedValue:@""
                frameID:SysUTF8ToNSString(frame->GetFrameId())
           onlyPassword:NO];
@@ -1493,7 +1493,7 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
              fieldIdentifier:@"username"
              fieldRendererID:field_id
                    fieldType:@"text"
-                        type:@"focus"
+                        type:FormActivityParams::ActivityType::kFocus
                   typedValue:@""
                      frameID:SysUTF8ToNSString(GetMainWebFrameId())
                 onlyPassword:NO];
@@ -1538,7 +1538,7 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(4)
              fieldType:@"text"
-                  type:@"focus"
+                  type:FormActivityParams::ActivityType::kFocus
             typedValue:@""
                frameID:SysUTF8ToNSString(GetMainWebFrameId())
           onlyPassword:NO];
@@ -1573,7 +1573,7 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNoPasswordForms) {
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
              fieldType:@"text"
-                  type:@"focus"
+                  type:FormActivityParams::ActivityType::kFocus
             typedValue:@""
                frameID:SysUTF8ToNSString(GetMainWebFrameId())
           onlyPassword:NO];
@@ -2094,7 +2094,7 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
            fieldIdentifier:@"pw"
            fieldRendererID:FieldRendererId(3)
                  fieldType:@"password"
-                      type:@"focus"
+                      type:FormActivityParams::ActivityType::kFocus
                 typedValue:@""
                    frameID:SysUTF8ToNSString(GetMainWebFrameId())
               onlyPassword:NO];
@@ -2137,7 +2137,7 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
            fieldIdentifier:@"pw"
            fieldRendererID:FieldRendererId(3)
                  fieldType:@"password"
-                      type:@"input"
+                      type:FormActivityParams::ActivityType::kInput
                 typedValue:@"generated_password_long"
                    frameID:SysUTF8ToNSString(GetMainWebFrameId())
               onlyPassword:NO];
@@ -2180,7 +2180,7 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
            fieldIdentifier:@"pw"
            fieldRendererID:FieldRendererId(3)
                  fieldType:@"password"
-                      type:@"input"
+                      type:FormActivityParams::ActivityType::kInput
                 typedValue:@""
                    frameID:SysUTF8ToNSString(GetMainWebFrameId())
               onlyPassword:NO];

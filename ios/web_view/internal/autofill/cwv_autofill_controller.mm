@@ -77,6 +77,7 @@
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
+using ActivityType = autofill::FormActivityParams::ActivityType;
 using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
 NSErrorDomain const CWVAutofillErrorDomain =
@@ -182,7 +183,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   NSString* _lastFormActivityFrameID;
   std::string _lastFormActivityWebFrameID;
   NSString* _lastFormActivityTypedValue;
-  NSString* _lastFormActivityType;
+  ActivityType _lastFormActivityType;
   FormRendererId _lastFormActivityFormRendererID;
   FieldRendererId _lastFormActivityFieldRendererID;
   BOOL _lastFormActivityHasUserGesture;
@@ -991,17 +992,16 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   NSString* nsFieldType = base::SysUTF8ToNSString(params.field_type);
   NSString* nsFrameID = base::SysUTF8ToNSString(frame_id);
   NSString* nsValue = base::SysUTF8ToNSString(params.value);
-  NSString* nsType = base::SysUTF8ToNSString(params.type);
   BOOL userInitiated = params.has_user_gesture;
 
   _lastFormActivityWebFrameID = frame_id;
   _lastFormActivityTypedValue = nsValue;
-  _lastFormActivityType = nsType;
+  _lastFormActivityType = params.type;
   _lastFormActivityHasUserGesture = userInitiated;
   _lastFormActivityFormName = nsFormName;
   _lastFormActivityFieldIdentifier = nsFieldIdentifier;
   _lastFormActivityFrameID = nsFrameID;
-  if (params.type == "focus") {
+  if (params.type == ActivityType::kFocus) {
     if ([_delegate respondsToSelector:@selector
                    (autofillController:
                        didFocusOnFieldWithIdentifier:fieldType:formName:frameID
@@ -1014,7 +1014,8 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                                   value:nsValue
                           userInitiated:userInitiated];
     }
-  } else if (params.type == "input" || params.type == "keyup") {
+  } else if (params.type == ActivityType::kInput ||
+             params.type == ActivityType::kKeyUp) {
     // Some fields only emit 'keyup' events and not 'input' events, which would
     // result in the delegate not being notified when the field is updated.
     if ([_delegate respondsToSelector:@selector
@@ -1029,7 +1030,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                                   value:nsValue
                           userInitiated:userInitiated];
     }
-  } else if (params.type == "blur") {
+  } else if (params.type == ActivityType::kBlur) {
     if ([_delegate respondsToSelector:@selector
                    (autofillController:
                        didBlurOnFieldWithIdentifier:fieldType:formName:frameID

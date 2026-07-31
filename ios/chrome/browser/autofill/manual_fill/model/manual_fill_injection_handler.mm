@@ -317,7 +317,8 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
                     inFrame:(web::WebFrame*)frame {
   // Ignore non-user triggered events so page JS can't control which fields
   // receive data.
-  if (params.type != "focus" || !params.has_user_gesture) {
+  if (params.type != autofill::FormActivityParams::ActivityType::kFocus ||
+      !params.has_user_gesture) {
     return;
   }
   _lastFocusedElementParams = params;

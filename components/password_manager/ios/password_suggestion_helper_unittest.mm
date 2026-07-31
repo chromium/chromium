@@ -58,7 +58,6 @@ constexpr char kFillDataPassword[] = "super!secret";
 constexpr char16_t kFillDataBackupPassword[] = u"backup_password";
 NSString* const kTestFrameID = @"mainframe";
 NSString* const kTextFieldType = @"text";
-NSString* const kQueryFocusType = @"focus";
 
 NSString* NSFrameId(web::WebFrame* frame) {
   return SysUTF8ToNSString(frame->GetFrameId());
@@ -122,15 +121,16 @@ class PasswordSuggestionHelperTest : public PlatformTest {
       autofill::FieldRendererId fieldRendererID,
       NSString* fieldType,
       NSString* frameID) {
-    return [[FormSuggestionProviderQuery alloc] initWithFormName:@"form1"
-                                                  formRendererID:formRendererID
-                                                 fieldIdentifier:fieldIdentifier
-                                                 fieldRendererID:fieldRendererID
-                                                       fieldType:fieldType
-                                                            type:kQueryFocusType
-                                                      typedValue:@""
-                                                         frameID:frameID
-                                                    onlyPassword:NO];
+    return [[FormSuggestionProviderQuery alloc]
+        initWithFormName:@"form1"
+          formRendererID:formRendererID
+         fieldIdentifier:fieldIdentifier
+         fieldRendererID:fieldRendererID
+               fieldType:fieldType
+                    type:ActivityType::kFocus
+              typedValue:@""
+                 frameID:frameID
+            onlyPassword:NO];
   }
 
   FormSuggestionProviderQuery* BuildPasswordQuery(

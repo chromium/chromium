@@ -128,7 +128,7 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   auto sender_frame = web::FakeWebFrame::Create("sender_frame", true);
   params.form_name = "form-name";
   params.field_type = "field-type";
-  params.type = "type";
+  params.type = autofill::FormActivityParams::ActivityType::kFocus;
   params.value = "value";
   params.input_missing = true;
   observer_bridge_.FormActivityRegistered(&fake_web_state_, sender_frame.get(),
@@ -179,3 +179,55 @@ TEST_F(FormActivityObserverBridgeTest, DestructionOrder) {
   // crashes it fails). The observer_bridge_ destructor will be called at end of
   // scope.
 }
+
+namespace autofill {
+
+using ActivityType = FormActivityParams::ActivityType;
+
+namespace {
+
+constexpr char kActivityTypeBlur[] = "blur";
+constexpr char kActivityTypeChange[] = "change";
+constexpr char kActivityTypeFocus[] = "focus";
+constexpr char kActivityTypeFormChanged[] = "form_changed";
+constexpr char kActivityTypeInput[] = "input";
+constexpr char kActivityTypeKeyUp[] = "keyup";
+constexpr char kActivityTypeUnknown[] = "unknown";
+constexpr char kActivityTypeUnknownType[] = "unknown_type";
+
+}  // namespace
+
+class FormActivityParamsTest : public PlatformTest {
+ protected:
+  ActivityType StringToActivityType(std::string_view type) {
+    return FormActivityParams::StringToActivityType(type);
+  }
+  const char* ActivityTypeToString(ActivityType type) {
+    return FormActivityParams::ActivityTypeToString(type);
+  }
+};
+
+TEST_F(FormActivityParamsTest, ActivityTypeConversions) {
+  EXPECT_EQ(ActivityType::kBlur, StringToActivityType(kActivityTypeBlur));
+  EXPECT_EQ(ActivityType::kChange, StringToActivityType(kActivityTypeChange));
+  EXPECT_EQ(ActivityType::kFocus, StringToActivityType(kActivityTypeFocus));
+  EXPECT_EQ(ActivityType::kFormChanged,
+            StringToActivityType(kActivityTypeFormChanged));
+  EXPECT_EQ(ActivityType::kInput, StringToActivityType(kActivityTypeInput));
+  EXPECT_EQ(ActivityType::kKeyUp, StringToActivityType(kActivityTypeKeyUp));
+  EXPECT_EQ(ActivityType::kUnknown,
+            StringToActivityType(kActivityTypeUnknownType));
+
+  EXPECT_STREQ(kActivityTypeBlur, ActivityTypeToString(ActivityType::kBlur));
+  EXPECT_STREQ(kActivityTypeChange,
+               ActivityTypeToString(ActivityType::kChange));
+  EXPECT_STREQ(kActivityTypeFocus, ActivityTypeToString(ActivityType::kFocus));
+  EXPECT_STREQ(kActivityTypeFormChanged,
+               ActivityTypeToString(ActivityType::kFormChanged));
+  EXPECT_STREQ(kActivityTypeInput, ActivityTypeToString(ActivityType::kInput));
+  EXPECT_STREQ(kActivityTypeKeyUp, ActivityTypeToString(ActivityType::kKeyUp));
+  EXPECT_STREQ(kActivityTypeUnknown,
+               ActivityTypeToString(ActivityType::kUnknown));
+}
+
+}  // namespace autofill

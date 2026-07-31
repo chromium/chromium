@@ -70,6 +70,7 @@
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
+using ActivityType = autofill::FormActivityParams::ActivityType;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -199,7 +200,7 @@ class CWVAutofillControllerTest : public web::WebTest {
     autofill::FormActivityParams params;
     params.form_name = base::SysNSStringToUTF8(kTestFormName);
     params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.type = "focus";
+    params.type = ActivityType::kFocus;
     params.has_user_gesture = has_user_gesture;
     form_activity_tab_helper_->FormActivityRegistered(frame_ptr, params);
   }
@@ -461,7 +462,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestionAfterFocusShift) {
   autofill::FormActivityParams params_2;
   params_2.form_name = base::SysNSStringToUTF8(kTestFormName2);
   params_2.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier2);
-  params_2.type = "focus";
+  params_2.type = ActivityType::kFocus;
   params_2.has_user_gesture = true;
   form_activity_tab_helper_->FormActivityRegistered(frame_ptr_2, params_2);
 
@@ -574,7 +575,7 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
   params.value = base::SysNSStringToUTF8(kTestFieldValue);
   params.frame_id = web::kMainFakeFrameId;
   params.has_user_gesture = true;
-  params.type = "focus";
+  params.type = ActivityType::kFocus;
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
   [delegate verify];
@@ -598,7 +599,7 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
   params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
   params.value = base::SysNSStringToUTF8(kTestFieldValue);
   params.frame_id = web::kMainFakeFrameId;
-  params.type = "input";
+  params.type = ActivityType::kInput;
   params.has_user_gesture = true;
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
@@ -624,7 +625,7 @@ TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
   params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
   params.value = base::SysNSStringToUTF8(kTestFieldValue);
   params.frame_id = web::kMainFakeFrameId;
-  params.type = "keyup";
+  params.type = ActivityType::kKeyUp;
   params.has_user_gesture = true;
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
@@ -649,7 +650,7 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
   params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
   params.value = base::SysNSStringToUTF8(kTestFieldValue);
   params.frame_id = web::kMainFakeFrameId;
-  params.type = "blur";
+  params.type = ActivityType::kBlur;
   params.has_user_gesture = true;
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
@@ -771,7 +772,7 @@ TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoDriver) {
   // Simulate form activity to set _lastFormActivityWebFrameID.
   autofill::FormActivityParams params;
   params.frame_id = frame_id;
-  params.type = "focus";
+  params.type = ActivityType::kFocus;
   form_activity_tab_helper_->FormActivityRegistered(frame_ptr, params);
 
   // Simulate missing driver by notifying the factory that the WebState is being
@@ -805,7 +806,7 @@ TEST_F(CWVAutofillControllerTest, FetchFullCardDetails) {
   // Simulate form activity to set _lastFormActivityWebFrameID.
   autofill::FormActivityParams params;
   params.frame_id = frame_id;
-  params.type = "focus";
+  params.type = ActivityType::kFocus;
   web::WebFrame* main_frame = web_frames_manager_->GetMainWebFrame();
   form_activity_tab_helper_->FormActivityRegistered(main_frame, params);
 

@@ -53,7 +53,7 @@ FormActivityParams CreateFormActivityParams(const std::string field_type) {
   params.form_name = "form";
   params.field_identifier = "field_id";
   params.field_type = field_type;
-  params.type = "type";
+  params.type = FormActivityParams::ActivityType::kFocus;
   params.value = "value";
   params.input_missing = false;
   return params;
@@ -387,7 +387,7 @@ TEST_F(FormInputAccessoryMediatorTest, FormActivityBlurShouldBeIgnored) {
   [mediator_ injectProvider:provider_];
 
   FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
-  params.type = "blur";
+  params.type = FormActivityParams::ActivityType::kBlur;
   [[handler_ reject] resetFormInputView];
   [[provider_ reject] retrieveSuggestionsForForm:params
                                         webState:static_cast<web::WebState*>(

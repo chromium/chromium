@@ -17,8 +17,6 @@ NSString* const kTestUsernameFieldIdentifier = @"username";
 NSString* const kTestPasswordFieldIdentifier = @"pw";
 FieldRendererId const kTestFieldRendererID = FieldRendererId(1);
 NSString* const kTestTextFieldType = @"text";
-NSString* const kTestFocusType = @"focus";
-NSString* const kTestInputType = @"input";
 NSString* const kTestTypedValue = @"smth";
 NSString* const kTestFrameID = @"someframe";
 }  // namespace
@@ -34,7 +32,7 @@ TEST_F(FormSuggestionProviderQueryTest, PasswordFieldFocused) {
        fieldIdentifier:kTestPasswordFieldIdentifier
        fieldRendererID:kTestFieldRendererID
              fieldType:kObfuscatedFieldType
-                  type:kTestFocusType
+                  type:ActivityType::kFocus
             typedValue:kTestTypedValue
                frameID:kTestFrameID
           onlyPassword:NO];
@@ -51,7 +49,7 @@ TEST_F(FormSuggestionProviderQueryTest, InputInTextField) {
        fieldIdentifier:kTestUsernameFieldIdentifier
        fieldRendererID:kTestFieldRendererID
              fieldType:kTestTextFieldType
-                  type:kTestInputType
+                  type:ActivityType::kInput
             typedValue:kTestTypedValue
                frameID:kTestFrameID
           onlyPassword:NO];

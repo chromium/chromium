@@ -72,6 +72,7 @@ using autofill::FillingProduct;
 using autofill::FormRendererId;
 using autofill::Section;
 using autofill::SuggestionType;
+using ActivityType = autofill::FormActivityParams::ActivityType;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
@@ -447,7 +448,7 @@ TEST_F(AutofillAgentTest,
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
              fieldType:@"text"
-                  type:@"focus"
+                  type:ActivityType::kFocus
             typedValue:@""
                frameID:base::SysUTF8ToNSString(kTestFrameId)
           onlyPassword:NO];
@@ -687,7 +688,7 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_ClearForm) {
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
              fieldType:@"text"
-                  type:@"focus"
+                  type:ActivityType::kFocus
             typedValue:@""
                frameID:base::SysUTF8ToNSString(kTestFrameId)
           onlyPassword:NO];
@@ -746,7 +747,7 @@ TEST_F(AutofillAgentTest, onSuggestionsReady_ClearFormWithGPay) {
        fieldIdentifier:@"address"
        fieldRendererID:FieldRendererId(2)
              fieldType:@"text"
-                  type:@"focus"
+                  type:ActivityType::kFocus
             typedValue:@""
                frameID:base::SysUTF8ToNSString(kTestFrameId)
           onlyPassword:NO];

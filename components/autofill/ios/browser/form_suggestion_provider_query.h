@@ -8,6 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+
+using ActivityType = autofill::FormActivityParams::ActivityType;
 
 namespace {
 // The "password" field type does not explicitly mean that the field contains a
@@ -39,9 +42,8 @@ NSString* const kObfuscatedFieldType = @"password";
 // HTML input field type (i.e. 'text', 'password').
 @property(readonly, nonatomic, copy) NSString* fieldType;
 
-// Type of form activity that initiates the query (i.e. 'focus', 'blur',
-// 'form_changed').
-@property(readonly, nonatomic, copy) NSString* type;
+// Type of form activity that initiates the query.
+@property(readonly, nonatomic, assign) ActivityType type;
 
 // The value contained in a field.
 @property(readonly, nonatomic, copy) NSString* typedValue;
@@ -58,7 +60,7 @@ NSString* const kObfuscatedFieldType = @"password";
                  fieldIdentifier:(NSString*)fieldIdentifier
                  fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                        fieldType:(NSString*)fieldType
-                            type:(NSString*)type
+                            type:(ActivityType)type
                       typedValue:(NSString*)typedValue
                          frameID:(NSString*)frameID
                     onlyPassword:(BOOL)onlyPassword NS_DESIGNATED_INITIALIZER;

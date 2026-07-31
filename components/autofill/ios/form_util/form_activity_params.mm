@@ -13,6 +13,37 @@ using base::SysUTF8ToNSString;
 
 namespace autofill {
 
+namespace {
+
+constexpr char kActivityTypeBlur[] = "blur";
+constexpr char kActivityTypeChange[] = "change";
+constexpr char kActivityTypeFocus[] = "focus";
+constexpr char kActivityTypeFormChanged[] = "form_changed";
+constexpr char kActivityTypeInput[] = "input";
+constexpr char kActivityTypeKeyUp[] = "keyup";
+constexpr char kActivityTypeUnknown[] = "unknown";
+
+const char* ToString(FormActivityParams::ActivityType type) {
+  switch (type) {
+    case FormActivityParams::ActivityType::kBlur:
+      return kActivityTypeBlur;
+    case FormActivityParams::ActivityType::kChange:
+      return kActivityTypeChange;
+    case FormActivityParams::ActivityType::kFocus:
+      return kActivityTypeFocus;
+    case FormActivityParams::ActivityType::kFormChanged:
+      return kActivityTypeFormChanged;
+    case FormActivityParams::ActivityType::kInput:
+      return kActivityTypeInput;
+    case FormActivityParams::ActivityType::kKeyUp:
+      return kActivityTypeKeyUp;
+    case FormActivityParams::ActivityType::kUnknown:
+      return kActivityTypeUnknown;
+  }
+}
+
+}  // namespace
+
 BaseFormActivityParams::BaseFormActivityParams() = default;
 BaseFormActivityParams::BaseFormActivityParams(
     const BaseFormActivityParams& other) = default;
@@ -108,7 +139,7 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
     params->field_type = *field_type;
   }
   if (type) {
-    params->type = *type;
+    params->type = StringToActivityType(*type);
   }
   if (value) {
     params->value = *value;
@@ -118,6 +149,33 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
   }
 
   return true;
+}
+
+FormActivityParams::ActivityType FormActivityParams::StringToActivityType(
+    std::string_view type) {
+  if (type == kActivityTypeBlur) {
+    return ActivityType::kBlur;
+  }
+  if (type == kActivityTypeChange) {
+    return ActivityType::kChange;
+  }
+  if (type == kActivityTypeFocus) {
+    return ActivityType::kFocus;
+  }
+  if (type == kActivityTypeFormChanged) {
+    return ActivityType::kFormChanged;
+  }
+  if (type == kActivityTypeInput) {
+    return ActivityType::kInput;
+  }
+  if (type == kActivityTypeKeyUp) {
+    return ActivityType::kKeyUp;
+  }
+  return ActivityType::kUnknown;
+}
+
+const char* FormActivityParams::ActivityTypeToString(ActivityType type) {
+  return ToString(type);
 }
 
 bool FormActivityParams::operator==(const FormActivityParams& params) const {
@@ -138,7 +196,7 @@ std::ostream& operator<<(std::ostream& os, const FormActivityParams& params) {
   os << ", field_renderer_id: " << params.field_renderer_id;
   os << ", field_type: " << params.field_type;
   os << ", value: " << params.value;
-  os << ", type: " << params.type;
+  os << ", type: " << ToString(params.type);
   os << ", has_user_gesture: " << params.has_user_gesture;
   return os;
 }

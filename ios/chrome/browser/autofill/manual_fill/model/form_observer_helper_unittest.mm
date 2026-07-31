@@ -71,7 +71,7 @@ TEST_F(ManualFillFormObserverHelperiOSTest, ObservesWebState) {
   params.form_name = "form";
   params.field_identifier = "field_id";
   params.field_type = "text";
-  params.type = "blur";
+  params.type = autofill::FormActivityParams::ActivityType::kBlur;
   params.value = "value";
   params.input_missing = false;
 
@@ -102,7 +102,7 @@ TEST_F(ManualFillFormObserverHelperiOSTest, ObservesMultipleWebStates) {
   params.form_name = "form";
   params.field_identifier = "field_id";
   params.field_type = "text";
-  params.type = "focus";
+  params.type = autofill::FormActivityParams::ActivityType::kFocus;
   params.value = "value";
   params.input_missing = false;
 

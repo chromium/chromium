@@ -310,7 +310,7 @@ bool IsRequestDedupingAllowed() {
        fieldIdentifier:base::SysUTF8ToNSString(params.field_identifier)
        fieldRendererID:params.field_renderer_id
              fieldType:base::SysUTF8ToNSString(params.field_type)
-                  type:base::SysUTF8ToNSString(params.type)
+                  type:params.type
             typedValue:base::SysUTF8ToNSString(params.value)
                frameID:base::SysUTF8ToNSString(params.frame_id)
           onlyPassword:NO];

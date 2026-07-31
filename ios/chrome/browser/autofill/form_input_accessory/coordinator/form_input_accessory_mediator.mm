@@ -70,6 +70,7 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using ActivityType = autofill::FormActivityParams::ActivityType;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using base::UmaHistogramEnumeration;
@@ -507,7 +508,7 @@ bool IsStateless() {
 
   // Ignore form_changed events to prevent gestureless form changes from
   // overwriting the active keyboard accessory's target web frame ID.
-  if (params.type == "form_changed") {
+  if (params.type == ActivityType::kFormChanged) {
     return;
   }
 
@@ -531,7 +532,8 @@ bool IsStateless() {
   }
 
   // Skip retrieving suggestions for blur or change events.
-  if (params.type == "blur" || params.type == "change") {
+  if (params.type == ActivityType::kBlur ||
+      params.type == ActivityType::kChange) {
     return;
   }
 
