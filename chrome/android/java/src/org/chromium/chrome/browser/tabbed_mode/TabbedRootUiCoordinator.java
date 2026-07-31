@@ -2494,8 +2494,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void showVerticalTabs(boolean show) {
-        assumeNonNull(mVerticalTabsSideUiCoordinator)
-                .setVisible(show, /* suppressAnimations= */ false);
+        if (mVerticalTabsSideUiCoordinator != null) {
+            mVerticalTabsSideUiCoordinator.setVisible(show, /* suppressAnimations= */ false);
+        }
     }
 
     /** Toggle the visibility between horizontal tab strip and vertical tab list. */
