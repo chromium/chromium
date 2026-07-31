@@ -16,41 +16,59 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   async function testAddLocation() {
     const addLocationButton = locationsWidget.contentElement.querySelector('.add-locations-button');
     addLocationButton.click();
+    await UI.Widget.Widget.allUpdatesComplete;
 
-    const newLocationInputs = locationsWidget.list.editor.controls;
-    TestRunner.addResult(`Opened input box: ${Boolean(newLocationInputs)}`);
+    const dialogContent =
+        UI.Dialog.Dialog.getInstance()?.contentElement.querySelector(
+            '.location-dialog-content');
+    TestRunner.addResult(`Opened input box: ${Boolean(dialogContent)}`);
 
-    await AxeCoreTestRunner.runValidation(locationsWidget.contentElement);
+    await AxeCoreTestRunner.runValidation(dialogContent);
   }
 
   async function testNewLocationError() {
-    const locationsEditor = locationsWidget.list.editor;
-    const newLocationInputs = locationsEditor.controls;
-    const nameInput = newLocationInputs[0];
-    const latitudeInput = newLocationInputs[1];
-    const longitudeInput = newLocationInputs[2];
+    const dialogContent =
+        UI.Dialog.Dialog.getInstance()?.contentElement.querySelector(
+            '.location-dialog-content');
+    const nameInput =
+        dialogContent.querySelector('input[placeholder="Location name"]');
+    const latitudeInput =
+        dialogContent.querySelector('input[placeholder="Latitude"]');
+    const longitudeInput =
+        dialogContent.querySelector('input[placeholder="Longitude"]');
+    const saveButton = dialogContent.querySelector('.save-button');
     let errorMessage;
 
-    TestRunner.addResult(`Invalidating the ${nameInput.getAttribute('aria-label')} input`);
-    nameInput.dispatchEvent(new Event('input'));
-    errorMessage = locationsEditor.errorMessageContainer.textContent;
+    TestRunner.addResult(
+        `Invalidating the ${nameInput.getAttribute('placeholder')} input`);
+    nameInput.value = '';
+    saveButton.click();
+    await UI.Widget.Widget.allUpdatesComplete;
+    errorMessage =
+        dialogContent.querySelector('.editor-field-error').textContent.trim();
     TestRunner.addResult(`Error message: ${errorMessage}`);
 
-    TestRunner.addResult(`Invalidating the ${latitudeInput.getAttribute('aria-label')} input`);
+    TestRunner.addResult(
+        `Invalidating the ${latitudeInput.getAttribute('placeholder')} input`);
     nameInput.value = 'location';
     latitudeInput.value = 'a.a';
-    latitudeInput.dispatchEvent(new Event('input'));
-    errorMessage = locationsEditor.errorMessageContainer.textContent;
+    saveButton.click();
+    await UI.Widget.Widget.allUpdatesComplete;
+    errorMessage =
+        dialogContent.querySelector('.editor-field-error').textContent.trim();
     TestRunner.addResult(`Error message: ${errorMessage}`);
 
-    TestRunner.addResult(`Invalidating the ${longitudeInput.getAttribute('aria-label')} input`);
+    TestRunner.addResult(
+        `Invalidating the ${longitudeInput.getAttribute('placeholder')} input`);
     latitudeInput.value = '1.1';
     longitudeInput.value = '1a.1';
-    longitudeInput.dispatchEvent(new Event('input'));
-    errorMessage = locationsEditor.errorMessageContainer.textContent;
+    saveButton.click();
+    await UI.Widget.Widget.allUpdatesComplete;
+    errorMessage =
+        dialogContent.querySelector('.editor-field-error').textContent.trim();
     TestRunner.addResult(`Error message: ${errorMessage}`);
 
-    await AxeCoreTestRunner.runValidation(locationsWidget.contentElement);
+    await AxeCoreTestRunner.runValidation(dialogContent);
   }
 
   TestRunner.runAsyncTestSuite([testAddLocation, testNewLocationError]);
