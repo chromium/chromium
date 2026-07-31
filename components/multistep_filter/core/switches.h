@@ -11,6 +11,9 @@ namespace multistep_filter::switches {
 inline constexpr char kMultistepFilterAllowHttpForTesting[] =
     "multistep-filter-allow-http-for-testing";
 
+// Tag the browser instance as running evals to filter out UMA metrics.
+inline constexpr char kMultistepFilterEvals[] = "multistep-filter-evals";
+
 }  // namespace multistep_filter::switches
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_SWITCHES_H_

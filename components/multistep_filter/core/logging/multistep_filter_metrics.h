@@ -163,6 +163,12 @@ inline constexpr char
     kMultistepFilterPostSuggestionApplicationUserEngagementHistogram[] =
         "MultistepFilter.PostSuggestionApplication.UserEngagement";
 
+// Synthetic trial names and groups.
+inline constexpr char kMultistepFilterEvalsSyntheticTrialName[] =
+    "SyntheticMultistepFilterEvals";
+inline constexpr char kMultistepFilterEvalsSyntheticTrialGroupEnabled[] =
+    "Enabled";
+
 // =============================================================================
 // TASK TYPE NAMES
 // =============================================================================

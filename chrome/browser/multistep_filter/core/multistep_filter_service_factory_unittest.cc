@@ -3,15 +3,24 @@
 // found in the LICENSE file.
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/multistep_filter/core/features.h"
+#include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
+#include "components/multistep_filter/core/switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/active_field_trials.h"
+#include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,9 +40,17 @@ class MultistepFilterServiceFactoryTest : public testing::Test {
         IdentityManagerFactory::GetForProfile(profile_.get()), "test@gmail.com",
         signin::ConsentLevel::kSignin);
   }
+  std::vector<variations::ActiveGroupId> GetSyntheticFieldTrials() {
+    return metrics_service_.Get()
+        ->GetSyntheticTrialRegistry()
+        ->GetCurrentSyntheticFieldTrialsForTest();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
+  ScopedMetricsServiceForSyntheticTrials metrics_service_{
+      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(MultistepFilterServiceFactoryTest,
@@ -96,6 +113,35 @@ TEST_F(MultistepFilterServiceFactoryTest, RegisterProfilePrefs) {
           kRetentionIsLastSuggestionAcceptedPref);
   ASSERT_NE(last_accepted_pref, nullptr);
   EXPECT_TRUE(last_accepted_pref->IsDefaultValue());
+}
+
+TEST_F(MultistepFilterServiceFactoryTest, RegistersSyntheticTrialForEvals) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kMultistepFilterEvals);
+
+  feature_list_.InitAndEnableFeature(kMultistepFilter);
+  SignIn();
+
+  auto* service = MultistepFilterServiceFactory::GetForProfile(profile_.get());
+  EXPECT_NE(nullptr, service);
+
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), kMultistepFilterEvalsSyntheticTrialName,
+      kMultistepFilterEvalsSyntheticTrialGroupEnabled));
+}
+
+TEST_F(MultistepFilterServiceFactoryTest,
+       DoesNotRegisterSyntheticTrialWithoutSwitch) {
+  feature_list_.InitAndEnableFeature(kMultistepFilter);
+  SignIn();
+
+  auto* service = MultistepFilterServiceFactory::GetForProfile(profile_.get());
+  EXPECT_NE(nullptr, service);
+
+  EXPECT_FALSE(variations::ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(), kMultistepFilterEvalsSyntheticTrialName,
+      kMultistepFilterEvalsSyntheticTrialGroupEnabled));
 }
 
 }  // namespace multistep_filter
