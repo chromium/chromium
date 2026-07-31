@@ -53,6 +53,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openAutocompleteMatch',
       'openLensSearch',
       'openPopupSelection',
+      'openProfilePicker',
       'queryAutocomplete',
       'recordModelSelectionAction',
       'recordToolSelectionAction',
@@ -259,6 +260,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   openLensSearch() {
     this.methodCalled('openLensSearch');
+  }
+
+  openProfilePicker() {
+    this.methodCalled('openProfilePicker');
   }
 
   setActiveToolMode(tool: ToolMode) {

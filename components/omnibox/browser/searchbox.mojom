@@ -529,6 +529,9 @@ interface PageHandler {
   // Called when the user clicks the drive upload button.
   OnDriveUploadClicked() => (DriveUploadResponse response);
 
+  // Opens the profile picker for switching profiles.
+  OpenProfilePicker();
+
   // Gets the page classification for the current context.
   GetPageClassification() => (string metricSource);
 

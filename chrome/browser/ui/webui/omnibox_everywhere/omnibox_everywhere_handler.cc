@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "content/public/browser/web_ui.h"
@@ -106,4 +108,10 @@ void OmniboxEverywhereHandler::CleanupDrivePicker() {
   // cancel, or error) so that the widget can regain focus and restore standard
   // auto-dismissal.
   service_->OnDrivePickerClosed();
+}
+
+void OmniboxEverywhereHandler::OpenProfilePicker() {
+  if (service_) {
+    service_->ShowProfilePicker();
+  }
 }

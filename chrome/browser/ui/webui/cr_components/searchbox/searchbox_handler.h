@@ -192,6 +192,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       GetDriveDisclaimerStatusCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
+  void OpenProfilePicker() override {}
   void GetPageClassification(GetPageClassificationCallback callback) override;
 #if !BUILDFLAG(IS_ANDROID)
   void SetSmartTabSharingActive(bool active) override;

@@ -17,11 +17,14 @@ build_webui("build") {
     "omnibox.html.ts",
     "omnibox.ts",
     "omnibox_everywhere.ts",
+    "profile_icon.html.ts",
+    "profile_icon.ts",
   ]
   css_files = [
     "composebox.css",
     "app.css",
     "omnibox.css",
+    "profile_icon.css",
     "searchbox_shared_style.css",
   ]
   ts_composite = true

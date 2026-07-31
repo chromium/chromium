@@ -36,8 +36,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         ` :
                                   ''}
       </cr-searchbox-input>
-      <img id="profileIcon" src="${this.profileAvatarUrl_}"
-          alt="${this.i18n('profileButtonLabel')}">
+      <omnibox-everywhere-profile-icon id="profileIcon"></omnibox-everywhere-profile-icon>
       <div class="dropdownContainer">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"

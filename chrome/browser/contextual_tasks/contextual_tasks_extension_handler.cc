@@ -176,6 +176,7 @@ void ContextualTasksExtensionHandler::GetDriveDisclaimerStatus(
 void ContextualTasksExtensionHandler::OnDriveDisclaimerAccepted() {}
 void ContextualTasksExtensionHandler::OnDriveUploadClicked(
     OnDriveUploadClickedCallback callback) {}
+void ContextualTasksExtensionHandler::OpenProfilePicker() {}
 void ContextualTasksExtensionHandler::GetPageClassification(
     GetPageClassificationCallback callback) {
   std::move(callback).Run("INVALID_SPEC");

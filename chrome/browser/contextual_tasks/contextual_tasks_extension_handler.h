@@ -139,6 +139,7 @@ class ContextualTasksExtensionHandler
       GetDriveDisclaimerStatusCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
+  void OpenProfilePicker() override;
   void GetPageClassification(GetPageClassificationCallback callback) override;
   void OnThumbnailRemoved() override;
 

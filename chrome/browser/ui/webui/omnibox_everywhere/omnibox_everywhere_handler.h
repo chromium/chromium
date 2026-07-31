@@ -41,6 +41,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
   // standalone WebContents with the latest active BrowserWindowInterface, and
   // update the OmniboxEverywhereService state.
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
+  void OpenProfilePicker() override;
 
   // ContextualSearchboxHandler:
   // Overridden to notify the OmniboxEverywhereService when the Drive picker is

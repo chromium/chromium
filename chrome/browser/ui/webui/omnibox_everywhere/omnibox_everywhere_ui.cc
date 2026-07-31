@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -83,11 +84,26 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
             .GetProfileAttributesWithPath(profile_->GetPath());
     if (entry) {
       gfx::Image icon =
-          profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 40, 40);
+          profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(), 48, 48);
       profile_avatar_url = webui::GetBitmapDataUrl(icon.AsBitmap());
+
+      std::u16string gaia_name = entry->GetGAIAName();
+      std::u16string profile_name = entry->GetName();
+      std::u16string display_name = profile_name;
+      if (!gaia_name.empty() && gaia_name != profile_name) {
+        display_name = gaia_name + u" • " + profile_name;
+      }
+      source->AddString("profileName", base::UTF16ToUTF8(display_name));
+      source->AddString("profileEmail",
+                        base::UTF16ToUTF8(entry->GetUserName()));
+    } else {
+      source->AddString("profileName", "");
+      source->AddString("profileEmail", "");
     }
   }
   source->AddString("profileAvatarUrl", profile_avatar_url);
+  source->AddBoolean("omniboxEverywhereProfilePickerEnabled",
+                     omnibox::kOmniboxEverywhereProfilePickerParam.Get());
   source->AddLocalizedString("profileButtonLabel",
                              IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE);
   source->AddLocalizedString("searchBoxHintAskOrType",

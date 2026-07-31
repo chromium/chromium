@@ -52,6 +52,12 @@ bool OmniboxEverywhereService::IsPopupVisible() const {
   return controller() && controller()->IsVisible();
 }
 
+void OmniboxEverywhereService::ShowProfilePicker() {
+  if (controller()) {
+    controller()->ShowProfilePicker();
+  }
+}
+
 void OmniboxEverywhereService::SetIsNavigating(bool is_navigating) {
   if (controller() && controller()->ui_manager()) {
     controller()->ui_manager()->SetIsNavigating(is_navigating);
