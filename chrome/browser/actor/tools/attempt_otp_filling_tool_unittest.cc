@@ -778,9 +778,9 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
 
   EXPECT_EQ(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
             future.Take()->code);
-  histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram,
-                                      AttemptOtpFillingToolEvent::kNoActorLogin,
-                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
@@ -794,6 +794,7 @@ TEST_F(AttemptOtpFillingToolTest,
       .WillOnce(RunOnceCallback<4>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog).Times(0);
   auto verifier =
       std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
           fake_affiliation_service_);
@@ -809,9 +810,9 @@ TEST_F(AttemptOtpFillingToolTest,
   tool.Invoke(future.GetCallback());
 
   EXPECT_EQ(kOk, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram,
-                                      AttemptOtpFillingToolEvent::kNoActorLogin,
-                                      0);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
@@ -894,9 +895,6 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
   tool.Invoke(future.GetCallback());
 
   EXPECT_EQ(kOk, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram,
-                                      AttemptOtpFillingToolEvent::kNoActorLogin,
-                                      1);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
@@ -929,9 +927,9 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
 
   EXPECT_EQ(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
             future.Take()->code);
-  histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram,
-                                      AttemptOtpFillingToolEvent::kNoActorLogin,
-                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest,
@@ -958,9 +956,9 @@ TEST_F(AttemptOtpFillingToolTest,
   tool.Invoke(future.GetCallback());
 
   EXPECT_EQ(mojom::ActionResultCode::kOtpUnableToFill, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram,
-                                      AttemptOtpFillingToolEvent::kNoActorLogin,
-                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid, 1);
 }
 
 TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
@@ -1023,9 +1021,9 @@ TEST_F(AttemptOtpFillingToolTest,
   tool.Invoke(future.GetCallback());
 
   EXPECT_EQ(mojom::ActionResultCode::kOtpUnableToFill, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(kAttemptOtpFillingToolHistogram,
-                                      AttemptOtpFillingToolEvent::kNoActorLogin,
-                                      1);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid, 1);
 }
 
 }  // namespace actor

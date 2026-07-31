@@ -50,12 +50,15 @@ enum class AttemptOtpFillingToolEvent {
   kFormFillingStatusFormNotFound = 9,
   kFormFillingStatusTabNotAvailable = 10,
   kNoTargetFrameWithOtpFound = 11,
-  kNoActorLogin = 12,
+  // kNoActorLogin = 12,  Obsolete: this is no longer an exit condition for the
+  // flow.
   kOtpRetrievalError = 13,
   kFormFillingNotSecureBeforeFilling = 14,
   kFillingOtpSuccess = 15,
   kFillingOtpError = 16,
-  kMaxValue = kFillingOtpError
+  kGmailOtpConfirmationResponseNotValid = 17,
+  kGmailOtpConfirmationDeclinedByUser = 18,
+  kMaxValue = kGmailOtpConfirmationDeclinedByUser
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:AttemptOtpFillingEvent)
 

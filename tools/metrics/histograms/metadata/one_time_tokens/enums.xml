@@ -66,11 +66,13 @@ found in the LICENSE file.
   <int value="9" label="FormFillingStatusFormNotFound"/>
   <int value="10" label="FormFillingStatusTabNotAvailable"/>
   <int value="11" label="NoTargetFrameWithOtpFound"/>
-  <int value="12" label="NoActorLogin"/>
+  <int value="12" label="(Obsolete) NoActorLogin - Removed in 2026/07"/>
   <int value="13" label="OtpRetrievalError"/>
   <int value="14" label="FormFillingNotSecureBeforeFilling"/>
   <int value="15" label="FillingOtpSuccess"/>
   <int value="16" label="FillingOtpError"/>
+  <int value="17" label="GmailOtpConfirmationResponseNotValid"/>
+  <int value="18" label="GmailOtpConfirmationDeclinedByUser"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:AttemptOtpFillingEvent) -->
