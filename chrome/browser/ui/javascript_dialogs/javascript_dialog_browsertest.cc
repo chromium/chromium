@@ -390,8 +390,16 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCausePromptTabHidden) {
   EXPECT_EQ(DismissalCause::kTabHidden, tester.GetLastDismissalCause());
 }
 
+// TODO(crbug.com/541131636): Re-enable test after fixing flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DismissalCausePromptBrowserSwitched \
+  DISABLED_DismissalCausePromptBrowserSwitched
+#else
+#define MAYBE_DismissalCausePromptBrowserSwitched \
+  DismissalCausePromptBrowserSwitched
+#endif
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
-                       DismissalCausePromptBrowserSwitched) {
+                       MAYBE_DismissalCausePromptBrowserSwitched) {
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_PROMPT);
   ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
