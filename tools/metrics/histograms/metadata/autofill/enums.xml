@@ -5543,7 +5543,6 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="CompanyName"/>
   <int value="11" label="Iban"/>
   <int value="12" label="IbanNickname"/>
-  <int value="13" label="Vehicle"/>
   <int value="14" label="VehicleMake"/>
   <int value="15" label="VehicleModel"/>
   <int value="16" label="VehicleYear"/>
@@ -5551,13 +5550,11 @@ Called by update_autofill_enums.py.-->
   <int value="18" label="VehiclePlateNumber"/>
   <int value="19" label="VehiclePlateState"/>
   <int value="20" label="VehicleVin"/>
-  <int value="21" label="PassportFull"/>
   <int value="22" label="PassportName"/>
   <int value="23" label="PassportCountry"/>
   <int value="24" label="PassportNumber"/>
   <int value="25" label="PassportIssueDate"/>
   <int value="26" label="PassportExpirationDate"/>
-  <int value="27" label="FlightReservationFull"/>
   <int value="28" label="FlightReservationFlightNumber"/>
   <int value="29" label="FlightReservationTicketNumber"/>
   <int value="30" label="FlightReservationConfirmationCode"/>
@@ -5566,7 +5563,6 @@ Called by update_autofill_enums.py.-->
   <int value="33" label="FlightReservationArrivalAirport"/>
   <int value="34" label="FlightReservationDepartureDate"/>
   <int value="35" label="FlightReservationArrivalDate"/>
-  <int value="36" label="ShipmentFull"/>
   <int value="37" label="ShipmentTrackingNumber"/>
   <int value="38" label="ShipmentAssociatedOrderId"/>
   <int value="39" label="ShipmentDeliveryAddress"/>
@@ -5575,26 +5571,21 @@ Called by update_autofill_enums.py.-->
   <int value="42" label="ShipmentCarrierDomain"/>
   <int value="43" label="ShipmentEstimatedDeliveryDate"/>
   <int value="44" label="ShipmentShippedDate"/>
-  <int value="45" label="NationalIdCardFull"/>
   <int value="46" label="NationalIdCardName"/>
   <int value="47" label="NationalIdCardCountry"/>
   <int value="48" label="NationalIdCardNumber"/>
   <int value="49" label="NationalIdCardIssueDate"/>
   <int value="50" label="NationalIdCardExpirationDate"/>
-  <int value="51" label="RedressNumberFull"/>
   <int value="52" label="RedressNumberName"/>
   <int value="53" label="RedressNumberNumber"/>
-  <int value="54" label="KnownTravelerNumberFull"/>
   <int value="55" label="KnownTravelerNumberName"/>
   <int value="56" label="KnownTravelerNumberNumber"/>
   <int value="57" label="KnownTravelerNumberExpirationDate"/>
-  <int value="58" label="DriversLicenseFull"/>
   <int value="59" label="DriversLicenseName"/>
   <int value="60" label="DriversLicenseState"/>
   <int value="61" label="DriversLicenseNumber"/>
   <int value="62" label="DriversLicenseIssueDate"/>
   <int value="63" label="DriversLicenseExpirationDate"/>
-  <int value="64" label="OrderFull"/>
   <int value="65" label="OrderId"/>
   <int value="66" label="OrderAccount"/>
   <int value="67" label="OrderDate"/>

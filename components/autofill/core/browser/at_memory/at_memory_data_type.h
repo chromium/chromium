@@ -19,7 +19,7 @@ namespace autofill {
 // Represents the semantic type of a user's @memory query, identifying the
 // specific type of requested information, either referring to a specific
 // attribute or to a broader category (e.g. a vehicle, or vehicle's VIN).
-using AtMemoryDataType = std::variant<FieldType, EntityType, AttributeType>;
+using AtMemoryDataType = std::variant<FieldType, AttributeType>;
 
 // Translates a MemoryDataType to an Autofill-specific data type.
 std::optional<AtMemoryDataType> ToAtMemoryDataType(

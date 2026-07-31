@@ -23,9 +23,6 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
 #define INTENT_TO_FIELD_TYPE(intent, field_type) \
   case MemoryDataType::intent:                   \
     return field_type
-#define INTENT_TO_ENTITY_TYPE(intent, entity_type) \
-  case MemoryDataType::intent:                     \
-    return EntityType(EntityTypeName::entity_type)
 #define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type) \
   case MemoryDataType::intent_and_attribute_type:           \
     return AttributeType(AttributeTypeName::intent_and_attribute_type)
@@ -51,7 +48,6 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_FIELD_TYPE(kCreditCardSecurityCode,
                          CREDIT_CARD_VERIFICATION_CODE);
     INTENT_TO_FIELD_TYPE(kCreditCardNameOnCard, CREDIT_CARD_NAME_FULL);
-    INTENT_TO_ENTITY_TYPE(kVehicle, kVehicle);
     INTENT_TO_ATTRIBUTE_TYPE(kVehicleMake);
     INTENT_TO_ATTRIBUTE_TYPE(kVehicleModel);
     INTENT_TO_ATTRIBUTE_TYPE(kVehicleYear);
@@ -59,13 +55,11 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kVehiclePlateNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kVehiclePlateState);
     INTENT_TO_ATTRIBUTE_TYPE(kVehicleVin);
-    INTENT_TO_ENTITY_TYPE(kPassportFull, kPassport);
     INTENT_TO_ATTRIBUTE_TYPE(kPassportName);
     INTENT_TO_ATTRIBUTE_TYPE(kPassportCountry);
     INTENT_TO_ATTRIBUTE_TYPE(kPassportNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kPassportIssueDate);
     INTENT_TO_ATTRIBUTE_TYPE(kPassportExpirationDate);
-    INTENT_TO_ENTITY_TYPE(kFlightReservationFull, kFlightReservation);
     INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationFlightNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationTicketNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationConfirmationCode);
@@ -73,33 +67,27 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationDepartureAirport);
     INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationArrivalAirport);
     INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationDepartureDate);
-    INTENT_TO_ENTITY_TYPE(kNationalIdCardFull, kNationalIdCard);
     INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardName);
     INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardCountry);
     INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardIssueDate);
     INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardExpirationDate);
-    INTENT_TO_ENTITY_TYPE(kRedressNumberFull, kRedressNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kRedressNumberName);
     INTENT_TO_ATTRIBUTE_TYPE(kRedressNumberNumber);
-    INTENT_TO_ENTITY_TYPE(kKnownTravelerNumberFull, kKnownTravelerNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kKnownTravelerNumberName);
     INTENT_TO_ATTRIBUTE_TYPE(kKnownTravelerNumberNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kKnownTravelerNumberExpirationDate);
-    INTENT_TO_ENTITY_TYPE(kDriversLicenseFull, kDriversLicense);
     INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseName);
     INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseState);
     INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseNumber);
     INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseIssueDate);
     INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseExpirationDate);
-    INTENT_TO_ENTITY_TYPE(kOrderFull, kOrder);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderId);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderAccount);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderDate);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantName);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantDomain);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderProductNames);
-    INTENT_TO_ENTITY_TYPE(kShipmentFull, kShipment);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentTrackingNumber);
     INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME(kShipmentAssociatedOrderId,
                                        kShipmentOrderIds);
@@ -119,7 +107,6 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
   NOTREACHED();
 
 #undef INTENT_TO_ATTRIBUTE_TYPE
-#undef INTENT_TO_ENTITY_TYPE
 #undef INTENT_TO_FIELD_TYPE
 #undef INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME
 }
@@ -153,9 +140,9 @@ ToAutofillPolicyDataCategory(const AtMemoryDataType& type) {
             }
             NOTREACHED();
           },
-          [](const EntityType& entity_type)
+          [](const AttributeType& attribute_type)
               -> std::optional<AutofillClient::AutofillPolicyDataCategory> {
-            switch (entity_type.name()) {
+            switch (attribute_type.entity_type().name()) {
               case EntityTypeName::kNationalIdCard:
               case EntityTypeName::kPassport:
               case EntityTypeName::kDriversLicense:
@@ -171,11 +158,6 @@ ToAutofillPolicyDataCategory(const AtMemoryDataType& type) {
                 return AutofillClient::AutofillPolicyDataCategory::kShopping;
             }
             NOTREACHED();
-          },
-          [](const AttributeType& attribute_type)
-              -> std::optional<AutofillClient::AutofillPolicyDataCategory> {
-            return ToAutofillPolicyDataCategory(
-                AtMemoryDataType(attribute_type.entity_type()));
           }},
       type);
 }

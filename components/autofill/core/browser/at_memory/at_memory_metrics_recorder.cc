@@ -86,7 +86,6 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kCreditCardNickname:
       return "CreditCard";
 
-    case MemoryDataType::kDriversLicenseFull:
     case MemoryDataType::kDriversLicenseName:
     case MemoryDataType::kDriversLicenseState:
     case MemoryDataType::kDriversLicenseNumber:
@@ -94,7 +93,6 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kDriversLicenseExpirationDate:
       return "DriversLicense";
 
-    case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
     case MemoryDataType::kFlightReservationConfirmationCode:
@@ -109,13 +107,11 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kIbanNickname:
       return "Iban";
 
-    case MemoryDataType::kKnownTravelerNumberFull:
     case MemoryDataType::kKnownTravelerNumberName:
     case MemoryDataType::kKnownTravelerNumberNumber:
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
       return "KnownTravelerNumber";
 
-    case MemoryDataType::kNationalIdCardFull:
     case MemoryDataType::kNationalIdCardName:
     case MemoryDataType::kNationalIdCardCountry:
     case MemoryDataType::kNationalIdCardNumber:
@@ -123,7 +119,6 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kNationalIdCardExpirationDate:
       return "NationalIdCard";
 
-    case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
     case MemoryDataType::kOrderDate:
@@ -133,7 +128,6 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kOrderGrandTotal:
       return "Order";
 
-    case MemoryDataType::kPassportFull:
     case MemoryDataType::kPassportName:
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportNumber:
@@ -141,12 +135,10 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kPassportExpirationDate:
       return "Passport";
 
-    case MemoryDataType::kRedressNumberFull:
     case MemoryDataType::kRedressNumberName:
     case MemoryDataType::kRedressNumberNumber:
       return "RedressNumber";
 
-    case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
@@ -157,7 +149,6 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kShipmentShippedDate:
       return "Shipment";
 
-    case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
     case MemoryDataType::kVehicleYear:

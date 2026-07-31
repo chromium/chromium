@@ -448,9 +448,10 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiEntityData) {
   entity_data_manager().AddOrUpdateEntityInstance(vehicle);
   WaitForDatabase();
 
-  // Asking for Vehicle should return combined result and individual attributes.
+  // Asking for Vehicle Plate Number should return combined result and
+  // individual attributes.
   std::vector<MemorySearchResult> results =
-      RetrieveAllHelper(retriever(), MemoryDataType::kVehicle);
+      RetrieveAllHelper(retriever(), MemoryDataType::kVehiclePlateNumber);
   EXPECT_THAT(
       results,
       ElementsAre(IsMemorySearchResult(
@@ -473,7 +474,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_PassportData) {
   WaitForDatabase();
 
   std::vector<MemorySearchResult> results =
-      RetrieveAllHelper(retriever(), MemoryDataType::kPassportFull);
+      RetrieveAllHelper(retriever(), MemoryDataType::kPassportNumber);
   ASSERT_FALSE(results.empty());
 
   auto it = std::find_if(results.begin(), results.end(),
@@ -514,26 +515,6 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiAttributeData) {
           /*is_obfuscated=*/false, vehicle.guid().value())));
 }
 
-// Tests that RetrieveAll falls back to the first non-empty attribute for
-// Vehicle when plate number is missing.
-TEST_F(AutofillDataProviderTest, RetrieveAll_VehicleFallbackToFirstNonEmpty) {
-  EntityInstance vehicle = test::GetVehicleEntityInstance(
-      {.name = u"", .plate = u"", .make = u"BMW", .year = u"", .use_count = 1});
-  entity_data_manager().AddOrUpdateEntityInstance(vehicle);
-  WaitForDatabase();
-
-  std::vector<MemorySearchResult> results =
-      RetrieveAllHelper(retriever(), MemoryDataType::kVehicle);
-  EXPECT_THAT(
-      results,
-      ElementsAre(IsMemorySearchResult(
-          u"BMW", u"Make",
-          ElementsAre(
-              IsMetadata(MemoryDataType::kVehicleModel, u"Series 2"),
-              IsMetadata(MemoryDataType::kVehiclePlateState, u"California"),
-              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")),
-          /*is_obfuscated=*/false, vehicle.guid().value())));
-}
 
 // Tests that RetrieveAll omits address suggestions for profiles that only have
 // a name but no address data.

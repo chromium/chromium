@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager_test_api.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder_test_api.h"
-#include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -562,8 +561,8 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  MemorySearchResult entry(MemoryDataType::kFlightReservationFull, u"Label",
-                           u"Value");
+  MemorySearchResult entry(MemoryDataType::kFlightReservationFlightNumber,
+                           u"Label", u"Value");
   entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   entries.push_back(std::move(entry));
 
@@ -576,7 +575,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
   EXPECT_THAT(
       final_suggestions,
       ElementsAre(EqualsAtMemorySuggestion(
-          MemoryDataType::kFlightReservationFull,
+          MemoryDataType::kFlightReservationFlightNumber,
           ElementsAre(EqualsSuggestion(
               SuggestionType::kManageAutofillAiTravel,
               l10n_util::GetStringUTF16(
@@ -752,82 +751,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   EXPECT_EQ(updated_entity->use_count(), initial_use_count + 1);
 }
 
-// Tests that when filling a full entity (e.g. Passport Full), the manager
-// fetches the unmasked entity instance from AutofillAiAccessManager and fills
-// the primary entity value correctly.
-TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
-  base::HistogramTester histogram_tester;
-  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
-  AddOrUpdateEntityInstance(passport);
 
-  auto [form_id, field_id] = SeeFormAndShowPopup();
-
-  std::vector<Suggestion> final_suggestions;
-  {
-    MemorySearchResult entry(MemoryDataType::kPassportFull, u"Passport",
-                             u"some text");
-    entry.identifier = passport.guid().value();
-    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
-    MockQueryResultsAndExpectCallback(u"query",
-                                      MemorySearchStatus::kFinalResponseSuccess,
-                                      {entry}, final_suggestions);
-  }
-  manager().OnSearchSubmitted(u"query");
-  ASSERT_EQ(final_suggestions.size(), 1u);
-
-  auto mock_ai_access_manager =
-      std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
-          &autofill_manager());
-  MockAutofillAiAccessManager* mock_ai_access_manager_ptr =
-      mock_ai_access_manager.get();
-  test_api(autofill_manager())
-      .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
-
-  EXPECT_CALL(*mock_ai_access_manager_ptr,
-              FetchEntityInstance(passport, true, _))
-      .WillOnce([&](EntityInstance entity, bool will_fill,
-                    AutofillAiAccessManager::OnEntityInstanceFetchedCallback
-                        callback) {
-        std::move(callback).Run(entity, /*reauth_attempted=*/false);
-        return true;
-      });
-
-  std::optional<AttributeType> expected_primary_attribute_type =
-      GetPrimaryAttributeType(passport);
-  ASSERT_TRUE(expected_primary_attribute_type.has_value());
-  base::optional_ref<const AttributeInstance> expected_primary_attribute =
-      passport.attribute(*expected_primary_attribute_type);
-  ASSERT_TRUE(expected_primary_attribute.has_value());
-  std::u16string expected_primary_value =
-      expected_primary_attribute->GetCompleteInfo(
-          autofill_client().GetAppLocale());
-  ASSERT_FALSE(expected_primary_value.empty());
-
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         expected_primary_value, FillingProduct::kAtMemory, _));
-
-  int64_t initial_use_count = passport.use_count();
-  task_environment_.FastForwardBy(base::Seconds(60));
-
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
-
-  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
-                                      true, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Latency.FetchPii.AutofillAi", 1);
-
-  base::optional_ref<const EntityInstance> updated_entity =
-      autofill_client().GetEntityDataManager()->GetEntityInstance(
-          passport.guid());
-  ASSERT_TRUE(updated_entity.has_value());
-  EXPECT_EQ(updated_entity->use_count(), initial_use_count + 1);
-}
 
 // Tests that when filling a sensitive Personal Context entry, the
 // `AtMemoryQueryService` authenticates, fetches the unmasked value from
@@ -2290,23 +2214,23 @@ TEST_P(AtMemoryManagerIconTest,
   const std::vector<TestCase> test_cases = {
       {MemoryDataType::kAddressFull, Suggestion::Icon::kLocation,
        Suggestion::Icon::kLocationSpark},
-      {MemoryDataType::kVehicle, Suggestion::Icon::kVehicle,
+      {MemoryDataType::kVehiclePlateNumber, Suggestion::Icon::kVehicle,
        Suggestion::Icon::kVehicleSpark},
-      {MemoryDataType::kPassportFull, Suggestion::Icon::kPassport,
+      {MemoryDataType::kPassportNumber, Suggestion::Icon::kPassport,
        Suggestion::Icon::kPassportSpark},
-      {MemoryDataType::kFlightReservationFull, Suggestion::Icon::kFlight,
-       Suggestion::Icon::kFlightSpark},
-      {MemoryDataType::kDriversLicenseFull, Suggestion::Icon::kIdCard,
+      {MemoryDataType::kFlightReservationFlightNumber,
+       Suggestion::Icon::kFlight, Suggestion::Icon::kFlightSpark},
+      {MemoryDataType::kDriversLicenseNumber, Suggestion::Icon::kIdCard,
        Suggestion::Icon::kIdCardSpark},
-      {MemoryDataType::kKnownTravelerNumberFull, Suggestion::Icon::kIdCard2,
+      {MemoryDataType::kKnownTravelerNumberNumber, Suggestion::Icon::kIdCard2,
        Suggestion::Icon::kIdCard2Spark},
       {MemoryDataType::kCreditCardNumber, Suggestion::Icon::kCardGenericVector,
        Suggestion::Icon::kCardGenericSpark},
       {MemoryDataType::kIban, Suggestion::Icon::kCardGenericVector,
        Suggestion::Icon::kCardGenericSpark},
-      {MemoryDataType::kOrderFull, Suggestion::Icon::kOrder,
+      {MemoryDataType::kOrderId, Suggestion::Icon::kOrder,
        Suggestion::Icon::kOrderSpark},
-      {MemoryDataType::kShipmentFull, Suggestion::Icon::kShipment,
+      {MemoryDataType::kShipmentTrackingNumber, Suggestion::Icon::kShipment,
        Suggestion::Icon::kShipmentSpark},
       {MemoryDataType::kEmail, Suggestion::Icon::kLocation,
        Suggestion::Icon::kLocationSpark},

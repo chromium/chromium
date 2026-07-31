@@ -71,6 +71,8 @@ MemorySearchResult ConvertToMemorySearchResult(
     const personal_context::proto::AtMemorySearchResult& proto_result,
     std::string_view app_locale);
 
+// Returns the primary attribute type for a given entity type.
+AttributeType GetPrimaryAttributeType(EntityType entity_type);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_UTIL_H_

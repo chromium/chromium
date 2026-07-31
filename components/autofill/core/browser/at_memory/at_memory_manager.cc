@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
-#include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -112,19 +111,16 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
       return create_suggestion(SuggestionType::kManageIban,
                                IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
 
-    case MemoryDataType::kPassportFull:
     case MemoryDataType::kPassportName:
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportNumber:
     case MemoryDataType::kPassportIssueDate:
     case MemoryDataType::kPassportExpirationDate:
-    case MemoryDataType::kNationalIdCardFull:
     case MemoryDataType::kNationalIdCardName:
     case MemoryDataType::kNationalIdCardCountry:
     case MemoryDataType::kNationalIdCardNumber:
     case MemoryDataType::kNationalIdCardIssueDate:
     case MemoryDataType::kNationalIdCardExpirationDate:
-    case MemoryDataType::kDriversLicenseFull:
     case MemoryDataType::kDriversLicenseName:
     case MemoryDataType::kDriversLicenseState:
     case MemoryDataType::kDriversLicenseNumber:
@@ -134,7 +130,6 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
           SuggestionType::kManageAutofillAiIdentityDocs,
           IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT);
 
-    case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
     case MemoryDataType::kFlightReservationConfirmationCode:
@@ -143,14 +138,11 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
     case MemoryDataType::kFlightReservationArrivalAirport:
     case MemoryDataType::kFlightReservationDepartureDate:
     case MemoryDataType::kFlightReservationArrivalDate:
-    case MemoryDataType::kRedressNumberFull:
     case MemoryDataType::kRedressNumberName:
     case MemoryDataType::kRedressNumberNumber:
-    case MemoryDataType::kKnownTravelerNumberFull:
     case MemoryDataType::kKnownTravelerNumberName:
     case MemoryDataType::kKnownTravelerNumberNumber:
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
-    case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
     case MemoryDataType::kVehicleYear:
@@ -162,7 +154,6 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
           SuggestionType::kManageAutofillAiTravel,
           IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT);
 
-    case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
     case MemoryDataType::kOrderDate:
@@ -170,7 +161,6 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
     case MemoryDataType::kOrderMerchantDomain:
     case MemoryDataType::kOrderProductNames:
     case MemoryDataType::kOrderGrandTotal:
-    case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
@@ -193,9 +183,6 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
 std::u16string GetSuggestionLabelTypeName(const MemorySearchResult& entry) {
   std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(entry.type);
   if (data_type) {
-    if (const EntityType* entity_type = std::get_if<EntityType>(&*data_type)) {
-      return entity_type->GetNameForI18n();
-    }
     if (const AttributeType* attribute_type =
             std::get_if<AttributeType>(&*data_type)) {
       return attribute_type->entity_type().GetNameForI18n();
@@ -223,16 +210,10 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
       }
       NOTREACHED();
     }
-    case MemoryDataType::kPassportFull:
-    case MemoryDataType::kDriversLicenseFull:
-    case MemoryDataType::kNationalIdCardFull:
-    case MemoryDataType::kKnownTravelerNumberFull:
-    case MemoryDataType::kRedressNumberFull:
     case MemoryDataType::kPassportNumber:
     case MemoryDataType::kDriversLicenseNumber:
     case MemoryDataType::kNationalIdCardNumber:
     case MemoryDataType::kKnownTravelerNumberNumber:
-    case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
     case MemoryDataType::kVehicleYear:
@@ -244,7 +225,6 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportIssueDate:
     case MemoryDataType::kPassportExpirationDate:
-    case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
     case MemoryDataType::kFlightReservationConfirmationCode:
@@ -253,7 +233,6 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kFlightReservationArrivalAirport:
     case MemoryDataType::kFlightReservationDepartureDate:
     case MemoryDataType::kFlightReservationArrivalDate:
-    case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
@@ -274,7 +253,6 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kDriversLicenseState:
     case MemoryDataType::kDriversLicenseIssueDate:
     case MemoryDataType::kDriversLicenseExpirationDate:
-    case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
     case MemoryDataType::kOrderDate:
@@ -324,7 +302,6 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kEmail:
       return is_autofill_only ? Suggestion::Icon::kLocation
                               : Suggestion::Icon::kLocationSpark;
-    case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
     case MemoryDataType::kVehicleYear:
@@ -334,7 +311,6 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kVehicleVin:
       return is_autofill_only ? Suggestion::Icon::kVehicle
                               : Suggestion::Icon::kVehicleSpark;
-    case MemoryDataType::kPassportFull:
     case MemoryDataType::kPassportName:
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportNumber:
@@ -342,7 +318,6 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kPassportExpirationDate:
       return is_autofill_only ? Suggestion::Icon::kPassport
                               : Suggestion::Icon::kPassportSpark;
-    case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
     case MemoryDataType::kFlightReservationConfirmationCode:
@@ -353,13 +328,11 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kFlightReservationArrivalDate:
       return is_autofill_only ? Suggestion::Icon::kFlight
                               : Suggestion::Icon::kFlightSpark;
-    case MemoryDataType::kNationalIdCardFull:
     case MemoryDataType::kNationalIdCardName:
     case MemoryDataType::kNationalIdCardCountry:
     case MemoryDataType::kNationalIdCardNumber:
     case MemoryDataType::kNationalIdCardIssueDate:
     case MemoryDataType::kNationalIdCardExpirationDate:
-    case MemoryDataType::kDriversLicenseFull:
     case MemoryDataType::kDriversLicenseName:
     case MemoryDataType::kDriversLicenseState:
     case MemoryDataType::kDriversLicenseNumber:
@@ -367,10 +340,8 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kDriversLicenseExpirationDate:
       return is_autofill_only ? Suggestion::Icon::kIdCard
                               : Suggestion::Icon::kIdCardSpark;
-    case MemoryDataType::kRedressNumberFull:
     case MemoryDataType::kRedressNumberName:
     case MemoryDataType::kRedressNumberNumber:
-    case MemoryDataType::kKnownTravelerNumberFull:
     case MemoryDataType::kKnownTravelerNumberName:
     case MemoryDataType::kKnownTravelerNumberNumber:
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
@@ -385,7 +356,6 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kIbanNickname:
       return is_autofill_only ? Suggestion::Icon::kCardGenericVector
                               : Suggestion::Icon::kCardGenericSpark;
-    case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
     case MemoryDataType::kOrderDate:
@@ -395,7 +365,6 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
     case MemoryDataType::kOrderGrandTotal:
       return is_autofill_only ? Suggestion::Icon::kOrder
                               : Suggestion::Icon::kOrderSpark;
-    case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
@@ -841,11 +810,6 @@ IsAsync AtMemoryManager::FillSearchResult(
       // cards.
       return IsAsync(false);
     }
-    case MemoryDataType::kPassportFull:
-    case MemoryDataType::kDriversLicenseFull:
-    case MemoryDataType::kNationalIdCardFull:
-    case MemoryDataType::kKnownTravelerNumberFull:
-    case MemoryDataType::kRedressNumberFull:
     case MemoryDataType::kPassportNumber:
     case MemoryDataType::kDriversLicenseNumber:
     case MemoryDataType::kNationalIdCardNumber:
@@ -891,7 +855,6 @@ IsAsync AtMemoryManager::FillSearchResult(
       return IsAsync(false);
     }
 
-    case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
     case MemoryDataType::kVehicleYear:
@@ -903,7 +866,6 @@ IsAsync AtMemoryManager::FillSearchResult(
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportIssueDate:
     case MemoryDataType::kPassportExpirationDate:
-    case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
     case MemoryDataType::kFlightReservationConfirmationCode:
@@ -912,7 +874,6 @@ IsAsync AtMemoryManager::FillSearchResult(
     case MemoryDataType::kFlightReservationArrivalAirport:
     case MemoryDataType::kFlightReservationDepartureDate:
     case MemoryDataType::kFlightReservationArrivalDate:
-    case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
@@ -932,7 +893,6 @@ IsAsync AtMemoryManager::FillSearchResult(
     case MemoryDataType::kDriversLicenseState:
     case MemoryDataType::kDriversLicenseIssueDate:
     case MemoryDataType::kDriversLicenseExpirationDate:
-    case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
     case MemoryDataType::kOrderDate:
@@ -1402,8 +1362,7 @@ IsAsync AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
 
   std::optional<AtMemoryDataType> data_type =
       ToAtMemoryDataType(payload.memory_data_type);
-  CHECK(data_type && (std::holds_alternative<AttributeType>(*data_type) ||
-                      std::holds_alternative<EntityType>(*data_type)));
+  CHECK(data_type && std::holds_alternative<AttributeType>(*data_type));
 
   if (payload.is_personal_context_sourced) {
     return FillSensitivePersonalContextData(form_id, field_id, suggestion,
@@ -1468,20 +1427,11 @@ void AtMemoryManager::OnAutofillAiFetched(
 
   const EntityInstance& fetched_entity = result.value();
 
-  std::optional<AttributeType> target_attribute_type;
-  if (std::holds_alternative<AttributeType>(data_type)) {
-    target_attribute_type = std::get<AttributeType>(data_type);
-  } else {
-    CHECK(std::holds_alternative<EntityType>(data_type));
-    target_attribute_type = GetPrimaryAttributeType(fetched_entity);
-  }
-
-  if (!target_attribute_type) {
-    return;
-  }
+  CHECK(std::holds_alternative<AttributeType>(data_type));
+  AttributeType target_attribute_type = std::get<AttributeType>(data_type);
 
   std::optional<std::u16string> attribute_fill_value = GetAttributeFillValue(
-      fetched_entity, *target_attribute_type, form_id, field_id, *owner_);
+      fetched_entity, target_attribute_type, form_id, field_id, *owner_);
   if (!attribute_fill_value) {
     return;
   }

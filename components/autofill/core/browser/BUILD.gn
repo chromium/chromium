@@ -140,8 +140,6 @@ static_library("browser") {
     "at_memory/at_memory_manager.h",
     "at_memory/at_memory_metrics_recorder.cc",
     "at_memory/at_memory_metrics_recorder.h",
-    "at_memory/at_memory_utils.cc",
-    "at_memory/at_memory_utils.h",
     "at_memory/autofill_data_provider.cc",
     "at_memory/autofill_data_provider.h",
     "autofill_ai_form_rationalization.cc",

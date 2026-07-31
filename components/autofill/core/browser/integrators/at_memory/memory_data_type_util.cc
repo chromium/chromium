@@ -121,14 +121,9 @@ bool IsSpiiMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kCreditCardNumber:
     case MemoryDataType::kCreditCardSecurityCode:
     case MemoryDataType::kPassportNumber:
-    case MemoryDataType::kPassportFull:
     case MemoryDataType::kNationalIdCardNumber:
-    case MemoryDataType::kNationalIdCardFull:
     case MemoryDataType::kDriversLicenseNumber:
-    case MemoryDataType::kDriversLicenseFull:
     case MemoryDataType::kRedressNumberNumber:
-    case MemoryDataType::kRedressNumberFull:
-    case MemoryDataType::kKnownTravelerNumberFull:
     case MemoryDataType::kKnownTravelerNumberNumber:
       return true;
     case MemoryDataType::kNameFull:
@@ -142,7 +137,6 @@ bool IsSpiiMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kCompanyName:
     case MemoryDataType::kEmail:
     case MemoryDataType::kIbanNickname:
-    case MemoryDataType::kVehicle:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
     case MemoryDataType::kVehicleYear:
@@ -154,7 +148,6 @@ bool IsSpiiMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kPassportCountry:
     case MemoryDataType::kPassportIssueDate:
     case MemoryDataType::kPassportExpirationDate:
-    case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
     case MemoryDataType::kFlightReservationTicketNumber:
     case MemoryDataType::kFlightReservationConfirmationCode:
@@ -177,7 +170,6 @@ bool IsSpiiMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kCreditCardExpirationDate:
     case MemoryDataType::kCreditCardNameOnCard:
     case MemoryDataType::kCreditCardNickname:
-    case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
     case MemoryDataType::kOrderAccount:
     case MemoryDataType::kOrderDate:
@@ -186,7 +178,6 @@ bool IsSpiiMemoryDataType(MemoryDataType type) {
     case MemoryDataType::kOrderMerchantDomain:
     case MemoryDataType::kOrderProductNames:
     case MemoryDataType::kOrderGrandTotal:
-    case MemoryDataType::kShipmentFull:
     case MemoryDataType::kShipmentTrackingNumber:
     case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
@@ -208,7 +199,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
 
   auto process_attribute = [&entity](MemoryDataType type, std::string val) {
     switch (type) {
-      case MemoryDataType::kPassportFull:
       case MemoryDataType::kPassportNumber:
         entity.mutable_passport()->set_number(std::move(val));
         break;
@@ -232,7 +222,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         }
         break;
 
-      case MemoryDataType::kDriversLicenseFull:
       case MemoryDataType::kDriversLicenseNumber:
         entity.mutable_drivers_license()->set_number(std::move(val));
         break;
@@ -257,7 +246,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         }
         break;
 
-      case MemoryDataType::kNationalIdCardFull:
       case MemoryDataType::kNationalIdCardNumber:
         entity.mutable_national_id()->set_number(std::move(val));
         break;
@@ -282,7 +270,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         }
         break;
 
-      case MemoryDataType::kFlightReservationFull:
       case MemoryDataType::kFlightReservationFlightNumber:
         entity.mutable_flight_reservation()->set_flight_number(std::move(val));
         break;
@@ -326,7 +313,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         }
         break;
 
-      case MemoryDataType::kVehicle:
       case MemoryDataType::kVehicleMake:
         entity.mutable_vehicle()->set_vehicle_make(std::move(val));
         break;
@@ -350,7 +336,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         entity.mutable_vehicle()->set_owner_name(std::move(val));
         break;
 
-      case MemoryDataType::kOrderFull:
       case MemoryDataType::kOrderId:
         entity.mutable_order()->set_order_id(std::move(val));
         break;
@@ -382,7 +367,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         }
         break;
 
-      case MemoryDataType::kShipmentFull:
       case MemoryDataType::kShipmentTrackingNumber:
         entity.mutable_shipment()->set_tracking_number(std::move(val));
         break;
@@ -418,7 +402,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
         }
         break;
 
-      case MemoryDataType::kKnownTravelerNumberFull:
       case MemoryDataType::kKnownTravelerNumberNumber:
         entity.mutable_known_traveler_number()->set_number(std::move(val));
         break;
@@ -440,7 +423,6 @@ personal_context::proto::Entity ToPersonalContextEntity(
       case MemoryDataType::kIban:
       case MemoryDataType::kIbanNickname:
       case MemoryDataType::kShipmentDeliveryAddress:
-      case MemoryDataType::kRedressNumberFull:
       case MemoryDataType::kRedressNumberName:
       case MemoryDataType::kRedressNumberNumber:
       case MemoryDataType::kKnownTravelerNumberExpirationDate:
@@ -574,21 +556,6 @@ std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type) {
     case MemoryDataType::kFlightReservationArrivalDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_DATE_ATTRIBUTE_NAME);
-    // Entity types:
-    case MemoryDataType::kVehicle:
-    case MemoryDataType::kPassportFull:
-    case MemoryDataType::kFlightReservationFull:
-    case MemoryDataType::kNationalIdCardFull:
-    case MemoryDataType::kRedressNumberFull:
-    case MemoryDataType::kKnownTravelerNumberFull:
-    case MemoryDataType::kDriversLicenseFull:
-    case MemoryDataType::kOrderFull:
-    case MemoryDataType::kShipmentFull: {
-      std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
-      const auto* entity_type =
-          data_type ? std::get_if<EntityType>(&*data_type) : nullptr;
-      return entity_type ? entity_type->GetNameForI18n() : u"";
-    }
     // Attribute types:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
@@ -677,7 +644,7 @@ MemoryDataType ToMemoryDataType(
     case personal_context::proto::MEMORY_DATA_TYPE_IBAN_NICKNAME:
       return MemoryDataType::kIbanNickname;
     case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE:
-      return MemoryDataType::kVehicle;
+      return MemoryDataType::kVehiclePlateNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MAKE:
       return MemoryDataType::kVehicleMake;
     case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MODEL:
@@ -693,7 +660,7 @@ MemoryDataType ToMemoryDataType(
     case personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_VIN:
       return MemoryDataType::kVehicleVin;
     case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_FULL:
-      return MemoryDataType::kPassportFull;
+      return MemoryDataType::kPassportNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME:
       return MemoryDataType::kPassportName;
     case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY:
@@ -705,7 +672,7 @@ MemoryDataType ToMemoryDataType(
     case personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_EXPIRATION_DATE:
       return MemoryDataType::kPassportExpirationDate;
     case personal_context::proto::MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FULL:
-      return MemoryDataType::kFlightReservationFull;
+      return MemoryDataType::kFlightReservationFlightNumber;
     case personal_context::proto::
         MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER:
       return MemoryDataType::kFlightReservationFlightNumber;
@@ -731,7 +698,7 @@ MemoryDataType ToMemoryDataType(
         MEMORY_DATA_TYPE_FLIGHT_RESERVATION_ARRIVAL_DATE:
       return MemoryDataType::kFlightReservationArrivalDate;
     case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_FULL:
-      return MemoryDataType::kShipmentFull;
+      return MemoryDataType::kShipmentTrackingNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER:
       return MemoryDataType::kShipmentTrackingNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_ASSOCIATED_ORDER_ID:
@@ -748,7 +715,7 @@ MemoryDataType ToMemoryDataType(
         MEMORY_DATA_TYPE_SHIPMENT_ESTIMATED_DELIVERY_DATE:
       return MemoryDataType::kShipmentEstimatedDeliveryDate;
     case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_FULL:
-      return MemoryDataType::kNationalIdCardFull;
+      return MemoryDataType::kNationalIdCardNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_NAME:
       return MemoryDataType::kNationalIdCardName;
     case personal_context::proto::MEMORY_DATA_TYPE_NATIONAL_ID_CARD_COUNTRY:
@@ -761,13 +728,13 @@ MemoryDataType ToMemoryDataType(
         MEMORY_DATA_TYPE_NATIONAL_ID_CARD_EXPIRATION_DATE:
       return MemoryDataType::kNationalIdCardExpirationDate;
     case personal_context::proto::MEMORY_DATA_TYPE_REDRESS_NUMBER_FULL:
-      return MemoryDataType::kRedressNumberFull;
+      return MemoryDataType::kRedressNumberNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_REDRESS_NUMBER_NAME:
       return MemoryDataType::kRedressNumberName;
     case personal_context::proto::MEMORY_DATA_TYPE_REDRESS_NUMBER_NUMBER:
       return MemoryDataType::kRedressNumberNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_FULL:
-      return MemoryDataType::kKnownTravelerNumberFull;
+      return MemoryDataType::kKnownTravelerNumberNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_NAME:
       return MemoryDataType::kKnownTravelerNumberName;
     case personal_context::proto::MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_NUMBER:
@@ -776,7 +743,7 @@ MemoryDataType ToMemoryDataType(
         MEMORY_DATA_TYPE_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return MemoryDataType::kKnownTravelerNumberExpirationDate;
     case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_FULL:
-      return MemoryDataType::kDriversLicenseFull;
+      return MemoryDataType::kDriversLicenseNumber;
     case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NAME:
       return MemoryDataType::kDriversLicenseName;
     case personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_STATE:
@@ -789,7 +756,7 @@ MemoryDataType ToMemoryDataType(
         MEMORY_DATA_TYPE_DRIVERS_LICENSE_EXPIRATION_DATE:
       return MemoryDataType::kDriversLicenseExpirationDate;
     case personal_context::proto::MEMORY_DATA_TYPE_ORDER_FULL:
-      return MemoryDataType::kOrderFull;
+      return MemoryDataType::kOrderId;
     case personal_context::proto::MEMORY_DATA_TYPE_ORDER_ID:
       return MemoryDataType::kOrderId;
     case personal_context::proto::MEMORY_DATA_TYPE_ORDER_ACCOUNT:
@@ -911,4 +878,27 @@ std::vector<MemorySearchResult> ExtractRemoteResults(
   return remote_results;
 }
 
+AttributeType GetPrimaryAttributeType(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kVehicle:
+      return AttributeType(AttributeTypeName::kVehiclePlateNumber);
+    case EntityTypeName::kPassport:
+      return AttributeType(AttributeTypeName::kPassportNumber);
+    case EntityTypeName::kDriversLicense:
+      return AttributeType(AttributeTypeName::kDriversLicenseNumber);
+    case EntityTypeName::kOrder:
+      return AttributeType(AttributeTypeName::kOrderId);
+    case EntityTypeName::kNationalIdCard:
+      return AttributeType(AttributeTypeName::kNationalIdCardNumber);
+    case EntityTypeName::kKnownTravelerNumber:
+      return AttributeType(AttributeTypeName::kKnownTravelerNumberNumber);
+    case EntityTypeName::kRedressNumber:
+      return AttributeType(AttributeTypeName::kRedressNumberNumber);
+    case EntityTypeName::kFlightReservation:
+      return AttributeType(AttributeTypeName::kFlightReservationFlightNumber);
+    case EntityTypeName::kShipment:
+      return AttributeType(AttributeTypeName::kShipmentTrackingNumber);
+  }
+  NOTREACHED();
+}
 }  // namespace autofill

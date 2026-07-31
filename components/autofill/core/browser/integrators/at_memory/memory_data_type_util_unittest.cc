@@ -123,6 +123,13 @@ TEST(MemoryDataTypeUtilTest, ToMemoryDataTypeMapping) {
       ToMemoryDataType(
           personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NUMBER),
       MemoryDataType::kDriversLicenseNumber);
+
+  // Entity types map to their primary attributes:
+  EXPECT_EQ(ToMemoryDataType(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE),
+            MemoryDataType::kVehiclePlateNumber);
+  EXPECT_EQ(
+      ToMemoryDataType(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_FULL),
+      MemoryDataType::kPassportNumber);
 }
 
 // Tests extraction of source references (Gmail, Photos) into MemoryEntrySource

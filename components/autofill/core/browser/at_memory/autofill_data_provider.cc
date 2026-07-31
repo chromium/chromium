@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
-#include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -242,37 +241,6 @@ std::vector<MemorySearchResult> FetchFullAddressData(
   return entries;
 }
 
-// Fetches data from EntityDataManager (Autofill AI) for the requested entity.
-std::vector<MemorySearchResult> FetchAutofillAiEntityData(
-    const EntityDataManager* entity_data_manager,
-    EntityType entity_type,
-    std::string_view app_locale) {
-  std::vector<MemorySearchResult> entries;
-  if (!entity_data_manager) {
-    return entries;
-  }
-  entries.reserve(entity_data_manager->GetEntityInstances().size());
-  for (const EntityInstance& entity :
-       entity_data_manager->GetEntityInstances()) {
-    if (entity.type() != entity_type) {
-      continue;
-    }
-
-    std::optional<AttributeType> primary_attribute_type =
-        GetPrimaryAttributeType(entity);
-    if (!primary_attribute_type) {
-      continue;
-    }
-
-    base::optional_ref<const AttributeInstance> attr =
-        entity.attribute(*primary_attribute_type);
-    CHECK(attr);
-    entries.push_back(CreateMemorySearchResultForEntity(
-        entity, *primary_attribute_type, attr->GetCompleteInfo(app_locale),
-        app_locale));
-  }
-  return entries;
-}
 
 // Fetches data from EntityDataManager (Autofill AI) for the requested
 // attribute.
@@ -355,11 +323,6 @@ std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
             }
             return FetchDataFromAddressProfiles(*personal_data_manager_,
                                                 field_type, memory_data_type);
-          },
-          [this](EntityType entity_type) -> std::vector<MemorySearchResult> {
-            return FetchAutofillAiEntityData(
-                entity_data_manager_, entity_type,
-                personal_data_manager_->address_data_manager().app_locale());
           },
           [this](
               AttributeType attribute_type) -> std::vector<MemorySearchResult> {
