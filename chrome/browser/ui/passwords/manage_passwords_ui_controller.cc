@@ -67,7 +67,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/desktop_to_mobile_promos/features.h"
@@ -888,12 +887,9 @@ void ManagePasswordsUIController::OnBubbleHidden() {
     UpdateBubbleAndIconVisibility();
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager =
-            autofill::BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(*this, /*show_next_bubble=*/true);
-    }
+  if (auto* manager =
+          autofill::BubbleManager::GetForWebContents(web_contents())) {
+    manager->OnBubbleHiddenByController(*this, /*show_next_bubble=*/true);
   }
 }
 
@@ -1392,15 +1388,7 @@ void ManagePasswordsUIController::OnVisibilityChanged(
     UpdateBubbleAndIconVisibility();
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    // BubbleManager will handle the effects of tab changes.
-    return;
-  }
-
-  if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*initiated_by_bubble_manager=*/false);
-  }
+  // BubbleManager will handle the effects of tab changes.
 }
 
 bool ManagePasswordsUIController::ShouldReshowOnTabVisible() const {
@@ -1532,11 +1520,6 @@ bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
 
 bool ManagePasswordsUIController::BubbleManagerHasPasswordBubbleInQueue()
     const {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    return false;
-  }
-
   if (auto* manager =
           autofill::BubbleManager::GetForWebContents(web_contents())) {
     return manager->HasPendingBubbleOfSameType(GetBubbleType());
@@ -1657,17 +1640,11 @@ void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
 
   user_action_ = user_action;
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager =
-            autofill::BubbleManager::GetForWebContents(web_contents())) {
-      CHECK(!manager->HasConflictingPendingBubble(GetBubbleType()));
-      manager->RequestShowController(*this, user_action);
-    }
-    return;
+  if (auto* manager =
+          autofill::BubbleManager::GetForWebContents(web_contents())) {
+    CHECK(!manager->HasConflictingPendingBubble(GetBubbleType()));
+    manager->RequestShowController(*this, user_action);
   }
-
-  ShowBubble();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -29,15 +28,6 @@
 #include "url/origin.h"
 
 class ManagePasswordsUIControllerBrowserTest : public ManagePasswordsTest {};
-
-class ManagePasswordsUIControllerBrowserTestWithFeatureOverride
-    : public base::test::WithFeatureOverride,
-      public ManagePasswordsTest {
- public:
-  ManagePasswordsUIControllerBrowserTestWithFeatureOverride()
-      : base::test::WithFeatureOverride(
-            autofill::features::kAutofillShowBubblesBasedOnPriorities) {}
-};
 
 // Regression test for crbug.com/485738514.
 // Verifies that a background tab correctly updates its own PageActionController
@@ -86,9 +76,8 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
          "update.";
 }
 
-IN_PROC_BROWSER_TEST_P(
-    ManagePasswordsUIControllerBrowserTestWithFeatureOverride,
-    OnAutofillingSharedPasswordNotNotifiedYet) {
+IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
+                       OnAutofillingSharedPasswordNotNotifiedYet) {
   // Simulate two candidates in the dropdown menu where one of them is shared.
   password_manager::PasswordForm non_shared_credentials;
   non_shared_credentials.url = GURL("http://example.com/login");
@@ -122,9 +111,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(GetController()->IsShowingBubble());
 }
 
-IN_PROC_BROWSER_TEST_P(
-    ManagePasswordsUIControllerBrowserTestWithFeatureOverride,
-    OnAutofillingSharedPasswordNotifiedAlready) {
+IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
+                       OnAutofillingSharedPasswordNotifiedAlready) {
   // Simulate two candidates in the dropdown menu where one of them is shared,
   // while the user has been notified about the shared password already.
   password_manager::PasswordForm non_shared_credentials;
@@ -154,6 +142,3 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(GetController()->IsAutomaticallyOpeningBubble());
   EXPECT_FALSE(GetController()->IsShowingBubble());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    ManagePasswordsUIControllerBrowserTestWithFeatureOverride);
