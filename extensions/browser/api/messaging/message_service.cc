@@ -527,9 +527,7 @@ void MessageService::OpenChannelToExtension(
     // information (so that it's always present, even for extensions that don't
     // have an explicit key); we should.
     const ExternallyConnectableInfo* externally_connectable =
-        static_cast<const ExternallyConnectableInfo*>(
-            target_extension->GetManifestData(
-                manifest_keys::kExternallyConnectable));
+        target_extension->GetManifestData<ExternallyConnectableInfo>();
     bool is_externally_connectable = false;
 
     if (externally_connectable) {

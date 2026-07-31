@@ -236,10 +236,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns true if this extension or app includes areas within `origin`.
   bool OverlapsWithOrigin(const GURL& origin) const;
 
-  // Get the manifest data associated with the key, or NULL if there is none.
-  // Can only be called after Init is finished.
-  const ManifestData* GetManifestData(std::string_view key) const;
-
+  // Gets the manifest data associated with the key, or null if there is none.
+  // Can only be called after Init() is finished.
   template <class T>
   const T* GetManifestData() const {
     static_assert(std::is_base_of_v<ManifestData, T>,
@@ -381,6 +379,10 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   bool LoadSharedFeatures(std::u16string* error);
   bool LoadManifestVersion(std::u16string* error);
   bool LoadShortName(std::u16string* error);
+
+  // Internal variant to get the ManifestData associated with `key`.
+  // External callers should use the templated versions.
+  const ManifestData* GetManifestData(std::string_view key) const;
 
   // The extension's human-readable name. Name is used for display purpose. It
   // might be wrapped with unicode bidi control characters so that it is

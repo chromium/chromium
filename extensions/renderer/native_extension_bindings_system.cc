@@ -388,8 +388,7 @@ bool CanWebpageContextConnectExternally(ScriptContext* context) {
   for (const auto& extension :
        *RendererExtensionRegistry::Get()->GetMainThreadExtensionSet()) {
     const ExternallyConnectableInfo* info =
-        static_cast<const ExternallyConnectableInfo*>(
-            extension->GetManifestData(manifest_keys::kExternallyConnectable));
+        extension->GetManifestData<ExternallyConnectableInfo>();
     if (info && info->matches.MatchesURL(context->url())) {
       return true;
     }
