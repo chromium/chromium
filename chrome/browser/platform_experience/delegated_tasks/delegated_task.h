@@ -14,6 +14,7 @@
 namespace platform_experience {
 
 // Outcome status of executing a delegated task.
+// LINT.IfChange(DelegatedTaskStatus)
 enum class DelegatedTaskStatus {
   kSuccess = 0,
   kPehNotFound = 1,
@@ -26,11 +27,14 @@ enum class DelegatedTaskStatus {
   kInvalidArgs = 8,
   kMaxValue = kInvalidArgs,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:DelegatedTaskStatus)
 
+// LINT.IfChange(DelegatedTaskType)
 enum class DelegatedTaskType {
   kRegisterSearchPromotion = 0,
   kMaxValue = kRegisterSearchPromotion,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PlatformExperienceDelegatedTaskName)
 
 // Standard exit codes returned by PEH.
 enum class PehExitCode {

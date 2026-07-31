@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -88,9 +89,14 @@ MULTIPROCESS_TEST_MAIN(TimeoutProcess) {
   return kTaskSuccessExitCode;
 }
 
+MULTIPROCESS_TEST_MAIN(CustomExitCodeProcess) {
+  return 42;
+}
+
 }  // namespace
 
 TEST_F(DelegatedTaskRunnerTest, BinaryNotFound) {
+  base::HistogramTester histogram_tester;
   auto mock_launcher = std::make_unique<MockPehLauncher>();
   EXPECT_CALL(*mock_launcher, GetBinaryPath())
       .WillOnce(Return(base::FilePath()));
@@ -106,6 +112,12 @@ TEST_F(DelegatedTaskRunnerTest, BinaryNotFound) {
   EXPECT_FALSE(result.exit_code_or_status.has_value());
   EXPECT_EQ(result.exit_code_or_status.error(),
             DelegatedTaskStatus::kPehNotFound);
+
+  histogram_tester.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Status",
+      DelegatedTaskStatus::kPehNotFound, 1);
+  histogram_tester.ExpectTotalCount(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Duration", 1);
 }
 
 TEST_F(DelegatedTaskRunnerTest, ProcessLaunchFailure) {
@@ -128,6 +140,7 @@ TEST_F(DelegatedTaskRunnerTest, ProcessLaunchFailure) {
 }
 
 TEST_F(DelegatedTaskRunnerTest, SuccessAndCommandLineVerification) {
+  base::HistogramTester histogram_tester;
   auto mock_launcher = std::make_unique<MockPehLauncher>();
   EXPECT_CALL(*mock_launcher, GetBinaryPath())
       .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
@@ -158,6 +171,12 @@ TEST_F(DelegatedTaskRunnerTest, SuccessAndCommandLineVerification) {
 
   EXPECT_EQ(launched_cmd_line.GetSwitchValueASCII(kTaskCustomSwitchKey),
             kTaskCustomSwitchValue);
+
+  histogram_tester.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Status",
+      DelegatedTaskStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Duration", 1);
 }
 
 TEST_F(DelegatedTaskRunnerTest, InvalidTask) {
@@ -210,7 +229,39 @@ TEST_F(DelegatedTaskRunnerTest, InvalidArgs) {
             DelegatedTaskStatus::kInvalidArgs);
 }
 
+TEST_F(DelegatedTaskRunnerTest, CustomExitCodeLogsSuccess) {
+  base::HistogramTester histogram_tester;
+  auto mock_launcher = std::make_unique<MockPehLauncher>();
+  EXPECT_CALL(*mock_launcher, GetBinaryPath())
+      .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
+
+  EXPECT_CALL(*mock_launcher, LaunchProcess(_, _))
+      .WillOnce([&](const base::CommandLine& cmd_line,
+                    const base::LaunchOptions& options) {
+        return base::SpawnMultiProcessTestChild(
+            "CustomExitCodeProcess",
+            base::GetMultiProcessTestChildBaseCommandLine(), options);
+      });
+
+  auto runner = std::make_unique<DelegatedTaskRunner>(std::move(mock_launcher));
+  auto task = std::make_unique<TestDelegatedTask>();
+  base::test::TestFuture<DelegatedTaskResult> future;
+
+  runner->Run(std::move(task), future.GetCallback());
+
+  auto result = future.Get();
+  EXPECT_TRUE(result.exit_code_or_status.has_value());
+  EXPECT_EQ(result.exit_code_or_status.value(), 42);
+
+  histogram_tester.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Status",
+      DelegatedTaskStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Duration", 1);
+}
+
 TEST_F(DelegatedTaskRunnerMockTimeTest, Timeout) {
+  base::HistogramTester histogram_tester;
   auto mock_launcher = std::make_unique<MockPehLauncher>();
   EXPECT_CALL(*mock_launcher, GetBinaryPath())
       .WillOnce(Return(base::FilePath(kFakeBinaryPath)));
@@ -236,6 +287,12 @@ TEST_F(DelegatedTaskRunnerMockTimeTest, Timeout) {
   EXPECT_FALSE(result.exit_code_or_status.has_value());
   EXPECT_EQ(result.exit_code_or_status.error(),
             DelegatedTaskStatus::kTaskTimeout);
+
+  histogram_tester.ExpectUniqueSample(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Status",
+      DelegatedTaskStatus::kTaskTimeout, 1);
+  histogram_tester.ExpectTotalCount(
+      "Windows.PlatformExperienceHelper.DelegatedTasks.TestTask.Duration", 1);
 }
 
 TEST_F(DelegatedTaskRunnerTest, RunnerDestroyedBeforeTaskCompletion) {

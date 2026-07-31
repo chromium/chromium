@@ -15,8 +15,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -158,15 +160,32 @@ void DelegatedTaskRunner::CleanupAndReturnResult(
   }
 
   weak_factory_.InvalidateWeakPtrs();
-  task_.reset();
 
   CHECK(completion_callback_);
   base::TimeDelta execution_time = base::TimeTicks::Now() - task_start_time_;
+
+  if (task_) {
+    std::string_view task_name = task_->GetTaskName();
+    // Tasks returning any exit code (standard 0 or custom non-zero exit codes)
+    // are logged as kSuccess since process execution completed successfully.
+    DelegatedTaskStatus status = exit_code_or_status.has_value()
+                                     ? DelegatedTaskStatus::kSuccess
+                                     : exit_code_or_status.error();
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Windows.PlatformExperienceHelper.DelegatedTasks.",
+                      task_name, ".Status"}),
+        status);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Windows.PlatformExperienceHelper.DelegatedTasks.",
+                      task_name, ".Duration"}),
+        execution_time);
+  }
+
+  task_.reset();
+
   ReturnTaskCompletionStatusAsync(std::move(exit_code_or_status),
                                   execution_time,
                                   std::move(completion_callback_));
-
-  // TODO(b/525017787): Add UMA telemetry to log task result.
 }
 
 }  // namespace platform_experience

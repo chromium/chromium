@@ -26,6 +26,23 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(DelegatedTaskStatus) -->
+
+<enum name="DelegatedTaskStatus">
+  <summary>Outcome status of executing a delegated task.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="PEH Not Found"/>
+  <int value="2" label="Process Launch Failure"/>
+  <int value="3" label="Runner Destroyed Before Task Completion"/>
+  <int value="4" label="Invalid Exit Code"/>
+  <int value="5" label="Watch Process Handle Failure"/>
+  <int value="6" label="Task Timeout"/>
+  <int value="7" label="Invalid Task Type"/>
+  <int value="8" label="Invalid Args"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/platform_experience/delegated_tasks/delegated_task.h:DelegatedTaskStatus) -->
+
 <enum name="DisplayIdResult">
   <int value="0" label="Error">Error calling EnumDisplayDevices</int>
   <int value="1" label="Empty">DISPLAY_DEVICE data was empty</int>

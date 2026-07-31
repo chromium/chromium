@@ -48,6 +48,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/win/taskbar_manager.h:PinAppToTaskbarChannel) -->
 
+<!-- LINT.IfChange(PlatformExperienceDelegatedTaskName) -->
+
+<variants name="PlatformExperienceDelegatedTaskName">
+  <variant name="RegisterSearchPromotion"
+      summary="Register search promotion task"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/platform_experience/delegated_tasks/delegated_task.h:DelegatedTaskType) -->
+
 <histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
     expires_after="2026-05-04">
   <owner>ajgo@chromium.org</owner>
@@ -431,6 +440,30 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the error status returned by various ::Pdh* functions on error.
   </summary>
+</histogram>
+
+<histogram
+    name="Windows.PlatformExperienceHelper.DelegatedTasks.{TaskName}.Duration"
+    units="ms" expires_after="2027-07-27">
+  <owner>alsan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the execution duration of the {TaskName} delegated task run by the
+    platform experience helper.
+  </summary>
+  <token key="TaskName" variants="PlatformExperienceDelegatedTaskName"/>
+</histogram>
+
+<histogram
+    name="Windows.PlatformExperienceHelper.DelegatedTasks.{TaskName}.Status"
+    enum="DelegatedTaskStatus" expires_after="2027-07-27">
+  <owner>alsan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the outcome status of running the {TaskName} delegated task via the
+    platform experience helper.
+  </summary>
+  <token key="TaskName" variants="PlatformExperienceDelegatedTaskName"/>
 </histogram>
 
 <histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.System"
