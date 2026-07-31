@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseb
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.function.Supplier;
+
 /**
  * Class responsible for holding the co-browse view and its respective components. NOTE: Owner is
  * responsible for destroying this object.
@@ -43,11 +45,7 @@ public class CoBrowseViews {
     private final @TabBottomSheetClientType int mClientType;
     private final @CoBrowseContainerType int mContainerType;
     private final @Nullable CoBrowseComponentProvider mContentProvider;
-    private final @Nullable PeekViewManager mPeekViewManager;
-    private @Nullable View mPeekView;
-    private boolean mIsPlaceholderSetUp;
-    private @Nullable View mPlaceholderView;
-    private @Nullable NullableObservableSupplier<Boolean> mPlaceholderAllowedSupplier;
+    private final Supplier<@Nullable PeekViewManager> mPeekViewManagerSupplier;
     private final Callback<@Nullable Boolean> mPlaceholderAllowedCallback =
             this::onPlaceholderAllowedChanged;
     private final Callback<@Nullable WebContents> mWebContentsObserver = this::onWebContentsChanged;
@@ -56,6 +54,12 @@ public class CoBrowseViews {
     private final @Nullable ViewGroup mFuseboxContainer;
     private final ViewGroup mPeekContainer;
     private final @Nullable View mHandleBar;
+
+    private @Nullable PeekViewManager mPeekViewManager;
+    private @Nullable View mPeekView;
+    private boolean mIsPlaceholderSetUp;
+    private @Nullable View mPlaceholderView;
+    private @Nullable NullableObservableSupplier<Boolean> mPlaceholderAllowedSupplier;
 
     /**
      * Constructor for CoBrowseViews.
@@ -67,7 +71,7 @@ public class CoBrowseViews {
      * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
      * @param contentProvider The provider for custom sheet content implementations.
-     * @param peekViewManager The manager for the peek view.
+     * @param peekViewManagerSupplier Supplier for the manager for the peek view.
      */
     public CoBrowseViews(
             View containerView,
@@ -77,7 +81,7 @@ public class CoBrowseViews {
             @Nullable ContextualTasksFusebox fusebox,
             @ColorInt int backgroundColor,
             @Nullable CoBrowseComponentProvider contentProvider,
-            @Nullable PeekViewManager peekViewManager) {
+            Supplier<@Nullable PeekViewManager> peekViewManagerSupplier) {
         mClientType = clientType;
         mContainerType = containerType;
         mWebUi = webUi;
@@ -85,7 +89,7 @@ public class CoBrowseViews {
         mBackgroundColor = backgroundColor;
         mContainerView = containerView;
         mContentProvider = contentProvider;
-        mPeekViewManager = peekViewManager;
+        mPeekViewManagerSupplier = peekViewManagerSupplier;
 
         // Cache view lookups.
         mWebUiContainer = assertNonNull(containerView.findViewById(R.id.web_ui_container));
@@ -100,7 +104,10 @@ public class CoBrowseViews {
     }
 
     /** Returns the peek view manager if one was specified, null otherwise. */
-    public @Nullable PeekViewManager getPeekViewManager() {
+    public @Nullable PeekViewManager getOrCreatePeekViewManager() {
+        if (mPeekViewManager == null) {
+            mPeekViewManager = mPeekViewManagerSupplier.get();
+        }
         return mPeekViewManager;
     }
 

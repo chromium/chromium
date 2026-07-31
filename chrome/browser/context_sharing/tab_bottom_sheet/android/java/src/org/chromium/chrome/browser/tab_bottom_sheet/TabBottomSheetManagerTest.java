@@ -135,7 +135,7 @@ public class TabBottomSheetManagerTest {
                                     null,
                                     Color.WHITE,
                                     new TestCoBrowseComponentProvider(),
-                                    mPeekViewManager);
+                                    () -> mPeekViewManager);
                     mManager =
                             (TabBottomSheetManagerImpl)
                                     tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
@@ -646,7 +646,7 @@ public class TabBottomSheetManagerTest {
                                         null,
                                         Color.WHITE,
                                         new TestCoBrowseComponentProvider(),
-                                        mPeekViewManager));
+                                        () -> mPeekViewManager));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -350,7 +350,7 @@ public class TabBottomSheetCoordinator {
     }
 
     private void setupPeekView(boolean startsExpanded) {
-        mPeekViewManager = mCoBrowseViews.getPeekViewManager();
+        mPeekViewManager = mCoBrowseViews.getOrCreatePeekViewManager();
         if (mPeekViewManager != null) {
             PropertyModel model = mPeekViewManager.getModel();
             mPeekView =
