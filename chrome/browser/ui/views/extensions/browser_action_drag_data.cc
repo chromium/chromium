@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
@@ -41,7 +42,7 @@ bool BrowserActionDragData::CanDrop(const ui::OSExchangeData& data,
 }
 
 bool BrowserActionDragData::IsFromProfile(const Profile* profile) const {
-  return profile_unique_id_ == profile->UniqueId();
+  return profile_unique_token_ == profile->UniqueToken();
 }
 
 void BrowserActionDragData::Write(Profile* profile,
@@ -81,7 +82,8 @@ BrowserActionDragData::GetBrowserActionFormatType() {
 
 void BrowserActionDragData::WriteToPickle(Profile* profile,
                                           base::Pickle* pickle) const {
-  pickle->WriteString(profile->UniqueId());
+  pickle->WriteUInt64(profile->UniqueToken().GetHighForSerialization());
+  pickle->WriteUInt64(profile->UniqueToken().GetLowForSerialization());
   pickle->WriteString(id_);
   pickle->WriteUInt64(index_);
 }
@@ -89,9 +91,17 @@ void BrowserActionDragData::WriteToPickle(Profile* profile,
 bool BrowserActionDragData::ReadFromPickle(base::Pickle* pickle) {
   base::PickleIterator data_iterator(*pickle);
 
-  if (!data_iterator.ReadString(&profile_unique_id_)) {
+  uint64_t token_high = 0;
+  uint64_t token_low = 0;
+  if (!data_iterator.ReadUInt64(&token_high) ||
+      !data_iterator.ReadUInt64(&token_low)) {
     return false;
   }
+  auto token = base::UnguessableToken::Deserialize(token_high, token_low);
+  if (!token) {
+    return false;
+  }
+  profile_unique_token_ = *token;
 
   if (!data_iterator.ReadString(&id_)) {
     return false;
