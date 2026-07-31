@@ -256,6 +256,7 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
+        "luci.buildbucket.run_in_turboci": 2,
     },
     main_list_view = "try",
     use_clang_coverage = True,
@@ -748,6 +749,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
+        "luci.buildbucket.run_in_turboci": 2,
     },
     main_list_view = "try",
     use_clang_coverage = True,
@@ -969,7 +971,7 @@ gpu.try_.optional_tests_builder(
         location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 50,
+        "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
     max_concurrent_builds = 7,
@@ -999,7 +1001,7 @@ gpu.try_.optional_tests_builder(
         location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 50,
+        "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
     max_concurrent_builds = 7,

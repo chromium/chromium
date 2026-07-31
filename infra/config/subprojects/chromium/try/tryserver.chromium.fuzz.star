@@ -207,6 +207,9 @@ def _test_builder(**kwargs):
                 "third_party/libFuzzer/.+",
             ],
         ),
+        experiments = {
+            "luci.buildbucket.run_in_turboci": 25,
+        },
         **kwargs
     )
 
