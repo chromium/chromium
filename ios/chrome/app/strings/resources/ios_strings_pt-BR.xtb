@@ -186,6 +186,7 @@
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
 <translation id="1559263013367304065">desde que começou a usar o Google Lens</translation>
 <translation id="1560153516220021659">Botão da barra de ferramentas secundária fechado</translation>
+<translation id="1562601408588733317">Gerencie a busca e o preenchimento de informações com o Gemini</translation>
 <translation id="1565371473877914088">Nova guia anônima</translation>
 <translation id="1567960978791353852">Mostrar Modo de Leitura</translation>
 <translation id="1571780780926010134">Guias anônimas</translation>
@@ -1402,6 +1403,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5666313630530585305">Faça login em um site.</translation>
 <translation id="5669335982068190158">A conta foi desconectada como parte da redefinição do iPhone. Toque em "Continuar" abaixo para fazer login.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Gerenciar apps conectados</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Quer trocar de conta? Os dados da conta não salvos serão excluídos.</translation>
 <translation id="5683499062697987550">Para usar e salvar senhas na sua Conta do Google, confirme sua identidade.</translation>
@@ -1577,6 +1579,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6240553182907836376">Atualizar documento de identidade</translation>
 <translation id="6240601837375010619">Salvar passaporte</translation>
 <translation id="6241132809279377987">Aproveite mais recursos no seu iPhone com os apps do Google</translation>
+<translation id="6244366663267187541">Escolha quais apps o Gemini pode acessar</translation>
 <translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
 <translation id="6251835855431997163">Preencher <ph name="VALUE" /> automaticamente</translation>
 <translation id="6253686838150111720">Fazer login em <ph name="URL" /></translation>
@@ -1955,6 +1958,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="7471557245617580330">Criar nova guia</translation>
 <translation id="7473555040328423550">Adicionar guia</translation>
 <translation id="7476548258282096076">Este card mostra os sites que você mais visita.</translation>
+<translation id="7482823403440483089">Preenchimento automático aprimorado</translation>
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7486006552035434095">Manter os dispositivos sincronizados</translation>
 <translation id="7491131399623468277">Acessar as configurações…</translation>
@@ -2204,7 +2208,6 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Você está prestes a trocar de perfil</translation>
 <translation id="8275068909952022340">Mais…</translation>
-<translation id="8280797717392145626">Links recebidos</translation>
 <translation id="8281781826761538115">Padrão: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282657446819506217">Abrir no grupo de guias</translation>

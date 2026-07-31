@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">메뉴 → 비밀번호 관리자</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="1503814213414825943">다른 앱으로 내보낼 계정을 선택하세요</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1506063256525392513">액세스를 허용하면 사진을 찍고, 업로드하고, QR 코드를 스캔할 수 있습니다.</translation>
 <translation id="1506733063065214205">RCS MLS 클라이언트</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">시크릿 탭 닫기</translation>
 <translation id="1559263013367304065">Google 렌즈를 사용한 이후</translation>
 <translation id="1560153516220021659">접힌 보조 툴바 버튼</translation>
+<translation id="1562601408588733317">Gemini로 정보 찾기 및 자동 입력 관리</translation>
 <translation id="1565371473877914088">새 시크릿 탭</translation>
 <translation id="1567960978791353852">읽기 모드 표시</translation>
 <translation id="1571780780926010134">시크릿 탭</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">이 카드에는 안전 확인 기능이 자동으로 감지한 개인 정보 보호 또는 보안 문제가 표시됩니다.</translation>
 <translation id="1840320537320704887">새 탭 페이지 환경설정이 삭제되었습니다.</translation>
 <translation id="1845230888742614096">그룹 유지</translation>
+<translation id="1853558655412913122">이제 '설정'으로 이동한 다음 '주소 표시줄'에서 주소 표시줄의 위치를 변경할 수 있습니다.</translation>
 <translation id="1853692000353488670">새 시크릿 탭</translation>
 <translation id="1854463785401910334">열린 탭 검색</translation>
 <translation id="1860609647735325606">Gemini로 설명</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">파일 삭제가 예약되면 취소할 수 없습니다.</translation>
 <translation id="498624032394115435">링크가 있는 사용자가 모든 탭을 수정할 수 있습니다.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, 조직에서 관리합니다.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">탭 그룹 색상: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5009127379503001909">계속 둘러보기</translation>
@@ -1396,6 +1400,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5666313630530585305">웹사이트에 로그인합니다.</translation>
 <translation id="5669335982068190158">iPhone 재설정 중 로그아웃되었습니다. 아래에서 '계속'을 탭하여 로그인하세요.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">연결된 앱 관리</translation>
 <translation id="567881659373499783">버전 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">계정을 전환하시겠습니까? 저장되지 않은 계정 데이터가 삭제됩니다</translation>
 <translation id="5683499062697987550">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
@@ -1571,6 +1576,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6240553182907836376">신분증 업데이트</translation>
 <translation id="6240601837375010619">여권 저장</translation>
 <translation id="6241132809279377987">Google 앱으로 iPhone에서 더 많은 기능을 이용하세요.</translation>
+<translation id="6244366663267187541">Gemini에 연결할 앱을 선택하세요.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6251835855431997163"><ph name="VALUE" /> 자동 완성</translation>
 <translation id="6253686838150111720"><ph name="URL" />에 로그인</translation>
@@ -1803,6 +1809,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6924299883035848912">인터넷 사용 기록 삭제 숨기기</translation>
 <translation id="6930162026494574854">번역 설정 재설정</translation>
 <translation id="6930799952781667037">이 언어로 변경하려면 탭하세요.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">비밀번호 설정</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6946722113367118030">생각 중</translation>
@@ -1852,6 +1859,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="713215255510512027"><ph name="FILENAME" />(<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">카메라를 사용할 수 없음</translation>
 <translation id="7138678301420049075">기타</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />, <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">탭이 닫히고 인터넷 사용 기록이 삭제됩니다</translation>
 <translation id="714291438898585119">별표표시</translation>
 <translation id="7145337554745942724">운전면허증 업데이트</translation>
@@ -1917,6 +1925,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7402602673739047753">{count,plural, =1{북마크 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}other{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님이 “<ph name="GROUP_NAME" />" 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>
 <translation id="7409985198648820906">읽지 않은 기사 <ph name="UNREAD_COUNT" />개 있음</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />, <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">계속</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7419565702166471774">항상 보안 연결 사용</translation>
@@ -1946,6 +1955,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7471557245617580330">새 탭 만들기</translation>
 <translation id="7473555040328423550">탭 추가</translation>
 <translation id="7476548258282096076">이 카드에는 가장 많이 방문한 사이트가 표시됩니다.</translation>
+<translation id="7482823403440483089">향상된 자동 완성</translation>
 <translation id="7484645889979462775">이 사이트 제외</translation>
 <translation id="7486006552035434095">기기 동기화 상태 유지</translation>
 <translation id="7491131399623468277">설정으로 이동…</translation>
@@ -2195,7 +2205,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">프로필을 전환하려고 합니다</translation>
 <translation id="8275068909952022340">더보기…</translation>
-<translation id="8280797717392145626">링크 수신됨</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282657446819506217">탭 그룹에서 열기</translation>
@@ -2205,6 +2214,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8292893224181644074">다운로드 완료됨</translation>
 <translation id="8299417921174340354">비밀번호를 사용하려면 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="8307481894409578819">이 파일을 업로드할 수 없음</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />, <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">새 검색</translation>
 <translation id="8319282042900445670"><ph name="DATE" /> <ph name="TIME" />(으)로 리마인더 설정됨</translation>
 <translation id="8320212361750431956">최근 활동</translation>
@@ -2492,6 +2502,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9219154867334666734">탭 검색…</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>
 <translation id="926455622548529175">전환 및 삭제</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">강조 표시된 텍스트</translation>
 <translation id="932305336591073205">{count,plural, =1{탭 닫기}other{탭 닫기}}</translation>
 <translation id="939472100615258482">현재 사이트</translation>

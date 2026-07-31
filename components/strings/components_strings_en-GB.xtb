@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Paper type</translation>
 <translation id="1142965388643537393">Travel info</translation>
 <translation id="1143142264369994168">Certificate Signer</translation>
-<translation id="1144136880160289237">You don't have any active topics yet</translation>
 <translation id="1149617035358809955">verify it's you so it can fill in your payment info</translation>
 <translation id="1150565364351027703">Sunglasses</translation>
 <translation id="1150979032973867961">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your computer's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
@@ -372,7 +371,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1564634006476980707">HTTPS scheme recommended for search URL: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Networking information, such as addresses, interface configuration and connection quality</translation>
 <translation id="1567040042588613346">This policy is working as intended but the same value is set elsewhere and is superseded by this policy.</translation>
-<translation id="1567405528131216114">Add <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Enter expiry date</translation>
 <translation id="1569694109004336106">Google Chrome is trying to turn on Windows Hello for filling in passwords.</translation>
 <translation id="1569905000953679183">Extension install policy fetch</translation>
@@ -382,7 +380,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1579189948231786790">This site is blocked by your organisation</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
-<translation id="1584492003828271317">As you browse, whether an ad you see is personalised depends on this setting, site-suggested ads, your cookie settings and if the site that you’re viewing personalises ads</translation>
 <translation id="1585306568496579337">The extension '<ph name="EXTENSION_NAME" />' wants to open <ph name="PROTOCOL" /> links through <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">Which extensions you have installed</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -400,7 +397,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Second roll</translation>
 <translation id="1611854593425834707">Close device list for casting</translation>
-<translation id="1612199629998703524">Manage topics</translation>
 <translation id="1615178538289490617">Revoke access for <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Administrator policy disables screen capture when confidential content is visible</translation>
 <translation id="161612500287664753">Ask Google Search about this page</translation>
@@ -680,7 +676,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2071852865256799872">Your browser is managed by your organisation and your profile is managed by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Info saved to device only</translation>
-<translation id="2074733626795553847">Unblock <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">You visited</translation>
 <translation id="2078956195623975415">Music and dance games</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -731,7 +726,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="213826338245044447">Mobile Bookmarks</translation>
 <translation id="2141000681034340397">Edit your input</translation>
 <translation id="2141475438898772664">Pay in four or monthly</translation>
-<translation id="2144171668675205303">No active topics</translation>
 <translation id="2145193671493396738">Economy news</translation>
 <translation id="214556005048008348">Cancel payment</translation>
 <translation id="2147117373852943630">Musical instruments</translation>
@@ -1022,7 +1016,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="254947805923345898">Policy value is not valid.</translation>
 <translation id="2549836668759467704">Construction Consulting and Contracting</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> and more</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> sent an invalid response.</translation>
 <translation id="2551608178605132291">Address: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1056,7 +1049,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2605979593348332811">Phonetic name</translation>
 <translation id="2606760465469169465">Auto-verify</translation>
 <translation id="2607101320794533334">Subject Public Key Info</translation>
-<translation id="2608019759319359258">When a topic is blocked, it won't be used to personalise ads</translation>
 <translation id="2610561535971892504">Click to copy</translation>
 <translation id="2612676031748830579">Card number</translation>
 <translation id="2612993535136743634">All security codes saved on your device and in your Google Account will be deleted</translation>
@@ -1499,7 +1491,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3299720788264079132">Something went wrong while using <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 in x 42 in</translation>
 <translation id="3303855915957856445">No search results found</translation>
-<translation id="3303872874382375219">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK1" />ad topics<ph name="LINK_END1" />, your <ph name="BEGIN_LINK2" />cookie settings<ph name="LINK_END2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK3" />managing your ad privacy<ph name="LINK_END3" />.</translation>
 <translation id="3304073249511302126">bluetooth scanning</translation>
 <translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">The password that you just used was found in a data breach. Password Manager recommends changing this password now.</translation>
@@ -1538,7 +1529,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3377144306166885718">The server used an obsolete version of TLS.</translation>
 <translation id="3377188786107721145">Policy parse error</translation>
 <translation id="3377642479079205807">Thin</translation>
-<translation id="3378612801784846695">Topics are based on your recent browsing history and are used by sites to show you personalised ads while protecting your identity</translation>
 <translation id="3380365263193509176">Unknown error</translation>
 <translation id="3380864720620200369">Client ID:</translation>
 <translation id="3383566085871012386">Current precedence order</translation>
@@ -1575,7 +1565,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3433111389595862568">Collaboration and Conferencing Software</translation>
 <translation id="3433144818443565002">Voice and Video Chat</translation>
 <translation id="3434025015623587566">Google Password Manager needs more access</translation>
-<translation id="3434346831962601311">No blocked topics</translation>
 <translation id="343474037147570563">Files you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="3435557549311968410">Continuous (short)</translation>
 <translation id="3435738964857648380">Security</translation>
@@ -1727,7 +1716,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3662040827609932717">This IBAN is saved in Google Wallet so that you can use it across Google services.</translation>
 <translation id="3664479564786885722">Search more buying options from other shops that sell this product.</translation>
 <translation id="3664782872746246217">Keywords:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Learn more<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3670159164851218963">AI Mode history</translation>
 <translation id="3670229581627177274">Turn on Bluetooth</translation>
@@ -1959,7 +1947,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 
     You might also contact the site owner and suggest that they upgrade to HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
-<translation id="4030545038933060179">When on, a list of topics appears here based on your recent browsing history</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4036753017940930924">Lots and land</translation>
 <translation id="403724377879219932">Can ask to access other devices on your local network</translation>
@@ -2064,7 +2051,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> more item}other{<ph name="ITEM_COUNT" /> more items}}</translation>
 <translation id="4176463684765177261">Disabled</translation>
-<translation id="4177501066905053472">Ad topics</translation>
 <translation id="4178863275556660738">Pay with non-card payment methods</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Untrack price</translation>
@@ -2293,7 +2279,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4523580145196408446">Linked</translation>
 <translation id="4523643381056109546">Signage</translation>
 <translation id="4524138615196389145">Confirm your cards faster by using WebAuthn from now on</translation>
-<translation id="45243788195988825">Block <ph name="TOPIC" /></translation>
 <translation id="4528888973346221791">Work profile information (such as your username)</translation>
 <translation id="4530347922939905757">Text message</translation>
 <translation id="4531477351494678589">Virtual card number:</translation>
@@ -2498,6 +2483,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4865063548323785458">Save and autofill your passwords to easily sign in to sites and apps</translation>
 <translation id="4866506163384898554">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to show your cursor</translation>
 <translation id="4868277513442568587">To continue using your shared tab groups, update Chrome</translation>
+<translation id="4873312501243535625">Media File Checker</translation>
 <translation id="4873616204573862158">Eyewear</translation>
 <translation id="4873807733347502026">Lock and use your mouse</translation>
 <translation id="4876305945144899064">No username</translation>
@@ -2522,7 +2508,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympics</translation>
 <translation id="4897851261703006488">This policy should not have headers exceeding <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
-<translation id="4898742041545089450">This topic is unblocked and may become active based on your browsing history</translation>
 <translation id="4900217275619098670">Ninth roll</translation>
 <translation id="4901052769830245369">Labels (semi-gloss)</translation>
 <translation id="4901162432287938633">Hygiene and Toiletries</translation>
@@ -2617,10 +2602,8 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5043480802608081735">Link that you copied</translation>
 <translation id="5043753287208271200">Yellow 3</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
-<translation id="5048293684454354469">Ad topics are just one of many things that a site can use to personalise ads. Even without ad topics, sites can still show you ads but they may be less personalised. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Press tab for more search shortcuts available after this search suggestion</translation>
 <translation id="5052488928733955073">Trouble filling in your info. Check your connection.</translation>
-<translation id="5052517576853118371">Active topics</translation>
 <translation id="5053116470141135293">A virtual card number will be filled when you check out with this card to protect your actual details. Manage in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="5056587122125565772">Create image</translation>
@@ -2719,7 +2702,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5206392433295093945">Bedroom</translation>
 <translation id="5209670883520018268">Tray 20</translation>
 <translation id="5212364581680288382">Motorcycle racing</translation>
-<translation id="5214542134842513912">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics.</translation>
 <translation id="52163492208010719">Manage identity docs</translation>
 <translation id="521659676233207110">Tray 13</translation>
 <translation id="5216942107514965959">Last visited today</translation>
@@ -4079,7 +4061,6 @@ Additional details:
 <translation id="7305767780379163575">Unable to save photo</translation>
 <translation id="7307063504147610123">Address saved to this device</translation>
 <translation id="7308436126008021607">background sync</translation>
-<translation id="7309058266849426521">Learn more about managing your ad privacy in Chrome.</translation>
 <translation id="7310392214323165548">Device will restart very soon</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7313107491291103073">Your organisation has flagged this site as it might violate a policy.</translation>
@@ -4470,7 +4451,6 @@ Additional details:
 <translation id="7877007680666472091">protected content IDs</translation>
 <translation id="7878562273885520351">Your password may be compromised</translation>
 <translation id="7885670691503039914">You'll get email alerts if the price drops on any site. This page will be saved to the bookmark folder <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="7886897188117641322">Choose which broad categories of topics can be used to help personalise ads</translation>
 <translation id="7887683347370398519">Check your CVC and try again</translation>
 <translation id="7887885240995164102">Enter picture-in-picture</translation>
 <translation id="7888367499748383555">No fees, as low as 0% APR (subject to eligibility)</translation>
@@ -4580,7 +4560,6 @@ Additional details:
 <translation id="8046360364391076336">Industrial Materials and Equipment</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8057023045886711556">Comedy films</translation>
-<translation id="805766869470867930">You haven't blocked any topics</translation>
 <translation id="8057711352706143257">'<ph name="SOFTWARE_NAME" />' isn’t configured correctly. Uninstalling '<ph name="SOFTWARE_NAME" />' usually fixes the problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Not required</translation>
 <translation id="8061691770921837575">Make-up and cosmetics</translation>
@@ -4627,7 +4606,6 @@ Additional details:
 <translation id="8130113808541743942">Move to…</translation>
 <translation id="813024282736408069">Turn on a virtual card for autofill</translation>
 <translation id="8131740175452115882">Confirm</translation>
-<translation id="8133495915926741232">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
@@ -4846,7 +4824,6 @@ Additional details:
 <translation id="8467494337615822642">Go to Chrome safety check page in settings</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8469428721212363950">Retail trade</translation>
-<translation id="8472700501934242014">Blocked topics</translation>
 <translation id="8473626140772740486">300 mm x 450 mm</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474910779563686872">Show developer details</translation>
@@ -4991,7 +4968,6 @@ Additional details:
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731268612289859741">Security code</translation>
 <translation id="8733345475331865475">Car insurance</translation>
-<translation id="8733764070897080460">You can block topics that you don’t want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks. Learn more</translation>
 <translation id="8734529307927223492">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 in x 40 in</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to open a new incognito window to browse privately</translation>

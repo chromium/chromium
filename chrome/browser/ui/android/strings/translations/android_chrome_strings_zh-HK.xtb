@@ -77,7 +77,6 @@
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1269129608791067105">您可在此查看記錄</translation>
-<translation id="1273937721055267968">封鎖 <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">開啟提示通知</translation>
 <translation id="1289129165308566697">查看其他裝置上的記錄</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
@@ -312,6 +311,7 @@
 <translation id="2328474416100889417">所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而所有邀請連結亦將會關閉</translation>
 <translation id="2329500425421091035">為你介紹 Chrome 版 AI 模式</translation>
 <translation id="2330186936255788117">更多書籤</translation>
+<translation id="2330243730505117832">閂咗「選擇裝置」。</translation>
 <translation id="2332515770639153015">已啟用「強化安全瀏覽」功能</translation>
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="2334275697832662087">Chrome 採用 AI 技術的安全功能可保護你免受網上威脅，讓你安心瀏覽網頁</translation>
@@ -336,7 +336,6 @@
 <translation id="2413014528833954543">無法查看此裝置上的密碼</translation>
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2415037988255164008">要還原視窗嗎？</translation>
-<translation id="2421705177906985956">目前沒有可顯示的網站</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{影片，清單中有 1 段影片}other{影片，清單中有 # 段影片}}</translation>
 <translation id="2433507940547922241">外觀</translation>
@@ -479,7 +478,6 @@
 <translation id="297771753501244313">按上次開啟日期排序</translation>
 <translation id="2979639724566107830">在新視窗中開啟</translation>
 <translation id="2980545254049127870">輕鬆開啟訊息、文件和其他應用程式中的連結</translation>
-<translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2983398917942897288">未啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">退出畫中畫</translation>
 <translation id="2984978667043170458">加入前後文來執行 Google 搜尋</translation>
@@ -491,7 +489,6 @@
 <translation id="2996809686854298943">請提供網址</translation>
 <translation id="3024215143424744261">閱讀模式偏好設定已關閉</translation>
 <translation id="3026955690410463085">加入連結</translation>
-<translation id="3027644380269727216">根據您在網站上的活動推薦。此設定已開啟。</translation>
 <translation id="3027950907978057636">來自 <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
@@ -500,7 +497,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
-<translation id="3038272154009688107">查看所有網站</translation>
+<translation id="3044436568790455247">「選擇裝置」宜家顯示喺成個畫面。</translation>
 <translation id="3057938290530993634">按住即可固定最常瀏覽的網站，方便下次存取</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
@@ -509,6 +506,7 @@
 <translation id="3067505415088964188">價格偏低</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />私隱權政策<ph name="END_LINK3" />》約束。</translation>
+<translation id="3075397426753215787">選擇裝置。</translation>
 <translation id="3080375898390966733">使用「Google 智能鏡頭」搜尋分頁</translation>
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
 <translation id="3087734570205094154">下方</translation>
@@ -548,6 +546,7 @@
 <translation id="3282801380074962248">展開呢個部分</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{# 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
+<translation id="3287664192482809715">「選擇裝置」宜家顯示喺畫面下半部。</translation>
 <translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
 <translation id="3301639354590628973">要切換帳戶嗎？</translation>
 <translation id="3301936297336370235">密碼建議確認</translation>
@@ -566,7 +565,6 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3351959803838327376">長按網站並開啟選單</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
-<translation id="3373701465337594448">開啟設定後，系統會在此顯示您曾瀏覽的網站清單來推斷您的興趣。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3385749568468586663">Gemini 不支援無痕模式</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
@@ -710,7 +708,6 @@
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3976396876660209797">移除並重新建立此捷徑</translation>
 <translation id="397650873162244514"><ph name="TAB_TITLE" />，已固定的分頁</translation>
-<translation id="3985022125189960801">您重新新增的網站可再次猜測您的興趣。</translation>
 <translation id="3985215325736559418">您要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3994236846568425219">在裝置啟用深色主題後啟用深色主題</translation>
@@ -755,7 +752,6 @@
 <translation id="4170577491341606575">正在擷取資料…</translation>
 <translation id="4176838562184310003">Chrome 未正確關閉，但可以嘗試還原遺失的視窗和分頁。還原時，部分視窗可能會最小化。</translation>
 <translation id="4177222230309051052">取得所有書籤</translation>
-<translation id="4177501066905053472">廣告主題</translation>
 <translation id="417865198503699526">搜尋設定</translation>
 <translation id="4180726336228139707">只儲存在此裝置上</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -887,7 +883,6 @@
 <translation id="4675298276894277358">此網站不會再顯示</translation>
 <translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題</translation>
 <translation id="4685741273709472646">由下拉式選單入面揀</translation>
-<translation id="4687718960473379118">網站建議的廣告</translation>
 <translation id="468924408576231679">複製「<ph name="PAGE_TITLE" />」的網頁連結，來源：<ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
 <translation id="469286762610133730">取得更適切的內容</translation>
@@ -1138,7 +1133,6 @@
 <translation id="5765517223145864268">請分享您的使用體驗。您亦可<ph name="BEGIN_LINK" />變更設定<ph name="END_LINK" />。</translation>
 <translation id="5776970333778123608">資料不重要</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_USED" /> (共 <ph name="SPACE_AVAILABLE" />)</translation>
-<translation id="5797949256525811424">已封鎖主題</translation>
 <translation id="580893287573699959">管理感興趣的主題和網站</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
@@ -1171,7 +1165,6 @@
 <translation id="5907542076239273525">書籤已儲存至「<ph name="FOLDER_NAME" />」</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />，揀咗播緊音訊嘅無痕式分頁</translation>
 <translation id="5932881020239635062">序號</translation>
-<translation id="5938820472109305350">新增<ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">使用 Google 搜尋內容</translation>
 <translation id="5945035219773565305">目前的建議：<ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">正在查看實際網頁</translation>
@@ -1268,7 +1261,6 @@
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6291294824436685757">刪除瀏覽資料；揀要刪除嘅內容</translation>
-<translation id="6295158916970320988">所有網站</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6301526076346731664">開啟 Developer Tools</translation>
 <translation id="630308129961693966">選擇網址列位置</translation>
@@ -1369,7 +1361,6 @@
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審核</translation>
 <translation id="6637100877383020115">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
-<translation id="6641780377503683465">移除<ph name="INTEREST" /></translation>
 <translation id="6642299196749785472">附加分頁</translation>
 <translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
@@ -1379,7 +1370,6 @@
 <translation id="6669390930482049506">通知我</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6672697278890207089">請輸入通關密語</translation>
-<translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6676927815633975364">登入此網站和 Chrome</translation>
 <translation id="6684262542644248484">登入網站</translation>
 <translation id="6684809838922667136">協助改善 Chrome</translation>
@@ -1481,7 +1471,6 @@
 <translation id="6971862865055170158">不核准</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />，新分頁或已更新的分頁</translation>
 <translation id="6976811588313110624">加入新嘅捷徑。</translation>
-<translation id="6978717888677691380">您已封鎖的網站</translation>
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6980258170429555165">突顯咗「<ph name="MENU_NAME" />」選單。</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
@@ -1601,7 +1590,6 @@
 <translation id="7453810262525006706">收合去側視模式</translation>
 <translation id="7454641608352164238">空間不足</translation>
 <translation id="7454744349230173024">你的機構已關閉密碼儲存功能</translation>
-<translation id="7455988709578031708">根據您的瀏覽記錄推薦。此設定已開啟。</translation>
 <translation id="7456774706094330779">延伸預先載入模式</translation>
 <translation id="7466328545712777810">如果產品在任何網站上降價，你會收到通知</translation>
 <translation id="7466431077154602932">密集檢視</translation>
@@ -1660,7 +1648,6 @@
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
 <translation id="7666185984446444960">已關閉 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
-<translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>
 <translation id="7690596512217303514">裝置無法開啟 Chrome。如要修正問題，請前往應用程式商店下載最新版的 Chrome 更新。</translation>
 <translation id="7692761875510935111">在瀏覽器中迅速開啟。按住這裡即可編輯此捷徑。</translation>
 <translation id="7695270712963178084">Chrome 尋找功能</translation>
@@ -1817,7 +1804,6 @@
 <translation id="8271267069224406035">舉報垃圾內容</translation>
 <translation id="8277710303010772444">開始搜尋</translation>
 <translation id="8279945625179116733">受 <ph name="APP_NAME" /> 保護</translation>
-<translation id="8280797717392145626">已收到連結</translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282297628636750033">在可用情況下，為網站套用深色主題</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
@@ -2002,7 +1988,6 @@
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9047347135558855162">迅速在 Chrome 中開始搜尋</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
-<translation id="9055497320631373736">已重新將網站加入至潛在網站</translation>
 <translation id="9057030985451135243">瞭解共用分頁群組</translation>
 <translation id="905722970894408436"><ph name="TAB_TITLE" />，揀咗已固定嘅畫中畫分頁</translation>
 <translation id="9063400323119781058">已取消訂閱</translation>
@@ -2021,7 +2006,6 @@
 <translation id="9086455579313502267">無法存取網絡</translation>
 <translation id="9093915805850895575">在 Chrome 視窗中開啟</translation>
 <translation id="909756639352028172">如要盡享個人化體驗，請將 Chrome 加入「網絡和應用程式活動記錄」以及連結的 Google 服務</translation>
-<translation id="9099220545925418560">根據您的瀏覽記錄推薦。此設定已關閉。</translation>
 <translation id="9099674669267916096">頁數</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
 <translation id="9101137867221042551">管理</translation>
@@ -2032,7 +2016,6 @@
 <translation id="9112483451228487295">快速刪除瀏覽資料</translation>
 <translation id="9124978074365039456">使用相機和圖片庫購物、翻譯及識別所見內容</translation>
 <translation id="9130135798965366513">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
-<translation id="9131209053278896908">已封鎖的網站會在此顯示</translation>
 <translation id="9133397713400217035">離線探索</translation>
 <translation id="9143389653531441385">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶註冊</translation>
 <translation id="9148126808321036104">重新登入</translation>

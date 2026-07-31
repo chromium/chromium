@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Тып паперы</translation>
 <translation id="1142965388643537393">Інфармацыя пра паездкі</translation>
 <translation id="1143142264369994168">Сродак подпісу сертыфікатаў</translation>
-<translation id="1144136880160289237">У вас пакуль што няма актыўных тэм</translation>
 <translation id="1149617035358809955">спраўдзіць вашу асобу, каб запоўніць плацежную інфармацыю</translation>
 <translation id="1150565364351027703">Сонечныя акуляры</translation>
 <translation id="1150979032973867961">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: аперацыйная сістэма камп’ютара не давярае сертыфікату бяспекі гэтага дамена. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
@@ -351,6 +350,7 @@
 <translation id="1539840569003678498">Справаздача адпраўлена:</translation>
 <translation id="1542105669288201090">Бізнес-адукацыя</translation>
 <translation id="1542830386724426410">Паказваць даступныя перавагі і бонусы для карткі падчас афармлення заказу. Прымяняюцца ўмовы эмітэнта. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Даведацца больш.<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Згодна з правіламі вашай арганізацыі скапіраванае змесціва правяраецца на наяўнасць канфідэнцыяльнай інфармацыі. Устаўка можа быць дазволена пасля завяршэння праверкі.</translation>
 <translation id="1545757265410828525">Гісторыя цэн</translation>
 <translation id="1546286808622193216">Параўноўвайце перавагі картак з дапамогай Gemini</translation>
 <translation id="1549470594296187301">Каб карыстацца гэтай функцыяй, трэба ўключыць JavaScript.</translation>
@@ -372,7 +372,6 @@
 <translation id="1564634006476980707">Схема HTTPS, рэкамендаваная для URL-адраса пошуку: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Сеткавыя даныя, такая як адрасы, налады інтэрфейсу і якасць падключэння</translation>
 <translation id="1567040042588613346">Гэта палітыка працуе належным чынам, але замяняе аднолькавае значэнне, зададзенае з іншай крыніцы.</translation>
-<translation id="1567405528131216114">Дадаць тэму "<ph name="TOPIC" />"</translation>
 <translation id="1569487616857761740">Увядзіце тэрмін дзеяння</translation>
 <translation id="1569694109004336106">Google Chrome спрабуе ўключыць Windows Hello для ўводу пароляў.</translation>
 <translation id="1569905000953679183">Атрыманне палітыкі ўсталявання пашырэнняў</translation>
@@ -382,7 +381,6 @@
 <translation id="1579189948231786790">Ваша арганізацыя заблакіравала гэты сайт</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Падчас паказу вэб-старонкі нешта пайшло не так.</translation>
-<translation id="1584492003828271317">Ці будзе ажыццяўляцца персаналізацыя рэкламы, якая вам паказваецца, залежыць ад гэтай налады, рэкламы, якая прапануецца сайтамі, налад файлаў cookie, а таксама ад таго, ці персаналізуе рэкламу сам сайт, які вы наведваеце</translation>
 <translation id="1585306568496579337">Пашырэнне "<ph name="EXTENSION_NAME" />" хоча адкрываць спасылкі для дзеяння "<ph name="PROTOCOL" />" праз сайт <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">Якія пашырэнні вы ўсталявалі.</translation>
 <translation id="1588438908519853928">Звычайны</translation>
@@ -400,7 +398,6 @@
 <translation id="161042844686301425">Блакітны</translation>
 <translation id="1611101756749861742">Другі рулон</translation>
 <translation id="1611854593425834707">Закрыць спіс прылад для трансляцыі</translation>
-<translation id="1612199629998703524">Кіраванне тэмамі</translation>
 <translation id="1615178538289490617">Адклікаць доступ да порта <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Палітыка, зададзеная адміністратарам, адключае здыманне экрана, калі на ім паказваецца прыватнае змесціва</translation>
 <translation id="161612500287664753">Задаць пытанне пра гэту старонку ў Google Пошуку</translation>
@@ -680,7 +677,6 @@
 <translation id="2071852865256799872">Вашым браўзерам кіруе ваша арганізацыя, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Інфармацыя захоўваецца толькі на прыладзе</translation>
-<translation id="2074733626795553847">Разблакіраваць тэму "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Наведана</translation>
 <translation id="2078956195623975415">Музычныя і танцавальныя гульні</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
@@ -731,7 +727,6 @@
 <translation id="213826338245044447">Мабільныя закладкі</translation>
 <translation id="2141000681034340397">Змяніць уведзеныя даныя</translation>
 <translation id="2141475438898772664">Аплата ў чатыры этапы або штомесяц</translation>
-<translation id="2144171668675205303">Няма актыўных тэм</translation>
 <translation id="2145193671493396738">Навіны эканомікі</translation>
 <translation id="214556005048008348">Скасаваць плацеж</translation>
 <translation id="2147117373852943630">Музычныя інструменты</translation>
@@ -1023,7 +1018,6 @@
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
 <translation id="254947805923345898">Значэнне палітыкі несапраўднае.</translation>
 <translation id="2549836668759467704">Будаўнічыя падрады і кансультацыі</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> і яшчэ</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> адправіў няправільны адказ.</translation>
 <translation id="2551608178605132291">Адрас: <ph name="ADDRESS" /></translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1057,7 +1051,6 @@
 <translation id="2605979593348332811">Фанетычнае імя</translation>
 <translation id="2606760465469169465">Аўтаматычная праверка</translation>
 <translation id="2607101320794533334">Інфармацыя пра адкрыты ключ суб’екта</translation>
-<translation id="2608019759319359258">Калі тэма заблакіравана, яна не выкарыстоўваецца для персаналізацыі рэкламы</translation>
 <translation id="2610561535971892504">Капіруецца адным націсканнем</translation>
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2612993535136743634">Усе коды бяспекі, захаваныя на вашай прыладзе і ва Уліковым запісе Google, будуць выдалены</translation>
@@ -1497,10 +1490,10 @@
 <translation id="3293642807462928945">Даведацца больш пра палітыку "<ph name="POLICY_NAME" />"</translation>
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
 <translation id="3299098170013242198">Windows Hello выкарыстоўваецца для ўводу пароляў.</translation>
+<translation id="3299197721044635447">Правілы вашай арганізацыі не дазволілі ўставіць змесціва па-за кантэкстам пад кіраваннем Chrome</translation>
 <translation id="3299720788264079132">Пры выкарыстанні функцыі "<ph name="FEATURE_NAME" />" адбылася памылка</translation>
 <translation id="3303176609391916566">30 x 42 цалі</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
-<translation id="3303872874382375219">Ці будзе ажыццяўляцца персаналізацыя рэкламы, якая вам паказваецца, залежыць шмат ад чаго, у тым ліку ад гэтай налады, <ph name="BEGIN_LINK1" />тэм рэкламы<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />налад файлаў cookie<ph name="LINK_END2" />, а таксама ад таго, ці персаналізуе рэкламу сам сайт, які вы наведваеце. <ph name="BEGIN_LINK3" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе.<ph name="LINK_END3" /></translation>
 <translation id="3304073249511302126">пошук прылад Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
@@ -1539,7 +1532,6 @@
 <translation id="3377144306166885718">Сервер выкарыстоўвае ўстарэлую версію пратакола TLS.</translation>
 <translation id="3377188786107721145">Памылка аналізу палітыкі</translation>
 <translation id="3377642479079205807">Тонкія рысы</translation>
-<translation id="3378612801784846695">Тэмы выяўляюцца на падставе нядаўняй гісторыі прагляду вамі сайтаў і выкарыстоўваюцца сайтамі для паказу вам персаналізаванай рэкламы. Інфармацыя, якая можа раскрыць вашу асобу, пры гэтым не абагульваецца.</translation>
 <translation id="3380365263193509176">Невядомая памылка</translation>
 <translation id="3380864720620200369">Ідэнтыфікатар кліента:</translation>
 <translation id="3383566085871012386">Бягучы парадак прыярытэту</translation>
@@ -1576,7 +1568,6 @@
 <translation id="3433111389595862568">Праграмнае забеспячэнне для сумеснай працы і канферэнцый</translation>
 <translation id="3433144818443565002">Галасавы і відэачат</translation>
 <translation id="3434025015623587566">Менеджару пароляў Google патрабуюцца шырэйшыя правы доступу</translation>
-<translation id="3434346831962601311">Няма заблакіраваных тэм</translation>
 <translation id="343474037147570563">Запампаваныя і далучаныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам. У прыватнасці, яны могуць быць правераны на наяўнасць канфідэнцыяльных даных або шкодных праграм альбо адпраўлены на захоўванне ў адпаведнасці з палітыкамі кампаніі і іх зможа пабачыць адміністратар.</translation>
 <translation id="3435557549311968410">Ролевая папера (злучаная па кароткім краі)</translation>
 <translation id="3435738964857648380">Бяспека</translation>
@@ -1727,7 +1718,6 @@
 <translation id="3662040827609932717">Гэты нумар IBAN захаваны ў Google Кашальку, таму вы можаце выкарыстоўваць яго ў розных сэрвісах Google.</translation>
 <translation id="3664479564786885722">Вы можаце шукаць прапановы пэўнага тавару ад іншых крам, якія яго прадаюць.</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Нумар</translation>
 <translation id="3670159164851218963">Гісторыя рэжыму AI</translation>
 <translation id="3670229581627177274">Уключыць Bluetooth</translation>
@@ -1959,7 +1949,6 @@
 
     Таксама вы можаце звярнуцца да ўладальніка сайта і прапанаваць яму перайсці на HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Адрабіць дадаванне</translation>
-<translation id="4030545038933060179">Калі гэта налада ўключана, спіс тэм, які фарміруецца на падставе нядаўняй гісторыі прагляду сайтаў, будзе паказвацца тут.</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4036753017940930924">Зямля і зямельныя ўчасткі</translation>
 <translation id="403724377879219932">Можа запытваць доступ да іншых прылад у лакальнай сетцы</translation>
@@ -2064,7 +2053,6 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Яшчэ <ph name="ITEM_COUNT" /> элемент}one{Яшчэ <ph name="ITEM_COUNT" /> элемент}few{Яшчэ <ph name="ITEM_COUNT" /> элементы}many{Яшчэ <ph name="ITEM_COUNT" /> элементаў}other{Яшчэ <ph name="ITEM_COUNT" /> элемента}}</translation>
 <translation id="4176463684765177261">Выключана</translation>
-<translation id="4177501066905053472">Тэмы рэкламы</translation>
 <translation id="4178863275556660738">Аплата спосабамі, адрознымі ад картак</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перастаць адсочваць цану</translation>
@@ -2293,7 +2281,6 @@
 <translation id="4523580145196408446">Звязаны</translation>
 <translation id="4523643381056109546">Шыльды</translation>
 <translation id="4524138615196389145">Калі выкарыстоўваць WebAuthn, пацвярджаць карткі можна будзе хутчэй</translation>
-<translation id="45243788195988825">Заблакіраваць тэму "<ph name="TOPIC" />"</translation>
 <translation id="4528888973346221791">Інфармацыя пра працоўны профіль (напрыклад, імя карыстальніка)</translation>
 <translation id="4530347922939905757">Тэкставае паведамленне</translation>
 <translation id="4531477351494678589">Нумар віртуальнай карткі:</translation>
@@ -2498,6 +2485,7 @@
 <translation id="4865063548323785458">Захоўвайце і аўтаматычна запаўняйце паролі, каб з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах</translation>
 <translation id="4866506163384898554">Націсніце "<ph name="ACCELERATOR1" />" + "<ph name="ACCELERATOR2" />", каб убачыць курсор</translation>
 <translation id="4868277513442568587">Каб і далей выкарыстоўваць абагуленыя групы ўкладак, трэба абнавіць Chrome</translation>
+<translation id="4873312501243535625">Праверка мультымедыйных файлаў</translation>
 <translation id="4873616204573862158">Акуляры</translation>
 <translation id="4873807733347502026">Заблакіраваць і выкарыстоўваць мыш</translation>
 <translation id="4876305945144899064">Адсутнічае імя карыстальніка</translation>
@@ -2522,7 +2510,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Алімпійскія гульні</translation>
 <translation id="4897851261703006488">Памер загалоўкаў для гэтай палітыкі не павінен перавышаць <ph name="MAX_HEADER_SIZE_LIMIT" /> КБ.</translation>
-<translation id="4898742041545089450">Гэта тэма разблакіравана і можа стаць актыўнай (гэта залежыць ад гісторыі прагляду вамі сайтаў)</translation>
 <translation id="4900217275619098670">Дзявяты рулон</translation>
 <translation id="4901052769830245369">Паўглянцавы этыкетачны матэрыял</translation>
 <translation id="4901162432287938633">Гігіена і туалетныя прылады</translation>
@@ -2617,10 +2604,8 @@
 <translation id="5043480802608081735">Скапіраваная вамі спасылка</translation>
 <translation id="5043753287208271200">Жоўты 3</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
-<translation id="5048293684454354469">Тэмы рэкламы – гэта адзін з мноства фактараў, на падставе якіх сайты яе персаналізуюць. Нават калі тэмы адключаны, сайты ўсё роўна змогуць паказваць вам рэкламу, аднак яна можа быць менш персаналізаванай. <ph name="BEGIN_LINK" />Даведацца больш пра кіраванне прыватнасцю ў рэкламе.<ph name="LINK_END" /></translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, націсніце Tab, каб убачыць іншыя даступныя ярлыкі для пошуку пасля гэтай прапановы пошуку</translation>
 <translation id="5052488928733955073">Не ўдаецца запоўніць інфармацыю. Праверце падключэнне.</translation>
-<translation id="5052517576853118371">Актыўныя тэмы</translation>
 <translation id="5053116470141135293">Пры аплаце гэтай карткай будзе ўказвацца нумар віртуальнай карткі, каб абараніць вашы рэальныя даныя. Кіраваць гэтай наладай можна ў Google Кашальку. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}one{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}few{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}many{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}other{Каб адправіць гэтыя файлы з дапамогай функцыі "Абагульванне паблізу", вызваліце месца на прыладзе (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">Стварыць відарыс</translation>
@@ -2718,7 +2703,6 @@
 <translation id="5206392433295093945">Спальня</translation>
 <translation id="5209670883520018268">Латок 20</translation>
 <translation id="5212364581680288382">Мотагонкі</translation>
-<translation id="5214542134842513912">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы. Калі выключыць катэгорыю, звязаныя з ёй тэмы таксама будуць заблакіраваны.</translation>
 <translation id="52163492208010719">Кіраваць дакументамі, якія пацвярджаюць асобу</translation>
 <translation id="521659676233207110">Латок 13</translation>
 <translation id="5216942107514965959">Апошняе наведванне: сёння</translation>
@@ -4077,7 +4061,6 @@
 <translation id="7305767780379163575">Не ўдалося захаваць фота</translation>
 <translation id="7307063504147610123">Адрас захаваны на гэтай прыладзе</translation>
 <translation id="7308436126008021607">фонавая сінхранізацыя</translation>
-<translation id="7309058266849426521">Даведайцеся больш пра кіраванне прыватнасцю ў рэкламе ў Chrome.</translation>
 <translation id="7310392214323165548">Скора прылада перазапусціцца</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
 <translation id="7313107491291103073">Ваша арганізацыя пазначыла, што гэты сайт, магчыма, парушае правілы.</translation>
@@ -4346,6 +4329,7 @@
 <translation id="767550629621587224">Матэрыялы з загадзя выразанымі раздзяляльнікамі</translation>
 <translation id="7675756033024037212">Змяненне маштабу і прагортванне забаронены</translation>
 <translation id="7676643023259824263">Пошук тэксту з буфера абмену: "<ph name="TEXT" />"</translation>
+<translation id="7676840398262504532">Ваша арганізацыя кантралюе капіраванне</translation>
 <translation id="7678730592635586336">Зняць відэа яшчэ раз</translation>
 <translation id="7679287273775285018">Аплата праз eWallet</translation>
 <translation id="7679367271685653708">Азнаёміцца з гісторыяй прагляду сайтаў або кіраваць ёй у наладах Chrome</translation>
@@ -4469,7 +4453,6 @@
 <translation id="7877007680666472091">ідэнтыфікатары абароненага змесціва</translation>
 <translation id="7878562273885520351">Ваш пароль можа быць раскрыты</translation>
 <translation id="7885670691503039914">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі па электроннай пошце. Гэта старонка будзе захоўвацца ў папцы "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="7886897188117641322">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы</translation>
 <translation id="7887683347370398519">Праверце код CVC і паўтарыце спробу</translation>
 <translation id="7887885240995164102">Уключыць рэжым "Відарыс у відарысе"</translation>
 <translation id="7888367499748383555">Без камісій, гадавая працэнтная стаўка складае 0% (пры адпаведнасці патрабаванням)</translation>
@@ -4579,7 +4562,6 @@
 <translation id="8046360364391076336">Прамысловыя матэрыялы і абсталяванне</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8057023045886711556">Камедыйныя фільмы</translation>
-<translation id="805766869470867930">Вы не блакіравалі ніякія тэмы</translation>
 <translation id="8057711352706143257">Праграма "<ph name="SOFTWARE_NAME" />" наладжана няправільна. Праблема звычайна вырашаецца выдаленнем праграмы "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">не патрабуецца</translation>
 <translation id="8061691770921837575">Макіяж і касметыка</translation>
@@ -4626,10 +4608,10 @@
 <translation id="8130113808541743942">Перамясціць у…</translation>
 <translation id="813024282736408069">Уключыце віртуальную картку для аўтазапаўнення</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
-<translation id="8133495915926741232">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы. Калі выключыць катэгорыю, звязаныя з ёй тэмы таксама будуць заблакіраваны. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Рэкрутынг і працаўладкаванне</translation>
 <translation id="8135546115396015134">стрэлку ўлева</translation>
 <translation id="8137456439814903304">Энергетыка і камунальныя арганізацыі</translation>
+<translation id="814071672416123670">Правілы вашай арганізацыі не дазволілі скапіраваць змесціва</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Створана месяц таму}one{Створана {NUM_MONTHS} месяц таму}few{Створана {NUM_MONTHS} месяцы таму}many{Створана {NUM_MONTHS} месяцаў таму}other{Створана {NUM_MONTHS} месяца таму}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, цяперашняя стандартная сістэма пошуку. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
@@ -4845,7 +4827,6 @@
 <translation id="8467494337615822642">Перайсці на старонку праверкі бяспекі Chrome у наладах</translation>
 <translation id="8468358362970107653">Канверт C3</translation>
 <translation id="8469428721212363950">Рознічны гандаль</translation>
-<translation id="8472700501934242014">Заблакіраваныя тэмы</translation>
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8474910779563686872">Паказаць падрабязныя звесткі пра распрацоўшчыка</translation>
@@ -4990,7 +4971,6 @@
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
 <translation id="8733345475331865475">Страхаванне аўтамабіляў</translation>
-<translation id="8733764070897080460">Вы можаце блакіраваць тэмы, якія не хочаце абагульваць з сайтамі. Акрамя таго, Chrome аўтаматычна выдаляе тэмы, дададзеныя больш чым 4 тыдні таму назад. Даведацца больш</translation>
 <translation id="8734529307927223492">Вашай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />.</translation>
 <translation id="8736059027199600831">30 x 40 цаляў</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб адкрыць новае акно ў рэжыме інкогніта для прыватнага прагляду вэб-сайтаў, націсніце Tab, затым Enter</translation>

@@ -2448,6 +2448,21 @@ La aplicación de esta política en los dispositivos administrados está influen
 <translation id="2508800409212941632">Política de configuración para el Enterprise Connector <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> de <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">El usuario podrá realizar capturas de paquetes de red</translation>
 <translation id="2509919237512982967">Utilizar los controles de formulario heredados hasta M84.</translation>
+<translation id="2509947330677441695">Si estableces la política, se permitirá el acceso a las URLs de la lista en el modo Incógnito. Úsala para abrir excepciones a ciertos patrones de URL definidos en <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, con el formato especificado en ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Si se establecen esta política y <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, la lista de direcciones permitidas tiene prioridad. Si una URL coincide con un patrón de la lista de direcciones permitidas, se permitirá. Si coincide con un patrón de la lista de direcciones bloqueadas (pero no con uno de la lista de direcciones permitidas), se bloqueará. Si una URL no coincide con ninguna, se usarán las políticas generales de <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> como alternativa.
+
+Si estableces esta política y no estableces <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, se bloqueará cualquier URL que no esté en la lista de direcciones permitidas en el modo Incógnito.
+
+Si <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> está configurada para no permitir (valor 1), pero esta política está configurada, el modo Incógnito solo estará disponible para las URLs que coincidan con la lista de direcciones permitidas.
+
+Si no estableces la política, no se permitirán excepciones a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ni a <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Esta política solo afecta el modo Incógnito. Para permitir las URLs en todos los perfiles de usuario, usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Los comodines de host generales (p. ej., "*" o "[*]") no están permitidos; usa la política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> para habilitar la función de forma global.
+
+Esta política está limitada a 1,000 entradas.</translation>
 <translation id="2512531606818417084">Esta política es temporal y ya no funcionará a partir de la versión M137.
 
 Esta función habilita el uso de "zstd" en el encabezado de solicitud Accept-Encoding
@@ -6571,9 +6586,6 @@ Si no estableces la política, su comportamiento se determina según la polític
 Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5070539335358964387">Permitir Buscar y completar con Gemini y mejorar los modelos de IA.</translation>
 <translation id="5071303485174858500">Inhabilitar la sesión de invitado administrada y restringida</translation>
-<translation id="5073609397321802133">Si se establece la política como falsa, los usuarios no podrán personalizar el fondo en la página Nueva pestaña. En caso de que haya un fondo personalizado, este se quitará de forma permanente, incluso si más tarde se establece la política como verdadera.
-
-      Si se establece la política como verdadera o no se establece, los usuarios podrán personalizar el fondo en la página Nueva pestaña.</translation>
 <translation id="5073788301065423829">Esta política habilita o inhabilita la función "Ayúdame a escribir" para ChromeOS.
 
 Si habilitas esta política, se activará la función "Ayúdame a escribir".
@@ -10881,6 +10893,21 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7602621823177962064">Inhabilitar los informes de la memoria del dispositivo</translation>
 <translation id="7604169113182304895">Las apps de Android pueden respetar esta lista de forma voluntaria, pero no puedes forzarlas a que lo hagan.</translation>
+<translation id="7604302274842086162">Esta política se puede usar para permitir <ph name="CHROME_DEVTOOLS_NAME" /> en URLs específicas.
+
+Los patrones de URLs se comparan con la URL de cada marco de la página que se inspecciona. El comportamiento resultante depende de si también se establece la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Si estableces esta política y no estableces <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, la URL de cada marco debe coincidir con un patrón de esta lista de direcciones permitidas para que se permita <ph name="CHROME_DEVTOOLS_NAME" />. Si la URL de algún marco no coincide, se bloquearán las Herramientas para desarrolladores para toda la página. Para obtener información sobre el formato de las URLs, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si se establecen esta política y la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, esta lista de direcciones permitidas tendrá prioridad. Si la URL de un marco coincide con un patrón de esta lista de direcciones permitidas, se permitirá, incluso si también coincide con un patrón de la lista de direcciones bloqueadas. Si una URL coincide con un patrón de la lista de direcciones bloqueadas (pero no con uno de la lista de direcciones permitidas), se bloqueará. Si una URL no coincide con ninguna, se usará la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> como alternativa.
+
+Si no estableces esta política, la disponibilidad de <ph name="CHROME_DEVTOOLS_NAME" /> se determinará según las políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> y <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política también se aplica a <ph name="CHROME_DEVTOOLS_NAME" /> que se abre para extensiones y aplicaciones web.
+
+Los comodines de host generales (p. ej., "*" o "[*]") no están permitidos; usa la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> para habilitar la función de forma global.
+
+Esta política se limitará a 1,000 entradas.</translation>
 <translation id="7607831126797434329">Bloquear descargas automáticas en estos sitios</translation>
 <translation id="7608186022704392724">La función de envío automático de PIN cambia la manera en la que se ingresan los PIN en <ph name="PRODUCT_OS_NAME" />.
           En lugar de mostrar el mismo campo de texto que se utiliza para ingresar contraseñas, esta

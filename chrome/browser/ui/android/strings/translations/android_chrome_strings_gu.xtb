@@ -77,7 +77,6 @@
 <translation id="1258753120186372309">Google ડૂડલ: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1269129608791067105">તમને તમારો ઇતિહાસ અહીં મળશે</translation>
-<translation id="1273937721055267968"><ph name="DOMAIN" />ને બ્લૉક કરો</translation>
 <translation id="1280921956537356716">ટિપ સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="1289129165308566697">અન્ય ડિવાઇસ પર તમારો ઇતિહાસ જુઓ</translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
@@ -312,6 +311,7 @@
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
 <translation id="2329500425421091035">રજૂ કરી રહ્યાં છીએ Chromeમાં AI મોડ</translation>
 <translation id="2330186936255788117">વધુ બુકમાર્ક</translation>
+<translation id="2330243730505117832">"કોઈ ડિવાઇસ પસંદ કરો" બંધ છે.</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
 <translation id="233375395665273385">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="2334275697832662087">Chromeની AI-સંચાલિત સુરક્ષા તમને ઑનલાઇન જોખમો સામે સુરક્ષિત રાખવામાં મદદ કરે છે, જેથી તમે બ્રાઉઝ કરો ત્યારે તમને વિશ્વાસ રહે</translation>
@@ -336,7 +336,6 @@
 <translation id="2413014528833954543">આ ડિવાઇસ પર પાસવર્ડ ચેક કરી શકતા નથી</translation>
 <translation id="2414886740292270097">ઘાટું</translation>
 <translation id="2415037988255164008">વિન્ડો રિસ્ટોર કરો</translation>
-<translation id="2421705177906985956">હમણાં બતાવવા માટે કોઈ સાઇટ નથી</translation>
 <translation id="2426805022920575512">બીજું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{વીડિયો, સૂચિમાં 1 વીડિયો છે}one{વીડિયો, સૂચિમાં # વીડિયો છે}other{વીડિયો, સૂચિમાં # વીડિયો છે}}</translation>
 <translation id="2433507940547922241">દેખાવ</translation>
@@ -479,7 +478,6 @@
 <translation id="297771753501244313">છેલ્લે ખોલાયા મુજબ સૉર્ટ કરો</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2980545254049127870">મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંથી સરળતાથી લિંક ખોલો</translation>
-<translation id="2983102365694924129">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ બંધ છે.</translation>
 <translation id="2983398917942897288">નિષ્ક્રિય (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">ચિત્રમાં ચિત્રમાંથી બહાર નીકળો</translation>
 <translation id="2984978667043170458">Google Searchમાં આજુબાજુની ટેક્સ્ટ શામેલ કરો</translation>
@@ -491,7 +489,6 @@
 <translation id="2996809686854298943">URL આવશ્યક છે</translation>
 <translation id="3024215143424744261">વાંચન મોડની પસંદગીઓ બંધ કરી</translation>
 <translation id="3026955690410463085">લિંકનો સમાવેશ કરો</translation>
-<translation id="3027644380269727216">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" />માંથી</translation>
 <translation id="3029276696788198026">પહેલેથી લોડ કરેલો કોઈ વિકલ્પ નથી</translation>
 <translation id="3029704984691124060">પાસફ્રેઝેસ મેળ ખાતા નથી</translation>
@@ -500,7 +497,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />સહાય મેળવો<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037517125981011456">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવે છે</translation>
-<translation id="3038272154009688107">બધી સાઇટ જુઓ</translation>
+<translation id="3044436568790455247">"કોઈ ડિવાઇસ પસંદ કરો" સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવ્યું.</translation>
 <translation id="3057938290530993634">આગલી વખતે સરળ ઍક્સેસ માટે, તમારી સૌથી વધુ મુલાકાત લેવાયેલી વેબસાઇટને પિન કરવા ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> બુકમાર્ક}one{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}other{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}}</translation>
 <translation id="3062802207422175757">Chrome પર તમારી રુચિ વિશેના લેખ</translation>
@@ -509,6 +506,7 @@
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3070005020161560471">ઑટોમૅટિક રીતે અનુવાદ કરો</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />પ્રાઇવસી પૉલિસી<ph name="END_LINK3" /> પણ લાગુ થાય છે.</translation>
+<translation id="3075397426753215787">કોઈ ડિવાઇસ પસંદ કરો.</translation>
 <translation id="3080375898390966733">Google Lens વડે ટૅબ શોધો</translation>
 <translation id="3080525922482950719">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
@@ -548,6 +546,7 @@
 <translation id="3282801380074962248">વિભાગ મોટો કરો</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}one{# પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}other{# પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}}</translation>
+<translation id="3287664192482809715">"કોઈ ડિવાઇસ પસંદ કરો" અડધી ઊંચાઈએ ખોલવામાં આવ્યું.</translation>
 <translation id="3293181007446299124">તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે અને તમારી ઓળખને સુરક્ષિત રાખવા માટે રિપોર્ટને થોડા વિલંબ પછી મોકલવામાં આવે છે</translation>
 <translation id="3301639354590628973">એકાઉન્ટ સ્વિચ કરીએ?</translation>
 <translation id="3301936297336370235">પાસવર્ડના સૂચનનું કન્ફર્મેશન</translation>
@@ -566,7 +565,6 @@
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3351959803838327376">વેબસાઇટ પર થોડીવાર દબાવી રાખો અને મેનૂ ખોલો</translation>
 <translation id="3359667936385849800">તમારા વર્તમાન સેવા પ્રદાતાનો ઉપયોગ કરો</translation>
-<translation id="3373701465337594448">જ્યારે ચાલુ હોય, ત્યારે તમારી રુચિઓનું અનુમાન લગાવતી હોય તેવી તમે મુલાકાત લો છો તે સાઇટની સૂચિ અહીં દેખાય છે</translation>
 <translation id="3384347053049321195">છબી શેર કરો</translation>
 <translation id="3385749568468586663">Gemini છૂપા મોડમાં ઉપલબ્ધ નથી</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
@@ -710,7 +708,6 @@
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3976396876660209797">આ શૉર્ટકટ દૂર કરો અને ફરી બનાવો</translation>
 <translation id="397650873162244514"><ph name="TAB_TITLE" />, પિન કરેલું ટૅબ</translation>
-<translation id="3985022125189960801">તમને શું ગમે છે તેનું અનુમાન લગાવી શકતી સાઇટના પૂલમાં જો તમે કોઈ સાઇટ ઇચ્છતા હો, તો તેને ફરીથી ઉમેરો</translation>
 <translation id="3985215325736559418">શું તમે <ph name="FILE_NAME" /> ને ફરી ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="3987993985790029246">લિંક કૉપિ કરો</translation>
 <translation id="3994236846568425219">જ્યારે તમારા ડિવાઇસની ડાર્ક થીમ ચાલુ હોય ત્યારે ડાર્ક થીમ ચાલુ કરો</translation>
@@ -755,7 +752,6 @@
 <translation id="4170577491341606575">તમારું કન્ટેન્ટ મેળવી રહ્યાં છીએ\u2026</translation>
 <translation id="4176838562184310003">Chrome યોગ્ય રીતે શટ ડાઉન થયું નથી અને તમારી ગુમાવેલી વિન્ડો અને ટૅબ રિસ્ટોર કરવાનો પ્રયાસ કરી શકે છે. રિસ્ટોર કરતી વખતે કેટલીક વિન્ડો નાની કરવામાં આવી હોઈ શકે છે.</translation>
 <translation id="4177222230309051052">તમારા બધા બુકમાર્ક મેળવો</translation>
-<translation id="4177501066905053472">જાહેરાતના વિષયો</translation>
 <translation id="417865198503699526">સેટિંગ શોધો</translation>
 <translation id="4180726336228139707">માત્ર આ જ ડિવાઇસ પર</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
@@ -887,7 +883,6 @@
 <translation id="4675298276894277358">આ સાઇટ ફરીથી બતાવવામાં આવશે નહીં</translation>
 <translation id="4678082183394354975">Chromeમાં સાઇટ માટે ઘેરી થીમ ચાલુ છે</translation>
 <translation id="4685741273709472646">ડ્રૉપડાઉન સૂચિમાંથી પસંદ કરો</translation>
-<translation id="4687718960473379118">સાઇટ દ્વારા સૂચવેલી જાહેરાતો</translation>
 <translation id="468924408576231679">વેબપેજ <ph name="PAGE_TITLE" />ની લિંક કૉપિ કરો. સૉર્સ: <ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">શોધ એન્જિન</translation>
 <translation id="469286762610133730">બહેતર કન્ટેન્ટ મેળવો</translation>
@@ -1138,7 +1133,6 @@
 <translation id="5765517223145864268">અમને તમારા અનુભવ વિશે જણાવો. અથવા <ph name="BEGIN_LINK" />તમારા સેટિંગને બદલો<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">બિનમહત્ત્વપૂર્ણ ડેટા</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />માંથી <ph name="SPACE_USED" />નો વપરાશ કરી રહ્યાં છીએ</translation>
-<translation id="5797949256525811424">બ્લૉક કરેલો વિષય</translation>
 <translation id="580893287573699959">તમને જેમાં રુચિ હોય તેવા વિષયો અને સાઇટ મેનેજ કરો</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# કલાક પહેલાં}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="5810288467834065221">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
@@ -1171,7 +1165,6 @@
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, પસંદ કરેલું સાંભળી શકાય તેવું છૂપું ટૅબ</translation>
 <translation id="5932881020239635062">શ્રૃંખલા</translation>
-<translation id="5938820472109305350"><ph name="INTEREST" /> ઉમેરો</translation>
 <translation id="5942872142862698679">શોધવા માટે Googleનો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="5945035219773565305">હાલનો સુઝાવ:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">લાઇવ પેજ જોઈ રહ્યાં છીએ</translation>
@@ -1268,7 +1261,6 @@
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6291294824436685757">બ્રાઉઝિંગ ડેટા ડિલીટ કરો; ડિલીટ કરવા માટેનો ડેટા પસંદ કરો</translation>
-<translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
 <translation id="6301526076346731664">ડેવલપર ટૂલ ખોલો</translation>
 <translation id="630308129961693966">તમારા ઍડ્રેસ બારની સ્થિતિ પસંદ કરો</translation>
@@ -1369,7 +1361,6 @@
 <translation id="6633067410344541938">છૂપા મોડના સત્ર અનલૉક કરો</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
-<translation id="6641780377503683465"><ph name="INTEREST" />ને કાઢી નાખો</translation>
 <translation id="6642299196749785472">ટૅબ જોડો</translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1379,7 +1370,6 @@
 <translation id="6669390930482049506">મને સૂચિત કરો</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
-<translation id="6672917148207387131"><ph name="DOMAIN" /> ઉમેરો</translation>
 <translation id="6676927815633975364">આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6684262542644248484">વેબસાઇટ પર સાઇન ઇન કરો</translation>
 <translation id="6684809838922667136">Chromeને બહેતર બનાવો</translation>
@@ -1481,7 +1471,6 @@
 <translation id="6971862865055170158">મંજૂરી આપશો નહીં</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, નવું કે અપડેટ કરેલું ટૅબ</translation>
 <translation id="6976811588313110624">નવો શૉર્ટકટ ઉમેરો.</translation>
-<translation id="6978717888677691380">તમે બ્લૉક કરેલી સાઇટ</translation>
 <translation id="6979737339423435258">હંમેશાં</translation>
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> મેનૂ હાઇલાઇટ કરેલું છે.</translation>
 <translation id="6983306615164277634">તમે આ સ્થિતિને બદલવા માટે ઍડ્રેસ બારને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
@@ -1601,7 +1590,6 @@
 <translation id="7453810262525006706">બાજુના વ્યૂને નાનું કરો</translation>
 <translation id="7454641608352164238">પર્યાપ્ત જગ્યા નથી</translation>
 <translation id="7454744349230173024">તમારી સંસ્થા દ્વારા પાસવર્ડ સાચવવાનું બંધ કરવામાં આવ્યું છે</translation>
-<translation id="7455988709578031708">તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="7456774706094330779">પહેલેથી લોડ કરવાનો વિસ્તૃત મોડ</translation>
 <translation id="7466328545712777810">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને નોટિફિકેશન મળશે</translation>
 <translation id="7466431077154602932">કૉમ્પેક્ટ વ્યૂ</translation>
@@ -1660,7 +1648,6 @@
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> બંધ છે</translation>
 <translation id="7682724950699840886">નીચેની ટિપ અજમાવી જુઓ: ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે, ફરીથી નિકાસ કરવાનો પ્રયાસ કરો.</translation>
-<translation id="7686086654630106285">સાઇટ દ્વારા સૂચિત જાહેરાતો વિશે વધુ વિગતો</translation>
 <translation id="7690596512217303514">તમારા ડિવાઇસ દ્વારા Chrome ખોલી શક્યું નથી. સમસ્યાને ઠીક કરવા માટે, તમારા ઍપ સ્ટોરમાંથી Chromeની નવીનતમ અપડેટ ડાઉનલોડ કરો.</translation>
 <translation id="7692761875510935111">ઝડપથી બ્રાઉઝરમાં ખોલો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="7695270712963178084">Chrome Finds</translation>
@@ -1817,7 +1804,6 @@
 <translation id="8271267069224406035">સ્પામની જાણ કરો</translation>
 <translation id="8277710303010772444">શોધ શરૂ કરો</translation>
 <translation id="8279945625179116733"><ph name="APP_NAME" /> દ્વારા સુરક્ષિત</translation>
-<translation id="8280797717392145626">લિંક મળી</translation>
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8282297628636750033">શક્ય હોય ત્યારે સાઇટ પર ઘેરી થીમ લાગુ કરો</translation>
 <translation id="8282950411412455249">સુરક્ષા સેટિંગ પર જાઓ</translation>
@@ -2002,7 +1988,6 @@
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
 <translation id="9047347135558855162">Chromeમાં ઝડપથી શોધ શરૂ કરો</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>
-<translation id="9055497320631373736">આ સાઇટને સંભવિત સાઇટની સૂચિમાં પાછી ઉમેરવામાં આવી છે</translation>
 <translation id="9057030985451135243">શેર કરેલા ટૅબના ગ્રૂપ વિશે જાણો</translation>
 <translation id="905722970894408436"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું ચિત્ર-માં-ચિત્રનું ટૅબ</translation>
 <translation id="9063400323119781058">અનસબ્સ્ક્રાઇબ કર્યું</translation>
@@ -2021,7 +2006,6 @@
 <translation id="9086455579313502267">નેટવર્ક ઍક્સેસ કરવામાં અક્ષમ છે</translation>
 <translation id="9093915805850895575">Chrome વિન્ડોમાં ખોલો</translation>
 <translation id="909756639352028172">સૌથી વધુ મનગમતો બનાવેલો અનુભવ મેળવવા માટે, વેબ અને ઍપ ઍક્ટિવિટી તેમજ લિંક કરેલી Google સેવાઓમાં Chromeનો સમાવેશ કરો</translation>
-<translation id="9099220545925418560">તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે. આ સેટિંગ બંધ છે.</translation>
 <translation id="9099674669267916096">પેજની સંખ્યા</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9101137867221042551">મેનેજમેન્ટ</translation>
@@ -2032,7 +2016,6 @@
 <translation id="9112483451228487295">બ્રાઉઝિંગ ડેટા ઝડપથી ડિલીટ કરો</translation>
 <translation id="9124978074365039456">તમારા કૅમેરા અને ફોટો ગૅલરીનો ઉપયોગ કરીને તમે જે જુઓ છો તે ખરીદો, તેનો અનુવાદ કરો અને તેને ઓળખો</translation>
 <translation id="9130135798965366513">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> આ સાઇટ સાથે તમારું <ph name="FIELDS_STRING" /> શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />સેવાની શરતો<ph name="END_LINK2" /> જુઓ.</translation>
-<translation id="9131209053278896908">બ્લૉક કરેલી સાઇટ અહીં દેખાય છે</translation>
 <translation id="9133397713400217035">ઑફલાઇનમાં શોધખોળ કરો</translation>
 <translation id="9143389653531441385"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે સાઇન અપ કરો</translation>
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>

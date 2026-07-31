@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
 <translation id="1559263013367304065">откако користите Google Lens</translation>
 <translation id="1560153516220021659">Копче за собран секундарен алатник</translation>
+<translation id="1562601408588733317">Управувајте со наоѓањето и пополнувањето податоци со Gemini</translation>
 <translation id="1565371473877914088">Нова инкогнито картичка</translation>
 <translation id="1567960978791353852">Прикажи Reading Mode</translation>
 <translation id="1571780780926010134">Картички „Инкогнито“</translation>
@@ -1396,6 +1397,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5666313630530585305">Најавете се на вебсајт.</translation>
 <translation id="5669335982068190158">Бевте одјавени како дел од ресетирањето на вашиот iPhone. Допрете „Продолжи“ подолу за да се најавите.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Управувајте со поврзаните апликации</translation>
 <translation id="567881659373499783">Верзија <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Да се префрли на друга сметка? Незачуваните податоци во сметката ќе се избришат.</translation>
 <translation id="5683499062697987550">За да користите и зачувувате лозинки во вашата сметка на Google, потврдете го вашиот идентитет.</translation>
@@ -1571,6 +1573,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6240553182907836376">Ажурирајте го документот за идентификација</translation>
 <translation id="6240601837375010619">Зачувајте го пасошот</translation>
 <translation id="6241132809279377987">Отклучете повеќе функции за вашиот iPhone со апликациите на Google</translation>
+<translation id="6244366663267187541">Изберете со кои апликации да се поврзува Gemini</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163">Автоматски пополни <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Најавете се на <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7471557245617580330">Создај нова картичка</translation>
 <translation id="7473555040328423550">Додајте картичка</translation>
 <translation id="7476548258282096076">Картичкава ги прикажува вашите најчесто отворани сајтови.</translation>
+<translation id="7482823403440483089">Подобрено автоматско пополнување</translation>
 <translation id="7484645889979462775">Никогаш за оваа локација</translation>
 <translation id="7486006552035434095">Уредите нека ви бидат синхронизирани</translation>
 <translation id="7491131399623468277">Отворете „Поставки“…</translation>
@@ -2195,7 +2199,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Ќе го смените профилот</translation>
 <translation id="8275068909952022340">Повеќе…</translation>
-<translation id="8280797717392145626">Примени се линкови</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8282657446819506217">Отвори во група картички</translation>

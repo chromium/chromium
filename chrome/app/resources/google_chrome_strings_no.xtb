@@ -77,6 +77,7 @@
 <translation id="1698376642261615901">Google Chrome er en nettleser som kjører nettsider og programmer i ekspressfart. Den er rask, stabil og enkel å bruke. Google Chrome har innebygd beskyttelse mot skadelig programvare og svindelforsøk (nettfisking), slik at du kan føle deg tryggere når du surfer på nettet.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome startes på nytt om én time}other{Chrome startes på nytt om # timer}}</translation>
 <translation id="1722488837206509557">Dette gjør at du kan velge blant tilgjengelige enheter og vise innhold på dem.</translation>
+<translation id="1724094881572874997">For å sikre arbeidet ditt i Chrome kan organisasjonen din se eller administrere bestemt informasjon når du er logget på Chrome.</translation>
 <translation id="177180974022074201">Prøv med Gemini i Chrome</translation>
 <translation id="1786003790898721085">Sørg for at du er logget på Chrome på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
 <translation id="1786044937610313874">Snarveier åpnes i Chrome</translation>
@@ -413,6 +414,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="521447420733633466">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5239627039202700673">Bruk Chrome hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
+<translation id="524751727772074981">Spør om hva som helst, akkurat der du er, med Gemini i Chrome</translation>
 <translation id="5251420635869119124">Gjester kan bruke Chrome uten å etterlate seg spor.</translation>
 <translation id="5271833978500241046">Bruk dem sammen med andre Gemini-funksjoner i Chrome</translation>
 <translation id="5286907366254680517">Registrert</translation>

@@ -77,7 +77,6 @@
 <translation id="1258753120186372309">Google 涂鸦：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">阅读清单</translation>
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
-<translation id="1273937721055267968">屏蔽 <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">开启提示通知</translation>
 <translation id="1289129165308566697">查看其他设备上的历史记录</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
@@ -337,7 +336,6 @@
 <translation id="2413014528833954543">无法在此设备上检查密码</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2415037988255164008">要恢复窗口吗？</translation>
-<translation id="2421705177906985956">目前没有可显示的网站</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{视频，列表中有 1 个视频}other{视频，列表中有 # 个视频}}</translation>
 <translation id="2433507940547922241">外观</translation>
@@ -480,7 +478,6 @@
 <translation id="297771753501244313">按上次打开时间排序</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2980545254049127870">轻松打开消息、文档和其他应用中的链接</translation>
-<translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
 <translation id="2983398917942897288">非活跃（<ph name="ITEM_COUNT" /> 个）</translation>
 <translation id="2983835398644161987">退出“画中画”模式</translation>
 <translation id="2984978667043170458">将上下文内容纳入到 Google 搜索查询中</translation>
@@ -492,7 +489,6 @@
 <translation id="2996809686854298943">必须提供网址</translation>
 <translation id="3024215143424744261">已关闭阅读模式偏好设置</translation>
 <translation id="3026955690410463085">包括链接</translation>
-<translation id="3027644380269727216">根据您在网站上的活动推测得出。此设置已开启。</translation>
 <translation id="3027950907978057636">来自<ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">无预加载</translation>
 <translation id="3029704984691124060">密码不匹配</translation>
@@ -501,7 +497,6 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />获取帮助<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037517125981011456">显示 Chrome 登录提示</translation>
-<translation id="3038272154009688107">查看所有网站</translation>
 <translation id="3044436568790455247">“选择设备”对话框已以全屏高度显示。</translation>
 <translation id="3057938290530993634">按住即可固定最常用的网站，方便以后访问</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
@@ -570,7 +565,6 @@
 <translation id="3340978935015468852">设置</translation>
 <translation id="3351959803838327376">长按网站打开菜单</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
-<translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3385749568468586663">Gemini 在无痕模式下无法使用</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
@@ -714,7 +708,6 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3976396876660209797">移除并重新创建此快捷方式</translation>
 <translation id="397650873162244514"><ph name="TAB_TITLE" />，固定标签页</translation>
-<translation id="3985022125189960801">若要允许该网站推测您的喜好，请将其重新添加到网站列表中</translation>
 <translation id="3985215325736559418">要重新下载“<ph name="FILE_NAME" />”吗？</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3994236846568425219">在设备开启深色主题时启用深色主题</translation>
@@ -759,7 +752,6 @@
 <translation id="4170577491341606575">正在获取您的数据\u2026</translation>
 <translation id="4176838562184310003">Chrome 未正确关闭，可以尝试恢复您丢失的窗口和标签页。恢复后，部分窗口可能会最小化。</translation>
 <translation id="4177222230309051052">获取您的所有书签</translation>
-<translation id="4177501066905053472">广告主题</translation>
 <translation id="417865198503699526">搜索某项设置</translation>
 <translation id="4180726336228139707">仅在此设备上</translation>
 <translation id="4181841719683918333">语言</translation>
@@ -891,7 +883,6 @@
 <translation id="4675298276894277358">此网站不会再显示</translation>
 <translation id="4678082183394354975">Chrome 中已为网站开启深色主题</translation>
 <translation id="4685741273709472646">从下拉列表中选择</translation>
-<translation id="4687718960473379118">网站建议的广告</translation>
 <translation id="468924408576231679">复制指向“<ph name="PAGE_TITLE" />”网页的链接。来源：<ph name="PAGE_URL" /></translation>
 <translation id="4692623383562244444">搜索引擎</translation>
 <translation id="469286762610133730">获得更合乎需求的内容</translation>
@@ -1142,7 +1133,6 @@
 <translation id="5765517223145864268">与我们分享您的体验。或者，<ph name="BEGIN_LINK" />更改您的设置<ph name="END_LINK" />。</translation>
 <translation id="5776970333778123608">不重要的数据</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_USED" />，共 <ph name="SPACE_AVAILABLE" /></translation>
-<translation id="5797949256525811424">已屏蔽此主题</translation>
 <translation id="580893287573699959">管理您感兴趣的主题和网站</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小时前}other{# 小时前}}</translation>
 <translation id="5810288467834065221">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
@@ -1175,7 +1165,6 @@
 <translation id="5907542076239273525">书签已保存到“<ph name="FOLDER_NAME" />”中。</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />，已选择的无痕式标签页，正在播放音频</translation>
 <translation id="5932881020239635062">序列号</translation>
-<translation id="5938820472109305350">添加“<ph name="INTEREST" />”</translation>
 <translation id="5942872142862698679">目前使用的搜索引擎是 Google</translation>
 <translation id="5945035219773565305">当前建议：<ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">目前查看的是实际网页</translation>
@@ -1272,7 +1261,6 @@
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6278428485366576908">主题</translation>
 <translation id="6291294824436685757">删除浏览数据；选择要删除的数据</translation>
-<translation id="6295158916970320988">所有网站</translation>
 <translation id="629730747756840877">账号</translation>
 <translation id="6301526076346731664">打开开发者工具</translation>
 <translation id="630308129961693966">选择地址栏的位置</translation>
@@ -1373,7 +1361,6 @@
 <translation id="6633067410344541938">解锁无痕模式</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6637100877383020115">为帮助改进应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
-<translation id="6641780377503683465">移除“<ph name="INTEREST" />”</translation>
 <translation id="6642299196749785472">附加标签页</translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}other{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}}</translation>
@@ -1383,7 +1370,6 @@
 <translation id="6669390930482049506">通知我</translation>
 <translation id="6671495933530132209">复制图片</translation>
 <translation id="6672697278890207089">请输入口令</translation>
-<translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
 <translation id="6676927815633975364">登录此网站和 Chrome</translation>
 <translation id="6684262542644248484">登录相应网站</translation>
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
@@ -1485,7 +1471,6 @@
 <translation id="6971862865055170158">禁止</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />，新标签页或更新后的标签页</translation>
 <translation id="6976811588313110624">添加新快捷键。</translation>
-<translation id="6978717888677691380">您已屏蔽的网站</translation>
 <translation id="6979737339423435258">时间不限</translation>
 <translation id="6980258170429555165">“<ph name="MENU_NAME" />”菜单处于突出显示状态。</translation>
 <translation id="6983306615164277634">您也可轻触并按住地址栏来更改其位置。</translation>
@@ -1603,7 +1588,6 @@
 <translation id="7453810262525006706">合拢为侧边视图</translation>
 <translation id="7454641608352164238">空间不足</translation>
 <translation id="7454744349230173024">您的组织已关闭密码保存功能</translation>
-<translation id="7455988709578031708">根据您的浏览记录推测得出。此设置已开启。</translation>
 <translation id="7456774706094330779">扩展型预加载</translation>
 <translation id="7466328545712777810">任一网站上的商品降价时，您都会收到通知</translation>
 <translation id="7466431077154602932">精简视图</translation>
@@ -1662,7 +1646,6 @@
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
 <translation id="7666185984446444960">已关闭 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="7682724950699840886">请尝试按以下提示操作：确保您的设备上有足够的空间，然后重新尝试导出。</translation>
-<translation id="7686086654630106285">详细了解网站建议的广告</translation>
 <translation id="7690596512217303514">您的设备无法打开 Chrome。若要解决此问题，请从应用商店下载最新的 Chrome 更新。</translation>
 <translation id="7692761875510935111">快速在浏览器中打开。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="7695270712963178084">Chrome 发现</translation>
@@ -1819,7 +1802,6 @@
 <translation id="8271267069224406035">举报垃圾信息</translation>
 <translation id="8277710303010772444">开始搜索</translation>
 <translation id="8279945625179116733">由“<ph name="APP_NAME" />”提供安全保护</translation>
-<translation id="8280797717392145626">已收到链接</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
@@ -2004,7 +1986,6 @@
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9047347135558855162">在 Chrome 中快速发起搜索</translation>
 <translation id="9050666287014529139">密码</translation>
-<translation id="9055497320631373736">已将此网站恢复为能够建议广告的潜在网站</translation>
 <translation id="9057030985451135243">了解分享的标签页分组</translation>
 <translation id="905722970894408436"><ph name="TAB_TITLE" />，选中的且固定的画中画标签页</translation>
 <translation id="9063400323119781058">已退订</translation>
@@ -2023,7 +2004,6 @@
 <translation id="9086455579313502267">无法访问网络</translation>
 <translation id="9093915805850895575">在 Chrome 窗口中打开</translation>
 <translation id="909756639352028172">若要获得最具个性化的体验，请在“网络与应用活动记录”和关联的 Google 服务中包括 Chrome</translation>
-<translation id="9099220545925418560">根据您的浏览记录。此设置已关闭。</translation>
 <translation id="9099674669267916096">页数</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9101137867221042551">管理</translation>
@@ -2034,7 +2014,6 @@
 <translation id="9112483451228487295">快速删除浏览数据</translation>
 <translation id="9124978074365039456">打开相机和图库，轻松购物、实时翻译、拍照识物</translation>
 <translation id="9130135798965366513">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
-<translation id="9131209053278896908">已屏蔽的网站会显示在这里</translation>
 <translation id="9133397713400217035">离线浏览</translation>
 <translation id="9143389653531441385">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册</translation>
 <translation id="9148126808321036104">重新登录</translation>

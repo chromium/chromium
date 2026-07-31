@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Zatvori kartice bez arhiv.</translation>
 <translation id="1559263013367304065">od korišćenja Google objektiva</translation>
 <translation id="1560153516220021659">Skupljeno dugme sekundarne trake s alatkama</translation>
+<translation id="1562601408588733317">Upravljajte pronalaženjem i popunjavanjem informacija pomoću Gemini-ja</translation>
 <translation id="1565371473877914088">Nova kartica bez arhiviranja</translation>
 <translation id="1567960978791353852">Prikaži Režim čitanja</translation>
 <translation id="1571780780926010134">Kartice bez arhiviranja</translation>
@@ -1396,6 +1397,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5666313630530585305">Prijavite se na veb-sajt.</translation>
 <translation id="5669335982068190158">Odjavljeni ste u sklopu resetovanja iPhone-a. Dodirnite Nastavi u nastavku da biste se prijavili.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Upravljajte Povezanim aplikacijama</translation>
 <translation id="567881659373499783">Verzija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Želite da promenite nalog? Nesačuvani podaci naloga će biti izbrisani.</translation>
 <translation id="5683499062697987550">Da biste koristili i čuvali lozinke na Google nalogu, potvrdite svoj identitet.</translation>
@@ -1571,6 +1573,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6240553182907836376">Ažurirajte identifikacioni dokument</translation>
 <translation id="6240601837375010619">Sačuvajte pasoš</translation>
 <translation id="6241132809279377987">Otključajte još funkcija za iPhone pomoću Google aplikacija</translation>
+<translation id="6244366663267187541">Odaberite aplikacije sa kojima se Gemini povezuje</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
 <translation id="6251835855431997163">Automatski popunite <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Prijavite se na <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="7471557245617580330">Napravi novu karticu</translation>
 <translation id="7473555040328423550">Dodajte karticu</translation>
 <translation id="7476548258282096076">Ova kartica prikazuje najposećenije sajtove.</translation>
+<translation id="7482823403440483089">Poboljšano automatsko popunjavanje</translation>
 <translation id="7484645889979462775">Nikad za ovaj sajt</translation>
 <translation id="7486006552035434095">Sinhronizujte uređaje</translation>
 <translation id="7491131399623468277">Idite u Podešavanja…</translation>
@@ -2195,7 +2199,6 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Promenićete profil</translation>
 <translation id="8275068909952022340">Još…</translation>
-<translation id="8280797717392145626">Linkovi su primljeni</translation>
 <translation id="8281781826761538115">Podrazumevano – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282657446819506217">Otvori u grupi kartica</translation>

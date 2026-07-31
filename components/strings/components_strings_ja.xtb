@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">用紙の種類</translation>
 <translation id="1142965388643537393">旅行情報</translation>
 <translation id="1143142264369994168">証明書の署名者</translation>
-<translation id="1144136880160289237">アクティブなトピックはまだありません</translation>
 <translation id="1149617035358809955">お支払い情報を入力できるよう、本人確認を行ってください</translation>
 <translation id="1150565364351027703">サングラス</translation>
 <translation id="1150979032973867961">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のパソコンのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
@@ -351,6 +350,7 @@
 <translation id="1539840569003678498">レポートの送信日時:</translation>
 <translation id="1542105669288201090">ビジネス教育</translation>
 <translation id="1542830386724426410">購入手続きの際に、ご利用いただけるカードの特典とメリットを表示します。カード発行会社の利用規約が適用されます。<ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />詳細<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">組織のポリシーに基づき、コピーしたコンテンツに機密情報が含まれていないかスキャンしています。スキャン完了後、状況に応じて貼り付けが許可されます。</translation>
 <translation id="1545757265410828525">価格の推移</translation>
 <translation id="1546286808622193216">Gemini を使用してカードの特典を比較します</translation>
 <translation id="1549470594296187301">この機能を使用するには JavaScript を有効にする必要があります。</translation>
@@ -372,7 +372,6 @@
 <translation id="1564634006476980707">検索 URL には HTTPS スキームを推奨します: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ネットワーク情報（アドレス、インターフェース設定、接続品質など）</translation>
 <translation id="1567040042588613346">このポリシーは想定どおり動作していますが、同じ値が設定されている別のポリシーが優先されています。</translation>
-<translation id="1567405528131216114"><ph name="TOPIC" /> を追加</translation>
 <translation id="1569487616857761740">有効期限の入力</translation>
 <translation id="1569694109004336106">Google Chrome がパスワード入力で Windows Hello を有効にしようとしています。</translation>
 <translation id="1569905000953679183">拡張機能のインストール ポリシーの取得</translation>
@@ -382,7 +381,6 @@
 <translation id="1579189948231786790">このサイトは組織によってブロックされています</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
-<translation id="1584492003828271317">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、ウェブサイトが提案する広告、Cookie の設定状況、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="1585306568496579337">拡張機能「<ph name="EXTENSION_NAME" />」が <ph name="HANDLER_HOSTNAME" /> 経由で <ph name="PROTOCOL" /> リンクを開くことを求めています</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
 <translation id="1588438908519853928">ノーマル</translation>
@@ -400,7 +398,6 @@
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611101756749861742">ロール 2</translation>
 <translation id="1611854593425834707">キャストするデバイスリストを閉じる</translation>
-<translation id="1612199629998703524">トピックの管理</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="161612500287664753">Google 検索でこのページについて質問する</translation>
@@ -680,7 +677,6 @@
 <translation id="2071852865256799872">お使いのブラウザは組織によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">情報はデバイスのみに保存されます</translation>
-<translation id="2074733626795553847"><ph name="TOPIC" /> のブロックを解除</translation>
 <translation id="2074771604462073334">過去にアクセス</translation>
 <translation id="2078956195623975415">音楽ゲーム、ダンスゲーム</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -731,7 +727,6 @@
 <translation id="213826338245044447">モバイルのブックマーク</translation>
 <translation id="2141000681034340397">入力内容を編集</translation>
 <translation id="2141475438898772664">4 回払いまたは毎月の分割払い</translation>
-<translation id="2144171668675205303">アクティブなトピックはありません</translation>
 <translation id="2145193671493396738">経済ニュース</translation>
 <translation id="214556005048008348">支払いをキャンセル</translation>
 <translation id="2147117373852943630">楽器</translation>
@@ -1022,7 +1017,6 @@
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="254947805923345898">ポリシーの値が無効です。</translation>
 <translation id="2549836668759467704">建築コンサルティング、請負</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />、<ph name="TOPIC_2" />、その他</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> から無効な応答が送信されました。</translation>
 <translation id="2551608178605132291">住所: <ph name="ADDRESS" />。</translation>
 <translation id="2552246211866555379">はがき</translation>
@@ -1056,7 +1050,6 @@
 <translation id="2605979593348332811">よみがな</translation>
 <translation id="2606760465469169465">自動確認</translation>
 <translation id="2607101320794533334">サブジェクトの公開鍵情報</translation>
-<translation id="2608019759319359258">トピックをブロックすると、そのトピックは広告のパーソナライズに使用されなくなります</translation>
 <translation id="2610561535971892504">クリックしてコピー</translation>
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="2612993535136743634">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
@@ -1496,10 +1489,10 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理します</translation>
 <translation id="3299098170013242198">パスワード入力で Windows Hello が有効になっています</translation>
+<translation id="3299197721044635447">組織のポリシーにより、管理対象の Chrome コンテキスト外にコンテンツを貼り付けられませんでした</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> の使用中にエラーが発生しました</translation>
 <translation id="3303176609391916566">30x42 インチ</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
-<translation id="3303872874382375219">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK1" />広告のトピック<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定<ph name="LINK_END2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK3" />広告のプライバシー管理について<ph name="LINK_END3" /></translation>
 <translation id="3304073249511302126">Bluetooth スキャン</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
@@ -1538,7 +1531,6 @@
 <translation id="3377144306166885718">このサーバーは TLS の廃止されたバージョンを使用しています。</translation>
 <translation id="3377188786107721145">ポリシー解析エラーです</translation>
 <translation id="3377642479079205807">細い</translation>
-<translation id="3378612801784846695">トピックは最近の閲覧履歴に基づいて判断され、サイトでユーザーの個人情報を保護しながら、パーソナライズド広告を表示する際に使用されます</translation>
 <translation id="3380365263193509176">不明なエラー</translation>
 <translation id="3380864720620200369">クライアント ID:</translation>
 <translation id="3383566085871012386">現在の優先順位</translation>
@@ -1575,7 +1567,6 @@
 <translation id="3433111389595862568">コラボレーション、会議用ソフトウェア</translation>
 <translation id="3433144818443565002">ボイスチャット、ビデオチャット</translation>
 <translation id="3434025015623587566">Google パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
-<translation id="3434346831962601311">ブロック中のトピックはありません</translation>
 <translation id="343474037147570563">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="3435557549311968410">連続（短尺）</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
@@ -1727,7 +1718,6 @@
 <translation id="3662040827609932717">この IBAN は Google ウォレットに保存され、Google サービス全体で使用できるようになります。</translation>
 <translation id="3664479564786885722">この商品を販売している他のショップの購入オプションを検索します。</translation>
 <translation id="3664782872746246217">キーワード:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />詳細<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">番号</translation>
 <translation id="3670159164851218963">AI モードの履歴</translation>
 <translation id="3670229581627177274">Bluetooth を ON にする</translation>
@@ -1959,7 +1949,6 @@
 
     サイトの所有者に連絡して、HTTPS へのアップグレードを提案することもできます。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
-<translation id="4030545038933060179">この設定が有効な場合、最近の閲覧履歴に基づいたトピックのリストがここに表示されます</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4036753017940930924">用地、土地</translation>
 <translation id="403724377879219932">ローカル ネットワーク上の他のデバイスへのアクセスを要求できる</translation>
@@ -2064,7 +2053,6 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{他 <ph name="ITEM_COUNT" /> 件のアイテム}other{他 <ph name="ITEM_COUNT" /> 件のアイテム}}</translation>
 <translation id="4176463684765177261">停止中</translation>
-<translation id="4177501066905053472">広告のトピック</translation>
 <translation id="4178863275556660738">カード以外のお支払い方法で支払う</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">価格トラッキングを停止</translation>
@@ -2293,7 +2281,6 @@
 <translation id="4523580145196408446">リンク済み</translation>
 <translation id="4523643381056109546">サイネージ</translation>
 <translation id="4524138615196389145">今後 WebAuthn を使用して、カードの確認をより迅速に行います</translation>
-<translation id="45243788195988825"><ph name="TOPIC" /> をブロック</translation>
 <translation id="4528888973346221791">仕事用プロフィールの情報（ユーザー名など）</translation>
 <translation id="4530347922939905757">テキスト メッセージ</translation>
 <translation id="4531477351494678589">仮想カード番号:</translation>
@@ -2498,6 +2485,7 @@
 <translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます。</translation>
 <translation id="4866506163384898554">カーソルを表示するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
 <translation id="4868277513442568587">共有タブグループを引き続き使用するには、Chrome を更新してください</translation>
+<translation id="4873312501243535625">メディア ファイル チェッカー</translation>
 <translation id="4873616204573862158">眼鏡</translation>
 <translation id="4873807733347502026">マウスのロックと使用</translation>
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
@@ -2522,7 +2510,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">オリンピック</translation>
 <translation id="4897851261703006488">このポリシーで指定できるヘッダーのサイズは最大 <ph name="MAX_HEADER_SIZE_LIMIT" /> KB です。</translation>
-<translation id="4898742041545089450">このトピックのブロックを解除しました。トピックは閲覧履歴に基づいてアクティブになることがあります。</translation>
 <translation id="4900217275619098670">ロール 9</translation>
 <translation id="4901052769830245369">ラベル（半光沢）</translation>
 <translation id="4901162432287938633">衛生用品、トイレタリー</translation>
@@ -2617,10 +2604,8 @@
 <translation id="5043480802608081735">コピーしたリンク</translation>
 <translation id="5043753287208271200">黄 3</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
-<translation id="5048293684454354469">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK" />広告のプライバシー管理について<ph name="LINK_END" /></translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" /> です。Tab キーを押すと、この検索候補の後に使用できる検索ショートカットが表示されます</translation>
 <translation id="5052488928733955073">情報を入力できません。接続をご確認ください。</translation>
-<translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5053116470141135293">このカードでご購入手続きを行う際に仮想カード番号が入力され、実際のカード情報が保護されます。管理は Google ウォレットで行います。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="5056587122125565772">画像を作成</translation>
@@ -2719,7 +2704,6 @@
 <translation id="5206392433295093945">ベッドルーム</translation>
 <translation id="5209670883520018268">トレイ 20</translation>
 <translation id="5212364581680288382">オートバイ レース</translation>
-<translation id="5214542134842513912">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します。大まかなカテゴリをオフにすると、その関連トピックもブロックされます。</translation>
 <translation id="52163492208010719">身分証明書を管理</translation>
 <translation id="521659676233207110">トレイ 13</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
@@ -4079,7 +4063,6 @@
 <translation id="7305767780379163575">写真を保存できません</translation>
 <translation id="7307063504147610123">アドレスをこのデバイスに保存しました</translation>
 <translation id="7308436126008021607">バックグラウンド同期</translation>
-<translation id="7309058266849426521">詳しくは、Chrome で広告のプライバシーを管理する方法についての説明をご覧ください。</translation>
 <translation id="7310392214323165548">間もなくデバイスが再起動します</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7313107491291103073">あなたの組織ではこのサイトはポリシーに違反している可能性があるものとして報告されています。</translation>
@@ -4347,6 +4330,7 @@
 <translation id="767550629621587224">プレカットタブ</translation>
 <translation id="7675756033024037212">スクロールとズームは許可されませんでした</translation>
 <translation id="7676643023259824263">クリップボードにあるテキスト<ph name="TEXT" />を検索します</translation>
+<translation id="7676840398262504532">組織がコピー操作をモニタリングしています</translation>
 <translation id="7678730592635586336">動画を撮り直す</translation>
 <translation id="7679287273775285018">電子ウォレットで支払う</translation>
 <translation id="7679367271685653708">Chrome の設定で閲覧履歴を表示、管理します</translation>
@@ -4470,7 +4454,6 @@
 <translation id="7877007680666472091">保護されたコンテンツ ID</translation>
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
 <translation id="7885670691503039914">値下げしたサイトがある場合、メールで通知します。このページはブックマーク フォルダ「<ph name="LAST_BOOKMARKS_FOLDER" />」に保存されます。</translation>
-<translation id="7886897188117641322">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します</translation>
 <translation id="7887683347370398519">CVC を確認してからもう一度お試しください</translation>
 <translation id="7887885240995164102">ピクチャー イン ピクチャーを開始</translation>
 <translation id="7888367499748383555">手数料なし、年利 0% の分割払い（利用条件があります）</translation>
@@ -4580,7 +4563,6 @@
 <translation id="8046360364391076336">産業資材、設備</translation>
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8057023045886711556">コメディー映画</translation>
-<translation id="805766869470867930">ブロックしているトピックはありません</translation>
 <translation id="8057711352706143257">「<ph name="SOFTWARE_NAME" />」が正しく設定されていません。通常、この問題は「<ph name="SOFTWARE_NAME" />」をアンインストールすることで解決します。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">任意</translation>
 <translation id="8061691770921837575">メイク、化粧品</translation>
@@ -4627,10 +4609,10 @@
 <translation id="8130113808541743942">移動先...</translation>
 <translation id="813024282736408069">自動入力で仮想カードを有効にする</translation>
 <translation id="8131740175452115882">確認</translation>
-<translation id="8133495915926741232">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します。大まかなカテゴリをオフにすると、その関連トピックもブロックされます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">採用、人事</translation>
 <translation id="8135546115396015134">左矢印キー</translation>
 <translation id="8137456439814903304">エネルギー、公共事業</translation>
+<translation id="814071672416123670">組織のポリシーにより、コンテンツをコピーできませんでした</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 か月前に作成}other{{NUM_MONTHS} か月前に作成}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />、現在のデフォルト設定。<ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF バージョン:</translation>
@@ -4846,7 +4828,6 @@
 <translation id="8467494337615822642">Chrome 設定の安全チェックページに移動</translation>
 <translation id="8468358362970107653">C3 封筒</translation>
 <translation id="8469428721212363950">小売業</translation>
-<translation id="8472700501934242014">ブロックしたトピック</translation>
 <translation id="8473626140772740486">300x450 mm</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
@@ -4992,7 +4973,6 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
 <translation id="8733345475331865475">自動車保険</translation>
-<translation id="8733764070897080460">ユーザーはウェブサイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。詳細</translation>
 <translation id="8734529307927223492">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="8736059027199600831">30x40 インチ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングします</translation>

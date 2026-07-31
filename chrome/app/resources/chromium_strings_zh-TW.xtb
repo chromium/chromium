@@ -571,6 +571,7 @@
 <translation id="7173822816570314652">由於 Chromium 資料閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其刪除。當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
+<translation id="7204669035546236137">使用 Chromium 內建 Gemini，隨時隨地都能提問</translation>
 <translation id="7213008767289637091">將 Chromium 保留在 Dock 上，隨時都能快速存取</translation>
 <translation id="7213407614656404070">你只要在訊息、文件和其他應用程式中點選連結，即可透過 Chromium 開啟</translation>
 <translation id="7216228761061470870">在電腦上使用圖片搜尋時，網頁標題、網址和內容 (包括 PDF) 都會傳送到伺服器</translation>
@@ -627,6 +628,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7745317241717453663">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
 <translation id="7750130090210923118">重設為預設的 Chromium</translation>
+<translation id="7752521946322750699">為確保你在 Chromium 上的工作資料安全無虞，當你登入 Chromium 時，貴機構將可查看或管理特定資訊。</translation>
 <translation id="7781047659465034537">將 Chromium 設為預設瀏覽器，並釘選到工作列</translation>
 <translation id="7786760609782648049">加快 Chromium 的運作速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary 版</translation>

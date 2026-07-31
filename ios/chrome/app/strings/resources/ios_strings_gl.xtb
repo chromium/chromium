@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">Menú → Xestor de contrasinais</translation>
 <translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="1503814213414825943">Selecciona as contas que queiras exportar a outra aplicación.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
 <translation id="1506733063065214205">Cliente MLS de RCS</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">Pechar pestanas incógnito</translation>
 <translation id="1559263013367304065">desde que usas Google Lens</translation>
 <translation id="1560153516220021659">Botón contraído da barra de ferramentas secundaria</translation>
+<translation id="1562601408588733317">Xestiona as opcións de buscar e completar información con Gemini</translation>
 <translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
 <translation id="1567960978791353852">Mostrar modo de lectura</translation>
 <translation id="1571780780926010134">Pestanas do modo de incógnito</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">Nesta tarxeta mostraranse os problemas de privacidade ou seguranza que detecte automaticamente Comprobación de seguranza.</translation>
 <translation id="1840320537320704887">Quitáronse as preferencias da páxina Nova pestana</translation>
 <translation id="1845230888742614096">Manter grupo</translation>
+<translation id="1853558655412913122">Agora podes cambiar a posición da barra de enderezos en Configuración e, a continuación, en Barra de enderezos</translation>
 <translation id="1853692000353488670">Nova pestana de incógnito</translation>
 <translation id="1854463785401910334">Fai buscas nas pestanas abertas</translation>
 <translation id="1860609647735325606">Explicar con Gemini</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">Unha vez programada, a eliminación dun ficheiro non se pode cancelar.</translation>
 <translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), perfil xestionado pola túa organización.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tocar a cor do grupo <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5009127379503001909">Seguir explorando</translation>
@@ -1396,6 +1400,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5666313630530585305">Inicia sesión nun sitio web.</translation>
 <translation id="5669335982068190158">Pechouse sesión como parte do restablecemento do iPhone. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Xestionar aplicacións conectadas</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Queres cambiar de conta? Eliminaranse os datos da conta que non se gardasen.</translation>
 <translation id="5683499062697987550">Para gardar os contrasinais na túa Conta de Google e poder usalos, verifica a túa identidade.</translation>
@@ -1571,6 +1576,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6240553182907836376">Actualiza o documento de identidade</translation>
 <translation id="6240601837375010619">Garda o pasaporte</translation>
 <translation id="6241132809279377987">Accede a máis funcións no teu iPhone coas aplicacións de Google</translation>
+<translation id="6244366663267187541">Escolle a que aplicacións se conecta Gemini</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
 <translation id="6251835855431997163">Autocompletar <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Iniciar sesión en <ph name="URL" /></translation>
@@ -1803,6 +1809,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="6924299883035848912">Ocultar Eliminar datos de navegación</translation>
 <translation id="6930162026494574854">Restaurar config. tradución</translation>
 <translation id="6930799952781667037">Toca para cambiar a este idioma.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Define un contrasinal</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6946722113367118030">Pensar</translation>
@@ -1852,6 +1859,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7138678301420049075">Outros</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>
 <translation id="714291438898585119">Marcado con estrela</translation>
 <translation id="7145337554745942724">Actualiza o permiso de conducir</translation>
@@ -1917,6 +1925,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7402602673739047753">{count,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google ({email}).}other{Hai {count} marcadores gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google ({email}).}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) perderá inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos non lidos.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Si, acepto</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
@@ -1946,6 +1955,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7471557245617580330">Crear unha pestana nova</translation>
 <translation id="7473555040328423550">Engadir pestana</translation>
 <translation id="7476548258282096076">Esta tarxeta mostra os sitios que máis visitas.</translation>
+<translation id="7482823403440483089">Función de autocompletar mellorada</translation>
 <translation id="7484645889979462775">Nunca neste sitio</translation>
 <translation id="7486006552035434095">Mantén sincronizados os teus dispositivos</translation>
 <translation id="7491131399623468277">Ir á configuración…</translation>
@@ -2195,7 +2205,6 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Estás a piques de cambiar de perfil</translation>
 <translation id="8275068909952022340">Máis…</translation>
-<translation id="8280797717392145626">Ligazóns recibidas</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282657446819506217">Abrir nun grupo de pestanas</translation>
@@ -2205,6 +2214,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8292893224181644074">Descarga completada</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="8319282042900445670">Estableceuse o recordatorio para a seguinte data: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="8320212361750431956">Actividade recente</translation>
@@ -2492,6 +2502,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="9219154867334666734">Realizar buscas nas pestanas…</translation>
 <translation id="9223358826628549784">Enviouse o informe de erros.</translation>
 <translation id="926455622548529175">Cambiar e eliminar</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Texto destacado</translation>
 <translation id="932305336591073205">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="939472100615258482">Sitio actual</translation>

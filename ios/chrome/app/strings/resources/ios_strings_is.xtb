@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
 <translation id="1559263013367304065">frá notkun Google-linsu</translation>
 <translation id="1560153516220021659">Samandreginn hnappur viðbótartækjastiku</translation>
+<translation id="1562601408588733317">Stjórnaðu því hvernig Gemini finnur og fyllir út upplýsingar</translation>
 <translation id="1565371473877914088">Nýr huliðsflipi</translation>
 <translation id="1567960978791353852">Sýna lesstillingu</translation>
 <translation id="1571780780926010134">Huliðsflipar</translation>
@@ -1396,6 +1397,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5666313630530585305">Skráðu þig inn á vefsvæði.</translation>
 <translation id="5669335982068190158">Þú varst skráð(ur) út í tengslum við endurstillingu iPhone. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig inn.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Stjórna tengdum forritum</translation>
 <translation id="567881659373499783">Útgáfa <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Skipta um reikning? Óvistuðum reikningsgögnum verður eytt.</translation>
 <translation id="5683499062697987550">Staðfestu að þetta sért þú til að nota og vista aðgangsorð á Google-reikningnum þínum.</translation>
@@ -1571,6 +1573,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6240553182907836376">Uppfæra nafnskírteini</translation>
 <translation id="6240601837375010619">Vista vegabréf</translation>
 <translation id="6241132809279377987">Fáðu fleiri eiginleika fyrir iPhone með Google-forritum</translation>
+<translation id="6244366663267187541">Veldu hvaða forritum Gemini tengist</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6251835855431997163">Sjálfvirk útfylling fyrir <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Skrá inn á <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7471557245617580330">Búa til nýjan flipa</translation>
 <translation id="7473555040328423550">Bæta flipa við</translation>
 <translation id="7476548258282096076">Þetta kort sýnir vefsvæðin sem þú opnar oftast.</translation>
+<translation id="7482823403440483089">Ítarleg sjálfvirk útfylling</translation>
 <translation id="7484645889979462775">Aldrei fyrir þetta vefsvæði</translation>
 <translation id="7486006552035434095">Haltu tækjunum þínum samstilltum</translation>
 <translation id="7491131399623468277">Opna stillingar…</translation>
@@ -2195,7 +2199,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Þú ert að fara að skipta um prófíl</translation>
 <translation id="8275068909952022340">Meira…</translation>
-<translation id="8280797717392145626">Tenglar mótteknir</translation>
 <translation id="8281781826761538115">Sjálfgefið – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Sleppa</translation>
 <translation id="8282657446819506217">Opna í flipahóp</translation>

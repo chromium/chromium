@@ -381,7 +381,6 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1272508081857842302">Отворање <ph name="BEGIN_LINK" />поддржани линкови<ph name="END_LINK" /></translation>
-<translation id="1273937721055267968">Блокирај <ph name="DOMAIN" /></translation>
 <translation id="1274721046703404848">Управувајте со врската меѓу пребарувачките услуги и апликациите Google Workspace, како Google Drive</translation>
 <translation id="1274997165432133392">Колачиња и други податоци за сајтовите</translation>
 <translation id="1275936815032730048">стартер + стрелка надесно</translation>
@@ -1819,7 +1818,6 @@
 <translation id="2416435988630956212">Функциски копчиња на тастатурата</translation>
 <translation id="2419131370336513030">Приказ на инсталирани апликации</translation>
 <translation id="2419706071571366386">Од безбедносни причини, одјавете се од компјутерот кога не го користите.</translation>
-<translation id="2421705177906985956">Нема сајтови за прикажување во моментов</translation>
 <translation id="2423506062824112361">Преземањето на содржините не успеа поради непозната причина.</translation>
 <translation id="2423578206845792524">Сни&amp;ми слика како…</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гостин}one{Гости (#)}other{Гости (#)}}</translation>
@@ -2573,7 +2571,6 @@
 <translation id="2979893796619951531">Изостави го сајтот</translation>
 <translation id="2981113813906970160">Прикажи голем курсор на глушец</translation>
 <translation id="2981728693230031897">Резимирајте ја страницава со Gemini</translation>
-<translation id="2983102365694924129">Според вашата активност на сајт. Оваа поставка е исклучена.</translation>
 <translation id="2983311431122838216">Прашајте го „AI-режимот“ во „Пребарување на Google“</translation>
 <translation id="2983373101216420412">Ниво на батерија на кутијата <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2983818520079887040">Поставки...</translation>
@@ -2653,7 +2650,6 @@
 <translation id="3024374909719388945">Користи 24-часовен часовник</translation>
 <translation id="3025905136198521738">Подреди го поделениот приказ – активен е приказот одлево</translation>
 <translation id="3027296729579831126">Вклучете „Споделување во близина“</translation>
-<translation id="3027644380269727216">Според вашата активност на сајт. Оваа поставка е вклучена.</translation>
 <translation id="3028445648481691885">Преземањето е откажано</translation>
 <translation id="3029466929721441205">Прикажи ја алатката пенкало на полицата</translation>
 <translation id="3029808567601324798">Време до заклучување</translation>
@@ -2669,7 +2665,6 @@
 <translation id="3036546437875325427">Овозможи Flash</translation>
 <translation id="3036907164806060573">Сон</translation>
 <translation id="3037193115779933814">Букви и броеви</translation>
-<translation id="3038272154009688107">Прикажи ги сите сајтови</translation>
 <translation id="3038612606416062604">Додај печатач рачно</translation>
 <translation id="3038628620670416486">Лоцирајте ги копчињата на глувчето</translation>
 <translation id="303955801043931176">Картичката е затворена</translation>
@@ -3083,7 +3078,6 @@
 <translation id="3372602033006349389">На други уреди</translation>
 <translation id="337286756654493126">Читајте датотеки и папки што ги отворате во апликацијата</translation>
 <translation id="3373059063088819384">Отвори во „Режим на читање“</translation>
-<translation id="3373701465337594448">Кога е вклучено, список со сајтови кои ги посетувате што ги погодуваат вашите интереси ќе се појави тука</translation>
 <translation id="3374294321938930390">Ознаката „<ph name="BOOKMARK_TITLE" />“ е преместена во „<ph name="NEW_FOLDER_TITLE" />“.</translation>
 <translation id="3374750024044667358">Лесно враќајте се на сајтовите што сте ги посетиле така што ќе се најавите на истата сметка на двата уреда</translation>
 <translation id="3376035595160918049">Прегледајте го ажурирањето за апликацијата</translation>
@@ -3115,7 +3109,6 @@
 <translation id="3394072120086516913">Компјутер поврзан со жица и уред со Cast поврзан на Wi-Fi</translation>
 <translation id="3394850431319394743">Има дозвола да користи идентификатори за да пушта заштитени содржини</translation>
 <translation id="339722927132407568">Замрзнува</translation>
-<translation id="339831248473754720">Отвори „<ph name="SELECTION" />“ во „Режим за читање“</translation>
 <translation id="3399432415385675819">Известувањата ќе се оневозможат</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> Х <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) - испреплетено</translation>
 <translation id="3401484564516348917">да чита податоци за прелистувачот, оперативниот систем, уредот, инсталираниот софтвер, вредностите од регистарот и датотеките</translation>
@@ -3595,7 +3588,6 @@
 <translation id="3748424433435232460">Веќе е зачувана лозинка за оваа сметка на уредов</translation>
 <translation id="3748466028423001972">Замени со приказот долу</translation>
 <translation id="3748706263662799310">Пријавете грешка</translation>
-<translation id="3749724428455457489">Дознајте повеќе за рекламите предложени од сајтови</translation>
 <translation id="3752115502500640407">Споделете копија од вашата лозинка за <ph name="WEBSITE" /></translation>
 <translation id="3753033997400164841">Складирајте еднаш. Користете насекаде</translation>
 <translation id="3753142252662437130">Филтри за боја</translation>
@@ -3620,7 +3612,6 @@
 <translation id="37613671848467444">Отвори во &amp;Инкогнито прозорец</translation>
 <translation id="3761560059647741692">Пејзаж</translation>
 <translation id="3761733456040768239">Повеќе дејства за <ph name="CARD_DESCRIPTION" />, CVC е зачуван</translation>
-<translation id="3763433740586298940">Може да ги блокирате сајтовите што не ви се допаѓаат. Chrome автоматски ги брише од списокот и сајтовите што се постари од 30 дена.</translation>
 <translation id="3763549179847864476">Копче за враќање на „Водич за приватност“</translation>
 <translation id="3764314093345384080">Детални информации за верзијата</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуницирај со USB-уред}one{Комуницирај со # USB-уред}other{Комуницирај со # USB-уреди}}</translation>
@@ -3939,7 +3930,6 @@
 <translation id="3984536049089846927">Следна страница</translation>
 <translation id="398477389655464998">Копирај го линкот до нагласената ставка</translation>
 <translation id="3984862166739904574">Дефиниција на „Брзи одговори“</translation>
-<translation id="3985022125189960801">Повторно додајте сајт ако сакате да биде во групата сајтови што можат да погодуваат што ви се допаѓа</translation>
 <translation id="3986813315215454677">Bluetooth на ChromeOS</translation>
 <translation id="3987307536043958493">Блокирај и напушти</translation>
 <translation id="3987544746655539083">Продолжи да го блокираш пристапот на сајтов до локацијата</translation>
@@ -4158,7 +4148,6 @@
 <translation id="4175137578744761569">Светловиолеотова и бела</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4176864026061939326">Со уредов се управува. Администраторот на вашиот уред бара нов профил за сметката <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="4177668342649553942">Отвори <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Екстензиите се додатоци за Chrome што може да ви помогнат да се организирате, да ги поедноставувате задачите и да го приспособувате прелистувањето</translation>
 <translation id="4177860704813504507">Лозинка или отпечаток</translation>
@@ -4809,7 +4798,6 @@
 <translation id="4685044513206555960">Инсталирањето веб-апликации е блокирано со администраторски правила.</translation>
 <translation id="4687238339694011189">Уверете се дека печатачот е вклучен и поврзан на истата мрежа како и вашиот Chromebook или користете USB-кабел</translation>
 <translation id="4687613760714619596">Непознат уред (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">Реклами предложени од сајтови</translation>
 <translation id="4688036121858134881">ID на локална евиденција: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> го враќа уредов на претходна верзија (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">Проверете ја интернет-врската и обидете се повторно да го користите Gemini</translation>
@@ -5058,7 +5046,6 @@
 <translation id="4871719318659334896">Затвори ја групата</translation>
 <translation id="4872192066608821120">За да ги увезете лозинките, изберете CSV-датотека</translation>
 <translation id="4872212987539553601">Поставете шифрирање на уредот</translation>
-<translation id="4873312501243535625">Проверувач на медиумска датотека</translation>
 <translation id="4875690134140862902">Картичка</translation>
 <translation id="4876273079589074638">Помогнете им на нашите инженери да го истражат и поправат падот. Наведете ги прецизните чекори ако можете. Сите детали се важни.</translation>
 <translation id="4876305945144899064">Нема корисничко име</translation>
@@ -5342,7 +5329,6 @@
 <translation id="5091636240353511739">Прикажи го PIN-кодот</translation>
 <translation id="5092567114307895466">Проверете дали сте подобни и дали ги исполнувате условите</translation>
 <translation id="5093447877601682598">Испратете повратни информации за лентата за картички</translation>
-<translation id="5093477827231450397">Список со сајтови што сте ги блокирале и кои не сакате да предлагаат реклами на други сајтови</translation>
 <translation id="5093569275467863761">Подрамка за инкогнито за кеш за движење наназад/нанапред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Со апликацијава може да отворате и уредувате поддржани датотеки од апликацијата Files или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, <ph name="BEGIN_LINK" />дознајте како да поставите стандардни апликации на вашиот уред<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Комуницирај со матични апликации што соработуваат</translation>
@@ -5351,7 +5337,6 @@
 <translation id="5095848221827496531">Поништување на изборот</translation>
 <translation id="5096775069898886423">За сајтовите што не поддржуваат безбедни врски, добијте предупредување пред да го отворите сајтот</translation>
 <translation id="5097002363526479830">Не успеа да се поврзе на мрежа „<ph name="NAME" />“: <ph name="DETAILS" /></translation>
-<translation id="5097349930204431044">Сајтовите што ги посетувате може да утврдуваат што ви се допаѓа и потоа да ви предлагаат реклами кога ќе продолжите со прелистувањето</translation>
 <translation id="5097649414558628673">Алатка: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Автоматски кликнувај кога курсорот ќе застане</translation>
 <translation id="5098963855433723436">Се отвора во засебна апликација</translation>
@@ -5989,7 +5974,6 @@
 <translation id="5611474372949142946">Затвори ги картичките подолу</translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
-<translation id="561552177910095306">Список со сајтови што сте ги посетиле неодамна кои може да предлагаат реклами на други сајтови додека прелистувате</translation>
 <translation id="5616571005307953937">Најстара</translation>
 <translation id="5616726534702877126">Резервирајте големина</translation>
 <translation id="561698261642843490">Затворете го Firefox</translation>
@@ -6072,7 +6056,6 @@
 <translation id="5684110242705861346">Екстензијата „<ph name="NAME" />“ е додадена според правилата на вашата организација и ја контролира поставкава. <ph name="BEGIN_LINK" />Погледнете ги деталите<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Детали за Wi-Fi</translation>
 <translation id="5687340364605915800">Сајтовите постапуваат според сопствено убедување при одговарање на барањево</translation>
-<translation id="5687606994963670306">Chrome автоматски ги брише сајтовите што се постари од 30 дена. Сајт што ќе го отворите повторно може одново да се појави на списокот. Или може да блокирате сајт да ви прикажува реклами. Дознајте повеќе за <ph name="BEGIN_LINK" />управувањето со вашата приватност за реклами на Chrome.<ph name="END_LINK" /></translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="56907980372820799">Поврзи податоци</translation>
@@ -7314,7 +7297,6 @@
 <translation id="6670983860904543332">Автоматските ажурирања ви ги обезбедуваат најновите функции. Истражете ги истакнатите функции од неодамнешните ажурирања.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="6672697278890207089">Внесете ја вашата лозинка</translation>
-<translation id="6672917148207387131">Додај <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">Режимот „Инкогнито“ <ph name="BEGIN_LINK" />ја штити приватноста на вашето прелистување од другите<ph name="END_LINK" /> што го користат уредот</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">Го продолжува траењето на батеријата со намалување на осветленоста, ограничување на активноста и визуелните ефекти во заднина, одложување на известувањата и вклучување „Штедач на енергија“ на Chrome.</translation>
@@ -7663,7 +7645,6 @@
 <translation id="6924940560840297548">Картичките се отстранети бидејќи не сте ги користеле неодамна</translation>
 <translation id="6928650056523249512">Автоматско отстранување на дозволите за некористени сајтови</translation>
 <translation id="6929639755025587400">Се инсталира апликацијата…</translation>
-<translation id="6929669104135164900">Отвори „<ph name="SELECTION" />“ во „Режим за читање“</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Една екстензија е одбиена}one{# екстензија е одбиена}other{# екстензии се одбиени}}</translation>
 <translation id="6930337524857202955">Достапно е ново преземање</translation>
 <translation id="6930477763029357444">Дозволите што ќе ѝ ги доделите на <ph name="APP_NAME" /> ќе важат и за <ph name="PARENT_APP_NAME" /> и за нејзините инсталирани апликации.</translation>
@@ -7718,7 +7699,6 @@
 <translation id="697312151395002334">Дозволено им е да испраќаат скокачки програми и да користат пренасочувања</translation>
 <translation id="69739764870135975">Ако Google го користите и како стандарден пребарувач, тогаш ќе добивате подобри и контекстуално релевантни предлози</translation>
 <translation id="6978121630131642226">Пребарувачи</translation>
-<translation id="6978717888677691380">Сајтови што сте ги блокирале</translation>
 <translation id="6979041727349121225">Штедач на енергија</translation>
 <translation id="6979044105893951891">Стартувај ја и излези од надгледуваната гостинска сесија</translation>
 <translation id="6979158407327259162">Google Диск</translation>
@@ -8336,7 +8316,6 @@
 <translation id="7453008956351770337">Со избирање на печатачов, давате дозвола следната екстензија да пристапува до него:</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Вашата организација го исклучи зачувувањето лозинки</translation>
-<translation id="7455988709578031708">Според вашата историја на прелистувањето. Оваа поставка е вклучена.</translation>
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">Продолжено вчитување однапред</translation>
 <translation id="7456847797759667638">Отвори локација...</translation>
@@ -8636,7 +8615,6 @@
 <translation id="7685049629764448582">Меморија на JavaScript</translation>
 <translation id="7685087414635069102">Потребен е PIN</translation>
 <translation id="7685351732518564314">Притиснете некое копче на уредот <ph name="DEVICE_NAME" />.</translation>
-<translation id="7686086654630106285">Повеќе за реклами предложени од сајтови</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Изберете од списокот</translation>
 <translation id="7690853182226561458">Додај &amp;папка</translation>
@@ -8853,7 +8831,6 @@
 <translation id="7867763367097007079">{COUNT,plural, =1{Зачувајте ја лозинката за <ph name="WEBSITE" /> во вашата сметка на Google}one{Зачувајте ги лозинките за <ph name="WEBSITE" /> во вашата сметка на Google}other{Зачувајте ги лозинките за <ph name="WEBSITE" /> во вашата сметка на Google}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - спарено</translation>
 <translation id="7870005751202275328">Кликнете ја лентата за адреса</translation>
-<translation id="787069710204604994">На пример, ако посетите сајт што продава патики за маратон, сајтот може да одлучи дека сте заинтересирани да трчате маратон. Подоцна ако посетите друг сајт, тој сајт може да ви прикаже реклама за патики за трчање предложени од првиот сајт.</translation>
 <translation id="7871109039747854576">Користи ги копчињата <ph name="COMMA" /> и <ph name="PERIOD" /> за прелистување список со кандидати</translation>
 <translation id="7871277686245037315">search + стрелка налево</translation>
 <translation id="7871691770940645922">Виртуелен браилов приказ</translation>
@@ -9864,7 +9841,6 @@
 <translation id="8648408795949963811">Температура на бојата на „Ноќното светло“</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> сака: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
 <translation id="8648889679430451455">Избриши ги персонализираните податоци</translation>
-<translation id="8649026945479135076">Нормално е сајтовите што ги посетувате да ги помнат работите што ве интересираат за да го персонализираат вашето доживување. Сајтовите можат и да зачувуваат податоци со Chrome за вашите интереси.</translation>
 <translation id="8651585100578802546">Принуди повторно вчитување на страницата</translation>
 <translation id="8651806635673244884">Може да ги вратите картичките најгоре со кликнување со десното копче на која било картичка и избирање „Прикажи ги картичките хоризонтално“</translation>
 <translation id="8652400352452647993">Грешка на екстензијата на пакетот</translation>
@@ -10472,7 +10448,6 @@
 <translation id="9096221857560878399">Споредете ги опциите</translation>
 <translation id="9096776523567481218">не е инсталирано локално</translation>
 <translation id="9098860402274800697">Отстрани ги Google Play и апликациите за Android</translation>
-<translation id="9099220545925418560">Според вашата историја на прелистувањето. Оваа поставка е исклучена.</translation>
 <translation id="9099383880226822604">Прашума</translation>
 <translation id="910000385680858937">Дозволено – <ph name="PERMISSION_DETAILS" />. Поврзете микрофон на уредот.</translation>
 <translation id="9100416672768993722">За да се префрлите на последно користениот метод за внесување, притиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Празно место<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -10522,7 +10497,6 @@
 <translation id="9130135798965366513">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето <ph name="FIELDS_STRING" /> со сајтов. Погледнете ги <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Условите за користење<ph name="END_LINK2" /> на сајтов.</translation>
 <translation id="9130364135697530260">Вметнатите содржини на сајтов може да ги користат податоците што ги зачувале за вас</translation>
 <translation id="9130857050314385402">Насловите и URL-адресите на картичките се испраќаат до Google кога користите вештина</translation>
-<translation id="9131209053278896908">Блокираните сајтови ќе се појавуваат тука</translation>
 <translation id="9131487537093447019">Испраќајте и примајте пораки од уреди со Bluetooth.</translation>
 <translation id="9133568201369135151">Прибирањето дијагностички податоци заврши. Податоциве опфаќаат некои од вашите лични податоци.</translation>
 <translation id="9133985615769429248">Ако го споделувате овој уред со други, може да го користите заклучувањето екран за да потврдувате дека сте вие секогаш кога користите зачувана лозинка</translation>

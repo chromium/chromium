@@ -79,6 +79,7 @@
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1049795001945932310">&amp;ভাষা সেটিংস</translation>
 <translation id="1050693411695664090">দুর্বল</translation>
+<translation id="1050765387089990494">আমন্ত্রণ প্রত্যাখ্যান করে একটি সংক্ষিপ্ত, নম্রভাবে উত্তর ড্রাফ্ট করো</translation>
 <translation id="1053226848101751430">এন্ট্রি মোছা হয়েছে</translation>
 <translation id="1054048317165655285">আপনার ফোন সেট আপ করা সম্পূর্ণ করুন</translation>
 <translation id="1054153489933238809">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
@@ -109,6 +110,7 @@
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> সেকেন্ডে অন্য ব্রাউজারে খোলা হচ্ছে</translation>
 <translation id="1071661533099313342">ভিউ আলাদা করুন</translation>
 <translation id="1072700771426194907">ইউএসবি ডিভাইস শনাক্ত করা হয়েছে</translation>
+<translation id="1073951898092443918">আমার ইমেলের টোন পরিবর্তন করে সেটি আরও বেশি বিশ্বাসযোগ্য করে তোলো</translation>
 <translation id="1075920807995555452">আপনার <ph name="DEVICE_TYPE" />-এ আপনার উদ্যোগের ম্যানেজ করা পরিবেশে টুল, এডিটর ও আইডিই (IDE) রান করান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করুন</translation>
 <translation id="1076730357641144594"><ph name="GOOGLE_PASSWORD_MANAGER" />-এ সেভ করা আপনার পাসকী দেখতে ও ম্যানেজ করতে পারবেন</translation>
@@ -363,6 +365,7 @@
 <translation id="1256143630373008432">সেল্ফ টেস্ট করা যায়নি</translation>
 <translation id="1257336506558170607">বেছে নেওয়া সার্টিফিকেট এক্সপোর্ট করুন</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
+<translation id="1259438590315804994">নির্দিষ্ট কোনও রোলের জন্য আমার দক্ষতা ও অভিজ্ঞতা হাইলাইট করে একটি কভার লেটারের ভূমিকা ড্রাফ্ট করো</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> থেকে সবসময় পপ-আপ এবং রিডাইরেক্টের অনুমতি দিন</translation>
 <translation id="1261380933454402672">মাঝারি রকমের</translation>
 <translation id="1262395978737369974">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ব্যবহার করার অনুমতি সবসময় আছে</translation>
@@ -381,7 +384,6 @@
 <translation id="126768002343224824">১৬x</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1272508081857842302"><ph name="BEGIN_LINK" />কাজ করে এমন লিঙ্ক<ph name="END_LINK" /> খোলা হচ্ছে</translation>
-<translation id="1273937721055267968"><ph name="DOMAIN" /> ব্লক করুন</translation>
 <translation id="1274721046703404848">Search পরিষেবা ও Google Drive-এর মতো Google Workspace অ্যাপের মধ্যে কানেকশন ম্যানেজ করুন</translation>
 <translation id="1274997165432133392">কুকিজ এবং অন্য সাইট ডেটা</translation>
 <translation id="1275936815032730048">launcher + right arrow</translation>
@@ -655,9 +657,11 @@
 <translation id="1506187449813838456">পিচ বাড়ান</translation>
 <translation id="1507170440449692343">এই পৃষ্ঠাটিকে আপনার ক্যামেরা অ্যাক্সেস করা থেকে অবরুদ্ধ করা হয়েছে৷</translation>
 <translation id="1507246803636407672">এবং পরিত্যাগ</translation>
+<translation id="1508605873202255562">আমার লক্ষ্য পূরণ করতে কাস্টমাইজ করা ট্র্যাকার তৈরি করো</translation>
 <translation id="1508931164824684991">সাইট জাভাস্ক্রিপ্ট ব্যবহার করতে পারে</translation>
 <translation id="1509163368529404530">&amp;গ্রুপ আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
 <translation id="1509281256533087115">USB এর মাধ্যমে যেকোনো <ph name="DEVICE_NAME_AND_VENDOR" /> অ্যাক্সেস করুন</translation>
+<translation id="1510135664727683766">Gemini-র সাথে আপনার কথোপকথন বা আপনার Google Workspace ডেটা পর্যালোচনা করা অথবা জেনারেটিভ AI মডেল উন্নত করতেও তা ব্যবহার করা হবে না। Gemini হল AI এবং এটি ভুল করতে পারে।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1510341833810331442">কোনও সাইটকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দিন</translation>
 <translation id="1510882959204224895">উইন্ডোতে খুলুন</translation>
@@ -710,6 +714,7 @@
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> অ্যাক্সেস করতে চায়৷ এটি আপনার ফাইলগুলিকে মডিফাই করতে বা মুছে ফেলতে পারে৷</translation>
 <translation id="1549966883323105187">আরও চটপট আপনার সেভ করা পাসওয়ার্ড পান</translation>
 <translation id="1550656959113606473">ডিফল্ট ক্রোম</translation>
+<translation id="1550906923175308360">আজকের জন্য আমার একটি 'করণীয়' তালিকা তৈরি করো যাতে আমি নিজের কাজ ঠিকমতো করতে পারি</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" এক্সটেনশনের মাধ্যমে ডিফল্ট সার্চ ইঞ্জিনকে ওভাররাইড করা হয়েছে এবং এখন <ph name="SEARCH_PROVIDER_DOMAIN" />-এর মাধ্যমে কন্ট্রোল করা হচ্ছে</translation>
 <translation id="1552752544932680961">এক্সটেনশান পরিচালনা করুন</translation>
 <translation id="1553538517812678578">সীমাহীন</translation>
@@ -1166,6 +1171,7 @@
 <translation id="1892453608039100484">১. নিচে <ph name="BUTTON_LABEL" /> বোতামে ক্লিক করুন
 ২. আপনার Windows সেটিংসে <ph name="BUTTON_2" /> বোতামে ক্লিক করুন</translation>
 <translation id="1895658205118569222">বন্ধ করুন</translation>
+<translation id="1896353439080510710">Google AI উন্নত করতে চ্যাট পর্যালোচনা ও ব্যবহার করা হয়। Gemini হল AI এবং এটি ভুল করতে পারে। আপনি <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />নিজের অ্যাক্টিভিটি ম্যানেজ<ph name="END_LINK_MANAGE_ACTIVITY" /> করতে পারবেন, এর মধ্যে আপনার লোকেশনের তথ্যও রয়েছে। <ph name="BEGIN_LINK_LEARN_MORE" />আপনার পছন্দ সম্পর্কে আরও জানুন<ph name="END_LINK_LEARN_MORE" />।</translation>
 <translation id="1897120393475391208">শক্তিশালী পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="1897860317037652061">স্ক্যান করা যায়নি</translation>
 <translation id="1898804291554630487">এই পৃষ্ঠা সম্পর্কে জিজ্ঞেস করুন</translation>
@@ -1233,6 +1239,7 @@
 <translation id="1940221956626514677">টুলবার কাস্টমাইজ করুন</translation>
 <translation id="1940546824932169984">সংযুক্ত ডিভাইস</translation>
 <translation id="194081218158106711">পরিবর্তিত পাসওয়ার্ড কনফার্ম করা হচ্ছে...</translation>
+<translation id="1940937679128415504">আজ রাতে কাছাকাছি রেস্তোরাঁয় কোনও টেবিল খালি আছে?</translation>
 <translation id="1941410638996203291">শুরু করার সময় <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ভার্সন: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">Microsoft OneDrive-এ অটোমেটিক কানেক্ট করা জন্য আপনার অ্যাডমিনিস্ট্রেটর আপনার অ্যাকাউন্ট কনফিগার করেছেন, তবে কোনও সমস্যা হয়েছে।</translation>
@@ -1819,7 +1826,6 @@
 <translation id="2416435988630956212">কীবোর্ডের ফাংশন কী</translation>
 <translation id="2419131370336513030">ইনস্টল করা অ্যাপ দেখুন</translation>
 <translation id="2419706071571366386">নিরাপত্তার কারণে, আপনার কম্পিউটার ব্যবহার করা না হলে সাইন-আউট করুন।</translation>
-<translation id="2421705177906985956">এই মুহূর্তে দেখানোর মতো কোনও সাইট নেই</translation>
 <translation id="2423506062824112361">অজানা কারণে কন্টেন্ট ডাউনলোড করা যায়নি।</translation>
 <translation id="2423578206845792524">এই হিসেবে ছবি সেভ করুন...</translation>
 <translation id="2424424966051154874">{0,plural, =1{গেস্ট}one{গেস্ট (#)}other{গেস্ট (#)}}</translation>
@@ -2524,6 +2530,7 @@
 <translation id="2939908794993783865">বন্ধ থাকা অতিরিক্ত সাইট</translation>
 <translation id="2939938020978911855">উপলব্ধ ব্লুটুথ ডিভাইসগুলি দেখান</translation>
 <translation id="2941112035454246133">নিম্ন</translation>
+<translation id="2942170180325421996">বন্ধুর সাথে একটি তর্কের মীমাংসা করতে আমাকে সাহায্য করো; এমন একটি নিরপেক্ষ ও তথ্যনির্ভর বিশ্লেষণ দাও যেখানে দুই পক্ষকেই সমানভাবে তুলে ধরা হয়েছে</translation>
 <translation id="2942560570858569904">অপেক্ষা করা হচ্ছে...</translation>
 <translation id="2942581856830209953">এই পৃষ্ঠাটি কাস্টমাইজ করুন</translation>
 <translation id="2942707801577151363">Word, Excel ও PowerPoint ফাইল খুলুন, এডিট এবং সেভ করুন। কিছু ফিচারের জন্য সাবস্ক্রিপশনের প্রয়োজন হতে পারে।</translation>
@@ -2573,7 +2580,6 @@
 <translation id="2979893796619951531">সাইট বাদ দিন</translation>
 <translation id="2981113813906970160">বড় মাউস কার্সার দেখান</translation>
 <translation id="2981728693230031897">Gemini-র সাহায্যে এই পৃষ্ঠার সারসংক্ষেপ তৈরি করুন</translation>
-<translation id="2983102365694924129">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="2983311431122838216">Google Search-এ AI মোডকে জিজ্ঞাসা করুন</translation>
 <translation id="2983373101216420412">কেসের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
 <translation id="2983818520079887040">সেটিংস...</translation>
@@ -2653,7 +2659,6 @@
 <translation id="3024374909719388945">24-ঘন্টার ঘড়ি ব্যবহার করুন</translation>
 <translation id="3025905136198521738">স্প্লিট ভিউ সাজান - লেফ্ট ভিউ অ্যাক্টিভ আছে</translation>
 <translation id="3027296729579831126">'নিয়ারবাই শেয়ার' ফিচারটি চালু করুন</translation>
-<translation id="3027644380269727216">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি চালু করা আছে।</translation>
 <translation id="3028445648481691885">ডাউনলোড বাতিল করা হয়েছে</translation>
 <translation id="3029466929721441205">শেল্ফে স্টাইলাস টুল দেখুন</translation>
 <translation id="3029808567601324798">লক করার সময়</translation>
@@ -2669,7 +2674,6 @@
 <translation id="3036546437875325427">Flash সক্ষম করুন</translation>
 <translation id="3036907164806060573">স্বপ্ন</translation>
 <translation id="3037193115779933814">অক্ষর ও সংখ্যা</translation>
-<translation id="3038272154009688107">সব সাইট দেখুন</translation>
 <translation id="3038612606416062604">নিজ হাতে একটি প্রিন্টার যোগ করুন</translation>
 <translation id="3038628620670416486">আপনার মাউসে থাকা বোতামে ক্লিক করুন</translation>
 <translation id="303955801043931176">ট্যাব বন্ধ করা হয়েছে</translation>
@@ -2839,6 +2843,7 @@
 <translation id="3179982752812949580">টেক্সটের ফন্ট</translation>
 <translation id="31806439105337256">ট্যাবগুলি উল্লম্বভাবে দেখুন</translation>
 <translation id="3180990259147710757">চোয়াল বাঁদিকে নিয়ে যান</translation>
+<translation id="3181307292207270140">আমার এখন আরামদায়ক কোনও ক্যাফেতে বসে একটু নিজের মতো করে সময় কাটাতে ইচ্ছে করছে, যেখানে বই পড়া যাবে, পাশাপাশি কিছু কাজও সেরে নেওয়া যেতে পারে। আশেপাশে এমন কোনও জায়গা খুঁজে দিতে পারবে যেখানকার পরিবেশ শান্ত, আরামদায়ক হবে এবং ভরসাযোগ্য ওয়াই-ফাই কানেকশন থাকবে?</translation>
 <translation id="3181825792072797598">সিঙ্ক চালু করুন</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
 <translation id="3182749001423093222">বানান পরীক্ষা</translation>
@@ -3083,7 +3088,6 @@
 <translation id="3372602033006349389">অন্য ডিভাইসে</translation>
 <translation id="337286756654493126">আপনি অ্যাপ্লিকেশানটিতে খোলেন এমন ফোল্ডারগুলি পড়ে</translation>
 <translation id="3373059063088819384">'Reading Mode' খুলুন</translation>
-<translation id="3373701465337594448">চালু থাকাকালীন, আপনার পছন্দ অনুমান করতে পারে এমন সাইটের তালিকা এখানে দেখা যাবে</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' '<ph name="NEW_FOLDER_TITLE" />'-এ সরানো হয়েছে।</translation>
 <translation id="3374750024044667358">দুটি ডিভাইসেই একই অ্যাকাউন্টে সাইন-ইন করে আপনার দেখা সাইটগুলিতে সহজেই ফিরে যান</translation>
 <translation id="3376035595160918049">অ্যাপ আপডেট পর্যালোচনা করুন</translation>
@@ -3115,7 +3119,6 @@
 <translation id="3394072120086516913">PC তার দিয়ে যুক্ত এবং কাস্ট ডিভাইস ওয়াই-ফাই নেটওয়ার্কে আছে</translation>
 <translation id="3394850431319394743">সুরক্ষিত কন্টেন্ট চালানোর জন্য শনাক্তকারী ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="339722927132407568">আটকে যায়</translation>
-<translation id="339831248473754720">“<ph name="SELECTION" />” রিডিং মোডে খুলুন</translation>
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> হার্জ) - একত্রে</translation>
 <translation id="3401484564516348917">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার, রেজিস্ট্রি ভ্যালু এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
@@ -3140,6 +3143,7 @@
 <translation id="3415580428903497523">আপনার অপারেটিং সিস্টেম থেকে ইমপোর্ট করা স্থানীয় সার্টিফিকেট ব্যবহার করুন</translation>
 <translation id="341589277604221596">লাইভ ক্যাপশন - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">সবসময় সম্পূর্ণ ইউআরএল দেখুন</translation>
+<translation id="3417390269491141648">আমার হেল্থ প্ল্যানের বিকল্পগুলির মধ্যে তুলনা করো এবং সেগুলির মধ্যে যেসব মূল পার্থক্য রয়েছে তার ব্রেকডাউন তৈরি করো</translation>
 <translation id="3417835166382867856">ট্যাব সার্চ করুন</translation>
 <translation id="3417836307470882032">মিলিটারি টাইম</translation>
 <translation id="3418798368381485936">এই অ্যাকাউন্ট ব্যবহার করে আপনি সাইন-ইন করতে পারবেন না</translation>
@@ -3448,6 +3452,7 @@
 <translation id="3647654707956482440">এই লিঙ্ক ব্যবহার করা যাচ্ছে না। লিখতে গিয়ে কিছু ভুল হয়েছে কিনা চেক করুন অথবা আবার চেষ্টা করতে অন্য একটি লিঙ্ক ব্যবহার করুন।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> শনাক্ত হয়েছে</translation>
+<translation id="3648667207586409316">স্ট্রেস কমাতে আমি কী কী করতে পারি?</translation>
 <translation id="3650845953328929506">লগ আপলোড করা বাকি আছে।</translation>
 <translation id="3651488188562686558">ওয়াই ফাই থেকে সংযোগ বিচ্ছিন্ন করুন</translation>
 <translation id="3652181838577940678">আপনার পেনে থাকা বোতামে ক্লিক করুন</translation>
@@ -3595,7 +3600,6 @@
 <translation id="3748424433435232460">এই অ্যাকাউন্টের জন্য একটি পাসওয়ার্ড আগে থেকেই এই ডিভাইসে সেভ করা আছে</translation>
 <translation id="3748466028423001972">নিচের ভিউয়ের সাথে অদল বদল করুন</translation>
 <translation id="3748706263662799310">একটি বাগ রিপোর্ট করুন</translation>
-<translation id="3749724428455457489">সাইটের সাজেস্ট করা বিজ্ঞাপন সম্পর্কে আরও জানুন</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" />-এর জন্য আপনার পাসওয়ার্ডের কপি শেয়ার করুন</translation>
 <translation id="3753033997400164841">একবার সেভ করুন। সব জায়গায় ব্যবহার করুন</translation>
 <translation id="3753142252662437130">কালার ফিল্টার</translation>
@@ -3620,7 +3624,6 @@
 <translation id="37613671848467444">ছদ্মবেশী উইন্ডোতে খুলু&amp;ন</translation>
 <translation id="3761560059647741692">ল্যান্ডস্কেপ</translation>
 <translation id="3761733456040768239"><ph name="CARD_DESCRIPTION" />-এর জন্য আরও অ্যাকশন, CVC সেভ করা হয়েছে</translation>
-<translation id="3763433740586298940">আপনি চান না এমন সাইটগুলি ব্লক করতে পারবেন। এছাড়াও তালিকা থেকে ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়।</translation>
 <translation id="3763549179847864476">গোপনীয়তা সংক্রান্ত গাইডে ফিরে যাওয়ার বোতাম</translation>
 <translation id="3764314093345384080">বিল্ড সম্পর্কিত বিস্তারিত তথ্য</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{একটি USB ডিভাইসের সাথে যোগাযোগ করুন}one{# USB ডিভাইসের সাথে যোগাযোগ করুন}other{# USB ডিভাইসের সাথে যোগাযোগ করুন}}</translation>
@@ -3654,6 +3657,7 @@
 <translation id="3786224729726357296"><ph name="SITE" />-এর সাইট ডেটা ও অনুমতি মুছুন</translation>
 <translation id="3786834302860277193">কম্পোজিশন টেক্সটের জন্য আন্ডারলাইন দেখুন</translation>
 <translation id="3786890785076278600">স্ট্যাটিক লাইন</translation>
+<translation id="3787429331139352881">নিম্নলিখিত টেক্সটটি কর্মক্ষেত্রের সাথে মানানসই হয় এমন পেশাদার পদ্ধতিতে, নম্রভাবে ও স্পষ্ট করে আবার লেখো। মূল মেসেজটি অপরিবর্তিত রেখে এক্সিকিউটিভ অডিয়েন্সের জন্য উপযুক্ত করে তুলতে টোন উন্নত করো: [এখানে আপনার টেক্সট লিখুন]</translation>
 <translation id="3787434344076711519">অনুবাদের জন্য অপেক্ষা করা হচ্ছে</translation>
 <translation id="3789432704615470433">SharePoint ও OneDrive ফাইল</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
@@ -3938,12 +3942,12 @@
 <translation id="3984536049089846927">পরের পৃষ্ঠা</translation>
 <translation id="398477389655464998">হাইলাইট করা টেক্সটের লিঙ্ক কপি করুন</translation>
 <translation id="3984862166739904574">কুইক আন্সারের সংজ্ঞা</translation>
-<translation id="3985022125189960801">আপনি কী পছন্দ করেন তা অনুমান করতে পারে এমন সাইটগুলির পুলে আপনি চাইলে একটি সাইট আবার যোগ করুন</translation>
 <translation id="3986813315215454677">ChromeOS ব্লুটুথ</translation>
 <translation id="3987307536043958493">ব্লক করুন এবং ছেড়ে বেরিয়ে আসুন</translation>
 <translation id="3987544746655539083">আপনার লোকেশন অ্যাক্সেস করা থেকে এই সাইটকে ব্লক করে রাখুন</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
 <translation id="3988124842897276887">এই ট্যাব একটি USB ডিভাইসের সাথে কানেক্ট করা রয়েছে</translation>
+<translation id="3988734044246990738">আমার আসন্ন ট্রিপের জন্য প্যাকিং লিস্ট তৈরি করো। আমি যাতে কোনও গুরুত্বপূর্ণ বিষয় ভুলে না যাই তা নিশ্চিত করতে আমাকে সাহায্য করো</translation>
 <translation id="3989635538409502728">সাইন-আউট করুন</translation>
 <translation id="399179161741278232">আমদানিকৃত</translation>
 <translation id="3992008114154328194">ডাউনলোড হচ্ছে <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
@@ -3999,6 +4003,7 @@
 <translation id="4039966970282098406">মাইক্রোফোন, ক্যামেরা এবং আরও অনেক কিছুর কন্ট্রোল অ্যাক্সেস করে আপনার গোপনীয়তা ম্যানেজ করুন</translation>
 <translation id="4040041015953651705">যে ভাষা থেকে অনুবাদ করতে হবে</translation>
 <translation id="4040854068229263729">&amp;Remove from dictionary</translation>
+<translation id="4042611013811262481">রেসিপি বা মিল প্ল্যানের ভিত্তিতে আমার জন্য মুদিখানার তালিকা তৈরি করো</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{পৃষ্ঠাটি ছেড়ে যান}one{পৃষ্ঠাগুলি ছেড়ে যান}other{পৃষ্ঠাগুলি ছেড়ে যান}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যান</translation>
 <translation id="4043267180218562935">কার্সর সাইজ</translation>
@@ -4158,7 +4163,6 @@
 <translation id="4175137578744761569">হালকা বেগুনি ও সাদা</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
 <translation id="4176864026061939326">এই ডিভাইসটি ম্যানেজ করা হয়। <ph name="USER_EMAIL_ADDRESS" /> অ্যাকাউন্টের জন্য আপনার ডিভাইস অ্যাডমিনিস্ট্রেটরের নতুন একটি প্রোফাইল প্রয়োজন</translation>
-<translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> খুলুন - <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">এক্সটেনশন হল Chrome-এর অ্যাড-অন, যা আপনাকে গুছিয়ে রাখতে, টাস্ক সহজ এবং আপনার ব্রাউজিং কাস্টমাইজ করতে সাহায্য করে</translation>
 <translation id="4177860704813504507">পাসওয়ার্ড বা ফিঙ্গারপ্রিন্ট</translation>
@@ -4226,6 +4230,7 @@
 <translation id="4235965441080806197">সাইন-ইন বাতিল করুন</translation>
 <translation id="4235976607074422892">স্ক্রল করার স্পিড</translation>
 <translation id="4236163961381003811">আরও এক্সটেনশন খুঁজুন</translation>
+<translation id="4238607350028440048">তুমি একজন নিয়োগকারী ম্যানেজার হিসেবে আমাকে প্রশ্ন করে ইন্টারভিউয়ের জন্য প্র্যাক্টিস করতে সাহায্য করো</translation>
 <translation id="4241140145060464825">অ্যাপের কন্টেন্ট</translation>
 <translation id="4241224519481557898">বিভাগ</translation>
 <translation id="4242245038391716252">এক্সটেনশনের মাধ্যমে ডাউনলোড করা হয়েছে: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -4237,6 +4242,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, গ্রেড <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">আরও স্টাইলাস স্টাইলাস অ্যাপ খুঁজুন</translation>
 <translation id="4246980464509998944">অতিরিক্ত মন্তব্য:</translation>
+<translation id="42481816218163154">১৫ মিনিটের একটি মর্নিং রুটিন তৈরি করো যা আমার সকালের বিভিন্ন কাজকে আরও সহজ করে তুলতে সাহায্য করবে। নিশ্চিত করো যে এতে মনোযোগ বৃদ্ধিকারী এক্সারসাইজ অন্তর্ভুক্ত আছে</translation>
 <translation id="4248401726442101648">কোনও ক্যামেরা কানেক্ট করা নেই</translation>
 <translation id="4249116869350613769">ব্যাটারি সেভার</translation>
 <translation id="4249373718504745892">এই পৃষ্ঠাটিকে আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস করা থেকে অবরুদ্ধ করা হয়েছে৷</translation>
@@ -4245,6 +4251,7 @@
 <translation id="4250596587221570622">আপনার প্রোফাইলের জন্য থিম বেছে নিন</translation>
 <translation id="4250680216510889253">না</translation>
 <translation id="4251243704979202079"><ph name="FOLDERNAME" />-এ <ph name="ORIGIN" /> ফাইল দেখতে এবং এর নিজস্ব কপি তৈরি করতে পারবে</translation>
+<translation id="4251676308358173916">আমাকে ১০ মিনিটের ফুল বডির জন্য ওয়ার্কআউট তৈরি করতে সাহায্য করো। আমি শারীরিক শক্তি, স্ট্যামিনা এবং নমনীয়তার ওপর গুরুত্ব দিতে চাই</translation>
 <translation id="4252899949534773101">ব্লুটুথ বন্ধ করা আছে</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ট্যাব কন্টেন্ট শেয়ার করা হয়েছে</translation>
 <translation id="4253168017788158739">টিকা</translation>
@@ -4283,6 +4290,7 @@
 <translation id="4276390967705106170">নতুন ব্রাউজার ট্যাবে খুলুন</translation>
 <translation id="4276598757692536305">প্রিন্টারের জন্য PPD ফাইল</translation>
 <translation id="4277434192562187284">XML কনফিগারেশন সোর্স</translation>
+<translation id="4277442707759481607">কোনও বিষয় সম্পর্কে আমার জ্ঞান পরীক্ষা করার জন্য প্র্যাক্টিস প্রশ্ন তৈরি করো</translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
 <translation id="4279129444466079448">আপনি এই ডিভাইসে সর্বাধিক <ph name="PROFILE_LIMIT" />টি eSIM প্রোফাইল ইনস্টল করতে পারবেন। আরেকটি প্রোফাইল যোগ করতে, আগে থেকে আছে এমন প্রোফাইল সরান।</translation>
 <translation id="427987768447457592">নতুন ট্যাব গ্রুপ</translation>
@@ -4382,6 +4390,7 @@
 <translation id="435185728237714178">ইনস্টল ও স্ট্রিম করা অ্যাপ ম্যানেজ করতে "<ph name="APP_NAME" />" অ্যাপে যান</translation>
 <translation id="4352913519324947509">আপনার পাসওয়ার্ড পরিবর্তন করা হয়নি, তবে এখনও আপনার বর্তমান পাসওয়ার্ড দিয়ে সাইট অ্যাক্সেস করার সুবিধা থাকা উচিত</translation>
 <translation id="4354073718307267720">কোনও সাইট আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে চাইলে, একবার জিজ্ঞাসা করে নিন</translation>
+<translation id="435434000498374342">৫ কিমি দৌড়াতে চান এমন একজন একদম নতুন রানারের জন্য ৮ সপ্তাহের একটি ট্রেনিং শিডিউল ড্রাফ্ট করো। এতে পর্যায়ক্রমে হাঁটা ও দৌড়ানোর বিরতি এবং নির্দিষ্ট বিশ্রামের দিনগুলো অন্তর্ভুক্ত করো</translation>
 <translation id="4354344420232759511">আপনার দেখা সাইটগুলি এখানে দেখানো হবে</translation>
 <translation id="4356100841225547054">ভলিউম বন্ধ করুন</translation>
 <translation id="4357583358198801992">ট্যাব গ্রুপ দেখুন</translation>
@@ -4431,6 +4440,7 @@
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন বন্ধ করা হয়েছে কারণ এটি আর ব্যবহার করা যাবে না}one{এইসব এক্সটেনশন বন্ধ করা হয়েছে কারণ এটি আর ব্যবহার করা যাবে না}other{এইসব এক্সটেনশন বন্ধ করা হয়েছে কারণ এটি আর ব্যবহার করা যাবে না}}</translation>
 <translation id="4386435410933281983">সেভ করা যায়নি। আবার চেষ্টা করুন</translation>
 <translation id="4386604394450371010">এক নজরে</translation>
+<translation id="4387362115623213806">দেখা করার প্ল্যান প্রত্যাখ্যান করার জন্য নম্রভাবে উত্তর ড্রাফ্ট করতে আমাকে সাহায্য করো</translation>
 <translation id="4387890294700445764">যে পাসওয়ার্ডগুলি চুরি হয়েছে</translation>
 <translation id="4388650384344483842">কমপক্ষে ৮টি অক্ষর ব্যবহার করুন</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{<ph name="URL" />-এর জন্য পাসওয়ার্ড}one{<ph name="URL" />-এর জন্য পাসওয়ার্ড ({COUNT}টি)}other{<ph name="URL" />-এর জন্য পাসওয়ার্ড ({COUNT}টি)}}</translation>
@@ -4509,6 +4519,7 @@
 <translation id="4437879751057074691">পাসওয়ার্ড এবং পাসকী সেভ করার সুবিধা পান</translation>
 <translation id="4437947179446780764">কাস্টম ডিএনএস পরিষেবা প্রদানকারী যোগ করুন</translation>
 <translation id="4438043733494739848">স্বচ্ছ</translation>
+<translation id="4439665841041786039">আমার সমস্যা সমাধানে সাহায্য করার জন্য তুমি কি আমার সাথে ব্রেনস্টর্ম করতে পারবে?</translation>
 <translation id="4441147046941420429">চালিয়ে যেতে, আপনার ডিভাইস থেকে নিরাপত্তা কী সরিয়ে দিন, তারপর আবার ইনসার্ট করে টাচ করুন</translation>
 <translation id="444134486829715816">প্রসারিত করুন...</translation>
 <translation id="4441928470323187829">আপনার অ্যাডমিনিস্ট্রেটর পিন করেছে</translation>
@@ -4569,6 +4580,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         আপনি কার্ড মেনু থেকে সেটিংস ম্যানেজ করতে অথবা 'Chrome কাস্টমাইজ করুন' বিকল্প থেকে আরও বিকল্প দেখতে পারবেন।</translation>
+<translation id="4503459574136856756">আরও পেশাদার করে তুলতে আমার বায়ো আবার লেখো</translation>
 <translation id="4504940961672722399">এই আইকনে ক্লিক করে বা <ph name="EXTENSION_SHORTCUT" /> টিপে এই এক্সটেনশনটি ব্যবহার করুন৷</translation>
 <translation id="4505469832694348179">এই QR কোডের সাহায্যে Chrome ডাউনলোড করুন এবং আপনর Google অ্যাকাউন্টে সাইন-ইন করুন।</translation>
 <translation id="450552327874992444">শব্দটি আগে থেকে যোগ করা হয়েছে</translation>
@@ -4800,6 +4812,7 @@
 <translation id="4681453295291708042">'নিয়ারবাই শেয়ার' ফিচারটি বন্ধ করে দিন</translation>
 <translation id="4681512854288453141">সোর্স সংক্রান্ত নীতি</translation>
 <translation id="4681930562518940301">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
+<translation id="4682003508123230705">আমাকে শিখতে সাহায্য করো</translation>
 <translation id="4682481611456523884">এই সাইটে এম্বেড করা কন্টেন্ট আপনার সম্পর্কে যে তথ্য সেভ করেছে তা ব্যবহার করতে পারে না</translation>
 <translation id="4682807230647698604">আপনি যখন এই ফিচার ব্যবহার করেন, তখন AI অভিজ্ঞতা তৈরি করার জন্য Google-কে প্রাসঙ্গিক ডেটা পাঠানো হয়</translation>
 <translation id="4683143253481759090">Chrome আপডেট করা হয়েছে</translation>
@@ -4809,7 +4822,6 @@
 <translation id="4685044513206555960">অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী ওয়েব অ্যাপ ইনস্টলেশন ব্লক করা হয়েছে।</translation>
 <translation id="4687238339694011189">আপনার প্রিন্টার চালু করা আছে কিনা তা নিশ্চিত করুন ও Chromebook-এর সাথে কানেক্ট করা একই নেটওয়ার্কে কানেক্ট করা আছে কিনা তা ভালভাবে দেখে নিন। অথবা ইউএসবি কেবেল ব্যবহার করে কানেক্ট করুন</translation>
 <translation id="4687613760714619596">অজানা ডিভাইস (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">সাইট-প্রস্তাবিত বিজ্ঞাপন</translation>
 <translation id="4688036121858134881">স্থানীয় লগ আইডি: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />।</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> এই ডিভাইস আগের ভার্সনে নিয়ে যাচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">আপনার ইন্টারনেট কানেকশন দেখে আবার Gemini ব্যবহার করে দেখুন</translation>
@@ -4841,6 +4853,7 @@
 <translation id="4711638718396952945">সেটিংস পুনরুদ্ধার করুন</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">সমস্ত উইন্ডো বন্ধ করার সময় মুছুন</translation>
+<translation id="4714279348049646935">ক্রেডিট আওয়ার, কোর্সের লেভেল এবং গ্রেড পয়েন্টের মান অনুযায়ী ওয়েটেড গড় হিসাব করে আমার GPA গণনা করো</translation>
 <translation id="4714414859110184926">পাসকী পান</translation>
 <translation id="4715631922189108923">ব্যবহারকারীর নাম এডিট করুন</translation>
 <translation id="47158868804223727">গ্রুপের নাম বড় করার বা আড়াল করার জন্য তাতে ক্লিক করুন</translation>
@@ -4899,6 +4912,7 @@
 <translation id="4759202969060787081">খুলবেন না</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4761104368405085019">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
+<translation id="4762155283275129615">মেসেজের মূল পয়েন্টে ফোকাস করে আমার ইমেল ছোট করো</translation>
 <translation id="4762489666082647806">পয়েন্টার কালার</translation>
 <translation id="4762718786438001384">ডিভাইসের ডিস্কের স্থান আশংকাজনকভাবে কম</translation>
 <translation id="4762849514113423887">ভুল পাসওয়ার্ড। আবার চেষ্টা করুন।</translation>
@@ -5058,7 +5072,6 @@
 <translation id="4871719318659334896">গ্রুপ বন্ধ করুন</translation>
 <translation id="4872192066608821120">পাসওয়ার্ড ইমপোর্ট করার জন্য, CSV ফাইল বেছে নিন</translation>
 <translation id="4872212987539553601">অন-ডিভাইস এনক্রিপশন সেট-আপ করা</translation>
-<translation id="4873312501243535625">মিডিয়া ফাইল পরীক্ষাকারী</translation>
 <translation id="4875690134140862902">ট্যাব</translation>
 <translation id="4876273079589074638">এই ক্র্যাশ বা সমস্যাটির বিষয়ে সার্চ করে সেটি ঠিক করতে আমাদের ইঞ্জিনিয়ারদের সাহায্য করুন। কোনও বিবরণ যত ছোটই হোক না কেন সেটি গুরুত্বপূর্ণ!</translation>
 <translation id="4876305945144899064">কোনও ব্যবহারকারীর নাম নেই</translation>
@@ -5247,6 +5260,7 @@
 <translation id="5015344424288992913">প্রক্সি স্থির করা হচ্ছে...</translation>
 <translation id="5016305686459575361">ফোন কানেক্ট করার মাধ্যমে আপনি এগুলি করতে পারবেন:</translation>
 <translation id="5016491575926936899">আপনার কম্পিউটার থেকে টেক্সট, ইন্টারনেট কানেকশন শেয়ার, কথোপকথনের বিজ্ঞপ্তির উত্তর এবং আপনার ফোনের সাহায্যে <ph name="DEVICE_TYPE" /> আনলক করতে পারবেন।<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="5016793191388570244">এমন একটি মজাদার সূচি তৈরি করো যাতে সপ্তাহান্তে প্রচুর সিনেমা দেখার প্ল্যান থাকে। এমন একটি থিম ঠিক করো যাতে অন্তত ৪টি দারুণ সিনেমার নাম থাকে এবং সেই সিনেমার সাথে মানানসই কিছু স্ন্যাকসের আইডিয়া দাও</translation>
 <translation id="5017250179386090956">মূল নোড অ্যানোটেশন ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="5017529052065664584">গত ১৫ মিনিট</translation>
 <translation id="5018207570537526145">এক্সটেনশনের ওয়েবসাইট খুলুন</translation>
@@ -5342,7 +5356,6 @@
 <translation id="5091636240353511739">পিন দেখুন</translation>
 <translation id="5092567114307895466">আপনি উপযুক্ত এবং শর্ত পূরণ করেছেন কিনা তা চেক করুন</translation>
 <translation id="5093447877601682598">ট্যাব বার সম্পর্কে মতামত পাঠান</translation>
-<translation id="5093477827231450397">সেইসব সাইটের তালিকা যা আপনি ব্লক করেছেন এবং যার থেকে আপনি অন্য সাইটে বিজ্ঞাপনের সাজেশন চান না</translation>
 <translation id="5093569275467863761">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files অ্যাপ বা অন্য অ্যাপ থেকে এই অ্যাপে কাজ করে এমন ফাইল খুলতে ও এডিট করতে পারবেন। ডিফল্ট হিসেবে কোন কোন ফাইল এই অ্যাপে খোলে তা নিয়ন্ত্রণ করতে, <ph name="BEGIN_LINK" />আপনার ডিভাইসে কীভাবে ডিফল্ট হিসেবে অ্যাপ সেট করবেন তা জানুন<ph name="END_LINK" />।</translation>
 <translation id="5094721898978802975">সহযোগী ন্যাটিভ অ্যাপ্লিকেশানগুলির সাথে যোগাযোগ করুন</translation>
@@ -5351,7 +5364,6 @@
 <translation id="5095848221827496531">বাদ দিন</translation>
 <translation id="5096775069898886423">যেসব সাইটে সুরক্ষিত কানেকশনের সুবিধা কাজ করে না, সেই সব সাইট দেখার আগে সতর্কতা পান</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />': <ph name="DETAILS" /> নেটওয়ার্কে সংযোগ করা গেল না </translation>
-<translation id="5097349930204431044">আপনি কী পছন্দ করেন তা আপনার দেখা সাইটগুলি নির্ধারণ করতে পারে এবং তারপরে ব্রাউজ করার সাথে সাথে বিজ্ঞাপন সাজেস্ট করে</translation>
 <translation id="5097649414558628673">টুল: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">কার্সর থেমে যাওয়া মাত্রই অটোমেটিক ক্লিক করুন</translation>
 <translation id="5098963855433723436">আলাদা অ্যাপ্লিকেশনে খোলে</translation>
@@ -5430,6 +5442,7 @@
 <translation id="5154917547274118687">স্মৃতি</translation>
 <translation id="5155299520372681119">ফাইল আপলোড করার মেয়াদ শেষ হয়ে গেছে এবং সেটি সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="5156638757840305347">কার্সর দেখা গেলে বা সরলে তা হাইলাইট করা হয়</translation>
+<translation id="5156995531130738884">আমার ক্লাসের জন্য একটি আকর্ষণীয় সেশনের রূপরেখাসহ লেসন প্ল্যান ড্রাফ্ট করো</translation>
 <translation id="5157250307065481244">সাইটের বিবরণ দেখুন</translation>
 <translation id="5159094275429367735">Crostini সেট আপ করুন</translation>
 <translation id="5159236862360390997">টিউটোরিয়াল সহ সহায়তা বাবলের একটি সিরিজ দেখানো হবে।
@@ -5487,6 +5500,7 @@
 <translation id="5195074424945754995">এই নিয়মগুলি পূরণ করে এমন URLগুলি ব্রাউজার সুইচ ট্রিগার করবে না এবং <ph name="BROWSER_NAME" /> বা <ph name="ALTERNATIVE_BROWSER_NAME" />-এ খোলা হতে পারে।</translation>
 <translation id="5196790039230503600">জেসচার ব্যবহার করুন, তারপর কোন জায়গায় আইটেমটি রাখতে চান, তা দেখাতে নিজের মাথা নাড়ান। এটি রাখতে আবার জেসচারটি ব্যবহার করুন।</translation>
 <translation id="5197255632782567636">ইন্টারনেট</translation>
+<translation id="5197384040493814274">আমার ব্র্যান্ড প্রোমোট করার ক্ষেত্রে কোন ধরনের পরামর্শ দেবে? আমার ওয়েবসাইট কীভাবে অপ্টিমাইজ করতে পারি সেই সম্পর্কিত পরামর্শও যোগ করবে</translation>
 <translation id="5199729219167945352">পরীক্ষাদি</translation>
 <translation id="5200191131577845078"><ph name="DOMAIN" />-কে বিজ্ঞপ্তি পাঠানোর অনুমতি আছে</translation>
 <translation id="5200680225062692606">টাচ আইডি লক করা আছে। চালিয়ে যেতে, আপনার পাসওয়ার্ড লিখুন।</translation>
@@ -5499,6 +5513,7 @@
 <translation id="5204967432542742771">পাসওয়ার্ড প্রবেশ করান</translation>
 <translation id="5205484256512407285">ফাইল ট্রান্সফার করতে, কখনও মোবাইল ডেটা ব্যবহার করা হয় না</translation>
 <translation id="520568280985468584">নেটওয়ার্ক যোগ করা হয়েছে। আপনার সেলুলার নেটওয়ার্ক অ্যাক্টিভ হতে কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="5206980963892466043">আমাদের <ph name="BEGIN_LINK_TERMS" />শর্তাবলী<ph name="END_LINK_TERMS" />, <ph name="BEGIN_LINK_LOCATION_TERMS" />Korean লোকেশনের শর্তাবলী<ph name="END_LINK_LOCATION_TERMS" /> এবং <ph name="BEGIN_LINK_PRIVACY" />গোপনীয়তা বিজ্ঞপ্তি<ph name="END_LINK_PRIVACY" /> প্রযোজ্য।</translation>
 <translation id="5207395053540207113">Search-কে Drive কন্টেন্ট অ্যাক্সেস করতে দেবেন?</translation>
 <translation id="5207949376430453814">পাঠ্যের কার্সার হাইলাইট করুন</translation>
 <translation id="520840839826327499">আপনি একটি উপযুক্ত ChromeOS ডিভাইস ব্যবহার করছেন কিনা তা <ph name="SERVICE_NAME" /> দেখতে চায়।</translation>
@@ -5598,6 +5613,7 @@
 <translation id="5290322819358431297">আপনার পাসওয়ার্ড অটোফিল করুন</translation>
 <translation id="52912272896845572">ব্যক্তিগত কী ফাইলটি ভুল৷</translation>
 <translation id="5293043095535566171">লোকেশন অ্যাক্সেস চালু করবেন?</translation>
+<translation id="5293160437421672778">পরিবারের সাথে যাওয়ার উপযুক্ত এমন রেস্তোরাঁ খোঁজো যেখানে রিজার্ভেশনের সুবিধা আছে। বাচ্চাদের জন্য মেনু ও ক্যাজুয়াল পরিবেশ থাকতে হবে</translation>
 <translation id="5293170712604732402">সেটিংসকে তাদের মূল ডিফল্টে পুনঃস্থাপন করুন</translation>
 <translation id="5294068591166433464">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chrome, পৃষ্ঠার সামান্য কিছু কন্টেন্ট সহ URL Google-এ পাঠাতে পারে</translation>
 <translation id="5294618183559481278">আপনার ডিভাইসের সামনে ব্যক্তিদের শনাক্ত করার জন্য আপনার <ph name="DEVICE_TYPE" /> বিল্ট-ইন সেন্সর ব্যবহার করে। আপনার ডিভাইসে ঝটপট সমস্ত ডেটা প্রসেস করা হয় এবং তারপরে মুছে ফেলা হয়। Google-এ কখনই সেন্সর ডেটা পাঠানো হয় না। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -5779,6 +5795,7 @@
 <translation id="5444281205834970653">মুছে দিন ও এগিয়ে যান</translation>
 <translation id="5444452275167152925">ChromeOS থেকে ইমপোর্ট করা হয়েছে</translation>
 <translation id="5445400788035474247">১০x</translation>
+<translation id="5447289297870286353">ব্রেনস্ট্রর্ম করুন</translation>
 <translation id="5449551289610225147">ভুল পাসওয়ার্ড</translation>
 <translation id="5449588825071916739">সবকটি ট্যাব বুকমার্ক করুন...</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
@@ -5978,6 +5995,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5600706100022181951">আপডেটটি ডাউনলোড করতে <ph name="UPDATE_SIZE_MB" /> এমবি মোবাইল ডেটা খরচ হবে। ডাউনলোড করতে চান?</translation>
 <translation id="5601503069213153581">পিন</translation>
+<translation id="5601519850195445492">আমার ঘরে করা যাবে এমন ১০ মিনিটের ওয়ার্ক-আউটের রুটিন তৈরি করো, যাতে লাফানো বা জোরে মুভ করার জেসচার থাকবে না</translation>
 <translation id="5601833336918638013">সাইটকে ব্লুটুথ ডিভাইস খোঁজার জন্য অনুমতি দেবেন না</translation>
 <translation id="5602586420788540146">নতুন ট্যাব গ্রুপে খুলুন</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন ব্লক করা আছে}one{এই এক্সটেনশন ব্লক করা আছে}other{এই এক্সটেনশন ব্লক করা আছে}}</translation>
@@ -5989,7 +6007,6 @@
 <translation id="5611474372949142946">নিচের ট্যাব বন্ধ করুন</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="5614947000616625327">iCloud কী-চেন</translation>
-<translation id="561552177910095306">আপনার দেখা সাম্প্রতিক সাইটগুলির তালিকা যা আপনি ব্রাউজ করার সাথে সাথে অন্যান্য সাইটে বিজ্ঞাপন সাজেস্ট করতে পারে</translation>
 <translation id="5616571005307953937">সবচেয়ে পুরনো</translation>
 <translation id="5616726534702877126">ডিস্কের সাইজ রিজার্ভ করুন</translation>
 <translation id="561698261642843490">Firefox বন্ধ করুন</translation>
@@ -6073,7 +6090,6 @@
 <translation id="5684110242705861346">আপনার সংস্থার নীতি অনুযায়ী "<ph name="NAME" />" এক্সটেনশন যোগ করা হয়েছে এবং এটি এই সেটিং নিয়ন্ত্রণ করছে। <ph name="BEGIN_LINK" />বিবরণ দেখুন<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">ওয়াই-ফাইয়ের বিবরণ</translation>
 <translation id="5687340364605915800">কোনও সাইট এই অনুরোধ অনুযায়ী কাজ করবে কিনা, তা সাইটই নির্ধারণ করে</translation>
-<translation id="5687606994963670306">৩০ দিনের বেশি পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। আপনি আবার ভিজিট করেছেন এমন সাইট তালিকায় আবার দেখা যেতে পারে। বা কোনও সাইটকে নিজের জন্য বিজ্ঞাপন সম্পর্কিত সাজেশন দেওয়া থেকে ব্লক করতে পারবেন। <ph name="BEGIN_LINK" />Chrome-এ আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা<ph name="END_LINK" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="5689233503102158537">alt+backspace</translation>
 <translation id="5689516760719285838">লোকেশন</translation>
 <translation id="56907980372820799">ডেটা লিঙ্ক করুন</translation>
@@ -6108,10 +6124,12 @@
 <translation id="5713158217420111469"><ph name="DEVICE" />-এর সাথে কানেক্ট করা রয়েছে</translation>
 <translation id="5713988532993992900">ইনভার্ট করা</translation>
 <translation id="5714100381896040477">স্ক্রিনের উপরে অ্যানিমেশন সীমিত করুন</translation>
+<translation id="5714683021965197919">Gemini-র সাথে আপনার কথোপকথন বা আপনার Google Workspace ডেটা পর্যালোচনা করা অথবা জেনারেটিভ AI মডেল উন্নত করতেও তা ব্যবহার করা হবে না। Gemini হল AI এবং এটি ভুল করতে পারে। কিছু কন্টেন্ট সকলের জন্য উপযুক্ত নাও হতে পারে।</translation>
 <translation id="5719854774000914513">সাইটগুলি HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="5720729194423017301">সাইট ও সার্চ ইঞ্জিনের শর্টকাট</translation>
 <translation id="572155275267014074">Android সেটিংস</translation>
 <translation id="5722086096420375088">সবুজ ও সাদা</translation>
+<translation id="5722778418591961221">আমার লক্ষ্য পূরণে সাহায্য করার জন্য বাড়িতেই করা যায় এমন একটি ফিটনেস রুটিন তৈরি করো</translation>
 <translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="5723508132121499792">কোনো পৃষ্ঠভূমি অ্যাপ্লিকেশান চলছে না</translation>
 <translation id="5724723163580775373">বড় ফোকাস</translation>
@@ -6906,6 +6924,7 @@
 <translation id="635100112331897007">Chrome সংক্রান্ত সব নীতি দেখুন</translation>
 <translation id="6351178441572658285">অ্যাপের ভাষা</translation>
 <translation id="6352992678231622317">ট্যাব নিচে সরানো হয়েছে</translation>
+<translation id="635394585025793320">আমি কাউকে ইমপ্রেস করতে চাই। সবাই যে রেস্তোরাঁ নিয়ে এখন কথা বলছে সেখানে ২ জনের জন্য টেবিল খালি আছে কিনা দেখো</translation>
 <translation id="6355632359041940003">টাস্কের দায়িত্ব নিয়ে নিন</translation>
 <translation id="6356537493253478650">শান্ত</translation>
 <translation id="63566973648609420">শুধুমাত্র আপনার পাসফ্রেজসহ কোনো ব্যক্তি আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন৷ পাসফ্রেজটি Google-এ পাঠানো হয় না বা এর দ্বারা সংরক্ষণ করা হয় না৷ যদি আপনি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে আপনাকে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট<ph name="END_LINK" /> করতে হবে।</translation>
@@ -7060,6 +7079,7 @@
 <translation id="6472893788822429178">হোম বোতাম দেখান</translation>
 <translation id="6473315466413288899">কোনও একটি বিকল্প বেছে নিন</translation>
 <translation id="6474021817475285003">Google Calendar-এ আরও দেখুন</translation>
+<translation id="6474401088838630457">Gemini-কে এই বিষয়ে আরও জিজ্ঞাসা করুন</translation>
 <translation id="6474498546677193336">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটিকে ব্যবহার করছে। পরবর্তী সময়ে Linux-কে যখন বন্ধ করা হবে, তখনই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>
 <translation id="6474884162850599008">Google ড্রাইভ অ্যাকাউন্ট ডিসকানেক্ট করুন</translation>
 <translation id="6476482583633999078">স্পিচ স্পিড</translation>
@@ -7160,6 +7180,7 @@
 <translation id="6557199166823345360">সার্চ আরও রিফাইন করতে, আরও বিবরণ যোগ করুন অথবা আপনার বেছে নেওয়া আইটেম সম্পর্কে প্রশ্ন করুন</translation>
 <translation id="6557290421156335491">আমার শর্টকাট</translation>
 <translation id="6558098963164662391">&amp;Remove from Dictionary</translation>
+<translation id="6558249393995317167">তুমি কি কোনও তারার (স্টার) জীবনচক্রের বিভিন্ন পর্যায় বর্ণনা করতে পারবে?</translation>
 <translation id="6560061709899140565">অন্যান্য কাস্ট সেশন দেখুন</translation>
 <translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6561877237303825108">এই ফাইলের ধরন (<ph name="TYPE" />) বিপজ্জনক হতে পারে। <ph name="ORIGIN" />-কে বিশ্বাস করলে তবেই এই ফাইল সেভ করুন</translation>
@@ -7222,6 +7243,7 @@
 <translation id="6596916244504302242">এই পৃষ্ঠাটি রিলোড করুন যাতে এই সাইটে আপনার আপডেট করা এক্সটেনশন সেটিংস প্রয়োগ করা যায়</translation>
 <translation id="6597324406048772521">এই সাইটে এক্সটেনশনের অনুমতি নেই</translation>
 <translation id="6597331566371766302">নিচের এক্সটেনশন আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে ব্লক করা হয়েছে:</translation>
+<translation id="6598254692592360221">লিখুন বা এডিট করুন</translation>
 <translation id="659894938503552850">সবচেয়ে নতুন</translation>
 <translation id="6599829027342135752"><ph name="APP_NAME" />-এর জন্য নিরাপত্তা কী ব্যবহার করতে সেটি যোগ করে টাচ করুন</translation>
 <translation id="6601262427770154296">ব্যবহারকারীর অভিধান ম্যানেজ করুন</translation>
@@ -7315,7 +7337,6 @@
 <translation id="6670983860904543332">অটোমেটিক আপডেট আপনাকে লেটেস্ট ফিচারের সুবিধা প্রদান করে। সাম্প্রতিক আপডেট থেকে হাইলাইট এক্সপ্লোর করুন।</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{একটি ঠিকানা}one{#টি ঠিকানা}other{#টি ঠিকানা}}</translation>
 <translation id="6672697278890207089">আপনার পাসফ্রেজটি প্রবেশ করান</translation>
-<translation id="6672917148207387131"><ph name="DOMAIN" /> যোগ করুন</translation>
 <translation id="6673353404516008367">আপনার ডিভাইস যারা ব্যবহার করেন, 'ছদ্মবেশী' মোড <ph name="BEGIN_LINK" />আপনার করা ব্রাউজিং অ্যাক্টিভিটি অন্যদের কাছে গোপন রাখে<ph name="END_LINK" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">উজ্জ্বলতা কমিয়ে, ভিজ্যুয়াল এফেক্ট ও ব্যাকগ্রাউন্ড অ্যাক্টিভিটি সীমিত করে, বিজ্ঞপ্তি পেতে দেরি এবং Chrome পাওয়ার সেভার চালু করে ব্যাটারির আয়ু বাড়ায়।</translation>
@@ -7596,6 +7617,7 @@
 <translation id="6873156759937047811">পিন:</translation>
 <translation id="6873571253135628430">সাইট সংক্রান্ত অনুমতি পরিবর্তন করুন</translation>
 <translation id="6874986444867497677">ইনস্টলেশন করা যায়নি। আবার চেষ্টা করুন অথবা এই উইন্ডো বন্ধ করুন।</translation>
+<translation id="6875515581501280009">এই উইকেন্ডে আমার জন্য একটি বাস্তবসম্মত প্ল্যান তৈরি করো যাতে আমি ডিজিটাল দুনিয়া থেকে দূরে থাকতে পারি</translation>
 <translation id="6876155724392614295">সাইকেল</translation>
 <translation id="6876469544038980967">উপযোগী নয়</translation>
 <translation id="6878422606530379992">সেন্সর ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
@@ -7664,7 +7686,6 @@
 <translation id="6924940560840297548">কার্ড সরানো হয়েছে কারণ আপনি সেগুলি সম্প্রতি ব্যবহার করেননি</translation>
 <translation id="6928650056523249512">ব্যবহার করা হয়নি এমন সাইট থেকে অটোমেটিক অনুমতি সরান</translation>
 <translation id="6929639755025587400">অ্যাপ ইনস্টল করা হচ্ছে…</translation>
-<translation id="6929669104135164900">“<ph name="SELECTION" />” রিডিং মোডে খুলুন</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{একটি এক্সটেনশন বাতিল করা হয়েছে}one{#টি এক্সটেনশন বাতিল করা হয়েছে}other{#টি এক্সটেনশন বাতিল করা হয়েছে}}</translation>
 <translation id="6930337524857202955">নতুন ডাউনলোড উপলভ্য আছে</translation>
 <translation id="6930477763029357444"><ph name="APP_NAME" />-এর জন্য আপনি যেসব অনুমতি দেবেন, তা <ph name="PARENT_APP_NAME" /> ও এর ভিতর ইনস্টল করা অ্যাপের ক্ষেত্রেও প্রযোজ্য হবে।</translation>
@@ -7719,7 +7740,6 @@
 <translation id="697312151395002334">পপ-আপ পাঠানো ও রিডাইরেক্ট করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="69739764870135975">তাছাড়া, Google আপনার ডিফল্ট সার্চ ইঞ্জিন হিসেবে সেট করা থাকলে, আপনি আরও ভাল ও প্রাসঙ্গিক সাজেশন দেখতে পাবেন</translation>
 <translation id="6978121630131642226">সার্চ ইঞ্জিনসমূহ</translation>
-<translation id="6978717888677691380">আপনার ব্লক করা সাইট</translation>
 <translation id="6979041727349121225">পাওয়ার সেভার</translation>
 <translation id="6979044105893951891">ম্যানেজ করা গেস্ট সেশন লঞ্চ করে সেটি থেকে বেরিয়ে আসুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -7731,7 +7751,9 @@
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="6983507711977005608">ইনস্ট্যান্ট টিথারিং নেটওয়ার্ক ডিসকানেক্ট করুন</translation>
 <translation id="6983890893900549383">Escape</translation>
+<translation id="6984095691972094111">আমি একটি নতুন ভাষা শেখার চেষ্টা করছি। আমাকে ভোকাবুলারি ও ব্যাকরণ প্র্যাক্টিস করার ক্ষেত্রে সাহায্য করার জন্য একটি ক্যুইজ তৈরি করো</translation>
 <translation id="698428203349952091">অনুমতি নেই তালিকাতে সাইট যোগ করুন</translation>
+<translation id="698450079873764780">আমার সাথে রোলপ্লে করে কঠিন কথোপকথনের জন্য আমাকে প্রস্তুত হতে সাহায্য করো যাতে আমি আমার উত্তর অনুশীলন করতে পারি</translation>
 <translation id="6985235333261347343">Microsoft Key Recovery Agent</translation>
 <translation id="698524779381350301">নিম্নলিখিত সাইটে নিজে থেকেই অ্যাক্সেস দিন</translation>
 <translation id="6985607387932385770">প্রিন্টারগুলি</translation>
@@ -7868,6 +7890,7 @@
 <translation id="7088434364990739311">আপডেট চেক শুরু করা যায়নি (এরর কোড <ph name="ERROR" />)৷</translation>
 <translation id="7088960765736518739">সুইচ অ্যাক্সেস</translation>
 <translation id="7089253021944603172">আবার ট্যাব অ্যাক্টিভ করে</translation>
+<translation id="7090698782953528257">গাণিতিক সমীকরণ ভিজ্যুয়ালাইজ করতে এবং কার্ভের আকার দেখার ক্ষেত্রে সাহায্য করতে আমাকে ফাংশনের গ্রাফ তৈরিতে সাহায্য করো</translation>
 <translation id="7090714929377281710">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="7092452922791061650">এই ট্যাবে ডানদিকের বোতামে ক্লিক করুন এবং “বর্তমান ট্যাবের সাথে নতুন স্প্লিট ভিউ” বিকল্প বেছে নিন</translation>
 <translation id="7092504544229909737">Android অ্যাপে এটি ব্যবহার করা যাবে না</translation>
@@ -7887,6 +7910,7 @@
 <translation id="710224247908684995">কোনও এক্সটেনশন Safe Browsing বন্ধ করে দিয়েছে</translation>
 <translation id="7102832101143475489">অনুরোধের সময় শেষ হয়ে গেছে</translation>
 <translation id="7103944802169726298">পিসি (PC) ও কাস্ট ডিভাইস একই ওয়াই-ফাই নেটওয়ার্কে আছে</translation>
+<translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google মেম্বারশিপ</translation>
 <translation id="7107609441453408294">সব স্পিকারে একই অডিও প্লে করুন</translation>
 <translation id="7108338896283013870">লুকান</translation>
 <translation id="7108419148561505648">সেভ করার আগে কমপক্ষে একটি ফিল্ড পূরণ করুন</translation>
@@ -8254,6 +8278,7 @@
 <translation id="7395774987022469191">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="7396017167185131589">শেয়ার করা ফোল্ডারগুলি এখানে দেখা যাবে</translation>
 <translation id="7396845648024431313">সিস্টেমের প্রারম্ভে <ph name="APP_NAME" /> শুরু হবে এবং এমনকি আপনি অন্য সব <ph name="PRODUCT_NAME" /> উইন্ডো বন্ধ করার পরেও ব্যাকগ্রাউন্ডে চলতে থাকবে৷</translation>
+<translation id="7398815534290329738">Google AI উন্নত করতে চ্যাট পর্যালোচনা ও ব্যবহার করা হয়। Gemini হল AI এবং এটি ভুল করতে পারে। কিছু কন্টেন্ট সকলের জন্য উপযুক্ত নাও হতে পারে। আপনি <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />নিজের অ্যাক্টিভিটি ম্যানেজ<ph name="END_LINK_MANAGE_ACTIVITY" /> করতে পারবেন, এর মধ্যে আপনার লোকেশনের তথ্যও রয়েছে। <ph name="BEGIN_LINK_LEARN_MORE" />আপনার পছন্দ সম্পর্কে আরও জানুন<ph name="END_LINK_LEARN_MORE" />।</translation>
 <translation id="7399045143794278225">সিঙ্ক করার বিকল্প কাস্টমাইজ করুন</translation>
 <translation id="7399616692258236448">শুধুমাত্র আপনি অনুমতি দেওয়া সাইট ছাড়া সব সাইটের জন্য লোকেশনের অনুরোধ অটোমেটিক ব্লক করা হয়</translation>
 <translation id="7399802613464275309">নিরাপত্তা পরীক্ষা</translation>
@@ -8338,7 +8363,6 @@
 <translation id="7453008956351770337">এই প্রিন্টারটি নির্বাচন করে, আপনি নিম্নল্লিখিত এক্সটেনশনটিকে আপনার প্রিন্টারে অ্যাক্সেস করার অনুমতি দিচ্ছেন:</translation>
 <translation id="7454548535253569100">পোর্টাল: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">আপনার প্রতিষ্ঠান পাসওয়ার্ড সেভ করার ফিচার বন্ধ করে রেখেছে</translation>
-<translation id="7455988709578031708">আপনার ব্রাউজিং ইতিহাসের উপর ভিত্তি করে। এই সেটিংটি চালু করা আছে।</translation>
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456774706094330779">এক্সটেনডেড প্রিলোডিং</translation>
 <translation id="7456847797759667638">লোকেশন খুলুন...</translation>
@@ -8535,6 +8559,7 @@
 <translation id="7620049858153799769">Gemini উন্নত করতে, হিউম্যান রিভিউয়াররা শেয়ার করা ট্যাব সম্পর্কে কথোপকথন দেখতে পারেন।</translation>
 <translation id="7620083113061729689">ইতিহাস সিঙ্ক করুন</translation>
 <translation id="7620616707541471029">চালিয়ে যেতে একটি অ্যাকাউন্ট বেছে নিন</translation>
+<translation id="7621546470643449009">রাতের আকাশে কী কী দেখতে হবে তা শিখতে আমাকে সাহায্য করার জন্য তারা দেখার একটি প্রাথমিক নির্দেশিকা তৈরি করো, যেখানে সহজেই চেনা যায় এমন ৩টি নক্ষত্রপুঞ্জও অন্তর্ভুক্ত থাকবে</translation>
 <translation id="7621595347123595643">আপনার পাসওয়ার্ড বা পিন ভুলে গেলে আপনি স্থানীয় ডেটা আগের অবস্থায় ফেরাতে পারবেন না।</translation>
 <translation id="762200934554267613">সাইট এই ডিভাইসে অন্যান্য অ্যাপ ও পরিষেবা অ্যাক্সেস করার অনুমতি চাইতে পারে</translation>
 <translation id="7622768823216805500">খুব সহজে চেক-আউট করার মতো শপিং ফিচারের জন্য সাইট সাধারণত পেমেন্ট হ্যান্ডলার ইনস্টল করে</translation>
@@ -8588,6 +8613,7 @@
 <translation id="7659154729610375585">যাই হোক, ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসতে চান?</translation>
 <translation id="7659336857671800422">গোপনীয়তা সংক্রান্ত গাইডে যান</translation>
 <translation id="7660146600670077843">ট্যাবে ডানদিকের বোতামে ক্লিক করুন এবং "নতুন গ্রুপে ট্যাব যোগ করুন" বিকল্প বেছে নিন</translation>
+<translation id="7661440329832413796">Python-এ কীভাবে কোড লিখতে হয় তা শিখতে আমাকে সাহায্য করো</translation>
 <translation id="7662535435481776002">লো কনট্রাস্ট লাইট</translation>
 <translation id="7663719505383602579">গ্রাহক: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">কীবোর্ড শর্টকাট আছে</translation>
@@ -8638,7 +8664,6 @@
 <translation id="7685049629764448582">জাভাস্ক্রিপ্ট মেমরি</translation>
 <translation id="7685087414635069102">পিন প্রয়োজন</translation>
 <translation id="7685351732518564314">আপনার <ph name="DEVICE_NAME" /> ডিভাইসে বোতাম প্রেস করুন।</translation>
-<translation id="7686086654630106285">সাইট-প্রস্তাবিত বিজ্ঞাপন সম্পর্কে আরও অনেক কিছু</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">তালিকা থেকে বেছে নিন</translation>
 <translation id="7690853182226561458">ফোল্ডার যুক্ত &amp;করুন...</translation>
@@ -8813,6 +8838,7 @@
 <translation id="7826039927887234077"><ph name="MOOD" /> মুড সহ <ph name="SUBJECT" />-এর <ph name="INDEX" />টি সাম্প্রতিক AI থিম।</translation>
 <translation id="7826174860695147464">পুরনো ব্রাউজার সমর্থন (LBS) - ইন্টার্নাল</translation>
 <translation id="7826838152281937785">নিচের ভিউ বন্ধ করুন</translation>
+<translation id="7828317134176902620"><ph name="BEGIN_LINK_TERMS" />Google-এর শর্তাবলী<ph name="END_LINK_TERMS" /> এবং <ph name="BEGIN_LINK_PRIVACY" />Gemini অ্যাপ গোপনীয়তা বিজ্ঞপ্তি<ph name="END_LINK_PRIVACY" /> প্রযোজ্য।</translation>
 <translation id="7828642077514646543">সমস্যা: সার্টিফিকেট ডিকোড করা যায়নি</translation>
 <translation id="7830276128493844263">সিস্টেম সেটিংস থেকে লোকেশন বন্ধ করে দেওয়া হয়েছে</translation>
 <translation id="7830833461614351956">খোলার জন্য <ph name="CLOUD_PROVIDER" />-এ <ph name="NUM_OF_FILES" />টি ফাইল কপি করবেন?</translation>
@@ -8855,7 +8881,6 @@
 <translation id="7867763367097007079">{COUNT,plural, =1{আপনার Google অ্যাকাউন্টে <ph name="WEBSITE" />টি পাসওয়ার্ড সেভ করুন}one{আপনার Google অ্যাকাউন্টে <ph name="WEBSITE" />টি পাসওয়ার্ড সেভ করুন}other{আপনার Google অ্যাকাউন্টে <ph name="WEBSITE" />টি পাসওয়ার্ড সেভ করুন}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - যুক্ত করা হয়েছে</translation>
 <translation id="7870005751202275328">অ্যাড্রেস বারে ক্লিক করুন</translation>
-<translation id="787069710204604994">যেমন, আপনি যদি লম্বা-দূরত্বের দৌড়ের জুতা বিক্রি করে এমন একটি ওয়েবসাইট যান, তাহলে সাইটগুলি হয়ত বুঝতে পারবে যে আপনি ম্যারাথন দৌড়ে আগ্রহী। পরে আপনি যদি অন্য একটি সাইটে যান, তাহলে প্রথম সাইটের সাজেশনের উপর ভিত্তি করে দ্বিতীয় সাইটটি দৌড়ের জুতোর বিজ্ঞাপন দেখাবে।</translation>
 <translation id="7871109039747854576">প্রার্থী তালিকা পৃষ্ঠাতে সূচীবদ্ধ করার জন্য <ph name="COMMA" /> এবং <ph name="PERIOD" /> কী ব্যবহার করুন</translation>
 <translation id="7871277686245037315">search + left arrow</translation>
 <translation id="7871691770940645922">ভার্চুয়াল ব্রেইল প্রদর্শন</translation>
@@ -9034,6 +9059,7 @@
 কী ফাইল: <ph name="KEY_FILE" />
 
 নিজের কী ফাইল কোন নিরাপদ স্থানে রাখুন৷ আপনাকে নিজের এক্সটেনশনের নতুন ভার্সন তৈরি করতে হবে৷</translation>
+<translation id="7999482381722829925">সাধারণত যেসব জায়গা পরিষ্কার করার ক্ষেত্রে নজর দেওয়া হয় না, সেগুলি টার্গেট করো এবং রুম-অনুযায়ী অগ্রাধিকারের ভিত্তিতে ডিপ ক্লিনিং চেকলিস্ট তৈরি করো</translation>
 <translation id="8000020256436988724">সরজ্ঞামদণ্ড</translation>
 <translation id="800117767980299235">ভয়েস হাইলাইট</translation>
 <translation id="8001561107130904792">পৃষ্ঠার কন্টেন্ট শেয়ার করা</translation>
@@ -9215,6 +9241,7 @@
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8133297578569873332">ঠিকঠাক - FM</translation>
 <translation id="8133676275609324831">&amp;ফোল্ডারে দেখান</translation>
+<translation id="8134188842648614148"><ph name="PROFILE_NAME" /> • <ph name="TIER_NAME" /></translation>
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" />K</translation>
 <translation id="8136269678443988272">আপনার লেখা পিনগুলি মিলছে না</translation>
 <translation id="8137559199583651773">এক্সটেনশানগুলি পরিচালনা করুন</translation>
@@ -9374,6 +9401,7 @@
 <translation id="8256319818471787266">স্পার্কি</translation>
 <translation id="8257950718085972371">ক্যামেরা অ্যাক্সেস অবরোধ করা অবিরত রাখুন</translation>
 <translation id="8258027225380843424">সফলভাবে ইমপোর্ট করা হয়েছে!</translation>
+<translation id="8258311291367036761">কোনও বিষয়ে চিন্তা করতে আমাকে সাহায্য করতে পারবে?</translation>
 <translation id="8259048637628995340">নিরবচ্ছিন্ন অভিজ্ঞতা পেতে আপনার Android ফোন কানেক্ট করুন</translation>
 <translation id="8260177673299865994">ডাউনলোড করার সময় সুরক্ষা উন্নত করুন</translation>
 <translation id="8260864402787962391">মাউস</translation>
@@ -9473,6 +9501,7 @@
 <translation id="8327544198829180337">এই ভিউ বন্ধ করুন</translation>
 <translation id="8328228852664998535">আপনি চালিয়ে গেলে, <ph name="BRAND" /> থেকে আপনার পাসওয়ার্ড, পাসকী এবং অন্যান্য ডেটা স্থায়ীভাবে মুছে দেওয়া হবে। সাইট বা অ্যাপের জন্য আপনার তৈরি করা অ্যাকাউন্ট মুছে দেওয়া হবে না।</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
+<translation id="8329314618548024109">আমার কেমন অনুভূতি হচ্ছে সেই সম্পর্কে আমাকে প্রশ্ন করো এবং আমার উত্তরের ভিত্তিতে আমার মুডের সাথে মানানসই প্লেলিস্ট তৈরি করো</translation>
 <translation id="8330617762701840933">বিকল্প ব্রাউজারে রিডাইরেক্ট করে এমন ওয়েবসাইটগুলির তালিকা।</translation>
 <translation id="8330689128072902965">আশপাশের পরিচিতিরা আপনার সাথে শেয়ার করতে পারবেন। পরিবর্তন করতে ক্লিক করুন।</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />}=2{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />এবং আরও {OVERFLOW_COUNT}টি <ph name="END_LINK" />)}other{যে ধরনের ফাইল কাজ করে: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />এবং আরও {OVERFLOW_COUNT}টি <ph name="END_LINK" />)}}</translation>
@@ -9866,7 +9895,6 @@
 <translation id="8648408795949963811">নাইট লাইটের কালার টেম্পারেচার</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> এর জন্য অনুমতি চায় <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, এবং আরও অনেক কিছু</translation>
 <translation id="8648889679430451455">পছন্দমতো বেছে নেওয়া ডেটা মুছে দিন</translation>
-<translation id="8649026945479135076">আপনার অভিজ্ঞতাকে পছন্দমতো করতে, আপনি যে সাইটগুলিতে যান সেগুলি আপনার আগ্রহের বিষয়গুলি মনে রাখা সাধারণ। এছাড়া Chrome-এর মাধ্যমে আপনার আগ্রহের বিষয়ে তথ্যগুলি সাইট স্টোর করতে পারে।</translation>
 <translation id="8651585100578802546">এই পৃষ্ঠাটি ফোর্স রিলোড করুন</translation>
 <translation id="8651806635673244884">আপনি যেকোনও ট্যাবে ডানদিকের বোতামে ক্লিক করে এবং “ট্যাবগুলি অনুভূমিকভাবে দেখান” বিকল্প বেছে নিয়ে আপনার ট্যাবগুলিকে আবার উপরে সরাতে পারবেন</translation>
 <translation id="8652400352452647993">প্যাক এক্সটেনশনে সমস্যা হয়েছে</translation>
@@ -10124,6 +10152,7 @@
 <translation id="8841884135319684422">টাস্ক শেষ করুন</translation>
 <translation id="8842594465773264717">এই ফিঙ্গারপ্রিন্ট মুছুন</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
+<translation id="8845586173202501576">আমার আসন্ন পরীক্ষার জন্য পোমোডোরো টেকনিক ও স্পেসড রিপিটেশন ব্যবহার করে ৭ দিনের স্টাডি শিডিউল তৈরি করো। আমি পরীক্ষার আগের দিন বেশি পড়াশোনা করতে চাই না, তাই নিশ্চিত করো যে আগের দিন হালকা রিভিউ ও ঘুম যেন শিডিউল করা হয়</translation>
 <translation id="8846132060409673887">এই কম্পিউটারের প্রস্তুতকারক এবং মডেলটি পড়ুন</translation>
 <translation id="8846239054091760429">মোনো অডিও, স্টার্টআপ, 'লাইভ ক্যাপশন' ও আরও অনেক কিছু</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -10199,8 +10228,10 @@
 <translation id="8898786835233784856">পরবর্তী ট্যাব বেছে নিন</translation>
 <translation id="8898790559170352647">আপনার Microsoft অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
+<translation id="8899299346165404002">এমন একটি আউটলাইন ড্রাফ্ট করো যা আমার চিন্তাভাবনাকে স্পষ্ট ও সংক্ষিপ্ত ফর্ম্যাটে সাজায়</translation>
 <translation id="8899851313684471736">নতুন &amp;উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="8900413463156971200">মোবাইল নেটওয়ার্ক চালু করুন</translation>
+<translation id="8901147364315347044">কারও জন্য নতুন ধরনের উপহারের বিষয়ে আইডিয়া পেতে আমাকে সাহায্য করার জন্য ব্রেনস্টর্ম করো। আমি তার শখ ও আগ্রহের বিষয়গুলি তোমার সাথে শেয়ার করব</translation>
 <translation id="8902667442496790482">'বাছুন ও শুনুন'-এর সেটিংস খুলুন</translation>
 <translation id="8903733144777177139">মাইক্রোফোন অ্যাক্সেস ব্লক করা হয়েছে</translation>
 <translation id="8904787158537906492">ক্লিপবোর্ডে লিঙ্ক কপি করা হয়েছে</translation>
@@ -10474,7 +10505,6 @@
 <translation id="9096221857560878399">বিকল্পগুলির তুলনা করুন</translation>
 <translation id="9096776523567481218">লোকালি ইনস্টল করা হয়নি</translation>
 <translation id="9098860402274800697">Google Play ও Android অ্যাপ সরিয়ে দিন</translation>
-<translation id="9099220545925418560">আপনার ব্রাউজিং ইতিহাসের উপর ভিত্তি করে। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="9099383880226822604">রেন ফরেস্ট</translation>
 <translation id="910000385680858937">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। আপনার ডিভাইসের সাথে মাইক্রোফোন কানেক্ট করুন।</translation>
 <translation id="9100416672768993722">শেষ ব্যবহৃত ইনপুট পদ্ধতিতে পাল্টাতে <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> টিপুন</translation>
@@ -10524,7 +10554,6 @@
 <translation id="9130135798965366513">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> এই সাইটের সাথে আপনার <ph name="FIELDS_STRING" /> শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> ও <ph name="BEGIN_LINK2" />পরিষেবার শর্তাবলী<ph name="END_LINK2" /> দেখুন।</translation>
 <translation id="9130364135697530260">এই সাইটে এম্বেড করা কন্টেন্ট আপনার সম্পর্কে যে তথ্য সেভ করেছে তা নিজে ব্যবহার করতে পারবে</translation>
 <translation id="9130857050314385402">আপনি স্কিল ব্যবহার করলে, ট্যাবের নাম ও URL Google-কে পাঠানো হয়</translation>
-<translation id="9131209053278896908">ব্লক করা সাইট এখানে দেখা যাবে</translation>
 <translation id="9131487537093447019">ব্লুটুথ ডিভাইসগুলি থেকে বার্তা পাঠান ও গ্রহণ করুন।</translation>
 <translation id="9133568201369135151">ডায়াগনস্টিক ডেটা সংগ্রহ করা সম্পূর্ণ হয়েছে। আপনার কিছু ব্যক্তিগত তথ্য এই ডেটায় অন্তর্ভুক্ত করা হয়েছে।</translation>
 <translation id="9133985615769429248">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে আপনার স্ক্রিন লক ব্যবহার করতে পারেন</translation>

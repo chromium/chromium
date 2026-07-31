@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="1559263013367304065">‏מאז שהתחלת להשתמש ב-Google Lens</translation>
 <translation id="1560153516220021659">הכפתור המשני בסרגל הכלים מכווץ</translation>
+<translation id="1562601408588733317">‏ניהול האופן שבו אפשר לאתר ולמלא מידע באמצעות Gemini</translation>
 <translation id="1565371473877914088">כרטיסייה פרטית חדשה</translation>
 <translation id="1567960978791353852">הצגת מצב הקריאה</translation>
 <translation id="1571780780926010134">כרטיסיות פרטיות</translation>
@@ -1396,6 +1397,7 @@
 <translation id="5666313630530585305">נכנסים לחשבון באתר כלשהו.</translation>
 <translation id="5669335982068190158">‏יצאת מהחשבון במהלך האיפוס של iPhone. כדי להיכנס שוב לחשבון, יש ללחוץ על 'המשך' למטה.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">ניהול אפליקציות מקושרות</translation>
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">לעבור לחשבון השני? נתוני החשבון שלא נשמרו יימחקו.</translation>
 <translation id="5683499062697987550">‏כדי להשתמש בסיסמאות ולשמור אותן בחשבון Google, עליך לאמת את הזהות שלך.</translation>
@@ -1571,6 +1573,7 @@
 <translation id="6240553182907836376">לעדכן את פרטי התעודה המזהה?</translation>
 <translation id="6240601837375010619">לשמור את הדרכון?</translation>
 <translation id="6241132809279377987">‏עם האפליקציות של Google, האייפון שלך יכול לעשות יותר</translation>
+<translation id="6244366663267187541">‏בחירת האפליקציות ש-Gemini יתחבר אליהן</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6251835855431997163">מילוי אוטומטי של <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">כניסה אל <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@
 <translation id="7471557245617580330">יצירת כרטיסייה חדשה</translation>
 <translation id="7473555040328423550">הוספת כרטיסייה</translation>
 <translation id="7476548258282096076">בכרטיס הזה מוצגים האתרים שבהם ביקרת הכי הרבה.</translation>
+<translation id="7482823403440483089">מילוי אוטומטי משופר</translation>
 <translation id="7484645889979462775">לעולם לא עבור אתר זה</translation>
 <translation id="7486006552035434095">אפשר לסנכרן בין המכשירים</translation>
 <translation id="7491131399623468277">להגדרות…</translation>
@@ -2195,7 +2199,6 @@
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">תיכף מתבצע מעבר לפרופיל אחר</translation>
 <translation id="8275068909952022340">עוד…</translation>
-<translation id="8280797717392145626">הקישורים התקבלו</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8282657446819506217">פתיחה בקבוצת כרטיסיות</translation>

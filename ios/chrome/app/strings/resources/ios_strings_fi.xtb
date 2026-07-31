@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">Valikko → Salasanat</translation>
 <translation id="1498283581832036924">Tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
 <translation id="1503814213414825943">Valitse tilit, jotka haluat viedä toiseen sovellukseen.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Hakukone</translation>
 <translation id="1506063256525392513">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle sekä skannata QR-koodeja</translation>
 <translation id="1506733063065214205">RCS MLS ‑asiakassovellus</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
 <translation id="1559263013367304065">Google Lensin käytön jälkeen</translation>
 <translation id="1560153516220021659">Tiivistetty toissijaisen yläpalkin painike</translation>
+<translation id="1562601408588733317">Ylläpidä tietojen hakemista ja täyttämistä Geminillä</translation>
 <translation id="1565371473877914088">Uusi incognito-välilehti</translation>
 <translation id="1567960978791353852">Näytä lukutila</translation>
 <translation id="1571780780926010134">Incognito-välilehdet</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">Kortissa näkyvät yksityisyys- tai tietoturvaongelmat, jotka turvatarkistus havaitsee puolestasi automaattisesti.</translation>
 <translation id="1840320537320704887">Uusi välilehti ‐sivun asetukset poistettu</translation>
 <translation id="1845230888742614096">Säilytä ryhmä</translation>
+<translation id="1853558655412913122">Voit nyt muuttaa osoitepalkin sijaintia valitsemalla "Asetukset" ja sitten "Osoitepalkki"</translation>
 <translation id="1853692000353488670">Uusi incognito-välilehti</translation>
 <translation id="1854463785401910334">Hae avoimilta välilehdiltä</translation>
 <translation id="1860609647735325606">Selitä Geminillä</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">Kun tiedoston poistaminen on ajoitettu, sitä ei voi perua.</translation>
 <translation id="498624032394115435">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, organisaatiosi hallinnoima.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Välilehtiryhmän väri on <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5009127379503001909">Jatka selaamista</translation>
@@ -1396,6 +1400,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5666313630530585305">Kirjaudu sisään verkkosivustolle.</translation>
 <translation id="5669335982068190158">Sinut kirjattiin ulos, kun iPhone nollattiin. Kirjaudu sisään valitsemalla alta "Jatka".</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Ylläpidä yhdistettyjä sovelluksia</translation>
 <translation id="567881659373499783">Versio <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Haluatko vaihtaa tiliä? Tallentamaton tilidata poistetaan.</translation>
 <translation id="5683499062697987550">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa salasanoja Google-tililläsi.</translation>
@@ -1571,6 +1576,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6240553182907836376">Päivitä henkilötodistus</translation>
 <translation id="6240601837375010619">Tallenna passi</translation>
 <translation id="6241132809279377987">Hyödynnä iPhonen lisäominaisuuksia Google-sovelluksilla</translation>
+<translation id="6244366663267187541">Valitse, mihin sovelluksiin Gemini muodostaa yhteyden</translation>
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
 <translation id="6251835855431997163">Täytä <ph name="VALUE" /> automaattisesti</translation>
 <translation id="6253686838150111720">Kirjaudu sisään: <ph name="URL" /></translation>
@@ -1803,6 +1809,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="6924299883035848912">Piilota "Poista selausdata"</translation>
 <translation id="6930162026494574854">Nollaa käännösasetukset</translation>
 <translation id="6930799952781667037">Vaihda tähän kieleen napauttamalla.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Aseta tunnuskoodi</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6946722113367118030">Ajattelu</translation>
@@ -1852,6 +1859,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera ei ole käytettävissä</translation>
 <translation id="7138678301420049075">Muu</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Välilehdet suljetaan ja selausdata poistetaan</translation>
 <translation id="714291438898585119">Tähdellä merkityt</translation>
 <translation id="7145337554745942724">Päivitä ajokortti</translation>
@@ -1917,6 +1925,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="7402602673739047753">{count,plural, =1{1 kirjanmerkki tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({email}).}other{{count} kirjanmerkkiä tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({email}).}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) menettää heti pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />"</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> lukematonta artikkelia</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Jatka</translation>
 <translation id="741204030948306876">Kyllä</translation>
 <translation id="7419565702166471774">Käytä aina turvallisia yhteyksiä</translation>
@@ -1946,6 +1955,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="7471557245617580330">Luo uusi välilehti</translation>
 <translation id="7473555040328423550">Lisää välilehti</translation>
 <translation id="7476548258282096076">Tällä kortilla näkyvät käydyimmät sivustosi.</translation>
+<translation id="7482823403440483089">Parannettu automaattinen täyttö</translation>
 <translation id="7484645889979462775">Ei koskaan tälle sivustolle</translation>
 <translation id="7486006552035434095">Pidä laitteesi synkronoituina</translation>
 <translation id="7491131399623468277">Siirry Asetuksiin…</translation>
@@ -2195,7 +2205,6 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Olet vaihtamassa profiilia</translation>
 <translation id="8275068909952022340">Lisää…</translation>
-<translation id="8280797717392145626">Linkkejä vastaanotettu</translation>
 <translation id="8281781826761538115">Oletus – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ohita</translation>
 <translation id="8282657446819506217">Avaa välilehtiryhmässä</translation>
@@ -2205,6 +2214,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8292893224181644074">Lataus valmis</translation>
 <translation id="8299417921174340354">Salasanojen käyttöä varten sinun on ensin asetettava laitteellesi tunnuskoodi.</translation>
 <translation id="8307481894409578819">Tiedoston lataaminen epäonnistui</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Uusi haku</translation>
 <translation id="8319282042900445670">Muistutus asetettu: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Uusimmat tapahtumat</translation>
@@ -2492,6 +2502,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="9219154867334666734">Hae välilehtiä…</translation>
 <translation id="9223358826628549784">Virheraportti lähetettiin.</translation>
 <translation id="926455622548529175">Vaihda ja poista</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Korostettu teksti</translation>
 <translation id="932305336591073205">{count,plural, =1{Sulje välilehti}other{Sulje välilehdet}}</translation>
 <translation id="939472100615258482">Nykyinen sivusto</translation>

@@ -2353,6 +2353,21 @@ Die Anwendung dieser Richtlinie auf verwalteten Geräten wird durch die Richtlin
 <translation id="2508800409212941632">Konfigurationsrichtlinie für den <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Connector</translation>
 <translation id="2509748672176727116">Der Nutzer ist zu Netzwerkpaketaufnahmen berechtigt</translation>
 <translation id="2509919237512982967">Verwende alte Formularsteuerelemente bis M84.</translation>
+<translation id="2509947330677441695">Mit dieser Richtlinie kann im Inkognitomodus auf die aufgeführten URLs zugegriffen werden. Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte in „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ definierte URL-Muster festlegen.
+
+Wenn sowohl diese Richtlinie als auch „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ konfiguriert sind, hat die Zulassungsliste Vorrang. Wenn eine URL mit einem Muster auf der Zulassungsliste übereinstimmt, wird sie zugelassen. Wenn eine URL mit einem Muster übereinstimmt, das auf der Sperrliste (aber nicht auf der Zulassungsliste) steht, wird sie blockiert. Wenn eine URL mit keinem Muster der beiden Listen übereinstimmt, werden die allgemeinen Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ / „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ als Fallback verwendet.
+
+Wenn diese Richtlinie konfiguriert ist und „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ nicht, werden alle URLs, die nicht auf der Zulassungsliste stehen, im Inkognitomodus blockiert.
+
+Wenn „<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />“ auf „Nicht zulassen“ (Wert 1) festgelegt ist, diese Richtlinie aber konfiguriert ist, ist der Inkognitomodus nur für die URLs verfügbar, die mit der Zulassungsliste übereinstimmen.
+
+Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />“ möglich.
+
+Diese Richtlinie wirkt sich nur auf den Inkognitomodus aus. Wenn du URLs für alle Nutzerprofile zulassen möchtest, verwende die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“.
+
+Alles einschließende Platzhalter für den Host (z. B. „*“ oder „[*]“ sind nicht zulässig. Verwende die Richtlinie „<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />“, um die Funktion global zu aktivieren.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="2512531606818417084">Diese Richtlinie ist nur vorübergehend verfügbar und funktioniert ab M137 nicht mehr.
 
 Dieses Funktion ermöglicht die Verwendung von „zstd“ im „Accept-Encoding“-Anfrageheader und die Unterstützung der Dekomprimierung von <ph name="ZSTANDARD_SHORTNAME" />-komprimierten Webinhalten.
@@ -6342,9 +6357,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5070539335358964387">„Mit Gemini suchen und ausfüllen“ zulassen und KI-Modelle verbessern.</translation>
 <translation id="5071303485174858500">Eingeschränkte verwaltete Gastsitzung deaktivieren.</translation>
-<translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
-
-      Wenn die Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, können Nutzer den Hintergrund auf der "Neuer Tab"-Seite anpassen.</translation>
 <translation id="5073788301065423829">Mit dieser Richtlinie wird „Formuliere für mich“ für ChromeOS aktiviert oder deaktiviert.
 
 Ist diese Richtlinie aktiviert, ist auch „Formuliere für mich“ aktiviert.
@@ -10424,6 +10436,21 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 <translation id="759957074386651883">Safe Browsing-Einstellungen</translation>
 <translation id="7602621823177962064">Melden der Informationen zum Arbeitsspeicher auf Geräten deaktivieren</translation>
 <translation id="7604169113182304895">Diese Liste kann auf freiwilliger Basis für Android-Apps übernommen werden. Es ist nicht möglich, die Verwendung zu erzwingen.</translation>
+<translation id="7604302274842086162">Mit dieser Richtlinie kannst du <ph name="CHROME_DEVTOOLS_NAME" /> für bestimmte URLs zulassen.
+
+URL-Muster werden mit der URL jedes Frames auf der geprüften Seite abgeglichen. Das daraus resultierende Verhalten hängt davon ab, ob die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ ebenfalls konfiguriert ist.
+
+Wenn diese Richtlinie konfiguriert ist und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ nicht, muss die URL jedes Frames mit einem Muster auf dieser Zulassungsliste übereinstimmen, damit <ph name="CHROME_DEVTOOLS_NAME" /> zulässig sind. Wenn die URL eines Frames nicht übereinstimmt, werden die Entwicklertools für die gesamte Seite blockiert. Informationen zum URL-Format findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Wenn sowohl diese Richtlinie als auch „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ festgelegt sind, hat diese Zulassungsliste Vorrang. Wenn die URL eines Frames mit einem Muster auf dieser Zulassungsliste übereinstimmt, ist sie zulässig, auch wenn sie ebenfalls mit einem Muster auf der Sperrliste übereinstimmt. Wenn eine URL mit einem Muster übereinstimmt, das auf der Sperrliste (aber nicht auf der Zulassungsliste) steht, wird sie blockiert. Wenn eine URL mit keinem Muster der beiden Listen übereinstimmt, wird die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ als Fallback verwendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird die Verfügbarkeit von <ph name="CHROME_DEVTOOLS_NAME" /> durch die Richtlinien „<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />“ und „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“ bestimmt.
+
+Diese Richtlinie gilt auch für <ph name="CHROME_DEVTOOLS_NAME" />, die für Erweiterungen und Webanwendungen geöffnet werden.
+
+Alles einschließende Platzhalter für den Host (z. B. „*“ oder „[*]“ sind nicht zulässig. Verwende die Richtlinie „<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />“, um die Funktion global zu aktivieren.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="7607831126797434329">Automatische Downloads auf diesen Websites blockieren</translation>
 <translation id="7608186022704392724">Durch die Funktion der automatischen PIN-Eingabe ändert sich die Eingabe von PINs unter <ph name="PRODUCT_OS_NAME" />.
           Statt das Textfeld anzuzeigen, das auch für die Eingabe des Passworts verwendet wird, zeigt diese Funktion eine spezielle UI, an der Nutzer erkennen, wie viele Ziffern für die PIN benötigt werden. In der Folge wird die Länge der jeweiligen PIN außerhalb der verschlüsselten Nutzerdaten gespeichert. Es werden nur PINs mit mindestens 6 und höchstens 12 Ziffern unterstützt.
@@ -12731,6 +12758,15 @@ Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutz
 
       Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Wenn sie auf „true“ gesetzt wird, werden die Anmelde-/Abmeldeereignisse auf den Geräten gemeldet.</translation>
+<translation id="9087577919890548366">Wenn diese Richtlinie aktiviert ist, werden bei Anfragen vom Typ „<ph name="LOCAL_NETWORK_ACCESS" />“ in den <ph name="CHROME_DEVTOOLS_NAME" /> nur Warnungen aufgrund fehlgeschlagener „<ph name="LOCAL_NETWORK_ACCESS" />“-Prüfungen angezeigt.
+
+Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden Anfragen vom Typ „<ph name="LOCAL_NETWORK_ACCESS" />“ gemäß dem standardmäßigen Verarbeitungsprozess für diesen Anfragetyp verarbeitet.
+
+Informationen zu Einschränkungen für den <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/.
+
+Diese Unternehmensrichtlinie ist nur vorübergehend verfügbar und wird nach M156 entfernt.
+
+Langfristig kann die Richtlinie „<ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />“ verwendet werden, um URL-Muster auf die Zulassungsliste zu setzen, für die automatisch die Berechtigung „<ph name="LOCAL_NETWORK_ACCESS" />“ gewährt werden soll.</translation>
 <translation id="9087652369391570821">Konfigurationsrichtlinie für den Chrome Enterprise Connector „OnFileTransfer”</translation>
 <translation id="9088433379343318874">Contentanbieter für betreute Nutzer aktivieren</translation>
 <translation id="9088444059179765143">Methode für die automatische Erkennung der Zeitzone konfigurieren</translation>

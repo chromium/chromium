@@ -77,6 +77,7 @@
 <translation id="1698376642261615901">Google Chrome è un browser web che apre pagine e applicazioni web con grande velocità. È veloce, stabile e facile da utilizzare. Esplora il Web in modo più sicuro grazie alla protezione contro malware e phishing incorporata in Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome verrà riavviato tra un'ora}other{Chrome verrà riavviato tra # ore}}</translation>
 <translation id="1722488837206509557">In questo modo potrai selezionare i dispositivi disponibili su cui visualizzare i contenuti.</translation>
+<translation id="1724094881572874997">Per proteggere il tuo lavoro su Chrome, la tua organizzazione potrà visualizzare o gestire determinate informazioni quando accedi a Chrome.</translation>
 <translation id="177180974022074201">Prova con Gemini in Chrome</translation>
 <translation id="1786003790898721085">Assicurati di aver effettuato l'accesso a Chrome sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
 <translation id="1786044937610313874">Le scorciatoie si aprono in Chrome</translation>
@@ -412,6 +413,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="521447420733633466">Se condividi un dispositivo, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5239627039202700673">Usa Chrome ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
+<translation id="524751727772074981">Chiedi qualsiasi cosa, ovunque ti trovi, con Gemini in Chrome</translation>
 <translation id="5251420635869119124">Gli ospiti possono utilizzare Chrome senza lasciare tracce.</translation>
 <translation id="5271833978500241046">Usale insieme ad altre funzionalità di Gemini in Chrome</translation>
 <translation id="5286907366254680517">Rilevata</translation>

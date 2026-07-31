@@ -81,6 +81,7 @@
 <translation id="1698376642261615901">Google Chrome ድረ-ገፆችን እና መተግበሪያዎችን በሚገርም ፍጥነት ማሄድ የሚችል የድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Google Chrome ውስጥ አብሮት በተሰራ የአስጋሪና ተንኮል-አዘል ሶፍትዌር መከላከያ አማካኝነት ደህንነትዎ በበለጠ ሁኔታ ተጠብቆ ድሩን ያስሱ።</translation>
 <translation id="1713301662689114961">{0,plural, =1{በአንድ ሰዓት ውስጥ Chrome ዳግም ይጀመራል}one{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}other{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}}</translation>
 <translation id="1722488837206509557">ይህ ከሚገኙ መሣሪያዎች እንዲመርጡ እና ይዘቶችን እንዲያሳዩ ያስችልዎታል።</translation>
+<translation id="1724094881572874997">በChrome ላይ ሥራዎን ደኅንነት ለመጠበቅ፣ ወደ Chrome ሲገቡ ድርጅትዎ የተወሰነ መረጃን ማየት ወይም ማስተዳደር ይችላል።</translation>
 <translation id="177180974022074201">Gemini በChrome ውስጥ ይሞክሩ</translation>
 <translation id="1786003790898721085">በእርስዎ <ph name="TARGET_DEVICE_NAME" /> ላይ በመለያ ወደ Chrome መግባትዎን ያረጋግጡ እና እንደገና ለመላክ ይሞክሩ።</translation>
 <translation id="1786044937610313874">አቋራጮች በChrome ውስጥ ተከፍተዋል</translation>
@@ -419,6 +420,7 @@
 <translation id="521447420733633466">መሣሪያ የሚያጋሩ ከሆኑ ጓደኛዎች እና ቤተሰብ ተለይተው ሊያስሱ እና Chromeን በሚፈልጉበት መንገድ ማዋቀር ይችላሉ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5239627039202700673">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ ጠቅ በሚያደርጉበት ማንኛውም ጊዜ Chrome ይጠቀሙ</translation>
+<translation id="524751727772074981">በGemini በChrome ውስጥ፣ ባሉበት ሆነው ማንኛውንም ነገር ይጠይቁ</translation>
 <translation id="5251420635869119124">እንግዳዎች ምንም ነገር ሳይተዉ Chromeን መጠቀም ይችላሉ።</translation>
 <translation id="5271833978500241046">በChrome ውስጥ ከሌሎች የGemini ባህሪያት ጋር አብረው ይጠቀሙባቸው</translation>
 <translation id="5286907366254680517">ተገኝቷል</translation>

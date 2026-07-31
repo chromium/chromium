@@ -381,7 +381,6 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1272508081857842302">Отварање <ph name="BEGIN_LINK" />подржаних линкова<ph name="END_LINK" /></translation>
-<translation id="1273937721055267968">Блокирај <ph name="DOMAIN" /></translation>
 <translation id="1274721046703404848">Управљајте везом између услуга Претраге и Google Workspace апликација, као што је Google диск</translation>
 <translation id="1274997165432133392">Колачићи и други подаци о сајтовима</translation>
 <translation id="1275936815032730048">тастер покретача + стрелица надесно</translation>
@@ -1805,7 +1804,6 @@
 <translation id="2416435988630956212">Функцијски тастери на тастатури</translation>
 <translation id="2419131370336513030">Прикажи инсталиране апликације</translation>
 <translation id="2419706071571366386">Из безбедносних разлога се одјавите када не користите рачунар.</translation>
-<translation id="2421705177906985956">Тренутно нема сајтова за приказ</translation>
 <translation id="2423506062824112361">Преузимање садржаја није успело из непознатог разлога.</translation>
 <translation id="2423578206845792524">Са&amp;чувај слику као...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гост}one{Гост (#)}few{Гост (#)}other{Гост (#)}}</translation>
@@ -2559,7 +2557,6 @@
 <translation id="2979893796619951531">Изузми сајт</translation>
 <translation id="2981113813906970160">Прикажи велики курсор</translation>
 <translation id="2981728693230031897">Резимирајте ову страницу помоћу Gemini-ја</translation>
-<translation id="2983102365694924129">На основу ваше активности на сајту. Ово подешавање је искључено.</translation>
 <translation id="2983311431122838216">Питај AI режим у Google претрази</translation>
 <translation id="2983373101216420412">Ниво напуњености батерије футроле <ph name="PERCENTAGE" />%.</translation>
 <translation id="2983818520079887040">Подешавања...</translation>
@@ -2639,7 +2636,6 @@
 <translation id="3024374909719388945">Користи 24-часовни сат</translation>
 <translation id="3025905136198521738">Промени распоред подељеног приказа – активан је леви приказ</translation>
 <translation id="3027296729579831126">Укључи Дељење у близини</translation>
-<translation id="3027644380269727216">На основу ваше активности на сајту. Ово подешавање је укључено.</translation>
 <translation id="3028445648481691885">Преузимање је отказано</translation>
 <translation id="3029466929721441205">Прикажите алатке за писаљку на полици</translation>
 <translation id="3029808567601324798">Време до закључавања</translation>
@@ -2655,7 +2651,6 @@
 <translation id="3036546437875325427">Омогући Flash</translation>
 <translation id="3036907164806060573">Сан</translation>
 <translation id="3037193115779933814">Слова и бројеви</translation>
-<translation id="3038272154009688107">Прикажи све сајтове</translation>
 <translation id="3038612606416062604">Ручно додајте штампач</translation>
 <translation id="3038628620670416486">Пронађите дугмад на мишу</translation>
 <translation id="303955801043931176">Картица је затворена</translation>
@@ -3069,7 +3064,6 @@
 <translation id="3372602033006349389">Други уређаји</translation>
 <translation id="337286756654493126">Читање директоријума које отворите у апликацији</translation>
 <translation id="3373059063088819384">Отвори у режиму за читање</translation>
-<translation id="3373701465337594448">Када је ово подешавање укључено, овде се приказује листа сајтова које посећујете, а који погађају ваша интересовања</translation>
 <translation id="3374294321938930390">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен у фолдер <ph name="NEW_FOLDER_TITLE" />.</translation>
 <translation id="3374750024044667358">Лако се вратите на сајтове које сте посетили тако што ћете се пријавити на исти налог на оба уређаја</translation>
 <translation id="3376035595160918049">Прегледајте ажурирање апликације</translation>
@@ -3101,7 +3095,6 @@
 <translation id="3394072120086516913">Рачунар користи жичану мрежу, а уређај за пребацивање је на WiFi-ју</translation>
 <translation id="3394850431319394743">Дозвољена употреба идентификатора за пуштање заштићеног садржаја</translation>
 <translation id="339722927132407568">Зауставља се</translation>
-<translation id="339831248473754720">Отвори избор „<ph name="SELECTION" />“ у режиму за читање</translation>
 <translation id="3399432415385675819">Обавештења ће бити онемогућена</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />×<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> херца) – преплетено</translation>
 <translation id="3401484564516348917">Читање информација о прегледачу, ОС-у, уређају, инсталираном софтверу, вредностима регистра и фајловима</translation>
@@ -3581,7 +3574,6 @@
 <translation id="3748424433435232460">Лозинка за овај налог је већ сачувана на овом уређају</translation>
 <translation id="3748466028423001972">Замени доњим приказом</translation>
 <translation id="3748706263662799310">Пријавите грешку</translation>
-<translation id="3749724428455457489">Сазнајте више о огласима које предлаже сајт</translation>
 <translation id="3752115502500640407">Делите копију лозинке за <ph name="WEBSITE" /></translation>
 <translation id="3753033997400164841">Сачувајте једном. Користите свуда</translation>
 <translation id="3753142252662437130">Филтери за боју</translation>
@@ -3606,7 +3598,6 @@
 <translation id="37613671848467444">Отвори у &amp;прозору без архивирања</translation>
 <translation id="3761560059647741692">Пејзаж</translation>
 <translation id="3761733456040768239">Још радњи за картицу <ph name="CARD_DESCRIPTION" />, CVC је сачуван</translation>
-<translation id="3763433740586298940">Можете да блокирате сајтове које не желите. Chrome такође аутоматски са листе брише сајтове који су старији од 30 дана.</translation>
 <translation id="3763549179847864476">Дугме Назад за Водич за приватност</translation>
 <translation id="3764314093345384080">Детаљне информације о верзији</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуникација са USB уређајем}one{Комуникација са # USB уређајем}few{Комуникација са # USB уређаја}other{Комуникација са # USB уређаја}}</translation>
@@ -3925,7 +3916,6 @@
 <translation id="3984536049089846927">Следећа страница</translation>
 <translation id="398477389655464998">Копирај линк до истакнутог текста</translation>
 <translation id="3984862166739904574">Дефиниција за брзе одговоре</translation>
-<translation id="3985022125189960801">Поново додајте сајт ако желите да буде у групи сајтова који могу да погађају шта вам се свиђа</translation>
 <translation id="3986813315215454677">Bluetooth за ChromeOS</translation>
 <translation id="3987307536043958493">Блокирај и напусти</translation>
 <translation id="3987544746655539083">Настави да блокираш приступ локацији за овај сајт</translation>
@@ -4144,7 +4134,6 @@
 <translation id="4175137578744761569">Светлољубичаста и бела</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
 <translation id="4176864026061939326">Овим уређајем се управља. Администратор уређаја захтева нови профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="4177501066905053472">Теме огласа</translation>
 <translation id="4177668342649553942">Отвори <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Додаци су Chrome додаци који вам помажу да будете организовани, поједноставите задатке и прилагодите прегледање</translation>
 <translation id="4177860704813504507">Лозинка или отисак прста</translation>
@@ -4795,7 +4784,6 @@
 <translation id="4685044513206555960">Администраторске смернице блокирају инсталирање веб-апликације.</translation>
 <translation id="4687238339694011189">Уверите се да је штампач укључен и повезан на исту мрежу као и Chromebook или користите USB кабл</translation>
 <translation id="4687613760714619596">Непознат уређај (<ph name="DEVICE_ID" />)</translation>
-<translation id="4687718960473379118">Огласи које предлажу сајтови</translation>
 <translation id="4688036121858134881">ИД локалне евиденције: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> враћа овај уређај на претходну верзију (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">Проверите интернет везу и пробајте поново да користите Gemini</translation>
@@ -5044,7 +5032,6 @@
 <translation id="4871719318659334896">Затвори групу</translation>
 <translation id="4872192066608821120">Да бисте увезли лозинке, изаберите CSV фајл</translation>
 <translation id="4872212987539553601">Подесите шифровање на уређају</translation>
-<translation id="4873312501243535625">Провера медијских датотека</translation>
 <translation id="4875690134140862902">Картица</translation>
 <translation id="4876273079589074638">Помозите инжењерима да истраже и реше проблеме са отказивањем. Наведите тачне кораке ако можете. Ниједан детаљ није неважан!</translation>
 <translation id="4876305945144899064">Нема корисничког имена</translation>
@@ -5328,7 +5315,6 @@
 <translation id="5091636240353511739">Прикажи PIN</translation>
 <translation id="5092567114307895466">Проверите да ли испуњавате услове</translation>
 <translation id="5093447877601682598">Пошаљи повратне информације о траци са картицама</translation>
-<translation id="5093477827231450397">Листа сајтова које сте блокирали и за које не желите да предлажу огласе другим сајтовима</translation>
 <translation id="5093569275467863761">Цео кеширани подоквир без архивирања: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Помоћу ове апликације можете да отварате и мењате подржане фајлове из апликације Фајлови или других апликација. Да бисте контролисали који фајлови подразумевано отварају ову апликацију, <ph name="BEGIN_LINK" />сазнајте како да подесите подразумеване апликације на уређају<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Комуникација са основним апликацијама за сарадњу</translation>
@@ -5337,7 +5323,6 @@
 <translation id="5095848221827496531">Поништите избор</translation>
 <translation id="5096775069898886423">За сајтове који не подржавају безбедне везе, добијајте упозорење пре него што посетите сајт</translation>
 <translation id="5097002363526479830">Повезивање са мрежом „<ph name="NAME" />“ није успело: <ph name="DETAILS" /></translation>
-<translation id="5097349930204431044">Сајтови које посећујете могу да одреде шта вам се свиђа, а затим да вам предлажу огласе док и даље прегледате садржај</translation>
 <translation id="5097649414558628673">Алатка: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Аутоматски клик кад се курсор заустави</translation>
 <translation id="5098963855433723436">Отвара се у засебној апликацији</translation>
@@ -5973,7 +5958,6 @@
 <translation id="5611474372949142946">Затвори картице у наставку</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
-<translation id="561552177910095306">Листа недавних сајтова које сте посетили и који могу да предлажу огласе за друге сајтове док настављате да прегледате</translation>
 <translation id="5616571005307953937">Најстарије</translation>
 <translation id="5616726534702877126">Резервиши величину</translation>
 <translation id="561698261642843490">Затворите Firefox</translation>
@@ -6057,7 +6041,6 @@
 <translation id="5684110242705861346">Додатак <ph name="NAME" /> је додат према смерницама ваше организације и управља овим подешавањем. <ph name="BEGIN_LINK" />Прикажи детаље<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Детаљи о WiFi мрежи</translation>
 <translation id="5687340364605915800">Сајтови по сопственом нахођењу одговарају на овај захтев</translation>
-<translation id="5687606994963670306">Chrome аутоматски брише сајтове старије од 30 дана. Сајт који поново посетите може опет да се појави на листи. А можете и да блокирате сајт да вам не би предлагао огласе. Сазнајте више о <ph name="BEGIN_LINK" />управљању приватношћу са огласима у Chrome-у.<ph name="END_LINK" /></translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="56907980372820799">Повежи податке</translation>
@@ -7301,7 +7284,6 @@
 <translation id="6670983860904543332">Аутоматска ажурирања вам пружају најновије функције. Истражите истакнуте функције из недавних ажурирања.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
 <translation id="6672697278890207089">Унос приступне фразе</translation>
-<translation id="6672917148207387131">Додај <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">Режим без архивирања чува <ph name="BEGIN_LINK" />приватност прегледања од других<ph name="END_LINK" /> који користе уређај</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">Продужује трајање батерије тако што смањује осветљеност, ограничава активности у позадини и визуелне ефекте, одлаже обавештења и укључује Chrome уштеду енергије.</translation>
@@ -7650,7 +7632,6 @@
 <translation id="6924940560840297548">Картице су уклоњене јер их нисте недавно користили</translation>
 <translation id="6928650056523249512">Аутоматски уклони дозволе за сајтове који се не користе</translation>
 <translation id="6929639755025587400">Апликација се инсталира…</translation>
-<translation id="6929669104135164900">Отвори избор „<ph name="SELECTION" />“ у режиму за читање</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Додатак је одбијен}one{# додатак је одбијен}few{# додатка су одбијена}other{# додатака је одбијено}}</translation>
 <translation id="6930337524857202955">Доступно је ново преузимање</translation>
 <translation id="6930477763029357444">Дозволе које одобрите за апликацију <ph name="APP_NAME" /> важиће и за апликацију <ph name="PARENT_APP_NAME" /> и њене инсталиране апликације.</translation>
@@ -7705,7 +7686,6 @@
 <translation id="697312151395002334">Дозвољено им је да шаљу искачуће прозоре и да користе преусмеравања</translation>
 <translation id="69739764870135975">Ако вам је Google и подразумевани претраживач, видећете боље, контекстуално релевантне предлоге</translation>
 <translation id="6978121630131642226">Претраживачи</translation>
-<translation id="6978717888677691380">Сајтови које сте блокирали</translation>
 <translation id="6979041727349121225">Уштеда енергије</translation>
 <translation id="6979044105893951891">Покретање и напуштање сесија госта којима се управља</translation>
 <translation id="6979158407327259162">Google диск</translation>
@@ -8324,7 +8304,6 @@
 <translation id="7453008956351770337">Када изаберете овај штампач, дајете дозволу за приступ штампачу следећем додатку:</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7454744349230173024">Организација је искључила чување лозинки</translation>
-<translation id="7455988709578031708">На основу историје прегледања. Ово подешавање је укључено.</translation>
 <translation id="7456142309650173560">програмер</translation>
 <translation id="7456774706094330779">Продужено предучитавање</translation>
 <translation id="7456847797759667638">Отвори локацију...</translation>
@@ -8624,7 +8603,6 @@
 <translation id="7685049629764448582">JavaScript меморија</translation>
 <translation id="7685087414635069102">PIN је обавезан</translation>
 <translation id="7685351732518564314">Притисните дугме на уређају <ph name="DEVICE_NAME" />.</translation>
-<translation id="7686086654630106285">Више о огласима које предлажу сајтови</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690378713476594306">Одаберите са листе</translation>
 <translation id="7690853182226561458">Додај &amp;директоријум...</translation>
@@ -8841,7 +8819,6 @@
 <translation id="7867763367097007079">{COUNT,plural, =1{Сачувајте лозинку за веб-сајт <ph name="WEBSITE" /> на Google налогу}one{Сачувајте лозинке за веб-сајт <ph name="WEBSITE" /> на Google налогу}few{Сачувајте лозинке за веб-сајт <ph name="WEBSITE" /> на Google налогу}other{Сачувајте лозинке за веб-сајт <ph name="WEBSITE" /> на Google налогу}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Упарен је</translation>
 <translation id="7870005751202275328">Кликните на траку за адресу.</translation>
-<translation id="787069710204604994">На пример, ако посетите сајт који продаје патике за трчање на дуге раздаљине, тај сајт може да одлучи да вас занима трчање маратона. Касније, ако посетите неки други сајт, тај сајт може да вам прикаже оглас за патике за трчање које је предложио први сајт.</translation>
 <translation id="7871109039747854576">Користите тастере <ph name="COMMA" /> и <ph name="PERIOD" /> да бисте поставили листу кандидата</translation>
 <translation id="7871277686245037315">тастер за претрагу + стрелица налево</translation>
 <translation id="7871691770940645922">Виртуелни приказ са Брајевом азбуком</translation>
@@ -9852,7 +9829,6 @@
 <translation id="8648408795949963811">Топлина боја Ноћног светла</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> жели да: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> и друго</translation>
 <translation id="8648889679430451455">Обриши податке за персонализацију</translation>
-<translation id="8649026945479135076">Уобичајено је да сајтови које посећујете памте ствари које вас занимају ради персонализације доживљаја. Сајтови могу и да чувају информације о вашим интересовањима у Chrome-у.</translation>
 <translation id="8651585100578802546">Принудно поново учитај ову страницу</translation>
 <translation id="8651806635673244884">Можете да вратите картице у врх тако што ћете кликнути десним тастером на било коју картицу и изабрати Прикажи картице хоризонтално</translation>
 <translation id="8652400352452647993">Грешка у вези са паковањем додатка</translation>
@@ -10460,7 +10436,6 @@
 <translation id="9096221857560878399">Упореди опције</translation>
 <translation id="9096776523567481218">није локално инсталирано</translation>
 <translation id="9098860402274800697">Уклони Google Play и Android апликације</translation>
-<translation id="9099220545925418560">На основу историје прегледања. Ово подешавање је искључено.</translation>
 <translation id="9099383880226822604">Прашума</translation>
 <translation id="910000385680858937">Дозвољено је – <ph name="PERMISSION_DETAILS" />. Повежите микрофон са уређајем.</translation>
 <translation id="9100416672768993722">Да бисте прешли на последње коришћени метод уноса, притисните <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Тастер за размак<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -10510,7 +10485,6 @@
 <translation id="9130135798965366513">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити <ph name="FIELDS_STRING" /> са овим сајтом. Погледајте <ph name="BEGIN_LINK1" />политику приватности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />услове коришћења услуге<ph name="END_LINK2" /> за овај сајт.</translation>
 <translation id="9130364135697530260">Уграђени садржај на овом сајту не може да користи информације које су сачуване о вама</translation>
 <translation id="9130857050314385402">Наслови картица и URL-ови шаљу се Google-у када користите вештину</translation>
-<translation id="9131209053278896908">Овде се приказују блокирани сајтови</translation>
 <translation id="9131487537093447019">Слање порука на Bluetooth уређаје и примање порука са њих.</translation>
 <translation id="9133568201369135151">Прикупљање дијагностичких података је завршено. У те податке су уврштени и неки лични подаци.</translation>
 <translation id="9133985615769429248">Ако делите овај уређај са другима, можете да користите откључавање екрана да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>

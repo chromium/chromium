@@ -574,6 +574,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="7173822816570314652">Organizația ta șterge datele Chromium dacă nu sunt folosite timp de <ph name="TIMEOUT_DURATION" />. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
 <translation id="718435575166326686">Chromium are nevoie de acces la cameră pentru acest site</translation>
 <translation id="7196312274710523067">Chromium nu a putut fi lansat. Încearcă din nou.</translation>
+<translation id="7204669035546236137">Întreabă orice în locul în care te afli, cu Gemini în Chromium</translation>
 <translation id="7213008767289637091">Păstrează Chromium în bara de andocare pentru a-l accesa rapid oricând</translation>
 <translation id="7213407614656404070">Folosește Chromium când dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="7216228761061470870">Când folosești Căutarea de imagini pe computer, titlul paginii, adresa URL și conținutul, inclusiv PDF-urile, sunt trimise la server</translation>
@@ -630,6 +631,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7745317241717453663">Astfel, se vor șterge datele de navigare de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7750130090210923118">Revino la tema Chromium prestabilită</translation>
+<translation id="7752521946322750699">Pentru a-ți proteja activitatea în Chromium, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chromium.</translation>
 <translation id="7781047659465034537">Setează Chromium ca browser prestabilit și fixează-l în bara de activități</translation>
 <translation id="7786760609782648049">Crește eficiența în Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Itxi ezkutuko moduko fitxak</translation>
 <translation id="1559263013367304065">Google Lens erabiltzen hasi zinenetik</translation>
 <translation id="1560153516220021659">Tolestutako bigarren mailako tresna-barraren botoia</translation>
+<translation id="1562601408588733317">Kudeatu Gemini-rekin informazioa bilatzeko eta betetzeko aukera</translation>
 <translation id="1565371473877914088">Ezkutuko moduko fitxa berria</translation>
 <translation id="1567960978791353852">Erakutsi irakurtzeko modua</translation>
 <translation id="1571780780926010134">Ezkutuko moduko fitxak</translation>
@@ -1396,6 +1397,7 @@
 <translation id="5666313630530585305">Hasi saioa webgune batean.</translation>
 <translation id="5669335982068190158">iPhone-a berrezarri duzunez, saioa amaitu zaizu. Saioa hasteko, sakatu aurrera egiteko aukera.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Kudeatu aplikazio konektatuak</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" /> bertsioa</translation>
 <translation id="5680012489335339762">Kontua aldatu nahi duzu? Kontuko gorde gabeko datuak ezabatuko dira.</translation>
 <translation id="5683499062697987550">Pasahitzak Google-ko kontuan erabiltzeko eta gordetzeko, egiaztatu zeu zarela.</translation>
@@ -1571,6 +1573,7 @@
 <translation id="6240553182907836376">Eguneratu nortasun-agiria</translation>
 <translation id="6240601837375010619">Gorde pasaportea</translation>
 <translation id="6241132809279377987">Desblokeatu iPhone-rako eginbide gehiago Google-ren aplikazioekin</translation>
+<translation id="6244366663267187541">Aukeratu zer aplikazio konektatu nahi dituzun Gemini-rekin</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="6251835855431997163">Bete <ph name="VALUE" /> automatikoki</translation>
 <translation id="6253686838150111720">Hasi saioa <ph name="URL" /> zerbitzuan</translation>
@@ -1946,6 +1949,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="7471557245617580330">Sortu beste fitxa bat</translation>
 <translation id="7473555040328423550">Gehitu fitxa bat</translation>
 <translation id="7476548258282096076">Gehien bisitatzen dituzun webguneak agertzen dira txartel honetan.</translation>
+<translation id="7482823403440483089">Betetze automatiko hobetua</translation>
 <translation id="7484645889979462775">Inoiz ez webgune honetan</translation>
 <translation id="7486006552035434095">Mantendu gailuak sinkronizatuta</translation>
 <translation id="7491131399623468277">Joan Ezarpenak atalera…</translation>
@@ -2195,7 +2199,6 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profila aldatzera zoaz</translation>
 <translation id="8275068909952022340">Gehiago…</translation>
-<translation id="8280797717392145626">Jasotako estekak</translation>
 <translation id="8281781826761538115">Lehenetsia - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltatu</translation>
 <translation id="8282657446819506217">Ireki fitxa taldean</translation>

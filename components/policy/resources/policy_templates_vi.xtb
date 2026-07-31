@@ -2367,6 +2367,21 @@ Việc áp dụng chính sách này trên các thiết bị được quản lý 
 <translation id="2508800409212941632">Chính sách cấu hình cho Trình kết nối doanh nghiệp <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509748672176727116">Người dùng sẽ có thể chặn bắt gói tin qua mạng</translation>
 <translation id="2509919237512982967">Dùng các thành phần điều khiển biểu mẫu cũ cho đến M84.</translation>
+<translation id="2509947330677441695">Việc đặt chính sách này sẽ cho phép bạn truy cập vào các URL có trong danh sách ở chế độ ẩn danh. Hãy dùng chính sách này để mở các trường hợp ngoại lệ đối với một số mẫu URL được xác định trong <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> theo định dạng được nêu tại ( https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu một URL khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép. Còn nếu URL đó khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì các chính sách chung <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách cho phép sẽ bị chặn ở chế độ ẩn danh.
+
+Nếu bạn đặt <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> thành không cho phép (giá trị 1) nhưng định cấu hình chính sách này, thì chế độ ẩn danh sẽ chỉ hoạt động đối với những URL khớp với danh sách cho phép.
+
+Nếu bạn không đặt chính sách này thì <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> và <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> sẽ không có trường hợp ngoại lệ.
+
+Chính sách này chỉ ảnh hưởng đến chế độ ẩn danh. Để cho phép URL cho tất cả hồ sơ người dùng, vui lòng sử dụng chính sách <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Không được sử dụng ký tự đại diện chung chung dùng để khớp với mọi máy chủ lưu trữ (ví dụ: "*" hoặc "[*]"); hãy dùng chính sách <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> để bật tính năng này trên phạm vi toàn cục.
+
+Chính sách này chỉ áp dụng cho 1000 mục.</translation>
 <translation id="2512531606818417084">Đây là chính sách tạm thời và sẽ không còn hoạt động kể từ phiên bản M137.
 
 Tính năng này cho phép sử dụng "zstd" trong tiêu đề của yêu cầu Accept-Encoding và hỗ trợ giải nén nội dung trên web được nén bằng <ph name="ZSTANDARD_SHORTNAME" />.
@@ -6425,9 +6440,6 @@ Nếu bạn không đặt chính sách này thì hành vi của chính sách s�
 Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5070539335358964387">Cho phép tính năng Tìm và điền bằng Gemini và cải tiến các mô hình AI.</translation>
 <translation id="5071303485174858500">Tắt phiên khách được quản lý và bị hạn chế.</translation>
-<translation id="5073609397321802133">Nếu bạn đặt chính sách này thành false, thì trang Thẻ mới sẽ không cho phép người dùng tùy chỉnh nền. Các nền tùy chỉnh hiện có sẽ bị xóa vĩnh viễn ngay cả khi sau này, bạn đặt chính sách này thành true.
-
-      Nếu bạn không đặt hoặc đặt chính sách này thành true, thì người dùng có thể tùy chỉnh nền trên trang Thẻ mới.</translation>
 <translation id="5073788301065423829">Chính sách này bật hoặc tắt tính năng "Giúp tôi viết" cho ChromeOS.
 
 Nếu bạn đặt chính sách này thành Bật, thì tính năng "Giúp tôi viết" sẽ bật.
@@ -10623,6 +10635,21 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 <translation id="759957074386651883">Cài đặt Duyệt web an toàn</translation>
 <translation id="7602621823177962064">Tắt tính năng báo cáo thông tin về bộ nhớ của thiết bị</translation>
 <translation id="7604169113182304895">Các ứng dụng Android có thể chọn sử dụng danh sách này một cách tự nguyện. Bạn không thể buộc các ứng dụng đó sử dụng danh sách.</translation>
+<translation id="7604302274842086162">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
+
+Các mẫu URL sẽ được so khớp với URL của mọi khung trên trang đang được kiểm tra. Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mọi khung phải khớp với một mẫu trong danh sách cho phép này thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép. Nếu URL của bất kỳ khung nào không khớp thì Công cụ cho nhà phát triển sẽ bị chặn đối với toàn bộ trang. Để biết thông tin về định dạng URL, hãy truy cập vào trang https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép này sẽ được ưu tiên áp dụng. Nếu URL của một khung khớp với một mẫu trong danh sách cho phép này, URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu một URL khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
+
+Không được sử dụng ký tự đại diện chung chung dùng để khớp với mọi máy chủ lưu trữ (ví dụ: "*" hoặc "[*]"); hãy dùng chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> để bật tính năng này trên phạm vi toàn cục.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="7607831126797434329">Chặn tính năng tự động tải xuống trên các trang web này</translation>
 <translation id="7608186022704392724">Tính năng tự động gửi mã PIN thay đổi cách nhập mã PIN trên <ph name="PRODUCT_OS_NAME" />.
           Thay vì cho thấy cùng một trường văn bản dùng để nhập mật khẩu, tính năng này

@@ -77,7 +77,6 @@
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Спіс чытання</translation>
 <translation id="1269129608791067105">Ваша гісторыя знаходзіцца тут</translation>
-<translation id="1273937721055267968">Заблакіраваць <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Уключыць апавяшчэнні з парадамі</translation>
 <translation id="1289129165308566697">Паглядзець гісторыю на іншых прыладах</translation>
 <translation id="129553762522093515">Нядаўна закрытыя</translation>
@@ -337,7 +336,6 @@
 <translation id="2413014528833954543">Не ўдаецца праверыць паролі на гэтай прыладзе</translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2415037988255164008">Аднавіць вокны?</translation>
-<translation id="2421705177906985956">Пакуль што сайтаў няма</translation>
 <translation id="2426805022920575512">Выбраць іншы ўліковы запіс</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Відэа, 1 відэа ў спісе}one{Відэа, # відэа ў спісе}few{Відэа, # відэа ў спісе}many{Відэа, # відэа ў спісе}other{Відэа, # відэа ў спісе}}</translation>
 <translation id="2433507940547922241">Выгляд</translation>
@@ -480,7 +478,6 @@
 <translation id="297771753501244313">Па часе адкрыцця</translation>
 <translation id="2979639724566107830">Адкрыць у новым акне</translation>
 <translation id="2980545254049127870">Лёгка адкрывайце спасылкі з паведамленняў, дакументаў і іншых праграм</translation>
-<translation id="2983102365694924129">Выкарыстоўваюцца даныя пра вашы дзеянні на сайце. Гэта налада выключана.</translation>
 <translation id="2983398917942897288">Неактыўныя (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Выйсці з рэжыму "Відарыс у відарысе"</translation>
 <translation id="2984978667043170458">Дадаваць кантэкст у пошукавыя запыты Google</translation>
@@ -492,7 +489,6 @@
 <translation id="2996809686854298943">Патрабуецца URL-адрас</translation>
 <translation id="3024215143424744261">Налады рэжыму чытання закрыты</translation>
 <translation id="3026955690410463085">Абагуліць разам са спасылкай</translation>
-<translation id="3027644380269727216">Выкарыстоўваюцца даныя пра вашы дзеянні на сайце. Гэта налада ўключана.</translation>
 <translation id="3027950907978057636">Крыніца: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Без перадзагрузкі</translation>
 <translation id="3029704984691124060">Фразы-паролі не супадаюць</translation>
@@ -501,7 +497,6 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Даведка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037517125981011456">Будуць паказвацца запыты ўваходу ў Chrome</translation>
-<translation id="3038272154009688107">Паказаць усе сайты</translation>
 <translation id="3044436568790455247">Аркуш "Выберыце прыладу" адкрыты на ўсю вышыню.</translation>
 <translation id="3057938290530993634">Націсніце і ўтрымлівайце, каб замацаваць вэб-сайты, якія вы наведваеце часцей за ўсё, для лёгкага доступу да іх пазней</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
@@ -570,7 +565,6 @@
 <translation id="3340978935015468852">налады</translation>
 <translation id="3351959803838327376">Націсніце і ўтрымлівайце адрас вэб-сайта, каб адкрыць меню.</translation>
 <translation id="3359667936385849800">Выкарыстоўваць бягучага пастаўшчыка паслуг</translation>
-<translation id="3373701465337594448">Калі гэта налада ўключана, спіс наведаных вамі сайтаў, якія спрабуюць вызначаць вашы інтарэсы, будзе паказвацца тут</translation>
 <translation id="3384347053049321195">Абагуліць відарыс</translation>
 <translation id="3385749568468586663">Сэрвіс Gemini недаступны ў рэжыме інкогніта</translation>
 <translation id="3387650086002190359">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за памылак файлавай сістэмы.</translation>
@@ -714,7 +708,6 @@
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="3976396876660209797">Выдаліце і яшчэ раз стварыце гэты ярлык</translation>
 <translation id="397650873162244514"><ph name="TAB_TITLE" />, замацаваная ўкладка</translation>
-<translation id="3985022125189960801">Калі вы хочаце, каб сайт вызначаў, што вам падабаецца, вы можаце выдаліць яго са спіса заблакіраваных сайтаў</translation>
 <translation id="3985215325736559418">Спампаваць файл "<ph name="FILE_NAME" />" зноў?</translation>
 <translation id="3987993985790029246">Скапіраваць спасылку</translation>
 <translation id="3994236846568425219">Выкарыстоўваць цёмную тэму, калі на прыладзе ўключана цёмная тэма</translation>
@@ -759,7 +752,6 @@
 <translation id="4170577491341606575">Ідзе загрузка даных\u2026</translation>
 <translation id="4176838562184310003">Браўзер Chrome завяршыў работу няправільна і можа паспрабаваць аднавіць страчаныя вокны і ўкладкі. Пры аднаўленні некаторыя вокны могуць згарнуцца.</translation>
 <translation id="4177222230309051052">Трымайце ўсе свае закладкі пад рукой</translation>
-<translation id="4177501066905053472">Тэмы рэкламы</translation>
 <translation id="417865198503699526">Пошук налады</translation>
 <translation id="4180726336228139707">Толькі на гэтай прыладзе</translation>
 <translation id="4181841719683918333">Мовы</translation>
@@ -891,7 +883,6 @@
 <translation id="4675298276894277358">Мы больш не будзем паказваць гэты сайт</translation>
 <translation id="4678082183394354975">У браўзеры Chrome уключана цёмная тэма для сайтаў</translation>
 <translation id="4685741273709472646">Выбраць з выпаднога спіса</translation>
-<translation id="4687718960473379118">Рэклама, якая прапануецца сайтамі</translation>
 <translation id="468924408576231679">Скапіраваць спасылку на вэб-старонку "<ph name="PAGE_TITLE" />". Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="4692623383562244444">Пошукавыя сістэмы</translation>
 <translation id="469286762610133730">Атрымлівайце больш цікавае змесціва</translation>
@@ -1142,7 +1133,6 @@
 <translation id="5765517223145864268">Падзяліцеся з намі сваімі ўражаннямі або <ph name="BEGIN_LINK" />змяніце налады<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Няважныя даныя</translation>
 <translation id="5793665092639000975">Выкарыстоўваецца: <ph name="SPACE_USED" /> з <ph name="SPACE_AVAILABLE" /></translation>
-<translation id="5797949256525811424">Тэма заблакіравана</translation>
 <translation id="580893287573699959">Выберыце, якія тэмы і сайты вас цікавяць</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
@@ -1175,7 +1165,6 @@
 <translation id="5907542076239273525">Закладка захавана ў папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5911301511366365629"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта з уключаным гукам</translation>
 <translation id="5932881020239635062">Серыйны нумар</translation>
-<translation id="5938820472109305350">Дадаць: <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Выкарыстоўваецца пошукавая сістэма Google</translation>
 <translation id="5945035219773565305">Бягучая рэкамендацыя:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Праглядаецца апублікаваная версія старонкі</translation>
@@ -1272,7 +1261,6 @@
 <translation id="6277522088822131679">Узнікла праблема з друкам старонкі. Паўтарыце спробу.</translation>
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6291294824436685757">Выдаліць даныя пра работу ў браўзеры; выбраць даныя для выдалення</translation>
-<translation id="6295158916970320988">Усе сайты</translation>
 <translation id="629730747756840877">Уліковы запіс</translation>
 <translation id="6301526076346731664">Адкрыць інструменты распрацоўшчыка</translation>
 <translation id="630308129961693966">Выберыце пазіцыю адраснага радка</translation>
@@ -1373,7 +1361,6 @@
 <translation id="6633067410344541938">Разблакіраваць сеанс інкогніта</translation>
 <translation id="6636623428211296678">Вы можаце азнаёміцца з іншымі наладамі ніжэй або завяршыць праверку</translation>
 <translation id="6637100877383020115">Chrome адпраўляе ў Google даныя пра збоі і выкарыстанне, якія дапамогуць палепшыць праграму. <ph name="BEGIN_UMA_LINK" />Кіраваць<ph name="END_UMA_LINK" /></translation>
-<translation id="6641780377503683465">Выдаліць: <ph name="INTEREST" /></translation>
 <translation id="6642299196749785472">Далучыць укладкі</translation>
 <translation id="6647441008198474441">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб прадказваць, якія сайты вы можаце наведаць далей</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1383,7 +1370,6 @@
 <translation id="6669390930482049506">Апавяшчаць мяне</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6672697278890207089">Увядзіце фразу-пароль</translation>
-<translation id="6672917148207387131">Дадаць <ph name="DOMAIN" /></translation>
 <translation id="6676927815633975364">Будзе выкананы ўваход на сайт і ў Chrome</translation>
 <translation id="6684262542644248484">Увайдзіце на сайт.</translation>
 <translation id="6684809838922667136">Зрабіце браўзер Chrome лепшым</translation>
@@ -1485,7 +1471,6 @@
 <translation id="6971862865055170158">Не ўхваляць</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, новая ці абноўленая ўкладка</translation>
 <translation id="6976811588313110624">Дадаць новае спалучэнне клавіш.</translation>
-<translation id="6978717888677691380">Заблакіраваныя вамі сайты</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
 <translation id="6980258170429555165">Меню "<ph name="MENU_NAME" />" вылучана.</translation>
 <translation id="6983306615164277634">Каб змяніць палажэнне адраснага радка, націсніце яго і ўтрымлівайце.</translation>
@@ -1605,7 +1590,6 @@
 <translation id="7453810262525006706">Згарнуць да віду збоку</translation>
 <translation id="7454641608352164238">Не хапае месца</translation>
 <translation id="7454744349230173024">Ваша арганізацыя адключыла захаванне пароляў</translation>
-<translation id="7455988709578031708">Выкарыстоўваюцца даныя гісторыі прагляду сайтаў. Гэта налада ўключана.</translation>
 <translation id="7456774706094330779">Пашыраная перадзагрузка</translation>
 <translation id="7466328545712777810">Пры зніжэнні цаны на сайтах вы будзеце атрымліваць апавяшчэнні</translation>
 <translation id="7466431077154602932">Кампактны выгляд</translation>
@@ -1664,7 +1648,6 @@
 <translation id="766587987807204883">Тут паказваюцца артыкулы, якія можна чытаць нават па-за сеткай</translation>
 <translation id="7666185984446444960">Закрыта: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="7682724950699840886">Паспрабуйце наступнае: праверце, ці дастаткова месца на прыладзе, затым паўтарыце экспарт.</translation>
-<translation id="7686086654630106285">Падрабязней пра рэкламу, якая прапануецца сайтамі</translation>
 <translation id="7690596512217303514">Запусціць Chrome на вашай прыладзе не ўдалося. Устараніце праблему, спампаваўшы з крамы праграм апошняе абнаўленне браўзера Chrome.</translation>
 <translation id="7692761875510935111">Хуткае адкрыццё ў браўзеры. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="7695270712963178084">Вынікі пошуку ад Chrome</translation>
@@ -1821,7 +1804,6 @@
 <translation id="8271267069224406035">Паскардзіцца на спам</translation>
 <translation id="8277710303010772444">Пачаць пошук</translation>
 <translation id="8279945625179116733">Абаронена праграмай "<ph name="APP_NAME" />"</translation>
-<translation id="8280797717392145626">Атрыманы спасылкі</translation>
 <translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8282297628636750033">Прымяняць цёмную тэму, калі гэта магчыма</translation>
 <translation id="8282950411412455249">Перайсці ў налады бяспекі</translation>
@@ -2006,7 +1988,6 @@
 <translation id="9042893549633094279">Прыватнасць і бяспека</translation>
 <translation id="9047347135558855162">Хутка пачаць пошук у Chrome</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>
-<translation id="9055497320631373736">Сайт зноў дададзены ў спіс патэнцыйных</translation>
 <translation id="9057030985451135243">Даведацца больш пра абагуленыя групы ўкладак</translation>
 <translation id="905722970894408436"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка "Відарыс у відарысе"</translation>
 <translation id="9063400323119781058">Падпіска скасавана</translation>
@@ -2025,7 +2006,6 @@
 <translation id="9086455579313502267">Не ўдалося атрымаць доступ да сеткі</translation>
 <translation id="9093915805850895575">Адкрыць у акне Chrome</translation>
 <translation id="909756639352028172">Каб павысіць якасць персаналізацыі, дадайце Chrome да гісторыі дзеянняў у інтэрнэце і праграмах і звязаных сэрвісаў Google</translation>
-<translation id="9099220545925418560">Выкарыстоўваюцца даныя гісторыі прагляду сайтаў. Гэта налада выключана.</translation>
 <translation id="9099674669267916096">Колькасць старонак</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="9101137867221042551">Кіраванне</translation>
@@ -2036,7 +2016,6 @@
 <translation id="9112483451228487295">Хуткае выдаленне даных пра работу ў браўзеры</translation>
 <translation id="9124978074365039456">Знаходзьце тавары, перакладайце тэксты і распазнавайце навакольныя аб’екты з дапамогай камеры і фотагалерэі</translation>
 <translation id="9130135798965366513">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />ўмовамі выкарыстання<ph name="END_LINK2" /> сайта.</translation>
-<translation id="9131209053278896908">Заблакіраваныя сайты будуць паказвацца тут</translation>
 <translation id="9133397713400217035">Агляд па-за сеткай</translation>
 <translation id="9143389653531441385">Зарэгістравацца праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>

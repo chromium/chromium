@@ -573,6 +573,7 @@
 <translation id="7173822816570314652">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后删除 Chromium 数据，其中可能包括历史记录、自动填充和下载内容。</translation>
 <translation id="718435575166326686">Chromium 需要为此网站授予摄像头权限</translation>
 <translation id="7196312274710523067">无法启动 Chromium。请重试。</translation>
+<translation id="7204669035546236137">使用 Chromium 中的 Gemini，无需离开当前页面即可随意提问</translation>
 <translation id="7213008767289637091">将 Chromium 保留在程序坞中，即可随时快速访问</translation>
 <translation id="7213407614656404070">随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="7216228761061470870">当您在桌面设备上使用“图片搜索”功能时，系统会将网页标题、网址和内容（包括 PDF 文件）发送给服务器</translation>

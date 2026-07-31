@@ -575,6 +575,7 @@
 <translation id="7173822816570314652"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium 데이터를 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.</translation>
 <translation id="718435575166326686">Chromium에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="7196312274710523067">Chromium을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
+<translation id="7204669035546236137">어디서든 무엇이든 Chromium의 Gemini에게 물어보세요</translation>
 <translation id="7213008767289637091">Chromium을 도크에 고정하여 언제든지 빠르게 액세스하세요.</translation>
 <translation id="7213407614656404070">언제든지 메시지, 문서 및 다른 앱에서 링크를 클릭하여 Chromium을 사용하세요</translation>
 <translation id="7216228761061470870">데스크톱에서 이미지 검색을 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 서버로 전송됩니다.</translation>
@@ -631,6 +632,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7750130090210923118">기본 Chromium으로 재설정</translation>
+<translation id="7752521946322750699">Chromium에서 업무를 보호하기 위해 Chromium에 로그인하면 조직에서 특정 정보를 보거나 관리할 수 있습니다</translation>
 <translation id="7781047659465034537">Chromium을 기본 브라우저로 설정하고 작업 표시줄에 고정하세요</translation>
 <translation id="7786760609782648049">Chromium의 속도를 높여보세요</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

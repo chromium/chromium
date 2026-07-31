@@ -2353,6 +2353,21 @@ De toepassing van dit beleid op beheerde apparaten wordt beïnvloed door het bel
 <translation id="2508800409212941632">Configuratiebeleid voor de <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise Connector</translation>
 <translation id="2509748672176727116">De gebruiker kan opnamen van netwerkpakketten uitvoeren</translation>
 <translation id="2509919237512982967">Verouderde formulierbesturingselementen gebruiken tot M84.</translation>
+<translation id="2509947330677441695">Als je het beleid instelt, wordt toegang geboden tot de vermelde URL's in de incognitomodus. Gebruik dit beleid om uitzonderingen te openen voor bepaalde URL-patronen die zijn gedefinieerd in <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Als zowel dit beleid als <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> zijn ingesteld, heeft de toelatingslijst voorrang. Als een URL overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het algemene beleid van <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid instelt en <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> niet, wordt elke URL die niet op de toelatingslijst staat, geblokkeerd in de incognitomodus.
+
+Als je <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> instelt op Niet toestaan (waarde 1), maar dit beleid instelt, is de incognitomodus alleen beschikbaar voor de URL's die overeenkomen met de toelatingslijst.
+
+Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> en <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Dit beleid is alleen van invloed op de incognitomodus. Als je URL's wilt toestaan voor alle gebruikersprofielen, gebruik je het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Algemene jokertekens (zoals '*' of '[*]') zijn niet toegestaan. Gebruik het beleid <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> om de functie wereldwijd aan te zetten.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="2512531606818417084">Dit beleid is tijdelijk en werkt niet meer vanaf M137.
 
 Met deze functie worden het gebruik van 'zstd' in de verzoekheader Accept-Encoding en ondersteuning voor het decomprimeren van met <ph name="ZSTANDARD_SHORTNAME" /> gecomprimeerde webcontent aangezet.
@@ -6314,9 +6329,6 @@ Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5070539335358964387">'Zoeken en invullen met Gemini' toestaan en AI-modellen verbeteren.</translation>
 <translation id="5071303485174858500">Beperkte beheerde gastsessie uitzetten.</translation>
-<translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
-
-      Als het beleid wordt ingesteld op 'True' of niet wordt ingesteld, kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' aanpassen.</translation>
 <translation id="5073788301065423829">Met dit beleid kun je Help me met schrijven aan- of uitzetten voor ChromeOS.
 
 Als je dit beleid toepast, staat Help me met schrijven aan.
@@ -10397,6 +10409,21 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 <translation id="759957074386651883">Safe Browsing-instellingen</translation>
 <translation id="7602621823177962064">Rapportage van geheugeninformatie van apparaat uitzetten</translation>
 <translation id="7604169113182304895">Het is mogelijk dat Android-apps deze lijst op vrijwillige basis respecteren. Je kunt ze niet dwingen om de lijst te respecteren.</translation>
+<translation id="7604302274842086162">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
+
+URL-patronen worden vergeleken met de URL van elk frame op de pagina die wordt geïnspecteerd. Het resulterende gedrag hangt ervan af of het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ook is ingesteld.
+
+Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> niet, moet de URL van elk frame overeenkomen met een patroon op deze toelatingslijst om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan. Als de URL van een frame niet overeenkomt, wordt DevTools geblokkeerd voor de hele pagina. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
+
+Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> beide instelt, heeft deze toelatingslijst voorrang. Als de URL van een frame overeenkomt met een patroon op deze toelatingslijst, wordt deze toegestaan, zelfs als deze ook overeenkomt met een patroon op de blokkeerlijst. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
+
+Als je dit beleid niet instelt, wordt de beschikbaarheid van <ph name="CHROME_DEVTOOLS_NAME" /> bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
+
+Algemene jokertekens (zoals '*' of '[*]') zijn niet toegestaan. Gebruik het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> om de functie wereldwijd aan te zetten.
+
+Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="7607831126797434329">Automatische downloads blokkeren op deze sites</translation>
 <translation id="7608186022704392724">Met de functie voor automatisch versturen van pincodes kun je wijzigen hoe pincodes worden ingevoerd in <ph name="PRODUCT_OS_NAME" />.
           Deze functie heeft een speciale UI die gebruikers duidelijk laat zien hoeveel tekens er voor hun pincode zijn vereist in plaats van hetzelfde tekstveld voor de invoer van het wachtwoord te tonen. Hierdoor wordt de lengte van de pincode van de gebruiker niet samen met de versleutelde gegevens van die gebruiker opgeslagen. Alleen pincodes die tussen 6 en 12 cijfers lang zijn, worden ondersteund.

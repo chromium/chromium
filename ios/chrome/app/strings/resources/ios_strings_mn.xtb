@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Нууцлалтай табуудыг хаах</translation>
 <translation id="1559263013367304065">Google Lens-г ашигласнаас хойш</translation>
 <translation id="1560153516220021659">Хураасан хоёрдогч хэрэгслийн мөрийн товч</translation>
+<translation id="1562601408588733317">Gemini-р мэдээлэл олж, бөглөхийг удирдах</translation>
 <translation id="1565371473877914088">Нууцлалтай шинэ таб</translation>
 <translation id="1567960978791353852">Унших горимыг харуулах</translation>
 <translation id="1571780780926010134">Нууцлалтай табууд</translation>
@@ -1396,6 +1397,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5666313630530585305">Вебсайтад нэвтэрнэ үү.</translation>
 <translation id="5669335982068190158">Таны iPhone-г шинэчлэх явцад таныг гаргасан. Нэвтрэхийн тулд доорх үргэлжлүүлэх дээр товшино уу.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Холбоотой аппыг удирдах</translation>
 <translation id="567881659373499783">Хувилбар <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Бүртгэлүүдийг сэлгэх үү? Бүртгэлийн хадгалаагүй өгөгдлийг устгана.</translation>
 <translation id="5683499062697987550">Google Бүртгэлдээ нууц үгнүүд ашиглах болон тэдгээрийг хадгалахын тулд өөрийгөө мөн болохыг бататгана уу.</translation>
@@ -1571,6 +1573,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6240553182907836376">Биеийн байцаалтыг шинэчлэх</translation>
 <translation id="6240601837375010619">Паспортыг хадгалах</translation>
 <translation id="6241132809279377987">Google аппаар өөрийн iPhone-д зориулж илүү олон онцлогийн түгжээг тайлаарай</translation>
+<translation id="6244366663267187541">Gemini-г ямар аппуудтай холбогдохыг сонгоно уу</translation>
 <translation id="6247557882553405851">Google-н Нууц үгний менежер</translation>
 <translation id="6251835855431997163"><ph name="VALUE" />-г автоматаар бөглөх</translation>
 <translation id="6253686838150111720"><ph name="URL" />-д нэвтрэх</translation>
@@ -1946,6 +1949,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7471557245617580330">Шинэ цонх үүсгэх</translation>
 <translation id="7473555040328423550">Таб нэмэх</translation>
 <translation id="7476548258282096076">Энэ карт таны хамгийн их зочилсон сайтуудыг харуулна.</translation>
+<translation id="7482823403440483089">Сайжруулсан автоматаар бөглөх хэсэг</translation>
 <translation id="7484645889979462775">Энэ сайтанд хэзээ ч битгий хадгал</translation>
 <translation id="7486006552035434095">Төхөөрөмжүүдээ синк хийсэн хэвээр байлгаарай</translation>
 <translation id="7491131399623468277">Тохиргоо руу очих…</translation>
@@ -2195,7 +2199,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8270320981823560179">Драйв</translation>
 <translation id="8274795744553482834">Та профайл сэлгэх гэж байна</translation>
 <translation id="8275068909952022340">Бусад…</translation>
-<translation id="8280797717392145626">Холбооснууд хүлээн авсан</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8282657446819506217">Табын бүлэгт нээх</translation>

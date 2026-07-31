@@ -79,6 +79,7 @@
 <translation id="1698376642261615901">Google Chrome on veebibrauser, mis käitab veebilehti ja rakendusi välgukiirusel. See on kiire, töökindel ja lihtsalt kasutatav. Veebi sirvimine on turvalisem tänu Google Chrome'i sisseehitatud pahavara- ja andmepüügivastasele kaitsele.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome käivitatakse uuesti tunni aja pärast}other{Chrome käivitatakse uuesti # tunni pärast}}</translation>
 <translation id="1722488837206509557">See võimaldab teil valida saadaolevate seadmete hulgast ja kuvada neis sisu.</translation>
+<translation id="1724094881572874997">Chrome'is töötamise turvalisuse tagamiseks saab teie organisatsioon teatud teavet vaadata või hallata, kui olete Chrome'i sisse logitud.</translation>
 <translation id="177180974022074201">Proovi Geminiga Chrome’is</translation>
 <translation id="1786003790898721085">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chrome'i sisse logitud, ja proovige siis uuesti saata.</translation>
 <translation id="1786044937610313874">Otseteed avanevad Chrome'is</translation>
@@ -417,6 +418,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="521447420733633466">Kui jagate seadet, saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chrome'i just nii, nagu neile meeldib.</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5239627039202700673">Kasutage Chrome’i iga kord, kui klõpsate sõnumites, dokumentides ja teistes rakendustes linkidel</translation>
+<translation id="524751727772074981">Saate Geminilt Chrome'is küsida kõike, just seal, kus olete</translation>
 <translation id="5251420635869119124">Külastajad saavad kasutada Chrome'i jälgi jätmata.</translation>
 <translation id="5271833978500241046">Kasutage neid koos teiste Gemini funktsioonidega Chrome'is</translation>
 <translation id="5286907366254680517">Tuvastatud</translation>

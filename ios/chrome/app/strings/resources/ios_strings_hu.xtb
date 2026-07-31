@@ -184,6 +184,7 @@
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
 <translation id="1559263013367304065">a Google Lens használatának kezdete óta</translation>
 <translation id="1560153516220021659">Összecsukott másodlagos eszköztár gombja</translation>
+<translation id="1562601408588733317">Az információk Gemini általi megkeresésének és kitöltésének kezelése</translation>
 <translation id="1565371473877914088">Új inkognitó lap</translation>
 <translation id="1567960978791353852">Olvasási mód megjelenítése</translation>
 <translation id="1571780780926010134">Inkognitó lapok</translation>
@@ -1399,6 +1400,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5666313630530585305">Jelentkezzen be a webhelyre.</translation>
 <translation id="5669335982068190158">Az iPhone visszaállítása során a rendszer kijelentkeztette Önt. A bejelentkezéshez koppintson a Folytatás gombra alább.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Összekapcsolt alkalmazások kezelése</translation>
 <translation id="567881659373499783">Verzió: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Fiókot vált? A nem mentett fiókadatok törlődnek.</translation>
 <translation id="5683499062697987550">A jelszavak Google-fiókban való használatához és mentéséhez igazolja személyazonosságát.</translation>
@@ -1574,6 +1576,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6240553182907836376">Személyazonosító okmány frissítése</translation>
 <translation id="6240601837375010619">Útlevél mentése</translation>
 <translation id="6241132809279377987">Még több funkcióhoz férhet hozzá iPhone-ján a Google-alkalmazásokkal</translation>
+<translation id="6244366663267187541">Válassza ki, hogy a Gemini mely alkalmazásokhoz kapcsolódjon</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
 <translation id="6251835855431997163"><ph name="VALUE" /> automatikusan kitöltheti</translation>
 <translation id="6253686838150111720">Bejelentkezés ide: <ph name="URL" /></translation>
@@ -1952,6 +1955,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="7471557245617580330">Új lap létrehozása</translation>
 <translation id="7473555040328423550">Lap hozzáadása</translation>
 <translation id="7476548258282096076">Ez a kártya az Ön által leggyakrabban látogatott webhelyeket mutatja.</translation>
+<translation id="7482823403440483089">Továbbfejlesztett automatikus kitöltés</translation>
 <translation id="7484645889979462775">Ezen a webhelyen soha</translation>
 <translation id="7486006552035434095">Biztosítsa, hogy eszközei szinkronban maradjanak</translation>
 <translation id="7491131399623468277">Ugrás a Beállításokhoz…</translation>
@@ -2201,7 +2205,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profilváltásra készül</translation>
 <translation id="8275068909952022340">Továbbiak…</translation>
-<translation id="8280797717392145626">Linkek fogadva</translation>
 <translation id="8281781826761538115">Alapértelmezett – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8282657446819506217">Megnyitás lapcsoportban</translation>

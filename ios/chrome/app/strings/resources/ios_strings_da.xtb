@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}one{{count} fane}other{{count} faner}}</translation>
 <translation id="1082554859195167538">Produktanmeldelser til dig</translation>
 <translation id="1084365883616172403">Opslag delt på Facebook.</translation>
+<translation id="108485301461714610">AI-tilstand i Google Søgning og tilknyttede apps</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åbnes</translation>
 <translation id="1086486568852410168">Søg med Google Lens</translation>
 <translation id="1096992026380844478">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. <ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">Inaktive faner</translation>
 <translation id="1231733316453485619">Vil du aktivere synkronisering?</translation>
 <translation id="1238794841176717085">Del denne side</translation>
+<translation id="1248901457873510750">Åbn Betalinger</translation>
 <translation id="1253032109800629289">Skjul "Få notifikationer om prissporing"</translation>
 <translation id="1254424942107648268">Find forrige</translation>
 <translation id="1258491128795710625">Nyheder</translation>
@@ -184,6 +186,7 @@
 <translation id="1558391695376153246">Luk inkognitofaner</translation>
 <translation id="1559263013367304065">siden anvendelsen af Google Lens</translation>
 <translation id="1560153516220021659">Den sekundære knap til værktøjslinjen er skjult</translation>
+<translation id="1562601408588733317">Administrer, hvordan du finder og udfylder oplysninger med Gemini</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
 <translation id="1567960978791353852">Vis Læsetilstand</translation>
 <translation id="1571780780926010134">Inkognitofaner</translation>
@@ -1108,6 +1111,7 @@
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4738968082443868320">Google Drev</translation>
 <translation id="474209246745757965">Shop og oversæt med dit kamera</translation>
+<translation id="4742142641516465928">Åbn Autofyld og adgangskoder</translation>
 <translation id="4742407542027196863">Administrer adgangskoder…</translation>
 <translation id="4744428388659507035">Aktivér "Bogmærker" i indstillingerne for at få vist dine bogmærker på alle dine enheder.</translation>
 <translation id="4746926359847517643">Du kan altid finde dem i historikken igen.</translation>
@@ -1399,6 +1403,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5666313630530585305">Log ind på et website.</translation>
 <translation id="5669335982068190158">Du er blevet logget ud som en del af nulstillingen af din iPhone. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Administrer tilknyttede apps</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Vil du skifte konto? Kontodata, der ikke er gemt, slettes.</translation>
 <translation id="5683499062697987550">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto.</translation>
@@ -1574,6 +1579,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6240553182907836376">Opdater identitetskort</translation>
 <translation id="6240601837375010619">Gem pas</translation>
 <translation id="6241132809279377987">Få adgang til flere iPhone-funktioner med Google-apps</translation>
+<translation id="6244366663267187541">Vælg, hvilke apps Gemini skal oprette tilknytning til</translation>
 <translation id="6247557882553405851">Google Adgangs­ko­de­administrator</translation>
 <translation id="6251835855431997163">Autofyld <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Log ind på <ph name="URL" /></translation>
@@ -1952,6 +1958,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7471557245617580330">Opret ny fane</translation>
 <translation id="7473555040328423550">Tilføj fane</translation>
 <translation id="7476548258282096076">Dette kort viser de websites, du besøger oftest.</translation>
+<translation id="7482823403440483089">Forbedret autofyld</translation>
 <translation id="7484645889979462775">Aldrig for dette website</translation>
 <translation id="7486006552035434095">Bevar synkroniseringen af dine enheder</translation>
 <translation id="7491131399623468277">Gå til Indstillinger…</translation>
@@ -2201,7 +2208,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8270320981823560179">Drev</translation>
 <translation id="8274795744553482834">Du er ved at skifte profil</translation>
 <translation id="8275068909952022340">Mere…</translation>
-<translation id="8280797717392145626">Der er modtaget links</translation>
 <translation id="8281781826761538115">Standardsprog – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Spring over</translation>
 <translation id="8282657446819506217">Åbn i fanegruppe</translation>

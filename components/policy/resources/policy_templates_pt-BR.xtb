@@ -6586,9 +6586,6 @@ Se for deixada sem definição, o comportamento será determinado pela política
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5070539335358964387">Permitir o recurso Encontrar e Preencher com o Gemini e melhorar os modelos de IA.</translation>
 <translation id="5071303485174858500">Desativar sessão de visitante gerenciada restrita.</translation>
-<translation id="5073609397321802133">Se a política for definida como falsa, a página "Nova guia" não permitirá que os usuários personalizem o plano de fundo. Qualquer plano de fundo personalizado já existente será removido permanentemente, mesmo que a política seja definida como verdadeira mais tarde.
-
-      Se a política for definida como "verdadeira" ou não for definida, os usuários poderão personalizar o plano de fundo da página "Nova guia".</translation>
 <translation id="5073788301065423829">Esta política ativa ou desativa o recurso "Me ajude a escrever" no ChromeOS.
 
 Se a política for ativada, o recurso ficará ativado.
@@ -10295,6 +10292,20 @@ Observação: se você estiver usando esta política para resolver o fuso horár
       Se ela for definida como falsa, os usuários, apps e extensões não poderão entrar no modo de tela cheia.</translation>
 <translation id="7180529638251181928">Não aplicar o Modo Restrito no <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="718126088895133062">Esta política especifica o código de licenciamento do usuário do <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
+<translation id="7182622189057326705">Esta política foi descontinuada e não tem efeito porque o recurso de área de transferência compartilhada foi removido do Chrome.
+
+Descrição original:
+Ativar o recurso de área de transferência compartilhada, que permite que os usuários enviem texto entre computadores Chrome e um dispositivo Android quando a sincronização está ativada e o usuário está conectado.
+
+          Se esta política for definida como verdadeira, a capacidade de enviar texto entre dispositivos ficará ativada para o usuário do Chrome.
+
+          Se esta política for definida como falsa, a capacidade de enviar texto entre dispositivos ficará desativada para o usuário do Chrome.
+
+          Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
+
+          Se esta política não for definida, o recurso de área de transferência compartilhada será ativado por padrão.
+
+          Cabe aos administradores definir políticas em todas as plataformas que sejam relevantes. É recomendado definir um único valor para esta política em todas as plataformas.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usar um serviço da Web do Google para ajudar a solucionar erros de ortografia</translation>
 <translation id="7187248416163189586">Desativar relatórios de informações da luz de fundo do dispositivo</translation>

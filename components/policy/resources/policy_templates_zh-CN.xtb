@@ -2342,6 +2342,21 @@ PAC 样式的字符串：
 <translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> 企业版连接器的配置政策</translation>
 <translation id="2509748672176727116">用户将能够执行网络数据包捕获流程</translation>
 <translation id="2509919237512982967">在 M84 之前的版本中使用旧版表单控件。</translation>
+<translation id="2509947330677441695">通过设置此政策，可在无痕模式下访问所列网址。您可利用此政策，为 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 中定义的特定网址格式设置例外情况；请务必按照 https://support.google.com/chrome/a?p=url_blocklist_filter_format 中指定的格式进行配置。
+
+如果同时设置了此政策和 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 政策，则以许可清单为准。如果某个网址与许可清单上的格式匹配，则允许访问该网址；如果与屏蔽清单（而非许可清单）上的格式匹配，则该网址会被屏蔽；如果与两者都不匹配，则通用的 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策将用作后备政策。
+
+如果已设置此政策，但未设置 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 政策，则所有不在许可清单上的网址都会在无痕模式下被屏蔽。
+
+如果 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 政策设置为禁止（值为 1），但已配置此政策，则无痕模式将仅适用于与许可清单匹配的网址。
+
+如果未设置此政策，<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 政策将不会有任何例外情况。
+
+此政策仅影响无痕模式。如要允许所有用户个人资料访问相关网址，请使用 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策。
+
+不允许使用全主机通配符（例如“*”或“[*]”），请使用 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 政策在全局范围内启用该功能。
+
+此政策最多只能包含 1,000 个条目。</translation>
 <translation id="2512531606818417084">此政策只是临时应对方案，从 M137 开始将不再有效。
 
 此功能允许在 Accept-Encoding 请求标头中使用“zstd”，并且支持对经过 <ph name="ZSTANDARD_SHORTNAME" /> 压缩的 Web 内容进行解压缩。
@@ -6290,9 +6305,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="5070539335358964387">允许使用 Gemini 智能查找和填充功能并改进 AI 模型。</translation>
 <translation id="5071303485174858500">停用受限受管理访客会话。</translation>
-<translation id="5073609397321802133">如果此政策设为 false，“新标签页”页面将不允许用户自定义背景。所有现有的自定义背景都将被永久移除，即使此政策后来又改设为 true 也是如此。
-
-      如果此政策设为 true 或未设置，用户便能够在“新标签页”页面上自定义背景。</translation>
 <translation id="5073788301065423829">此政策用于启用或停用 ChromeOS 的“帮我写”功能。
 
 如果此政策已启用，系统将启用“帮我写”功能。
@@ -10349,6 +10361,21 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="759957074386651883">安全浏览设置</translation>
 <translation id="7602621823177962064">停用设备内存信息报告功能</translation>
 <translation id="7604169113182304895">Android 应用可能会主动选择采纳该列表。您无法强制此类应用采纳该列表。</translation>
+<translation id="7604302274842086162">此政策可用于允许在特定网址上使用 <ph name="CHROME_DEVTOOLS_NAME" />。
+
+系统会将网址格式与正在接受检查的网页上每个框架的网址进行比对。最终行为取决于是否也设置了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
+
+如果已设置此政策，但未设置 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，则只有当每个框架的网址都与此许可清单上的格式匹配时，才允许使用 <ph name="CHROME_DEVTOOLS_NAME" />。如果有框架的网址不匹配，系统将针对整个网页屏蔽开发者工具。如需了解网址格式，请参阅 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+如果同时设置了此政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，则以许可清单为准。如果框架的网址与此许可清单上的格式匹配，那么即使它同时匹配屏蔽清单中的格式，也仍会被允许。如果某个网址与屏蔽清单（而非许可清单）上的格式匹配，则该网址会被屏蔽。如果某个网址与两者都不匹配，则 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策将用作后备政策。
+
+如果未设置此政策，<ph name="CHROME_DEVTOOLS_NAME" />的可用性将由 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策决定。
+
+此政策还适用于为扩展程序和 Web 应用打开的 <ph name="CHROME_DEVTOOLS_NAME" />。
+
+不允许使用全主机通配符（例如“*”或“[*]”），请使用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策在全局范围内启用该功能。
+
+此政策最多只能包含 1,000 个条目。</translation>
 <translation id="7607831126797434329">禁止在这些网站上自动下载</translation>
 <translation id="7608186022704392724">PIN 码自动提交功能会更改 PIN 码在 <ph name="PRODUCT_OS_NAME" /> 中的输入方式。
           该功能会显示一个特殊界面以清楚地指明用户的 PIN 码需要包含的位数，而不会显示原本用于输入密码的文本字段。因此，用户的 PIN 码长度会存储在用户加密数据之外。仅支持长度介于 6-12 位数字的 PIN 码。

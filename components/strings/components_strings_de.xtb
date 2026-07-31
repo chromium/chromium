@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Papiertyp</translation>
 <translation id="1142965388643537393">Reiseinformationen</translation>
 <translation id="1143142264369994168">Signaturgeber des Zertifikats</translation>
-<translation id="1144136880160289237">Du hast noch keine aktiven Themen</translation>
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
@@ -372,7 +371,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1564634006476980707">Empfohlenes HTTPS-Schema für Such-URL: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Netzwerkinformationen wie Adressen, Schnittstellenkonfigurationen und Verbindungsqualität</translation>
 <translation id="1567040042588613346">Diese Richtlinie funktioniert wie beabsichtigt, an anderer Stelle ist jedoch der gleiche Wert festgelegt, der von dieser Richtlinie ersetzt wird.</translation>
-<translation id="1567405528131216114"><ph name="TOPIC" /> hinzufügen</translation>
 <translation id="1569487616857761740">Ablaufdatum eingeben</translation>
 <translation id="1569694109004336106">Google Chrome versucht, Windows Hello zum Ausfüllen von Passwörtern zu aktivieren.</translation>
 <translation id="1569905000953679183">Abruf der Installationsrichtlinien für Erweiterungen</translation>
@@ -382,7 +380,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1579189948231786790">Diese Website wurde von deiner Organisation blockiert</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Fehler beim Anzeigen dieser Webseite.</translation>
-<translation id="1584492003828271317">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, der von Websites vorgeschlagenen Werbung, deinen Cookie-Einstellungen und davon ab, ob die besuchte Website Werbung personalisiert.</translation>
 <translation id="1585306568496579337">Die Erweiterung „<ph name="EXTENSION_NAME" />“ möchte Links vom Typ „<ph name="PROTOCOL" />“ über <ph name="HANDLER_HOSTNAME" /> öffnen</translation>
 <translation id="1586541204584340881">Welche Erweiterungen du installiert hast</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -400,7 +397,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Zweite Rolle</translation>
 <translation id="1611854593425834707">Geräteliste für das Streamen schließen</translation>
-<translation id="1612199629998703524">Themen verwalten</translation>
 <translation id="1615178538289490617">Zugriff für <ph name="PORT_NAME" /> widerrufen</translation>
 <translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="161612500287664753">Der Google Suche eine Frage zu dieser Seite stellen</translation>
@@ -598,6 +594,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="192095259937375524">Button „Tab teilen“ – aktivieren, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1927439846988093361">Haarpflege</translation>
+<translation id="1927930548546198515">Chrome protokolliert, wie du die Funktion verwendest, z. B. deine Anfragen und dein Verhalten, wenn du Vorschläge annimmst oder ignorierst</translation>
 <translation id="1932098463447129402">Nicht vor</translation>
 <translation id="1935353813610900265">Feedback zur KI‑gestützten Verlaufssuche senden</translation>
 <translation id="1935995810530254458">Trotzdem kopieren</translation>
@@ -679,7 +676,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Informationen nur auf Gerät gespeichert</translation>
-<translation id="2074733626795553847">Blockierung aufheben für <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Letzter Aufruf:</translation>
 <translation id="2078956195623975415">Musik- und Tanzspiele</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
@@ -730,7 +726,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="213826338245044447">Mobile Lesezeichen</translation>
 <translation id="2141000681034340397">Eingabe bearbeiten</translation>
 <translation id="2141475438898772664">In 4 Raten oder monatlich zahlen</translation>
-<translation id="2144171668675205303">Keine aktiven Themen</translation>
 <translation id="2145193671493396738">Wirtschaftsnachrichten</translation>
 <translation id="214556005048008348">Zahlung abbrechen</translation>
 <translation id="2147117373852943630">Musikinstrumente</translation>
@@ -830,7 +825,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2268044343513325586">Verfeinern</translation>
 <translation id="2268966938956566076">In <ph name="MINUTES" /> Min. hochladen</translation>
 <translation id="2270484714375784793">Telefonnummer</translation>
-<translation id="2274179746480077483">Informationen aus Apps wie Gmail und Google Fotos automatisch ausfüllen. Basierend auf Personal Intelligence.</translation>
+<translation id="2274179746480077483">Informationen aus Apps wie Gmail und Google Fotos automatisch eintragen. Basierend auf Personal Intelligence.</translation>
 <translation id="2276057643614339130">Druckbasis</translation>
 <translation id="2277103315734023688">Vorwärts springen</translation>
 <translation id="2277753418458118549">Verbindungsdetails anzeigen</translation>
@@ -981,6 +976,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2491120439723279231">Das Serverzertifikat enthält Fehler.</translation>
 <translation id="2491414235131909199">Diese Seite wurde von einer Erweiterung blockiert</translation>
 <translation id="2493122313108999546">Größe geändert</translation>
+<translation id="249376477913017009">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen geöffnet</translation>
 <translation id="2495083838625180221">JSON-Parser</translation>
 <translation id="2496402116964818747">Du kannst in den <ph name="SETTINGS" /> ändern, ob dein Fingerabdruck zum Ausfüllen von Passwörtern verwendet werden soll</translation>
 <translation id="2498091847651709837">Neue Karte scannen</translation>
@@ -1020,7 +1016,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
 <translation id="254947805923345898">Der Richtlinienwert ist ungültig.</translation>
 <translation id="2549836668759467704">Beratungsdienste und Aufträge im Baugewerbe</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> und mehr</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> hat eine ungültige Antwort gesendet.</translation>
 <translation id="2551608178605132291">Adresse: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1054,7 +1049,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2605979593348332811">Phonetischer Name</translation>
 <translation id="2606760465469169465">Automatische Bestätigung</translation>
 <translation id="2607101320794533334">Informationen zum öffentlichen Schlüssel des Antragstellers</translation>
-<translation id="2608019759319359258">Wenn ein Thema blockiert ist, wird es nicht für die Personalisierung von Werbung verwendet</translation>
 <translation id="2610561535971892504">Zum Kopieren klicken</translation>
 <translation id="2612676031748830579">Kartennummer</translation>
 <translation id="2612993535136743634">Alle auf deinem Gerät und in deinem Google-Konto gespeicherten Sicherheitscodes werden gelöscht</translation>
@@ -1149,6 +1143,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742128390261873684">Heimautomatisierung</translation>
 <translation id="2743512410823092182">Ressourcen und Ausrüstung für DJs</translation>
+<translation id="275259155159336003">Unterstützt durch Personal Intelligence mit Gemini. Deine Anfragen, Seitentitel und URLs werden möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern. <ph name="BEGIN_LINK" />Einstellungen verwalten<ph name="END_LINK" /></translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> Dateien werden in Google Drive hochgeladen</translation>
 <translation id="2759299890026163685">Versuche es noch einmal, wenn du eine stabile Internetverbindung hast</translation>
 <translation id="2759825833388495838">dein Passwort in <ph name="APP_NAME" /> einzugeben</translation>
@@ -1432,6 +1427,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3207830513221832868"><ph name="BLOCKED_URL" /> enthält möglicherweise nicht jugendfreie Inhalte</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
+<translation id="3209071504641569648">Deine Anfragen, Seitentitel und URLs werden an Google gesendet und möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern</translation>
 <translation id="3212468046572043669">Download gestartet. Zum Ansehen: von oben ziehen und auf den Button „Zurück“ tippen</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
@@ -1468,6 +1464,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3254301855501243548">18 × 22 Zoll</translation>
 <translation id="3255926992597692024">Chromium versucht, Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
+<translation id="3261180263071638338">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen geschlossen</translation>
 <translation id="3261488570342242926">Informationen zu virtuellen Karten</translation>
 <translation id="3262698603497362968">Kaufoptionen</translation>
 <translation id="3264637689694266148">Wenn du Vorschläge deaktivierst, können der Seitentitel und die URLs deiner Tabs weiterhin für andere Chrome-Funktionen verarbeitet werden. Du kannst den Browserzugriff auf diese Daten in deinen</translation>
@@ -1494,7 +1491,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3299720788264079132">Bei der Verwendung von <ph name="FEATURE_NAME" /> ist ein Fehler aufgetreten</translation>
 <translation id="3303176609391916566">30 × 42 Zoll</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
-<translation id="3303872874382375219">Ob du personalisierte Werbung siehst, kann von Vielem abhängen – unter anderem von dieser Einstellung, <ph name="BEGIN_LINK1" />den Werbethemen<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />deinen Cookie-Einstellungen<ph name="LINK_END2" /> und davon, ob die besuchte Website Werbung personalisiert. <ph name="BEGIN_LINK3" />Weitere Informationen zum Verwalten des Datenschutzes bei Werbung<ph name="LINK_END3" /></translation>
 <translation id="3304073249511302126">Bluetooth-Suche</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
@@ -1533,7 +1529,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3377144306166885718">Der Server hat eine veraltete TLS-Version verwendet.</translation>
 <translation id="3377188786107721145">Fehler beim Parsen der Richtlinie</translation>
 <translation id="3377642479079205807">Dünn</translation>
-<translation id="3378612801784846695">Die Themen basieren auf deinem aktuellen Browserverlauf und werden von Websites verwendet, um dir personalisierte Werbung zu zeigen und dabei deine Identität zu schützen</translation>
 <translation id="3380365263193509176">Unbekannter Fehler</translation>
 <translation id="3380864720620200369">Client-ID: </translation>
 <translation id="3383566085871012386">Aktuelle Rangfolge</translation>
@@ -1570,7 +1565,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3433111389595862568">Software für Zusammenarbeit und Konferenzen</translation>
 <translation id="3433144818443565002">Sprach- und Video-Chats</translation>
 <translation id="3434025015623587566">Der Google Passwortmanager benötigt einen umfassenderen Zugriff</translation>
-<translation id="3434346831962601311">Keine blockierten Themen</translation>
 <translation id="343474037147570563">Dateien, die du hochlädst oder anhängst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
 <translation id="3435557549311968410">Endlos (kurz)</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
@@ -1720,7 +1714,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3662040827609932717">Diese IBAN wurde in Google Wallet gespeichert, damit du sie auch in anderen Google-Diensten verwenden kannst.</translation>
 <translation id="3664479564786885722">Weitere Kaufoptionen in anderen Geschäften suchen, die dieses Produkt verkaufen.</translation>
 <translation id="3664782872746246217">Suchbegriffe:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Weitere Informationen<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3670159164851218963">KI-Modus-Verlauf</translation>
 <translation id="3670229581627177274">Bluetooth aktivieren</translation>
@@ -1952,7 +1945,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 
     Du kannst auch den Websiteinhaber kontaktieren und ihm vorschlagen, auf HTTPS umzustellen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Hinzufügen rückgängig machen</translation>
-<translation id="4030545038933060179">Wenn diese Option aktiviert ist, wird basierend auf deinem aktuellen Browserverlauf eine Liste von Themen angezeigt</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4036753017940930924">Grundstücke und Ländereien</translation>
 <translation id="403724377879219932">Kann anfragen, ob auf andere Geräte in deinem lokalen Netzwerk zugegriffen werden darf</translation>
@@ -2057,7 +2049,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> weiteres Element}other{<ph name="ITEM_COUNT" /> weitere Elemente}}</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
-<translation id="4177501066905053472">Werbethemen</translation>
 <translation id="4178863275556660738">Mit anderen Zahlungsmethoden als Karten bezahlen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
@@ -2286,7 +2277,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4523580145196408446">Verknüpft</translation>
 <translation id="4523643381056109546">Beschilderung</translation>
 <translation id="4524138615196389145">Karten mithilfe von WebAuthn ab sofort schneller bestätigen</translation>
-<translation id="45243788195988825"><ph name="TOPIC" /> blockieren</translation>
 <translation id="4528888973346221791">Informationen aus dem Arbeitsprofil, z. B. dein Nutzername</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Virtuelle Kartennummer:</translation>
@@ -2323,6 +2313,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Flugreservierungen</translation>
 <translation id="4607608436550361748">Chrome-Tipps aufrufen</translation>
+<translation id="4607879293515681409">Mit der Funktion „Erweitertes Autofill“ kannst du jetzt Informationen wie Flugnummern und Termine aus Apps wie Gmail und Google Fotos abrufen und einfügen</translation>
 <translation id="460848736049414407">Vom Administrator blockiert</translation>
 <translation id="4610279718074907952">Diese Website ist einer durch <ph name="SET_OWNER" /> definierten Gruppe zugeordnet, die deine Aktivitäten sehen kann</translation>
 <translation id="4612631413844865947">Bei der Verarbeitung deiner Bestellung bei <ph name="MERCHANT_ORIGIN" /> über <ph name="PAYMENT_APP_ORIGIN" /> ist ein Fehler aufgetreten.</translation>
@@ -2490,6 +2481,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch eintragen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
 <translation id="4866506163384898554">Zum Einblenden des Cursors |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| drücken</translation>
 <translation id="4868277513442568587">Aktualisiere Chrome, um deine geteilten Tabgruppen weiterhin verwenden zu können</translation>
+<translation id="4873312501243535625">Mediendatei-Prüfung</translation>
 <translation id="4873616204573862158">Brillen</translation>
 <translation id="4873807733347502026">Maus sperren und verwenden</translation>
 <translation id="4876305945144899064">Kein Nutzername</translation>
@@ -2514,7 +2506,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympische Spiele</translation>
 <translation id="4897851261703006488">Diese Richtlinie sollte keine Header enthalten, die größer als <ph name="MAX_HEADER_SIZE_LIMIT" /> KB sind.</translation>
-<translation id="4898742041545089450">Die Blockierung dieses Themas ist aufgehoben und wird basierend auf deinem Browserverlauf möglicherweise aktiv</translation>
 <translation id="4900217275619098670">Neunte Rolle</translation>
 <translation id="4901052769830245369">Etiketten (halbglanz)</translation>
 <translation id="4901162432287938633">Hygiene- und Toilettenartikel</translation>
@@ -2609,10 +2600,8 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5043480802608081735">Von dir kopierter Link</translation>
 <translation id="5043753287208271200">Gelb 3</translation>
 <translation id="5045550434625856497">Falsches Passwort</translation>
-<translation id="5048293684454354469">Werbethemen sind nur eine von vielen Möglichkeiten, um Werbung auf einer Website zu personalisieren. Websites können dir auch ohne Werbethemen Werbung zeigen. Diese ist aber möglicherweise weniger interessant für dich. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Werbung<ph name="LINK_END" /></translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, drücke die Tabulatortaste, um weitere Kürzel für die Suche zu sehen, die nach diesem Suchvorschlag verfügbar sind</translation>
 <translation id="5052488928733955073">Deine Informationen können nicht eingegeben werden. Überprüfe deine Verbindung.</translation>
-<translation id="5052517576853118371">Aktive Themen</translation>
 <translation id="5053116470141135293">Beim Bezahlen mit dieser Karte wird eine virtuelle Kartennummer eingegeben, um deine tatsächlichen Kartendetails zu schützen. Du kannst diese Einstellung in Google Wallet verwalten. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Damit du diese Datei mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}other{Damit du diese Dateien mit Nearby Share senden kannst, musst du auf deinem Gerät Speicherplatz (<ph name="DISK_SPACE_SIZE" />) freigeben}}</translation>
 <translation id="5056587122125565772">Bild erstellen</translation>
@@ -2711,7 +2700,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5206392433295093945">Schlafzimmer</translation>
 <translation id="5209670883520018268">Fach 20</translation>
 <translation id="5212364581680288382">Motorradrennsport</translation>
-<translation id="5214542134842513912">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden sollen. Wenn du eine allgemeine Kategorie deaktivierst, werden die zugehörigen Themen ebenfalls blockiert.</translation>
 <translation id="52163492208010719">Ausweisdokumente verwalten</translation>
 <translation id="521659676233207110">Fach 13</translation>
 <translation id="5216942107514965959">Heute zuletzt besucht</translation>
@@ -2838,6 +2826,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5401344472773249513">Prominenten- und Unterhaltungsnachrichten</translation>
 <translation id="5401674281624189321">Berg- und Skiresorts</translation>
+<translation id="5402715318763077894">Zugriff auf lokales Netzwerk zulassen?</translation>
 <translation id="540949333488055151">Kunststoff (bunt)</translation>
 <translation id="540969355065856584">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist zurzeit ungültig. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="5411462078004183575">Preisgünstige Option</translation>
@@ -3088,6 +3077,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5764725887548570807">Ungültiges Quellenformat.</translation>
 <translation id="5764920692828389743">An <ph name="EMAIL_ADDRESS" /> senden</translation>
 <translation id="5765072501007116331">Wähle eine Adresse aus, um Lieferoptionen und -anforderungen zu sehen</translation>
+<translation id="5768323954710688012">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen vollständig geöffnet</translation>
 <translation id="57689295674415555">Wurde die virtuelle Kartennummer nicht eingefügt?</translation>
 <translation id="5773286975255318081">Beispielsweise Nutzernamen von Profilen und Browserversionen</translation>
 <translation id="5774897849666641211">Fragen zu diesem Tab stellen</translation>
@@ -4069,7 +4059,6 @@ Weitere Details:
 <translation id="7305767780379163575">Foto kann nicht gespeichert werden</translation>
 <translation id="7307063504147610123">Adresse auf diesem Gerät gespeichert</translation>
 <translation id="7308436126008021607">Hintergrundsynchronisierung</translation>
-<translation id="7309058266849426521">Weitere Informationen zum Verwalten des Datenschutzes bei Werbung in Chrome.</translation>
 <translation id="7310392214323165548">Das Gerät wird sehr bald neu gestartet</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7313107491291103073">Deine Organisation hat diese Website gemeldet, da sie möglicherweise gegen eine Richtlinie verstößt.</translation>
@@ -4460,7 +4449,6 @@ Weitere Details:
 <translation id="7877007680666472091">geschützte Inhalts-IDs</translation>
 <translation id="7878562273885520351">Dein Passwort könnte gefährdet sein</translation>
 <translation id="7885670691503039914">Du erhältst eine E‑Mail-Benachrichtigung, wenn der Preis auf einer Website gesenkt wird. Diese Seite wird im Lesezeichenordner „<ph name="LAST_BOOKMARKS_FOLDER" />“ gespeichert.</translation>
-<translation id="7886897188117641322">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden können</translation>
 <translation id="7887683347370398519">Prüfe deinen CVC und versuche es dann noch einmal.</translation>
 <translation id="7887885240995164102">Bild im Bild aktivieren</translation>
 <translation id="7888367499748383555">Keine Gebühren, bis zu 0 % effektiver Jahreszins (es gelten bestimmte Voraussetzungen)</translation>
@@ -4570,7 +4558,6 @@ Weitere Details:
 <translation id="8046360364391076336">Industriematerialien und ‑geräte</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8057023045886711556">Komödien</translation>
-<translation id="805766869470867930">Du hast keine Themen blockiert</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ist nicht ordnungsgemäß konfiguriert. Durch die Deinstallation von "<ph name="SOFTWARE_NAME" />" sollte das Problem behoben werden. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Nicht erforderlich</translation>
 <translation id="8061691770921837575">Kosmetikartikel</translation>
@@ -4617,7 +4604,6 @@ Weitere Details:
 <translation id="8130113808541743942">Verschieben nach...</translation>
 <translation id="813024282736408069">Virtuelle Karte für Autofill aktivieren</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
-<translation id="8133495915926741232">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden sollen. Wenn du eine allgemeine Kategorie deaktivierst, werden die zugehörigen Themen ebenfalls blockiert. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Personalbeschaffung</translation>
 <translation id="8135546115396015134">die linke Taste</translation>
 <translation id="8137456439814903304">Energie und Energieversorger</translation>
@@ -4836,7 +4822,6 @@ Weitere Details:
 <translation id="8467494337615822642">In den Einstellungen die Seite für den Chrome-Sicherheitscheck aufrufen</translation>
 <translation id="8468358362970107653">Umschlag C3</translation>
 <translation id="8469428721212363950">Einzelhandel</translation>
-<translation id="8472700501934242014">Blockierte Themen</translation>
 <translation id="8473626140772740486">300 × 450 mm</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474910779563686872">Entwicklerdetails anzeigen</translation>
@@ -4982,7 +4967,6 @@ Weitere Details:
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>
 <translation id="8733345475331865475">Autoversicherung</translation>
-<translation id="8733764070897080460">Du kannst Themen blockieren, die nicht mit Websites geteilt werden sollen. Themen, die älter als 4 Wochen sind, werden von Chrome automatisch gelöscht. Weitere Informationen</translation>
 <translation id="8734529307927223492">Dein <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="8736059027199600831">30 × 40 Zoll</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>

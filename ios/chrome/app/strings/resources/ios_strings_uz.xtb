@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">Menyu → Parollar menejeri</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hisobingiz oʻchirilmaydi</translation>
 <translation id="1503814213414825943">Boshqa ilovaga eksport qilinadigan hisoblarni tanlang.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1506063256525392513">Rasmlarni suratga olish va internetga yuklash, QR kodlarni skanerlash imkonini beradi</translation>
 <translation id="1506733063065214205">RCS MLS mijozi</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">Inkognito varaqlarni yopish</translation>
 <translation id="1559263013367304065">Google Lens ishlatilganidan beri</translation>
 <translation id="1560153516220021659">Yigʻilgan qoʻshimcha asboblar paneli tugmasi</translation>
+<translation id="1562601408588733317">Gemini yordamida axborot topish va kiritishni boshqaring</translation>
 <translation id="1565371473877914088">Yangi inkognito sahifa</translation>
 <translation id="1567960978791353852">Oʻqish rejimini chiqarish</translation>
 <translation id="1571780780926010134">Inkognito varaqlar</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">Bu bildirgida Xavfsizlik tekshiruvi avtomatik aniqlagan maxfiylik yoki xavfsizlik muammolari chiqadi.</translation>
 <translation id="1840320537320704887">Yangi varaq sahifasi sozlamalari olib tashlandi</translation>
 <translation id="1845230888742614096">Guruh qolsin</translation>
+<translation id="1853558655412913122">Endi manzil qatori joylashuvini “Sozlamalar”, keyin “Manzil qatori” ruknida oʻzgartirish mumkin.</translation>
 <translation id="1853692000353488670">Yangi inkognito varaq</translation>
 <translation id="1854463785401910334">Ochiq varaqlar ichidan qidirish</translation>
 <translation id="1860609647735325606">Gemini bilan tushuntiring</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">Faylning oʻchirilishi reja qilinganidan keyin bekor qilinmaydi.</translation>
 <translation id="498624032394115435">Havolaga ega har kim barcha varaqlarni tahrirlashi mumkin.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> hisobi tashkilot boshqaruvida.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Varaqlar guruhi rangi: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
 <translation id="5009127379503001909">Tanishishda davom etish</translation>
@@ -1396,6 +1400,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5666313630530585305">Saytga kirish</translation>
 <translation id="5669335982068190158">iPhone qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Ulangan ilovalarni boshqarish</translation>
 <translation id="567881659373499783"><ph name="PRODUCT_VERSION" />-versiya</translation>
 <translation id="5680012489335339762">Hisobni almashtirasizmi? Saqlanmagan hisob maʼlumotlari oʻchirib tashlanadi.</translation>
 <translation id="5683499062697987550">Parollarni Google hisobiga saqlashda va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
@@ -1571,6 +1576,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6240553182907836376">ID kartani yangilash</translation>
 <translation id="6240601837375010619">Pasportni saqlash</translation>
 <translation id="6241132809279377987">Google ilovalari yordamida iPhone uchun koʻproq funksiyalarni oching</translation>
+<translation id="6244366663267187541">Gemini qaysi ilovalarga ulanishini tanlang</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6251835855431997163">Avtomatik kiritish: <ph name="VALUE" /></translation>
 <translation id="6253686838150111720"><ph name="URL" /> hisobiga kirish</translation>
@@ -1803,6 +1809,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="6924299883035848912">Brauzer maʼlumotlarini oʻchirishni berkitish</translation>
 <translation id="6930162026494574854">Tarjima sozlamalarini tozalash</translation>
 <translation id="6930799952781667037">Tilni tanlash uchun bosing.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Maxfiy kodni belgilang</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6946722113367118030">Oʻychan</translation>
@@ -1852,6 +1859,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera ish faoliyatida emas</translation>
 <translation id="7138678301420049075">Boshqa</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Varaqlar yopiladi va brauzer tarixi tozalanadi</translation>
 <translation id="714291438898585119">Yulduzchali</translation>
 <translation id="7145337554745942724">Haydovchilik guvohnomasini yangilash</translation>
@@ -1917,6 +1925,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7402602673739047753">{count,plural, =1{1 ta bukmark faqat shu qurilmada saqlanadi. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda ({email}) saqlang.}other{{count} ta bukmark faqat shu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda ({email}) saqlang.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) uchun “<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ta maqola ochilmagan.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Davom etish</translation>
 <translation id="741204030948306876">Ha, roziman</translation>
 <translation id="7419565702166471774">Doim xavfsiz ulanish ishlatilsin</translation>
@@ -1946,6 +1955,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7471557245617580330">Yangi tab ochish</translation>
 <translation id="7473555040328423550">Varaq kiritish</translation>
 <translation id="7476548258282096076">Bu panelda eng koʻp ochiladigan saytlar chiqadi.</translation>
+<translation id="7482823403440483089">Yaxshilangan avtomatik kiritish</translation>
 <translation id="7484645889979462775">Bu saytda hech qachon</translation>
 <translation id="7486006552035434095">Qurilmalaringizni sinxronlab boring</translation>
 <translation id="7491131399623468277">Sozlamalarni ochish…</translation>
@@ -2195,7 +2205,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profilni almashtirish arafasidasiz</translation>
 <translation id="8275068909952022340">Yana…</translation>
-<translation id="8280797717392145626">Havolalar qabul qilindi</translation>
 <translation id="8281781826761538115">Standart - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8282657446819506217">Varaqlar guruhida ochish</translation>
@@ -2205,6 +2214,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8292893224181644074">Yuklab olindi</translation>
 <translation id="8299417921174340354">Parollarni ishlatish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="8307481894409578819">Bu faylni yuklash imkonsiz</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Yangi qidiruv</translation>
 <translation id="8319282042900445670">Eslatma yaratildi: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Oxirgi faollik</translation>
@@ -2492,6 +2502,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="9219154867334666734">Varaqlardan qidirish…</translation>
 <translation id="9223358826628549784">Ishdan chiqish hisoboti yuborildi.</translation>
 <translation id="926455622548529175">Almashtirish va oʻchirish</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Belgilangan matn</translation>
 <translation id="932305336591073205">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="939472100615258482">Joriy sayt</translation>

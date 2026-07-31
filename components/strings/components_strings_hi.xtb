@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">पेपर टाइप</translation>
 <translation id="1142965388643537393">यात्रा की जानकारी</translation>
 <translation id="1143142264369994168">प्रमाणपत्र हस्ताक्षरकर्ता</translation>
-<translation id="1144136880160289237">आपके पास अभी तक कोई ऐक्टिव विषय नहीं है</translation>
 <translation id="1149617035358809955">अपनी पहचान की पुष्टि करें, ताकि यह आपके क्रेडिट/डेबिट कार्ड की जानकारी भर सके</translation>
 <translation id="1150565364351027703">धूप के चश्मे</translation>
 <translation id="1150979032973867961">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र आपके कंप्यूटर के ऑपरेटिंग सिस्टम द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
@@ -351,6 +350,7 @@
 <translation id="1539840569003678498">रिपोर्ट भेज दी गई:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षा</translation>
 <translation id="1542830386724426410">चेकआउट के समय, कार्ड से खरीदारी करने पर मिलने वाले फ़ायदों और इनामों की जानकारी दिखाएं. कार्ड जारी करने वाले बैंक की शर्तें लागू. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ज़्यादा जानें<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">आपके संगठन की नीतियों के आधार पर, आपके कॉपी किए गए कॉन्टेंट को संवेदनशील जानकारी के लिए स्कैन किया जा रहा है. स्कैन पूरा होने के बाद, कॉन्टेंट को चिपकाने की अनुमति दी जा सकती है.</translation>
 <translation id="1545757265410828525">कीमत का इतिहास</translation>
 <translation id="1546286808622193216">Gemini का इस्तेमाल करके, कार्ड पर मिलने वाले फ़ायदों की तुलना करें</translation>
 <translation id="1549470594296187301">इस सुविधा का उपयोग करने के लिए JavaScript को सक्षम किया जाना चाहिए.</translation>
@@ -372,7 +372,6 @@
 <translation id="1564634006476980707">इस खोज यूआरएल के लिए एचटीटीपीएस स्कीम इस्तेमाल करने का सुझाव दिया जाता है: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
-<translation id="1567405528131216114"><ph name="TOPIC" /> जोड़ें</translation>
 <translation id="1569487616857761740">खत्म होने की तारीख डालें</translation>
 <translation id="1569694109004336106">Google Chrome, पासवर्ड भरने के लिए Windows Hello को चालू करने की कोशिश कर रहा है.</translation>
 <translation id="1569905000953679183">एक्सटेंशन इंस्टॉल करने से जुड़ी नीति फ़ेच करना</translation>
@@ -382,7 +381,6 @@
 <translation id="1579189948231786790">इस साइट को आपके संगठन ने ब्लॉक किया है</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">इस वेबपेज को दिखाने के दौरान कुछ गड़बड़ी हुई है.</translation>
-<translation id="1584492003828271317">ब्राउज़ करते समय दिखने वाला विज्ञापन आपकी पसंद के मुताबिक है या नहीं, यह इस सेटिंग, साइट के सुझाए गए विज्ञापनों, और आपकी कुकी सेटिंग के आधार पर तय होता है. इनके अलावा, यह इस बात पर भी निर्भर करता है कि आप जिस साइट पर हैं उस पर दिलचस्पी के मुताबिक विज्ञापन दिखाने की सुविधा है या नहीं</translation>
 <translation id="1585306568496579337">"<ph name="EXTENSION_NAME" />" एक्सटेंशन, <ph name="HANDLER_HOSTNAME" /> के ज़रिए <ph name="PROTOCOL" /> लिंक खोलना चाहता है</translation>
 <translation id="1586541204584340881">आपने कौनसे एक्सटेंशन इंस्टॉल किए हैं</translation>
 <translation id="1588438908519853928">सामान्य</translation>
@@ -400,7 +398,6 @@
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1611101756749861742">दूसरा रोल</translation>
 <translation id="1611854593425834707">कास्ट करने के लिए, डिवाइस की सूची बंद करें</translation>
-<translation id="1612199629998703524">विषय मैनेज करें</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> का ऐक्सेस वापस लें</translation>
 <translation id="1615402009686901181">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन कैप्चर की सुविधा बंद कर दी जाती है</translation>
 <translation id="161612500287664753">Google Search की मदद से, इस पेज के बारे में जानकारी खोजें</translation>
@@ -681,7 +678,6 @@
 <translation id="2071852865256799872">आपके ब्राउज़र को आपका संगठन और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">जानकारी सिर्फ़ डिवाइस में सेव की गई</translation>
-<translation id="2074733626795553847"><ph name="TOPIC" /> को अनब्लॉक करें</translation>
 <translation id="2074771604462073334">आपके डिवाइस पर खोला गया टैब</translation>
 <translation id="2078956195623975415">म्यूज़िक और डांस गेम</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
@@ -732,7 +728,6 @@
 <translation id="213826338245044447">मोबाइल बुकमार्क</translation>
 <translation id="2141000681034340397">अपने इनपुट में बदलाव करें</translation>
 <translation id="2141475438898772664">दो-दो हफ़्तों की अवधि वाली चार किस्तों में या हर महीने पेमेंट करें</translation>
-<translation id="2144171668675205303">कोई विषय ऐक्टिव नहीं है</translation>
 <translation id="2145193671493396738">आर्थिक मामलों से जुड़ी खबरें</translation>
 <translation id="214556005048008348">भुगतान न करें</translation>
 <translation id="2147117373852943630">म्यूज़िकल इंस्ट्रुमेंट</translation>
@@ -1023,7 +1018,6 @@
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="254947805923345898">नीति का मान मान्य नहीं है.</translation>
 <translation id="2549836668759467704">निर्माण से जुड़े परामर्श और अनुबंध</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> वगैरह</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ने एक गलत जवाब भेजा है.</translation>
 <translation id="2551608178605132291">पता: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">हगाकी (पोस्टकार्ड)</translation>
@@ -1057,7 +1051,6 @@
 <translation id="2605979593348332811">फ़ोनेटिक नाम</translation>
 <translation id="2606760465469169465">अपने-आप पुष्टि होने की अनुमति</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक कुंजी जानकारी</translation>
-<translation id="2608019759319359258">किसी विषय को ब्लॉक करने पर, उसका इस्तेमाल आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए नहीं किया जाएगा</translation>
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2612993535136743634">आपके डिवाइस और Google खाते में सेव किए गए सभी सुरक्षा कोड मिटा दिए जाएंगे</translation>
@@ -1496,10 +1489,10 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीति के बारे में ज़्यादा जानें</translation>
 <translation id="3295444047715739395">Chrome की सेटिंग में अपने पासवर्ड देखें और प्रबंधित करें</translation>
 <translation id="3299098170013242198">Windows Hello चालू है, पासवर्ड डाला जा सकता है</translation>
+<translation id="3299197721044635447">आपके संगठन की नीतियों की वजह से, मैनेज किए जा रहे Chrome के कॉन्टेक्स्ट से बाहर कॉन्टेंट चिपकाया नहीं जा सका</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> का इस्तेमाल करते समय कोई गड़बड़ी हुई</translation>
 <translation id="3303176609391916566">30 x 42 इंच</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
-<translation id="3303872874382375219">आपको दिखने वाला विज्ञापन आपकी दिलचस्पी के मुताबिक है या नहीं, यह कई चीज़ों के आधार पर तय होता है. इसमें यह सेटिंग, <ph name="BEGIN_LINK1" />विज्ञापन के विषय<ph name="LINK_END1" />, और आपकी <ph name="BEGIN_LINK2" />कुकी सेटिंग<ph name="LINK_END2" /> शामिल है. साथ ही, यह इस बात पर भी निर्भर होता है कि आप जिस साइट पर हैं वह लोगों की दिलचस्पी के मुताबिक विज्ञापन दिखाती है या नहीं. <ph name="BEGIN_LINK3" />विज्ञापनों के लिए अपनी निजता को मैनेज करने<ph name="LINK_END3" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="3304073249511302126">ब्लूटूथ स्कैन किया जा रहा है</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप तुरंत इस पासवर्ड को बदलें.</translation>
@@ -1538,7 +1531,6 @@
 <translation id="3377144306166885718">सर्वर, TLS के पुराने वर्शन का इस्तेमाल कर रहा है.</translation>
 <translation id="3377188786107721145">नीति पार्स गड़बड़ी</translation>
 <translation id="3377642479079205807">पतला</translation>
-<translation id="3378612801784846695">विज्ञापन के विषय, आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर तय किए जाते हैं. साइटें इनका इस्तेमाल, आपको दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए करती हैं. इस दौरान साइटें आपकी पहचान को भी सुरक्षित रखती हैं</translation>
 <translation id="3380365263193509176">अज्ञात गड़बड़ी</translation>
 <translation id="3380864720620200369">क्लाइंट आईडी:</translation>
 <translation id="3383566085871012386">प्राथमिकता का मौजूदा क्रम</translation>
@@ -1575,7 +1567,6 @@
 <translation id="3433111389595862568">मिलकर काम करने और कॉन्फ़्रेंसिंग के सॉफ़्टवेयर</translation>
 <translation id="3433144818443565002">ऑडियो और वीडियो चैट</translation>
 <translation id="3434025015623587566">Google Password Manager को और चीज़ों का ऐक्सेस चाहिए</translation>
-<translation id="3434346831962601311">कोई विषय ब्लॉक नहीं किया गया है</translation>
 <translation id="343474037147570563">अपलोड या अटैच की गई फ़ाइलों को विश्लेषण के लिए, Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी या मैलवेयर का पता लगाने के लिए, उन फ़ाइलों को स्कैन किया जा सकता है. साथ ही, उन्हें कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और ये आपके एडमिन को दिख सकती हैं.</translation>
 <translation id="3435557549311968410">कंटिन्यूअस (शॉर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
@@ -1727,7 +1718,6 @@
 <translation id="3662040827609932717">इस आईबीएएन को Google Wallet में सेव किया गया है. इसलिए, इसका इस्तेमाल Google की सभी सेवाओं पर किया जा सकता है.</translation>
 <translation id="3664479564786885722">इस प्रॉडक्ट को बेचने वाले दूसरे स्टोर से खरीदारी के ज़्यादा विकल्प खोजें.</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">कार्ड नंबर</translation>
 <translation id="3670159164851218963">एआई मोड का इतिहास</translation>
 <translation id="3670229581627177274">ब्लूटूथ चालू करें</translation>
@@ -1959,7 +1949,6 @@
 
     साइट के मालिक से संपर्क करके, नेटवर्क को एचटीटीपीएस पर अपग्रेड करने का सुझाव भी दिया जा सकता है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;जोड़ना वापस लाएं</translation>
-<translation id="4030545038933060179">इस सेटिंग के चालू होने पर, आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, यहां विषयों की सूची दिखती है</translation>
 <translation id="4031179711345676612">माइक्रोफ़ोन की अनुमति है</translation>
 <translation id="4036753017940930924">प्लॉट और ज़मीन</translation>
 <translation id="403724377879219932">साइट, आपके लोकल नेटवर्क पर मौजूद अन्य डिवाइस ऐक्सेस करने की अनुमति मांग सकती है</translation>
@@ -2051,6 +2040,7 @@
 <translation id="4153446078232988116">एचटीटीपीएस वाली इस साइट (<ph name="SITE" />) पर सुरक्षित कनेक्शन की सुविधा काम नहीं करती</translation>
 <translation id="4153858337812834972">हाल ही में खोले गए टैब</translation>
 <translation id="4154277373259957087">पेमेंट के तरीके भरने से पहले, Chrome आपकी पहचान की पुष्टि करेगा. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
+<translation id="4157273919218514718">यह सुविधा Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. <ph name="BEGIN_LINK" />सेटिंग मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4165422751765527461">इससे एक नए टैब में 'सहायता केंद्र लेख' खुलता है</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
@@ -2064,7 +2054,6 @@
 <translation id="4173315687471669144">फ़ूल्ज़कैप</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> और आइटम}one{<ph name="ITEM_COUNT" /> और आइटम}other{<ph name="ITEM_COUNT" /> और आइटम}}</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
-<translation id="4177501066905053472">विज्ञापन के विषय</translation>
 <translation id="4178863275556660738">कार्ड के अलावा, अन्य तरीकों से पेमेंट करें</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">कीमत ट्रैक न करें</translation>
@@ -2293,7 +2282,6 @@
 <translation id="4523580145196408446">लिंक किया गया</translation>
 <translation id="4523643381056109546">साइनेज</translation>
 <translation id="4524138615196389145">अब WebAuthn का इस्तेमाल करके अपने कार्ड की जल्दी पुष्टि करें</translation>
-<translation id="45243788195988825"><ph name="TOPIC" /> को ब्लॉक करें</translation>
 <translation id="4528888973346221791">वर्क प्रोफ़ाइल से जुड़ी जानकारी (जैसे, आपका उपयोगकर्ता नाम)</translation>
 <translation id="4530347922939905757">मैसेज</translation>
 <translation id="4531477351494678589">वर्चुअल कार्ड नंबर:</translation>
@@ -2498,6 +2486,7 @@
 <translation id="4865063548323785458">साइटों और ऐप्लिकेशन में आसानी से साइन इन करने के लिए, अपने पासवर्ड सेव करें और ऑटोमैटिक भरने की सुविधा इस्तेमाल करें</translation>
 <translation id="4866506163384898554">अपना कर्सर दिखाने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
 <translation id="4868277513442568587">शेयर किए गए टैब ग्रुप का इस्तेमाल जारी रखने के लिए, Chrome को अपडेट करें</translation>
+<translation id="4873312501243535625">मीडिया फ़ाइल चेकर</translation>
 <translation id="4873616204573862158">चश्मे और सनग्लास</translation>
 <translation id="4873807733347502026">अपने माउस को लॉक करें और उसका इस्तेमाल करें</translation>
 <translation id="4876305945144899064">कोई उपयोगकर्ता नाम नहीं</translation>
@@ -2522,7 +2511,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ओलंपिक</translation>
 <translation id="4897851261703006488">इस नीति के हेडर का साइज़ <ph name="MAX_HEADER_SIZE_LIMIT" /> केबी से ज़्यादा नहीं होना चाहिए.</translation>
-<translation id="4898742041545089450">इस विषय को अनब्लॉक कर दिया गया है. साथ ही, यह मुमकिन है कि आपके ब्राउज़िंग इतिहास के आधार पर, यह विषय ऐक्टिव हो जाए</translation>
 <translation id="4900217275619098670">नौवां रोल</translation>
 <translation id="4901052769830245369">लेबल (सेमी-ग्लॉस)</translation>
 <translation id="4901162432287938633">हाइजीन और टॉयलेटरी</translation>
@@ -2617,10 +2605,8 @@
 <translation id="5043480802608081735">आपका कॉपी किया हुआ लिंक</translation>
 <translation id="5043753287208271200">येलो 3</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
-<translation id="5048293684454354469">विज्ञापन के विषय, उन कई चीज़ों में से एक है जिनका इस्तेमाल करके कोई साइट, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखा सकती है. विज्ञापन के विषयों के बिना भी, साइटें आपको विज्ञापन दिखा सकती हैं. हालांकि, ऐसा हो सकता है कि विज्ञापन पूरी तरह से आपकी दिलचस्पी के मुताबिक न हों. <ph name="BEGIN_LINK" />Chrome पर विज्ञापन देखने के दौरान अपनी निजता मैनेज करने<ph name="LINK_END" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, इस खोज से जुड़े सुझाव मिलने के बाद, अन्य सर्च शॉर्टकट देखने के लिए tab दबाएं</translation>
 <translation id="5052488928733955073">जानकारी भरने में समस्या आ रही है. अपने इंटरनेट कनेक्शन की जांच करें.</translation>
-<translation id="5052517576853118371">दिलचस्पी के मौजूदा विषय</translation>
 <translation id="5053116470141135293">इस कार्ड से पेमेंट करते समय, वर्चुअल कार्ड नंबर अपने-आप भर जाएगा. इससे आपके असल कार्ड की जानकारी सुरक्षित रहेगी. Google Wallet में मैनेज करें. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}one{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}other{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}}</translation>
 <translation id="5056587122125565772">इमेज जनरेट करें</translation>
@@ -2719,7 +2705,6 @@
 <translation id="5206392433295093945">बेडरूम</translation>
 <translation id="5209670883520018268">ट्रे 20</translation>
 <translation id="5212364581680288382">मोटरसाइकल रेसिंग</translation>
-<translation id="5214542134842513912">चुनें कि दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, विषयों की किन कैटगरी का इस्तेमाल किया जा सकता है. विषयों की इन कैटगरी को बंद करने से, मिलते-जुलते विषय भी ब्लॉक हो जाएंगे.</translation>
 <translation id="52163492208010719">पहचान से जुड़े दस्तावेज़ों को मैनेज करें</translation>
 <translation id="521659676233207110">ट्रे 13</translation>
 <translation id="5216942107514965959">साइट पर पिछली बार आज गए</translation>
@@ -4079,7 +4064,6 @@
 <translation id="7305767780379163575">फ़ोटो सेव नहीं की जा सकी</translation>
 <translation id="7307063504147610123">इस डिवाइस में ईमेल पता सेव किया गया</translation>
 <translation id="7308436126008021607">बैकग्राउंड सिंक</translation>
-<translation id="7309058266849426521">Chrome में विज्ञापन देखने वाले की निजता बनाए रखने के बारे में ज़्यादा जानें.</translation>
 <translation id="7310392214323165548">डिवाइस जल्द ही रीस्टार्ट होगा</translation>
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
 <translation id="7313107491291103073">आपके संगठन ने इस साइट को फ़्लैग किया है, क्योंकि यह किसी नीति का उल्लंघन कर सकती है.</translation>
@@ -4276,6 +4260,7 @@
 <translation id="7575800019233204241">"आपका कनेक्शन निजी नहीं है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" या "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" या "SSL प्रमाणपत्र गड़बड़ी"</translation>
 <translation id="7575887283389198269">मोबाइल फ़ोन</translation>
 <translation id="7579113844074980463"><ph name="MANUFACTURER" /> टैबलेट</translation>
+<translation id="7579227976546039122">डेवलपर बिल्ड</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" के मैनेज किए जा रहे कॉन्फ़िगरेशन में अज्ञात वैरिएबल "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">साइड 2 इमेज Y शिफ़्ट</translation>
 <translation id="7582602800368606489">Google Calendar में जल्दी से नया इवेंट बनाएं</translation>
@@ -4347,6 +4332,7 @@
 <translation id="767550629621587224">प्री-कट टैब्स</translation>
 <translation id="7675756033024037212">स्क्रोल और ज़ूम करने की अनुमति नहीं है</translation>
 <translation id="7676643023259824263">क्लिपबोर्ड टेक्स्ट, <ph name="TEXT" /> खोजें</translation>
+<translation id="7676840398262504532">आपका संगठन, कॉपी किए जाने वाले कॉन्टेंट की निगरानी करता है</translation>
 <translation id="7678730592635586336">वीडियो फिर से बनाएं</translation>
 <translation id="7679287273775285018">इलेक्ट्रॉनिक वॉलेट से पेमेंट करें</translation>
 <translation id="7679367271685653708">Chrome की सेटिंग में अपने ब्राउज़िंग इतिहास को देखें और मैनेज करें</translation>
@@ -4470,7 +4456,6 @@
 <translation id="7877007680666472091">सुरक्षित Content ID</translation>
 <translation id="7878562273885520351">आपके पासवर्ड से छेड़छाड़ की जा सकती है</translation>
 <translation id="7885670691503039914">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको ईमेल से सूचना मिलेगी. यह पेज, <ph name="LAST_BOOKMARKS_FOLDER" /> बुकमार्क फ़ोल्डर में सेव किया जाएगा.</translation>
-<translation id="7886897188117641322">चुनें कि आपको दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, विषयों की किन कैटगरी का इस्तेमाल किया जाए</translation>
 <translation id="7887683347370398519">अपना कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचे और फिर से कोशिश करें</translation>
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
 <translation id="7888367499748383555">कोई शुल्क नहीं, कम से कम 0% एपीआर (हालांकि, यह इस पर निर्भर करता है कि ज़रूरी शर्तें पूरी हो रही हैं या नहीं)</translation>
@@ -4580,7 +4565,6 @@
 <translation id="8046360364391076336">इंडस्ट्रियल मटीरियल और इक्विपमेंट</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8057023045886711556">कॉमेडी फ़िल्में</translation>
-<translation id="805766869470867930">आपने किसी भी विषय को ब्लॉक नहीं किया है</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" सही तरीके से कॉन्फ़िगर नहीं किया गया है. आमतौर पर "<ph name="SOFTWARE_NAME" />" को अनइंस्टॉल करने से समस्या ठीक हो जाती है. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">सहमति लेना ज़रूरी नहीं है</translation>
 <translation id="8061691770921837575">मेकअप और कॉस्मेटिक</translation>
@@ -4627,10 +4611,10 @@
 <translation id="8130113808541743942">यहां ले जाएं...</translation>
 <translation id="813024282736408069">ऑटोमैटिक तरीके से वर्चुअल कार्ड की जानकारी भरने की सुविधा चालू करें</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
-<translation id="8133495915926741232">चुनें कि दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, विषयों की किन कैटगरी का इस्तेमाल किया जा सकता है. विषयों की इन कैटगरी को बंद करने से, मिलते-जुलते विषय भी ब्लॉक हो जाएंगे. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">रिक्रूटमेंट और स्टाफ़िंग</translation>
 <translation id="8135546115396015134">बाईं ओर मौजूद बटन</translation>
 <translation id="8137456439814903304">ऊर्जा और बिजली, पानी जैसी सुविधाएं</translation>
+<translation id="814071672416123670">आपके संगठन की नीतियों की वजह से, कॉन्टेंट कॉपी नहीं किया जा सका</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 महीने पहले बनाया गया}one{{NUM_MONTHS} महीने पहले बनाया गया}other{{NUM_MONTHS} महीने पहले बनाया गया}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, मौजूदा डिफ़ॉल्ट सर्च इंजन. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>
@@ -4846,7 +4830,6 @@
 <translation id="8467494337615822642">सेटिंग में, Chrome की सुरक्षा जांच वाले पेज पर जाएं</translation>
 <translation id="8468358362970107653">C3 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8469428721212363950">खुदरा व्यापार</translation>
-<translation id="8472700501934242014">ब्लॉक किए गए विषय</translation>
 <translation id="8473626140772740486">300 x 450 मि॰मी॰</translation>
 <translation id="8473863474539038330">पते और अन्य जानकारी</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
@@ -4992,7 +4975,6 @@
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
 <translation id="8733345475331865475">ऑटो इंश्योरेंस</translation>
-<translation id="8733764070897080460">आपको जिन विषयों को साइटों के साथ शेयर नहीं करना है उन्हें ब्लॉक किया जा सकता है. Chrome आपके चार हफ़्ते से ज़्यादा पुराने विषयों को भी ऑटोमैटिकली मिटा देता है. ज़्यादा जानें</translation>
 <translation id="8734529307927223492">आपके <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है</translation>
 <translation id="8736059027199600831">30 x 40 इंच</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, निजी रूप से ब्राउज़ करने के लिए, पहले Tab और फिर Enter दबाकर एक नई गुप्त विंडो खोलें</translation>
@@ -5359,6 +5341,7 @@
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988159990683914416">डेवलपर बिल्ड</translation>
 <translation id="989988560359834682">पते में बदलाव करें</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">फ़ुटवेयर</translation>
 <translation id="992110854164447044">वर्चुअल कार्ड आपके असली कार्ड की पहचान ज़ाहिर नहीं होने देता है. इससे, आपको धोखाधड़ी से बचने में मदद मिलती है. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">የወረቀት ዓይነት</translation>
 <translation id="1142965388643537393">የጉዞ መረጃ</translation>
 <translation id="1143142264369994168">ሰርቲፊኬት ፈራሚ</translation>
-<translation id="1144136880160289237">እስካሁን ምንም ንቁ ርዕሶች የሉዎትም</translation>
 <translation id="1149617035358809955">የክፍያ መረጃዎን እንዲያስገባ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="1150565364351027703">የጸሐይ መነጽሮች</translation>
 <translation id="1150979032973867961">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በኮምፒውተርዎ ስርዓተ ክወና የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
@@ -351,6 +350,7 @@
 <translation id="1539840569003678498">ሪፖርት ተልኳል፦</translation>
 <translation id="1542105669288201090">የቢዝነስ ትምህርት</translation>
 <translation id="1542830386724426410">በክፍያ ማጠናቀቅ ወቅት የሚገኙ የካርድ ጥቅማጥቅሞችን እና ሽልማቶችን ያሳያል። የሰጪ ደንቦች ይተገበራሉ። <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />የበለጠ ለመረዳት<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">በድርጅትዎ መመሪያዎች መሠረት የቀዱት ይዘት ልዩ ጥንቃቄ የሚያስፈልገው መረጃን ለማግኘት እየተቃኘ ነው። ቅኝቱ ከተጠናቀቀ በኋላ መለጠፍ ሊፈቀድ ይችላል።</translation>
 <translation id="1545757265410828525">የዋጋ ታሪክ</translation>
 <translation id="1546286808622193216">Geminiን በመጠቀም የካርድ ጥቅማጥቅሞችን ያነጻጽሩ</translation>
 <translation id="1549470594296187301">ይህን ባህሪ ለመጠቀም ጃቫስክሪፕት መንቃት አለበት።</translation>
@@ -372,7 +372,6 @@
 <translation id="1564634006476980707">የኤችቲቲፒኤስ እቅድ ለURL ፍለጋ ይመከራል፦ <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">እንደ አድራሻዎች፣ የበይነገጽ ውቅረት እና የግንኙነት ጥራት ያሉ የአውታረ መረብ መረጃ</translation>
 <translation id="1567040042588613346">ይህ መመሪያ እንደታሰበው እየሰራ ነው፣ ነገር ግን ተመሳሳይ እሴት በሌላ ቦታ የተቀናበረ ሲሆን በዚህ መመሪያ ተተክቷል።</translation>
-<translation id="1567405528131216114"><ph name="TOPIC" /> አክል</translation>
 <translation id="1569487616857761740">የጊዜ ማብቂያ ቀን ያስገቡ</translation>
 <translation id="1569694109004336106">Google Chrome የይለፍ ቃላትን ለመሙላት Windows Helloን ለማብራት እየሞከረ ነው።</translation>
 <translation id="1569905000953679183">የቅጥያ ጭነት መመሪያ ማምጣት</translation>
@@ -382,7 +381,6 @@
 <translation id="1579189948231786790">ይህ ጣቢያ በድርጅትዎ ታግዷል</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ይህን ድረ-ገፅ በማሳየት ላይ ሳለ የሆነ ችግር ተፈጥሯል።</translation>
-<translation id="1584492003828271317">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር፣ በጣቢያ የተጠቆሙ ማስታወቂያዎች፣ በእርስዎ የኩኪ ቅንብሮች እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ በሚሉት ላይ ይወሰናል</translation>
 <translation id="1585306568496579337">ቅጥያው «<ph name="EXTENSION_NAME" />» በ<ph name="HANDLER_HOSTNAME" /> በኩል <ph name="PROTOCOL" /> አገናኞችን መክፈት ይፈልጋል</translation>
 <translation id="1586541204584340881">የትኛዎቹ ቅጥያዎች ናቸው እርስዎ የጫኑት</translation>
 <translation id="1588438908519853928">መደበኛ</translation>
@@ -400,7 +398,6 @@
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1611101756749861742">ሁለተኛ ጥቅልል</translation>
 <translation id="1611854593425834707">cast ለማድረግ የመሣሪያ ዝርዝርን ይዝጉ</translation>
-<translation id="1612199629998703524">ርዕሶችን አስተዳድር</translation>
 <translation id="1615178538289490617">ለ<ph name="PORT_NAME" /> መዳረሻን ሻር</translation>
 <translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገፅ ማንሳትን ያሰናክላል</translation>
 <translation id="161612500287664753">ስለ እዚህ ገፅ Google ፍለጋን ይጠይቁ</translation>
@@ -680,7 +677,6 @@
 <translation id="2071852865256799872">የእርስዎ አሳሽ የሚተዳደረው በድርጅትዎ ነው እና የእርስዎ መገለጫ የሚተዳደረው በ<ph name="PROFILE_DOMAIN" /> ነው</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">መረጃ ወደ መሣሪያ ብቻ ተቀምጧል</translation>
-<translation id="2074733626795553847">የ<ph name="TOPIC" /> እገዳውን አንሳ</translation>
 <translation id="2074771604462073334">እርስዎ የጎበኙት</translation>
 <translation id="2078956195623975415">የሙዚቃ እና የዳንስ ጨዋታዎች</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
@@ -731,7 +727,6 @@
 <translation id="213826338245044447">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
 <translation id="2141000681034340397">ግብዓትዎትን ያርትዑ</translation>
 <translation id="2141475438898772664">በ4 ወይም በየወሩ ይክፈሉ</translation>
-<translation id="2144171668675205303">ምንም ንቁ ርዕሶች የሉም</translation>
 <translation id="2145193671493396738">የኢኮኖሚ ዜና</translation>
 <translation id="214556005048008348">ክፍያን ሰርዝ</translation>
 <translation id="2147117373852943630">የሙዚቃ መሣሪያዎች</translation>
@@ -1022,7 +1017,6 @@
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="254947805923345898">የመመሪያ እሴት የሚሰራ አይደለም።</translation>
 <translation id="2549836668759467704">የግንባታ ማማከር እና ውል መዋዋል</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />፣ <ph name="TOPIC_2" /> እና ተጨማሪ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ልክ ያልኾነ ምላሽ ልኳል።</translation>
 <translation id="2551608178605132291">አድራሻ፦ <ph name="ADDRESS" />።</translation>
 <translation id="2552246211866555379">ሃጋኪ</translation>
@@ -1056,7 +1050,6 @@
 <translation id="2605979593348332811">የድምፀ ልሳን ስም</translation>
 <translation id="2606760465469169465">በራስ-ሰር ማረጋገጥ</translation>
 <translation id="2607101320794533334">የርዕሰ ጉዳዩ ህዝባዊ ቁልፍ መረጃ</translation>
-<translation id="2608019759319359258">አንድ ርዕስ ሲታገድ ማስታወቂያዎችን ግላዊ ለማድረግ ጥቅም ላይ አይውልም</translation>
 <translation id="2610561535971892504">ለመቅዳት ጠቅ ያድርጉ</translation>
 <translation id="2612676031748830579">የካርድ ቁጥር</translation>
 <translation id="2612993535136743634">በእርስዎ መሣሪያ ላይ እና Google መለያ ውስጥ የተቀመጡ ሁሉም የደህንነት ኮዶች ይሰረዛሉ</translation>
@@ -1495,10 +1488,10 @@
 <translation id="3293642807462928945">ስለ<ph name="POLICY_NAME" /> መመሪያው ተጨማሪ ይወቁ</translation>
 <translation id="3295444047715739395">በChrome ቅንብሮች ውስጥ የእርስዎን የይለፍ ቃላት ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="3299098170013242198">Windows Hello የይለፍ ቃላትን ለመሙላት በርቷል</translation>
+<translation id="3299197721044635447">በድርጅትዎ መመሪያዎች ምክንያት ይዘት ከሚተዳደረው የChrome ዓውድ ውጭ መለጠፍ አልተቻለም</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />ን በመጠቀም ላይ ሳለ የሆነ ስህተት ተከስቷል</translation>
 <translation id="3303176609391916566">30 x 42 ኢንች</translation>
 <translation id="3303855915957856445">ምንም የፍለጋ ውጤቶች አልተገኙም</translation>
-<translation id="3303872874382375219">የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ ስለመሆኑ ይህን ቅንብር፣ <ph name="BEGIN_LINK1" />የማስታወቂያ ርዕሶች<ph name="LINK_END1" />፣ የእርስዎ<ph name="BEGIN_LINK2" />የኩኪ ቅንብሮች<ph name="LINK_END2" /> እና የሚመለከቱት ጣቢያ ማስታወቂያዎችን ግላዊ የሚያደርግ እንደሆነ ጨምሮ በብዙ ነገሮች ላይ ሊመካ ይችላል። <ph name="BEGIN_LINK3" />የማስታወቂያ ግላዊነትዎን ስለማስተዳደር<ph name="LINK_END3" /> የበለጠ ይረዱ።</translation>
 <translation id="3304073249511302126">የብሉቱዝ ቅኝት</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የይለፍ ቃል አስተዳዳሪ ይህን የይለፍ ቃል አሁን እንዲቀይሩት ይመክራል።</translation>
@@ -1537,7 +1530,6 @@
 <translation id="3377144306166885718">አገልጋዩ ጊዜ ያለፈበት የTLS ስሪት ተጠቅመዋል።</translation>
 <translation id="3377188786107721145">የመምሪያ ትንተና ስህተት</translation>
 <translation id="3377642479079205807">ቀጭን</translation>
-<translation id="3378612801784846695">ርዕሶች በቅርብ ጊዜ የአሰሳ ታሪክ ላይ የተመሠረቱ ናቸው፣ እንዲሁም ማንነትዎን እየጠበቁ ግላዊነት የተላበሱ ማስታወቂያዎችን ለእርስዎ ለማሳየት በጣቢያዎች ጥቅም ላይ ይውላሉ</translation>
 <translation id="3380365263193509176">ያልታወቀ ስህተት</translation>
 <translation id="3380864720620200369">የደንበኛ መታወቂያ፦</translation>
 <translation id="3383566085871012386">የአሁኑ ቀዳሚ ትዕዛዝ</translation>
@@ -1574,7 +1566,6 @@
 <translation id="3433111389595862568">የትብብር እና ጉባዔ የማድረግ ሶፍትዌር</translation>
 <translation id="3433144818443565002">የድምጽ እና ቪድዮ ውይይት</translation>
 <translation id="3434025015623587566">Google የይለፍ ቃል አስተዳዳሪ ተጨማሪ መዳረሻ ያስፈልገዋል</translation>
-<translation id="3434346831962601311">ምንም የታገዱ ርዕሶች የሉም</translation>
 <translation id="343474037147570563">እርስዎ የሚሰቅሏቸው ወይም ዓባሪ የሚያደርጓቸው ፋይሎች ለትንታኔ ወደ Google ደመና ወይም ሦስተኛ ወገኖች ይላካሉ። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ወይም ለተንኮል አዘል ዌር ሊቃኙ ይችላሉ እና በኩባንያ መመሪያ መሠረት ሊከማቹ እና ለአስተዳዳሪዎ የሚታዩ ሊሆኑ ይችላሉ።</translation>
 <translation id="3435557549311968410">ቀጣይነት ያለው (አጭር)</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
@@ -1726,7 +1717,6 @@
 <translation id="3662040827609932717">ይህን አይቢኤኤን በመላው የGoogle አገልግሎቶች ላይ መጠቀም እንዲችሉ በGoogle Wallet ውስጥ ተቀምጧል።</translation>
 <translation id="3664479564786885722">ይህን ምርት ከሚሸጡ ሌሎች መደብሮች ተጨማሪ የግዢ አማራጮችን ይፈልጉ።</translation>
 <translation id="3664782872746246217">ቁልፍ ቃላት፦</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">ቁጥር</translation>
 <translation id="3670159164851218963">የሰው ሠራሽ አስተውሎት ሁነታ ታሪክ</translation>
 <translation id="3670229581627177274">ብሉቱዝን አብራ</translation>
@@ -1958,7 +1948,6 @@
 
     እንዲሁም የጣቢያ ባለቤቱን ሊያገኙ እና ወደ ኤችቲቲፒኤስ እንዲያልቁ ሊጠቁሙ ይችላሉ። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይወቁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;አክልን ቀልብስ</translation>
-<translation id="4030545038933060179">በሚበራበት ጊዜ የርዕሶች ዝርዝር በአሰሳ ታሪክዎ ላይ በመመስረት እዚህ ላይ ይታያል</translation>
 <translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
 <translation id="4036753017940930924">ክፍት ቦታ እና መሬት</translation>
 <translation id="403724377879219932">በአካባቢያዊ አውታረ መረብዎ ላይ ያሉ ሌሎች መሣሪያዎችን ለመድረስ መጠየቅ ይችላል</translation>
@@ -2063,7 +2052,6 @@
 <translation id="4173315687471669144">ፉልስካፕ</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> ተጨማሪ ንጥል}one{<ph name="ITEM_COUNT" /> ተጨማሪ ንጥሎች}other{<ph name="ITEM_COUNT" /> ተጨማሪ ንጥሎች}}</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
-<translation id="4177501066905053472">የማስታወቂያ ርዕሶች</translation>
 <translation id="4178863275556660738">ካርድ ባልሆኑ የመክፈያ ዘዴዎች ይክፈሉ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ዋጋ ላይ ክትትል ማድረግ አቁም</translation>
@@ -2292,7 +2280,6 @@
 <translation id="4523580145196408446">ተገናኝቷል</translation>
 <translation id="4523643381056109546">የመረጃ ምልክቶች</translation>
 <translation id="4524138615196389145">ከአሁን በኋላ WebAuthnን በመጠቀም የእርስዎን ካርዶች በበለጠ ፍጥነት ያረጋግጡ</translation>
-<translation id="45243788195988825"><ph name="TOPIC" />ን አግድ</translation>
 <translation id="4528888973346221791">የሥራ መገለጫ መረጃ (እንደ የእርስዎ የተጠቃሚ ስም ያለ)</translation>
 <translation id="4530347922939905757">የጽሑፍ መልዕክት</translation>
 <translation id="4531477351494678589">ምናባዊ የካርድ ቁጥር፦</translation>
@@ -2497,6 +2484,7 @@
 <translation id="4865063548323785458">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች በቀላሉ ለመግባት የእርስዎን የይለፍ ቃላት ያስቀምጡ እና በራስ ይሙሉ</translation>
 <translation id="4866506163384898554">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ይጫኑ</translation>
 <translation id="4868277513442568587">የተጋሩ የትር ቡድኖችዎን መጠቀም ለመቀጠል፣ Chromeን ያዘምኑ</translation>
+<translation id="4873312501243535625">የሚዲያ ፋይል ፈታሽ</translation>
 <translation id="4873616204573862158">የአይን አላባሽ</translation>
 <translation id="4873807733347502026">የመዳፊት መቆለፊያ እና አጠቃቀም</translation>
 <translation id="4876305945144899064">ምንም የተጠቃሚ ስም የለም</translation>
@@ -2521,7 +2509,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />፣ <ph name="TYPE_2" />፣, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ኦሊምፒክስ</translation>
 <translation id="4897851261703006488">ይህ መመሪያ ከ<ph name="MAX_HEADER_SIZE_LIMIT" /> ኪባ የሚበልጡ ራስጌዎች ሊኖሩት አይገባም።</translation>
-<translation id="4898742041545089450">ይህ ርዕስ እገዳው ተነስቷል እና በአሰሳ ታሪክዎ ላይ በመመርኮዝ ንቁ ሊሆን ይችላል</translation>
 <translation id="4900217275619098670">ዘጠነኛ ጥቅልል</translation>
 <translation id="4901052769830245369">መሰየሚያዎች (በግማሽ አንጸባራቂ)</translation>
 <translation id="4901162432287938633">ንጽህና እና የመጸዳጃ ቤት ዕቃዎች</translation>
@@ -2616,10 +2603,8 @@
 <translation id="5043480802608081735">የቀዱት አገናኝ</translation>
 <translation id="5043753287208271200">ቢጫ 3</translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
-<translation id="5048293684454354469">የማስታወቂያ ርዕሶች አንድ ጣቢያ ማስታወቂያዎችን ግላዊ ለማድረግ ከሚጠቀምባቸው ብዙ ነገሮች ውስጥ አንዱ ብቻ ነው። የማስታወቂያ ርዕሶች ባይኖሩም እንኳ ጣቢያዎች አሁንም ማስታወቂያዎችን ሊያሳዩዎት ይችላሉ፣ ነገር ግን እነሱ ግላዊነት የተላበሱ ላይሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የእርስዎን የማስታወቂያ ግላዊነት ስለማስተዳደር<ph name="LINK_END" /> የበለጠ ይወቁ።</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />፣ ከዚህ የፍለጋ አስተያየት ጥቆማ በኋላ ለሚገኙ ለተጨማሪ የፍለጋ አቋራጮች ትርን ይጫኑ</translation>
 <translation id="5052488928733955073">መረጃዎን መሙላት ላይ ችግር ነበር። ግንኙነትዎን ይፈትሹ።</translation>
-<translation id="5052517576853118371">ንቁ ርዕሶች</translation>
 <translation id="5053116470141135293">ትክክለኛ ዝርዝሮችዎን ለመጠበቅ በዚህ ካርድ ግዢ ሲያጠናቅቁ የምናባዊ ካርድ ቁጥር ይሞላል። በGoogle Wallet ውስጥ ያስተዳድሩ። <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{አቅራቢያ አጋራን በመጠቀም ይህንን ፋይል ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}other{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}}</translation>
 <translation id="5056587122125565772">ምስል ፍጠር</translation>
@@ -2718,7 +2703,6 @@
 <translation id="5206392433295093945">የመኝታ ክፍል</translation>
 <translation id="5209670883520018268">መሳቢያ 20</translation>
 <translation id="5212364581680288382">የሞተርሳይክል እሽቅድምድም</translation>
-<translation id="5214542134842513912">ማስታወቂያዎችን ግላዊ ለማድረግ እንዲረዱ የትኞቹን ሰፊ የርዕሶች ምድቦች መጠቀም እንደሚቻል ይምረጡ። ሰፋ ያለ ምድብ ማጥፋትም ተዛማጅ ርዕሶቹን ያግዳል።</translation>
 <translation id="52163492208010719">የማንነት ሰነዶችን ያስተዳድሩ</translation>
 <translation id="521659676233207110">መሳቢያ 13</translation>
 <translation id="5216942107514965959">መጨረሻ የተጎበኘው ዛሬ</translation>
@@ -4078,7 +4062,6 @@
 <translation id="7305767780379163575">ፎቶን ማስቀመጥ አልተቻለም</translation>
 <translation id="7307063504147610123">ወደዚህ መሣሪያ የተቀመጠ አድራሻ</translation>
 <translation id="7308436126008021607">የዳራ ስምረት</translation>
-<translation id="7309058266849426521">በChrome ውስጥ የማስታወቂያ ግላዊነትዎን ስለማስተዳደር የበለጠ ይወቁ።</translation>
 <translation id="7310392214323165548">መሣሪያው በጣም በቅርቡ እንደገና ይጀምራል</translation>
 <translation id="7311244614769792472">ምንም ውጤቶች አልተገኙም</translation>
 <translation id="7313107491291103073">ድርጅትዎ ይህንን ጣቢያ መመሪያ ሊጥስ እንደሚችል ተጠቁሟል።</translation>
@@ -4346,6 +4329,7 @@
 <translation id="767550629621587224">ቀድመው የተቆረጡ ትሮች</translation>
 <translation id="7675756033024037212">ማሸብለል እና ማጉላት አይፈቀድም</translation>
 <translation id="7676643023259824263">የቅንጥብ ሰሌዳ ጽሁፍ <ph name="TEXT" /> ይፈልጉ</translation>
+<translation id="7676840398262504532">ድርጅትዎ መቅዳትን ይከታተላል</translation>
 <translation id="7678730592635586336">ቪድዮ ዳግም አንሳ</translation>
 <translation id="7679287273775285018">በኢ-ኪስ ቦርሳ ይክፈሉ</translation>
 <translation id="7679367271685653708">በChrome ቅንብሮች ውስጥ የአሰሳ ታሪክዎን ይመልከቱ እና ያቀናብሩ</translation>
@@ -4469,7 +4453,6 @@
 <translation id="7877007680666472091">የተጠበቁ የይዘት መታወቂያዎች</translation>
 <translation id="7878562273885520351">የእርስዎ ይለፍ ቃል ተሰርቆ ሊሆን ይችላል</translation>
 <translation id="7885670691503039914">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ የኢሜይል ማንቂያዎችን ያገኛሉ። ይህ ገጽ ወደ <ph name="LAST_BOOKMARKS_FOLDER" /> ዕልባት አቃፊ ይቀመጣል።</translation>
-<translation id="7886897188117641322">ማስታወቂያዎችን ግላዊ ለማድረግ የሚረዱ የትኞቹን ሰፊ የርዕሶች ምድቦች ይምረጡ</translation>
 <translation id="7887683347370398519">የእርስዎን CVC ይፈትሹ እና እንደገና ይሞክሩ</translation>
 <translation id="7887885240995164102">ወደ ሥዕል-ውስጥ-ሥዕል ይግቡ</translation>
 <translation id="7888367499748383555">ምንም ክፍያዎች የሉም፣ እስከ 0% ዓመታዊ መቶኛ ተመን ድረስ ዝቅ የሚል (ለብቁነት ተገዥ የሆነ)</translation>
@@ -4579,7 +4562,6 @@
 <translation id="8046360364391076336">የኢንዱስትሪ እቃዎች እና መሣሪያዎች</translation>
 <translation id="8052898407431791827">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="8057023045886711556">የኮሜዲ ፊልሞች</translation>
-<translation id="805766869470867930">ምንም ርዕሶችን አላገዱም</translation>
 <translation id="8057711352706143257">«<ph name="SOFTWARE_NAME" />» በአግባቡ አልተዋቀረም። «<ph name="SOFTWARE_NAME" />»ን ማራገፍ አብዛኛው ጊዜ ችግሩን ይፈታዋል። <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">አያስፈልግም</translation>
 <translation id="8061691770921837575">ሜክአፕ እና ኮስሜቲክስ</translation>
@@ -4626,10 +4608,10 @@
 <translation id="8130113808541743942">አንቀሳቅስ ወደ...</translation>
 <translation id="813024282736408069">ለራስ-ሙላ ምናባዊ ካርድ ያብሩ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
-<translation id="8133495915926741232">የትኛዎቹን ሰፊ የርዕሰ ጉዳዮች ምድቦች ማስታወቂያዎችን ግላዊ ለማድረግ እንደሚረዱ መምረጥ ይችላሉ። ሰፊ ምድብን ማጥፋት እንዲሁም ተዛማጅ ርዕሶቹን ያግዳል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ምልመላ እና የሰው ኃይል ምደባ</translation>
 <translation id="8135546115396015134">የግራ ቁልፍ</translation>
 <translation id="8137456439814903304">ኃይል እና መገልገያዎች</translation>
+<translation id="814071672416123670">በድርጅትዎ መመሪያዎች ምክንያት ይዘት ሊቀዳ አልቻለም</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{ከ1 ወር በፊት የተፈጠረ}one{ከ{NUM_MONTHS} ወር በፊት የተፈጠረ}other{ከ{NUM_MONTHS} ወሮች በፊት የተፈጠረ}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />፣ አሁን ያለ ነባሪ። <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">የPDF ስሪት፦</translation>
@@ -4845,7 +4827,6 @@
 <translation id="8467494337615822642">ቅንብሮች ውስጥ ወደ Chrome የደህንነት ፍተሻ ገፅ ይሂዱ</translation>
 <translation id="8468358362970107653">ሲ3 ፖስታ</translation>
 <translation id="8469428721212363950">የችርቻሮ ንግድ</translation>
-<translation id="8472700501934242014">የታገዱ ርዕሶች</translation>
 <translation id="8473626140772740486">300 x 450 ሚሜ</translation>
 <translation id="8473863474539038330">አድራሻዎች እና ተጨማሪ</translation>
 <translation id="8474910779563686872">የገንቢ ዝርዝሮችን አሳይ</translation>
@@ -4991,7 +4972,6 @@
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731268612289859741">የደህንነት ኮድ</translation>
 <translation id="8733345475331865475">የመኪና መድህን</translation>
-<translation id="8733764070897080460">ከጣቢያዎች ጋር እንዲጋሩ የማይፈልጓቸውን ርዕሶች ማገድ ይችላሉ። እንዲሁም Chrome ከ4 ሳምንታት በላይ የቆዩ ርዕሶችዎን በራስ-ሰር ሰርዝ ይሰርዛል። የበለጠ ለመረዳት</translation>
 <translation id="8734529307927223492">የእርስዎ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው</translation>
 <translation id="8736059027199600831">30 x 40 ኢንች</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑና ከዚያ በግል እንዲያስሱ ማንነት የማያሳውቅ ሁነታ መስኮት ለመክፈት አስገባን ይጫኑ</translation>

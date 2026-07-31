@@ -573,6 +573,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="7173822816570314652">Jūsu organizācija dzēš Chromium datus, ja šis pārlūks <ph name="TIMEOUT_DURATION" /> netiek izmantots. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.</translation>
 <translation id="718435575166326686">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru šajā vietnē.</translation>
 <translation id="7196312274710523067">Neizdevās palaist Chromium. Mēģiniet vēlreiz.</translation>
+<translation id="7204669035546236137">Atvērtajā ekrānā varat jautāt jebko Gemini pārlūkā Chromium</translation>
 <translation id="7213008767289637091">Paturiet pārlūku Chromium dokā, lai jebkurā laikā varētu tam ātri piekļūt.</translation>
 <translation id="7213407614656404070">Izmantojiet Chromium ikreiz, kad noklikšķināt uz saitēm ziņojumos, dokumentos un citās lietotnēs</translation>
 <translation id="7216228761061470870">Kad izmantojat attēlu meklēšanu, serverim tiek nosūtīts lapas nosaukums, URL un saturs, tostarp PDF faili.</translation>
@@ -627,6 +628,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="7745317241717453663">Veicot šo darbību, no šīs ierīces tiks dzēsti pārlūkošanas dati. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
 <translation id="7750130090210923118">Atiestatīt Chromium noklusējuma motīvu</translation>
+<translation id="7752521946322750699">Lai aizsargātu jūsu darbu pārlūkā Chromium, jūsu organizācija varēs skatīt vai pārvaldīt noteiktu informāciju, kad būsiet pierakstījies pārlūkā Chromium.</translation>
 <translation id="7781047659465034537">Iestatiet Chromium kā noklusējuma pārlūku un piespraudiet to uzdevumu joslai</translation>
 <translation id="7786760609782648049">Pārlūka Chromium darbības paātrināšana</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> — Chromium Canary</translation>

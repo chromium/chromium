@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">মেনু → Password Manager</translation>
 <translation id="1498283581832036924">আপনার <ph name="WEBSITE" /> অ্যাকাউন্ট মুছে ফেলা হবে না</translation>
 <translation id="1503814213414825943">আপনি অন্য অ্যাপে যেসব অ্যাকাউন্ট এক্সপোর্ট করতে চান সেগুলি বেছে নিন।</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1506063256525392513">এর সাহায্যে আপনি ফটো তুলতে ও আপলোড করতে, এমনকি QR কোড স্ক্যানও করতে পারবেন</translation>
 <translation id="1506733063065214205">RCS MLS Client</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="1559263013367304065">Google Lens ব্যবহার করার ফলে</translation>
 <translation id="1560153516220021659">সেকেন্ডারি টুলবারের বোতাম আড়াল করা হয়েছে</translation>
+<translation id="1562601408588733317">Gemini-র মাধ্যমে তথ্য খোঁজা ও পূরণ করা ম্যানেজ করুন</translation>
 <translation id="1565371473877914088">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1567960978791353852">রিডিং মোড দেখুন</translation>
 <translation id="1571780780926010134">ছদ্মবেশী ট্যাব</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">আপনার জন্য 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার অটোমেটিক যেকোনও গোপনীয়তা বা সুরক্ষা সংক্রান্ত সমস্যা শনাক্ত করলে, এই কার্ড তা দেখায়।</translation>
 <translation id="1840320537320704887">আপনার নতুন ট্যাব পৃষ্ঠার পছন্দ সরানো হয়েছে</translation>
 <translation id="1845230888742614096">গ্রুপ রেখে দিন</translation>
+<translation id="1853558655412913122">আপনি এখন "সেটিংস" এবং তারপরে "অ্যাড্রেস বার" থেকে অ্যাড্রেস বারের পজিশন পরিবর্তন করতে পারবেন</translation>
 <translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1854463785401910334">খুলে রাখা ট্যাবে সার্চ করুন</translation>
 <translation id="1860609647735325606">Gemini-র সাহায্যে ব্যাখ্যা করুন</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">কোনও একটি ফাইল মুছে ফেলার জন্য শিডিউল করা হলে, এটি বাতিল করা যাবে না।</translation>
 <translation id="498624032394115435">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন।</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> আপনার সংস্থা এটি ম্যানেজ করে।</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ট্যাব গ্রুপের রঙ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
 <translation id="5009127379503001909">ব্রাউজ করতে থাকুন</translation>
@@ -1397,6 +1401,7 @@
 <translation id="5666313630530585305">ওয়েবসাইটে সাইন-ইন করুন।</translation>
 <translation id="5669335982068190158">আপনার iPhone রিসেটের অংশ হিসেবে আপনি সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">কানেক্ট করা অ্যাপ ম্যানেজ করুন</translation>
 <translation id="567881659373499783">ভার্সন <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">অ্যাকাউন্ট পাল্টাবেন? সেভ করা হয়নি এমন ডেটা মুছে যাবে।</translation>
 <translation id="5683499062697987550">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করে সেভ করা চালিয়ে যেতে, আপনার পরিচয় যাচাই করুন।</translation>
@@ -1572,6 +1577,7 @@
 <translation id="6240553182907836376">আইডি কার্ড আপডেট করা</translation>
 <translation id="6240601837375010619">পাসপোর্ট সম্পর্কিত তথ্য সেভ করা</translation>
 <translation id="6241132809279377987">Google apps ব্যবহার করে আপনার iPhone-এ আরও ফিচার আনলক করুন</translation>
+<translation id="6244366663267187541">Gemini কোন অ্যাপের সাথে কানেক্ট করবে তা বেছে নিন</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="6251835855431997163">অটোফিল <ph name="VALUE" /></translation>
 <translation id="6253686838150111720"><ph name="URL" /> লিঙ্কে সাইন-ইন করুন</translation>
@@ -1804,6 +1810,7 @@
 <translation id="6924299883035848912">'ব্রাউজ করা ডেটা মুছুন' বিকল্প লুকান</translation>
 <translation id="6930162026494574854">অনুবাদের সেটিংস রিসেট করুন</translation>
 <translation id="6930799952781667037">এই ভাষায় পরিবর্তন করতে ট্যাপ করুন।</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">একটি পাসকোড সেট করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6946722113367118030">চিন্তা করা</translation>
@@ -1853,6 +1860,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">আপনার ট্যাব বন্ধ করে এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="714291438898585119">তারা চিহ্নিত</translation>
 <translation id="7145337554745942724">ড্রাইভিং লাইসেন্স সম্পর্কিত তথ্য আপডেট করা</translation>
@@ -1918,6 +1926,7 @@
 <translation id="7402602673739047753">{count,plural, =1{১টি বুকমার্ক শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। অন্য ডিভাইসে এটি ব্যবহার করার জন্য, আপনার Google অ্যাকাউন্ট {email}-এ এটি সেভ করুন।}one{{count}টি বুকমার্ক শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {email}-এ সেভ করুন।}other{{count}টি বুকমার্ক শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {email}-এ সেভ করুন।}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) অবিলম্বে “<ph name="GROUP_NAME" />" ট্যাব গ্রুপের অ্যাক্সেস হারাবেন</translation>
 <translation id="7409985198648820906">পড়া হয়নি এমন <ph name="UNREAD_COUNT" />টি নিবন্ধ।</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">চালিয়ে যান</translation>
 <translation id="741204030948306876">হ্যাঁ, আমি রাজি</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
@@ -1947,6 +1956,7 @@
 <translation id="7471557245617580330">নতুন ট্যাব তৈরি করুন</translation>
 <translation id="7473555040328423550">ট্যাব যোগ করুন</translation>
 <translation id="7476548258282096076">এই কার্ডে আপনি সবচেয়ে বেশি দেখেছেন এমন সাইট দেখানো হয়।</translation>
+<translation id="7482823403440483089">উন্নত অটোফিল করার সুবিধা</translation>
 <translation id="7484645889979462775">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7486006552035434095">আপনার ডিভাইস সিঙ্ক করে রাখুন</translation>
 <translation id="7491131399623468277">সেটিংসে যান…</translation>
@@ -2196,7 +2206,6 @@
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">আপনি প্রোফাইল সুইচ করতে চলেছেন</translation>
 <translation id="8275068909952022340">আরও…</translation>
-<translation id="8280797717392145626">লিঙ্ক পাওয়া গেছে</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">এড়িয়ে যান</translation>
 <translation id="8282657446819506217">ট্যাব গ্রুপে খুলুন</translation>
@@ -2206,6 +2215,7 @@
 <translation id="8292893224181644074">ডাউনলোড করা হয়ে গেছে</translation>
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="8307481894409578819">এই ফাইলটি আপলোড করা যায়নি</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" />-এর রিমাইন্ডার সেট করা হয়েছে</translation>
 <translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>
@@ -2493,6 +2503,7 @@
 <translation id="9219154867334666734">ট্যাব সার্চ করুন…</translation>
 <translation id="9223358826628549784">ক্র্যাশ রিপোর্ট পাঠানো হয়েছে৷</translation>
 <translation id="926455622548529175">পাল্টে নিন ও মুছুন</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">হাইলাইট করা টেক্সট</translation>
 <translation id="932305336591073205">{count,plural, =1{ট্যাব বন্ধ করুন}one{ট্যাব বন্ধ করুন}other{ট্যাব বন্ধ করুন}}</translation>
 <translation id="939472100615258482">বর্তমান সাইট</translation>

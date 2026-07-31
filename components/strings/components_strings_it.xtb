@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Tipo di carta</translation>
 <translation id="1142965388643537393">Informazioni di viaggio</translation>
 <translation id="1143142264369994168">Firmatario del certificato</translation>
-<translation id="1144136880160289237">Non hai ancora argomenti attivi</translation>
 <translation id="1149617035358809955">verificare la tua identità per poter inserire i tuoi dati di pagamento</translation>
 <translation id="1150565364351027703">Occhiali da sole</translation>
 <translation id="1150979032973867961">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile dal sistema operativo del computer. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che intercetta la connessione.</translation>
@@ -351,6 +350,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1539840569003678498">Data invio ultimo rapporto:</translation>
 <translation id="1542105669288201090">Formazione manageriale</translation>
 <translation id="1542830386724426410">Mostra i premi e i vantaggi disponibili per la carta al momento del pagamento. Si applicano i termini dell'emittente. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Scopri di più<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">In base alle policy della tua organizzazione, i contenuti copiati vengono analizzati per verificare la presenza di informazioni sensibili. Potrai incollare i contenuti una volta completata l'analisi.</translation>
 <translation id="1545757265410828525">Cronologia dei prezzi</translation>
 <translation id="1546286808622193216">Confronta i vantaggi delle carte con Gemini</translation>
 <translation id="1549470594296187301">JavaScript deve essere attivato per utilizzare questa funzione.</translation>
@@ -372,7 +372,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1564634006476980707">Schema HTTPS consigliato per l'URL di ricerca: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Le informazioni di rete, come indirizzi, configurazione di interfaccia e qualità della connessione</translation>
 <translation id="1567040042588613346">Questa policy funziona come previsto, ma altrove è impostato lo stesso valore, che viene sostituito da questa policy.</translation>
-<translation id="1567405528131216114">Aggiungi <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Inserisci data di scadenza</translation>
 <translation id="1569694109004336106">Google Chrome sta tentando di attivare Windows Hello per inserire le password.</translation>
 <translation id="1569905000953679183">Recupero policy di installazione delle estensioni</translation>
@@ -382,7 +381,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1579189948231786790">Questo sito è stato bloccato dalla tua organizzazione</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Si è verificato un problema durante la visualizzazione della pagina web.</translation>
-<translation id="1584492003828271317">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli annunci suggeriti dai siti, dalle impostazioni dei cookie e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="1585306568496579337">L'estensione "<ph name="EXTENSION_NAME" />" vuole aprire link <ph name="PROTOCOL" /> tramite <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">Le estensioni che hai installato</translation>
 <translation id="1588438908519853928">Normale</translation>
@@ -400,7 +398,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611101756749861742">Secondo rullo</translation>
 <translation id="1611854593425834707">Chiudi l'elenco dei dispositivi per la trasmissione</translation>
-<translation id="1612199629998703524">Gestire gli argomenti</translation>
 <translation id="1615178538289490617">Revoca l'accesso per <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La policy dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="161612500287664753">Chiedi alla Ricerca Google informazioni su questa pagina</translation>
@@ -680,7 +677,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2071852865256799872">Il tuo browser è gestito dalla tua organizzazione e il tuo profilo è gestito da <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Informazioni salvate solo sul dispositivo</translation>
-<translation id="2074733626795553847">Sblocca <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Visitato</translation>
 <translation id="2078956195623975415">Giochi musicali e di danza</translation>
 <translation id="2079545284768500474">Annulla</translation>
@@ -731,7 +727,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="213826338245044447">Preferiti mobile</translation>
 <translation id="2141000681034340397">Modifica il tuo input</translation>
 <translation id="2141475438898772664">Paga in 4 rate o mensilmente</translation>
-<translation id="2144171668675205303">Nessun argomento attivo</translation>
 <translation id="2145193671493396738">Notizie economiche</translation>
 <translation id="214556005048008348">Annulla pagamento</translation>
 <translation id="2147117373852943630">Strumenti musicali</translation>
@@ -1022,7 +1017,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="254947805923345898">Il valore della norma non è valido.</translation>
 <translation id="2549836668759467704">Consulenza per edilizia e appalti</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> e altri</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ha inviato una risposta non valida.</translation>
 <translation id="2551608178605132291">Indirizzo: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1056,7 +1050,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2605979593348332811">Nome fonetico</translation>
 <translation id="2606760465469169465">Verifica automatica</translation>
 <translation id="2607101320794533334">Info sulla chiave pubblica del soggetto</translation>
-<translation id="2608019759319359258">Se un argomento è bloccato, non verrà utilizzato per personalizzare gli annunci</translation>
 <translation id="2610561535971892504">Fai clic per copiare</translation>
 <translation id="2612676031748830579">Numero carta</translation>
 <translation id="2612993535136743634">Tutti i codici di sicurezza salvati sul dispositivo e nell'Account Google verranno eliminati</translation>
@@ -1493,10 +1486,10 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3293642807462928945">Scopri di più sulla norma <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visualizza e gestisci le tue password nelle impostazioni di Chrome</translation>
 <translation id="3299098170013242198">Windows Hello è attivo per inserire le password</translation>
+<translation id="3299197721044635447">Impossibile incollare i contenuti al di fuori del contesto Chrome gestito a causa delle policy della tua organizzazione</translation>
 <translation id="3299720788264079132">Si è verificato un problema durante l'utilizzo della funzionalità <ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
-<translation id="3303872874382375219">La visualizzazione di un annuncio personalizzato può dipendere da molti fattori, tra cui questa impostazione, gli <ph name="BEGIN_LINK1" />argomenti degli annunci<ph name="LINK_END1" />, le <ph name="BEGIN_LINK2" />impostazioni dei cookie<ph name="LINK_END2" /> e il fatto che il sito che stai visualizzando possa personalizzare gli annunci. Scopri di più sulla <ph name="BEGIN_LINK3" />gestione della privacy per gli annunci<ph name="LINK_END3" />.</translation>
 <translation id="3304073249511302126">scansione Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Il Gestore delle password consiglia di cambiarla subito.</translation>
@@ -1535,7 +1528,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3377144306166885718">Il server usava una versione obsoleta di TLS.</translation>
 <translation id="3377188786107721145">Errore di analisi della policy</translation>
 <translation id="3377642479079205807">Sottile</translation>
-<translation id="3378612801784846695">Gli argomenti si basano sulla tua cronologia di navigazione recente e vengono utilizzati dai siti per mostrarti annunci personalizzati, proteggendo al tempo stesso la tua identità</translation>
 <translation id="3380365263193509176">Errore sconosciuto</translation>
 <translation id="3380864720620200369">ID client:</translation>
 <translation id="3383566085871012386">Ordine di precedenza corrente</translation>
@@ -1572,7 +1564,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3433111389595862568">Software di collaborazione e per conferenze</translation>
 <translation id="3433144818443565002">Chat vocali e videochiamate</translation>
 <translation id="3434025015623587566">Gestore delle password di Google richiede un maggiore accesso</translation>
-<translation id="3434346831962601311">Nessun argomento bloccato</translation>
 <translation id="343474037147570563">I file che carichi o alleghi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base alle policy aziendali ed essere visibili al tuo amministratore.</translation>
 <translation id="3435557549311968410">Continuo (corto)</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
@@ -1724,7 +1715,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3662040827609932717">Questo IBAN è stato salvato in Google Wallet per consentirti di utilizzarlo sui servizi Google.</translation>
 <translation id="3664479564786885722">Cerca altre opzioni di acquisto in altri negozi che vendono questo prodotto.</translation>
 <translation id="3664782872746246217">Parole chiave:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Scopri di più<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3670159164851218963">Cronologia di AI Mode</translation>
 <translation id="3670229581627177274">Attiva il Bluetooth</translation>
@@ -1956,7 +1946,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 
     Puoi anche contattare il proprietario del sito e suggerire di fare l'upgrade a HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Annulla aggiunta</translation>
-<translation id="4030545038933060179">Quando l'opzione è attiva, un elenco di argomenti viene visualizzato qui in base alla tua cronologia di navigazione recente</translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
 <translation id="4036753017940930924">Lotti e terreni</translation>
 <translation id="403724377879219932">Può chiedere di accedere ad altri dispositivi connessi alla tua rete locale</translation>
@@ -2061,7 +2050,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> altro elemento}other{Altri <ph name="ITEM_COUNT" /> elementi}}</translation>
 <translation id="4176463684765177261">Disattivato</translation>
-<translation id="4177501066905053472">Argomenti degli annunci</translation>
 <translation id="4178863275556660738">Paga con metodi di pagamento diversi dalle carte</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Annulla monitoraggio prezzo</translation>
@@ -2290,7 +2278,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4523580145196408446">Collegato</translation>
 <translation id="4523643381056109546">Segnaletica</translation>
 <translation id="4524138615196389145">Verifica più velocemente le tue carte usando WebAuthn d'ora in poi</translation>
-<translation id="45243788195988825">Blocca <ph name="TOPIC" /></translation>
 <translation id="4528888973346221791">Informazioni del profilo di lavoro (ad esempio, nome utente)</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Numero di carta virtuale:</translation>
@@ -2495,6 +2482,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4865063548323785458">Salva e compila automaticamente le password per accedere facilmente a siti e app</translation>
 <translation id="4866506163384898554">Premi |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| per mostrare il cursore</translation>
 <translation id="4868277513442568587">Per continuare a utilizzare i tuoi gruppi di schede condivisi, aggiorna Chrome</translation>
+<translation id="4873312501243535625">Media File Checker</translation>
 <translation id="4873616204573862158">Occhiali</translation>
 <translation id="4873807733347502026">Blocca e usa il mouse</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
@@ -2519,7 +2507,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiadi</translation>
 <translation id="4897851261703006488">Questa policy non deve avere intestazioni superiori a <ph name="MAX_HEADER_SIZE_LIMIT" /> kB.</translation>
-<translation id="4898742041545089450">Questo argomento è stato sbloccato e potrebbe essere attivo in base alla tua cronologia di navigazione</translation>
 <translation id="4900217275619098670">Nono rullo</translation>
 <translation id="4901052769830245369">Etichette (semilucide)</translation>
 <translation id="4901162432287938633">Igiene personale</translation>
@@ -2614,10 +2601,8 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5043480802608081735">Link copiato</translation>
 <translation id="5043753287208271200">Giallo 3</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
-<translation id="5048293684454354469">Gli argomenti degli annunci sono solo uno dei tanti elementi che un sito può utilizzare per personalizzare gli annunci. Anche senza gli argomenti degli annunci, i siti possono continuare a mostrarti annunci, che però potrebbero essere meno personalizzati. Scopri di più sulla <ph name="BEGIN_LINK" />gestione della privacy per gli annunci<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, premi Tab per altre scorciatoie per la ricerca disponibili dopo questo suggerimento di ricerca</translation>
 <translation id="5052488928733955073">Si è verificato un problema durante l'inserimento delle informazioni. Controlla la connessione.</translation>
-<translation id="5052517576853118371">Argomenti attivi</translation>
 <translation id="5053116470141135293">Quando effettui un pagamento con questa carta, verrà inserito un numero di carta virtuale per proteggere i tuoi dati effettivi. Gestisci in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per inviare questo file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
 <translation id="5056587122125565772">Crea immagine</translation>
@@ -2716,7 +2701,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5206392433295093945">Camera da letto</translation>
 <translation id="5209670883520018268">Vassoio 20</translation>
 <translation id="5212364581680288382">Gare motociclistiche</translation>
-<translation id="5214542134842513912">Scegli quali categorie di argomenti possono essere utilizzate per personalizzare gli annunci. Se disattivi una categoria più ampia, verranno bloccati anche i suoi argomenti correlati.</translation>
 <translation id="52163492208010719">Gestisci documenti di identità</translation>
 <translation id="521659676233207110">Vassoio 13</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
@@ -4075,7 +4059,6 @@ Ulteriori dettagli:
 <translation id="7305767780379163575">Impossibile salvare la foto</translation>
 <translation id="7307063504147610123">Indirizzo salvato su questo dispositivo</translation>
 <translation id="7308436126008021607">sincronizzazione in background</translation>
-<translation id="7309058266849426521">Scopri di più sulla gestione della privacy per gli annunci in Chrome.</translation>
 <translation id="7310392214323165548">Il dispositivo verrà riavviato a breve</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7313107491291103073">La tua organizzazione ha segnalato questo sito perché potrebbe violare una policy.</translation>
@@ -4343,6 +4326,7 @@ Ulteriori dettagli:
 <translation id="767550629621587224">Schede pretagliate</translation>
 <translation id="7675756033024037212">Scorrimento e zoom non consentiti</translation>
 <translation id="7676643023259824263">Cerca testo negli appunti, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">La tua organizzazione monitora le operazioni di copia</translation>
 <translation id="7678730592635586336">Nuova ripresa video</translation>
 <translation id="7679287273775285018">Paga con e-wallet</translation>
 <translation id="7679367271685653708">Visualizza e gestisci la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
@@ -4466,7 +4450,6 @@ Ulteriori dettagli:
 <translation id="7877007680666472091">ID contenuti protetti</translation>
 <translation id="7878562273885520351">La tua password potrebbe essere stata compromessa</translation>
 <translation id="7885670691503039914">Riceverai avvisi via email se il prezzo calerà su qualsiasi sito. Questa pagina verrà salvata nella cartella dei preferiti "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="7886897188117641322">Scegli quali categorie di argomenti possono essere utilizzate per personalizzare gli annunci</translation>
 <translation id="7887683347370398519">Controlla il tuo codice CVC e riprova</translation>
 <translation id="7887885240995164102">Attiva Picture in picture</translation>
 <translation id="7888367499748383555">Nessuna commissione, TAEG minimo dello 0% (soggetto a idoneità)</translation>
@@ -4576,7 +4559,6 @@ Ulteriori dettagli:
 <translation id="8046360364391076336">Materiali e attrezzature industriali</translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8057023045886711556">Film commedie</translation>
-<translation id="805766869470867930">Non hai bloccato alcun argomento</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" non è configurato correttamente. La disinstallazione di "<ph name="SOFTWARE_NAME" />" solitamente risolve il problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">non richiesto</translation>
 <translation id="8061691770921837575">Cosmetici e maquillage</translation>
@@ -4623,10 +4605,10 @@ Ulteriori dettagli:
 <translation id="8130113808541743942">Sposta in…</translation>
 <translation id="813024282736408069">Attiva una carta virtuale per la compilazione automatica</translation>
 <translation id="8131740175452115882">Conferma</translation>
-<translation id="8133495915926741232">Scegli quali ampie categorie di argomenti possono essere utilizzate per personalizzare gli annunci. Se disattivi una categoria più ampia, verranno bloccati anche i suoi argomenti correlati. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>
 <translation id="8135546115396015134">tasto sinistro</translation>
 <translation id="8137456439814903304">Energia e servizi pubblici</translation>
+<translation id="814071672416123670">Impossibile copiare i contenuti a causa delle policy della tua organizzazione</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Creato 1 mese fa}other{Creato {NUM_MONTHS} mesi fa}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, valore predefinito corrente. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Versione PDF:</translation>
@@ -4842,7 +4824,6 @@ Ulteriori dettagli:
 <translation id="8467494337615822642">Vai alla pagina del controllo di sicurezza di Chrome nelle impostazioni</translation>
 <translation id="8468358362970107653">Busta C3</translation>
 <translation id="8469428721212363950">Commercio al dettaglio</translation>
-<translation id="8472700501934242014">Argomenti bloccati</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474910779563686872">Mostra i dettagli dello sviluppatore</translation>
@@ -4987,7 +4968,6 @@ Ulteriori dettagli:
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
 <translation id="8733345475331865475">Assicurazione auto</translation>
-<translation id="8733764070897080460">Puoi bloccare gli argomenti che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti più vecchi di 4 settimane. Scopri di più</translation>
 <translation id="8734529307927223492">Il tuo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 in</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aprire una nuova finestra Incognito per navigare in privato</translation>

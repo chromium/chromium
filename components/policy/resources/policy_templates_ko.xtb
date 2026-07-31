@@ -2382,6 +2382,21 @@ URL과 유사한 지정자:
 <translation id="2508800409212941632"><ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> <ph name="PRODUCT_NAME" /> Enterprise 커넥터의 구성 정책</translation>
 <translation id="2509748672176727116">사용자가 네트워크 패킷 캡처를 실행할 수 있음</translation>
 <translation id="2509919237512982967">M84까지 기존 양식 컨트롤을 사용합니다.</translation>
+<translation id="2509947330677441695">정책을 설정하면 시크릿 모드에서 목록에 추가된 URL에 액세스할 수 있습니다. 이 정책을 사용하면 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)에 지정된 형식을 사용하여 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />에 정의된 특정 URL 패턴에 대한 예외를 열 수 있습니다.
+
+이 정책과 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 허용 목록이 우선 적용됩니다. URL이 허용 목록의 패턴과 일치하면 허용됩니다. 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과 일치하지 않으면 차단됩니다. URL이 어느 쪽과도 일치하지 않으면 일반 <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책이 설정되어 있고 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우 허용 목록에 없는 모든 URL이 시크릿 모드에서 차단됩니다.
+
+<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 정책이 허용 안 함(값 1)으로 설정되어 있지만 이 정책이 구성된 경우 허용 목록과 일치하는 URL에만 시크릿 모드를 사용할 수 있습니다.
+
+정책을 설정하지 않으면 <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />에 예외가 허용되지 않습니다.
+
+이 정책은 시크릿 모드에만 영향을 미칩니다. 모든 사용자 프로필에서 URL을 허용하려면 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책을 사용하세요.
+
+포괄적 호스트 와일드 카드(즉, '*' 또는 '[*]')는 허용되지 않습니다. 전체적으로 기능을 사용 설정하려면 <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> 정책을 사용하세요.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="2512531606818417084">이 정책은 일시적이며 M137부터는 더 이상 작동하지 않습니다.
 
 이 기능을 사용하면 Accept-Encoding 요청 헤더에서 'zstd'를 사용하고 <ph name="ZSTANDARD_SHORTNAME" />로 압축된 웹 콘텐츠의 압축 해제를 지원할 수 있습니다.
@@ -6433,9 +6448,6 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="5070539335358964387">Gemini로 정보 찾기 및 자동 완성을 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="5071303485174858500">제한된 관리 게스트 세션을 사용 중지합니다.</translation>
-<translation id="5073609397321802133">정책이 false로 설정되어 있으면 사용자가 새 탭 페이지의 배경을 맞춤설정할 수 없습니다. 나중에 정책이 true로 설정되더라도 기존의 모든 맞춤 배경이 완전히 삭제됩니다.
-
-      정책이 true로 설정되거나 설정되지 않으면 사용자가 새 탭 페이지의 배경을 맞춤설정할 수 있습니다.</translation>
 <translation id="5073788301065423829">이 정책은 ChromeOS에서 '작성 지원 기능'을 사용 설정하거나 사용 중지합니다.
 
 정책을 사용으로 설정하면 '작성 지원 기능'이 사용 설정됩니다.
@@ -10616,6 +10628,21 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 <translation id="759957074386651883">세이프 브라우징 설정</translation>
 <translation id="7602621823177962064">기기 메모리 정보 보고 사용 중지</translation>
 <translation id="7604169113182304895">Android 앱이 자발적으로 이 목록을 사용하도록 선택할 수 있습니다. 강제로 Android 앱에서 이 목록을 사용하도록 할 수 없습니다.</translation>
+<translation id="7604302274842086162">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />을(를) 허용할 수 있습니다.
+
+URL 패턴이 검사 중인 페이지의 모든 프레임 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우, <ph name="CHROME_DEVTOOLS_NAME" />이(가) 허용되려면 모든 프레임의 URL이 해당 허용 목록의 패턴과 일치해야 합니다. 프레임 중 하나라도 URL이 일치하지 않으면 전체 페이지에서 DevTools가 차단됩니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 이 허용 목록이 우선 적용됩니다. 프레임의 URL이 해당 허용 목록의 패턴과 일치하는 경우, 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. URL이 차단 목록의 패턴과는 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+이 정책은 확장 프로그램 및 웹 애플리케이션용으로 열리는 <ph name="CHROME_DEVTOOLS_NAME" />에도 적용됩니다.
+
+포괄적 호스트 와일드 카드(즉, '*' 또는 '[*]')는 허용되지 않습니다. 전체적으로 기능을 사용 설정하려면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책을 사용하세요.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="7607831126797434329">이 사이트에서 자동 다운로드 차단</translation>
 <translation id="7608186022704392724">PIN 자동 제출 기능은 <ph name="PRODUCT_OS_NAME" />에서 PIN이 입력되는 방식을 변경합니다.
           이 기능은 비밀번호 입력에 사용되는 텍스트 입력란을 표시하는 대신

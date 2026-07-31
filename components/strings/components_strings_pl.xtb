@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Typ papieru</translation>
 <translation id="1142965388643537393">Informacje o podróży</translation>
 <translation id="1143142264369994168">Podmiot podpisujący certyfikat</translation>
-<translation id="1144136880160289237">Nie masz jeszcze żadnych aktywnych tematów</translation>
 <translation id="1149617035358809955">zweryfikować Twoją tożsamość, aby móc uzupełnić dane do płatności</translation>
 <translation id="1150565364351027703">Okulary przeciwsłoneczne</translation>
 <translation id="1150979032973867961">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w systemie operacyjnym tego komputera. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
@@ -351,6 +350,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1539840569003678498">Wysłanie raportu:</translation>
 <translation id="1542105669288201090">Edukacja biznesowa</translation>
 <translation id="1542830386724426410">W momencie płatności pokaż dostępne korzyści i nagrody z karty. Obowiązują warunki wystawcy. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Więcej informacji<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Zgodnie z zasadami obowiązującymi w organizacji skopiowane treści są skanowane pod kątem informacji poufnych. Wklejanie może być dozwolone po zakończeniu skanowania.</translation>
 <translation id="1545757265410828525">Historia cen</translation>
 <translation id="1546286808622193216">Porównaj korzyści związane z kartami za pomocą Gemini</translation>
 <translation id="1549470594296187301">Aby można było korzystać z tej funkcji, musi być włączony JavaScript.</translation>
@@ -372,7 +372,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1564634006476980707">Zalecany schemat HTTPS dla adresu URL wyszukiwania: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Dane sieciowe dotyczące adresów, konfiguracji interfejsu i jakości połączenia</translation>
 <translation id="1567040042588613346">Ta zasada działa w oczekiwany sposób, ale zastąpiła tę samą wartość ustawioną w innym miejscu.</translation>
-<translation id="1567405528131216114">Dodaj temat <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Wpisz datę ważności</translation>
 <translation id="1569694109004336106">Google Chrome próbuje włączyć Windows Hello, aby wypełniać hasła.</translation>
 <translation id="1569905000953679183">Pobieranie zasad instalacji rozszerzeń</translation>
@@ -382,7 +381,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1579189948231786790">Ta witryna została zablokowana przez Twoją organizację</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Podczas wyświetlania strony wystąpił błąd.</translation>
-<translation id="1584492003828271317">Personalizacja reklam wyświetlanych podczas przeglądania internetu zależy od tego ustawienia, od ustawienia dotyczącego reklam sugerowanych przez witrynę, od ustawień plików cookie oraz od tego, czy wyświetlasz reklamy spersonalizowane</translation>
 <translation id="1585306568496579337">Rozszerzenie „<ph name="EXTENSION_NAME" />” chce otworzyć linki <ph name="PROTOCOL" /> za pomoca <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">Zainstalowane przez Ciebie rozszerzenia</translation>
 <translation id="1588438908519853928">Normalny</translation>
@@ -400,7 +398,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1611101756749861742">Rolka 2</translation>
 <translation id="1611854593425834707">Zamknij listę urządzeń do przesyłania</translation>
-<translation id="1612199629998703524">Zarządzanie tematami</translation>
 <translation id="1615178538289490617">Unieważnij dostęp dla portu <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="161612500287664753">Zapytaj o tę stronę wyszukiwarkę Google</translation>
@@ -680,7 +677,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2071852865256799872">Twoją przeglądarką zarządza Twoja organizacja, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Informacje zostały zapisane tylko na urządzeniu</translation>
-<translation id="2074733626795553847">Odblokuj: <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">Odwiedzono</translation>
 <translation id="2078956195623975415">Gry muzyczne i taneczne</translation>
 <translation id="2079545284768500474">Cofnij</translation>
@@ -731,7 +727,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="213826338245044447">Zakładki na komórce</translation>
 <translation id="2141000681034340397">Edytuj dane wejściowe</translation>
 <translation id="2141475438898772664">Płatność w 4 ratach lub miesięczna</translation>
-<translation id="2144171668675205303">Brak aktywnych tematów</translation>
 <translation id="2145193671493396738">Wiadomości gospodarcze</translation>
 <translation id="214556005048008348">Anuluj płatność</translation>
 <translation id="2147117373852943630">Instrumenty muzyczne</translation>
@@ -1022,7 +1017,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="254947805923345898">Wartość zasady jest nieprawidłowa.</translation>
 <translation id="2549836668759467704">Doradztwo i usługi budowlane</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> i inne</translation>
 <translation id="255002559098805027">Serwer <ph name="HOST_NAME" /> wysłał nieprawidłową odpowiedź.</translation>
 <translation id="2551608178605132291">Adres: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1056,7 +1050,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2605979593348332811">Nazwa (fonetycznie)</translation>
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
 <translation id="2607101320794533334">Informacje o kluczu publicznym podmiotu</translation>
-<translation id="2608019759319359258">Gdy temat zostanie zablokowany, nie będzie używany do personalizacji reklam</translation>
 <translation id="2610561535971892504">Kliknij, aby skopiować</translation>
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="2612993535136743634">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
@@ -1496,10 +1489,10 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3293642807462928945">Więcej informacji o zasadzie <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Wyświetl hasła i zarządzaj nimi w ustawieniach Chrome</translation>
 <translation id="3299098170013242198">Funkcja Windows Hello jest włączona w celu wypełniania haseł</translation>
+<translation id="3299197721044635447">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się wkleić treści poza zarządzanym kontekstem Chrome</translation>
 <translation id="3299720788264079132">Podczas korzystania z funkcji <ph name="FEATURE_NAME" /> coś poszło nie tak</translation>
 <translation id="3303176609391916566">30 x 42 cale</translation>
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>
-<translation id="3303872874382375219">To, czy wyświetlana reklama jest spersonalizowana, zależy od wielu czynników, m.in. od tego ustawienia, od <ph name="BEGIN_LINK1" />tematów reklam<ph name="LINK_END1" />, od <ph name="BEGIN_LINK2" />ustawień plików cookie<ph name="LINK_END2" /> oraz od tego, czy witryna, którą odwiedzasz, personalizuje reklamy. Dowiedz się więcej o <ph name="BEGIN_LINK3" />zarządzaniu prywatnością w reklamach<ph name="LINK_END3" />.</translation>
 <translation id="3304073249511302126">skanowanie Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
@@ -1538,7 +1531,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3377144306166885718">Serwer użył przestarzałej wersji protokołu TLS.</translation>
 <translation id="3377188786107721145">Podczas przetwarzania zasady wystąpił błąd</translation>
 <translation id="3377642479079205807">Cienki</translation>
-<translation id="3378612801784846695">Tematy są określane na podstawie najnowszej historii przeglądania i są używane przez witryny do wyświetlania reklam spersonalizowanych, przy czym chroniona jest Twoja tożsamość</translation>
 <translation id="3380365263193509176">Nieznany błąd</translation>
 <translation id="3380864720620200369">Identyfikator klienta:</translation>
 <translation id="3383566085871012386">Obecna kolejność obowiązywania</translation>
@@ -1575,7 +1567,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3433111389595862568">Oprogramowanie do współpracy i rozmów wideo</translation>
 <translation id="3433144818443565002">Czaty głosowe i wideo</translation>
 <translation id="3434025015623587566">Menedżer haseł Google potrzebuje szerszych uprawnień dostępu</translation>
-<translation id="3434346831962601311">Brak zablokowanych tematów</translation>
 <translation id="343474037147570563">Przesyłane lub dołączone pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych lub złośliwego oprogramowania, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="3435557549311968410">Ciągły (krótki)</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
@@ -1727,7 +1718,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3662040827609932717">Ten numer IBAN jest zapisany w Portfelu Google i możesz go używać w różnych usługach Google.</translation>
 <translation id="3664479564786885722">Wyszukaj więcej opcji zakupu w innych sklepach, które sprzedają ten produkt.</translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Więcej informacji<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Numer</translation>
 <translation id="3670159164851218963">Historia trybu AI</translation>
 <translation id="3670229581627177274">Włącz Bluetooth</translation>
@@ -1959,7 +1949,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 
     Możesz też skontaktować się z właścicielem witryny i poprosić go o przejście na HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Cofnij dodanie</translation>
-<translation id="4030545038933060179">Gdy ta opcja będzie włączona, pojawi się tutaj lista tematów utworzona na podstawie najnowszej historii przeglądania</translation>
 <translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
 <translation id="4036753017940930924">Działki i grunty</translation>
 <translation id="403724377879219932">Może prosić o dostęp do innych urządzeń w sieci lokalnej</translation>
@@ -2064,7 +2053,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Jeszcze <ph name="ITEM_COUNT" /> element}few{Jeszcze <ph name="ITEM_COUNT" /> elementy}many{Jeszcze <ph name="ITEM_COUNT" /> elementów}other{Jeszcze <ph name="ITEM_COUNT" /> elementu}}</translation>
 <translation id="4176463684765177261">Wyłączone</translation>
-<translation id="4177501066905053472">Tematy reklam</translation>
 <translation id="4178863275556660738">Płać za pomocą form płatności innych niż karty</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
@@ -2293,7 +2281,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4523580145196408446">Połączono</translation>
 <translation id="4523643381056109546">Szyldy i znaki</translation>
 <translation id="4524138615196389145">Potwierdzaj karty szybciej przy użyciu WebAuthn</translation>
-<translation id="45243788195988825">Zablokuj temat <ph name="TOPIC" /></translation>
 <translation id="4528888973346221791">Informacje o profilu służbowym (np. nazwa użytkownika)</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Numer karty wirtualnej:</translation>
@@ -2498,6 +2485,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4865063548323785458">Zapisuj i automatycznie uzupełniaj hasła, aby łatwo logować się na stronach i w aplikacjach</translation>
 <translation id="4866506163384898554">Naciśnij |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, aby wyświetlić kursor</translation>
 <translation id="4868277513442568587">Aby nadal korzystać z udostępnionych grup kart, zaktualizuj Chrome</translation>
+<translation id="4873312501243535625">Kontroler plików multimedialnych</translation>
 <translation id="4873616204573862158">Okulary</translation>
 <translation id="4873807733347502026">Zablokować mysz i jej używać</translation>
 <translation id="4876305945144899064">Brak nazwy użytkownika</translation>
@@ -2522,7 +2510,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiada</translation>
 <translation id="4897851261703006488">Ta zasada nie powinna mieć nagłówków przekraczających <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
-<translation id="4898742041545089450">Ten temat został odblokowany i może stać się aktywny na podstawie Twojej historii przeglądania</translation>
 <translation id="4900217275619098670">Rolka 9</translation>
 <translation id="4901052769830245369">Etykiety (półpołysk)</translation>
 <translation id="4901162432287938633">Higiena i przybory toaletowe</translation>
@@ -2617,10 +2604,8 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5043480802608081735">Skopiowany link</translation>
 <translation id="5043753287208271200">Żółty 3</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
-<translation id="5048293684454354469">Tematy reklam to tylko 1 z wielu czynników, na podstawie których witryna może personalizować reklamy. Nawet jeśli nie wybierzesz tematów reklam, witryny nadal będą mogły wyświetlać reklamy, ale mogą być one mniej spersonalizowane. Dowiedz się więcej o <ph name="BEGIN_LINK" />zarządzaniu prywatnością w reklamach<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />. Naciśnij Tab, aby wyświetlić więcej skrótów do wyszukiwania dostępnych po tej sugestii wyszukiwania</translation>
 <translation id="5052488928733955073">Nie udało się uzupełnić informacji. Sprawdź połączenie.</translation>
-<translation id="5052517576853118371">Aktywne tematy</translation>
 <translation id="5053116470141135293">Podczas płacenia tą kartą zostanie wypełniony numer karty wirtualnej – pozwala to chronić Twoje prawdziwe dane. Zarządzaj w Portfelu Google. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Aby wysłać plik przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}few{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}many{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}other{Aby wysłać pliki przez Udostępnianie w pobliżu, zwolnij miejsce (<ph name="DISK_SPACE_SIZE" />) na urządzeniu}}</translation>
 <translation id="5056587122125565772">Utwórz obraz</translation>
@@ -2719,7 +2704,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5206392433295093945">Sypialnia</translation>
 <translation id="5209670883520018268">Taca 20</translation>
 <translation id="5212364581680288382">Wyścigi motocyklowe</translation>
-<translation id="5214542134842513912">Wybierz szerokie kategorie tematów, które mogą być używane do personalizacji reklam. Wyłączenie szerszej kategorii spowoduje też zablokowanie powiązanych z nią tematów.</translation>
 <translation id="52163492208010719">Zarządzaj dokumentami tożsamości</translation>
 <translation id="521659676233207110">Taca 13</translation>
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
@@ -4079,7 +4063,6 @@ Dodatkowe informacje:
 <translation id="7305767780379163575">Nie udało się zapisać zdjęcia</translation>
 <translation id="7307063504147610123">Adres został zapisany na tym urządzeniu</translation>
 <translation id="7308436126008021607">synchronizacja w tle</translation>
-<translation id="7309058266849426521">Dowiedz się więcej o zarządzaniu prywatnością w reklamach w Chrome.</translation>
 <translation id="7310392214323165548">Urządzenie wkrótce uruchomi się ponownie</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7313107491291103073">Twoja organizacja oznaczyła tę witrynę, ponieważ może ona naruszać zasady.</translation>
@@ -4347,6 +4330,7 @@ Dodatkowe informacje:
 <translation id="767550629621587224">Wstępnie wycięte zakładki</translation>
 <translation id="7675756033024037212">Przewijanie i powiększanie jest niedozwolone</translation>
 <translation id="7676643023259824263">Wyszukaj tekst ze schowka, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">Twoja organizacja monitoruje kopiowanie treści</translation>
 <translation id="7678730592635586336">Nagraj film jeszcze raz</translation>
 <translation id="7679287273775285018">Zapłać przez e-portfel</translation>
 <translation id="7679367271685653708">Wyświetl historię przeglądania i zarządzaj nią w ustawieniach Chrome</translation>
@@ -4470,7 +4454,6 @@ Dodatkowe informacje:
 <translation id="7877007680666472091">identyfikatory treści chronionych</translation>
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
 <translation id="7885670691503039914">Otrzymasz alert e-mail, jeśli produkt stanieje w dowolnej witrynie. Ta strona zostanie zapisana w folderze zakładek <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
-<translation id="7886897188117641322">Wybierz szerokie kategorie tematów, które mogą być używane do personalizacji reklam</translation>
 <translation id="7887683347370398519">Sprawdź kod CVC i spróbuj ponownie</translation>
 <translation id="7887885240995164102">Włącz obraz w obrazie</translation>
 <translation id="7888367499748383555">Bez opłat, RRSO od 0% (jeśli spełniasz wymagania)</translation>
@@ -4580,7 +4563,6 @@ Dodatkowe informacje:
 <translation id="8046360364391076336">Materiały i sprzęt przemysłowy</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>
 <translation id="8057023045886711556">Komedie</translation>
-<translation id="805766869470867930">Nie blokujesz żadnych tematów</translation>
 <translation id="8057711352706143257">Oprogramowanie „<ph name="SOFTWARE_NAME" />” nie jest prawidłowo skonfigurowane. Odinstalowanie oprogramowania „<ph name="SOFTWARE_NAME" />” zwykle rozwiązuje problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Niewymagana</translation>
 <translation id="8061691770921837575">Makijaż i kosmetyki</translation>
@@ -4627,10 +4609,10 @@ Dodatkowe informacje:
 <translation id="8130113808541743942">Przenieś do…</translation>
 <translation id="813024282736408069">Włącz kartę wirtualną na potrzeby autouzupełniania</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
-<translation id="8133495915926741232">Wybierz szerokie kategorie tematów, które mogą być używane do personalizacji reklam. Wyłączenie szerszej kategorii spowoduje też zablokowanie powiązanych z nią tematów. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
+<translation id="814071672416123670">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się skopiować treści</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Utworzono miesiąc temu}few{Utworzono {NUM_MONTHS} miesiące temu}many{Utworzono {NUM_MONTHS} miesięcy temu}other{Utworzono {NUM_MONTHS} miesiąca temu}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, bieżąca przeglądarka domyślna. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
@@ -4846,7 +4828,6 @@ Dodatkowe informacje:
 <translation id="8467494337615822642">Otwórz stronę kontroli zabezpieczeń w Chrome w ustawieniach</translation>
 <translation id="8468358362970107653">Koperta C3</translation>
 <translation id="8469428721212363950">Handel detaliczny</translation>
-<translation id="8472700501934242014">Zablokowane tematy</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474910779563686872">Pokaż informacje dla deweloperów</translation>
@@ -4991,7 +4972,6 @@ Dodatkowe informacje:
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731268612289859741">Kod bezpieczeństwa</translation>
 <translation id="8733345475331865475">Ubezpieczenia komunikacyjne</translation>
-<translation id="8733764070897080460">Możesz blokować tematy, których nie chcesz udostępniać witrynom. Chrome automatycznie usuwa też tematy starsze niż 4 tygodnie. Więcej informacji</translation>
 <translation id="8734529307927223492">Twoim urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 cali</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by otworzyć nowe okno incognito i przeglądać prywatnie.</translation>

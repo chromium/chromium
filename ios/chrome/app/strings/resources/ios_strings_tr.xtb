@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">Menü → Şifre Yöneticisi</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinmeyecek.</translation>
 <translation id="1503814213414825943">Başka bir uygulamaya aktarmak istediğiniz hesapları seçin.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Arama motoru</translation>
 <translation id="1506063256525392513">Bu şekilde, fotoğraf çekip yükleyebilir, QR kodlarını tarayabilirsiniz</translation>
 <translation id="1506733063065214205">RCS MLS İstemcisi</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
 <translation id="1559263013367304065">Google Lens'i kullanmaya başladığınızdan beri</translation>
 <translation id="1560153516220021659">Daraltılmış ikincil araç çubuğu düğmesi</translation>
+<translation id="1562601408588733317">Gemini ile bilgi bulma ve doldurma işlemlerini yönetin</translation>
 <translation id="1565371473877914088">Yeni Gizli Sekme</translation>
 <translation id="1567960978791353852">Okuma Modu'nu Göster</translation>
 <translation id="1571780780926010134">Gizli mod sekmeleri</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">Bu kart, Güvenlik Kontrolü'nün sizin için otomatik olarak tespit ettiği gizlilik veya güvenlik sorunlarını gösterir.</translation>
 <translation id="1840320537320704887">Yeni Sekme sayfası tercihleriniz kaldırıldı</translation>
 <translation id="1845230888742614096">Grubu silme</translation>
+<translation id="1853558655412913122">Artık adres çubuğunun konumunu "Ayarlar" ve ardından "Adres çubuğu"ndan değiştirebilirsiniz.</translation>
 <translation id="1853692000353488670">Yeni gizli sekme</translation>
 <translation id="1854463785401910334">Açık sekmelerde ara</translation>
 <translation id="1860609647735325606">Gemini ile açıkla</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">Silinmesi planlanan bir dosyanın silme işlemi iptal edilemez.</translation>
 <translation id="498624032394115435">Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, kuruluşunuz tarafından yönetiliyor.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Sekme grubu rengi <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
 <translation id="5009127379503001909">Göz atmaya devam et</translation>
@@ -1396,6 +1400,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5666313630530585305">Bir web sitesinde oturum açın.</translation>
 <translation id="5669335982068190158">iPhone sıfırlama işleminin bir parçası olarak oturumunuz kapatıldı. Oturum açmak için aşağıdaki devam et seçeneğine dokunun.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Bağlı Uygulamalar'ı yönetin</translation>
 <translation id="567881659373499783">Sürüm <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Hesap değiştirilsin mi? Kaydedilmemiş hesap verileri silinecek.</translation>
 <translation id="5683499062697987550">Şifreleri kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
@@ -1571,6 +1576,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6240553182907836376">Kimlik kartını güncelleyin</translation>
 <translation id="6240601837375010619">Pasaportu kaydedin</translation>
 <translation id="6241132809279377987">Google uygulamalarıyla iPhone'unuzda daha fazla özellikten yararlanın</translation>
+<translation id="6244366663267187541">Gemini'ın hangi uygulamalara bağlanacağını seçin</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
 <translation id="6251835855431997163">Otomatik doldur <ph name="VALUE" /></translation>
 <translation id="6253686838150111720"><ph name="URL" /> ile oturum aç</translation>
@@ -1803,6 +1809,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="6924299883035848912">Tarama Verilerini Sil Seçeneğini Gizle</translation>
 <translation id="6930162026494574854">Çeviri ayarlarını sıfırla</translation>
 <translation id="6930799952781667037">Bu dile değiştirmek için dokunun.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Şifre kodu ayarlayın</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6946722113367118030">Düşünme</translation>
@@ -1852,6 +1859,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Kamera kullanılamıyor</translation>
 <translation id="7138678301420049075">Diğer</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Sekmeleriniz kapatılacak ve tarama verileri silinecek</translation>
 <translation id="714291438898585119">Yıldızlı</translation>
 <translation id="7145337554745942724">Sürücü belgesini güncelleyin</translation>
@@ -1917,6 +1925,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7402602673739047753">{count,plural, =1{1 yer işareti yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}other{{count} yer işareti yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza ({email}) kaydedin.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />), "<ph name="GROUP_NAME" />" sekme grubuna erişimi anında kaybeder</translation>
 <translation id="7409985198648820906">Okunmamış <ph name="UNREAD_COUNT" /> makale.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Devam</translation>
 <translation id="741204030948306876">Evet, istiyorum</translation>
 <translation id="7419565702166471774">Her zaman güvenli bağlantılar kullan</translation>
@@ -1946,6 +1955,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7471557245617580330">Yeni sekme oluştur</translation>
 <translation id="7473555040328423550">Sekme ekle</translation>
 <translation id="7476548258282096076">Bu kart, en çok ziyaret edilen siteleri gösterir.</translation>
+<translation id="7482823403440483089">Gelişmiş otomatik doldurma</translation>
 <translation id="7484645889979462775">Bu site için hiçbir zaman</translation>
 <translation id="7486006552035434095">Cihazlarınızı senkronize durumda tutun</translation>
 <translation id="7491131399623468277">Ayarlar'a Git…</translation>
@@ -2195,7 +2205,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Profil değiştirmek üzeresiniz</translation>
 <translation id="8275068909952022340">Diğer…</translation>
-<translation id="8280797717392145626">Bağlantılar alındı</translation>
 <translation id="8281781826761538115">Varsayılan - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Atla</translation>
 <translation id="8282657446819506217">Sekme Grubunda Aç</translation>
@@ -2205,6 +2214,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8292893224181644074">İndirme İşlemi Tamamlandı</translation>
 <translation id="8299417921174340354">Şifreleri kullanmak için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="8307481894409578819">Bu dosya yüklenemedi</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Yeni Arama</translation>
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> için hatırlatıcı ayarlandı</translation>
 <translation id="8320212361750431956">Son Etkinlik</translation>
@@ -2492,6 +2502,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="9219154867334666734">Sekme Ara…</translation>
 <translation id="9223358826628549784">Kilitlenme raporu gönderildi.</translation>
 <translation id="926455622548529175">Hesap Değiştir ve Sil</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Vurgulanan metin</translation>
 <translation id="932305336591073205">{count,plural, =1{Sekmeyi kapat}other{Sekmeleri kapat}}</translation>
 <translation id="939472100615258482">Geçerli site</translation>

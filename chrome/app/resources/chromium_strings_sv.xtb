@@ -576,6 +576,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="7173822816570314652">Organisationen raderar Chromium-data när den inte har använts på <ph name="TIMEOUT_DURATION" />. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
 <translation id="718435575166326686">Du behöver ge Chromium kamerabehörighet för den här webbplatsen</translation>
 <translation id="7196312274710523067">Det gick inte att starta Chromium. Försök igen.</translation>
+<translation id="7204669035546236137">Fråga vad du vill, precis där du är, med Gemini i Chromium</translation>
 <translation id="7213008767289637091">Behåll Chromium i dockan så att du snabbt kan komma åt den när du vill</translation>
 <translation id="7213407614656404070">Använd Chromium varje gång du klickar på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="7216228761061470870">När du använder bildsökning på datorn skickas sidans rubrik, webbadress och innehåll, inklusive PDF-filer, till servern</translation>
@@ -632,6 +633,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7745317241717453663">Webbinformationen raderas från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
 <translation id="7750130090210923118">Återställ till standardversionen av Chromium</translation>
+<translation id="7752521946322750699">För att skydda ditt arbete i Chromium kan organisationen visa eller hantera viss information när du är inloggad i Chromium.</translation>
 <translation id="7781047659465034537">Ställ in Chromium som standard och fäst den på aktivitetsfältet</translation>
 <translation id="7786760609782648049">Gör Chromium snabbare</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

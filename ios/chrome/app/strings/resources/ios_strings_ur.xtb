@@ -30,6 +30,7 @@
 <translation id="1081932398873105675">{count,plural, =1{‫{count} ٹیب}other{‫{count} ٹیبز}}</translation>
 <translation id="1082554859195167538">آپ کیلئے پروڈکٹ کے تجزیے</translation>
 <translation id="1084365883616172403">‏Facebook کی اشاعت مکمل ہوگئی۔</translation>
+<translation id="108485301461714610">‏‫Google تلاش کی AI وضع اور منسلک ایپس</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> کھولی نہیں جا سکی</translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
 <translation id="1096992026380844478">آپ کی مطابقت پذیری کی ترتیبات آپ کے آخری بیک اپ کی بنیاد پر بحال کی جائیں گی۔ <ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا مطابقت پذیر کر سکتے ہیں<ph name="END_LINK" /></translation>
@@ -72,6 +73,7 @@
 <translation id="1227113644794103810">غیر فعال ٹیبز</translation>
 <translation id="1231733316453485619">مطابقت پذیری آن کریں؟</translation>
 <translation id="1238794841176717085">اس صفحہ کا اشتراک کریں</translation>
+<translation id="1248901457873510750">ادائیگیاں کھولیں</translation>
 <translation id="1253032109800629289">"قیمت کی ٹریکنگ کی اطلاعات حاصل کریں" کو چھپائیں</translation>
 <translation id="1254424942107648268">پچھلا تلاش کریں</translation>
 <translation id="1258491128795710625">نیا کیا ہے</translation>
@@ -184,6 +186,7 @@
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="1559263013367304065">‏‫Google لینز استعمال کرنے کے بعد سے</translation>
 <translation id="1560153516220021659">ثانوی ٹول بار کا بٹن سکیڑا گیا</translation>
+<translation id="1562601408588733317">‏‫Gemini کے ساتھ معلومات تلاش کرنے اور پُر کرنے کا نظم کریں</translation>
 <translation id="1565371473877914088">نیا پوشیدگی ٹیب</translation>
 <translation id="1567960978791353852">ریڈنگ موڈ دکھائیں</translation>
 <translation id="1571780780926010134">پوشیدگی ٹیبز</translation>
@@ -1108,6 +1111,7 @@
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">اپنے کیمرے سے خریداری اور ترجمہ کریں</translation>
+<translation id="4742142641516465928">آٹو فل اور پاس ورڈز کھولیں</translation>
 <translation id="4742407542027196863">پاس ورڈز کا نظم کریں…</translation>
 <translation id="4744428388659507035">اپنے تمام آلات پر اپنے بُک مارکس حاصل کرنے کے لیے، ترتیبات میں "بُک مارکس" کو آن کریں۔</translation>
 <translation id="4746926359847517643">یہ آپ کو سرگزشت میں ہمیشہ واپس مل سکتے ہیں۔</translation>
@@ -1399,6 +1403,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5666313630530585305">ویب سائٹ میں سائن ان کریں۔</translation>
 <translation id="5669335982068190158">‏آپ اپنے iPhone ری سیٹ کے حصے کے طور پر سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">منسلک ایپس کا نظم کریں</translation>
 <translation id="567881659373499783">ورژن <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">اکاؤنٹس سوئچ کریں؟ غیر محفوظ شدہ اکاؤنٹ کا ڈیٹا حذف کر دیا جائے گا۔</translation>
 <translation id="5683499062697987550">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کرنے اور محفوظ کرنے کے لیے، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
@@ -1574,6 +1579,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6240553182907836376">شناختی کارڈ اپ ڈیٹ کریں</translation>
 <translation id="6240601837375010619">پاسپورٹ کی معلومات محفوظ کریں</translation>
 <translation id="6241132809279377987">‏‫Google ایپس کے ساتھ اپنے iPhone کے لیے مزید خصوصیات کو غیر مقفل کریں</translation>
+<translation id="6244366663267187541">‏منتخب کریں کہ Gemini کن ایپس سے منسلک ہوتا ہے</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6251835855431997163"><ph name="VALUE" /> آٹو فل کریں</translation>
 <translation id="6253686838150111720">‫<ph name="URL" /> میں سائن ان کریں</translation>
@@ -1952,6 +1958,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7471557245617580330">نیا ٹیب بنائیں</translation>
 <translation id="7473555040328423550">ٹیب شامل کریں</translation>
 <translation id="7476548258282096076">یہ کارڈ آپ کی سب سے زیادہ ملاحظہ کردہ سائٹس دکھاتا ہے۔</translation>
+<translation id="7482823403440483089">بہتر کردہ آٹو فل خصوصیت</translation>
 <translation id="7484645889979462775">اس سائٹ کیلئے کبھی نہیں</translation>
 <translation id="7486006552035434095">اپنے آلات کو مطابقت پذیر رکھیں</translation>
 <translation id="7491131399623468277">ترتیبات پر جائیں…</translation>
@@ -2201,7 +2208,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">آپ پروفائلز کو سوئچ کرنے والے ہیں</translation>
 <translation id="8275068909952022340">مزید…</translation>
-<translation id="8280797717392145626">لنکس موصول ہوئے</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8282657446819506217">ٹیب گروپ میں کھولیں</translation>

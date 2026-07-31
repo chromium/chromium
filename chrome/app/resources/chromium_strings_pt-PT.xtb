@@ -574,6 +574,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="7173822816570314652">A sua organização elimina os dados do Chromium quando este não é usado durante <ph name="TIMEOUT_DURATION" />. Estes dados podem incluir o histórico, o preenchimento automático e as transferências.</translation>
 <translation id="718435575166326686">O Chromium necessita da autorização da câmara para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
+<translation id="7204669035546236137">Pergunte o que quiser, em qualquer lugar, com o Gemini no Chromium</translation>
 <translation id="7213008767289637091">Mantenha o Chromium na Dock para aceder rapidamente ao mesmo em qualquer altura</translation>
 <translation id="7213407614656404070">Use o Chromium sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="7216228761061470870">Quando usa a pesquisa de imagens no computador, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados para o servidor</translation>
@@ -630,6 +631,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7745317241717453663">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>
 <translation id="7750130090210923118">Repor Chromium predefinido</translation>
+<translation id="7752521946322750699">Para proteger o seu trabalho no Chromium, a sua organização vai poder ver ou gerir determinadas informações quando tiver sessão iniciada no Chromium.</translation>
 <translation id="7781047659465034537">Defina o Chromium como navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="7786760609782648049">Torne o Chromium mais rápido</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

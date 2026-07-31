@@ -2355,6 +2355,21 @@ L'application de cette règle sur les appareils gérés est influencée par la r
 <translation id="2508800409212941632">Règle de configuration du connecteur <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR" /> de <ph name="PRODUCT_NAME" /> Enterprise.</translation>
 <translation id="2509748672176727116">L'utilisateur pourra capturer des paquets du réseau</translation>
 <translation id="2509919237512982967">Utiliser les anciens éléments de contrôle de formulaire jusqu'à la version M84.</translation>
+<translation id="2509947330677441695">Cette règle permet d'autoriser l'accès en mode navigation privée aux URL de la liste. Utilisez-la pour définir des exceptions à certains formats d'URL définis dans <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, à l'aide du format spécifié sur ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Si cette règle et <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, la liste d'autorisation prévaut. Si une URL correspond à un format de la liste d'autorisation, elle est autorisée. Si elle correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, les règles générales <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sont utilisées comme règles de remplacement.
+
+Si cette règle est configurée et que <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ne l'est pas, toute URL ne figurant pas dans la liste d'autorisation est bloquée en mode navigation privée.
+
+Si <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> est défini sur "Interdire" (valeur 1), mais que cette règle est configurée, le mode navigation privée n'est disponible que pour les URL correspondant à la liste d'autorisation.
+
+Si cette règle n'est pas configurée, aucune exception à <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> et <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> n'est autorisée.
+
+Cette règle ne concerne que le mode navigation privée. Pour autoriser les URL pour tous les profils utilisateur, veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Les caractères génériques d'hôte globaux (par exemple, "*" ou "[*]") ne sont pas autorisés. Utilisez la règle <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> pour activer la fonctionnalité à l'échelle mondiale.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="2512531606818417084">Cette règle est temporaire et ne fonctionnera plus à partir de M137.
 
 Cette fonctionnalité permet d'utiliser "zstd" dans l'en-tête de requête Accept-Encoding et de décompresser le contenu Web compressé avec <ph name="ZSTANDARD_SHORTNAME" />.
@@ -6344,9 +6359,6 @@ Si la règle n'est pas configurée, son comportement est déterminé par la règ
 Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5070539335358964387">Autoriser Rechercher et remplir avec Gemini, et améliorer les modèles d'IA.</translation>
 <translation id="5071303485174858500">Désactiver la session Invité gérée restreinte.</translation>
-<translation id="5073609397321802133">Si cette règle est définie sur "False", les utilisateurs ne peuvent pas personnaliser l'arrière-plan sur la page "Nouvel onglet". Tout arrière-plan personnalisé actuel sera définitivement supprimé, même si la règle est définie sur "True" par la suite.
-
-      Si celle-ci est définie sur "True" ou si elle n'est pas configurée, les utilisateurs peuvent personnaliser l'arrière-plan sur la page "Nouvel onglet".</translation>
 <translation id="5073788301065423829">Cette règle active ou désactive "Aide-moi à écrire" pour ChromeOS.
 
 Si cette règle est activée, "Aide-moi à écrire" l'est aussi.
@@ -10441,6 +10453,21 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
 <translation id="759957074386651883">Paramètres de navigation sécurisée</translation>
 <translation id="7602621823177962064">Désactiver les rapports sur la mémoire de l'appareil</translation>
 <translation id="7604169113182304895">Les applications Android peuvent avoir été volontairement conçues pour respecter cette liste, mais vous ne pouvez pas les forcer à effectuer cette opération.</translation>
+<translation id="7604302274842086162">Cette règle peut être utilisée pour autoriser les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques.
+
+Les formats d'URL sont mis en correspondance avec l'URL de chaque frame sur la page inspectée. Le comportement qui en résulte dépend de la configuration ou non de la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Si cette règle est configurée et que <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ne l'est pas, l'URL de chaque frame doit correspondre à un format de cette liste d'autorisation pour que les <ph name="CHROME_DEVTOOLS_NAME" /> soient autorisés. Si l'URL d'un frame ne correspond pas, les Outils de développement seront bloqués pour l'ensemble de la page. Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si cette règle et la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, cette liste d'autorisation prévaut. Si l'URL d'un frame correspond à un format de cette liste d'autorisation, elle est autorisée, même si elle correspond aussi à un format de la liste de blocage. Si une URL correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est utilisée comme règle de remplacement.
+
+Si cette règle n'est pas configurée, la disponibilité des <ph name="CHROME_DEVTOOLS_NAME" /> est déterminée par les règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> et <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Cette règle s'applique également aux <ph name="CHROME_DEVTOOLS_NAME" /> ouverts pour les extensions et les applis Web.
+
+Les caractères génériques d'hôte globaux (par exemple, "*" ou "[*]") ne sont pas autorisés. Utilisez la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> pour activer la fonctionnalité à l'échelle mondiale.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="7607831126797434329">Bloquer les téléchargements automatiques sur ces sites</translation>
 <translation id="7608186022704392724">La fonctionnalité d'envoi automatique du code modifie la façon dont celui-ci est saisi dans <ph name="PRODUCT_OS_NAME" />.
           Au lieu d'afficher le champ de texte utilisé pour la saisie du mot de passe, cette fonctionnalité présente une interface utilisateur spéciale qui indique clairement à l'utilisateur le nombre de chiffres à saisir pour son code. De ce fait, la longueur du code de l'utilisateur est stockée en dehors des données chiffrées de l'utilisateur. Les codes compatibles comptent entre 6 et 12 chiffres.

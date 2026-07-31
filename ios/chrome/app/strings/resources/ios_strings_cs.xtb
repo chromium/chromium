@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Zavřít anonymní karty</translation>
 <translation id="1559263013367304065">za dobu, co používáte Google Lens</translation>
 <translation id="1560153516220021659">Tlačítko sbalené sekundární lišty</translation>
+<translation id="1562601408588733317">Správa vyhledávání a vyplňování informací pomocí Gemini</translation>
 <translation id="1565371473877914088">Nová anonymní karta</translation>
 <translation id="1567960978791353852">Zobrazit režim čtení</translation>
 <translation id="1571780780926010134">Anonymní karty</translation>
@@ -1396,6 +1397,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5666313630530585305">Přihlaste se na web.</translation>
 <translation id="5669335982068190158">V rámci resetování iPhonu jste byli odhlášeni. Níže klepněte na Pokračovat a přihlaste se.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Spravovat připojené aplikace</translation>
 <translation id="567881659373499783">Verze <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Přepnout účty? Neuložená data v účtu se smažou.</translation>
 <translation id="5683499062697987550">Pokud chcete používat a ukládat hesla ve svém účtu Google, ověřte svoji totožnost.</translation>
@@ -1571,6 +1573,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6240553182907836376">Aktualizace průkazu totožnosti</translation>
 <translation id="6240601837375010619">Uložení pasu</translation>
 <translation id="6241132809279377987">Využívejte na iPhonu další skvělé funkce aplikací Google</translation>
+<translation id="6244366663267187541">Vyberte, ke kterým aplikacím se má Gemini připojovat</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6251835855431997163">Automaticky vyplnit hodnotu <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Přihlášení na web <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="7471557245617580330">Vytvořit novou kartu</translation>
 <translation id="7473555040328423550">Přidat kartu</translation>
 <translation id="7476548258282096076">Na téhle kartě se zobrazují weby, které nejčastěji navštěvujete.</translation>
+<translation id="7482823403440483089">Vylepšené automatické vyplňování</translation>
 <translation id="7484645889979462775">Nikdy v případě těchto stránek</translation>
 <translation id="7486006552035434095">Synchronizujte svá zařízení</translation>
 <translation id="7491131399623468277">Přejít do Nastavení…</translation>
@@ -2195,7 +2199,6 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="8270320981823560179">Disk</translation>
 <translation id="8274795744553482834">Chystáte se přepnout profily</translation>
 <translation id="8275068909952022340">Více…</translation>
-<translation id="8280797717392145626">Byly přijaty odkazy</translation>
 <translation id="8281781826761538115">Výchozí – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8282657446819506217">Otevřít ve skupině karet</translation>

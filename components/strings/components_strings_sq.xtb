@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Lloji i letrës</translation>
 <translation id="1142965388643537393">Informacionet për udhëtimin</translation>
 <translation id="1143142264369994168">Nënshkruesi i certifikatës</translation>
-<translation id="1144136880160289237">Nuk ke ende asnjë temë aktive</translation>
 <translation id="1149617035358809955">të verifikojë që je ti që të mund të plotësojë informacionet e tua të pagesës</translation>
 <translation id="1150565364351027703">Syze dielli</translation>
 <translation id="1150979032973867961">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga sistemi operativ i kompjuterit. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po ndërhyn në lidhjen tënde.</translation>
@@ -372,7 +371,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1564634006476980707">Skema HTTPS rekomandohet për URL-në e kërkimit: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informacioni i rrjetit, si p.sh. adresat, konfigurimi i ndërfaqes dhe cilësia e lidhjes</translation>
 <translation id="1567040042588613346">Kjo politikë funksionon sipas parashikimit, por diku është caktuar e njëjta vlerë dhe ajo është zëvendësuar nga kjo politikë.</translation>
-<translation id="1567405528131216114">Shto <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Fut datën e skadimit</translation>
 <translation id="1569694109004336106">Google Chrome po përpiqet të aktivizojë Windows Hello për plotësimin e fjalëkalimeve.</translation>
 <translation id="1569905000953679183">Marrja e politikës së instalimit të shtesës</translation>
@@ -382,7 +380,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1579189948231786790">Ky sajt është bllokuar nga organizata jote</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Shkoi diçka keq kur po shfaqej faqja e uebit.</translation>
-<translation id="1584492003828271317">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga "Reklamat e sugjeruara nga sajtet", cilësimet e tua të kukive, si dhe nëse sajti që po shikon i personalizon reklamat</translation>
 <translation id="1585306568496579337">Shtesa "<ph name="EXTENSION_NAME" />" dëshiron të hapë lidhjet<ph name="PROTOCOL" /> nëpërmjet <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">Cilat shtesa ke instaluar</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -400,7 +397,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="161042844686301425">E bruztë</translation>
 <translation id="1611101756749861742">Ruli i dytë</translation>
 <translation id="1611854593425834707">Mbyll listën e pajisjeve për transmetimin</translation>
-<translation id="1612199629998703524">Menaxho temat</translation>
 <translation id="1615178538289490617">Revoko qasjen për <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="161612500287664753">Pyet "Kërko në Google" për këtë faqe</translation>
@@ -680,7 +676,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2071852865256799872">Shfletuesi yt menaxhohet nga organizata jote dhe profili yt menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Informacioni u ruajt vetëm në pajisje</translation>
-<translation id="2074733626795553847">Zhblloko "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">E ke vizituar</translation>
 <translation id="2078956195623975415">Lojëra me muzikë dhe kërcim</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
@@ -731,7 +726,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="213826338245044447">Faqeshënuesit celularë</translation>
 <translation id="2141000681034340397">Modifiko hyrjen tënde</translation>
 <translation id="2141475438898772664">Paguaj me 4 këste ose çdo muaj</translation>
-<translation id="2144171668675205303">Asnjë temë aktive</translation>
 <translation id="2145193671493396738">Lajme nga ekonomia</translation>
 <translation id="214556005048008348">Anulo pagesën</translation>
 <translation id="2147117373852943630">Instrumente muzikore</translation>
@@ -1022,7 +1016,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="254947805923345898">Vlera e politikës nuk është e vlefshme.</translation>
 <translation id="2549836668759467704">Konsultimi dhe nënkontraktimi në ndërtim</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> etj.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> dërgoi një përgjigje të pavlefshme.</translation>
 <translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1056,7 +1049,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2605979593348332811">Emri fonetik</translation>
 <translation id="2606760465469169465">Verifiko automatikisht</translation>
 <translation id="2607101320794533334">Informacion i çelësit publik të subjektit</translation>
-<translation id="2608019759319359258">Kur një temë është e bllokuar, ajo nuk do të përdoret për personalizimin e reklamave</translation>
 <translation id="2610561535971892504">Kliko për të kopjuar</translation>
 <translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="2612993535136743634">Të gjitha kodet e sigurisë të ruajtura në pajisjen tënde dhe në "Llogarinë e Google" do të fshihen</translation>
@@ -1499,7 +1491,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3299720788264079132">Ndodhi një gabim gjatë përdorimit të "<ph name="FEATURE_NAME" />"</translation>
 <translation id="3303176609391916566">30 x 42 inç</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
-<translation id="3303872874382375219">Nëse një reklamë që shikon është e personalizuar, kjo mund të varet nga shumë gjëra, duke përfshirë këtë cilësim, <ph name="BEGIN_LINK1" />temat e reklamave<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e kukive<ph name="LINK_END2" /> dhe nëse sajti që po shikon i personalizon reklamat. Mëso më shumë rreth <ph name="BEGIN_LINK3" />menaxhimit të privatësisë së reklamave<ph name="LINK_END3" />.</translation>
 <translation id="3304073249511302126">Skanimi i Bluetooth-it</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" rekomandon që ta ndryshosh këtë fjalëkalim tani.</translation>
@@ -1538,7 +1529,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3377144306166885718">Serveri ka përdorur një version të vjetruar të protokollit TLS.</translation>
 <translation id="3377188786107721145">Gabim i analizimit të politikës</translation>
 <translation id="3377642479079205807">E hollë</translation>
-<translation id="3378612801784846695">Temat bazohen në historikun tënd të shfletimit së fundi dhe përdoren nga sajtet për të të shfaqur reklama të personalizuara ndërkohë që mbrojnë identitetin tënd</translation>
 <translation id="3380365263193509176">Gabim i panjohur</translation>
 <translation id="3380864720620200369">ID-ja e klientit:</translation>
 <translation id="3383566085871012386">Porosia aktuale me përparësi</translation>
@@ -1575,7 +1565,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3433111389595862568">Softuer bashkëpunimi dhe konferencash</translation>
 <translation id="3433144818443565002">Biseda zanore dhe me video</translation>
 <translation id="3434025015623587566">"Menaxheri i fjalëkalimeve i Google" ka nevojë për më shumë qasje</translation>
-<translation id="3434346831962601311">Asnjë temë e bllokuar</translation>
 <translation id="343474037147570563">Skedarët që ngarkon ose bashkëngjit dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë dhe të jenë të dukshëm për administratorin tënd.</translation>
 <translation id="3435557549311968410">I vazhdueshëm (i shkurtër)</translation>
 <translation id="3435738964857648380">Siguria</translation>
@@ -1727,7 +1716,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3662040827609932717">Ky numër IBAN është ruajtur në "Portofolin e Google" që të mund ta përdorësh atë nëpër shërbimet e Google.</translation>
 <translation id="3664479564786885722">Kërko për më shumë opsione blerjeje nga dyqane të tjera që e shesin këtë produkt.</translation>
 <translation id="3664782872746246217">Fjalët kyçe:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Mëso më shumë<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Numri</translation>
 <translation id="3670159164851218963">Historiku i "Modalitetit të IA-së"</translation>
 <translation id="3670229581627177274">Aktivizo Bluetooth-in</translation>
@@ -1959,7 +1947,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 
     Mund të kontaktosh gjithashtu me zotëruesin e sajtit dhe t'i sugjerosh që ta përmirësojë në HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Zhbëje shtimin</translation>
-<translation id="4030545038933060179">Kur ky cilësim është aktiv, këtu shfaqet një listë e temave bazuar në historikun tënd të shfletimit së fundi.</translation>
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4036753017940930924">Parcela dhe toka</translation>
 <translation id="403724377879219932">Mund të kërkojë të qaset në pajisjet e tjera në rrjetin tënd lokal</translation>
@@ -2064,7 +2051,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> artikull tjetër}other{<ph name="ITEM_COUNT" /> artikuj të tjerë}}</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
-<translation id="4177501066905053472">Temat e reklamave</translation>
 <translation id="4178863275556660738">Paguaj me mënyra pagese pa kartë</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulo monitorimin e çmimeve</translation>
@@ -2293,7 +2279,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4523580145196408446">Lidhur</translation>
 <translation id="4523643381056109546">Tabela</translation>
 <translation id="4524138615196389145">Konfirmo kartat e tua më shpejt duke përdorur WebAuthn nga tani e tutje</translation>
-<translation id="45243788195988825">Blloko <ph name="TOPIC" /></translation>
 <translation id="4528888973346221791">Informacionet e profilit të punës (si p.sh. emri i përdoruesit)</translation>
 <translation id="4530347922939905757">Mesazhi me tekst</translation>
 <translation id="4531477351494678589">Numri i kartës virtuale:</translation>
@@ -2498,6 +2483,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4865063548323785458">Ruaj dhe plotëso automatikisht fjalëkalimet për t'u identifikuar me lehtësi në sajte dhe aplikacione</translation>
 <translation id="4866506163384898554">Shtyp |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| për të shfaqur kursorin</translation>
 <translation id="4868277513442568587">Përditëso Chrome që të vazhdosh të përdorësh grupet e ndara të skedave</translation>
+<translation id="4873312501243535625">Kontrolluesi i skedarëve të medias</translation>
 <translation id="4873616204573862158">Syze</translation>
 <translation id="4873807733347502026">Kyç dhe përdor miun</translation>
 <translation id="4876305945144899064">Nuk ka emër përdoruesi</translation>
@@ -2522,7 +2508,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Lojërat Olimpike</translation>
 <translation id="4897851261703006488">Kjo politikë nuk duhet të ketë tituj që tejkalojnë <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
-<translation id="4898742041545089450">Kjo temë është zhbllokuar dhe mund të bëhet aktive bazuar në historikun tënd të shfletimit</translation>
 <translation id="4900217275619098670">Ruli i nëntë</translation>
 <translation id="4901052769830245369">Etiketa (me gjysmë shkëlqim)</translation>
 <translation id="4901162432287938633">Higjiena dhe artikujt e higjienës</translation>
@@ -2617,10 +2602,8 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5043480802608081735">Lidhja që kopjove</translation>
 <translation id="5043753287208271200">E verdhë 3</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
-<translation id="5048293684454354469">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak të personalizuara. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, shtyp "Tab" për më shumë shkurtore kërkimi që ofrohen pas këtij sugjerimi kërkimi</translation>
 <translation id="5052488928733955073">Problem me plotësimin e informacioneve të tua. Kontrollo lidhjen tënde.</translation>
-<translation id="5052517576853118371">Temat aktive</translation>
 <translation id="5053116470141135293">Një numër karte virtuale do të plotësohet kur të përfundosh blerjen me këtë kartë për të mbrojtur detajet e tua aktuale. Menaxho te "Portofoli i Google". <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për ta dërguar këta skedarë duke përdorur "Ndarjen në afërsi", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="5056587122125565772">Krijo një imazh</translation>
@@ -2719,7 +2702,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5206392433295093945">Dhoma e gjumit</translation>
 <translation id="5209670883520018268">Tabakaja 20</translation>
 <translation id="5212364581680288382">Gara me motoçikleta</translation>
-<translation id="5214542134842513912">Zgjidh se cilat kategori të gjera të temave mund të përdoren për të ndihmuar në personalizimin e reklamave. Çaktivizimi i një kategorie më të gjerë do të bllokojë gjithashtu temat e ngjashme.</translation>
 <translation id="52163492208010719">Menaxho dokumentet e identitetit</translation>
 <translation id="521659676233207110">Tabakaja 13</translation>
 <translation id="5216942107514965959">Vizituar për herë të fundit sot</translation>
@@ -4077,7 +4059,6 @@ Detaje shtesë:
 <translation id="7305767780379163575">Fotografia nuk mund të ruhet</translation>
 <translation id="7307063504147610123">Adresat e ruajtura në këtë pajisje</translation>
 <translation id="7308436126008021607">sinkronizimi në sfond</translation>
-<translation id="7309058266849426521">Mëso më shumë rreth menaxhimit të privatësisë së reklamave në Chrome.</translation>
 <translation id="7310392214323165548">Pajisja do të riniset së shpejti</translation>
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7313107491291103073">Organizata jote e ka raportuar këtë sajt pasi ai mund të shkelë një politikë.</translation>
@@ -4468,7 +4449,6 @@ Detaje shtesë:
 <translation id="7877007680666472091">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="7878562273885520351">Fjalëkalimet e tua mund të jenë kompromentuar</translation>
 <translation id="7885670691503039914">Do të marrësh sinjalizime me email nëse ulet çmimi në ndonjë sajt. Kjo faqe do të ruhet te dosja e faeshënuesve "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="7886897188117641322">Zgjidh se cilat kategori të gjera të temave mund të përdoren për të ndihmuar në personalizimin e reklamave</translation>
 <translation id="7887683347370398519">Kontrollo CVC-në tënde dhe provo përsëri</translation>
 <translation id="7887885240995164102">Hyr në veçorinë "figurë brenda figurës"</translation>
 <translation id="7888367499748383555">Pa tarifa, me deri në 0% NEI (subjekt i kualifikimit)</translation>
@@ -4578,7 +4558,6 @@ Detaje shtesë:
 <translation id="8046360364391076336">Materiale dhe pajisje industriale</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8057023045886711556">Filma komedi</translation>
-<translation id="805766869470867930">Nuk ke bllokuar asnjë temë</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" nuk është konfiguruar mirë. Zakonisht këtë problem e zgjidh çinstalimi i "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Nuk kërkohet</translation>
 <translation id="8061691770921837575">Grimi dhe kozmetika</translation>
@@ -4625,7 +4604,6 @@ Detaje shtesë:
 <translation id="8130113808541743942">Zhvendos te...</translation>
 <translation id="813024282736408069">Aktivizo një kartë virtuale për plotësimin automatik</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
-<translation id="8133495915926741232">Zgjidh se cilat kategori të gjera të temave mund të përdoren për të ndihmuar në personalizimin e reklamave. Çaktivizimi i një kategorie më të gjerë do të bllokojë gjithashtu temat e ngjashme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>
 <translation id="8135546115396015134">tasti majtas</translation>
 <translation id="8137456439814903304">Energjia dhe shërbimet utilitare</translation>
@@ -4844,7 +4822,6 @@ Detaje shtesë:
 <translation id="8467494337615822642">Shko te faqja e kontrollit të sigurisë të Chrome te cilësimet</translation>
 <translation id="8468358362970107653">Zarf C3</translation>
 <translation id="8469428721212363950">Tregtia me pakicë</translation>
-<translation id="8472700501934242014">Temat e bllokuara</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474910779563686872">Shfaq detajet e zhvilluesit</translation>
@@ -4989,7 +4966,6 @@ Detaje shtesë:
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8731268612289859741">Kodi i sigurisë</translation>
 <translation id="8733345475331865475">Sigurimi i automjetit</translation>
-<translation id="8733764070897080460">Mund t'i bllokosh temat që nuk dëshiron të ndahen me sajtet. Chrome gjithashtu i fshin automatikisht temat më të vjetra se 4 javë. Mëso më shumë</translation>
 <translation id="8734529307927223492">Pajisja jote <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 inç</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të hapur një dritare të re "të fshehtë" për të shfletuar në mënyrë private</translation>

@@ -158,6 +158,7 @@
 <translation id="1497590942294823549">Trình đơn → Trình quản lý mật khẩu</translation>
 <translation id="1498283581832036924">Tài khoản <ph name="WEBSITE" /> của bạn sẽ không bị xoá.</translation>
 <translation id="1503814213414825943">Chọn những tài khoản bạn muốn xuất sang một ứng dụng khác.</translation>
+<translation id="1503850843654701910"><ph name="USER_NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1506063256525392513">Quyền này cho phép bạn chụp ảnh, tải ảnh lên và quét mã QR.</translation>
 <translation id="1506733063065214205">Ứng dụng RCS MLS</translation>
@@ -183,6 +184,7 @@
 <translation id="1558391695376153246">Đóng các thẻ Ẩn danh</translation>
 <translation id="1559263013367304065">kể từ khi sử dụng Google Ống kính</translation>
 <translation id="1560153516220021659">Nút trên thanh công cụ phụ được thu gọn</translation>
+<translation id="1562601408588733317">Quản lý việc tìm và điền thông tin bằng Gemini</translation>
 <translation id="1565371473877914088">Thẻ ẩn danh mới</translation>
 <translation id="1567960978791353852">Hiện chế độ đọc</translation>
 <translation id="1571780780926010134">Tab ẩn danh</translation>
@@ -273,6 +275,7 @@
 <translation id="183878838231635348">Thẻ này cho biết mọi vấn đề về quyền riêng tư hoặc bảo mật mà tính năng Kiểm tra an toàn tự động phát hiện cho bạn.</translation>
 <translation id="1840320537320704887">Đã xoá các lựa chọn ưu tiên của bạn đối với trang Thẻ mới</translation>
 <translation id="1845230888742614096">Giữ lại nhóm</translation>
+<translation id="1853558655412913122">Bạn hiện có thể thay đổi vị trí của thanh địa chỉ bằng cách vào phần "Cài đặt" rồi chọn "Thanh địa chỉ"</translation>
 <translation id="1853692000353488670">Thẻ ẩn danh mới</translation>
 <translation id="1854463785401910334">Tìm kiếm trên các thẻ đang mở</translation>
 <translation id="1860609647735325606">Nhờ Gemini giải thích</translation>
@@ -1190,6 +1193,7 @@
 <translation id="4985921635659180565">Sau khi lên lịch xoá, bạn không thể huỷ quá trình xoá.</translation>
 <translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, do tổ chức của bạn quản lý.</translation>
+<translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Màu của nhóm thẻ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5009127379503001909">Tiếp tục duyệt xem</translation>
@@ -1396,6 +1400,7 @@
 <translation id="5666313630530585305">Đăng nhập vào một trang web.</translation>
 <translation id="5669335982068190158">Bạn đã bị đăng xuất trong quá trình đặt lại iPhone. Nhấn vào Tiếp tục bên dưới để đăng nhập.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Quản lý Các ứng dụng có thể kết nối</translation>
 <translation id="567881659373499783">Phiên bản <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Bạn muốn đổi tài khoản? Dữ liệu tài khoản chưa lưu sẽ bị xoá.</translation>
 <translation id="5683499062697987550">Để sử dụng và lưu mật khẩu trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
@@ -1571,6 +1576,7 @@
 <translation id="6240553182907836376">Cập nhật thông tin thẻ căn cước</translation>
 <translation id="6240601837375010619">Lưu thông tin hộ chiếu</translation>
 <translation id="6241132809279377987">Trải nghiệm thêm nhiều tính năng trên iPhone khi có các ứng dụng của Google</translation>
+<translation id="6244366663267187541">Chọn những ứng dụng mà Gemini có thể kết nối</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
 <translation id="6251835855431997163">Tự động điền <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Đăng nhập vào <ph name="URL" /></translation>
@@ -1803,6 +1809,7 @@
 <translation id="6924299883035848912">Ẩn tuỳ chọn Xoá dữ liệu duyệt web</translation>
 <translation id="6930162026494574854">Đặt lại cài đặt Dịch</translation>
 <translation id="6930799952781667037">Nhấn để đổi sang ngôn ngữ này.</translation>
+<translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="693761253105515415">Đặt mật mã</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6946722113367118030">Đang suy nghĩ</translation>
@@ -1852,6 +1859,7 @@
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">Máy ảnh không khả dụng</translation>
 <translation id="7138678301420049075">Khác</translation>
+<translation id="7140355148730164340"><ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="7141960840225504692">Hệ thống sẽ đóng các thẻ và xoá dữ liệu duyệt web</translation>
 <translation id="714291438898585119">Có gắn dấu sao</translation>
 <translation id="7145337554745942724">Cập nhật thông tin giấy phép lái xe</translation>
@@ -1917,6 +1925,7 @@
 <translation id="7402602673739047753">{count,plural, =1{Có 1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào Tài khoản Google {email} của bạn.}other{Có {count} dấu trang chỉ được lưu trên thiết bị này. Để sử dụng những dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào Tài khoản Google {email} của bạn.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> bài viết chưa đọc.</translation>
+<translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tiếp tục</translation>
 <translation id="741204030948306876">Có, tôi đồng ý</translation>
 <translation id="7419565702166471774">Luôn sử dụng kết nối bảo mật</translation>
@@ -1946,6 +1955,7 @@
 <translation id="7471557245617580330">Tạo thẻ mới</translation>
 <translation id="7473555040328423550">Thêm thẻ</translation>
 <translation id="7476548258282096076">Thẻ này hiển thị các trang web bạn truy cập nhiều nhất.</translation>
+<translation id="7482823403440483089">Tính năng tự động điền nâng cao</translation>
 <translation id="7484645889979462775">Không bao giờ đối với trang web này</translation>
 <translation id="7486006552035434095">Đồng bộ hoá các thiết bị của bạn</translation>
 <translation id="7491131399623468277">Chuyển đến phần Cài đặt…</translation>
@@ -2195,7 +2205,6 @@
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">Bạn sắp chuyển đổi hồ sơ</translation>
 <translation id="8275068909952022340">Khác…</translation>
-<translation id="8280797717392145626">Đã nhận được đường liên kết</translation>
 <translation id="8281781826761538115">Mặc định - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8282657446819506217">Mở trong nhóm thẻ</translation>
@@ -2205,6 +2214,7 @@
 <translation id="8292893224181644074">Đã tải xuống xong</translation>
 <translation id="8299417921174340354">Để sử dụng mật khẩu, trước tiên, bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="8307481894409578819">Không thể tải tệp này lên</translation>
+<translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="8319076807703933069">Tìm kiếm mới</translation>
 <translation id="8319282042900445670">Đã đặt lời nhắc cho <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Hoạt động gần đây</translation>
@@ -2492,6 +2502,7 @@
 <translation id="9219154867334666734">Tìm thẻ…</translation>
 <translation id="9223358826628549784">Đã gửi báo cáo lỗi.</translation>
 <translation id="926455622548529175">Đổi và xoá</translation>
+<translation id="927648083916327561"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
 <translation id="929748059769569925">Văn bản được đánh dấu</translation>
 <translation id="932305336591073205">{count,plural, =1{Đóng thẻ}other{Đóng các thẻ}}</translation>
 <translation id="939472100615258482">Trang hiện tại</translation>

@@ -92,7 +92,6 @@
 <translation id="1142713751288681188">Թղթի տեսակը</translation>
 <translation id="1142965388643537393">Տեղեկություններ ճամփորդության մասին</translation>
 <translation id="1143142264369994168">Վկայագրի ստորագրող</translation>
-<translation id="1144136880160289237">Դուք դեռ ակտիվ թեմաներ չունեք</translation>
 <translation id="1149617035358809955">հաստատել ձեր ինքնությունը, որպեսզի կարողանա լրացնել ձեր վճարային տվյալները</translation>
 <translation id="1150565364351027703">Արևային ակնոց</translation>
 <translation id="1150979032973867961">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Ձեր համակարգչի օպերացիոն համակարգը չի վստահում դրա անվտանգության վկայականին: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
@@ -376,7 +375,6 @@
 <translation id="1564634006476980707">Խորհուրդ տրվող HTTPS սխեմա որոնման URL-ի համար՝ <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Ցանցային տեղեկությունները, օրինակ՝ հասցեները, միջերեսի կարգավորումները և կապի որակը</translation>
 <translation id="1567040042588613346">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն միևնույն արժեքը սահմանված է այլ տեղում և փոխարինվում է կանոնի կողմից։</translation>
-<translation id="1567405528131216114">Ավելացնել «<ph name="TOPIC" />» թեման</translation>
 <translation id="1569487616857761740">Մուտքագրեք գործողության ժամկետը</translation>
 <translation id="1569694109004336106">Google Chrome-ը փորձում է միացնել Windows Hello-ն՝ գաղտնաբառեր լրացնելու համար։</translation>
 <translation id="1569905000953679183">Ընդլայնումների տեղադրման կանոնների առբերում</translation>
@@ -386,7 +384,6 @@
 <translation id="1579189948231786790">Այս կայքը արգելափակվել է ձեր կազմակերպության կողմից</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Չհաջողվեց բացել վեբէջը:</translation>
-<translation id="1584492003828271317">Գովազդի անհատականացումը կախված է այս կարգավորումից, կայքերի կողմից առաջարկվող գովազդներից, քուքիների կարգավորումներից և այն կայքի կարգավորումներից, որը դուք դիտում եք</translation>
 <translation id="1585306568496579337">«<ph name="EXTENSION_NAME" />» ընդլայնումն ուզում է <ph name="HANDLER_HOSTNAME" />-ի միջոցով «<ph name="PROTOCOL" />» տեսակի հղումներ բացել</translation>
 <translation id="1586541204584340881">Ինչ ընդլայնումներ եք դուք տեղադրել</translation>
 <translation id="1588438908519853928">Սովորական</translation>
@@ -404,7 +401,6 @@
 <translation id="161042844686301425">Երկնագույն</translation>
 <translation id="1611101756749861742">Երկրորդ գլանափաթեթ</translation>
 <translation id="1611854593425834707">Փակել սարքերի ցանկը</translation>
-<translation id="1612199629998703524">Թեմաների կառավարում</translation>
 <translation id="1615178538289490617">Չեղարկել <ph name="PORT_NAME" /> միացքի հասանելիությունը</translation>
 <translation id="1615402009686901181">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="161612500287664753">Հարցրեք Google Որոնմանը այս էջի մասին</translation>
@@ -684,7 +680,6 @@
 <translation id="2071852865256799872">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից, իսկ պրոֆիլը՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Տեղեկությունները պահվեցին միայն սարքում</translation>
-<translation id="2074733626795553847">Արգելաբացել «<ph name="TOPIC" />» թեման</translation>
 <translation id="2074771604462073334">Դուք այցելել եք</translation>
 <translation id="2078956195623975415">Երաժշտական և պարային խաղեր</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -735,7 +730,6 @@
 <translation id="213826338245044447">Բջջային էջանիշներ</translation>
 <translation id="2141000681034340397">Փոփոխեք ձեր մուտքագրումը</translation>
 <translation id="2141475438898772664">Վճարեք 4 անգամով կամ ամսական</translation>
-<translation id="2144171668675205303">Ակտիվ թեմաներ չկան</translation>
 <translation id="2145193671493396738">Տնտեսական նորություններ</translation>
 <translation id="214556005048008348">Չեղարկել վճարումը</translation>
 <translation id="2147117373852943630">Երաժշտական գործիքներ</translation>
@@ -1026,7 +1020,6 @@
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="254947805923345898">Կանոնում նշված արժեքն անվավեր է։</translation>
 <translation id="2549836668759467704">Շինարարական խորհրդատվություն և կապալառուի ծառայություններ</translation>
-<translation id="2549919488151689436">«<ph name="TOPIC_1" />», «<ph name="TOPIC_2" />» և այլ թեմաներ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />-ը սխալ պատասխան է ուղարկել:</translation>
 <translation id="2551608178605132291">Հասցե՝ <ph name="ADDRESS" />։</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1060,7 +1053,6 @@
 <translation id="2605979593348332811">Անուն (տառադարձված)</translation>
 <translation id="2606760465469169465">Ավտոմատ ստուգում</translation>
 <translation id="2607101320794533334">Տեղեկություններ սուբյեկտի հանրային բանալու մասին</translation>
-<translation id="2608019759319359258">Երբ որևէ թեմա արգելափակված է, այն չի օգտագործվի գովազդն անհատականացնելու համար</translation>
 <translation id="2610561535971892504">Սեղմել՝ պատճենելու համար</translation>
 <translation id="2612676031748830579">Քարտի համարը</translation>
 <translation id="2612993535136743634">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
@@ -1505,7 +1497,6 @@
 <translation id="3299720788264079132">«<ph name="FEATURE_NAME" />» գործառույթն օգտագործելիս սխալ առաջացավ</translation>
 <translation id="3303176609391916566">30 x 42 դյույմ</translation>
 <translation id="3303855915957856445">Որոնման արդյունքներ չկան</translation>
-<translation id="3303872874382375219">Թե արդյոք ձեզ ցուցադրվող գովազդն անհատականացված է, կարող է կախված լինել շատ բաներից, այդ թվում՝ այս կարգավորումից, <ph name="BEGIN_LINK1" />գովազդների թեմաներից<ph name="LINK_END1" />, ձեր <ph name="BEGIN_LINK2" />քուքիների կարգավորումներից<ph name="LINK_END2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք։ <ph name="BEGIN_LINK3" />Ինչպես կառավարել գովազդի գաղտնիությունը<ph name="LINK_END3" />։</translation>
 <translation id="3304073249511302126">bluetooth սարքերի որոնում</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն։</translation>
@@ -1544,7 +1535,6 @@
 <translation id="3377144306166885718">Սերվերն օգտագործում է TLS-ի հնացած տարբերակ։</translation>
 <translation id="3377188786107721145">Կանոնի վերլուծման սխալ</translation>
 <translation id="3377642479079205807">Բարակ</translation>
-<translation id="3378612801784846695">Թեմաների ցանկը որոշվում է ձեր վերջին այցելությունների պատմության հիման վրա և օգտագործվում կայքերի կողմից՝ ձեզ անհատականացված գովազդ ցուցադրելու համար՝ միաժամանակ գաղտնի պահելով ձեր անձնական տվյալները</translation>
 <translation id="3380365263193509176">Անհայտ սխալ</translation>
 <translation id="3380864720620200369">Սպասառուի ID`</translation>
 <translation id="3383566085871012386">Կարևորության ընթացիկ հերթականություն</translation>
@@ -1581,7 +1571,6 @@
 <translation id="3433111389595862568">Համատեղ աշխատանքի և տեսակոնֆերանսների կազմակերպման ծրագրեր</translation>
 <translation id="3433144818443565002">Ձայնային և տեսազրույց</translation>
 <translation id="3434025015623587566">Google գաղտնաբառերի կառավարչին ավելի շատ թույլտվություններ են հարկավոր</translation>
-<translation id="3434346831962601311">Արգելափակված թեմաներ չկան</translation>
 <translation id="343474037147570563">Ձեր վերբեռնած կամ կցած ֆայլերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
 <translation id="3435557549311968410">Շարունակական (կարճ)</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
@@ -1733,7 +1722,6 @@
 <translation id="3662040827609932717">Այս IBAN համարը պահված է Google Wallet-ում, ուստի այն կարող եք օգտագործել Google-ի ծառայություններում։</translation>
 <translation id="3664479564786885722">Որոնել գնման այլ տարբերակներ այս ապրանքը վաճառող այլ խանութներում։</translation>
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Քարտի համարը</translation>
 <translation id="3670159164851218963">ԱԲ ռեժիմի պատմություն</translation>
 <translation id="3670229581627177274">Միացնել Bluetooth-ը</translation>
@@ -1965,7 +1953,6 @@
 
 Կարող եք նաև կապվել կայքի սեփականատիրոջ հետ և առաջարկել նրան անցնել HTTPS-ի։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Հետարկել հավելումը</translation>
-<translation id="4030545038933060179">Եթե գործառույթը միացված է, այստեղ կցուցադրվի թեմաների ցանկը՝ կազմված ձեր վերջին այցելությունների պատմության հիման վրա</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4036753017940930924">Հողամասեր և հողատարածքներ</translation>
 <translation id="403724377879219932">Կարող է ձեր լոկալ ցանցի մյուս սարքերի հասանելիություն խնդրել</translation>
@@ -2070,7 +2057,6 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Եվս <ph name="ITEM_COUNT" /> տարր}one{Եվս <ph name="ITEM_COUNT" /> տարր}other{Եվս <ph name="ITEM_COUNT" /> տարր}}</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
-<translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4178863275556660738">Վճարեք առանց քարտի վճարման եղանակներով</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
@@ -2299,7 +2285,6 @@
 <translation id="4523580145196408446">Կապված է</translation>
 <translation id="4523643381056109546">Ցուցանակներ</translation>
 <translation id="4524138615196389145">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը WebAuthn-ի միջոցով</translation>
-<translation id="45243788195988825">Արգելափակել «<ph name="TOPIC" />» թեման</translation>
 <translation id="4528888973346221791">Աշխատանքային պրոֆիլի մասին տեղեկություններ (օր․՝ ձեր օգտանունը)</translation>
 <translation id="4530347922939905757">Տեքստային հաղորդագրություն</translation>
 <translation id="4531477351494678589">Վիրտուալ քարտի համարը՝</translation>
@@ -2504,6 +2489,7 @@
 <translation id="4865063548323785458">Պահեք և ավտոմատ լրացրեք ձեր գաղտնաբառերը՝ հեշտությամբ մուտք գործելով կայքեր և հավելվածներ</translation>
 <translation id="4866506163384898554">Նշորդը ցույց տալու համար սեղմեք |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4868277513442568587">Թարմացրեք Chrome-ը, որպեսզի շարունակեք օգտագործել ներդիրների ընդհանուր խմբերը</translation>
+<translation id="4873312501243535625">Մեդիա ֆայլի ստուգիչ</translation>
 <translation id="4873616204573862158">Ակնոցներ</translation>
 <translation id="4873807733347502026">Կողպել և օգտագործել ձեր մկնիկը</translation>
 <translation id="4876305945144899064">Օգտանունը նշված չէ</translation>
@@ -2528,7 +2514,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Օլիմպիական խաղեր</translation>
 <translation id="4897851261703006488">Այս կանոնում վերնագրերի չափսը չպետք է գերազանցի <ph name="MAX_HEADER_SIZE_LIMIT" /> ԿԲ-ը։</translation>
-<translation id="4898742041545089450">Այս թեման արգելաբացված է և, կախված ձեր այցելությունների պատմությունից, կարող է ակտիվ դառնալ</translation>
 <translation id="4900217275619098670">Իններորդ գլանափաթեթ</translation>
 <translation id="4901052769830245369">Պիտակներ (կիսափայլուն)</translation>
 <translation id="4901162432287938633">Հիգիենայի և զուգարանի պարագաներ</translation>
@@ -2624,10 +2609,8 @@
 <translation id="5043480802608081735">Ձեր պատճենած հղումը</translation>
 <translation id="5043753287208271200">Դեղին 3</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
-<translation id="5048293684454354469">Գովազդների թեմաներն ընդամենը մեկն են այն գործիքներից, որոնք կայքը կարող է օգտագործել գովազդն անհատականացնելու համար։ Նույնիսկ առանց գովազդների թեմաների, կայքերը նախկինի պես կարող են ձեզ գովազդ ցուցադրել, բայց դրանք կարող են պակաս անհատականացված լինել։ <ph name="BEGIN_LINK" />Ինչպես կառավարել գովազդի գաղտնիությունը<ph name="LINK_END" />։</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, սեղմեք Tab ստեղնը՝ որոնման այս առաջարկից հետո որոնման այլ դյուրանցումներ տեսնելու համար</translation>
 <translation id="5052488928733955073">Չհաջողվեց լրացնել ձեր տվյալները։ Ստուգեք կապը։</translation>
-<translation id="5052517576853118371">Ակտիվ թեմաներ</translation>
 <translation id="5053116470141135293">Ձեր իրական տվյալները պաշտպանելու համար կլրացվի վիրտուալ քարտի համարը, երբ վճարում կատարեք այս քարտով։ Կառավարեք Google Wallet-ում։ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Այս ֆայլը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}one{Այս ֆայլը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}other{Այս ֆայլերը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">Ստեղծել պատկեր</translation>
@@ -2726,7 +2709,6 @@
 <translation id="5206392433295093945">Ննջասենյակ</translation>
 <translation id="5209670883520018268">Դարակ 20</translation>
 <translation id="5212364581680288382">Մոտոմրցավազք</translation>
-<translation id="5214542134842513912">Ընտրեք թեմաների ընդհանուր կատեգորիաները, որոնք կարող են օգտագործվել գովազդներն անհատականացնելու համար։ Եթե անջատեք որևէ ընդհանուր կատեգորիա, կարգելափակվեն նաև դրա բոլոր առնչվող թեմաները։</translation>
 <translation id="52163492208010719">Կառավարել անձը հաստատող փաստաթղթերը</translation>
 <translation id="521659676233207110">Դարակ 13</translation>
 <translation id="5216942107514965959">Վերջին այցելությունը՝ այսօր</translation>
@@ -4087,7 +4069,6 @@
 <translation id="7305767780379163575">Չհաջողվեց պահել լուսանկարը</translation>
 <translation id="7307063504147610123">Հասցեն պահվել է ձեր սարքում</translation>
 <translation id="7308436126008021607">ֆոնային համաժամացում</translation>
-<translation id="7309058266849426521">Իմանալ ավելին Chrome-ում գովազդի գաղտնիությունը կառավարելու մասին։</translation>
 <translation id="7310392214323165548">Սարքը շուտով կվերագործարկվի</translation>
 <translation id="7311244614769792472">Ոչինչ չի գտնվել</translation>
 <translation id="7313107491291103073">Ձեր կազմակերպությունը նշել է այս կայքը, քանի որ այն հավանաբար խախտում է կանոնները։</translation>
@@ -4478,7 +4459,6 @@
 <translation id="7877007680666472091">պաշտպանված բովանդակության նույնացուցիչներ</translation>
 <translation id="7878562273885520351">Ձեր գաղտնաբառը կարող են հափշտակել</translation>
 <translation id="7885670691503039914">Դուք էլփոստով ծանուցումներ կստանաք, երբ որևէ կայքում գնիջեցում լինի։ Այս էջը կպահվի էջանիշների «<ph name="LAST_BOOKMARKS_FOLDER" />» պանակում։</translation>
-<translation id="7886897188117641322">Ընտրեք թեմաների լայն կատեգորիաները, որոնք կարող են օգտագործվել գովազդներն անհատականացնելու համար</translation>
 <translation id="7887683347370398519">Ստուգեք ձեր CVC կոդը և նորից փորձեք</translation>
 <translation id="7887885240995164102">Անցնել «նկար նկարի մեջ» ռեժիմի</translation>
 <translation id="7888367499748383555">Միջնորդավճարներ չեն գանձվում, տարեկան տոկոսադրույքը՝ 0% (պահանջներին համապատասխանելու դեպքում)</translation>
@@ -4588,7 +4568,6 @@
 <translation id="8046360364391076336">Արդյունաբերական նյութեր և սարքավորումներ</translation>
 <translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>
 <translation id="8057023045886711556">Կատակերգական ֆիլմեր</translation>
-<translation id="805766869470867930">Դուք ոչ մի թեմա չեք արգելափակել</translation>
 <translation id="8057711352706143257">«<ph name="SOFTWARE_NAME" />» ծրագիրը սխալ է կազմաձևված: Ապատեղադրեք «<ph name="SOFTWARE_NAME" />» ծրագիրը: Դրանով սովորաբար խնդիրը լուծվում է: <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Չի պահանջվում</translation>
 <translation id="8061691770921837575">Դիմահարդարում և կոսմետիկ միջոցներ</translation>
@@ -4635,7 +4614,6 @@
 <translation id="8130113808541743942">Տեղափոխել…</translation>
 <translation id="813024282736408069">Միացրեք վիրտուալ քարտը ինքնալրացման համար</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
-<translation id="8133495915926741232">Ընտրեք թեմաների ընդհանուր կատեգորիաները, որոնք կարող են օգտագործվել գովազդներն անհատականացնելու համար։ Եթե անջատեք որևէ ընդհանուր կատեգորիա, կարգելափակվեն նաև դրա բոլոր առնչվող թեմաները։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Անձնակազմի հավաքագրում և ընտրություն</translation>
 <translation id="8135546115396015134">ձախ ստեղն</translation>
 <translation id="8137456439814903304">Էներգիա մատակարարող և կոմունալ ծառայություն</translation>
@@ -4854,7 +4832,6 @@
 <translation id="8467494337615822642">Անցնել Chrome-ի անվտանգության ստուգման էջ կարգավորումներում</translation>
 <translation id="8468358362970107653">Envelope C3</translation>
 <translation id="8469428721212363950">Մանրածախ առևտուր</translation>
-<translation id="8472700501934242014">Արգելափակված թեմաներ</translation>
 <translation id="8473626140772740486">300 x 450 մմ</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="8474910779563686872">Ցուցադրել մշակողի տվյալները</translation>
@@ -4999,7 +4976,6 @@
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
 <translation id="8733345475331865475">Ավտոապահովագրություն</translation>
-<translation id="8733764070897080460">Դուք կարող եք արգելափակել թեմաները, որոնցով չեք ցանկանում կիսվել կայքերի հետ։ Chrome-ը նաև ավտոմատ կերպով ջնջում է 4 շաբաթից հին ձեր թեմաները։ Իմանալ ավելին</translation>
 <translation id="8734529307927223492">Ձեր <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="8736059027199600831">30 x 40 դյույմ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր ինկոգնիտո պատուհան բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>

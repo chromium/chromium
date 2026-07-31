@@ -77,6 +77,7 @@
 <translation id="1698376642261615901">Google Chrome este un browser web care rulează pagini web și aplicații cu o viteză extraordinară. Este rapid, stabil și ușor de utilizat. Navigați pe web beneficiind de mai multă siguranță datorită protecției împotriva programelor malware și a phishingului, care este încorporată în Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se va relansa într-o oră}few{Chrome se va relansa în # ore}other{Chrome se va relansa în # de ore}}</translation>
 <translation id="1722488837206509557">Astfel, vei putea să selectezi dintre dispozitivele disponibile și să afișezi conținut pe acestea.</translation>
+<translation id="1724094881572874997">Pentru a-ți proteja activitatea în Chrome, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chrome.</translation>
 <translation id="177180974022074201">Încearcă cu Gemini în Chrome</translation>
 <translation id="1786003790898721085">Asigură-te că te-ai conectat la Chrome pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="1786044937610313874">Comenzile rapide se deschid în Chrome</translation>
@@ -413,6 +414,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="521447420733633466">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5239627039202700673">Folosește Chrome oricând dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
+<translation id="524751727772074981">Întreabă orice în locul în care te afli, cu Gemini în Chrome</translation>
 <translation id="5251420635869119124">Invitații pot folosi Chrome fără a lăsa nicio urmă.</translation>
 <translation id="5271833978500241046">Folosește-le împreună cu alte funcții Gemini în Chrome</translation>
 <translation id="5286907366254680517">Detectat</translation>

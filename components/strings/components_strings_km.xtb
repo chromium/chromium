@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">ប្រភេទក្រដាស</translation>
 <translation id="1142965388643537393">ព័ត៌មាន​អំពី​ការធ្វើដំណើរ</translation>
 <translation id="1143142264369994168">អ្នកចុះហត្ថលេខាវិញ្ញាបនប័ត្រ</translation>
-<translation id="1144136880160289237">អ្នកមិនទាន់មានប្រធានបទសកម្មនៅឡើយទេ</translation>
 <translation id="1149617035358809955">ផ្ទៀងផ្ទាត់ថា​ជាអ្នក ដើម្បីឱ្យវា​អាចបំពេញ​ព័ត៌មាននៃ​ការទូទាត់ប្រាក់​របស់អ្នក​បាន</translation>
 <translation id="1150565364351027703">វ៉ែនតា​ការពារពន្លឺព្រះអាទិត្យ</translation>
 <translation id="1150979032973867961">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វា
@@ -374,7 +373,6 @@
 <translation id="1564634006476980707">ទម្រង់ HTTPS ដែលបានណែនាំ​សម្រាប់ URL ស្វែងរក៖ <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ព័ត៌មានបណ្ដាញដូចជា អាសយដ្ឋាន ការកំណត់រចនាសម្ព័ន្ធផ្ទៃ និងគុណភាព​នៃការតភ្ជាប់ជាដើម</translation>
 <translation id="1567040042588613346">គោលការណ៍នេះ​កំពុងដំណើរការ​ដូចការរំពឹងទុក ប៉ុន្តែ​តម្លៃដូចគ្នា​ត្រូវបាន​កំណត់នៅ​កន្លែងផ្សេង និង​ត្រូវបាន​ជំនួសដោយ​គោលការណ៍នេះ។</translation>
-<translation id="1567405528131216114">បញ្ចូល <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">បញ្ចូលកាល​បរិច្ឆេទ​ផុត​កំណត់</translation>
 <translation id="1569694109004336106">Google Chrome កំពុងព្យាយាម​បើក Windows Hello ដើម្បីបំពេញ​ពាក្យសម្ងាត់។</translation>
 <translation id="1569905000953679183">ការទាញយក​គោលការណ៍​ដំឡើង​កម្មវិធីបន្ថែម</translation>
@@ -384,7 +382,6 @@
 <translation id="1579189948231786790">គេហទំព័រនេះ​ត្រូវបាន​ទប់ស្កាត់​ដោយ​ស្ថាប័ន​របស់អ្នក</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">មានបញ្ហាអ្វីមួយកើតឡើង ខណៈពេលកំពុងបង្ហាញគេហទំព័រនេះ</translation>
-<translation id="1584492003828271317">នៅ​ពេល​អ្នក​រុករក ថាតើ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​អ្នកមើលឃើញ​ត្រូវបាន​កំណត់ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់គឺអាស្រ័យលើ​ការកំណត់នេះ ការផ្សាយពាណិជ្ជកម្ម​ដែល​ណែនាំ​ដោយ​គេហទំព័រ ការ​កំណត់​ខូគីរបស់​អ្នក និង​ថាតើ​គេហទំព័រ​ដែល​អ្នក​កំពុងមើល​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់</translation>
 <translation id="1585306568496579337">កម្មវិធីបន្ថែម "<ph name="EXTENSION_NAME" />" ចង់​បើកតំណ <ph name="PROTOCOL" /> តាមរយៈ <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">ថាតើកម្មវិធីបន្ថែមណាខ្លះដែលអ្នកបានដំឡើង</translation>
 <translation id="1588438908519853928">ធម្មតា</translation>
@@ -402,7 +399,6 @@
 <translation id="161042844686301425">បៃតងខ្ចី</translation>
 <translation id="1611101756749861742">ដុំទីពីរ</translation>
 <translation id="1611854593425834707">បិទ​បញ្ជីឧបករណ៍​សម្រាប់​ការបញ្ជូន</translation>
-<translation id="1612199629998703524">គ្រប់គ្រងប្រធានបទ</translation>
 <translation id="1615178538289490617">ដកសិទ្ធិ​ចូលប្រើ <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">គោលការណ៍​របស់អ្នកគ្រប់គ្រង​បិទការថត​អេក្រង់ នៅពេលអាច​មើលឃើញខ្លឹមសារ​សម្ងាត់</translation>
 <translation id="161612500287664753">សួរ​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google អំពី​ទំព័រនេះ</translation>
@@ -576,6 +572,7 @@
 <translation id="1871284979644508959">ត្រូវតែបំពេញ</translation>
 <translation id="1871739799120352748">តម្លៃខ្ពស់</translation>
 <translation id="1874224422119691492">អ្នក​អាច​ផ្លាស់ប្ដូរ​ថាតើ​អ្នកប្រើ​​ការ​ចាក់សោ​អេក្រង់​របស់​អ្នក​សម្រាប់​ការ​បំពេញ​ពាក្យសម្ងាត់​នៅ​ក្នុង<ph name="SETTINGS" />ឬអត់</translation>
+<translation id="1874749478353075307">បានផ្ញើទៅ Chrome នៅលើ <ph name="DEVICE_NAME" /> របស់អ្នក • <ph name="USER_EMAIL" /></translation>
 <translation id="1875025161375567525">ទម្រ​រូបថត</translation>
 <translation id="1875512691959384712">Google ទម្រង់បែបបទ</translation>
 <translation id="1876399092304384674">តាម​កាលបរិច្ឆេទ</translation>
@@ -683,7 +680,6 @@
 <translation id="2071852865256799872">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់​ស្ថាប័នអ្នក ហើយកម្រងព័ត៌មាន​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">បានរក្សាទុកព័ត៌មានទៅក្នុងឧបករណ៍តែប៉ុណ្ណោះ</translation>
-<translation id="2074733626795553847">ឈប់ទប់ស្កាត់ <ph name="TOPIC" /></translation>
 <translation id="2074771604462073334">អ្នកបាន​ចូលមើល</translation>
 <translation id="2078956195623975415">ហ្គេម​តន្ត្រី និងរាំ</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
@@ -734,7 +730,6 @@
 <translation id="213826338245044447">ចំណាំទូរស័ព្ទ</translation>
 <translation id="2141000681034340397">កែការបញ្ចូលរបស់អ្នក</translation>
 <translation id="2141475438898772664">បង់ប្រាក់ចំនួន 4 ដង ឬរាល់ខែ</translation>
-<translation id="2144171668675205303">មិនមានប្រធានបទសកម្មទេ</translation>
 <translation id="2145193671493396738">ព័ត៌មាន​សេដ្ឋកិច្ច</translation>
 <translation id="214556005048008348">បោះបង់​ការបង់ប្រាក់</translation>
 <translation id="2147117373852943630">ឧបករណ៍​តន្ត្រី</translation>
@@ -1026,7 +1021,6 @@
 <translation id="2546283357679194313">ខុកឃី និងទិន្នន័យគេហទំព័រ</translation>
 <translation id="254947805923345898">តម្លៃ​របស់គោលការណ៍​គ្មានសុពលភាពទេ។</translation>
 <translation id="2549836668759467704">ការពិគ្រោះ និង​ការម៉ៅការ​សំណង់</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> និង​ច្រើនទៀត</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> បានផ្ញើការឆ្លើយតបដែលមិនត្រឹមត្រូវ</translation>
 <translation id="2551608178605132291">អាសយដ្ឋាន៖ <ph name="ADDRESS" />។</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1060,7 +1054,6 @@
 <translation id="2605979593348332811">ឈ្មោះ​តាម​សូរសព្ទ</translation>
 <translation id="2606760465469169465">ការផ្ទៀងផ្ទាត់ដោយស្វ័យ​ប្រវត្តិ</translation>
 <translation id="2607101320794533334">ព័ត៌មានសោសាធារណៈភាគីវិញ្ញាបនប័ត្រ</translation>
-<translation id="2608019759319359258">នៅពេលដែលប្រធានបទត្រូវបានទប់ស្កាត់ វានឹងមិនត្រូវបានប្រើដើម្បីកំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួនទេ</translation>
 <translation id="2610561535971892504">ចុច​ដើម្បី​ចម្លង</translation>
 <translation id="2612676031748830579">លេខកាត</translation>
 <translation id="2612993535136743634">លេខកូដ​សុវត្ថិភាព​ទាំងអស់​ដែលបានរក្សាទុក​នៅលើ​ឧបករណ៍​របស់អ្នក និង​នៅក្នុង​គណនី Google នឹងត្រូវបានលុប</translation>
@@ -1504,7 +1497,6 @@
 <translation id="3299720788264079132">មានអ្វីមួយខុសប្រក្រតី ពេលកំពុងប្រើប្រាស់<ph name="FEATURE_NAME" /></translation>
 <translation id="3303176609391916566">30 x 42 in</translation>
 <translation id="3303855915957856445">រកមិនឃើញលទ្ធផលស្វែងរកទេ</translation>
-<translation id="3303872874382375219">ថាតើការផ្សាយពាណិជ្ជកម្មដែលអ្នកមើលឃើញមានលក្ខណៈផ្ទាល់ខ្លួនឬអត់អាចអាស្រ័យលើអ្វីៗជាច្រើន រួមទាំងការកំណត់នេះ <ph name="BEGIN_LINK1" />ប្រធានបទផ្សាយពាណិជ្ជកម្ម<ph name="LINK_END1" /> <ph name="BEGIN_LINK2" />ការកំណត់ខូគី<ph name="LINK_END2" />របស់អ្នក និង​ថាតើ​គេហទំព័រ​ដែល​អ្នក​កំពុងមើល​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់។ ស្វែងយល់បន្ថែមអំពី<ph name="BEGIN_LINK3" />ការគ្រប់គ្រងឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្មរបស់អ្នក<ph name="LINK_END3" />។</translation>
 <translation id="3304073249511302126">ការស្កេន​ប៊្លូធូស</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">ពាក្យសម្ងាត់ដែលអ្នកទើបតែប្រើត្រូវបានរកឃើញនៅក្នុងការបែកធ្លាយទិន្នន័យ។ កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ណែនាំឱ្យផ្លាស់ប្ដូរពាក្យសម្ងាត់នេះឥឡូវនេះ។</translation>
@@ -1543,7 +1535,6 @@
 <translation id="3377144306166885718">ម៉ាស៊ីនមេបានប្រើ​កំណែ TLS ដែលលែងប្រើ។</translation>
 <translation id="3377188786107721145">កំហុសឆ្គងការវិភាគគោលការណ៍</translation>
 <translation id="3377642479079205807">ស្តើង</translation>
-<translation id="3378612801784846695">ប្រធានបទ​គឺផ្អែក​លើ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​របស់​អ្នកក្នុងពេលថ្មីៗនេះ និង​ត្រូវ​បានប្រើប្រាស់​ដោយ​គេហទំព័រ​ដើម្បី​បង្ហាញ​ការផ្សាយ​ពាណិជ្ជកម្ម​ដែល​មានលក្ខណៈ​ផ្ទាល់ខ្លួន​ដល់​អ្នក ព្រមទាំងការពារអត្តសញ្ញាណរបស់អ្នក</translation>
 <translation id="3380365263193509176">កំហុសឆ្គងមិនស្គាល់</translation>
 <translation id="3380864720620200369">លេខសម្គាល់អតិថិជន៖</translation>
 <translation id="3383566085871012386">លំដាប់អាទិភាពបច្ចុប្បន្ន</translation>
@@ -1580,7 +1571,6 @@
 <translation id="3433111389595862568">កម្មវិធី​សម្រាប់​ការសហការ និង​ការប្រជុំ</translation>
 <translation id="3433144818443565002">ការជជែក​ជាវីដេអូ និង​សំឡេង</translation>
 <translation id="3434025015623587566">កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ត្រូវការសិទ្ធិចូលប្រើប្រាស់បន្ថែមទៀត</translation>
-<translation id="3434346831962601311">គ្មានប្រធានបទដែលបានទប់ស្កាត់ទេ</translation>
 <translation id="343474037147570563">ឯកសារ​ដែលអ្នក​បង្ហោះ ឬ​ភ្ជាប់​ត្រូវបានផ្ញើ​ទៅ Google Cloud ឬ​ភាគីទីបី​ដើម្បីវិភាគ។ ឧទាហរណ៍ ឯកសារទាំងនោះ​អាចត្រូវបានស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប ឬ​កម្មវិធីគ្រោះថ្នាក់ និង​អាច​ត្រូវបាន​រក្សាទុក​ដោយផ្អែកតាម​គោលការណ៍​របស់ក្រុមហ៊ុន ហើយអ្នកគ្រប់គ្រងរបស់អ្នកអាចមើលឃើញឯកសារទាំងនោះ។</translation>
 <translation id="3435557549311968410">បន្តបន្ទាប់ (ខាងខ្លី)</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
@@ -1732,7 +1722,6 @@
 <translation id="3662040827609932717">IBAN នេះ​ត្រូវបាន​រក្សាទុក​នៅក្នុង Google Wallet ដូច្នេះ​អ្នកអាច​ប្រើវា​នៅលើ​សេវាកម្ម Google បាន។</translation>
 <translation id="3664479564786885722">ស្វែងរកជម្រើសទិញបន្ថែមពីហាងផ្សេងទៀតដែលលក់ផលិតផលនេះ។</translation>
 <translation id="3664782872746246217">ពាក្យ​គន្លឹះ៖</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ស្វែងយល់បន្ថែម<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">លេខ</translation>
 <translation id="3670159164851218963">ប្រវត្តិមុខងារ AI</translation>
 <translation id="3670229581627177274">បើកប៊្លូធូស</translation>
@@ -1964,7 +1953,6 @@
 
     អ្នក​ក៏អាច​ទាក់ទង​ទៅម្ចាស់​គេហទំព័រនេះ និងផ្ដល់យោបល់​ឱ្យគាត់​ដំឡើង​កម្រិតទៅ HTTPS បាន​ផងដែរ។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់​បន្ថែម​អំពី​សារប្រុង​ប្រយ័ត្ននេះ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">បកក្រោយការបន្ថែម</translation>
-<translation id="4030545038933060179">នៅ​ពេលបើក បញ្ជី​ប្រធានបទ​បង្ហាញ​នៅទីនេះ ផ្អែក​លើប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​របស់​អ្នកក្នុងពេលថ្មីៗនេះ</translation>
 <translation id="4031179711345676612">បាន​អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន</translation>
 <translation id="4036753017940930924">ដីឡូត៍ និងដី</translation>
 <translation id="403724377879219932">អាច​ស្នើសុំ​ចូលប្រើ​ឧបករណ៍​ផ្សេងទៀត​នៅលើ​បណ្ដាញ​មូលដ្ឋាន​របស់អ្នក​បាន</translation>
@@ -2056,6 +2044,7 @@
 <translation id="4153446078232988116"><ph name="SITE" /> មិនអាចធ្វើ​ការ​តភ្ជាប់ដែលមានសុវត្ថិភាព​ជាមួយ HTTPS បានទេ</translation>
 <translation id="4153858337812834972">ផ្ទាំង​ថ្មីៗបំផុត</translation>
 <translation id="4154277373259957087">ឥឡូវនេះ Chrome នឹង​ផ្ទៀងផ្ទាត់​ថាជាអ្នក មុននឹងបំពេញ​វិធីបង់ប្រាក់។ អ្នកអាច​ធ្វើបច្ចុប្បន្នភាពលក្ខណៈនេះបានគ្រប់ពេល​នៅក្នុង<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />។</translation>
+<translation id="4157273919218514718">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ <ph name="BEGIN_LINK" />គ្រប់គ្រង​ការកំណត់<ph name="END_LINK" /></translation>
 <translation id="4159784952369912983">ស្វាយ</translation>
 <translation id="4165422751765527461">បើក​អត្ថបទមជ្ឈមណ្ឌល​ជំនួយ​នៅក្នុង​ផ្ទាំងថ្មី</translation>
 <translation id="4165986682804962316">ការកំណត់គេហទំព័រ</translation>
@@ -2069,7 +2058,6 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ធាតុ <ph name="ITEM_COUNT" /> ទៀត}other{ធាតុ <ph name="ITEM_COUNT" /> ទៀត}}</translation>
 <translation id="4176463684765177261">បានបិទដំណើរការ</translation>
-<translation id="4177501066905053472">ប្រធានបទនៃការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="4178863275556660738">បង់ប្រាក់​តាម​វិធីបង់ប្រាក់​ដែលមិន​ប្រើកាត</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ឈប់​តាមដាន​តម្លៃ</translation>
@@ -2128,6 +2116,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">អាវយឺត</translation>
 <translation id="4253168017788158739">កំណត់ត្រា</translation>
+<translation id="4255125583058870090">កំពុងផ្ទុកកម្មវិធីទូទាត់ប្រាក់</translation>
 <translation id="4255487295905690262">អ្នក​នឹង​ទទួលបាន​ការជូនដំណឹង​តាមអ៊ីមែល ប្រសិនបើ​តម្លៃធ្លាក់ចុះ​នៅលើ​គេហទំព័រ​ណាមួយ។</translation>
 <translation id="425582637250725228">ការផ្លាស់ប្តូរដែលអ្នកបានធ្វើប្រហែលជាមិនបានរក្សាទុកទេ</translation>
 <translation id="4258748452823770588">ហេត្ថលេខាមិនល្អ</translation>
@@ -2299,7 +2288,6 @@
 <translation id="4523580145196408446">បានភ្ជាប់</translation>
 <translation id="4523643381056109546">ស្លាកសញ្ញា</translation>
 <translation id="4524138615196389145">បញ្ជាក់​បណ្ណរបស់អ្នក​រហ័ស​ជាងមុន​ដោយប្រើ WebAuthn ចាប់ពី​ពេលនេះ​តទៅ</translation>
-<translation id="45243788195988825">ទប់ស្កាត់ <ph name="TOPIC" /></translation>
 <translation id="4528888973346221791">ព័ត៌មាន​អំពី​កម្រងព័ត៌មាន​ការងារ (ដូចជា​ឈ្មោះ​អ្នកប្រើប្រាស់​របស់អ្នក​ជាដើម)</translation>
 <translation id="4530347922939905757">សារ​ជា​អក្សរ</translation>
 <translation id="4531477351494678589">លេខកាតនិម្មិត៖</translation>
@@ -2504,6 +2492,7 @@
 <translation id="4865063548323785458">រក្សាទុក និង​បំពេញ​ពាក្យសម្ងាត់​របស់អ្នក​ដោយ​ស្វ័យប្រវត្តិ ដើម្បី​ងាយស្រួល​ចូលគណនី​នៅលើ​គេហទំព័រ និង​កម្មវិធី</translation>
 <translation id="4866506163384898554">ចុច |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ដើម្បីបង្ហាញទស្សន៍ទ្រនិច​របស់អ្នក</translation>
 <translation id="4868277513442568587">ដើម្បី​បន្តប្រើ​ក្រុមផ្ទាំង​ដែលអ្នក​បានចែករំលែក សូម​ដំឡើង​កំណែ Chrome</translation>
+<translation id="4873312501243535625">ឧបករណ៍ពិនិត្យឯកសារកំសាន្ត</translation>
 <translation id="4873616204573862158">វ៉ែនតា</translation>
 <translation id="4873807733347502026">ចាក់សោ និងប្រើម៉ៅស៍របស់អ្នក</translation>
 <translation id="4876305945144899064">គ្មាន​ឈ្មោះ​អ្នកប្រើប្រាស់​ទេ</translation>
@@ -2528,7 +2517,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ព្រឹត្តិការណ៍​កីឡាអូឡាំពិក​</translation>
 <translation id="4897851261703006488">គោលការណ៍នេះ​មិនគួរ​មានផ្នែកក្បាល​លើសពី <ph name="MAX_HEADER_SIZE_LIMIT" />KB ទេ។</translation>
-<translation id="4898742041545089450">ប្រធានបទនេះត្រូវបានឈប់​ទប់ស្កាត់ និងអាចប្រែជាសកម្មដោយផ្អែកលើប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតរបស់អ្នក</translation>
 <translation id="4900217275619098670">ដុំទីប្រាំបួន</translation>
 <translation id="4901052769830245369">ស្លាក (រលោងមធ្យម)</translation>
 <translation id="4901162432287938633">អនាម័យ និង​ប្រដាប់ប្រដារអនាម័យផ្ទាល់ខ្លួន</translation>
@@ -2623,10 +2611,8 @@
 <translation id="5043480802608081735">តំណដែល​អ្នកបានចម្លង</translation>
 <translation id="5043753287208271200">លឿងទី 3</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
-<translation id="5048293684454354469">ប្រធានបទផ្សាយពាណិជ្ជកម្មគឺគ្រាន់តែជាវិធីមួយក្នុងចំណោមវិធីជាច្រើនដែលគេហទំព័រអាចប្រើដើម្បីកំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ទោះបីជាគ្មានប្រធានបទផ្សាយពាណិជ្ជកម្មក៏ដោយ ក៏គេហទំព័រនៅតែអាចបង្ហាញការផ្សាយពាណិជ្ជកម្មដល់អ្នក ប៉ុន្តែការផ្សាយពាណិជ្ជកម្មទាំងនោះប្រហែលជាមិនសូវមានលក្ខណៈផ្ទាល់ខ្លួនទេ។ ស្វែងយល់បន្ថែមអំពី<ph name="BEGIN_LINK" />ការគ្រប់គ្រងឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្មរបស់អ្នក<ph name="LINK_END" />។</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, ចុច tab ដើម្បី​ទទួលបាន​ផ្លូវកាត់​ការស្វែងរក​ច្រើនទៀត​ដែលអាច​ប្រើបាន បន្ទាប់ពី​ការណែនាំ​ការស្វែងរកនេះ</translation>
 <translation id="5052488928733955073">មានបញ្ហាក្នុងការបំពេញព័ត៌មានរបស់អ្នក។ សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក។</translation>
-<translation id="5052517576853118371">ប្រធានបទសកម្ម</translation>
 <translation id="5053116470141135293">លេខកាតនិម្មិត​នឹង​ត្រូវបាន​បំពេញ នៅពេល​អ្នក​បង់ប្រាក់ចេញ​ដោយប្រើ​កាតនេះ ដើម្បី​ការពារ​ព័ត៌មាន​លម្អិត​ជាក់ស្ដែង​របស់អ្នក។ គ្រប់គ្រង​នៅក្នុង Google Wallet។ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ដើម្បីផ្ញើឯកសារនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}other{ដើម្បីផ្ញើឯកសារទាំងនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}}</translation>
 <translation id="5056587122125565772">បង្កើត​រូបភាព</translation>
@@ -2725,7 +2711,6 @@
 <translation id="5206392433295093945">បន្ទប់គេង</translation>
 <translation id="5209670883520018268">ទម្រទី 20</translation>
 <translation id="5212364581680288382">ការប្រណាំងម៉ូតូ</translation>
-<translation id="5214542134842513912">ជ្រើសរើស​ប្រភេទ​ប្រធានបទ​ទូលំទូលាយ​ដែល​អាច​ត្រូវ​បាន​ប្រើ​ដើម្បី​ជួយ​កំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ការបិទប្រភេទកាន់តែទូលំទូលាយក៏នឹង​ទប់ស្កាត់ប្រធានបទ​ទាក់ទងរបស់វាផងដែរ។</translation>
 <translation id="52163492208010719">គ្រប់គ្រងឯកសារ​សម្គាល់ខ្លួន</translation>
 <translation id="521659676233207110">ទម្រទី 13</translation>
 <translation id="5216942107514965959">បានចូលមើល​លើកចុងក្រោយ​នៅថ្ងៃនេះ</translation>
@@ -3007,6 +2992,7 @@
 <translation id="5611398002774823980">រក្សាទុកនៅក្នុងគណនី</translation>
 <translation id="561165882404867731">បកប្រែទំព័រនេះដោយប្រើ Google បកប្រែ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ចង់ប្រើ​ទីតាំង​កុំព្យូទ័រ​របស់អ្នក</translation>
+<translation id="5613117810542399920">បានធ្វើចំណារវិញ</translation>
 <translation id="5613958591683399697">សួរ <ph name="ENGINE_NAME" /></translation>
 <translation id="5614190747811328134">ជូនដំណឹងអ្នកប្រើ</translation>
 <translation id="5614520971155863709">ហ្គេម​បៀ</translation>
@@ -3025,6 +3011,7 @@
 <translation id="5640474731385449758">កម្មវិធីបន្ថែម "<ph name="EXTENSION_NAME" />" ចង់​បើកតំណ <ph name="PROTOCOL" /> នៅក្នុង <ph name="ORIGIN" /> តាមរយៈ <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">សមាសភាគ និងប្រព័ន្ធ​ស្តេរ៉េអូ</translation>
 <translation id="5642508497713047">អ្នកចុះហត្ថលេខា CRL</translation>
+<translation id="5643946808525377120">បានផ្ញើទៅ Chrome នៅលើ <ph name="DEVICE_NAME" /> របស់អ្នក</translation>
 <translation id="5644090287519800334">ការប្ដូរ​រូបភាព X នៃចំហៀងទី 1</translation>
 <translation id="5644128326840674462">ផ្ទាំងបដា​ផ្សព្វផ្សាយ</translation>
 <translation id="5645132789250840550">ប្លាស្ទិក (រលោងមធ្យម)</translation>
@@ -3066,6 +3053,7 @@
 <translation id="5715150588940290235">លុប​លេខកូដ​សុវត្ថិភាព​ដែលបានរក្សាទុកឬ?</translation>
 <translation id="5715918316982363436"><ph name="TAB_COUNT" />ពី<ph name="WINDOW_COUNT" /> នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="5716325061445053985">ចុច​ដើម្បីបើក​ផ្ទាំង​នៅលើ​ទូរសព្ទ​របស់អ្នក</translation>
+<translation id="5717281954932320486">បំពេញព័ត៌មានលម្អិតអំពីកាតដោយស្វ័យប្រវត្តិ នៅពេលអ្នកបង់ប្រាក់ចេញលើអ៊ីនធឺណិត។ កាតត្រូវបានរក្សាទុកនៅក្នុង Google Wallet ដោយសុវត្ថិភាព។</translation>
 <translation id="5717509257172454543">ការជិះ​ស្គី​លើទឹក​កក</translation>
 <translation id="5718326209176373202">បញ្ចូលចំណារជាអក្សរ</translation>
 <translation id="5718601519531438273">រួមបញ្ចូល​ព័ត៌មាន ដូចជា​លិខិតឆ្លងដែន និង​បណ្ណ​បើកបរ​ជាដើម</translation>
@@ -4062,6 +4050,7 @@
 <translation id="7257453341537973799">ការរៀបចំ​ផែនការ និងធនធាន​សម្រាប់អាជីព</translation>
 <translation id="725866823122871198">ការភ្ជាប់ឯកជនទៅ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> មិនអាចធ្វើឡើងទេ ពីព្រោះកាលបរិច្ឆេទ និងម៉ោងកុំព្យូទ័ររបស់អ្នក (<ph name="DATE_AND_TIME" />)មិនត្រឹមត្រូវ។</translation>
 <translation id="7260075294900977274">ថតឆ្លាតវៃថ្មីដែលជួយអ្នករក្សាទុកទំព័រទិញទំនិញទាំងអស់របស់អ្នកនៅកន្លែងតែមួយ និងតាមដានតម្លៃដោយស្វ័យប្រវត្តិ ទទួលបានព័ត៌មានស៊ីជម្រៅអំពីតម្លៃ និងធ្វើអ្វីៗជាច្រើនទៀត</translation>
+<translation id="7261463765917514051">បង់ប្រាក់ចេញដោយសុវត្ថិភាពតាមរយៈការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="7265608370113700582">អាចប្រើ​អាសយដ្ឋាន​បានតែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ</translation>
 <translation id="7266094331715305887">កម្មវិធី​នៅលើ​ឧបករណ៍</translation>
 <translation id="7269151392155523061">ផ្លូវកាត់​មិនអាច​ដូចគ្នានឹង​ពាក្យគន្លឹះ​ក្នុងទំព័រប្រមូលផ្តុំ​ការស្វែងរក​ដែលកំណត់​ដោយ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />៖ <ph name="SHORTCUT_NAME" /></translation>
@@ -4084,7 +4073,6 @@
 <translation id="7305767780379163575">មិនអាច​រក្សាទុក​រូបថត​បានទេ</translation>
 <translation id="7307063504147610123">បានរក្សាទុក​អាសយដ្ឋាន​ទៅក្នុង​ឧបករណ៍នេះ</translation>
 <translation id="7308436126008021607">សមកាលកម្ម​ផ្ទៃខាងក្រោយ</translation>
-<translation id="7309058266849426521">ស្វែងយល់​បន្ថែម​អំពី​ការគ្រប់គ្រង​ឯកជនភាពនៃការផ្សាយពាណិជ្ជកម្ម​របស់​អ្នក​នៅ​ក្នុង Chrome។</translation>
 <translation id="7310392214323165548">ឧបករណ៍នឹងចាប់ផ្ដើមឡើងវិញឆាប់ៗនេះ</translation>
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
 <translation id="7313107491291103073">ស្ថាប័ន​របស់អ្នក​បាន​សម្គាល់​គេហទំព័រនេះ ដោយសារ​វាអាច​បំពាន​គោលការណ៍។</translation>
@@ -4282,6 +4270,7 @@
 <translation id="7575800019233204241">"ការតភ្ជាប់​របស់អ្នក​មិន​មានលក្ខណៈ​ឯកជន" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ឬ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ឬ "មានបញ្ហាផ្នែក​វិញ្ញាបនបត្រ SSL"</translation>
 <translation id="7575887283389198269">ទូរសព្ទ​ចល័ត</translation>
 <translation id="7579113844074980463">ថេប្លេត <ph name="MANUFACTURER" /></translation>
+<translation id="7579227976546039122">កំណែបង្កើតរបស់អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="7579442726219254162">អថេរ "<ph name="VARIABLE" />" ដែលមិនស្គាល់​នៅក្នុង​ការកំណត់រចនាសម្ព័ន្ធ​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ "<ph name="APPLICATION_ID" />"។</translation>
 <translation id="7581199239021537589">ការប្ដូរ​រូបភាព Y នៃចំហៀងទី 2</translation>
 <translation id="7582602800368606489">បង្កើត​ព្រឹត្តិការណ៍ថ្មី​នៅក្នុង Google ប្រតិទិន​បានរហ័ស</translation>
@@ -4477,7 +4466,6 @@
 <translation id="7877007680666472091">លេខសម្គាល់​ខ្លឹមសារ​ដែលមាន​ការការពារ</translation>
 <translation id="7878562273885520351">ពាក្យសម្ងាត់​របស់អ្នក​អាចត្រូវ​បានគេលួចប្រើ​</translation>
 <translation id="7885670691503039914">អ្នក​នឹង​ទទួលបាន​ការជូនដំណឹង​តាមអ៊ីមែល ប្រសិនបើ​មាន​ការធ្លាក់ថ្លៃ​នៅលើ​គេហទំព័រ​ណាមួយ។ ទំព័រនេះ​នឹង​ត្រូវបាន​រក្សាទុក​ទៅថត​ចំណាំ <ph name="LAST_BOOKMARKS_FOLDER" />។</translation>
-<translation id="7886897188117641322">ជ្រើសរើស​ប្រភេទ​ប្រធានបទ​ទូលំទូលាយ​ដែល​អាច​ត្រូវ​បាន​ប្រើ​ដើម្បី​ជួយ​កំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន</translation>
 <translation id="7887683347370398519">ពិនិត្យលេខកូដ CVC ហើយព្យាយាមម្តងទៀត</translation>
 <translation id="7887885240995164102">ចូលមុខងារ​រូបក្នុងរូប</translation>
 <translation id="7888367499748383555">គ្មានថ្លៃសេវា អត្រា​ការប្រាក់​ប្រចាំឆ្នាំចាប់ពី 0% (អាស្រ័យលើសិទ្ធិទទួលបាន)</translation>
@@ -4588,7 +4576,6 @@
 <translation id="8046360364391076336">សម្ភារ និង​បរិក្ខារ​ឧស្សាហកម្ម</translation>
 <translation id="8052898407431791827">បានចម្លង​ទៅ​ឃ្លីបបត</translation>
 <translation id="8057023045886711556">ភាពយន្ត​កំប្លែង</translation>
-<translation id="805766869470867930">អ្នកមិនបានទប់ស្កាត់ប្រធានបទណាមួយទេ</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" មិនបានកំណត់រចនាសម្ព័ន្ធត្រឹមត្រូវទេ។ ជាធម្មតាការលុប "<ph name="SOFTWARE_NAME" />" អាចដោះស្រាយបញ្ហានេះបាន។ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">មិន​តម្រូវ</translation>
 <translation id="8061691770921837575">ការតុបតែងខ្លួន និង​គ្រឿង​សម្អាង</translation>
@@ -4635,7 +4622,6 @@
 <translation id="8130113808541743942">ផ្លាស់​ទីទៅ...</translation>
 <translation id="813024282736408069">បើក​កាតនិម្មិត​សម្រាប់​ការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="8131740175452115882">អះអាង</translation>
-<translation id="8133495915926741232">ជ្រើសរើស​ប្រភេទ​ប្រធានបទ​ទូលំទូលាយ​ដែល​អាច​ត្រូវ​បាន​ប្រើ​ដើម្បី​ជួយ​កំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ការបិទប្រភេទកាន់តែទូលំទូលាយក៏នឹង​ទប់ស្កាត់ប្រធានបទ​ទាក់ទងរបស់វាផងដែរ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ការជ្រើសរើស និងរៀបចំបុគ្គលិក</translation>
 <translation id="8135546115396015134">គ្រាប់ចុច​ទៅឆ្វេង</translation>
 <translation id="8137456439814903304">ថាមពល និងក្រុមហ៊ុនផ្គត់ផ្គង់អគ្គិសនី</translation>
@@ -4653,6 +4639,7 @@
 <translation id="81563721597823545">បរិក្ខារ​កីឡា​ហុកគី</translation>
 <translation id="815805690561372740">Chrome មាន​មុខងារ​សុវត្ថិភាព​ដែលភ្ជាប់មក​ជាមួយស្រាប់ ដើម្បី​ការពារអ្នក នៅពេល​អ្នករុករក ដូចជាការរុករកដោយសុវត្ថិភាព​នៅលើ Google ដែល<ph name="BEGIN_LINK" />បានរកឃើញកម្មវិធីគ្រោះថ្នាក់នាពេលថ្មីៗនេះ<ph name="END_LINK" />នៅលើគេហទំព័រដែលអ្នកបានសាកល្បងចូលមើល។</translation>
 <translation id="8161095570253161196">បន្ត​រុករក</translation>
+<translation id="8163468049564974856">បើកការបំពេញស្វ័យប្រវត្តិ ដើម្បីបង់ប្រាក់ចេញដោយសុវត្ថិភាពលើអ៊ីនធឺណិត។ ព័ត៌មានលម្អិតកាតរបស់អ្នក​ត្រូវបាន​អ៊ីនគ្រីប​នៅក្នុង Google Wallet។</translation>
 <translation id="8163866351304776260">ចោះ​បួនរន្ធ​ខាងឆ្វេង</translation>
 <translation id="8164078261547504572">ចង់​ទទួលបាន​អ៊ីមែល​នៅ​ពេល​ធ្លាក់​ថ្លៃ​មែនទេ?</translation>
 <translation id="8169175551046720804">មិនអាច​កំណត់កូដ "<ph name="DATA_CONTROLS_KEYS" />" នៅក្នុង​វចនានុក្រម​តែមួយ​បានទេ</translation>
@@ -4855,7 +4842,6 @@
 <translation id="8467494337615822642">ចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
 <translation id="8468358362970107653">ស្រោមសំបុត្រ C3</translation>
 <translation id="8469428721212363950">ជំនួញ​លក់រាយ</translation>
-<translation id="8472700501934242014">ប្រធានបទដែលបានទប់ស្កាត់</translation>
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">អាសយដ្ឋាន​ និងច្រើន​ទៀត</translation>
 <translation id="8474910779563686872">បង្ហាញព័ត៌មានលម្អិតអំពី​អ្នកអភិវឌ្ឍន៍</translation>
@@ -5000,7 +4986,6 @@
 <translation id="8730621377337864115">រួចរាល់</translation>
 <translation id="8731268612289859741">លេខ​កូដ​សុវត្ថិភាព</translation>
 <translation id="8733345475331865475">ធានារ៉ាប់រង​យានយន្ត</translation>
-<translation id="8733764070897080460">អ្នក​អាច​ទប់ស្កាត់​ប្រធានបទ​ដែល​អ្នក​មិន​ចង់​ឱ្យ​ចែករំលែក​ជា​មួយ​គេហទំព័រ។ Chrome ក៏​លុប​ប្រធានបទ​របស់​អ្នកដែល​ចាស់​ជាង 4 សប្ដាហ៍​ដោយ​ស្វ័យប្រវត្តិ​​ផងដែរ។ ស្វែងយល់បន្ថែម</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> របស់​អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 in</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីបើក​ផ្ទាំងឯកជនថ្មី ដើម្បីរុករកជាលក្ខណៈឯកជន</translation>
@@ -5018,6 +5003,7 @@
 <translation id="8758529215314160755">អ្នកអាច​កែឈ្មោះ​របស់អ្នកនៅក្នុង​<ph name="BEGIN_LINK" />គណនី Google<ph name="END_LINK" /> របស់អ្នក ពោលគឺ <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">បណ្ណនេះផុតកំណត់ហើយ</translation>
 <translation id="87601671197631245">គេហទំព័រ​នេះ​ប្រើ​ការកំណត់​រចនាសម្ព័ន្ធ​សុវត្ថិភាព​​ហួសសម័យ ដែលអាចធ្វើឱ្យ​បែកធ្លាយ​ព័ត៌មាន​របស់អ្នក (ឧទាហរណ៍ ពាក្យសម្ងាត់ សារ ឬ​បណ្ណ​ឥណទាន) នៅពេល​ផ្ញើ​ទៅ​គេហទំព័រ​នេះ។</translation>
+<translation id="8762871163452985706">បានត្រឡប់ចំណារវិញ</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{បានផ្ញើ​តំណពី <ph name="DEVICE_NAME" />}other{បានផ្ញើ​តំណ # ពី <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">ឧបករណ៍ USB</translation>
 <translation id="8763986294015493060">បិទ​ផ្ទាំងឯកជន​ទាំងអស់​ដែលកំពុងបើក</translation>
@@ -5366,6 +5352,7 @@
 <translation id="987264212798334818">ទូទៅ</translation>
 <translation id="988159990683914416">លេខកំណែអ្នកអភិវឌ្ឍន៍</translation>
 <translation id="989988560359834682">កែអាសយដ្ឋាន</translation>
+<translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
 <translation id="991936891556421157">ស្បែកជើង</translation>
 <translation id="992110854164447044">កាត​និម្មិត​លាក់​កាត​ពិតប្រាកដ​របស់អ្នក ដើម្បីជួយ​ការពារ​អ្នក​ពី​ការគៃបន្លំ​ដែលអាចកើតមាន។ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>

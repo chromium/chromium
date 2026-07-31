@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1559263013367304065">që nga përdorimi i "Lentes së Google"</translation>
 <translation id="1560153516220021659">Butoni i shiritit dytësor të veglave u palos</translation>
+<translation id="1562601408588733317">Menaxho gjetjen dhe plotësimin e informacioneve me Gemini</translation>
 <translation id="1565371473877914088">Skedë e re "e fshehtë"</translation>
 <translation id="1567960978791353852">Shfaq "Modalitetin e leximit"</translation>
 <translation id="1571780780926010134">Skedat "e fshehta"</translation>
@@ -1396,6 +1397,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5666313630530585305">Identifikohu te një uebsajt.</translation>
 <translation id="5669335982068190158">Ke dalë si pjesë e rivendosjes së iPhone. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Menaxho "Aplikacionet e lidhura"</translation>
 <translation id="567881659373499783">Versioni <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Të ndërrohen llogaritë? Të dhënat e paruajtura të llogarisë do të fshihen.</translation>
 <translation id="5683499062697987550">Për të përdorur dhe ruajtur fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti.</translation>
@@ -1571,6 +1573,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6240553182907836376">Përditëso kartën e identitetit</translation>
 <translation id="6240601837375010619">Ruaj pasaportën</translation>
 <translation id="6241132809279377987">Shkyç më shumë veçori për iPhone me aplikacionet e Google</translation>
+<translation id="6244366663267187541">Zgjidh se me cilat aplikacione lidhet Gemini</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6251835855431997163">Plotëso automatikisht: <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Identifikohu në "<ph name="URL" />"</translation>
@@ -1946,6 +1949,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="7471557245617580330">Krijo skedë të re</translation>
 <translation id="7473555040328423550">Shto skedë</translation>
 <translation id="7476548258282096076">Kjo kartë shfaq sajtet e tua më të vizituara.</translation>
+<translation id="7482823403440483089">Plotësimi automatik i përmirësuar</translation>
 <translation id="7484645889979462775">Asnjëherë për këtë faqe</translation>
 <translation id="7486006552035434095">Mbaji pajisjet e tua të sinkronizuara</translation>
 <translation id="7491131399623468277">Shko te Settings…</translation>
@@ -2195,7 +2199,6 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8270320981823560179">Disku</translation>
 <translation id="8274795744553482834">Je gati të ndërrosh profilet</translation>
 <translation id="8275068909952022340">Më shumë…</translation>
-<translation id="8280797717392145626">Lidhjet u morën</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Anashkalo</translation>
 <translation id="8282657446819506217">Hape në grupin e skedave</translation>

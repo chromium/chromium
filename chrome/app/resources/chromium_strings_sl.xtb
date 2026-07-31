@@ -576,6 +576,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="7173822816570314652">Organizacija izbriše podatke v Chromiumu, če se ne uporablja <ph name="TIMEOUT_DURATION" />. To lahko vključuje zgodovino, samodejno izpolnjene podatke in prenose.</translation>
 <translation id="718435575166326686">Chromium potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
 <translation id="7196312274710523067">Chromiuma ni bilo mogoče zagnati. Poskusite znova.</translation>
+<translation id="7204669035546236137">Z Geminijem v Chromiumu lahko vprašate kar koli, kjer koli ste</translation>
 <translation id="7213008767289637091">Chromium naj ostane v vrstici Dock, da lahko kadar koli hitro dostopate do njega</translation>
 <translation id="7213407614656404070">Uporaba Chromiuma ob vsakem kliku povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="7216228761061470870">Če uporabljate slikovno iskanje v namiznem računalniku, se naslov strani, URL in vsebina, vključno s datotekami PDF, pošljejo v strežnik.</translation>
@@ -632,6 +633,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7745317241717453663">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chromium prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7750130090210923118">Ponastavitev Chromiuma na privzete nastavitve</translation>
+<translation id="7752521946322750699">Zaradi zaščite vašega dela v Chromiumu si bo organizacija lahko ogledala nekatere podatke ali jih upravljala, ko boste prijavljeni v Chromium.</translation>
 <translation id="7781047659465034537">Nastavite Chromium kot privzeti brskalnik in ga pripnite v opravilno vrstico</translation>
 <translation id="7786760609782648049">Pospešite Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – delovna različica Chromiuma</translation>

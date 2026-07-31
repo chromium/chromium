@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="1559263013367304065">since using Google Lens</translation>
 <translation id="1560153516220021659">Collapsed secondary toolbar button</translation>
+<translation id="1562601408588733317">Manage finding and filling info with Gemini</translation>
 <translation id="1565371473877914088">New Incognito tab</translation>
 <translation id="1567960978791353852">Show Reading mode</translation>
 <translation id="1571780780926010134">Incognito tabs</translation>
@@ -1396,6 +1397,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5666313630530585305">Sign in to a website.</translation>
 <translation id="5669335982068190158">You were signed out as part of your iPhone reset. Tap continue below to sign in.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Manage Connected Apps</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Switch accounts? Unsaved account data will be deleted.</translation>
 <translation id="5683499062697987550">To use and save passwords in your Google Account, verify that it's you.</translation>
@@ -1571,6 +1573,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6240553182907836376">Update identity card</translation>
 <translation id="6240601837375010619">Save passport</translation>
 <translation id="6241132809279377987">Unlock more features for your iPhone with Google apps</translation>
+<translation id="6244366663267187541">Choose which apps Gemini connects to</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163">Autofill <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Sign in to <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7471557245617580330">Create new tab</translation>
 <translation id="7473555040328423550">Add tab</translation>
 <translation id="7476548258282096076">This card shows your most visited sites.</translation>
+<translation id="7482823403440483089">Enhanced autofill</translation>
 <translation id="7484645889979462775">Never for this site</translation>
 <translation id="7486006552035434095">Keep your devices in sync</translation>
 <translation id="7491131399623468277">Go to Settings…</translation>
@@ -2195,7 +2199,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8270320981823560179">Drive</translation>
 <translation id="8274795744553482834">You're about to switch profiles</translation>
 <translation id="8275068909952022340">More…</translation>
-<translation id="8280797717392145626">Links received</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282657446819506217">Open in tab group</translation>

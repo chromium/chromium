@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">પેપરનો પ્રકાર</translation>
 <translation id="1142965388643537393">મુસાફરીની માહિતી</translation>
 <translation id="1143142264369994168">પ્રમાણપત્ર હસ્તાક્ષરકર્તા</translation>
-<translation id="1144136880160289237">તમારી પાસે હજી સુધી કોઈ સક્રિય વિષય નથી</translation>
 <translation id="1149617035358809955">આ તમે જ છો તેની ચકાસણી કરો, જેથી તે ચુકવણી માટેની તમારી માહિતી ભરી શકે</translation>
 <translation id="1150565364351027703">ગોગલ્સ</translation>
 <translation id="1150979032973867961">આ સર્વર સાબિત કરી શક્યું નથી કે એ <ph name="DOMAIN" /> છે; એનું સુરક્ષા પ્રમાણપત્ર તમારા કમ્પ્યુટરની ઑપરેટિંગ સિસ્ટમ દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
@@ -351,6 +350,7 @@
 <translation id="1539840569003678498">રિપોર્ટ મોકલ્યો:</translation>
 <translation id="1542105669288201090">વ્યવસાય સંબંધિત શિક્ષણ</translation>
 <translation id="1542830386724426410">ચેકઆઉટ વખતે ઉપલબ્ધ કાર્ડના લાભ અને રિવૉર્ડ બતાવો. રજૂકર્તાની શરતો લાગુ થાય છે. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />વધુ જાણો<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">તમારી સંસ્થાની પૉલિસીઓના આધારે, તમે કૉપિ કરેલું કન્ટેન્ટ સંવેદનશીલ માહિતી ધરાવે છે કે નહીં તે જોવા માટે તેને સ્કૅન કરવામાં આવી રહ્યું છે. સ્કૅન કરવાનું પૂર્ણ થઈ જાય પછી કદાચ પેસ્ટ કરવાની મંજૂરી આપવામાં આવી શકે છે.</translation>
 <translation id="1545757265410828525">કિંમતનો ઇતિહાસ</translation>
 <translation id="1546286808622193216">Geminiનો ઉપયોગ કરીને કાર્ડના લાભની તુલના કરો</translation>
 <translation id="1549470594296187301">આ સુવિધાનો ઉપયોગ કરવા માટે JavaScript સક્ષમ કરેલ હોવી આવશ્યક છે.</translation>
@@ -372,7 +372,6 @@
 <translation id="1564634006476980707">શોધ URL માટે HTTPS સ્કીમનો સુઝાવ આપવામાં આવે છે: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ઍડ્રેસ, ઇન્ટરફેસ કન્ફિગ્યુરેશન અને કનેક્શન ક્વૉલિટી જેવી નેટવર્કની માહિતી</translation>
 <translation id="1567040042588613346">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે પરંતુ સમાન મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેની જગ્યા લે છે.</translation>
-<translation id="1567405528131216114"><ph name="TOPIC" /> ઉમેરો</translation>
 <translation id="1569487616857761740">સમાપ્તિ તારીખ દાખલ કરો</translation>
 <translation id="1569694109004336106">Google Chrome પાસવર્ડ ભરવા માટે Windows Hello ચાલુ કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="1569905000953679183">એક્સ્ટેન્શન ઇન્સ્ટૉલ કરવાની પૉલિસી મેળવવી</translation>
@@ -382,7 +381,6 @@
 <translation id="1579189948231786790">તમારી સંસ્થા દ્વારા આ સાઇટને બ્લૉક કરવામાં આવી છે</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">આ વેબપેજ બતાવતી વખતે કંઈક ખોટું થયું.</translation>
-<translation id="1584492003828271317">જેમ-જેમ તમે બ્રાઉઝ કરો, તેમ-તેમ તમને દેખાતી જાહેરાત મનગમતી બનાવેલી છે કે નહીં અને તમે જોઈ રહ્યાં છો તે સાઇટ જાહેરાતોને મનગમતી બનાવે છે કે નહીં એ બાબત આ સેટિંગ, સાઇટે સૂચવેલી જાહેરાતો તથા તમારી કુકીનાં સેટિંગ પર આધારિત હોય છે</translation>
 <translation id="1585306568496579337">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન <ph name="HANDLER_HOSTNAME" /> મારફતે <ph name="PROTOCOL" />ની લિંક ખોલવા માગે છે</translation>
 <translation id="1586541204584340881">તમે કયા એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે</translation>
 <translation id="1588438908519853928">સામાન્ય</translation>
@@ -400,7 +398,6 @@
 <translation id="161042844686301425">સ્યાન</translation>
 <translation id="1611101756749861742">બીજો રોલ</translation>
 <translation id="1611854593425834707">કાસ્ટ કરવા માટેની ડિવાઇસની સૂચિ બંધ કરો</translation>
-<translation id="1612199629998703524">વિષયોને મેનેજ કરો</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> માટેનો ઍક્સેસ રદ કરો</translation>
 <translation id="1615402009686901181">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
 <translation id="161612500287664753">આ પેજ વિશે Google Searchને પૂછો</translation>
@@ -680,7 +677,6 @@
 <translation id="2071852865256799872">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" /> દ્વારા તમારી પ્રોફાઇલ મેનેજ કરવામાં આવે છે</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">માહિતી ફ્ક્ત ડિવાઇસ પર જ સાચવવામાં આવી છે</translation>
-<translation id="2074733626795553847"><ph name="TOPIC" />ને અનબ્લૉક કરો</translation>
 <translation id="2074771604462073334">તમે લીધેલી મુલાકાત</translation>
 <translation id="2078956195623975415">મ્યુઝિક અને ડાન્સ ગેમ</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
@@ -731,7 +727,6 @@
 <translation id="213826338245044447">મોબાઇલ બુકમાર્ક</translation>
 <translation id="2141000681034340397">તમારા ઇનપુટમાં ફેરફાર કરો</translation>
 <translation id="2141475438898772664">4 હપ્તામાં કે માસિક ચુકવણી કરો</translation>
-<translation id="2144171668675205303">કોઈ સક્રિય વિષય નથી</translation>
 <translation id="2145193671493396738">ઇકોનોમી સંબંધિત ન્યૂઝ</translation>
 <translation id="214556005048008348">ચુકવણી રદ કરો</translation>
 <translation id="2147117373852943630">મ્યુઝિકલ ઇન્સ્ટ્રુમેન્ટ</translation>
@@ -1022,7 +1017,6 @@
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
 <translation id="254947805923345898">પૉલિસી મૂલ્ય માન્ય નથી.</translation>
 <translation id="2549836668759467704">બાંધકામ સંબંધિત પરામર્શ અને કોન્ટ્રાક્ટિંગ</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> અને વધુ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> એ અમાન્ય પ્રતિસાદ મોકલ્યો.</translation>
 <translation id="2551608178605132291">સરનામું: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1056,7 +1050,6 @@
 <translation id="2605979593348332811">ફોનેટિક નામ</translation>
 <translation id="2606760465469169465">ઑટોમૅટિક ચકાસણી</translation>
 <translation id="2607101320794533334">વિષય સાર્વજનિક કી માહિતી</translation>
-<translation id="2608019759319359258">જ્યારે કોઈ વિષયને બ્લૉક કરવામાં આવે છે, ત્યારે તેનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા માટે કરવામાં આવશે નહીં</translation>
 <translation id="2610561535971892504">કૉપિ કરવા માટે ક્લિક</translation>
 <translation id="2612676031748830579">કાર્ડ નંબર</translation>
 <translation id="2612993535136743634">તમારા ડિવાઇસ અને Google એકાઉન્ટમાં સાચવવામાં આવેલા બધા સુરક્ષા કોડ ડિલીટ કરવામાં આવશે</translation>
@@ -1496,10 +1489,10 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> પૉલિસી વિશે વધુ જાણો</translation>
 <translation id="3295444047715739395">Chrome સેટિંગમાં તમારા પાસવર્ડ જુઓ અને તેને મેનેજ કરો</translation>
 <translation id="3299098170013242198">પાસવર્ડ ભરવા માટે Windows Hello ચાલુ છે</translation>
+<translation id="3299197721044635447">તમારી સંસ્થાની પૉલિસીઓને કારણે મેનેજ કરેલા Chrome સંદર્ભની બહાર કન્ટેન્ટ પેસ્ટ કરી શકાયું નથી</translation>
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" />નો ઉપયોગ કરવા દરમિયાન કંઈક ખોટું થયું</translation>
 <translation id="3303176609391916566">30 x 42 ઇંચ</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
-<translation id="3303872874382375219">તમે જુઓ છો તે જાહેરાત મનગમતી બનાવેલી છે કે નહીં તે આ સેટિંગ, <ph name="BEGIN_LINK1" />જાહેરાતના વિષયો<ph name="LINK_END1" />, તમારી <ph name="BEGIN_LINK2" />કુકીનાં સેટિંગ<ph name="LINK_END2" />, અને જો તમે સાઇટ પર મનગમતી બનાવેલી જાહેરાતો જોઈ રહ્યાં છો તો તે સહિતની ઘણી બાબતો પર આધારિત હોઈ શકે છે. <ph name="BEGIN_LINK3" />તમારી જાહેરાત સંબંધિત પ્રાઇવસીને મેનેજ કરવા<ph name="LINK_END3" /> વિશે વધુ જાણો.</translation>
 <translation id="3304073249511302126">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Password Manager હમણાં જ આ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
@@ -1538,7 +1531,6 @@
 <translation id="3377144306166885718">સર્વર TLSના જૂના વર્ઝનનો ઉપયોગ કરે છે.</translation>
 <translation id="3377188786107721145">પૉલિસી વિશ્લેષણ ભૂલ</translation>
 <translation id="3377642479079205807">પાતળું</translation>
-<translation id="3378612801784846695">વિષયો તમારા હાલના બ્રાઉઝિંગ ઇતિહાસ પર આધારિત છે અને તમારી ઓળખને સુરક્ષિત કરતી વખતે તમને મનગમતી બનાવેલી જાહેરાતો બતાવવા માટે સાઇટ દ્વારા ઉપયોગમાં લેવામાં આવે છે</translation>
 <translation id="3380365263193509176">અજ્ઞાત ભૂલ</translation>
 <translation id="3380864720620200369">ક્લાઇન્ટ ID:</translation>
 <translation id="3383566085871012386">વર્તમાન પ્રાધાન્યતા ક્રમ</translation>
@@ -1575,7 +1567,6 @@
 <translation id="3433111389595862568">સહયોગ અને કૉન્ફરન્સ માટેના સૉફ્ટવેર</translation>
 <translation id="3433144818443565002">વૉઇસ અને વીડિયો ચૅટ</translation>
 <translation id="3434025015623587566">Google Password Managerને વધુ ઍક્સેસની જરૂર છે</translation>
-<translation id="3434346831962601311">બ્લૉક કરેલો કોઈ વિષય નથી</translation>
 <translation id="343474037147570563">તમે જે ફાઇલો અપલોડ કરો અથવા જોડો તેને Google Cloud અથવા ત્રીજા પક્ષોને વિશ્લેષણ માટે મોકલવામાં આવે છે. ઉદાહરણ તરીકે, તેમને કદાચ સંવેદનશીલ વ્યક્તિગત ડેટા અથવા માલવેર માટે સ્કૅન કરવામાં આવી શકે છે અને કંપનીની પૉલિસીઓના આધારે સ્ટોર કરવામાં આવી શકે છે તથા તમારા ઍડમિનિસ્ટ્રેટર તેને જોઈ શકે છે.</translation>
 <translation id="3435557549311968410">સતત (નાનો)</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
@@ -1727,7 +1718,6 @@
 <translation id="3662040827609932717">આ IBAN, Google Walletમાં સાચવવામાં આવ્યો છે, જેથી તમે Googleની બધી સેવાઓમાં તેનો ઉપયોગ કરી શકો.</translation>
 <translation id="3664479564786885722">આ પ્રોડક્ટ વેચતા અન્ય સ્ટોરમાંથી ખરીદીના વધુ વિકલ્પો શોધો.</translation>
 <translation id="3664782872746246217">કીવર્ડ:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">નંબર</translation>
 <translation id="3670159164851218963">AI મોડ ઇતિહાસ</translation>
 <translation id="3670229581627177274">Bluetooth ચાલુ કરો</translation>
@@ -1959,7 +1949,6 @@
 
     તમે સાઇટ માલિકનો સંપર્ક કરીને તેમને HTTPS પર અપગ્રેડ કરવાનું સૂચન પણ કરી શકો છો. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;ઉમેરવું પૂર્વવત્ કરો</translation>
-<translation id="4030545038933060179">જ્યારે ચાલુ હોય, ત્યારે તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસને આધારે વિષયોની સૂચિ અહીં દેખાય છે</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4036753017940930924">પ્લૉટ અને જમીન</translation>
 <translation id="403724377879219932">તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસ ઍક્સેસ કરવા માટે પૂછી શકે છે</translation>
@@ -2064,7 +2053,6 @@
 <translation id="4173315687471669144">ફૂલ્સ્કૅપ</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{વધુ <ph name="ITEM_COUNT" /> આઇટમ}one{વધુ <ph name="ITEM_COUNT" /> આઇટમ}other{વધુ <ph name="ITEM_COUNT" /> આઇટમ}}</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
-<translation id="4177501066905053472">જાહેરાતના વિષયો</translation>
 <translation id="4178863275556660738">કાર્ડ સિવાયની ચુકવણી પદ્ધતિઓ વડે ચુકવણી કરવી</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
@@ -2293,7 +2281,6 @@
 <translation id="4523580145196408446">લિંક કરેલું</translation>
 <translation id="4523643381056109546">નિર્દેશ સૂચક</translation>
 <translation id="4524138615196389145">હવેથી WebAuthnનો ઉપયોગ કરીને તમારા કાર્ડ વધુ ઝડપથી કન્ફર્મ કરો</translation>
-<translation id="45243788195988825"><ph name="TOPIC" />ને બ્લૉક કરો</translation>
 <translation id="4528888973346221791">ઑફિસની પ્રોફાઇલની માહિતી (જેમ કે તમારું વપરાશકર્તાનું નામ)</translation>
 <translation id="4530347922939905757">ટેક્સ્ટ મેસેજ</translation>
 <translation id="4531477351494678589">વર્ચ્યુઅલ કાર્ડ નંબર:</translation>
@@ -2498,6 +2485,7 @@
 <translation id="4865063548323785458">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે તમારા પાસવર્ડ સાચવો અને તેને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="4866506163384898554">તમારું કર્સર બતાવવા |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| દબાવો</translation>
 <translation id="4868277513442568587">તમારા શેર કરેલા ટૅબના ગ્રૂપનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે, Chrome અપડેટ કરો</translation>
+<translation id="4873312501243535625">મીડિયા ફાઇલ તપાસનાર</translation>
 <translation id="4873616204573862158">ચશ્માં</translation>
 <translation id="4873807733347502026">તમારું માઉસ લૉક કરી તેનો ઉપયોગ કરવા</translation>
 <translation id="4876305945144899064">કોઈ વપરાશકર્તા નામ નથી</translation>
@@ -2522,7 +2510,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ઑલિમ્પિક</translation>
 <translation id="4897851261703006488">આ પૉલિસીમાં <ph name="MAX_HEADER_SIZE_LIMIT" />KBથી વધુ કદના હેડર હોવા જોઈએ નહીં.</translation>
-<translation id="4898742041545089450">આ વિષય અનબ્લૉક કરેલો છે અને તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે સક્રિય થઈ શકે છે</translation>
 <translation id="4900217275619098670">નવમો રોલ</translation>
 <translation id="4901052769830245369">લેબલ (સેમી-ગ્લોસ)</translation>
 <translation id="4901162432287938633">સ્વચ્છતા અને પ્રસાધનો</translation>
@@ -2617,10 +2604,8 @@
 <translation id="5043480802608081735">તમે કૉપિ કરેલી લિંક</translation>
 <translation id="5043753287208271200">પીળો 3</translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
-<translation id="5048293684454354469">કોઈ સાઇટ જાહેરાતોને મનગમતી બનાવવા માટે ઉપયોગમાં લઈ શકે એવી ઘણી બાબતોમાંથી જાહેરાતના વિષયો માત્ર એક પરિમાણ છે. જાહેરાતના વિષયો વિના પણ, સાઇટ હજુ પણ તમને જાહેરાતો બતાવી શકે છે પરંતુ તે તમને ઓછી મનગમતી હોઈ શકે છે. <ph name="BEGIN_LINK" />તમારી જાહેરાત સંબંધિત પ્રાઇવસીને મેનેજ કરવા<ph name="LINK_END" /> વિશે વધુ જાણો.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, શોધ સંબંધિત આ સૂચન પછી ઉપલબ્ધ વધુ શોધ શૉર્ટકટ માટે ટૅબ દબાવો</translation>
 <translation id="5052488928733955073">તમારી માહિતી ભરવામાં સમસ્યા આવી. તમારું કનેક્શન ચેક કરો.</translation>
-<translation id="5052517576853118371">સક્રિય વિષયો</translation>
 <translation id="5053116470141135293">તમારી વાસ્તવિક વિગતોનું રક્ષણ કરવા માટે, જ્યારે તમે આ કાર્ડ વડે ચેકઆઉટ કરશો ત્યારે વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવશે. Google Walletમાં મેનેજ કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}one{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલ મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}other{નજીકના શેરની સુવિધાનો ઉપયોગ કરીને આ ફાઇલો મોકલવા માટે, તમારા ડિવાઇસ પર સ્પેસ (<ph name="DISK_SPACE_SIZE" />) ખાલી કરો}}</translation>
 <translation id="5056587122125565772">છબી બનાવો</translation>
@@ -2719,7 +2704,6 @@
 <translation id="5206392433295093945">બેડરૂમ</translation>
 <translation id="5209670883520018268">ટ્રે 20</translation>
 <translation id="5212364581680288382">મોટરસાઇકલની રેસ</translation>
-<translation id="5214542134842513912">જાહેરાતોને મનગમતી બનાવવામાં સહાય કરવા માટે વિષયોની કઈ વ્યાપક કૅટેગરીનો ઉપયોગ કરી શકાય તે પસંદ કરો. વ્યાપક કૅટેગરીને બંધ કરવાથી તેના સંબંધિત વિષયોને પણ બ્લૉક કરવામાં આવશે.</translation>
 <translation id="52163492208010719">ઓળખના દસ્તાવેજો મેનેજ કરો</translation>
 <translation id="521659676233207110">ટ્રે 13</translation>
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
@@ -4079,7 +4063,6 @@
 <translation id="7305767780379163575">ફોટો સાચવી શકતા નથી</translation>
 <translation id="7307063504147610123">આ ડિવાઇસ પર ઍડ્રેસ સાચવ્યું</translation>
 <translation id="7308436126008021607">બૅકગ્રાઉન્ડ સિંક</translation>
-<translation id="7309058266849426521">Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા વિશે વધુ જાણો.</translation>
 <translation id="7310392214323165548">ડિવાઇસ ટૂંક સમયમાં ફરી શરૂ થશે</translation>
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
 <translation id="7313107491291103073">તમારી સંસ્થાએ આ સાઇટને ચિહ્નિત કરી છે કારણ કે તે પૉલિસીનું ઉલ્લંઘન કરી શકે છે.</translation>
@@ -4347,6 +4330,7 @@
 <translation id="767550629621587224">પ્રી-કટ ટૅબ</translation>
 <translation id="7675756033024037212">સ્ક્રોલ અને નાનું-મોટું કરવાની મંજૂરી નથી</translation>
 <translation id="7676643023259824263">ક્લિપબોર્ડ ટેક્સ્ટમાંથી શોધો, <ph name="TEXT" /></translation>
+<translation id="7676840398262504532">તમારી સંસ્થા કૉપિ કરવાની ઍક્શનનું નિરીક્ષણ કરે છે</translation>
 <translation id="7678730592635586336">વીડિયો ફરીથી લો</translation>
 <translation id="7679287273775285018">ઇ-વૉલેટ વડે ચુકવણી કરો</translation>
 <translation id="7679367271685653708">Chrome સેટિંગમાં તમારો બ્રાઉઝિંગ ઇતિહાસ જુઓ અને મેનેજ કરો</translation>
@@ -4470,7 +4454,6 @@
 <translation id="7877007680666472091">સંરક્ષિત કન્ટેન્ટ IDs</translation>
 <translation id="7878562273885520351">તમારા પાસવર્ડ સાથે ચેડાં થઈ શકે છે</translation>
 <translation id="7885670691503039914">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને ઇમેઇલ દ્વારા અલર્ટ મળશે. આ પેજને બુકમાર્ક ફોલ્ડર <ph name="LAST_BOOKMARKS_FOLDER" />માં સાચવવામાં આવશે.</translation>
-<translation id="7886897188117641322">જાહેરાતોને મનગમતી બનાવવામાં સહાય કરવા માટે વિષયોની કઈ વ્યાપક કૅટેગરીનો ઉપયોગ કરી શકાય તે પસંદ કરો</translation>
 <translation id="7887683347370398519">તમારું CVC તપાસો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="7887885240995164102">ચિત્ર-માં-ચિત્ર મોડમાં દાખલ થાઓ</translation>
 <translation id="7888367499748383555">કોઈ શુલ્ક નથી, ઓછામાં ઓછો 0% જેટલો APR (યોગ્યતાને આધીન)</translation>
@@ -4580,7 +4563,6 @@
 <translation id="8046360364391076336">ઔદ્યોગિક સામગ્રી અને સાધન</translation>
 <translation id="8052898407431791827">ક્લિપબોર્ડ પર કૉપિ કર્યો</translation>
 <translation id="8057023045886711556">રમૂજી મૂવી</translation>
-<translation id="805766869470867930">તમે કોઈપણ વિષયને બ્લૉક કર્યા નથી</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />"ની ગોઠવણી યોગ્ય રીતે કરવામાં આવી નથી. સામાન્ય રીતે "<ph name="SOFTWARE_NAME" />"ને અનઇન્સ્ટૉલ કરવાથી સમસ્યા હલ થઈ જાય છે. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">આવશ્યક નથી</translation>
 <translation id="8061691770921837575">મેકઅપ અને સૌંદર્ય પ્રસાધનો</translation>
@@ -4627,10 +4609,10 @@
 <translation id="8130113808541743942">આમાં ખસેડો...</translation>
 <translation id="813024282736408069">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે વર્ચ્યુઅલ કાર્ડ ચાલુ કરો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
-<translation id="8133495915926741232">જાહેરાતોને મનગમતી બનાવવામાં સહાય કરવા માટે વિષયોની કઈ વ્યાપક કૅટેગરીનો ઉપયોગ કરી શકાય તે પસંદ કરો. વ્યાપક કૅટેગરીને બંધ કરવાથી તેના સંબંધિત મુદ્દા પણ બ્લૉક કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>
 <translation id="8135546115396015134">ડાબી કી</translation>
 <translation id="8137456439814903304">ઊર્જા અને યુટિલિટી</translation>
+<translation id="814071672416123670">તમારી સંસ્થાની પૉલિસીઓને કારણે કન્ટેન્ટ કૉપિ કરી શકાયું નથી</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 મહિના પહેલાં બનાવ્યું}one{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}other{{NUM_MONTHS} મહિના પહેલાં બનાવ્યું}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, હાલનું ડિફૉલ્ટ. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
@@ -4846,7 +4828,6 @@
 <translation id="8467494337615822642">સેટિંગમાં Chromeની 'સલામતી માટે તપાસ' પેજ સક્રિય કરો</translation>
 <translation id="8468358362970107653">એન્વલપ C3</translation>
 <translation id="8469428721212363950">છૂટક વેપાર</translation>
-<translation id="8472700501934242014">બ્લૉક કરેલા વિષયો</translation>
 <translation id="8473626140772740486">300 x 450 મિમી</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8474910779563686872">ડેવલપરની વિગતો બતાવો</translation>
@@ -4991,7 +4972,6 @@
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8731268612289859741">સિક્યુરિટી કોડ</translation>
 <translation id="8733345475331865475">ઑટોમોબાઇલ વીમો</translation>
-<translation id="8733764070897080460">અન્ય સાઇટ સાથે શેર કરવા માગતા ન હો એવા વિષયોને તમે બ્લૉક કરી શકો છો. Chrome તમારા 4 અઠવાડિયાથી જૂના વિષયોને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે. વધુ જાણો</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> દ્વારા તમારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે</translation>
 <translation id="8736059027199600831">30 x 40 ઇંચ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છુપી વિન્ડો ખોલવા માટે Tab પછી Enter દબાવો</translation>

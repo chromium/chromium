@@ -184,6 +184,7 @@
 <translation id="1558391695376153246">Funga vichupo fiche</translation>
 <translation id="1559263013367304065">kwa kuwa unatumia Lenzi ya Google</translation>
 <translation id="1560153516220021659">Kitufe cha upau wa ziada wa vidhibiti uliokunjwa</translation>
+<translation id="1562601408588733317">Dhibiti utafutaji na ujazaji wa maelezo ukitumia Gemini</translation>
 <translation id="1565371473877914088">Kichupo Fiche Kipya</translation>
 <translation id="1567960978791353852">Onyesha Hali ya Kusoma</translation>
 <translation id="1571780780926010134">Vichupo vya faragha</translation>
@@ -1399,6 +1400,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5666313630530585305">Ingia katika akaunti ya wavuti.</translation>
 <translation id="5669335982068190158">Uliondolewa kwenye akaunti ikiwa sehemu ya kuweka upya mipangilio ya iPhone yako. Gusa "endelea" hapo chini ili uingie katika akaunti.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Dhibiti Programu Ulizounganisha</translation>
 <translation id="567881659373499783">Toleo <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Ungependa kubadilisha akaunti? Data ya akaunti ambayo haijahifadhiwa itafutwa.</translation>
 <translation id="5683499062697987550">Ili utumie na uhifadhi manenosiri katika Akaunti yako ya Google, thibitisha kuwa ni wewe.</translation>
@@ -1574,6 +1576,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6240553182907836376">Sasisha maelezo ya kitambulisho</translation>
 <translation id="6240601837375010619">Hifadhi maelezo ya pasipoti</translation>
 <translation id="6241132809279377987">Pata vipengele zaidi katika iPhone ukitumia programu za Google</translation>
+<translation id="6244366663267187541">Chagua programu zinazounganishwa na Gemini</translation>
 <translation id="6247557882553405851">Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="6251835855431997163">Jaza kiotomatiki <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Ingia katika akaunti ya <ph name="URL" /></translation>
@@ -1952,6 +1955,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="7471557245617580330">Unda kichupo kipya</translation>
 <translation id="7473555040328423550">Weka kichupo</translation>
 <translation id="7476548258282096076">Kadi hii inaonyesha tovuti ulizotembelea zaidi.</translation>
+<translation id="7482823403440483089">Kipengele kilichoboreshwa cha kujaza kiotomatiki</translation>
 <translation id="7484645889979462775">Kamwe lisihifadhiwe kwa tovuti hii</translation>
 <translation id="7486006552035434095">Hakikisha vifaa vyako vimesawazishwa</translation>
 <translation id="7491131399623468277">Nenda kwenye Mipangilio...</translation>
@@ -2201,7 +2205,6 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8270320981823560179">Hifadhi</translation>
 <translation id="8274795744553482834">Unakaribia kubadilisha wasifu</translation>
 <translation id="8275068909952022340">Zaidi…</translation>
-<translation id="8280797717392145626">Umepokea viungo</translation>
 <translation id="8281781826761538115">Chaguomsingi - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Ruka</translation>
 <translation id="8282657446819506217">Fungua katika Kikundi cha Vichupo</translation>

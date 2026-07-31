@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">کاغذ کی قسم</translation>
 <translation id="1142965388643537393">سفری معلومات</translation>
 <translation id="1143142264369994168">سرٹیفکیٹ پر دستخط کنندہ</translation>
-<translation id="1144136880160289237">آپ کے پاس ابھی تک کوئی فعال موضوع نہیں ہے</translation>
 <translation id="1149617035358809955">تصدیق کریں کہ یہ آپ ہی ہیں تاکہ یہ آپ کی ادائیگی کی معلومات کو پُر کر سکے</translation>
 <translation id="1150565364351027703">دھوپ کا چشمہ</translation>
 <translation id="1150979032973867961">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے کمپیوٹر کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
@@ -373,7 +372,6 @@
 <translation id="1564634006476980707">‏تلاش URL کے لیے HTTPS اسکیم تجویز کی گئی: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">نیٹ ورکنگ معلومات جیسے پتے، انٹرفیس کنفیگریشن اور کنکشن کا معیار</translation>
 <translation id="1567040042588613346">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک جیسی قدر سیٹ کی گئی ہے اور اس نے اس پالیسی کی جگہ لے لی ہے۔</translation>
-<translation id="1567405528131216114"><ph name="TOPIC" /> کو شامل کریں</translation>
 <translation id="1569487616857761740">تاریخ اختتام درج کریں</translation>
 <translation id="1569694109004336106">‏Google Chrome پاس ورڈز پُر کرنے کے لیے Windows Hello کو آن کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="1569905000953679183">ایکسٹینشن انسٹال پالیسی کی بازیافت</translation>
@@ -383,7 +381,6 @@
 <translation id="1579189948231786790">آپ کی تنظیم نے اس سائٹ کو مسدود کر دیا ہے</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">یہ ویب صفحہ ڈسپلے کرتے ہوئے کچھ غلط ہو گیا۔</translation>
-<translation id="1584492003828271317">براؤز کرتے وقت، آپ جو اشتہار دیکھتے ہیں وہ ذاتی نوعیت کے ہیں یا نہیں اس کا انحصار اس ترتیب پر ہوتا ہے، سائٹ کے تجویز کردہ اشتہارات آپ کی کوکی کی ترتیبات اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی نوعیت کا بناتی ہے</translation>
 <translation id="1585306568496579337">ایکسٹینشن "<ph name="EXTENSION_NAME" />" <ph name="HANDLER_HOSTNAME" /> کے ذریعے <ph name="PROTOCOL" /> لنکس کھولنا چاہتی ہے</translation>
 <translation id="1586541204584340881">آپ نے کن ایکسٹینشنز کو انسٹال کیا ہے</translation>
 <translation id="1588438908519853928">حسب معمول</translation>
@@ -401,7 +398,6 @@
 <translation id="161042844686301425">سیان</translation>
 <translation id="1611101756749861742">دوسرا رول</translation>
 <translation id="1611854593425834707">کاسٹ کرنے کے لیے آلے کی فہرست بند کریں</translation>
-<translation id="1612199629998703524">موضوعات کا نظم کریں</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> تک رسائی منسوخ کریں</translation>
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="161612500287664753">‏اس صفحہ کے بارے میں Google تلاش سے پوچھیں</translation>
@@ -574,6 +570,7 @@
 <translation id="1871284979644508959">مطلوبہ فیلڈ</translation>
 <translation id="1871739799120352748">قیمت زیادہ ہے</translation>
 <translation id="1874224422119691492">آپ تبدیل کر سکتے ہیں کہ آیا آپ <ph name="SETTINGS" /> میں پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کرتے ہیں</translation>
+<translation id="1874749478353075307">‏آپ کے <ph name="DEVICE_NAME" /> • <ph name="USER_EMAIL" /> پر Chrome کو بھیجا گیا</translation>
 <translation id="1875025161375567525">تصویری ٹرے</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">تاریخ کے لحاظ سے</translation>
@@ -681,7 +678,6 @@
 <translation id="2071852865256799872">آپ کے براؤزر کا نظم آپ کی تنظیم کرتی ہے اور آپ کی پروفائل کا نظم <ph name="PROFILE_DOMAIN" /> کرتا ہے</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">معلومات صرف آلہ میں محفوظ کی گئی</translation>
-<translation id="2074733626795553847"><ph name="TOPIC" /> کو غیر مسدود کریں</translation>
 <translation id="2074771604462073334">آپ نے ملاحظہ کیا</translation>
 <translation id="2078956195623975415">موسیقی اور رقص والی گمیز</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -732,7 +728,6 @@
 <translation id="213826338245044447">موبائل بُک مارکس</translation>
 <translation id="2141000681034340397">اپنے ان پٹ میں ترمیم کریں</translation>
 <translation id="2141475438898772664">‫4 انسٹالمنٹ میں یا ماہانہ ادائیگی کریں</translation>
-<translation id="2144171668675205303">کوئی فعال موضوع نہیں ہے</translation>
 <translation id="2145193671493396738">معیشت کی خبریں</translation>
 <translation id="214556005048008348">ادائیگی منسوخ کریں</translation>
 <translation id="2147117373852943630">موسیقی کے ساز و سامان</translation>
@@ -1023,7 +1018,6 @@
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
 <translation id="254947805923345898">پالیسی کی قدر درست نہیں ہے۔</translation>
 <translation id="2549836668759467704">تعمیراتی مشاورت اور ٹھیکے داری</translation>
-<translation id="2549919488151689436">‫<ph name="TOPIC_1" />، <ph name="TOPIC_2" /> اور مزید</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> نے ایک غلط جواب بھیجا۔</translation>
 <translation id="2551608178605132291">پتہ: <ph name="ADDRESS" />۔</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1057,7 +1051,6 @@
 <translation id="2605979593348332811">فونیٹک نام</translation>
 <translation id="2606760465469169465">خودکار تصدیق کریں</translation>
 <translation id="2607101320794533334">موضوع عوامی کلید معلومات</translation>
-<translation id="2608019759319359258">جب کسی موضوع کو مسدود کر دیا جاتا ہے تو اس کا استعمال اشتہارات کو ذاتی نوعیت کا بنانے کے لیے نہیں کیا جائے گا</translation>
 <translation id="2610561535971892504">کلک کر کے کاپی کریں</translation>
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2612993535136743634">‏آپ کے آلے اور Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
@@ -1502,7 +1495,6 @@
 <translation id="3299720788264079132"><ph name="FEATURE_NAME" /> کا استعمال کرتے وقت کچھ غلط ہو گیا</translation>
 <translation id="3303176609391916566">‏‎30 x 42 انچ</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
-<translation id="3303872874382375219">آپ جو اشتہار دیکھتے ہیں آیا وہ ذاتی نوعیت کا ہے اس کا انحصار بہت سی چیزوں پر ہو سکتا ہے بشمول یہ ترتیب، <ph name="BEGIN_LINK1" />اشتہار کے موضوعات<ph name="LINK_END1" />، آپ کی <ph name="BEGIN_LINK2" />کوکی کی ترتیبات<ph name="LINK_END2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی نوعیت کا بناتی ہے۔ <ph name="BEGIN_LINK3" />اپنے اشتہار کی رازداری کا نظم کرنے<ph name="LINK_END3" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="3304073249511302126">بلوٹوتھ اسکیننگ</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
@@ -1541,7 +1533,6 @@
 <translation id="3377144306166885718">‏سرور نے TLS کا متروک ورژن استعمال کیا۔</translation>
 <translation id="3377188786107721145">پالیسی پارس کرنے کی خرابی</translation>
 <translation id="3377642479079205807">پتلا</translation>
-<translation id="3378612801784846695">موضوعات آپ کی حالیہ براؤزنگ کی سرگزشت پر مبنی ہیں اور آپ کی شناخت کی حفاظت کرتے وقت آپ کو ذاتی نوعیت کے اشتہارات دکھانے کے لیے سائٹس کے ذریعے استعمال کیے جاتے ہیں</translation>
 <translation id="3380365263193509176">نامعلوم خرابی</translation>
 <translation id="3380864720620200369">‏کلائنٹ ID:</translation>
 <translation id="3383566085871012386">موجودہ ترجیحی ترتیب</translation>
@@ -1578,7 +1569,6 @@
 <translation id="3433111389595862568">معاونت اور کانفرنسنگ سافٹ ویئر</translation>
 <translation id="3433144818443565002">صوتی اور ویڈیو چیٹ</translation>
 <translation id="3434025015623587566">‏Google پاس ورڈ مینیجر کو مزید رسائی کی ضرورت ہے</translation>
-<translation id="3434346831962601311">کوئی بھی مسدود کردہ موضوع نہیں</translation>
 <translation id="343474037147570563">‏جن فائلز کو آپ اپ لوڈ یا منسلک کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتی ہیں۔</translation>
 <translation id="3435557549311968410">مسلسل (مختصر)</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
@@ -1730,7 +1720,6 @@
 <translation id="3662040827609932717">‏یہ IBAN Google والٹ میں محفوظ ہے تاکہ آپ اسے تمام Google سروسز پر استعمال کر سکیں۔</translation>
 <translation id="3664479564786885722">اس پروڈکٹ کو بیچنے والے دوسرے اسٹورز سے خریداری کے مزید اختیارات تلاش کریں۔</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">نمبر</translation>
 <translation id="3670159164851218963">‏‫AI وضع کی سرگزشت</translation>
 <translation id="3670229581627177274">بلوٹوتھ آن کریں</translation>
@@ -1962,7 +1951,6 @@
 
     آپ سائٹ کے مالک سے رابطہ کر کے اسے HTTPS پر اپ گریڈ کرنے کی تجویز بھی دے سکتے ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">شامل کریں کو &amp;کالعدم کریں</translation>
-<translation id="4030545038933060179">آن ہونے پر، آپ کی حالیہ براؤزنگ کی سرگزشت کی بنیاد پر موضوعات کی فہرست یہاں ظاہر ہوتی ہے</translation>
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4036753017940930924">لاٹ اور زمین</translation>
 <translation id="403724377879219932">آپ کے مقامی نیٹ ورک پر موجود دیگر آلات تک رسائی کی درخواست کر سکتی ہے</translation>
@@ -2067,7 +2055,6 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> مزید آئٹم}other{<ph name="ITEM_COUNT" /> مزید آئٹمز}}</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
-<translation id="4177501066905053472">اشتہار کے موضوعات</translation>
 <translation id="4178863275556660738">نان کارڈ ادائیگی کے طریقوں سے ادائیگی کریں</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">قیمت کے ٹریک کو کالعدم کریں</translation>
@@ -2126,6 +2113,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ٹی شرٹس</translation>
 <translation id="4253168017788158739">نوٹ</translation>
+<translation id="4255125583058870090">ادائیگی کی ایپ لوڈ ہو رہی ہے</translation>
 <translation id="4255487295905690262">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر آپ کو ای میل الرٹس ملیں گے۔</translation>
 <translation id="425582637250725228">ممکن ہے کہ آپ کی تبدیلیاں محفوظ نہ ہوں۔</translation>
 <translation id="4258748452823770588">غلط دستخط</translation>
@@ -2296,7 +2284,6 @@
 <translation id="4523580145196408446">لنک ہے</translation>
 <translation id="4523643381056109546">علامتی تختی</translation>
 <translation id="4524138615196389145">‏اب سے WebAuthn کے استعمال سے تیزی سے اپنے کارڈز کی تصدیق کریں</translation>
-<translation id="45243788195988825"><ph name="TOPIC" /> کو بلاک کریں</translation>
 <translation id="4528888973346221791">دفتری پروفائل کی معلومات (جیسے آپ کا صارف نام)</translation>
 <translation id="4530347922939905757">ٹیکسٹ پیغام</translation>
 <translation id="4531477351494678589">ورچوئل کارڈ نمبر:</translation>
@@ -2501,6 +2488,7 @@
 <translation id="4865063548323785458">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کیلئے اپنے پاس ورڈز محفوظ اور انہیں آٹو فل کریں</translation>
 <translation id="4866506163384898554">اپنا کرسر دکھانے کے لیے |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| دبائیں</translation>
 <translation id="4868277513442568587">‏اپنے مشترکہ ٹیب گروپس کا استعمال جاری رکھنے کے لیے، Chrome کو اپ ڈیٹ کریں</translation>
+<translation id="4873312501243535625">میڈیا فائل چیکر</translation>
 <translation id="4873616204573862158">چشم پوش</translation>
 <translation id="4873807733347502026">اپنے ماؤس کو لاک کریں اور استعمال کریں</translation>
 <translation id="4876305945144899064">کوئی صارف نام نہیں ہے</translation>
@@ -2525,7 +2513,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">اولمپکس</translation>
 <translation id="4897851261703006488">‏اس پالیسی میں ‎<ph name="MAX_HEADER_SIZE_LIMIT" />KB سے زیادہ ہیڈرز نہیں ہونے چاہئیں۔</translation>
-<translation id="4898742041545089450">یہ موضوع غیر مسدود ہے اور آپ کی براؤزنگ کی سرگزشت کی بنیاد پر فعال ہو سکتا ہے</translation>
 <translation id="4900217275619098670">نواں ٹرے</translation>
 <translation id="4901052769830245369">لیبلز (سیمی گلوس)</translation>
 <translation id="4901162432287938633">حفظان صحت اور صحتگاری کا سامان</translation>
@@ -2620,10 +2607,8 @@
 <translation id="5043480802608081735">آپ کا کاپی کردہ لنک</translation>
 <translation id="5043753287208271200">پیلا 3</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
-<translation id="5048293684454354469">اشتہار کے موضوعات ان بہت سی چیزوں میں سے صرف ایک ہے جس کا استعمال سائٹ اشتہارات کو ذاتی نوعیت کا بنانے کے لیے کر سکتی ہے۔ اشتہار کے موضوعات کے بغیر بھی، سائٹس اب بھی آپ کو اشتہارات دکھا سکتی ہیں لیکن وہ کم ذاتی نوعیت کے ہو سکتے ہیں۔ <ph name="BEGIN_LINK" />اپنے اشتہار کی رازداری کا نظم کرنے<ph name="LINK_END" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />، اس تلاش کی تجویز کے بعد دستیاب مزید تلاش کے شارٹ کٹس کے لیے ٹیب کو دبائیں</translation>
 <translation id="5052488928733955073">اپنی معلومات پُر کرنے میں دشواری۔ اپنا کنکشن چیک کریں۔</translation>
-<translation id="5052517576853118371">فعال موضوعات</translation>
 <translation id="5053116470141135293">‏آپ کی اصل تفصیلات کی حفاظت کے لیے جب آپ اس کارڈ سے چیک آؤٹ کریں گے تو ایک ورچوئل کارڈ نمبر پُر کیا جائے گا۔ ‫Google والٹ میں نظم کریں۔ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{اس فائل کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}other{ان فائلز کو قریبی آلات کے ساتھ اشتراک کا استعمال کرتے ہوئے بھیجنے کے لیے اپنے آلے پر <ph name="DISK_SPACE_SIZE" /> جگہ خالی کریں}}</translation>
 <translation id="5056587122125565772">تصویر تخلیق کریں</translation>
@@ -2722,7 +2707,6 @@
 <translation id="5206392433295093945">بیڈ روم</translation>
 <translation id="5209670883520018268">ٹرے 20</translation>
 <translation id="5212364581680288382">موٹرسائیکلوں کی ریس</translation>
-<translation id="5214542134842513912">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں۔ ایک وسیع زمرہ کو آف کرنے سے اس سے متعلقہ موضوعات بھی مسدود ہو جائیں گے۔</translation>
 <translation id="52163492208010719">شناختی دستاویزات کا نظم کریں</translation>
 <translation id="521659676233207110">ٹرے 13</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
@@ -3004,6 +2988,7 @@
 <translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="561165882404867731">‏اس صفحہ کو Google ترجمہ ایپ کی مدد سے ترجمہ کریں</translation>
 <translation id="5612720917913232150"><ph name="URL" /> آپ کے کمپیوٹر کا مقام استعمال کرنا چاہتا ہے</translation>
+<translation id="5613117810542399920">تشریح دوبارہ کی گئی</translation>
 <translation id="5613958591683399697">‫<ph name="ENGINE_NAME" /> سے پوچھیں</translation>
 <translation id="5614190747811328134">صارف نوٹس</translation>
 <translation id="5614520971155863709">کارڈ گیمز</translation>
@@ -3022,6 +3007,7 @@
 <translation id="5640474731385449758">ایکسٹینشن "<ph name="EXTENSION_NAME" />" <ph name="PROTOCOL" /> لنکس کو <ph name="HANDLER_HOSTNAME" /> کے ذریعے <ph name="ORIGIN" /> میں کھولنا چاہتی ہے</translation>
 <translation id="5642411781689336699">اسٹیریو سسٹمز اور اجزاء</translation>
 <translation id="5642508497713047">‏CRL سائنر</translation>
+<translation id="5643946808525377120">‏آپ کے <ph name="DEVICE_NAME" /> پر Chrome کو بھیجا گیا</translation>
 <translation id="5644090287519800334">‏سائیڈ 1 تصویر X شفٹ</translation>
 <translation id="5644128326840674462">پروموشن بینر</translation>
 <translation id="5645132789250840550">پلاسٹک (سیمی گلوس)</translation>
@@ -3063,6 +3049,7 @@
 <translation id="5715150588940290235">محفوظ کردہ سیکیورٹی کوڈز حذف کریں؟</translation>
 <translation id="5715918316982363436">اس آلہ پر <ph name="WINDOW_COUNT" /> سے <ph name="TAB_COUNT" /></translation>
 <translation id="5716325061445053985">اپنے فون پر ٹیب کھولنے کیلئے تھپتھپائیں</translation>
+<translation id="5717281954932320486">‏آن لائن چیک آؤٹ کرتے وقت کارڈ کی تفصیلات خودکار طور پر پُر کریں۔ کارڈز Google والٹ میں محفوظ طریقے سے محفوظ ہیں۔</translation>
 <translation id="5717509257172454543">آئس اسکیٹنگ</translation>
 <translation id="5718326209176373202">ٹیکسٹ تشریحات شامل کریں</translation>
 <translation id="5718601519531438273">پاسپورٹس اور ڈرائیونگ لائسنسز جیسی معلومات شامل ہیں</translation>
@@ -4060,6 +4047,7 @@
 <translation id="7257453341537973799">کیریئر کے وسائل اور پلاننگ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> سے ایک نجی کنکشن تشکیل نہیں دیا جا سکتا ہے کیونکہ آپ کے کمپیوٹر کی تاریخ اور وقت (<ph name="DATE_AND_TIME" />) غلط ہیں۔</translation>
 <translation id="7260075294900977274">ایک ایسا نیا اسمارٹ فولڈر جو آپ کی خریداری کے تمام صفحات کو ایک جگہ محفوظ کرنے میں آپ کی مدد کرتا ہے اور خودکار طور پر قیمتوں کو ٹریک کرتا ہے اور قیمت سے متعلق حقائق وغیرہ حاصل کرتا ہے</translation>
+<translation id="7261463765917514051">آٹو فل کے ساتھ محفوظ طریقے سے چیک آؤٹ کریں</translation>
 <translation id="7265608370113700582">پتہ صرف اس آلہ پر دستیاب ہے</translation>
 <translation id="7266094331715305887">آلے پر انسٹال کردہ ایپس</translation>
 <translation id="7269151392155523061">شارٹ کٹ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> کے ذریعہ وضاحت کردہ تلاش کے جمع کنندہ کلیدی لفظ سے مماثل نہیں ہو سکتا: <ph name="SHORTCUT_NAME" /></translation>
@@ -4082,7 +4070,6 @@
 <translation id="7305767780379163575">تصویر محفوظ کرنے سے قاصر</translation>
 <translation id="7307063504147610123">پتہ اس آلے میں محفوظ ہو گیا</translation>
 <translation id="7308436126008021607">پس منظر کی مطابقت پذیری</translation>
-<translation id="7309058266849426521">‏‫Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے کے بارے میں مزید جانیں۔</translation>
 <translation id="7310392214323165548">آلہ جلدی ہی ری سٹارٹ ہو جائے گا</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7313107491291103073">آپ کی تنظیم نے اس سائٹ کو پرچم زد کیا ہے کیونکہ یہ پالیسی کی خلاف ورزی کر سکتی ہے۔</translation>
@@ -4474,7 +4461,6 @@
 <translation id="7877007680666472091">‏تحفظ یافتہ مواد کی IDs</translation>
 <translation id="7878562273885520351">لگتا ہے کسی نے آپ کے پاس ورڈ کے ساتھ چھیڑ چھاڑ کی ہے</translation>
 <translation id="7885670691503039914">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر، آپ کو ای میل الرٹس موصول ہوں گے۔ یہ صفحہ بُک مارک فولڈر <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہو جائے گا۔</translation>
-<translation id="7886897188117641322">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں</translation>
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7887885240995164102">'تصویر میں تصویر' میں داخل ہوں</translation>
 <translation id="7888367499748383555">‏کوئی فیس نہیں، کم از کم ‎0% APR (اہلیت کے ساتھ مشروط)</translation>
@@ -4584,7 +4570,6 @@
 <translation id="8046360364391076336">صنعتی مواد اور ساز و سامان</translation>
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="8057023045886711556">مزاحیہ موویز</translation>
-<translation id="805766869470867930">آپ نے کوئی موضوع مسدود نہیں کیا ہے</translation>
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" صحیح طور پر کنفیگر کردہ نہیں ہے۔ عام طور سے "<ph name="SOFTWARE_NAME" />" کو ان انسٹال کرنے سے یہ مسئلہ حل ہو جاتا ہے۔ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">غیر مطلوب</translation>
 <translation id="8061691770921837575">میک اپ اور کاسمیٹکس</translation>
@@ -4631,7 +4616,6 @@
 <translation id="8130113808541743942">اس میں منتقل کریں...</translation>
 <translation id="813024282736408069">آٹو فل کے لیے ورچوئل کارڈ آن کریں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
-<translation id="8133495915926741232">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں۔ ایک وسیع زمرہ کو آف کرنے سے اس سے متعلقہ موضوعات بھی مسدود ہو جائیں گے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>
 <translation id="8135546115396015134">بائیں کلید</translation>
 <translation id="8137456439814903304">توانائی اور یوٹیلیٹیز</translation>
@@ -4649,6 +4633,7 @@
 <translation id="81563721597823545">ہاکی کے ساز و سامان</translation>
 <translation id="815805690561372740">‏آپ کے براؤز کرتے وقت، Chrome کے پاس آپ کو تحفظ فراہم کرنے کیلئے پہلے سے شامل حفاظتی خصوصیات ہیں، جیسے Google محفوظ براؤزنگ جسے حال ہی میں اس سائٹ پر <ph name="BEGIN_LINK" />میلوئیر کا پتا چلا ہے<ph name="END_LINK" />، جسے آپ نے ملاحظہ کرنے کی کوشش کی ہے۔</translation>
 <translation id="8161095570253161196">براؤزنگ دوبارہ شروع کریں</translation>
+<translation id="8163468049564974856">‏آن لائن محفوظ طریقے سے چیک آؤٹ کرنے کے لیے آٹو فل آن کریں۔ آپ کے کارڈ کی تفصیلات Google والٹ میں مرموز کردہ ہیں۔</translation>
 <translation id="8163866351304776260">بائیں طرف مستطیل سوراخ</translation>
 <translation id="8164078261547504572">قیمتیں گرنے پر ای میلز چاہتے ہیں؟</translation>
 <translation id="8169175551046720804">کلیدیں "<ph name="DATA_CONTROLS_KEYS" />" ایک ہی ڈکشنری میں سیٹ نہیں کی جا سکتیں</translation>
@@ -4851,7 +4836,6 @@
 <translation id="8467494337615822642">‏ترتیبات میں Chrome سیفٹی چیک صفحہ پر جائیں</translation>
 <translation id="8468358362970107653">‏C3 لفافہ</translation>
 <translation id="8469428721212363950">ریٹیل تجارت</translation>
-<translation id="8472700501934242014">مسدود کردہ موضوعات</translation>
 <translation id="8473626140772740486">‏‎300 x 450 ملی میٹر</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="8474910779563686872">ڈویلپر کی تفصیلات دکھائیں</translation>
@@ -4996,7 +4980,6 @@
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
 <translation id="8733345475331865475">آٹو انشورنس</translation>
-<translation id="8733764070897080460">‏آپ ان موضوعات کو مسدود کر سکتے ہیں جنہیں آپ سائٹس کے ساتھ اشتراک نہیں کرنا چاہتے۔ Chrome آپ کے 4 ہفتوں سے پرانے موضوعات کو بھی خودکار طور پر حذف کر دیتا ہے۔ مزید جانیں</translation>
 <translation id="8734529307927223492">آپ کا <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="8736059027199600831">‏‎30 x 40 انچ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، نجی طور پر براؤز کرنے کے لیے ایک نئی پوشیدگی ونڈو کھولنے کی خاطر ٹیب، پھر اینٹر دبائیں</translation>
@@ -5014,6 +4997,7 @@
 <translation id="8758529215314160755">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="END_LINK" /> <ph name="ACCOUNT" /> میں اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="8759274551635299824">اس کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="87601671197631245">یہ سائٹ پرانی سیکیورٹی کنفیگریشن کو استعمال کر رہی ہے جو اس سائٹ پر بھیجے جانے پر آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) کو ظاہر کر سکتی ہے۔</translation>
+<translation id="8762871163452985706">تشریح کالعدم ہو گئی</translation>
 <translation id="8763676559028782284">{COUNT,plural, =1{‫<ph name="DEVICE_NAME" /> سے لنک بھیجا گیا}other{‫<ph name="DEVICE_NAME" /> سے # لنکس بھیجے گئے}}</translation>
 <translation id="8763927697961133303">‏USB آلہ</translation>
 <translation id="8763986294015493060">فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کریں</translation>

@@ -88,7 +88,6 @@
 <translation id="1142713751288681188">Тип бумаги</translation>
 <translation id="1142965388643537393">Информация о поездке</translation>
 <translation id="1143142264369994168">Подписчик сертификата</translation>
-<translation id="1144136880160289237">Этот список пока пуст.</translation>
 <translation id="1149617035358809955">проверить вашу личность, чтобы ввести платежные данные</translation>
 <translation id="1150565364351027703">Солнцезащитные очки</translation>
 <translation id="1150979032973867961">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Операционная система компьютера не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -351,6 +350,7 @@
 <translation id="1539840569003678498">Отчет отправлен:</translation>
 <translation id="1542105669288201090">Бизнес-образование</translation>
 <translation id="1542830386724426410">Показывать информацию о преимуществах и бонусах карты при оформлении покупки. Применяются условия эмитента. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Подробнее…<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="1544739361222649706">Согласно правилам вашей организации, скопированный контент проверяется на наличие конфиденциальной информации. После завершения сканирования вставка может быть разрешена.</translation>
 <translation id="1545757265410828525">История изменения цен</translation>
 <translation id="1546286808622193216">Сравнивайте преимущества карт с помощью Gemini.</translation>
 <translation id="1549470594296187301">Для использования этой функции необходимо включить JavaScript.</translation>
@@ -372,7 +372,6 @@
 <translation id="1564634006476980707">В URL поисковой системы рекомендуется использовать протокол HTTPS: <ph name="SEARCH_URL" />.</translation>
 <translation id="156703335097561114">Сетевые данные, такие как адреса, настройки интерфейса и качество подключения.</translation>
 <translation id="1567040042588613346">Правило работает корректно, но заменяет одинаковое значение, заданное где-то ещё.</translation>
-<translation id="1567405528131216114">Снова добавить тему "<ph name="TOPIC" />"</translation>
 <translation id="1569487616857761740">Укажите дату окончания срока действия</translation>
 <translation id="1569694109004336106">Google Chrome пытается включить Windows Hello, чтобы указывать пароли.</translation>
 <translation id="1569905000953679183">Получение правила установки расширений</translation>
@@ -382,7 +381,6 @@
 <translation id="1579189948231786790">Этот сайт заблокирован вашей организацией</translation>
 <translation id="1581080074034554886">CVC-код</translation>
 <translation id="1583429793053364125">При загрузке этой страницы возникли неполадки.</translation>
-<translation id="1584492003828271317">Персонализация объявлений зависит от этого параметра, предлагаемой сайтами рекламы, настроек файлов cookie, а также от параметров сайта, который у вас открыт.</translation>
 <translation id="1585306568496579337">Расширение "<ph name="EXTENSION_NAME" />" хочет открыть ссылку типа "<ph name="PROTOCOL" />" через <ph name="HANDLER_HOSTNAME" />.</translation>
 <translation id="1586541204584340881">Установленные расширения.</translation>
 <translation id="1588438908519853928">Обычный</translation>
@@ -400,7 +398,6 @@
 <translation id="161042844686301425">Голубой</translation>
 <translation id="1611101756749861742">Второй рулон</translation>
 <translation id="1611854593425834707">Закрыть список устройств, на которые можно транслировать контент</translation>
-<translation id="1612199629998703524">Управление темами</translation>
 <translation id="1615178538289490617">Отменить доступ к порту "<ph name="PORT_NAME" />"</translation>
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="161612500287664753">Спросить об этой странице у Google Поиска</translation>
@@ -680,7 +677,6 @@
 <translation id="2071852865256799872">Этим браузером управляет ваша организация, а профилем – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2072011841331007013">Google Jamboard</translation>
 <translation id="2073286362006276165">Данные сохранены только на устройстве</translation>
-<translation id="2074733626795553847">Разблокировать тему "<ph name="TOPIC" />"</translation>
 <translation id="2074771604462073334">Посещено</translation>
 <translation id="2078956195623975415">Музыкальные и танцевальные игры</translation>
 <translation id="2079545284768500474">Отмена</translation>
@@ -731,7 +727,6 @@
 <translation id="213826338245044447">Мобильные закладки</translation>
 <translation id="2141000681034340397">Изменить введенные данные</translation>
 <translation id="2141475438898772664">Оплата за 4 раза или помесячно</translation>
-<translation id="2144171668675205303">Нет активных тем</translation>
 <translation id="2145193671493396738">Экономические новости</translation>
 <translation id="214556005048008348">Отменить оплату</translation>
 <translation id="2147117373852943630">Музыкальные инструменты</translation>
@@ -1022,7 +1017,6 @@
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="254947805923345898">Недопустимое значение правила.</translation>
 <translation id="2549836668759467704">Строительные подряды и консультации</translation>
-<translation id="2549919488151689436">"<ph name="TOPIC_1" />", "<ph name="TOPIC_2" />" и другие темы</translation>
 <translation id="255002559098805027">Сайт <ph name="HOST_NAME" /> отправил недействительный ответ.</translation>
 <translation id="2551608178605132291">Адрес: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1056,7 +1050,6 @@
 <translation id="2605979593348332811">Произношение имени</translation>
 <translation id="2606760465469169465">Автоматическая проверка</translation>
 <translation id="2607101320794533334">Информация об открытом ключе субъекта</translation>
-<translation id="2608019759319359258">Заблокированные темы для персонализации рекламы не используются</translation>
 <translation id="2610561535971892504">Нажмите, чтобы скопировать</translation>
 <translation id="2612676031748830579">Номер карты</translation>
 <translation id="2612993535136743634">Все защитные коды, сохраненные на вашем устройстве и в аккаунте Google, будут удалены.</translation>
@@ -1495,10 +1488,10 @@
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
 <translation id="3299098170013242198">Windows Hello используется, чтобы указывать пароли</translation>
+<translation id="3299197721044635447">Не удалось вставить содержимое за пределами управляемого контекста Chrome из-за правил вашей организации.</translation>
 <translation id="3299720788264079132">Что-то пошло не так при использовании функции "<ph name="FEATURE_NAME" />".</translation>
 <translation id="3303176609391916566">30 x 42 дюйма</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
-<translation id="3303872874382375219">Персонализация объявлений зависит от множества факторов, включая данный параметр, <ph name="BEGIN_LINK1" />темы рекламы<ph name="LINK_END1" />, ваши <ph name="BEGIN_LINK2" />настройки файлов cookie<ph name="LINK_END2" />, а также от того, используется ли персонализация на каждом отдельном сайте. Подробнее о том, <ph name="BEGIN_LINK3" />как управлять конфиденциальностью в рекламе<ph name="LINK_END3" />…</translation>
 <translation id="3304073249511302126">поиск устройств Bluetooth</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
@@ -1537,7 +1530,6 @@
 <translation id="3377144306166885718">Этот сервер использует устаревшую версию протокола TLS.</translation>
 <translation id="3377188786107721145">Не удалось выполнить анализ политики</translation>
 <translation id="3377642479079205807">Тонкая</translation>
-<translation id="3378612801784846695">Темы подбираются на основе недавней истории браузера и используются сайтами для показа персонализированной рекламы. При этом ваши личные данные остаются защищены.</translation>
 <translation id="3380365263193509176">Неизвестная ошибка</translation>
 <translation id="3380864720620200369">Идентификатор клиента:</translation>
 <translation id="3383566085871012386">Текущий порядок приоритетности</translation>
@@ -1574,7 +1566,6 @@
 <translation id="3433111389595862568">ПО для конференц-связи и совместной работы</translation>
 <translation id="3433144818443565002">Голосовой и видеочат</translation>
 <translation id="3434025015623587566">Google Менеджеру паролей нужен более широкий доступ</translation>
-<translation id="3434346831962601311">Нет заблокированных тем</translation>
 <translation id="343474037147570563">Загруженные или прикрепленные вами файлы отправляются в Google Cloud или сторонние сервисы для анализа. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО. Также они могут быть доступны вашему администратору и храниться на основании правил компании.</translation>
 <translation id="3435557549311968410">Непрерывная печать (по короткому краю)</translation>
 <translation id="3435738964857648380">Безопасность</translation>
@@ -1726,7 +1717,6 @@
 <translation id="3662040827609932717">Этот код IBAN сохранен в Кошельке и может использоваться в сервисах Google.</translation>
 <translation id="3664479564786885722">Узнайте, в каких ещё магазинах продается этот товар.</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
-<translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Подробнее…<ph name="LINK_END1" /></translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3670159164851218963">История режима ИИ</translation>
 <translation id="3670229581627177274">Включить Bluetooth</translation>
@@ -1958,7 +1948,6 @@
 
 Вы также можете предложить владельцу сайта перейти на HTTPS. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="4030383055268325496">&amp;Отменить добавление</translation>
-<translation id="4030545038933060179">Если функция включена, здесь будет показываться список тем на основе недавней истории браузера.</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4036753017940930924">Землеустройство</translation>
 <translation id="403724377879219932">Разрешено запрашивать доступ к другим устройствам в локальной сети</translation>
@@ -2063,7 +2052,6 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Ещё <ph name="ITEM_COUNT" /> товар}one{Ещё <ph name="ITEM_COUNT" /> товар}few{Ещё <ph name="ITEM_COUNT" /> товара}many{Ещё <ph name="ITEM_COUNT" /> товаров}other{Ещё <ph name="ITEM_COUNT" /> товара}}</translation>
 <translation id="4176463684765177261">Отключено</translation>
-<translation id="4177501066905053472">Темы рекламы</translation>
 <translation id="4178863275556660738">Оплата не только картой</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перестать отслеживать цену</translation>
@@ -2292,7 +2280,6 @@
 <translation id="4523580145196408446">Привязано</translation>
 <translation id="4523643381056109546">Вывески</translation>
 <translation id="4524138615196389145">Подтверждайте карты быстрее с помощью WebAuthn</translation>
-<translation id="45243788195988825">Заблокировать тему "<ph name="TOPIC" />"</translation>
 <translation id="4528888973346221791">Информация о рабочем профиле, например имя пользователя</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Номер виртуальной карты:</translation>
@@ -2497,6 +2484,7 @@
 <translation id="4865063548323785458">Сохраняйте пароли, чтобы они автоматически вводились при входе в аккаунты на сайтах и в приложениях.</translation>
 <translation id="4866506163384898554">Чтобы увидеть указатель, нажмите |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|.</translation>
 <translation id="4868277513442568587">Чтобы по-прежнему использовать общие группы вкладок, обновите Chrome.</translation>
+<translation id="4873312501243535625">Проверка медиафайлов</translation>
 <translation id="4873616204573862158">Очки</translation>
 <translation id="4873807733347502026">Управление мышью</translation>
 <translation id="4876305945144899064">Имя пользователя не указано</translation>
@@ -2521,7 +2509,6 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийские игры</translation>
 <translation id="4897851261703006488">Максимальный размер заголовков для этого правила: <ph name="MAX_HEADER_SIZE_LIMIT" /> КБ.</translation>
-<translation id="4898742041545089450">Выбранная тема разблокирована и может стать активной в зависимости от вашей истории браузера.</translation>
 <translation id="4900217275619098670">Девятый лоток</translation>
 <translation id="4901052769830245369">Этикетки (полуглянцевые)</translation>
 <translation id="4901162432287938633">Гигиена и туалетные принадлежности</translation>
@@ -2616,10 +2603,8 @@
 <translation id="5043480802608081735">Скопированная ссылка</translation>
 <translation id="5043753287208271200">Желтый 3</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
-<translation id="5048293684454354469">Темы – лишь один из источников информации, которые сайты используют для персонализации рекламы. Если эта функция отключена, сайты по-прежнему будут показывать рекламу, но она может быть менее интересна для вас. Подробнее о том, <ph name="BEGIN_LINK" />как управлять конфиденциальностью в рекламе<ph name="LINK_END" />…</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, нажмите Tab, чтобы увидеть другие быстрые команды поиска после этой подсказки</translation>
 <translation id="5052488928733955073">Не удалось заполнить информацию. Проверьте подключение к интернету.</translation>
-<translation id="5052517576853118371">Активные темы</translation>
 <translation id="5053116470141135293">При оплате этой картой будет указан номер виртуальной. Это поможет защитить настоящие реквизиты. Изменить настройки можно в Google Кошельке. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Чтобы отправить этот файл с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}one{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}few{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}many{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}other{Чтобы отправить эти файлы с помощью функции "Обмен с окружением", освободите место (<ph name="DISK_SPACE_SIZE" />) на своем устройстве.}}</translation>
 <translation id="5056587122125565772">Создать изображение</translation>
@@ -2718,7 +2703,6 @@
 <translation id="5206392433295093945">Спальня</translation>
 <translation id="5209670883520018268">Лоток 20</translation>
 <translation id="5212364581680288382">Мотогонки</translation>
-<translation id="5214542134842513912">Укажите, какие категории тем могут использоваться для персонализации рекламы. Если отключить категорию, будут заблокированы все связанные с ней темы.</translation>
 <translation id="52163492208010719">Управление удостоверениями личности</translation>
 <translation id="521659676233207110">Лоток 13</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
@@ -4078,7 +4062,6 @@
 <translation id="7305767780379163575">Не удалось сохранить фото</translation>
 <translation id="7307063504147610123">Адрес сохранен на этом устройстве</translation>
 <translation id="7308436126008021607">фоновая синхронизация</translation>
-<translation id="7309058266849426521">Узнайте больше о том, как управлять конфиденциальностью рекламы в Chrome.</translation>
 <translation id="7310392214323165548">Скоро устройство будет перезагружено</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7313107491291103073">Возможно, он нарушает правила.</translation>
@@ -4346,6 +4329,7 @@
 <translation id="767550629621587224">Бумага с вкладками</translation>
 <translation id="7675756033024037212">Изменение масштаба и прокрутка запрещены</translation>
 <translation id="7676643023259824263">Поиск по тексту "<ph name="TEXT" />" из буфера обмена</translation>
+<translation id="7676840398262504532">Ваша организация отслеживает копирование.</translation>
 <translation id="7678730592635586336">Снять новое видео</translation>
 <translation id="7679287273775285018">Оплата с помощью электронного кошелька</translation>
 <translation id="7679367271685653708">Посмотреть историю браузера в настройках Chrome и управлять ею</translation>
@@ -4469,7 +4453,6 @@
 <translation id="7877007680666472091">идентификаторы защищенного контента</translation>
 <translation id="7878562273885520351">Злоумышленники могли узнать ваш пароль</translation>
 <translation id="7885670691503039914">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте. Закладка будет сохранена в папку "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
-<translation id="7886897188117641322">Выбирайте, какие категории тем могут использоваться для персонализации рекламы</translation>
 <translation id="7887683347370398519">Проверьте CVC-код и повторите попытку</translation>
 <translation id="7887885240995164102">Включить режим "Картинка в картинке"</translation>
 <translation id="7888367499748383555">Без комиссий, годовая процентная ставка до 0 % (есть условия)</translation>
@@ -4579,7 +4562,6 @@
 <translation id="8046360364391076336">Промышленные материалы и оборудование</translation>
 <translation id="8052898407431791827">Скопировано в буфер обмена</translation>
 <translation id="8057023045886711556">Комедии</translation>
-<translation id="805766869470867930">Вы не добавляли темы в этот список.</translation>
 <translation id="8057711352706143257">Программа "<ph name="SOFTWARE_NAME" />" настроена неправильно. Чтобы устранить проблему, удалите программу "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">согласие не требуется</translation>
 <translation id="8061691770921837575">Макияж и косметика</translation>
@@ -4626,10 +4608,10 @@
 <translation id="8130113808541743942">Выберите, куда переместить</translation>
 <translation id="813024282736408069">Включите виртуальную карту для автозаполнения</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
-<translation id="8133495915926741232">Укажите, какие категории тем могут использоваться для персонализации рекламы. Если отключить категорию, будут заблокированы все связанные с ней темы. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
 <translation id="8135546115396015134">стрелку влево</translation>
 <translation id="8137456439814903304">Энергетика и коммунальные службы</translation>
+<translation id="814071672416123670">Не удалось скопировать контент из-за правил вашей организации.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создано 1 месяц назад}one{Создано {NUM_MONTHS} месяц назад}few{Создано {NUM_MONTHS} месяца назад}many{Создано {NUM_MONTHS} месяцев назад}other{Создано {NUM_MONTHS} месяца назад}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, используется по умолчанию. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
@@ -4845,7 +4827,6 @@
 <translation id="8467494337615822642">Перейти на страницу проверки безопасности Chrome в настройках</translation>
 <translation id="8468358362970107653">Конверт C3</translation>
 <translation id="8469428721212363950">Розничная торговля</translation>
-<translation id="8472700501934242014">Заблокированные темы</translation>
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8474910779563686872">Показать сведения о разработчике</translation>
@@ -4990,7 +4971,6 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">CVC-код</translation>
 <translation id="8733345475331865475">Автострахование</translation>
-<translation id="8733764070897080460">Вы можете заблокировать темы, которыми не хотите делиться с сайтами. Кроме того, Chrome автоматически удаляет темы, добавленные более четырех недель назад. Подробнее…</translation>
 <translation id="8734529307927223492">Вашим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 дюймов</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть новое окно в режиме инкогнито.</translation>

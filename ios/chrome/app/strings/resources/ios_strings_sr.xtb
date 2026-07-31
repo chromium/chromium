@@ -183,6 +183,7 @@
 <translation id="1558391695376153246">Затвори картице без архив.</translation>
 <translation id="1559263013367304065">од коришћења Google објектива</translation>
 <translation id="1560153516220021659">Скупљено дугме секундарне траке с алаткама</translation>
+<translation id="1562601408588733317">Управљајте проналажењем и попуњавањем информација помоћу Gemini-ја</translation>
 <translation id="1565371473877914088">Нова картица без архивирања</translation>
 <translation id="1567960978791353852">Прикажи Режим читања</translation>
 <translation id="1571780780926010134">Картице без архивирања</translation>
@@ -1396,6 +1397,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5666313630530585305">Пријавите се на веб-сајт.</translation>
 <translation id="5669335982068190158">Одјављени сте у склопу ресетовања iPhone-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="5669528293118408608">www</translation>
+<translation id="5676124785522323481">Управљајте Повезаним апликацијама</translation>
 <translation id="567881659373499783">Верзија <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5680012489335339762">Желите да промените налог? Несачувани подаци налога ће бити избрисани.</translation>
 <translation id="5683499062697987550">Да бисте користили и чували лозинке на Google налогу, потврдите свој идентитет.</translation>
@@ -1571,6 +1573,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6240553182907836376">Ажурирајте идентификациони документ</translation>
 <translation id="6240601837375010619">Сачувајте пасош</translation>
 <translation id="6241132809279377987">Откључајте још функција за iPhone помоћу Google апликација</translation>
+<translation id="6244366663267187541">Одаберите апликације са којима се Gemini повезује</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6251835855431997163">Аутоматски попуните <ph name="VALUE" /></translation>
 <translation id="6253686838150111720">Пријавите се на <ph name="URL" /></translation>
@@ -1946,6 +1949,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7471557245617580330">Направи нову картицу</translation>
 <translation id="7473555040328423550">Додајте картицу</translation>
 <translation id="7476548258282096076">Ова картица приказује најпосећеније сајтове.</translation>
+<translation id="7482823403440483089">Побољшано аутоматско попуњавање</translation>
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7486006552035434095">Синхронизујте уређаје</translation>
 <translation id="7491131399623468277">Идите у Подешавања…</translation>
@@ -2195,7 +2199,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8270320981823560179">Диск</translation>
 <translation id="8274795744553482834">Променићете профил</translation>
 <translation id="8275068909952022340">Још…</translation>
-<translation id="8280797717392145626">Линкови су примљени</translation>
 <translation id="8281781826761538115">Подразумевано – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8282657446819506217">Отвори у групи картица</translation>

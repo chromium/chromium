@@ -79,6 +79,7 @@
 <translation id="1698376642261615901">Google Chrome ir tīmekļa pārlūks, kas zibenīgi atver tīmekļa lapas un izpilda lietojumprogrammas. Tas ir ātrs, stabils un ērti lietojams. Google Chrome iebūvētā aizsardzība pret ļaunprātīgu programmatūru un pikšķerēšanu nodrošina daudz drošāku tīmekļa pārlūkošanu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Pārlūks Chrome pēc stundas tiks restartēts}zero{Pārlūks Chrome pēc # stundām tiks restartēts}one{Pārlūks Chrome pēc # stundas tiks restartēts}other{Pārlūks Chrome pēc # stundām tiks restartēts}}</translation>
 <translation id="1722488837206509557">Tādējādi varēsiet atlasīt kādu no pieejamām ierīcēm un parādīt tajā saturu.</translation>
+<translation id="1724094881572874997">Lai aizsargātu jūsu darbu pārlūkā Chrome, jūsu organizācija varēs skatīt vai pārvaldīt noteiktu informāciju, kad būsiet pierakstījies pārlūkā Chrome.</translation>
 <translation id="177180974022074201">Izmēģināt, izmantojot Gemini pārlūkā Chrome</translation>
 <translation id="1786003790898721085">Ierīcē <ph name="TARGET_DEVICE_NAME" /> pierakstieties pārlūkā Chrome un pēc tam vēlreiz mēģiniet veikt sūtīšanu.</translation>
 <translation id="1786044937610313874">Saīsnes tiek atvērtas pārlūkā Chrome.</translation>
@@ -416,6 +417,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="521447420733633466">Ja jūsu ierīci izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chrome atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos profilos.</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5239627039202700673">Izmantojiet pārlūku Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs</translation>
+<translation id="524751727772074981">Atvērtajā ekrānā varat jautāt jebko Gemini pārlūkā Chrome</translation>
 <translation id="5251420635869119124">Viesi var izmantot pārlūku Chrome, neatstājot nekādas pēdas.</translation>
 <translation id="5271833978500241046">Izmantojiet tās kopā ar citām Gemini funkcijām pārlūkā Chrome.</translation>
 <translation id="5286907366254680517">Noteiktā valoda</translation>
