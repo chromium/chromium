@@ -1,6 +1,6 @@
 [package]
 name = "rustversion"
-version = "1.0.22"
+version = "1.0.23"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build/build.rs"
 categories = ["development-tools::build-utils", "no-std", "no-std::no-alloc"]
@@ -21,6 +21,7 @@ trybuild = { version = "1.0.49", features = ["diff"] }
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
