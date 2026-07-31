@@ -10749,6 +10749,13 @@ be describing additional metrics about the same event.
       The duration in milliseconds that the auto-opened Glic instance remained
       open.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -10763,16 +10770,37 @@ be describing additional metrics about the same event.
     <summary>
       Whether the glic window was attached or detached.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InvocationSource" enum="GlicInvocationSource">
     <summary>
       The source of the invocation of the glic window.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="WebClientMode" enum="GlicWebClientMode">
     <summary>
       The mode of the glic window.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -10787,11 +10815,25 @@ be describing additional metrics about the same event.
     <summary>
       Whether the glic window was attached or detached.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="InvocationSource" enum="GlicInvocationSource">
     <summary>
       The source of the invocation of the glic window.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
