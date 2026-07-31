@@ -593,13 +593,6 @@ gpu.ci.windows_builder(
             "win",
         ],
     ),
-    targets = targets.bundle(
-        # TODO(crbug.com/535541754): Remove compile targets once the child
-        # tester has tests enabled.
-        additional_compile_targets = [
-            "angle_unittests",
-        ],
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Chromium",
         short_name = "a64",
@@ -672,7 +665,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            # TODO(crbug.com/535541754): Enable tests.
+            "gpu_fyi_and_optional_non_linux_gtests",
+            "gpu_angle_win_intel_nvidia_telemetry_tests",
         ],
         mixins = [
             "win11_qualcomm_snapdragon_x_elite_stable",
