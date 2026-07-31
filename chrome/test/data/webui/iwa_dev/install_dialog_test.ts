@@ -162,4 +162,27 @@ suite('<iwa-dev-install-dialog>', () => {
 
     assertFalse(crDialog.open);
   });
+
+  test('emits local bundle install event', async () => {
+    const tabs = dialog.shadowRoot.querySelector('cr-tabs');
+    assertTrue(!!tabs);
+
+    // Select the "Signed Bundle" tab (index 1).
+    tabs.selected = 1;
+    tabs.dispatchEvent(
+        new CustomEvent('selected-changed', {detail: {value: 1}}));
+    await microtasksFinished();
+
+    const installButton =
+        dialog.shadowRoot.querySelector<HTMLButtonElement>('.action-button');
+    assertTrue(!!installButton);
+    assertFalse(installButton.disabled);
+
+    const eventPromise =
+        eventToPromise('request-install-from-local-bundle', dialog);
+
+    installButton.click();
+
+    await eventPromise;
+  });
 });

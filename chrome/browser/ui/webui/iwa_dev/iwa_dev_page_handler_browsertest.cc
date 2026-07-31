@@ -27,10 +27,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/shell_dialogs/fake_select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace {
 
@@ -100,6 +101,11 @@ class IwaDevHandlerBrowserTest
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://iwa-dev")));
   }
 
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    web_app::IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+  }
+
   web_app::IsolatedWebAppUrlInfo InstallProxyApp() {
     server_ =
         CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
@@ -162,6 +168,36 @@ class IwaDevHandlerBrowserTest
   std::optional<std::string> CallInstallAppFromDevProxy(const GURL& url) {
     base::test::TestFuture<const std::optional<std::string>&> future;
     GetHandler()->InstallAppFromDevProxy(url, future.GetCallback());
+    return future.Take();
+  }
+
+  std::optional<std::string> CallSelectAndInstallAppFromLocalWebBundle(
+      std::optional<base::FilePath> path) {
+    ui::FakeSelectFileDialog::Factory* factory =
+        ui::FakeSelectFileDialog::RegisterFactory();
+
+    base::test::TestFuture<void> dialog_opened_future;
+    factory->SetOpenCallback(dialog_opened_future.GetRepeatingCallback());
+
+    base::test::TestFuture<const std::optional<std::string>&> future;
+    GetHandler()->SelectAndInstallAppFromLocalWebBundle(future.GetCallback());
+
+    if (!dialog_opened_future.Wait()) {
+      ADD_FAILURE() << "Timed out waiting for file dialog to open.";
+      return "Timed out waiting for file dialog to open.";
+    }
+
+    ui::FakeSelectFileDialog* fake_dialog = factory->GetLastDialog();
+    if (!fake_dialog) {
+      ADD_FAILURE() << "fake_dialog is nullptr.";
+      return "fake_dialog is nullptr.";
+    }
+    if (path.has_value()) {
+      EXPECT_TRUE(fake_dialog->CallFileSelected(*path, "swbn"));
+    } else {
+      fake_dialog->CallFileSelectionCanceled();
+    }
+
     return future.Take();
   }
 
@@ -241,6 +277,32 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   EXPECT_THAT(*error,
               testing::HasSubstr(
                   "App is not installable: The manifest could not be fetched"));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
+                       SelectAndInstallAppFromLocalWebBundle_Success) {
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                         .SetName(kLocalBundleName)
+                                         .SetVersion(kAppBaseVersion))
+          .BuildBundle();
+
+  auto error = CallSelectAndInstallAppFromLocalWebBundle(app->path());
+  EXPECT_FALSE(error.has_value());
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->name, kLocalBundleName);
+  ASSERT_TRUE(apps[0]->source->is_bundle_path());
+  ExpectBundleInstalledAtTruncatedPath(apps[0]->source->get_bundle_path());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IwaDevHandlerBrowserTest,
+    SelectAndInstallAppFromLocalWebBundle_Error_NoFileSelected) {
+  auto error = CallSelectAndInstallAppFromLocalWebBundle(std::nullopt);
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(*error, "No file selected");
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,

@@ -29,6 +29,7 @@ source_set("iwa_dev") {
   deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:file_select_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/iwa_dev:resources",
     "//chrome/browser/web_applications",
@@ -52,5 +53,6 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",
+    "//ui/shell_dialogs:test_support",
   ]
 }

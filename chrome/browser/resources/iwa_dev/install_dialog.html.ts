@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './install_dev_proxy_tab.js';
+import './install_local_bundle_tab.js';
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -27,6 +28,11 @@ export function getHtml(this: IwaDevInstallDialogElement) {
             ?disabled="${this.isInstalling_}"
             @valid-changed="${this.onTabValidChanged_}">
         </iwa-dev-install-dev-proxy-tab>
+      ` : this.selectedTab_ === TabIndex.LOCAL_BUNDLE ? html`
+        <iwa-dev-install-local-bundle-tab
+            ?disabled="${this.isInstalling_}"
+            @valid-changed="${this.onTabValidChanged_}">
+        </iwa-dev-install-local-bundle-tab>
       ` : html`
         <p>Not implemented yet.</p>
       `}

@@ -48,7 +48,9 @@ ${!this.devModeEnabled_ ? html`
       `}
       <iwa-dev-install-dialog id="installDialog"
           @request-install-from-dev-proxy="${
-            this.onRequestInstallFromDevProxy_}">
+            this.onRequestInstallFromDevProxy_}"
+          @request-install-from-local-bundle="${
+            this.onRequestInstallFromLocalBundle_}">
       </iwa-dev-install-dialog>
       <cr-toast id="toast" duration="3000">
         <div>${this.toastMessage_}</div>

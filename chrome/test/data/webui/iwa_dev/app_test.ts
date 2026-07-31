@@ -296,4 +296,61 @@ suite('<iwa-dev-app>', () => {
         assertEquals(
             'Installation successful!', app.$.toast.textContent?.trim());
       });
+
+  test(
+      'calls selectAndInstallAppFromLocalWebBundle when dialog requests ' +
+          'install from local bundle',
+      async () => {
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: []}));
+        handler.setResultFor(
+            'selectAndInstallAppFromLocalWebBundle',
+            Promise.resolve({error: null}));
+
+        createApp(/*devModeEnabled=*/ true);
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        const dialog = app.$.installDialog;
+        assertTrue(!!dialog);
+
+        dialog.dispatchEvent(
+            new CustomEvent('request-install-from-local-bundle'));
+        await handler.whenCalled('selectAndInstallAppFromLocalWebBundle');
+        await microtasksFinished();
+
+        const crDialog = dialog.$.dialog;
+        assertTrue(!!crDialog);
+        assertFalse(crDialog.open);
+        assertTrue(app.$.toast.open);
+        assertEquals(
+            'Installation successful!', app.$.toast.textContent?.trim());
+      });
+
+  test(
+      'displays error when local bundle installation is cancelled',
+      async () => {
+        handler.setResultFor(
+            'getInstalledAppsInfo', Promise.resolve({apps: []}));
+        handler.setResultFor(
+            'selectAndInstallAppFromLocalWebBundle',
+            Promise.resolve({error: 'No file selected'}));
+
+        createApp(/*devModeEnabled=*/ true);
+        await handler.whenCalled('getInstalledAppsInfo');
+        await microtasksFinished();
+
+        const dialog = app.$.installDialog;
+        assertTrue(!!dialog);
+
+        dialog.dispatchEvent(
+            new CustomEvent('request-install-from-local-bundle'));
+        await handler.whenCalled('selectAndInstallAppFromLocalWebBundle');
+        await microtasksFinished();
+
+        const errorDiv =
+            dialog.shadowRoot.querySelector<HTMLElement>('#error-message');
+        assertTrue(!!errorDiv);
+        assertEquals('No file selected', errorDiv.textContent?.trim());
+      });
 });

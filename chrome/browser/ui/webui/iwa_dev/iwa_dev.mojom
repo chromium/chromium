@@ -38,6 +38,9 @@ interface PageHandler {
   // Returns an error message if installation failed, or null on success.
   InstallAppFromDevProxy(url.mojom.Url url) => (string? error);
 
+  // Opens a file picker for the user to select a Web Bundle and installs it.
+  SelectAndInstallAppFromLocalWebBundle() => (string? error);
+
   // Uninstalls an IWA with a given ID.
   UninstallApp(string app_id) => (bool success);
 };

@@ -71,6 +71,11 @@ export class IwaDevAppElement extends CrLitElement {
         this.browserProxy_.handler.installAppFromDevProxy(e.detail.url));
   }
 
+  protected async onRequestInstallFromLocalBundle_() {
+    await this.processInstallRequest_(
+        this.browserProxy_.handler.selectAndInstallAppFromLocalWebBundle());
+  }
+
   private async processInstallRequest_(
       installPromise: Promise<{error: string | null}>) {
     const dialog = this.$.installDialog;

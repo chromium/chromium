@@ -24,6 +24,8 @@ build_webui("build") {
     "install_dev_proxy_tab.ts",
     "install_dialog.html.ts",
     "install_dialog.ts",
+    "install_local_bundle_tab.html.ts",
+    "install_local_bundle_tab.ts",
     "install_tab.ts",
     "installed_app_list_item.html.ts",
     "installed_app_list_item.ts",

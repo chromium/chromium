@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
@@ -28,9 +29,11 @@
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -92,6 +95,47 @@ std::optional<std::string> MapToInstallError(
 
 }  // namespace
 
+class IwaDevPageHandler::LocalBundleSelectListener
+    : public content::FileSelectListener {
+ public:
+  explicit LocalBundleSelectListener(
+      base::OnceCallback<void(std::optional<base::FilePath>)> callback)
+      : callback_(std::move(callback)) {}
+
+  void Show(content::RenderFrameHost* render_frame_host) {
+    blink::mojom::FileChooserParams params;
+    params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
+    params.need_local_path = true;
+    params.accept_types.push_back(u".swbn");
+
+    FileSelectHelper::RunFileChooser(render_frame_host,
+                                     base::WrapRefCounted(this), params);
+  }
+
+  // content::FileSelectListener
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {
+    CHECK(callback_);
+    // `params.mode` is kOpen so a single file should have been selected.
+    CHECK_EQ(files.size(), 1u);
+    auto& file = *files[0];
+    // `params.need_local_path` is true so the result should be a native file.
+    CHECK(file.is_native_file());
+    std::move(callback_).Run(file.get_native_file()->file_path);
+  }
+
+  void FileSelectionCanceled() override {
+    CHECK(callback_);
+    std::move(callback_).Run(std::nullopt);
+  }
+
+ private:
+  ~LocalBundleSelectListener() override = default;
+
+  base::OnceCallback<void(std::optional<base::FilePath>)> callback_;
+};
+
 IwaDevPageHandler::IwaDevPageHandler(
     content::WebUI* web_ui,
     mojo::PendingRemote<iwa_dev::mojom::Page> page,
@@ -140,6 +184,35 @@ void IwaDevPageHandler::InstallAppFromDevProxy(
   provider_->isolated_web_app_dev_install_manager()
       .InstallIsolatedWebAppFromDevModeProxy(
           url, web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
+          base::BindOnce(&MapToInstallError).Then(std::move(callback)));
+}
+
+void IwaDevPageHandler::SelectAndInstallAppFromLocalWebBundle(
+    SelectAndInstallAppFromLocalWebBundleCallback callback) {
+  content::RenderFrameHost* render_frame_host =
+      web_contents_->GetPrimaryMainFrame();
+  if (!render_frame_host) {
+    return;
+  }
+
+  base::MakeRefCounted<LocalBundleSelectListener>(
+      base::BindOnce(&IwaDevPageHandler::OnLocalBundleSelected,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)))
+      ->Show(render_frame_host);
+}
+
+void IwaDevPageHandler::OnLocalBundleSelected(
+    SelectAndInstallAppFromLocalWebBundleCallback callback,
+    std::optional<base::FilePath> path) {
+  if (!path) {
+    std::move(callback).Run("No file selected");
+    return;
+  }
+
+  provider_->isolated_web_app_dev_install_manager()
+      .InstallIsolatedWebAppFromDevModeBundle(
+          *path,
+          web_app::IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
           base::BindOnce(&MapToInstallError).Then(std::move(callback)));
 }
 
