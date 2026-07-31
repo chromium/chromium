@@ -11,8 +11,14 @@ is_manifest_empty = false
 manifest_package = "androidx.biometric"
 resources = [
   "res/color-v26/biometric_error_color.xml",
-  "res/drawable/fingerprint_dialog_error.xml",
   "res/drawable/fingerprint_dialog_fp_icon.xml",
+  "res/drawable-anydpi-v24/fingerprint_dialog_error.xml",
+  "res/drawable-hdpi-v4/fingerprint_dialog_error.png",
+  "res/drawable-ldpi-v4/fingerprint_dialog_error.png",
+  "res/drawable-mdpi-v4/fingerprint_dialog_error.png",
+  "res/drawable-xhdpi-v4/fingerprint_dialog_error.png",
+  "res/drawable-xxhdpi-v4/fingerprint_dialog_error.png",
+  "res/drawable-xxxhdpi-v4/fingerprint_dialog_error.png",
   "res/layout/fingerprint_dialog_layout.xml",
   "res/values/values.xml",
   "res/values-af/values-af.xml",
