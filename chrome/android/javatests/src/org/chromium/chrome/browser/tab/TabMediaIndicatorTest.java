@@ -41,10 +41,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerDelegate;
@@ -138,6 +138,7 @@ public class TabMediaIndicatorTest {
 
     @Before
     public void setUp() throws Exception {
+        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         mPage = mActivityTestRule.startOnBlankPage();
         mTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         mTabRemover = mTabModel.getTabRemover();
@@ -258,7 +259,6 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/540893583")
     // PictureInPicture#isEnabled() is true on Android 11+.
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R)
     // PiP is not supported for automotive.
