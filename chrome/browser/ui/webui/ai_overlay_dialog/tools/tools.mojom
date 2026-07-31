@@ -151,6 +151,13 @@ interface AiOverlayTools {
   SetFullscreen(bool fullscreen)
       => result<mojo_base.mojom.Empty, string>;
 
+  // Select an option from a dropdown (<select>) element on the page.
+  //
+  // dom_node_id: The numeric DOM node ID of the target dropdown element from
+  // the Page Content Summary (e.g. 101).
+  // value: The value of the <option> element to select.
+  SelectOption(int32 dom_node_id, string value)
+      => result<mojo_base.mojom.Empty, string>;
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
   // video, or long text. Prefer direct voice replies for quick (<1s) tasks.

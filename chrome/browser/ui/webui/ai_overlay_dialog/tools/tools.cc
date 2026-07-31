@@ -895,6 +895,51 @@ void AiOverlayTools::SetFullscreen(bool fullscreen,
   std::move(callback).Run(base::ok(std::monostate()));
 }
 
+void AiOverlayTools::SelectOption(int32_t dom_node_id,
+                                  const std::string& value,
+                                  SelectOptionCallback callback) {
+  RecordToolCallInvoked("SelectOption");
+  content::WebContents* contents =
+      browser_->GetTabStripModel()->GetActiveWebContents();
+  if (!contents) {
+    std::move(callback).Run(base::unexpected("No active tab"));
+    return;
+  }
+
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  if (!rfh) {
+    std::move(callback).Run(base::unexpected("No main frame"));
+    return;
+  }
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame);
+
+  auto select_action = actor::mojom::SelectAction::New();
+  select_action->value = value;
+
+  auto invocation = actor::mojom::ToolInvocation::New();
+  invocation->task_id = actor::TaskId();
+  invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
+  invocation->action =
+      actor::mojom::ToolAction::NewSelect(std::move(select_action));
+
+  auto* raw_frame = chrome_render_frame.get();
+  raw_frame->InvokeTool(
+      std::move(invocation),
+      base::BindOnce(
+          [](mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> remote,
+             SelectOptionCallback cb, actor::mojom::ActionResultPtr res) {
+            if (res && res->code == actor::mojom::ActionResultCode::kOk) {
+              std::move(cb).Run(base::ok(std::monostate()));
+            } else {
+              std::move(cb).Run(base::unexpected(
+                  res ? res->message : "Dropdown element or option value not found"));
+            }
+          },
+          std::move(chrome_render_frame), std::move(callback)));
+}
+
 void AiOverlayTools::GetToolDefinitions(GetToolDefinitionsCallback callback) {
   std::move(callback).Run(kBuiltInToolDefinitionsJson);
 }

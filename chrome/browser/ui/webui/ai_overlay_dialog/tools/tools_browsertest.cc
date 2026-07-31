@@ -867,5 +867,25 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SetFullscreen) {
   EXPECT_TRUE(future2.Get().has_value());
   EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 }
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SelectOptionSuccess) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,<html><body><select id='test_select'><option "
+           "value='opt1'>Opt 1</option><option value='opt2'>Opt 2</option></select></body></html>")));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int dom_node_id =
+      content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_select")
+          .value();
+
+  base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+  tools()->SelectOption(dom_node_id, "opt2", future.GetCallback());
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ("opt2",
+            content::EvalJs(contents, "document.getElementById('test_select').value"));
+}
 }  // namespace
 }  // namespace ttc

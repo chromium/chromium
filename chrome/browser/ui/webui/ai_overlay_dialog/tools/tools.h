@@ -72,6 +72,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
                     ClickElementCallback callback) override;
   void SetFullscreen(bool fullscreen,
                      SetFullscreenCallback callback) override;
+  void SelectOption(int32_t dom_node_id,
+                    const std::string& value,
+                    SelectOptionCallback callback) override;
   void InvokeGlic(const std::string& prompt,
                   InvokeGlicCallback callback) override;
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;
