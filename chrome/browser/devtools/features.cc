@@ -113,7 +113,7 @@ BASE_FEATURE(kDevToolsAiAssistanceAccessibilityAgent,
 
 // Whether the DevTools AI Assistance Storage Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceStorageAgent,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the DevTools AI Code Completion is enabled.
 BASE_FEATURE(kDevToolsAiCodeCompletion, base::FEATURE_ENABLED_BY_DEFAULT);
