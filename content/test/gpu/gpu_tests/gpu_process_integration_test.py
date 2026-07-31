@@ -18,6 +18,9 @@ from gpu_tests.util import host_information
 
 import gpu_path_util
 
+_ASAN_NAVIGATE_MULTIPLIER = 4
+_FUCHSIA_TEST_COMPLETION_MULTIPLIER = 2
+
 _GPU_PAGE_TIMEOUT = 30
 _GPU_VISIBILITY_POLL_DURATION_SEC = 5
 _GPU_VISIBILITY_POLL_DELAY_SEC = 0.1
@@ -145,6 +148,19 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   ######################################
   # Helper functions for the tests below
 
+  def _GetNavigateTimeout(self) -> float:
+    # 60 matches Telemetry's default timeout for Navigate().
+    timeout = 60
+    if self._is_asan:
+      timeout *= _ASAN_NAVIGATE_MULTIPLIER
+    return timeout
+
+  def _GetTestCompletionTimeout(self) -> float:
+    timeout = 10
+    if self.browser.platform.GetOSName() == 'fuchsia':
+      timeout *= _FUCHSIA_TEST_COMPLETION_MULTIPLIER
+    return timeout
+
   def _Navigate(self, test_path: str) -> None:
     url = self.UrlOfStaticFilePath(test_path)
     # It's crucial to use the action_runner, rather than the tab's
@@ -152,12 +168,14 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # to become interactive or better, avoiding critical race
     # conditions.
     self.tab.action_runner.Navigate(
-        url, script_to_evaluate_on_commit=test_harness_script)
+        url,
+        script_to_evaluate_on_commit=test_harness_script,
+        timeout_in_seconds=self._GetNavigateTimeout())
 
   def _WaitForTestCompletion(self, tab: ct.Tab) -> None:
     tab.action_runner.WaitForJavaScriptCondition(
         'window.domAutomationController._finished',
-        timeout=(20 if self.browser.platform.GetOSName() == 'fuchsia' else 10))
+        timeout=self._GetTestCompletionTimeout())
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
       self.fail('Test reported that it failed')
 
