@@ -58,6 +58,13 @@ void DismissSnackbar() {
       performAction:grey_tap()];
 }
 
+// Opens the Tab Grid and waits until a tab grid cell is sufficiently visible.
+void OpenTabGridAndWaitTillVisible() {
+  [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::TabGridCellAtIndex(0)];
+}
+
 }  // namespace
 
 @interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
@@ -970,7 +977,8 @@ void DismissSnackbar() {
 
   // Open the Tab Grid to verify the activity label on the auto-opened
   // background tab.
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
+
   NSString* labelText = l10n_util::GetNSStringF(
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
   [[EarlGrey
@@ -1003,9 +1011,8 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
 
   // Enter the Tab Grid.
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
 
-  // Verify that the activity label "From remote_device" is visible.
   NSString* labelText = l10n_util::GetNSStringF(
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
   [[EarlGrey
@@ -1018,9 +1025,8 @@ void DismissSnackbar() {
       performAction:grey_tap()];
 
   // Enter the Tab Grid again.
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
 
-  // Verify that the label is now gone.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
                                           grey_sufficientlyVisible(), nil)]
@@ -1050,9 +1056,8 @@ void DismissSnackbar() {
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
 
   // Enter the Tab Grid.
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
 
-  // Verify that the activity label "From remote_device" is visible.
   NSString* labelText = l10n_util::GetNSStringF(
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
   [[EarlGrey
@@ -1071,7 +1076,7 @@ void DismissSnackbar() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Enter the Tab Grid.
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
 
   // Verify that the label is still visible after restart.
   [[EarlGrey
@@ -1084,7 +1089,7 @@ void DismissSnackbar() {
       performAction:grey_tap()];
 
   // Enter the Tab Grid again.
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
 
   // Verify that the label is now gone.
   ConditionBlock condition = ^{
@@ -1148,7 +1153,7 @@ void DismissSnackbar() {
 
   // Enter the Tab Grid (this triggers lazy recreation of the card label and
   // re-attaches the tracker).
-  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGridAndWaitTillVisible();
 
   // Verify that the activation metrics histograms have NOT been logged yet.
   GREYAssertNil(
@@ -1165,10 +1170,12 @@ void DismissSnackbar() {
   // Tap the restored background tab (index 1) to view/activate it.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(kExampleURL))];
 
   // Verify that the activation metrics histograms were logged successfully.
   // 1. Sharing.SendTabToSelf.ActivatedEntryPoint should have 1 sample in bucket
-  // 4 (kTabStrip).
+  // ShareActivatedEntryPoint::kTabStrip.
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
