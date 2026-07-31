@@ -85,9 +85,13 @@ class GlicEnablingDelegate {
   virtual std::string GetSessionCountryCode() const;
   // Returns the locale applied to the Chrome app.
   virtual std::string GetLocale() const;
-};
 
-bool GetCountryEnablementForTesting(const GlicEnablingDelegate& delegate);
+ protected:
+  friend class GlicGlobalEnabling;
+  friend class GlicEnabling;
+  static bool GetCountryEnablement(std::string_view permanent_country,
+                                   std::string_view session_country);
+};
 
 struct LastCheckedCountries {
   std::string permanent_country;
