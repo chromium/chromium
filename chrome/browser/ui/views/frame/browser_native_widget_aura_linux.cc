@@ -54,7 +54,8 @@ views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
   params.wm_class_class = shell_integration_linux::GetProgramClassClass();
   const char kX11WindowRoleBrowser[] = "browser";
   const char kX11WindowRolePopup[] = "pop-up";
-  params.wm_role_name = browser_view()->browser()->is_type_normal()
+  params.wm_role_name = browser_view()->browser()->GetType() ==
+                                BrowserWindowInterface::Type::TYPE_NORMAL
                             ? std::string(kX11WindowRoleBrowser)
                             : std::string(kX11WindowRolePopup);
   params.remove_standard_frame = UseCustomFrame();

@@ -297,7 +297,8 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       // Hide this menu option if the window is tabbed or is the devtools
       // window.
       result->new_hidden_state =
-          browser->is_type_normal() || browser->is_type_devtools();
+          browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
+          browser->is_type_devtools();
       break;
     }
     case IDC_ROUTE_MEDIA: {

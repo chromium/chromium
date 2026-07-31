@@ -114,7 +114,8 @@ bool SavedBoundsAreContentBounds(const Browser* browser) {
   // Applications other than web apps (such as devtools) save their window size.
   // Web apps, on the other hand, have the same behavior as popups, and save
   // their content bounds.
-  return !browser->is_type_normal() && !browser->is_type_devtools() &&
+  return browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL &&
+         !browser->is_type_devtools() &&
          !WindowFeatureController::From(browser)->IsTrustedSource();
 }
 

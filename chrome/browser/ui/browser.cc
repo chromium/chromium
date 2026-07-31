@@ -957,7 +957,7 @@ void Browser::OnWindowDidShow() {
       base::TimeTicks::Now());
 
   // Nothing to do for non-tabbed windows.
-  if (!is_type_normal()) {
+  if (GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
     return;
   }
 

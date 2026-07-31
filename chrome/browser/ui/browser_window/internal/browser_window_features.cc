@@ -851,7 +851,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       browser, browser->GetTabStripModel(), browser->GetSessionID(),
       browser->GetType());
 
-  if (browser->is_type_normal() ||
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
@@ -890,7 +890,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   // omnibox and a tab strip). By default most new features should be
   // instantiated in this block (please keep this list ordered without taking
   // into consideration buildflags, repeating buildflags is ok):
-  if (browser->is_type_normal()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     if (browser_view) {
       if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
         std::vector<std::pair<views::WebView*, ActorOverlayWebView*>>

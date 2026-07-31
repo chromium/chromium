@@ -66,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
   {
     Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
     ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
-    ASSERT_FALSE(app_browser->is_type_normal());
+    ASSERT_NE(app_browser->GetType(),
+              BrowserWindowInterface::Type::TYPE_NORMAL);
     app_browser->GetWindow()->Close();
   }
 

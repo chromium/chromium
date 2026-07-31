@@ -348,7 +348,7 @@ bool BrowserTabStripModelDelegate::CanGoBack(
 }
 
 bool BrowserTabStripModelDelegate::IsNormalWindow() {
-  return browser_->is_type_normal();
+  return browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 }
 
 BrowserWindowInterface*

@@ -97,8 +97,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(BrowserFrameViewChromeOS*,
 // Returns true if the header should be painted so that it looks the same as
 // the header used for packaged apps.
 bool UsePackagedAppHeaderStyle(const Browser* browser) {
-  if (browser->is_type_normal() ||
-      (browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP &&
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
+      (browser->is_type_popup() &&
        !WindowFeatureController::From(browser)->IsTrustedSource())) {
     return false;
   }

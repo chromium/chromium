@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
   // Check we have 2 browsers: |browser()| and |app_browser_|.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_NE(browser(), app_browser_);
-  EXPECT_TRUE(browser()->is_type_normal());
+  EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
   chrome::AddTabAt(app_browser_, chrome::ChromeUINewTabURLAsGURL(), -1, true);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_NE(browser(), app_browser_);
-  EXPECT_TRUE(browser()->is_type_normal());
+  EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),

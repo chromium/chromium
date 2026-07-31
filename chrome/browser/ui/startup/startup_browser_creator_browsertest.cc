@@ -800,7 +800,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     TabStripModel* tab_strip = browser()->tab_strip_model();
     EXPECT_EQ(1, tab_strip->count());
     EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
-    EXPECT_TRUE(browser()->is_type_normal());
+    EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
     EXPECT_EQ(GURL(url::kAboutBlankURL),
               tab_strip->GetWebContentsAt(0)->GetLastCommittedURL());
     // Should have opened the chrome://apps unsupported app flow in 2nd window.
@@ -841,7 +841,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     TabStripModel* tab_strip = browser()->tab_strip_model();
     EXPECT_EQ(1, tab_strip->count());
     EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
-    EXPECT_TRUE(browser()->is_type_normal());
+    EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
     EXPECT_EQ(GURL(url::kAboutBlankURL),
               tab_strip->GetWebContentsAt(0)->GetLastCommittedURL());
     // Should have opened the chrome://apps unsupported app flow in 2nd window.
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 
     // It should be a standard tabbed window, not an app window.
     EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
-    EXPECT_TRUE(browser()->is_type_normal());
+    EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
 
     // It should have loaded the requested app.
     const std::u16string expected_title(
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 
     // It should be a standard tabbed window, not an app window.
     EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
-    EXPECT_TRUE(browser()->is_type_normal());
+    EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
 
     // It should have loaded the requested app.
     const std::u16string expected_title(

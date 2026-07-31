@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(PageToolToctouPopupBypassTest,
 IN_PROC_BROWSER_TEST_F(PageToolToctouPopupBypassTest,
                        PopupWindow_FrameSwapIsBlockedAfterFix) {
   Browser* popup = CreateBrowserForPopup(browser()->GetProfile());
-  ASSERT_FALSE(popup->is_type_normal());
+  ASSERT_NE(popup->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   tabs::TabInterface* popup_tab = popup->GetActiveTabInterface();
   ASSERT_TRUE(popup_tab);
   ASSERT_FALSE(popup_tab->IsInNormalWindow());

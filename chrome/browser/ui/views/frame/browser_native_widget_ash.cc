@@ -289,7 +289,8 @@ void BrowserNativeWidgetAsh::SetWindowAutoManaged() {
   }
   // For browser window in Chrome OS, we should only enable the auto window
   // management logic for tabbed browser.
-  if (browser_view_->browser()->is_type_normal()) {
+  if (browser_view_->browser()->GetType() ==
+      BrowserWindowInterface::Type::TYPE_NORMAL) {
     GetNativeWindow()->SetProperty(ash::kWindowPositionManagedTypeKey, true);
   }
 }

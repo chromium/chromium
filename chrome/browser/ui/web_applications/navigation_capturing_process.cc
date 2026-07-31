@@ -1715,7 +1715,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       // For kBrowser apps, an explicitly specific browser to navigate in
       // should override what browser we might otherwise use for the profile.
       if (navigation_params_browser_ &&
-          navigation_params_browser_->is_type_normal()) {
+          navigation_params_browser_->GetType() ==
+              BrowserWindowInterface::Type::TYPE_NORMAL) {
         result.browser = navigation_params_browser_;
       } else {
         BrowserWindowInterface* browser = FindNormalBrowser(*profile_);

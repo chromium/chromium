@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   // 1) Browser windows.
   aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-  ASSERT_TRUE(browser()->is_type_normal());
+  ASSERT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   ASSERT_TRUE(widget->IsActive());
   SetToInitialShowState(widget);
   EXPECT_TRUE(IsInitialShowState(widget));

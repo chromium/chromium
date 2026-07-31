@@ -1814,7 +1814,8 @@ void BrowserCommandController::InitCommandState() {
   // Show various bits of UI
   DCHECK(!profile()->IsSystemProfile())
       << "Ought to never have browser for the system profile.";
-  const bool normal_window = browser_->is_type_normal();
+  const bool normal_window =
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
   const bool guest_session = profile()->IsGuestSession();
 
   command_updater_->UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
@@ -1991,7 +1992,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
                                          normal_window);
 
-  const bool enable_tab_search_commands = browser_->is_type_normal();
+  const bool enable_tab_search_commands =
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
   command_updater_->UpdateCommandEnabled(IDC_TAB_SEARCH,
                                          enable_tab_search_commands);
   command_updater_->UpdateCommandEnabled(IDC_TAB_SEARCH_CLOSE,
@@ -2012,7 +2014,7 @@ void BrowserCommandController::InitCommandState() {
 
   command_updater_->UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
 
-  if (browser_->is_type_normal()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     // Reading list commands.
     command_updater_->UpdateCommandEnabled(kReadingListMenuId, true);
     command_updater_->UpdateCommandEnabled(IDC_READING_LIST_MENU_ADD_TAB, true);
@@ -2170,7 +2172,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   bool is_app =
       browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
       browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP;
-  bool is_normal = browser_->is_type_normal();
+  bool is_normal =
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 
   command_updater_->UpdateCommandEnabled(IDC_DUPLICATE_TAB,
                                          !is_app && CanDuplicateTab(browser_));
@@ -2372,8 +2375,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   // Window management commands
   command_updater_->UpdateCommandEnabled(
       IDC_SHOW_AS_TAB,
-      !browser_->is_type_normal() && !is_fullscreen &&
-          !browser_->is_type_devtools() &&
+      browser_->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL &&
+          !is_fullscreen && !browser_->is_type_devtools() &&
           browser_->GetType() !=
               BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
 
@@ -2441,8 +2444,9 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 }
 
 void BrowserCommandController::UpdateCommandsForHostedAppAvailability() {
-  bool has_toolbar = browser_->is_type_normal() ||
-                     web_app::AppBrowserController::IsWebApp(browser_);
+  bool has_toolbar =
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
+      web_app::AppBrowserController::IsWebApp(browser_);
   if (BrowserWindowFullscreenController::From(browser_)
           ->ShouldHideUIForFullscreen()) {
     has_toolbar = false;
@@ -2659,7 +2663,8 @@ void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
           browser_->GetType() != BrowserWindowInterface::Type::TYPE_APP_POPUP &&
           target_index.has_value() &&
           CanDuplicateTabAt(browser_, *target_index));
-  const bool normal_window = browser_->is_type_normal();
+  const bool normal_window =
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
   command_updater_->UpdateCommandEnabled(
       IDC_MUTE_TARGET_SITE, normal_window && target_index.has_value());
   command_updater_->UpdateCommandEnabled(
@@ -2700,8 +2705,9 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
                                          CanCloseOtherTabs(browser_));
   command_updater_->UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
                                          CanMoveActiveTabToNewWindow(browser_));
-  command_updater_->UpdateCommandEnabled(IDC_NEW_SPLIT_TAB,
-                                         browser_->is_type_normal());
+  command_updater_->UpdateCommandEnabled(
+      IDC_NEW_SPLIT_TAB,
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL);
   command_updater_->UpdateCommandEnabled(IDC_GROUP_UNGROUPED_TABS,
                                          CanGroupAllUngroupedTabs(browser_));
 

@@ -884,7 +884,8 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   auto ensure_browser_visible = [](Browser* browser) {
 #if defined(TOOLKIT_VIEWS)
-    if (browser && browser->is_type_normal()) {
+    if (browser &&
+        browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
       if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
         if (auto* widget = browser_view->GetWidget()) {
           if (!widget->IsVisible()) {
@@ -904,7 +905,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
     Browser* normal_browser = nullptr;
     for (auto* window_interface : browsers) {
       if (Browser* browser = window_interface->GetBrowserForMigrationOnly()) {
-        if (browser->is_type_normal()) {
+        if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
           normal_window_interface = window_interface;
           normal_browser = browser;
           break;

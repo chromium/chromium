@@ -971,7 +971,7 @@ class NavCaptureParameterizedBrowserTest
 
  protected:
   void EnsureValidNewTabPage(Browser* browser) {
-    CHECK(browser->is_type_normal());
+    CHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL);
     // Ensure that if a fixture ended up loading a different page in the
     // starting tab, create a new tab for the navigation.
     GURL last_committed_url = browser->tab_strip_model()

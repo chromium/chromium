@@ -1393,7 +1393,7 @@ bool BrowserView::ShouldDrawTabStrip() const {
         tabs::VerticalTabStripStateController::From(browser_);
     const bool displays_vertical_tabs =
         controller && controller->ShouldDisplayVerticalTabs() &&
-        browser_->is_type_normal();
+        browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 
     if (displays_vertical_tabs) {
       return vertical_tab_strip_region_view_ &&
@@ -1410,7 +1410,8 @@ bool BrowserView::ShouldDrawTabStrip() const {
 bool BrowserView::ShouldDrawVerticalTabStrip() const {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   return ShouldDrawTabStrip() && controller &&
-         controller->ShouldDisplayVerticalTabs() && browser_->is_type_normal();
+         controller->ShouldDisplayVerticalTabs() &&
+         browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 }
 
 bool BrowserView::ShouldDrawWebAppFrameToolbar() const {
@@ -1489,7 +1490,7 @@ bool BrowserView::GetSupportsTabStrip() const {
 }
 
 bool BrowserView::GetIsNormalType() const {
-  return browser_->is_type_normal();
+  return browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
 }
 
 bool BrowserView::GetIsWebAppType() const {
@@ -3628,8 +3629,8 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   }
 
   // Add the name of the browser, unless this is an app window.
-  if (browser()->is_type_normal() ||
-      browser()->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) {
+  if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
+      browser()->is_type_popup()) {
     int message_id;
     switch (channel) {
       case version_info::Channel::CANARY:
@@ -3823,7 +3824,7 @@ bool BrowserView::CanChangeWindowIcon() const {
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the tabbed browser always use a static image for the window
   // icon. See GetWindowIcon().
-  if (browser_->is_type_normal()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     return false;
   }
 #endif
@@ -3869,7 +3870,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  if (browser_->is_type_normal()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     return ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CHROME_APP_ICON_192));
   }
   auto* window = GetNativeWindow();
@@ -3881,7 +3882,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
   }
 #endif
 
-  if (!browser_->is_type_normal()) {
+  if (browser_->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
     return ui::ImageModel::FromImage(
         WindowMetadataController::From(browser_.get())->GetCurrentPageIcon());
   }

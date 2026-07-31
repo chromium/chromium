@@ -261,7 +261,7 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
 // Check the custom tab bar is not instantiated for a tabbed browser window.
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                        IsNotCreatedInTabbedBrowser) {
-  EXPECT_TRUE(browser()->is_type_normal());
+  EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_TRUE(browser_view_->GetIsNormalType());
   EXPECT_FALSE(custom_tab_bar_);
 }

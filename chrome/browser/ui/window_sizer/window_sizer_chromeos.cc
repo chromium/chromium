@@ -95,7 +95,7 @@ bool WindowSizerChromeOS::GetBrowserBounds(
 
   bool determined = false;
   if (bounds->IsEmpty()) {
-    if (browser()->is_type_normal()) {
+    if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
       GetTabbedBrowserBounds(bounds, show_state);
       determined = true;
     } else if (WindowFeatureController::From(browser())->IsTrustedSource()) {
@@ -126,7 +126,7 @@ bool WindowSizerChromeOS::GetBrowserBounds(
     }
   }
 
-  if (browser()->is_type_normal() &&
+  if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
       *show_state == ui::mojom::WindowShowState::kDefault) {
     display::Display display =
         display::Screen::Get()->GetDisplayMatching(*bounds);
@@ -150,7 +150,7 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
     ui::mojom::WindowShowState* show_state) const {
   DCHECK(show_state);
   DCHECK(bounds_in_screen);
-  DCHECK(browser()->is_type_normal());
+  DCHECK(browser()->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL);
   DCHECK(bounds_in_screen->IsEmpty());
 
   const ui::mojom::WindowShowState passed_show_state = *show_state;

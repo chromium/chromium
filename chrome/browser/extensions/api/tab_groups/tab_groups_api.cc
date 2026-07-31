@@ -405,8 +405,9 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
       return false;
     }
 
-    // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
-    // this call SupportsWindowFeature(Browser::kFeatureTabstrip)?
+    // TODO(crbug.com/40638654): Rather than calling GetType() ==
+    // BrowserWindowInterface::Type::TYPE_NORMAL, should this call
+    // SupportsWindowFeature(Browser::kFeatureTabstrip)?
     if (target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
       *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
       return false;

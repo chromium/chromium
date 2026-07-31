@@ -395,7 +395,6 @@ class Browser : public TabStripModelObserver,
       const TabStripSelectionChange& selection) override;
   void TabStripEmpty() override;
 
-  bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }
   bool is_type_devtools() const { return type_ == TYPE_DEVTOOLS; }
 

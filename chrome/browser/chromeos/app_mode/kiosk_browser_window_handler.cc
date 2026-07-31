@@ -377,7 +377,7 @@ bool KioskBrowserWindowHandler::IsDevToolsAllowedBrowser(
 
 bool KioskBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
     Browser* browser) const {
-  return browser->is_type_normal() &&
+  return browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
          kiosk_troubleshooting_controller_
              ->AreKioskTroubleshootingToolsEnabled();
 }

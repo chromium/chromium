@@ -314,7 +314,9 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   }
 #endif
 
-  const bool create_new_browser = !browser || !browser->is_type_normal();
+  const bool create_new_browser =
+      !browser ||
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL;
   if (create_new_browser) {
     CHECK(profile_);
     // In some conditions a new browser object cannot be created. The most

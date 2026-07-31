@@ -935,7 +935,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       CHECK(browser->tab_strip_model()->GetActiveWebContents());
     }
 
-    if (browser_to_activate && browser_to_activate->is_type_normal()) {
+    if (browser_to_activate && browser_to_activate->GetType() ==
+                                   BrowserWindowInterface::Type::TYPE_NORMAL) {
       last_normal_browser = browser_to_activate;
     }
 
@@ -1387,7 +1388,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     // Assume that if the window is not-visible the browser is about to
     // be deleted. This is necessitated by browser destruction first hiding
     // the window, and then asynchronously deleting it.
-    return browser_ && browser_->is_type_normal() &&
+    return browser_ &&
+           browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
            !browser_->GetProfile()->IsOffTheRecord() &&
            browser_->GetWindow()->IsVisible();
   }
