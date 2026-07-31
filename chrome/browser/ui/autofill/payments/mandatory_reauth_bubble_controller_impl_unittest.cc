@@ -8,7 +8,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/mock_bubble_manager.h"
@@ -17,7 +16,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -138,37 +136,28 @@ class MandatoryReauthBubbleControllerImplTest
       weak_ptr_factory_{this};
 };
 
-class MandatoryReauthBubbleControllerImplTestWithFeatureOverride
-    : public base::test::WithFeatureOverride,
-      public MandatoryReauthBubbleControllerImplTest {
- public:
-  MandatoryReauthBubbleControllerImplTestWithFeatureOverride()
-      : base::test::WithFeatureOverride(
-            features::kAutofillShowBubblesBasedOnPriorities) {}
-};
-
-TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
+TEST_F(MandatoryReauthBubbleControllerImplTest,
        SuccessfullyInvokesAcceptCallback) {
   ShowBubble();
   EXPECT_CALL(accept_callback, Run).Times(1);
   ClickAcceptButton();
 }
 
-TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
+TEST_F(MandatoryReauthBubbleControllerImplTest,
        SuccessfullyInvokesCancelCallback) {
   ShowBubble();
   EXPECT_CALL(cancel_callback, Run).Times(1);
   ClickCancelButton();
 }
 
-TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
+TEST_F(MandatoryReauthBubbleControllerImplTest,
        SuccessfullyInvokesCloseCallback) {
   ShowBubble();
   EXPECT_CALL(close_callback, Run).Times(1);
   CloseBubble();
 }
 
-TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
+TEST_F(MandatoryReauthBubbleControllerImplTest,
        Metrics_OptInConfirmationBubble_Shown) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -186,12 +175,12 @@ TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
 // accept/cancel callbacks to destroy web contents when a user accepts the
 // re-auth bubble, which would cause a use-after-free. This test ensures this
 // case is handled.
-TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
+TEST_F(MandatoryReauthBubbleControllerImplTest,
        OnBubbleClosedSurvivesWebContentsDestructionInAcceptCallback) {
   // The accept callback destroys the WebContents that owns `ctrl` (via
   // WebContentsUserData).
   base::OnceClosure destroy_web_contents = base::BindOnce(
-      [](MandatoryReauthBubbleControllerImplTestWithFeatureOverride* test) {
+      [](MandatoryReauthBubbleControllerImplTest* test) {
         if (test->web_contents()) {
           test->web_contents()->RemoveUserData(
               tabs::TabLookupFromWebContents::UserDataKey());
@@ -207,9 +196,6 @@ TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
   // Simulate the user clicking "Yes" on the opt-in bubble.
   controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    MandatoryReauthBubbleControllerImplTestWithFeatureOverride);
 
 class MandatoryReauthBubbleControllerOptInBubbleMetricsTest
     : public MandatoryReauthBubbleControllerImplTest,

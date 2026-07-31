@@ -268,7 +268,6 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 
 struct VirtualCardEnrollBubbleViewsInteractiveUiTestParams {
   VirtualCardEnrollmentSource enrollment_source;
-  bool show_bubbles_based_on_priorities;
   bool is_wallet_branding_enabled;
 };
 
@@ -280,14 +279,6 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
   VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (GetParam().show_bubbles_based_on_priorities) {
-      enabled_features.push_back(
-          {features::kAutofillShowBubblesBasedOnPriorities, {}});
-    } else {
-      disabled_features.emplace_back(
-          features::kAutofillShowBubblesBasedOnPriorities);
-    }
 
     if (GetParam().is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
@@ -314,13 +305,11 @@ INSTANTIATE_TEST_SUITE_P(
             testing::Values(VirtualCardEnrollmentSource::kUpstream,
                             VirtualCardEnrollmentSource::kDownstream,
                             VirtualCardEnrollmentSource::kSettingsPage),
-            testing::Bool(),
             testing::Bool()),
-        [](std::tuple<VirtualCardEnrollmentSource, bool, bool> t) {
+        [](std::tuple<VirtualCardEnrollmentSource, bool> t) {
           return VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
               .enrollment_source = std::get<0>(t),
-              .show_bubbles_based_on_priorities = std::get<1>(t),
-              .is_wallet_branding_enabled = std::get<2>(t),
+              .is_wallet_branding_enabled = std::get<1>(t),
           };
         }),
     [](const ::testing::TestParamInfo<
@@ -341,10 +330,6 @@ INSTANTIATE_TEST_SUITE_P(
         default:
           NOTREACHED();
       }
-
-      test_name.emplace_back(info.param.show_bubbles_based_on_priorities
-                                 ? "_BubblePriorityEnabled"
-                                 : "_BubblePriorityDisabled");
 
       test_name.emplace_back(info.param.is_wallet_branding_enabled
                                  ? "_WalletBrandingEnabled"

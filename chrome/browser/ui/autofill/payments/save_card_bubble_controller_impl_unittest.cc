@@ -207,10 +207,7 @@ class SaveCardBubbleControllerImplTest
  public:
   SaveCardBubbleControllerImplTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAutofillShowBubblesBasedOnPriorities);
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   SaveCardBubbleControllerImplTest(SaveCardBubbleControllerImplTest&) = delete;
   SaveCardBubbleControllerImplTest& operator=(
@@ -447,9 +444,6 @@ class SaveCardBubbleControllerImplTest
   ExposeBubbleAutofillBubbleHandler test_autofill_bubble_handler_;
   std::unique_ptr<ui::ScopedUnownedUserData<AutofillBubbleHandler>>
       scoped_autofill_bubble_handler_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   base::WeakPtrFactory<SaveCardBubbleControllerImplTest> weak_ptr_factory_{
       this};
 };

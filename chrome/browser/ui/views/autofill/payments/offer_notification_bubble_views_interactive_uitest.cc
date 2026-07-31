@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,37 +45,17 @@ struct OfferNotificationBubbleViewsInteractiveUiTestData {
 
 std::string GetTestName(
     const ::testing::TestParamInfo<
-        std::tuple<OfferNotificationBubbleViewsInteractiveUiTestData, bool>>&
-        info) {
-  const auto& params = std::get<0>(info.param);
-  bool bubble_manager_enabled = std::get<1>(info.param);
-  return params.name + (bubble_manager_enabled ? "WithBubbleManagerEnabled"
-                                               : "WithBubbleManagerDisabled");
+        OfferNotificationBubbleViewsInteractiveUiTestData>& info) {
+  return info.param.name;
 }
 
 class OfferNotificationBubbleViewsInteractiveUiTest
     : public OfferNotificationBubbleViewsTestBase,
       public testing::WithParamInterface<
-          std::tuple<OfferNotificationBubbleViewsInteractiveUiTestData, bool>> {
+          OfferNotificationBubbleViewsInteractiveUiTestData> {
  public:
   OfferNotificationBubbleViewsInteractiveUiTest()
-      : test_offer_type_(std::get<0>(GetParam()).offer_type) {
-    bool bubble_manager_enabled = std::get<1>(GetParam());
-
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (bubble_manager_enabled) {
-      enabled_features.push_back(
-          {features::kAutofillShowBubblesBasedOnPriorities, {}});
-    } else {
-      disabled_features.push_back(
-          features::kAutofillShowBubblesBasedOnPriorities);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
+      : test_offer_type_(GetParam().offer_type) {}
 
   ~OfferNotificationBubbleViewsInteractiveUiTest() override = default;
   OfferNotificationBubbleViewsInteractiveUiTest(
@@ -164,7 +143,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
 
   TestAutofillClock test_clock_;
   const AutofillOfferData::OfferType test_offer_type_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/40228302): Split parameterized tests that are
@@ -179,12 +157,10 @@ class OfferNotificationBubbleViewsInteractiveUiTest
 INSTANTIATE_TEST_SUITE_P(
     MAYBE_GPayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Combine(
-        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-            "GPayCardLinked",
-            AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
-        }),
-        testing::Bool()),
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "GPayCardLinked",
+        AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
+    }),
     &GetTestName);
 
 // TODO(crbug.com/416010106): Flaky failures.
@@ -196,11 +172,8 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     MAYBE_GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Combine(
-        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-            "GPayPromoCode",
-            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
-        testing::Bool()),
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
     &GetTestName);
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.
@@ -223,11 +196,8 @@ class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
 INSTANTIATE_TEST_SUITE_P(
     MAYBE_GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
-    testing::Combine(
-        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-            "GPayPromoCode",
-            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
-        testing::Bool()),
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
     &GetTestName);
 
 // TODO(crbug.com/40817360): Flaky failures.

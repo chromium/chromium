@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,12 +45,9 @@ VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields(
 }
 
 class VirtualCardEnrollBubbleControllerImplBubbleViewTest
-    : public base::test::WithFeatureOverride,
-      public InProcessBrowserTest {
+    : public InProcessBrowserTest {
  public:
-  VirtualCardEnrollBubbleControllerImplBubbleViewTest()
-      : base::test::WithFeatureOverride(
-            features::kAutofillShowBubblesBasedOnPriorities) {}
+  VirtualCardEnrollBubbleControllerImplBubbleViewTest() = default;
   VirtualCardEnrollBubbleControllerImplBubbleViewTest(
       const VirtualCardEnrollBubbleControllerImplBubbleViewTest&) = delete;
   VirtualCardEnrollBubbleControllerImplBubbleViewTest& operator=(
@@ -97,7 +93,7 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
 
 // Ensures that bubble acceptance and loading shown metrics are recorded after
 // bubble is shown and accepted .
-IN_PROC_BROWSER_TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
                        ShowBubble) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -128,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 
 // Ensures that bubble acceptance, loading shown, and loading result metrics are
 // recorded when the bubble gets closed from the loading state.
-IN_PROC_BROWSER_TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
                        ShowBubbleInLoadingState) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -161,7 +157,7 @@ IN_PROC_BROWSER_TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 }
 
 // Tests virtual card enrollment flow with loading and confirmation.
-IN_PROC_BROWSER_TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
                        ShowBubbleInLoadingAndConfirmationState) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -209,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 
 // Test that on getting client-side timeout, virtual card bubble is closed in
 // loading state and confirmation dialog is not shown.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     VirtualCardEnrollBubbleControllerImplBubbleViewTest,
     CloseBubbleInLoadingState_NoConfirmationBubble_ClientSideTimeout) {
   ShowBubble();
@@ -230,7 +226,5 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(controller()->IsIconVisible());
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    VirtualCardEnrollBubbleControllerImplBubbleViewTest);
 }  // namespace
 }  // namespace autofill
