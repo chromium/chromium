@@ -111,6 +111,26 @@ if (!is_android) {
   }
 }
 
+source_set("chrome_render_view_host_test_harness") {
+  testonly = true
+  sources = [
+    "chrome_render_view_host_test_harness.cc",
+    "chrome_render_view_host_test_harness.h",
+  ]
+  public_deps = [
+    "//chrome/test/base:testing_profile",
+    "//content/test:test_support",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/signin",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
+}
+
 source_set("scoped_metrics_service_for_synthetic_trials") {
   testonly = true
   sources = [
