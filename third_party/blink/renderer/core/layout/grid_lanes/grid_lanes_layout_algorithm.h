@@ -402,6 +402,11 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren();
 
+  // For a `track-reverse` scroll container whose track area overflows, bake the
+  // reversed shift into the grid-axis track offsets, so the tracks land in
+  // negative coordinates and scrollable overflow originates from the end edge.
+  void ApplyTrackReverseOverflowShift(GridLayoutData* layout_data);
+
   std::optional<LayoutUnit> contain_intrinsic_block_size_;
   LayoutUnit intrinsic_block_size_;
   LayoutUnit stacking_axis_size_;

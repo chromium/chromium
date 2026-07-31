@@ -5,8 +5,51 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {
+
+namespace {
+
+// Returns which physical edges have overflow for a grid-lanes container.
+// `fill-reverse` flips the stacking-axis overflow and `track-reverse` flips
+// the grid-axis overflow.
+LogicalToPhysical<bool> GetOverflowConverter(const ComputedStyle& style) {
+  const bool is_fill_reverse = style.IsReverseGridLanesFillDirection();
+  const bool is_track_reverse = style.IsReverseGridLanesTrackDirection();
+  const bool is_for_columns =
+      style.GridLanesTrackSizingDirection() == kForColumns;
+
+  bool inline_start = false;
+  bool inline_end = true;
+  bool block_start = false;
+  bool block_end = true;
+
+  // `fill-reverse` places items from the end edge during layout, so its
+  // overflow is always on the start edge.
+  if (is_fill_reverse) {
+    if (is_for_columns) {
+      std::swap(block_start, block_end);
+    } else {
+      std::swap(inline_start, inline_end);
+    }
+  }
+
+  // `track-reverse` reverses the grid axis, so scrollable overflow originates
+  // from the start edge.
+  if (is_track_reverse) {
+    if (is_for_columns) {
+      std::swap(inline_start, inline_end);
+    } else {
+      std::swap(block_start, block_end);
+    }
+  }
+
+  return LogicalToPhysical(style.GetWritingDirection(), inline_start,
+                           inline_end, block_start, block_end);
+}
+
+}  // namespace
 
 LayoutGridLanes::LayoutGridLanes(Element* element) : LayoutBlock(element) {}
 
@@ -53,6 +96,16 @@ void LayoutGridLanes::StyleDidChange(
                                                track_direction)) {
     SetGridPlacementDirty(true);
   }
+}
+
+bool LayoutGridLanes::HasTopOverflow() const {
+  NOT_DESTROYED();
+  return GetOverflowConverter(StyleRef()).Top();
+}
+
+bool LayoutGridLanes::HasLeftOverflow() const {
+  NOT_DESTROYED();
+  return GetOverflowConverter(StyleRef()).Left();
 }
 
 const GridLayoutData* LayoutGridLanes::LayoutData() const {

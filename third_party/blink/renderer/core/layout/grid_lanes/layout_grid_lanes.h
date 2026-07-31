@@ -24,6 +24,9 @@ class CORE_EXPORT LayoutGridLanes : public LayoutBlock {
     return "LayoutGridLanes";
   }
 
+  bool HasTopOverflow() const override;
+  bool HasLeftOverflow() const override;
+
   bool HasCachedPlacementData() const;
   const GridPlacementData& CachedPlacementData() const;
   void SetCachedPlacementData(GridPlacementData&& placement_data);

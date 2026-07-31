@@ -147,6 +147,44 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
               *grid_items)};
 }
 
+void GridLanesLayoutAlgorithm::ApplyTrackReverseOverflowShift(
+    GridLayoutData* layout_data) {
+  const auto& node = Node();
+  if (!node.IsScrollContainer() ||
+      !Style().IsReverseGridLanesTrackDirection()) {
+    return;
+  }
+
+  const bool is_for_columns =
+      Style().GridLanesTrackSizingDirection() == kForColumns;
+  auto& track_collection =
+      is_for_columns ? layout_data->Columns() : layout_data->Rows();
+
+  LayoutUnit grid_axis_content_size;
+  if (is_for_columns) {
+    grid_axis_content_size =
+        container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum();
+  } else {
+    const LayoutUnit adjusted_intrinsic_block_size = ClampIntrinsicBlockSize(
+        GetConstraintSpace(), node, GetBreakToken(), BorderScrollbarPadding(),
+        intrinsic_block_size_ + BorderScrollbarPadding().BlockSum());
+    const LayoutUnit block_size = ComputeBlockSizeForFragment(
+        GetConstraintSpace(), node, BorderPadding(),
+        contain_intrinsic_block_size_.value_or(adjusted_intrinsic_block_size),
+        container_builder_.InlineSize());
+    grid_axis_content_size = block_size - BorderScrollbarPadding().BlockSum();
+  }
+
+  const LayoutUnit grid_axis_offset_adjustment =
+      (track_collection.CalculateSetSpanSize() - grid_axis_content_size)
+          .ClampNegativeToZero();
+
+  if (grid_axis_offset_adjustment > LayoutUnit()) {
+    track_collection.AdjustSetOffsets(/*set_index=*/0,
+                                      -grid_axis_offset_adjustment);
+  }
+}
+
 const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   HeapVector<Member<LayoutBox>> oof_children;
   const auto& node = Node();
@@ -190,6 +228,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     layout_data = &sizing_tree->LayoutData();
     const auto& track_collection =
         is_for_columns ? layout_data->Columns() : layout_data->Rows();
+
+    ApplyTrackReverseOverflowShift(layout_data);
 
     // TODO(javiercon): Handle gap decorations in fragmented grid lanes.
     if (!has_block_fragmentation &&
@@ -282,10 +322,10 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     LogicalSize size;
     if (is_for_columns) {
       offset = {track_collection.GetSetOffset(0),
-                border_scrollbar_padding.block_start};
+                BorderScrollbarPadding().block_start};
       size = {track_collection.CalculateSetSpanSize(), stacking_axis_size_};
     } else {
-      offset = {border_scrollbar_padding.inline_start,
+      offset = {BorderScrollbarPadding().inline_start,
                 track_collection.GetSetOffset(0)};
       size = {stacking_axis_size_, track_collection.CalculateSetSpanSize()};
     }
