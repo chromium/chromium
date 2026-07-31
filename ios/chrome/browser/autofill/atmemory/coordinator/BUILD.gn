@@ -6,6 +6,14 @@ source_set("coordinator") {
   sources = [
     "at_memory_coordinator.h",
     "at_memory_coordinator.mm",
+    "at_memory_granular_fill_coordinator.h",
+    "at_memory_granular_fill_coordinator.mm",
+    "at_memory_granular_fill_mediator.h",
+    "at_memory_granular_fill_mediator.mm",
+    "at_memory_search_coordinator.h",
+    "at_memory_search_coordinator.mm",
+    "at_memory_search_mediator.h",
+    "at_memory_search_mediator.mm",
     "scoped_at_memory_search_provider_override.h",
     "scoped_at_memory_search_provider_override.mm",
   ]
@@ -15,5 +23,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
   ]
 }

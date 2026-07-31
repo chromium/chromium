@@ -4,14 +4,24 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_coordinator.h"
 
+#import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_coordinator.h"
+#import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_coordinator.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
-#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_view_controller.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_result_commands.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
+@interface AtMemoryCoordinator () <AtMemorySearchResultCommands,
+                                   UIAdaptivePresentationControllerDelegate>
+@end
+
 @implementation AtMemoryCoordinator {
-  // ViewController for the AtMemory screen.
-  AtMemoryViewController* _viewController;
+  // NavigationController for the AtMemory flow.
+  UINavigationController* _navigationController;
+  // Coordinator for AtMemory search.
+  AtMemorySearchCoordinator* _atMemorySearchCoordinator;
+  // Coordinator for AtMemory granular fill.
+  AtMemoryGranularFillCoordinator* _atMemoryGranularFillCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -21,24 +31,55 @@
 }
 
 - (void)start {
-  _viewController = [[AtMemoryViewController alloc] init];
-  id<AtMemoryCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), AtMemoryCommands);
-  _viewController.atMemoryHandler = handler;
-  _viewController.presentationController.delegate = self;
+  _navigationController = [[UINavigationController alloc] init];
+  _navigationController.presentationController.delegate = self;
 
-  [self.baseViewController presentViewController:_viewController
+  _atMemorySearchCoordinator = [[AtMemorySearchCoordinator alloc]
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser];
+  _atMemorySearchCoordinator.searchResultHandler = self;
+  [_atMemorySearchCoordinator start];
+
+  _navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* sheet =
+      _navigationController.sheetPresentationController;
+  if (sheet) {
+    sheet.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
+    ];
+    sheet.prefersGrabberVisible = YES;
+    sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+    sheet.prefersEdgeAttachedInCompactHeight = YES;
+  }
+
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  if (_viewController.presentingViewController) {
-    [_viewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-  }
-  _viewController = nil;
+  [_atMemoryGranularFillCoordinator stop];
+  _atMemoryGranularFillCoordinator = nil;
+
+  [_atMemorySearchCoordinator stop];
+  _atMemorySearchCoordinator = nil;
+
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _navigationController = nil;
+}
+
+#pragma mark - AtMemorySearchResultCommands
+
+- (void)showAtMemoryGranularFillWithResult:(MemorySearchResult*)result {
+  [_atMemoryGranularFillCoordinator stop];
+
+  _atMemoryGranularFillCoordinator = [[AtMemoryGranularFillCoordinator alloc]
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser];
+  [_atMemoryGranularFillCoordinator start];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

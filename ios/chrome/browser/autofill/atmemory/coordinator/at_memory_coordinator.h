@@ -9,9 +9,10 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator for AtMemory feature.
-@interface AtMemoryCoordinator
-    : ChromeCoordinator <UIAdaptivePresentationControllerDelegate>
+// Main coordinator for the AtMemory feature flow. It manages the shared
+// navigation controller and coordinates transitions between the search and
+// granular fill child coordinators.
+@interface AtMemoryCoordinator : ChromeCoordinator
 
 @end
 
