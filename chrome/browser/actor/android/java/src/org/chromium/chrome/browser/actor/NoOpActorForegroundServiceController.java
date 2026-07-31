@@ -9,6 +9,7 @@ import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Set;
 
@@ -49,6 +50,9 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
 
     @Override
     public void stopActorForegroundService(int flags) {}
+
+    @Override
+    public void transitionActiveTasksToBackground(TabModelSelector selector) {}
 
     @Override
     public @Nullable Intent createTrustedBringTabToFrontIntent(ActorTask task) {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -12,11 +13,13 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -24,7 +27,10 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Orchestrates background actuation of agent tasks by provisioning offscreen tabs and windows. */
+/**
+ * Orchestrates background actuation of agent tasks by provisioning offscreen tabs and windows.
+ * Created before a FGS is started and destroyed when the FGS is destroyed.
+ */
 @NullMarked
 public class ActorBackgroundActuationManager {
     private static final String TAG = "ActorBackgroundMgr";
@@ -86,12 +92,21 @@ public class ActorBackgroundActuationManager {
     }
 
     /**
-     * Transitions active actor tasks from foreground to background.
+     * Transitions active tasks from foreground activity to background rendering.
      *
-     * @param sessions List of sessions to be moved offscreen.
+     * @param selector The TabModelSelector of the stopping activity.
      */
-    public void transitionToBackground(List<BackgroundSession> sessions) {
-        // TODO: Implement this.
+    public void transitionActiveTasksToBackground(TabModelSelector selector) {
+        ThreadUtils.assertOnUiThread();
+        List<BackgroundSession> sessions =
+                ActorTabStateHelper.detachActiveBackgroundSessions(selector);
+        for (BackgroundSession session : sessions) {
+            Tab tab = session.getLastActiveTab();
+            if (tab != null) {
+                startOffscreenRendering(tab);
+            }
+            mBackgroundSessions.add(session);
+        }
     }
 
     /**
@@ -134,6 +149,29 @@ public class ActorBackgroundActuationManager {
         return null;
     }
 
+    private void startOffscreenRendering(Tab tab) {
+        View compositorView =
+                CompositorViewHolderSupplier.getValueOrNullFrom(tab.getWindowAndroid());
+
+        int width;
+        int height;
+        if (compositorView != null
+                && compositorView.getWidth() > 0
+                && compositorView.getHeight() > 0) {
+            width = compositorView.getWidth();
+            height = compositorView.getHeight();
+        } else {
+            // Fallback to display metrics might behave incorrectly for floating window or
+            // split screen mode, but is sufficient for this use case.
+            DisplayMetrics displayMetrics =
+                    ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
+            width = displayMetrics.widthPixels;
+            height = displayMetrics.heightPixels;
+        }
+
+        OffscreenRenderingManager.getInstance().startOffscreenRendering(tab, width, height);
+    }
+
     private void setupBackgroundTab(
             Profile profile, String glicTriggerMessageId, Callback<@Nullable Tab> callback) {
         ThreadUtils.assertOnUiThread();
@@ -147,13 +185,7 @@ public class ActorBackgroundActuationManager {
                         .setDelegateFactory(new ActorTabDelegateFactory())
                         .build();
 
-        DisplayMetrics displayMetrics =
-                ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
-        int width = displayMetrics.widthPixels;
-        int height = displayMetrics.heightPixels;
-
-        Log.d(TAG, "Starting offscreen rendering (%dx%d).", width, height);
-        OffscreenRenderingManager.getInstance().startOffscreenRendering(tab, width, height);
+        startOffscreenRendering(tab);
 
         loadBlankThenCallback(tab, glicTriggerMessageId, callback);
     }

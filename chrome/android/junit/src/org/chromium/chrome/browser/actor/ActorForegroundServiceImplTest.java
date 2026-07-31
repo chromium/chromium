@@ -40,7 +40,7 @@ public class ActorForegroundServiceImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
-    @Mock private ActorForegroundServiceController mMockController;
+    @Mock private ActorForegroundServiceControllerImpl mMockController;
     @Mock private ActorBackgroundActuationManager mMockBackgroundManager;
     @Mock private Profile mMockProfile;
 
@@ -50,13 +50,13 @@ public class ActorForegroundServiceImplTest {
     @Before
     public void setUp() {
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
+        when(mMockController.getBackgroundActuationManager()).thenReturn(mMockBackgroundManager);
         ActorForegroundServiceController.setInstanceForTesting(mMockController);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         IntentUtils.setForceIsTrustedIntentForTesting(false);
 
         mServiceImpl = new ActorForegroundServiceImpl();
         mServiceImpl.setServiceForTesting(new ActorForegroundService());
-        mServiceImpl.setBackgroundManagerForTesting(mMockBackgroundManager);
         mNotification = new Notification();
     }
 

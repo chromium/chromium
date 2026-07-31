@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,8 +29,14 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /** Unit tests for {@link ActorBackgroundActuationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,6 +55,9 @@ public class ActorBackgroundActuationManagerTest {
     @Mock private OffscreenRenderingManager mOffscreenRenderingManager;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Tab mTab;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private TabRemover mTabRemover;
 
     private ActorBackgroundActuationManager mManager;
 
@@ -151,5 +161,61 @@ public class ActorBackgroundActuationManagerTest {
 
         // Verify setPreparedBackgroundTab was NOT called because of our fast-guard
         verify(mActorKeyedService, never()).setPreparedBackgroundTab(any(), any());
+    }
+
+    @Test
+    public void testTransitionActiveTasksToBackground() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
+
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
+
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+
+        // Verify offscreen rendering was started for the transitioned tab
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
+
+        // Verify the transitioned session is tracked
+        mManager.destroy();
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+    }
+
+    @Test
+    public void testTransitionActiveTasksToBackground_MultipleTabs() {
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(101);
+        when(tab2.getProfile()).thenReturn(mProfile);
+        when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, tab2).iterator());
+
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
+        when(mActorKeyedService.getActiveTaskIdOnTab(101, false)).thenReturn(123);
+
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+
+        // Verify offscreen rendering is started only for the most recent tab (tab2)
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(tab2), anyInt(), anyInt());
+        verify(mOffscreenRenderingManager, never())
+                .startOffscreenRendering(eq(mTab), anyInt(), anyInt());
+
+        mManager.destroy();
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(tab2);
     }
 }

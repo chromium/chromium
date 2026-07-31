@@ -11,6 +11,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Set;
 
@@ -61,6 +62,16 @@ public interface ActorForegroundServiceController {
 
     /** Proxies the stopActorForegroundService call to the bound service. */
     void stopActorForegroundService(int flags);
+
+    /**
+     * Transitions active tasks from foreground activity to background rendering.
+     *
+     * @param selector The TabModelSelector of the stopping activity.
+     */
+    default void transitionActiveTasksToBackground(TabModelSelector selector) {}
+
+    /** Destroys the background actuation manager and cleans up its resources. */
+    default void destroyBackgroundActuationManager() {}
 
     /**
      * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the

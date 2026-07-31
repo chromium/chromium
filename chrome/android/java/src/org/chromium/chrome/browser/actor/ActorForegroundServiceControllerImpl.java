@@ -38,8 +38,9 @@ import java.util.Set;
 @ServiceImpl(ActorForegroundServiceController.class)
 public class ActorForegroundServiceControllerImpl implements ActorForegroundServiceController {
     private static final String TAG = "ActorFgsController";
-    private @Nullable ActorForegroundServiceImpl mBoundService;
+    private @Nullable ActorBackgroundActuationManager mBackgroundActuationManager;
     private @Nullable Runnable mOnConnectedRunnable;
+    private @Nullable ActorForegroundServiceImpl mBoundService;
 
     private final ServiceConnection mConnection =
             new ServiceConnection() {
@@ -62,11 +63,13 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
                         Log.i(TAG, "Service disconnected: " + componentName);
                     }
                     mBoundService = null;
+                    destroyBackgroundActuationManager();
                 }
             };
 
     @Override
     public void startService(String glicTriggerMessageId) {
+        ensureBackgroundActuationManagerCreated();
         Context context = ContextUtils.getApplicationContext();
         ActorForegroundServiceImpl.startActorForegroundServiceWithGlicTriggerMessageId(
                 context, glicTriggerMessageId);
@@ -74,6 +77,7 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
 
     @Override
     public void startAndBindService(Runnable onConnected) {
+        ensureBackgroundActuationManagerCreated();
         mOnConnectedRunnable = onConnected;
         Context context = ContextUtils.getApplicationContext();
         ActorForegroundServiceImpl.startActorForegroundService(context);
@@ -86,6 +90,7 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         ContextUtils.getApplicationContext().unbindService(mConnection);
         mBoundService = null;
         mOnConnectedRunnable = null;
+        destroyBackgroundActuationManager();
     }
 
     @Override
@@ -105,6 +110,7 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             }
             return;
         }
+        ensureBackgroundActuationManagerCreated();
         mBoundService.startOrUpdateForegroundService(
                 newNotificationId, newNotification, oldNotificationId, killOldNotification);
     }
@@ -118,6 +124,22 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             return;
         }
         mBoundService.stopActorForegroundService(flags);
+    }
+
+    @Override
+    public void transitionActiveTasksToBackground(TabModelSelector selector) {
+        ThreadUtils.assertOnUiThread();
+        if (mBoundService == null) return;
+        assert mBackgroundActuationManager != null;
+        mBackgroundActuationManager.transitionActiveTasksToBackground(selector);
+    }
+
+    @Override
+    public void destroyBackgroundActuationManager() {
+        if (mBackgroundActuationManager != null) {
+            mBackgroundActuationManager.destroy();
+            mBackgroundActuationManager = null;
+        }
     }
 
     @Override
@@ -186,7 +208,22 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         return state == ActivityState.STARTED || state == ActivityState.RESUMED;
     }
 
+    public @Nullable ActorBackgroundActuationManager getBackgroundActuationManager() {
+        return mBackgroundActuationManager;
+    }
+
+    public void setBackgroundManagerForTesting(
+            @Nullable ActorBackgroundActuationManager backgroundManager) {
+        mBackgroundActuationManager = backgroundManager;
+    }
+
     public ServiceConnection getServiceConnectionForTesting() {
         return mConnection;
+    }
+
+    private void ensureBackgroundActuationManagerCreated() {
+        if (mBackgroundActuationManager == null) {
+            mBackgroundActuationManager = new ActorBackgroundActuationManager();
+        }
     }
 }

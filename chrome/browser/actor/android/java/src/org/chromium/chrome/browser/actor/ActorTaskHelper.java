@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -92,7 +93,11 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
 
     @Override
     public void onStopWithNative() {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
+            TabModelSelector selector = mTabModelSelectorSupplier.get();
+            assert selector != null;
+            ActorForegroundServiceController.get().transitionActiveTasksToBackground(selector);
+        } else if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             // TODO(b/537362347): Update method to remove usage of getCurrentActingTab() when
             // refactoring for multi-task.
             mActingTab = getCurrentActingTab();

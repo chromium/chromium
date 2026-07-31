@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -50,6 +51,7 @@ import java.util.Collections;
 public class ActorForegroundServiceControllerImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private ActorBackgroundActuationManager mMockBackgroundManager;
     @Mock private ActorForegroundServiceImpl mServiceImpl;
     @Mock private ActorForegroundServiceImpl.LocalBinder mBinder;
     @Mock private Notification mNotification;
@@ -142,6 +144,24 @@ public class ActorForegroundServiceControllerImplTest {
         ActorForegroundServiceController controller1 = ActorForegroundServiceController.get();
         ActorForegroundServiceController controller2 = ActorForegroundServiceController.get();
         assertSame("get() should return the cached singleton instance.", controller1, controller2);
+    }
+
+    @Test
+    public void testTransitionActiveTasksToBackground_NotConnected_DoesNothing() {
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+        mController.transitionActiveTasksToBackground(mTabModelSelector);
+        verify(mMockBackgroundManager, never())
+                .transitionActiveTasksToBackground(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    public void testTransitionActiveTasksToBackground_Connected_DelegatesToManager() {
+        mController.startAndBindService(() -> {});
+        mController.getServiceConnectionForTesting().onServiceConnected(null, mBinder);
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+
+        mController.transitionActiveTasksToBackground(mTabModelSelector);
+        verify(mMockBackgroundManager).transitionActiveTasksToBackground(mTabModelSelector);
     }
 
     @Test
