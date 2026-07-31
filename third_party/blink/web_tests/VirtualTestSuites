@@ -3467,6 +3467,8 @@
       "compositing/visibility",
       "compositing/webgl",
       "external/wpt/animation-worklet",
+      "external/wpt/container-timing/tentative/iframe-isolation-cross-origin.sub.html",
+      "external/wpt/container-timing/tentative/iframe-isolation-same-origin.html",
       "external/wpt/css/css-anchor-position/transform-010.html",
       "external/wpt/css/css-anchor-position/transform-011.html",
       "external/wpt/css/css-anchor-position/transform-012.html",
@@ -3525,6 +3527,8 @@
       "external/wpt/trusted-types/trusted-types-reporting.html"
     ],
     "exclusive_tests": [
+      "external/wpt/container-timing/tentative/iframe-isolation-cross-origin.sub.html",
+      "external/wpt/container-timing/tentative/iframe-isolation-same-origin.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-timing-001.tentative.https.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-timing-002.tentative.https.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html",

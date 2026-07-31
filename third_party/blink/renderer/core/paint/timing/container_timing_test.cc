@@ -7,9 +7,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_test_utils.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -647,6 +649,83 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
   TriggerPopulateEntries();
   // One entry per new root.
   EXPECT_EQ(2u, GetContainerEntryCount());
+}
+
+// Cross-frame isolation must hold identically under both attribution paths, so
+// the fixture runs each test with ContainerTimingPrepaintTraversal enabled and
+// disabled.
+class ContainerTimingIframeIsolationTest
+    : public PageTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  ContainerTimingIframeIsolationTest() : scoped_feature_(GetParam()) {}
+
+  void SetUp() override {
+    SetupPageWithClients(nullptr,
+                         MakeGarbageCollected<SingleChildLocalFrameClient>());
+  }
+
+ private:
+  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContainerTimingIframeIsolationTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "PrepaintTraversal" : "Fallback";
+                         });
+
+TEST_P(ContainerTimingIframeIsolationTest, IframeIsolation) {
+  SetBodyContent(R"HTML(<iframe id="child" srcdoc=""></iframe>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* child_frame = DynamicTo<LocalFrame>(GetFrame().Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+  LocalDOMWindow* child_window = child_frame->DomWindow();
+  ASSERT_TRUE(child_window);
+  Document* child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+
+  // srcdoc content does not reliably parse in this fixture; inject the child
+  // body programmatically instead.
+  child_document->body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id='child_root' containertiming='child_ct'>"
+      "<div id='child_content'>child text</div>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  ContainerTiming& parent_ct =
+      ContainerTiming::From(*GetDocument().domWindow());
+  ContainerTiming& child_ct = ContainerTiming::From(*child_window);
+
+  EXPECT_NE(&parent_ct, &child_ct);
+  // Each frame owns an independent pre-paint attribution tracker. The tracker
+  // only exists when ContainerTimingPrepaintTraversal is enabled; in the
+  // fallback path both are null, so the pointer comparison is not meaningful.
+  if (GetParam()) {
+    EXPECT_NE(parent_ct.PaintAttributionTracker(),
+              child_ct.PaintAttributionTracker());
+  }
+
+  Element* child_content =
+      child_document->getElementById(AtomicString("child_content"));
+  ASSERT_TRUE(child_content);
+  SimulateContainerTimingPaint(child_ct, child_content,
+                               gfx::RectF(0, 0, 100, 100));
+
+  auto* parent_performance =
+      DOMWindowPerformance::performance(*GetDocument().domWindow());
+  auto* child_performance = DOMWindowPerformance::performance(*child_window);
+  parent_performance->PopulateContainerTimingEntries();
+  child_performance->PopulateContainerTimingEntries();
+
+  EXPECT_EQ(0u, parent_performance
+                    ->getBufferedEntriesByType(AtomicString("container"))
+                    .size());
+  EXPECT_EQ(
+      1u, child_performance->getBufferedEntriesByType(AtomicString("container"))
+              .size());
 }
 
 }  // namespace blink
