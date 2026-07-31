@@ -2,13 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("grit") {
   if (is_chrome_branded) {
     source = "internal/browser_resources.grd"
+    inputs = [
+      "internal/arrow_selector_spark.icon",
+      "internal/arrow_selector_spark_filled.icon",
+      "internal/auto_browse_spinner.json",
+      "internal/magic_cursor.svg",
+      "internal/tab_icon_indicator.json",
+    ]
   } else {
     source = "browser_resources.grd"
+    inputs = [
+      "//chrome/app/vector_icons/screensaver_auto_old.icon",
+      "auto_browse_spinner.json",
+      "magic_cursor.svg",
+      "tab_icon_indicator.json",
+    ]
   }
   use_brotli = true
   outputs = [

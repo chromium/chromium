@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//chrome/browser/glic/resources/glic_resources.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -24,11 +25,65 @@ if (is_chrome_branded && enable_glic_internal_resources) {
 }
 
 grit("grit") {
+  inputs = [
+    "glic_attach_button.icon",
+    "glic_region_selection_cursor_icon.svg",
+  ]
+
   if (is_chrome_branded && enable_glic_internal_resources) {
     deps = [ ":check_grds" ]
     source = "internal/browser_resources.grd"
+    inputs += [
+      "//components/omnibox/browser/vector_icons/spark.icon",
+      "internal/banana.png",
+      "internal/border.sksl",
+      "internal/glic_accessing.icon",
+      "internal/glic_button_alt_icon_128x128.png",
+      "internal/glic_os_icon_variant_0.icon",
+      "internal/glic_os_icon_variant_1.icon",
+      "internal/glic_os_icon_variant_2.icon",
+      "internal/glic_profile_banner_bottom_left.svg",
+      "internal/glic_profile_banner_bottom_left_light.svg",
+      "internal/glic_profile_banner_bottom_left_light_v2.svg",
+      "internal/glic_profile_banner_bottom_left_v2.svg",
+      "internal/glic_profile_banner_top_right.svg",
+      "internal/glic_profile_banner_top_right_light.svg",
+      "internal/glic_profile_banner_top_right_light_v2.svg",
+      "internal/glic_profile_banner_top_right_v2.svg",
+      "internal/glic_profile_branding.css",
+      "internal/glic_profile_logo.svg",
+      "internal/glic_profile_logo_v2.svg",
+      "internal/glic_spark_v2.icon",
+      "internal/glic_status_icon.icon",
+      "internal/glic_status_icon_color_256x256.png",
+      "internal/glic_status_icon_dark_v2_256x256.png",
+      "internal/glic_status_icon_light_v2_256x256.png",
+      "internal/glic_status_icon_v2.icon",
+      "internal/logo.svg",
+      "internal/mac_alt_status_icon.icon",
+      "internal/parameterized_border.sksl",
+      "internal/simplified_border.sksl",
+      "internal/simplified_parameterized_border.sksl",
+      "internal/tab_media_glic_active.svg",
+    ]
   } else {
     source = "browser_resources.grd"
+    inputs += [
+      "//chrome/app/vector_icons/tv_old.icon",
+      "border.sksl",
+      "glic_button_alt_icon.png",
+      "glic_button_old.icon",
+      "glic_profile_banner_bottom_left.svg",
+      "glic_profile_banner_bottom_left_light.svg",
+      "glic_profile_banner_top_right.svg",
+      "glic_profile_banner_top_right_light.svg",
+      "glic_profile_branding.css",
+      "glic_profile_logo.svg",
+      "glic_status_icon_dark.png",
+      "glic_status_icon_light.png",
+      "logo.svg",
+      "tab_media_glic_active.svg",
+    ]
   }
   use_brotli = true
   outputs = [
