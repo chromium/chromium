@@ -1022,6 +1022,10 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       this, std::vector<ui::ElementIdentifier>{
                 CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
                 NewTabPageUI::kRealboxContextualEntrypointElementId});
+#else
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::vector<ui::ElementIdentifier>{
+                NewTabPageUI::kRealboxContextualEntrypointElementId});
 #endif
 }
 
