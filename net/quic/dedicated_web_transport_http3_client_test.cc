@@ -406,10 +406,20 @@ class DedicatedWebTransportHttp3HeadersTest
   HeaderCapturingBackend capturing_backend_;
 };
 
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/541015755): Destructor order causes MSan
+// use-of-uninitialized-value.
+#define MAYBE_AdditionalHeadersCasingAndDuplicates \
+  DISABLED_AdditionalHeadersCasingAndDuplicates
+#else
+#define MAYBE_AdditionalHeadersCasingAndDuplicates \
+  AdditionalHeadersCasingAndDuplicates
+#endif
+
 // Verify that additional_headers with mixed casing are lowercased and that
 // duplicate names (differing only in case) have their values combined.
 TEST_F(DedicatedWebTransportHttp3HeadersTest,
-       AdditionalHeadersCasingAndDuplicates) {
+       MAYBE_AdditionalHeadersCasingAndDuplicates) {
   StartServerWithCapture();
   WebTransportParameters parameters;
   parameters.additional_headers = {
