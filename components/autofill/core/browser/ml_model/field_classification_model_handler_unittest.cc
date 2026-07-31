@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 
 #include <optional>
+#include <ranges>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -16,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -125,7 +125,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
         GeoIpCountryCode("US"), /*ignore_small_forms=*/true,
         future.GetCallback());
     for (auto [form_structure, predictions] :
-         base::zip(form_structures, future.Get())) {
+         std::views::zip(form_structures, future.Get())) {
       predictions.ApplyTo(form_structure->fields());
     }
   }

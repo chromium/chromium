@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
@@ -23,7 +24,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/types/zip.h"
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
 namespace media {
@@ -899,7 +899,7 @@ void Vp9Parser::SetupLoopFilter() {
   }
 
   if (loop_filter.delta_enabled) {
-    for (auto [lvl, level] : base::zip(loop_filter.lvl, levels)) {
+    for (auto [lvl, level] : std::views::zip(loop_filter.lvl, levels)) {
       lvl[Vp9RefType::VP9_FRAME_INTRA][0] = ClampLf(
           level + loop_filter.ref_deltas[Vp9RefType::VP9_FRAME_INTRA] * scale);
       lvl[Vp9RefType::VP9_FRAME_INTRA][1] = 0;
@@ -907,7 +907,8 @@ void Vp9Parser::SetupLoopFilter() {
       auto remain_lvl = base::span(lvl).subspan<1u>();
       auto remain_ref_deltas = base::span(loop_filter.ref_deltas).subspan<1u>();
       DCHECK_EQ(remain_lvl.size(), remain_ref_deltas.size());
-      for (auto [lvl_type, delta] : base::zip(remain_lvl, remain_ref_deltas)) {
+      for (auto [lvl_type, delta] :
+           std::views::zip(remain_lvl, remain_ref_deltas)) {
         std::ranges::transform(loop_filter.mode_deltas, lvl_type.begin(),
                                ClampLf, [level, delta, scale](auto m) {
                                  return level + (delta + m) * scale;
@@ -915,7 +916,7 @@ void Vp9Parser::SetupLoopFilter() {
       }
     }
   } else {
-    for (auto [lvl, level] : base::zip(loop_filter.lvl, levels)) {
+    for (auto [lvl, level] : std::views::zip(loop_filter.lvl, levels)) {
       std::ranges::fill(base::as_writable_byte_span(lvl), level);
     }
   }

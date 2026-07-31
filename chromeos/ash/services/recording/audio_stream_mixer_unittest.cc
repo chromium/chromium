@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "chromeos/ash/services/recording/audio_capture_test_base.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 #include "chromeos/ash/services/recording/audio_stream.h"
@@ -29,7 +29,7 @@ std::unique_ptr<media::AudioBus> AddBuses(const media::AudioBus& bus1,
   DCHECK_EQ(bus1.frames(), bus2.frames());
 
   auto output_bus = media::AudioBus::Create(bus1.channels(), bus1.frames());
-  for (auto [src1_ch, src2_ch, dest_ch] : base::zip(
+  for (auto [src1_ch, src2_ch, dest_ch] : std::views::zip(
            bus1.AllChannels(), bus2.AllChannels(), output_bus->AllChannels())) {
     for (int i = 0; i < bus1.frames(); ++i) {
       dest_ch[i] = src1_ch[i] + src2_ch[i];

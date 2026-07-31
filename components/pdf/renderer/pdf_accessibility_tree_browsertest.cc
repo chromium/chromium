@@ -8,6 +8,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <ranges>
 
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -18,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_switches.h"
@@ -2726,7 +2726,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         listbox_child_nodes = listbox_node->GetAllChildren();
     for (const auto [expected, node] :
-         base::zip(kExpectedOptions[0], listbox_child_nodes)) {
+         std::views::zip(kExpectedOptions[0], listbox_child_nodes)) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
       EXPECT_NE(ax::mojom::Restriction::kReadOnly,
                 node->data().GetRestriction());
@@ -2754,7 +2754,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         listbox_child_nodes = listbox_node->GetAllChildren();
     for (const auto [expected, node] :
-         base::zip(kExpectedOptions[1], listbox_child_nodes)) {
+         std::views::zip(kExpectedOptions[1], listbox_child_nodes)) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
       EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
                 node->data().GetRestriction());
@@ -2935,7 +2935,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         popup_child_nodes = combobox_popup_node->GetAllChildren();
     for (const auto [expected, node] :
-         base::zip(kExpectedOptions[0], popup_child_nodes)) {
+         std::views::zip(kExpectedOptions[0], popup_child_nodes)) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
       EXPECT_NE(ax::mojom::Restriction::kReadOnly,
                 node->data().GetRestriction());
@@ -2991,7 +2991,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         popup_child_nodes = combobox_popup_node->GetAllChildren();
     for (const auto [expected, node] :
-         base::zip(kExpectedOptions[1], popup_child_nodes)) {
+         std::views::zip(kExpectedOptions[1], popup_child_nodes)) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
       EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
                 node->data().GetRestriction());

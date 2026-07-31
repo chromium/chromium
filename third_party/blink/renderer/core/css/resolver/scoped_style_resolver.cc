@@ -28,7 +28,8 @@
 
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 
-#include "base/types/zip.h"
+#include <ranges>
+
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/cascade_layered.h"
@@ -291,7 +292,8 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
   DCHECK_EQ(ref_groups.size(), rule_set_groups_.size())
       << "Differing number of requests for " << active_style_sheets_.size()
       << " sheets";
-  for (const auto [ref, actual] : base::zip(ref_groups, rule_set_groups_)) {
+  for (const auto [ref, actual] :
+       std::views::zip(ref_groups, rule_set_groups_)) {
     actual.AssertEqualTo(ref);
   }
 #endif

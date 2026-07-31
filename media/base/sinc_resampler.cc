@@ -86,7 +86,6 @@
 #include "base/cpu.h"
 #include "base/memory/aligned_memory.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 

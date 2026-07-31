@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
@@ -132,7 +132,7 @@ TEST_P(ChannelMixerTest, Mixing) {
   float expected_value = 0;
   float scale = GetParam().scale;
   for (auto [channel, value] :
-       base::zip(input_bus->AllChannels(), channel_values)) {
+       std::views::zip(input_bus->AllChannels(), channel_values)) {
     std::ranges::fill(channel, value);
     expected_value += value * scale;
   }

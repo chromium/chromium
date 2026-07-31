@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <variant>
@@ -33,7 +34,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -855,7 +855,7 @@ AutofillAiManager::GetSavePromptCandidates(
         entities_mergeabilities) const {
   std::vector<EntityImportPromptCandidate> save_candidates;
   for (const auto [observed_entity, mergeabilities] :
-       base::zip(observed_entities, entities_mergeabilities)) {
+       std::views::zip(observed_entities, entities_mergeabilities)) {
     // Discard `observed_entity` if it is a subset of some saved entity.
     if (std::ranges::any_of(
             mergeabilities,
@@ -870,7 +870,7 @@ AutofillAiManager::GetSavePromptCandidates(
     // here because they cannot be updated.
     bool has_non_readonly_mergeable_entity = false;
     for (auto [mergeability, saved_entity] :
-         base::zip(mergeabilities, saved_entities)) {
+         std::views::zip(mergeabilities, saved_entities)) {
       if (mergeability && !mergeability->mergeable_attributes.empty()) {
         // Read-only entities cannot be updated, so they do not block saving the
         // observed entity as a new entity. However, this save-promoting
@@ -904,7 +904,7 @@ AutofillAiManager::GetUpdatePromptCandidates(
         entities_mergeabilities) const {
   std::vector<EntityImportPromptCandidate> update_candidates;
   for (const auto [observed_entity, mergeabilities] :
-       base::zip(observed_entities, entities_mergeabilities)) {
+       std::views::zip(observed_entities, entities_mergeabilities)) {
     // Discard `observed_entity` if it is a subset of some saved entity.
     if (std::ranges::any_of(
             mergeabilities,
@@ -918,7 +918,7 @@ AutofillAiManager::GetUpdatePromptCandidates(
     // For each saved entity that is mergeable with `observed_entity`, we should
     // add an update prompt candidate.
     for (auto [mergeability, saved_entity] :
-         base::zip(mergeabilities, saved_entities)) {
+         std::views::zip(mergeabilities, saved_entities)) {
       if (!mergeability || mergeability->mergeable_attributes.empty() ||
           saved_entity.are_attributes_read_only() ||
           IsUpdateBlockedByStrikeDatabase(saved_entity.guid())) {

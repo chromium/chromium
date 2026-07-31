@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -24,7 +25,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "base/values.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/page_orientation.h"
@@ -245,7 +245,7 @@ blink::WebTouchEvent CreateTouchEvent(blink::WebInputEvent::Type type,
   constexpr int kNoModifiers = 0;
   blink::WebTouchEvent touch_event(
       type, kNoModifiers, blink::WebInputEvent::GetStaticTimeStampForTests());
-  for (auto [touch, point] : base::zip(touch_event.touches, points)) {
+  for (auto [touch, point] : std::views::zip(touch_event.touches, points)) {
     touch.SetPositionInWidget(point);
   }
   touch_event.touches_length = points.size();

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/form_structure_test_api.h"
 
-#include "base/types/zip.h"
+#include <ranges>
+
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,8 +30,8 @@ void FormStructureTestApi::SetFieldTypes(
               Each(Contains(Pair(GetActiveHeuristicSource(), _))))
       << "There must be a default heuristic prediction for every field.";
 
-  for (auto [field, heuristic_type, server_type] :
-       base::zip(form_structure_->fields(), heuristic_types, server_types)) {
+  for (auto [field, heuristic_type, server_type] : std::views::zip(
+           form_structure_->fields(), heuristic_types, server_types)) {
     for (const auto& [source, type] : heuristic_type) {
       field->set_heuristic_type(source, type);
     }

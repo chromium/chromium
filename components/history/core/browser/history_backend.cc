@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <utility>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "build/ios_buildflags.h"
 #include "components/favicon/core/favicon_backend.h"
@@ -2069,7 +2069,7 @@ std::optional<std::vector<URLID>> HistoryBackend::QueryUrlIds(
     return std::nullopt;
   }
   std::vector<URLID> result(urls.size(), 0);
-  for (auto [url, id] : base::zip(urls, result)) {
+  for (auto [url, id] : std::views::zip(urls, result)) {
     id = db_->GetRowForURL(url, nullptr);
   }
   return result;

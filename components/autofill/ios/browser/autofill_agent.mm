@@ -10,6 +10,7 @@
 #import <cstdint>
 #import <memory>
 #import <optional>
+#include <ranges>
 #import <string>
 #import <tuple>
 #import <utility>
@@ -32,7 +33,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
-#import "base/types/zip.h"
 #import "base/uuid.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
@@ -579,7 +579,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
   for (const auto& form : forms) {
     base::DictValue fieldData;
     for (const auto [field, field_prediction] :
-         base::zip(form.data.fields(), form.fields)) {
+         std::views::zip(form.data.fields(), form.fields)) {
       fieldData.Set(NumberToString(field.renderer_id().value()),
                     base::Value(field_prediction.overall_type));
     }

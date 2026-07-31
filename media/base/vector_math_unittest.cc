@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/base/vector_math.h"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <ranges>
 
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
@@ -16,7 +16,6 @@
 #include "base/memory/aligned_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "media/base/vector_math_testing.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -262,7 +261,7 @@ TEST_F(VectorMathTest, FCLAMP_remainder_data) {
   const auto run_per_value_clamp_test =
       [&](void (*fn)(base::span<const float>, base::span<float>)) {
         for (auto [input, output] :
-             base::zip(kUnclampedInputValues, kClampedOutputValues)) {
+             std::views::zip(kUnclampedInputValues, kClampedOutputValues)) {
           input_array_[0] = input;
           output_array_[0] = kGuardValue;
           fn(input_array_.as_span().first<kSmallVectorSize>(),

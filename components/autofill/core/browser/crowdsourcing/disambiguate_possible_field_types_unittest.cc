@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/containers/to_vector.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -41,8 +41,8 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
 
     FormStructure form_structure(form);
     std::vector<PossibleTypes> possible_types(form_structure.fields().size());
-    for (auto [test_field, field, pt] :
-         base::zip(test_fields, form_structure.fields(), possible_types)) {
+    for (auto [test_field, field, pt] : std::views::zip(
+             test_fields, form_structure.fields(), possible_types)) {
       field->set_server_predictions(
           {test::CreateFieldPrediction(test_field.predicted_type)});
       if (test_field.is_autofilled) {

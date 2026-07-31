@@ -10,7 +10,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
-#include "base/types/zip.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -142,7 +141,7 @@ TEST(ToVectorTest, UnsizedRangeProjected) {
 TEST(ToVectorTest, ToVectorWithZipAndProjection) {
   const std::vector a = {1, 2, 3};
   const std::vector b = {3, 2, 1};
-  auto z = base::zip(a, b);
+  auto z = std::views::zip(a, b);
 
   EXPECT_THAT(base::ToVector(
                   z, [](std::pair<int, int> x) { return x.first + x.second; }),

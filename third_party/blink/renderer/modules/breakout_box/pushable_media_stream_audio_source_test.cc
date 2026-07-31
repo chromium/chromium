@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
+#include <ranges>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
@@ -68,7 +69,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
 
     if (expected_data_) {
       for (auto [expected_ch, actual_ch] :
-           base::zip(expected_data_->AllChannels(), data.AllChannels())) {
+           std::views::zip(expected_data_->AllChannels(), data.AllChannels())) {
         EXPECT_EQ(actual_ch, expected_ch);
       }
     }

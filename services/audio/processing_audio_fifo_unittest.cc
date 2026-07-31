@@ -5,6 +5,7 @@
 #include "services/audio/processing_audio_fifo.h"
 
 #include <cstring>
+#include <ranges>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -12,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -55,7 +55,7 @@ void VerifyAudioDataEqual(const media::AudioBus& first,
   DCHECK_EQ(first.channels(), second.channels());
   DCHECK_EQ(first.frames(), second.frames());
   for (auto [first_ch, second_ch] :
-       base::zip(first.AllChannels(), second.AllChannels())) {
+       std::views::zip(first.AllChannels(), second.AllChannels())) {
     EXPECT_EQ(first_ch, second_ch);
   }
 }

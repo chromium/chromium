@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <ranges>
 
 #include "base/base_switches.h"
 #include "base/byte_size.h"
@@ -21,7 +22,6 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/types/fixed_array.h"
-#include "base/types/zip.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -213,7 +213,7 @@ class WebnnGraphLPMFuzzer {
     named_input_handles.reserve(graph_info->input_operands.size());
 
     for (auto [operand_id, remote] :
-         base::zip(graph_info->input_operands, input_remotes)) {
+         std::views::zip(graph_info->input_operands, input_remotes)) {
       const webnn::mojom::Operand& operand =
           *graph_info->operands.at(operand_id.value());
       EXPECT_TRUE(operand.name.has_value());
@@ -248,7 +248,7 @@ class WebnnGraphLPMFuzzer {
     named_output_handles.reserve(graph_info->output_operands.size());
 
     for (auto&& [operand_id, remote] :
-         base::zip(graph_info->output_operands, output_remotes)) {
+         std::views::zip(graph_info->output_operands, output_remotes)) {
       const webnn::mojom::Operand& operand =
           *graph_info->operands.at(operand_id.value());
       EXPECT_TRUE(operand.name.has_value());

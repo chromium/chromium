@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/types/zip.h"
 #include "base/version.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_data_type.h"
@@ -139,7 +138,7 @@ bool IsDiscreteGpu(const OrtEpDevice* device) {
       ort_api->HardwareDevice_Metadata(hardware_device);
 
   auto [keys, values] = GetKeyValueSpans(ort_api, device_metadata);
-  for (auto [key, value] : base::zip(keys, values)) {
+  for (auto [key, value] : std::views::zip(keys, values)) {
     if (std::string_view(key) == "Discrete") {
       return std::string_view(value) == "1";
     }
@@ -287,7 +286,7 @@ std::string_view GetOsDriverVersion(const OrtEpDevice* ep_device) {
   // onnxruntime_ep_device_ep_metadata_keys.h once it's available.
   constexpr std::string_view kOrtEpDeviceEpMetadataKeyOSDriverVersion =
       "os_driver_version";
-  for (auto [key, value] : base::zip(keys, values)) {
+  for (auto [key, value] : std::views::zip(keys, values)) {
     if (key == kOrtEpDeviceEpMetadataKeyOSDriverVersion) {
       return std::string_view(value);
     }
@@ -603,7 +602,7 @@ ConvertEpListForIntrospection(base::span<const OrtEpDevice* const> ep_devices) {
     CHECK(ep_metadata);
 
     auto [keys, values] = GetKeyValueSpans(ort_api, ep_metadata);
-    for (auto [key, value] : base::zip(keys, values)) {
+    for (auto [key, value] : std::views::zip(keys, values)) {
       if (std::string_view(key) == "version") {
         ep_details->version = value;
         break;

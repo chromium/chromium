@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 
+#include <ranges>
+
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
@@ -11,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -1138,7 +1139,7 @@ class FindDatesAndSetFormatStringsTest : public testing::Test {
 
     std::vector<DatesAndFormats> dafs;
     dafs.resize(fields.size());
-    for (auto [pt, daf] : base::zip(possible_types, dafs)) {
+    for (auto [pt, daf] : std::views::zip(possible_types, dafs)) {
       daf.formats = pt.formats;
       for (const auto& p : dates) {
         if (&pt == p.second) {

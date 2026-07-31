@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 
+#include <ranges>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -80,8 +81,8 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
 
-  for (auto [field, heuristic_type, server_type] :
-       base::zip(form_structure->fields(), heuristic_types, server_types)) {
+  for (auto [field, heuristic_type, server_type] : std::views::zip(
+           form_structure->fields(), heuristic_types, server_types)) {
     field->set_heuristic_type(GetActiveHeuristicSource(), heuristic_type);
     field->set_server_predictions({test::CreateFieldPrediction(server_type)});
   }

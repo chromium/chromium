@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
+#include <ranges>
 #include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -140,7 +141,7 @@ TEST_F(AutofillFieldFillingStatsAndScoreMetricsTest, FillingScores) {
   FormStructure& form_structure =
       *test_api(autofill_manager()).FindCachedFormById(form.global_id());
   for (const auto [field, autofill_field] :
-       base::zip(form.fields(), form_structure.fields())) {
+       std::views::zip(form.fields(), form_structure.fields())) {
     if (field.is_autofilled_according_to_renderer()) {
       autofill_field->AddFieldModifier(FieldModifier::kAutofill);
     }

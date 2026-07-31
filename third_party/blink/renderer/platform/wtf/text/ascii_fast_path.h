@@ -25,12 +25,12 @@
 #include <stdint.h>
 
 #include <limits>
+#include <ranges>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -173,7 +173,7 @@ ALWAYS_INLINE typename Allocator::ResultStringType ConvertAsciiCase(
     base::span<typename decltype(chars)::value_type> data;
     auto new_impl = allocator.Alloc(string.length(), data);
 
-    for (auto [dest, src] : base::zip(data, chars)) {
+    for (auto [dest, src] : std::views::zip(data, chars)) {
       dest = converter.Convert(src);
     }
     return new_impl;

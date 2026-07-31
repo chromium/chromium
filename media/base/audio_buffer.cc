@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <ranges>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -18,7 +19,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/pass_key.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
@@ -62,7 +62,8 @@ void PlanarRead(AudioBus* dest,
   using SourceValueType = typename SampleTypeTraits::ValueType;
 
   CHECK_EQ(static_cast<size_t>(dest->channels()), source.size());
-  for (auto [dest_ch, source_ch] : base::zip(dest->AllChannels(), source)) {
+  for (auto [dest_ch, source_ch] :
+       std::views::zip(dest->AllChannels(), source)) {
     auto dest_data = dest_ch.subspan(dest_offset, frames);
     // This code in `//media` is hot, so it's worth using
     // `reinterpret_span` to keep performance up.

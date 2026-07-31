@@ -5,11 +5,11 @@
 #include "media/base/audio_pull_fifo.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 
 namespace media {
@@ -67,7 +67,7 @@ int AudioPullFifo::ReadFromFifo(AudioBus* destination,
   }
 
   for (auto [fifo, dest] :
-       base::zip(fifo_->AllChannels(), destination->AllChannels())) {
+       std::views::zip(fifo_->AllChannels(), destination->AllChannels())) {
     auto fifo_data = fifo.subspan(fifo_index_, frames);
 
     dest.subspan(base::checked_cast<size_t>(write_pos), frames)

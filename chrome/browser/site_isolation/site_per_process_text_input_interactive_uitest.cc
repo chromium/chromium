@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <ranges>
 #include <vector>
 
 #include "base/command_line.h"
@@ -11,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       GetFrame(IndexVector{2, 2}),    GetFrame(IndexVector{2, 2, 0}),
       GetFrame(IndexVector{2, 2, 1}), GetFrame(IndexVector{3})};
 
-  for (const auto [frame, value] : base::zip(frames, values)) {
+  for (const auto [frame, value] : std::views::zip(frames, values)) {
     AddInputFieldToFrame(frame, "text", value, true);
   }
 
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{GetFrame(IndexVector{0}),
                                                 GetFrame(IndexVector{1})};
 
-  for (const auto [frame, value] : base::zip(frames, values)) {
+  for (const auto [frame, value] : std::views::zip(frames, values)) {
     AddInputFieldToFrame(frame, "text", value, true);
   }
 
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   for (auto* frame : frames)
     views.push_back(frame->GetView());
   std::vector<std::string> values{"a", "ab", "ac", "aca", "acb", "acd"};
-  for (const auto [frame, value] : base::zip(frames, values)) {
+  for (const auto [frame, value] : std::views::zip(frames, values)) {
     AddInputFieldToFrame(frame, "text", value, true);
   }
 
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderWidgetHostView*> views;
   for (auto* frame : frames)
     views.push_back(frame->GetView());
-  for (const auto [frame, value] : base::zip(frames, values)) {
+  for (const auto [frame, value] : std::views::zip(frames, values)) {
     AddInputFieldToFrame(frame, "text", value, true);
   }
 
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       };
 
   size_t count = 2;
-  for (const auto [value, view] : base::zip(values, views)) {
+  for (const auto [value, view] : std::views::zip(values, views)) {
     // First focus the <input>.
     send_tab_and_wait_for_value(value);
 
@@ -1280,7 +1280,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   // For each frame, add <input>, set its value to expected word, select it, ask
   // for dictionary and verify the word returned from renderer matches.
-  for (const auto [frame, expected_word] : base::zip(frames, expected_words)) {
+  for (const auto [frame, expected_word] :
+       std::views::zip(frames, expected_words)) {
     AddInputFieldToFrame(frame, "text", expected_word.c_str(), true);
     // Focusing the <input> automatically selects the text.
     ASSERT_TRUE(ExecJs(frame, "document.querySelector('input').focus();"));

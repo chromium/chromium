@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -20,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/zip.h"
 #include "base/values.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_matcher/url_matcher.h"
@@ -244,7 +244,7 @@ bool ChromeRequireCTDelegate::MatchSPKI(
   auto intermediate_hashes = base::span(hashes).subspan(1u);
   auto intermediate_buffers = chain->intermediate_buffers();
   for (auto [hash, cert_buffer] :
-       base::zip(intermediate_hashes, intermediate_buffers)) {
+       std::views::zip(intermediate_hashes, intermediate_buffers)) {
     if (spkis_.contains(hash)) {
       candidates.push_back(cert_buffer.get());
     }

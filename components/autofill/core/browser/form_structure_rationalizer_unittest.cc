@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 
+#include <ranges>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -11,7 +12,6 @@
 #include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -90,7 +90,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
     const std::vector<FieldTemplate>& fields) {
   auto form_structure = std::make_unique<FormStructure>(CreateFormData(fields));
   for (auto [field, field_template] :
-       base::zip(form_structure->fields(), fields)) {
+       std::views::zip(form_structure->fields(), fields)) {
     field->set_heuristic_type(GetActiveHeuristicSource(),
                               field_template.heuristic_type);
     field->set_server_predictions({test::CreateFieldPrediction(

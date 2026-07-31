@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 
@@ -16,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/types/zip.h"
 #include "base/values.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
@@ -153,7 +153,7 @@ std::optional<base::DictValue> CreateRequestBodyData(
   });
   bool some_succeeded = false;
   if (!data_sources.empty()) {
-    for (auto [presenter, key] : base::zip(presenters, kKeys)) {
+    for (auto [presenter, key] : std::views::zip(presenters, kKeys)) {
       for (auto& source : data_sources) {
         source->FeedToPresenter(presenter);
       }

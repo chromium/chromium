@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <tuple>
 #include <utility>
 #include <variant>
@@ -18,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -182,7 +182,7 @@ bool DeserializeSection3(base::PickleIterator* iter,
   field_data->set_text_direction(text_direction);
   std::vector<SelectOption> options;
   for (auto [option_value, option_text] :
-       base::zip(option_values, option_texts)) {
+       std::views::zip(option_values, option_texts)) {
     options.push_back(
         {.value = std::move(option_value), .text = std::move(option_text)});
   }

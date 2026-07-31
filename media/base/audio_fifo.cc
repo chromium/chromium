@@ -5,11 +5,11 @@
 #include "media/base/audio_fifo.h"
 
 #include <cstring>
+#include <ranges>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_math.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 
 namespace media {
@@ -79,7 +79,7 @@ void AudioFifo::Push(const AudioBus* source, int source_size) {
 
   // Copy all channels from the source to the FIFO. Wrap around if needed.
   for (auto [data_src, fifo_dest] :
-       base::zip(source->AllChannels(), audio_bus_->AllChannels())) {
+       std::views::zip(source->AllChannels(), audio_bus_->AllChannels())) {
     auto [append_data, wrap_data] = data_src.split_at(append_size);
 
     // Append part of (or the complete) source to the FIFO.
@@ -128,7 +128,7 @@ void AudioFifo::Consume(AudioBus* destination,
   // For all channels, remove the requested amount of data from the FIFO
   // and copy the content to the destination. Wrap around if needed.
   for (auto [data_dest, fifo_src] :
-       base::zip(destination->AllChannels(), audio_bus_->AllChannels())) {
+       std::views::zip(destination->AllChannels(), audio_bus_->AllChannels())) {
     auto [consume_data, wrap_data] =
         data_dest.subspan(dest_offset, frame_count).split_at(consume_size);
 

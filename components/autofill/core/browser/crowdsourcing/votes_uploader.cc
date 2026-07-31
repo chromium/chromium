@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <utility>
@@ -31,7 +32,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
@@ -397,7 +397,8 @@ void VotesUploader::StartVoteUploadProcess(
                     fields_that_match_state, last_unlocked_credit_card_cvc,
                     vote_data.otps, app_locale, *form);
 
-            for (auto [field, pt] : base::zip(form->fields(), possible_types)) {
+            for (auto [field, pt] :
+                 std::views::zip(form->fields(), possible_types)) {
               field->set_possible_types(pt.types);
             }
 
@@ -411,7 +412,7 @@ void VotesUploader::StartVoteUploadProcess(
                 vote_data.loyalty_cards, last_unlocked_credit_card_cvc,
                 vote_data.otps, app_locale);
             for (auto [field, dates_and_formats] :
-                 base::zip(form->fields(), possible_types)) {
+                 std::views::zip(form->fields(), possible_types)) {
               options.fields[field->global_id()].format_strings =
                   std::move(dates_and_formats).formats;
             }

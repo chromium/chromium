@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <functional>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "base/types/zip.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
@@ -1422,7 +1422,7 @@ void AutofillExternalDelegate::InsertDataListValues(
   suggestions.insert(suggestions.begin(), datalist_options.size(),
                      Suggestion(SuggestionType::kDatalistEntry));
   for (auto [suggestion, list_entry] :
-       base::zip(suggestions, datalist_options)) {
+       std::views::zip(suggestions, datalist_options)) {
     suggestion.main_text =
         Suggestion::Text(list_entry.value, Suggestion::Text::IsPrimary(true));
     suggestion.labels = {{Suggestion::Text(list_entry.text)}};

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -14,7 +15,6 @@
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/zip.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_instance_with_labels.h"
@@ -342,7 +342,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
                              g_browser_process->GetApplicationLocale());
     CHECK_EQ(entities_of_type.size(), labels.size());
 
-    for (const auto [entity, label] : base::zip(entities_of_type, labels)) {
+    for (const auto [entity, label] :
+         std::views::zip(entities_of_type, labels)) {
       const bool stored_in_wallet =
           entity->record_type() == EntityInstance::RecordType::kServerWallet;
       entities_with_labels.emplace_back(

@@ -9,11 +9,11 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/types/zip.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -907,8 +907,8 @@ TEST(WavAudioHandlerTest, CopyPartialFramesTo) {
   ASSERT_EQ(frames_written, 2u);
 
   // Compare the contents of the two buses.
-  for (auto [channel_actual, channel_expected] :
-       base::zip(bus_actual->AllChannels(), bus_expected->AllChannels())) {
+  for (auto [channel_actual, channel_expected] : std::views::zip(
+           bus_actual->AllChannels(), bus_expected->AllChannels())) {
     EXPECT_EQ(channel_actual, channel_expected);
   }
 }

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -494,8 +495,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
   // Verify FieldInfo UKM event for every field.
   for (const auto [field, heuristic_type, html_field_type, server_type,
                    overall_type, autocomplete_state] :
-       base::zip(form.fields(), heuristic_types, html_field_types, server_types,
-                 overall_types, autocomplete_states)) {
+       std::views::zip(form.fields(), heuristic_types, html_field_types,
+                       server_types, overall_types, autocomplete_states)) {
     FieldPrediction::Source prediction_source =
         server_type != NO_SERVER_DATA ? FieldPrediction::SOURCE_AUTOFILL_DEFAULT
                                       : FieldPrediction::SOURCE_UNSPECIFIED;

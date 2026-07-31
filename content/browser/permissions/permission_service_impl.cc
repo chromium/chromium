@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/types/zip.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/bad_message.h"
@@ -403,7 +403,7 @@ void PermissionServiceImpl::RequestPermissions(
             statuses.reserve(results.size());
             CHECK_EQ(permissions.size(), results.size());
             for (auto&& [permission, result] :
-                 base::zip(permissions, results)) {
+                 std::views::zip(permissions, results)) {
               statuses.push_back(PermissionUtil::ToPermissionStatusWithDetails(
                   permission->name, result));
             }

@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -42,7 +43,6 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -905,7 +905,8 @@ void FormFiller::FillOrPreviewForm(
       });
   absl::flat_hash_map<FieldGlobalId, FieldType> filled_field_types;
 
-  for (auto [result_field, field] : base::zip(result_fields, form.fields())) {
+  for (auto [result_field, field] :
+       std::views::zip(result_fields, form.fields())) {
     if (!skip_reasons[field->global_id()].empty()) {
       continue;
     }

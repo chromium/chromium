@@ -4,8 +4,9 @@
 
 #include "chrome/services/speech/speech_timestamp_estimator.h"
 
+#include <ranges>
+
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace speech {
@@ -31,7 +32,8 @@ MediaTimestampRange MediaSecondsRange(int start, int end) {
 void VerifyRanges(const MediaRanges& actual_ranges,
                   const MediaRanges& expected_ranges) {
   EXPECT_EQ(actual_ranges.size(), expected_ranges.size());
-  for (auto [actual, expected] : base::zip(actual_ranges, expected_ranges)) {
+  for (auto [actual, expected] :
+       std::views::zip(actual_ranges, expected_ranges)) {
     EXPECT_EQ(actual.start, expected.start);
     EXPECT_EQ(actual.end, expected.end);
 

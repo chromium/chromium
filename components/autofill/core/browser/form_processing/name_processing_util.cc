@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <concepts>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,7 +19,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -122,7 +122,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
   ComputeParseableNames(names);
 
   std::vector<std::pair<FieldGlobalId, std::u16string>> name_map;
-  for (const auto [field, name] : base::zip(fields, names)) {
+  for (const auto [field, name] : std::views::zip(fields, names)) {
     if (name != get(field).name()) {
       name_map.emplace_back(get(field).global_id(), name);
     }

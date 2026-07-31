@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager_test_api.h"
@@ -2331,7 +2331,7 @@ TEST_P(AtMemoryManagerIconTest,
   EXPECT_EQ(final_suggestions.size(), test_cases.size());
   const bool expect_sparkly = (scenario() != SourceScenario::kAutofillOnly);
   for (auto [test_case, suggestion] :
-       base::zip(test_cases, final_suggestions)) {
+       std::views::zip(test_cases, final_suggestions)) {
     Suggestion::Icon expected_icon =
         expect_sparkly ? test_case.sparkly_icon : test_case.regular_icon;
     EXPECT_EQ(suggestion.icon, expected_icon)

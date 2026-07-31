@@ -4,13 +4,14 @@
 
 #include "components/server_certificate_database/server_certificate_database.h"
 
+#include <ranges>
+
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "net/cert/x509_util.h"
@@ -129,7 +130,7 @@ bool ServerCertificateDatabase::InsertOrUpdateCerts(
   }
 
   for (auto&& [cert_info, proto_bytes] :
-       base::zip(cert_infos, proto_bytes_vec)) {
+       std::views::zip(cert_infos, proto_bytes_vec)) {
     sql::Statement insert_statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
         "INSERT OR REPLACE INTO certificates(sha256hash_hex, der_cert, "

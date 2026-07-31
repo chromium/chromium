@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -70,7 +70,7 @@ std::optional<SelectOption> GetExpirationMonthSelectControlValue(
   static constexpr char16_t kNumberPrefix[] = u"number:";
   static constexpr char16_t kStringPrefix[] = u"string:";
   for (auto [field_option, trimmed_value] :
-       base::zip(field_options, trimmed_values)) {
+       std::views::zip(field_options, trimmed_values)) {
     base::TrimWhitespace(field_option.value, base::TRIM_ALL, &trimmed_value);
     base::ReplaceFirstSubstringAfterOffset(&trimmed_value, 0, kNumberPrefix,
                                            u"");
@@ -108,7 +108,7 @@ std::optional<SelectOption> GetExpirationMonthSelectControlValue(
 
   // Attempt to match the user's `month` with the field's value attributes.
   for (auto [field_option, trimmed_value] :
-       base::zip(field_options, trimmed_values)) {
+       std::views::zip(field_options, trimmed_values)) {
     // We use the trimmed value to match with `month`, but the original select
     // value to fill the field (otherwise filling wouldn't work).
     if (std::optional<int> parsed_month =

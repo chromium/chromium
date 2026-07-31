@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_TEST_BASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_TEST_BASE_H_
 
+#include <ranges>
+
 #include "base/check_deref.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -241,7 +242,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
     if (FormStructure* form_structure =
             test_api(autofill_manager()).FindCachedFormById(form.global_id())) {
       for (auto [field, field_description] :
-           base::zip(form_structure->fields(), form_description.fields)) {
+           std::views::zip(form_structure->fields(), form_description.fields)) {
         test_api(*field).set_initial_value(u"");
         if (field_description.is_autofilled_according_to_renderer) {
           field->set_autofilled_type(field_description.role);

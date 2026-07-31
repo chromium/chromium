@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -222,7 +222,8 @@ std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   std::vector<AutofillFieldWithAttributeType> r;
-  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+  for (auto [field, attributes] :
+       std::views::zip(fields, attributes_by_field)) {
     if (!section_of_interest || field->section() == section_of_interest) {
       for (AttributeType attribute : attributes) {
         if (entity_of_interest == attribute.entity_type()) {
@@ -245,7 +246,8 @@ EntityMap DetermineAttributeTypes(
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   EntityMap r;
-  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+  for (auto [field, attributes] :
+       std::views::zip(fields, attributes_by_field)) {
     if (!section_of_interest || field->section() == section_of_interest) {
       for (AttributeType attribute : attributes) {
         r[attribute.entity_type()].emplace_back(*field, attribute);
@@ -263,7 +265,8 @@ SectionMap DetermineAttributeTypes(
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   SectionMap r;
-  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
+  for (auto [field, attributes] :
+       std::views::zip(fields, attributes_by_field)) {
     for (AttributeType attribute : attributes) {
       r[field->section()][attribute.entity_type()].emplace_back(*field,
                                                                 attribute);

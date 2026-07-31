@@ -24,12 +24,13 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 
+#include <ranges>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/types/zip.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
@@ -182,7 +183,7 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   auto hmtx_entries =
       UNSAFE_BUFFERS(base::span(hmtx->entries, count_hmtx_entries));
   for (const auto&& [advance_width, hmtx_entry] :
-       base::zip(advance_widths_, hmtx_entries)) {
+       std::views::zip(advance_widths_, hmtx_entries)) {
     advance_width = hmtx_entry.advance_width;
   }
 
@@ -238,7 +239,7 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   auto vmtx_entries =
       UNSAFE_BUFFERS(base::span(vmtx->entries, count_vmtx_entries));
   for (const auto&& [advance_height, vmtx_entry] :
-       base::zip(advance_heights_, vmtx_entries)) {
+       std::views::zip(advance_heights_, vmtx_entries)) {
     advance_height = vmtx_entry.advance_height;
   }
 
@@ -257,7 +258,7 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
   wtf_size_t count_top_side_bearings = count_vmtx_entries + count_tsb_extra;
   top_side_bearings_.resize(count_top_side_bearings);
   for (const auto&& [top_side_bearing, vmtx_entry] :
-       base::zip(top_side_bearings_, vmtx_entries)) {
+       std::views::zip(top_side_bearings_, vmtx_entries)) {
     top_side_bearing = vmtx_entry.top_side_bearing;
   }
   if (count_tsb_extra > 0) {
@@ -273,7 +274,8 @@ void OpenTypeVerticalData::LoadMetrics(sk_sp<SkTypeface> typeface) {
         count_tsb_extra));
     auto tsb_targets =
         base::span(top_side_bearings_).subspan(count_vmtx_entries);
-    for (const auto&& [tsb_target, tsb] : base::zip(tsb_targets, tsb_extra)) {
+    for (const auto&& [tsb_target, tsb] :
+         std::views::zip(tsb_targets, tsb_extra)) {
       tsb_target = tsb;
     }
   }

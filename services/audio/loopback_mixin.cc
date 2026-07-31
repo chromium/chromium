@@ -4,9 +4,10 @@
 
 #include "services/audio/loopback_mixin.h"
 
+#include <ranges>
+
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/types/zip.h"
 #include "base/unguessable_token.h"
 #include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_device_description.h"
@@ -71,7 +72,7 @@ void LoopbackMixin::OnData(const media::AudioBus* source,
 
   if (include_primary_source_) {
     for (auto [source_ch, mixed_ch] :
-         base::zip(source->AllChannels(), mix_bus_->AllChannels())) {
+         std::views::zip(source->AllChannels(), mix_bus_->AllChannels())) {
       media::vector_math::FMAC(source_ch, 1.0f, mixed_ch);  // mixed += source
     }
   }

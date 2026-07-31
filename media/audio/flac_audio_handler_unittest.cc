@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <ranges>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/types/zip.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
 #include "media/base/test_data_util.h"
@@ -46,7 +46,7 @@ TEST(FlacAudioHandlerTest, SampleDataTest) {
 
   // Compare the content in two buses.
   for (auto [channel_1, channel_2] :
-       base::zip(bus1->AllChannels(), bus2->AllChannels())) {
+       std::views::zip(bus1->AllChannels(), bus2->AllChannels())) {
     for (int s = 0; s < bus1->frames(); ++s) {
       ASSERT_FLOAT_EQ(channel_1[s], channel_2[s]);
     }
@@ -97,8 +97,8 @@ TEST(FlacAudioHandlerTest, CopyPartialFramesTo) {
 
   // Compare the contents of the two buses.
   ASSERT_EQ(expected_frames_written, total_frames_written);
-  for (auto [channel_actual, channel_expected] :
-       base::zip(bus_actual->AllChannels(), bus_expected->AllChannels())) {
+  for (auto [channel_actual, channel_expected] : std::views::zip(
+           bus_actual->AllChannels(), bus_expected->AllChannels())) {
     EXPECT_EQ(channel_actual, channel_expected);
   }
 }

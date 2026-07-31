@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 
+#include <ranges>
+
 #include "base/memory/values_equivalent.h"
-#include "base/types/zip.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
@@ -506,7 +507,7 @@ bool BoxPaintInvalidator::ShouldInvalidateGapDecorations() const {
   }
   auto fragments = box_.PhysicalFragments();
   for (const auto [previous_geometry, fragment] :
-       base::zip(*previous, fragments)) {
+       std::views::zip(*previous, fragments)) {
     if (!base::ValuesEquivalent(previous_geometry.Get(),
                                 fragment.GetGapGeometry())) {
       return true;

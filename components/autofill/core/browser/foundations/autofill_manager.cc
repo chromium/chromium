@@ -38,7 +38,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -1000,7 +999,7 @@ void AutofillManager::OnLoadedServerPredictions(
     // TODO(crbug.com/475586865): Use `AutofillManager::UpdateFormCache()`
     // instead of duplicating the logic.
     for (auto [form, server_predictions] :
-         base::zip(forms, form_server_predictions)) {
+         std::views::zip(forms, form_server_predictions)) {
       FormStructure* form_structure =
           FindCachedFormById(form.global_id(), /*pass_key=*/{});
       if (!form_structure) {

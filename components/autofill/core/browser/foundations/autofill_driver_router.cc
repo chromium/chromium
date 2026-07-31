@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
@@ -701,7 +701,7 @@ void AutofillDriverRouter::SendTypePredictionsToRenderer(
   std::map<FieldGlobalId, FormFieldDataPredictions> field_predictions;
   DCHECK_EQ(browser_fdp.data.fields().size(), browser_fdp.fields.size());
   for (auto [field, field_prediction] :
-       base::zip(browser_fdp.data.fields(), browser_fdp.fields)) {
+       std::views::zip(browser_fdp.data.fields(), browser_fdp.fields)) {
     field_predictions.emplace(field.global_id(), field_prediction);
   }
 

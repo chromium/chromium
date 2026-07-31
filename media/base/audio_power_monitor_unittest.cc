@@ -6,12 +6,12 @@
 
 #include <limits>
 #include <memory>
+#include <ranges>
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,7 +77,7 @@ class TestScenario {
 
     // Completely fill `bus_` with repeating `per_channel_data`.
     for (auto [channel, channel_data] :
-         base::zip(bus_->AllChannels(), per_channel_data)) {
+         std::views::zip(bus_->AllChannels(), per_channel_data)) {
       auto writer = base::SpanWriter<float>(channel);
       while (writer.remaining() > channel_data.size()) {
         writer.Write(channel_data);

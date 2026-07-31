@@ -10,6 +10,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -2284,7 +2284,7 @@ PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
   result.fields.resize(form_data.fields().size());
 
   for (auto [form_field, field_info] :
-       base::zip(form_data.fields(), result.fields)) {
+       std::views::zip(form_data.fields(), result.fields)) {
     field_info.renderer_id = form_field.renderer_id();
     field_info.form_control_type = form_field.form_control_type();
     field_info.autocomplete_attribute = form_field.autocomplete_attribute();
@@ -2310,7 +2310,7 @@ bool PasswordAutofillAgent::WasFormStructureChanged(
     return true;
 
   for (auto [form_field, cached_form_field] :
-       base::zip(form_info.fields, cached_form_info.fields)) {
+       std::views::zip(form_info.fields, cached_form_info.fields)) {
     if (form_field.renderer_id != cached_form_field.renderer_id) {
       return true;
     }

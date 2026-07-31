@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -34,7 +35,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
-#include "base/types/zip.h"
 #include "build/buildflag.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -282,7 +282,7 @@ std::vector<std::u16string> GetLabelsForSuggestions(
   }
 
   // Prepend the entity type's name to each label.
-  for (auto [entity, label] : base::zip(entities, labels)) {
+  for (auto [entity, label] : std::views::zip(entities, labels)) {
     label.insert(label.begin(),
                  std::u16string(entity->type().GetNameForI18n()));
   }
@@ -344,7 +344,8 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
 
   std::vector<std::vector<std::pair<FieldGlobalId, std::u16string>>>
       fields_to_values(entities.size());
-  for (auto [entity, field_to_values] : base::zip(entities, fields_to_values)) {
+  for (auto [entity, field_to_values] :
+       std::views::zip(entities, fields_to_values)) {
     for (const auto& [field, attribute_type] :
          type_assignment.Find(entity->type())) {
       base::optional_ref<const AttributeInstance> attribute =
@@ -813,7 +814,7 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
   std::vector<Suggestion> suggestions;
   suggestions.reserve(entities_to_suggest.size());
   CHECK_EQ(entities_to_suggest.size(), labels.size());
-  for (auto [entity, label] : base::zip(entities_to_suggest, labels)) {
+  for (auto [entity, label] : std::views::zip(entities_to_suggest, labels)) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
         assignment.Find(entity.type());
     base::optional_ref<const AutofillFieldWithAttributeType>

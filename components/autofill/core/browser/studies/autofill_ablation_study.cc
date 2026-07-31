@@ -9,6 +9,7 @@
 
 #include <array>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 
@@ -22,7 +23,6 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -203,7 +203,7 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
 
   base::Time now = AutofillClock::Now();
   for (auto [param, optimization_type] :
-       base::zip(ablation_list_params, ablation_optimization_types)) {
+       std::views::zip(ablation_list_params, ablation_optimization_types)) {
     // Do some basic checks for plausibility. Note that for testing purposes
     // we allow that ablation_weight == 1000. In this case 100% of forms are
     // in the ablation case. In practice ablation_weight * 2 <= total_weight

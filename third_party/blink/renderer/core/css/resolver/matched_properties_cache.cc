@@ -32,11 +32,11 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/types/zip.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -242,7 +242,7 @@ bool CachedMatchedProperties::CorrespondsTo(
   }
 
   for (const auto [lookup_it, cached_it] :
-       base::zip(lookup_properties, matched_properties)) {
+       std::views::zip(lookup_properties, matched_properties)) {
     CSSPropertyValueSet* cached_properties = cached_it.properties.Get();
     DCHECK(!lookup_it.properties->ModifiedSinceHashing())
         << "This should have been checked in AddMatchedProperties()";
@@ -274,7 +274,7 @@ void CachedMatchedProperties::RefreshKey(
     const MatchedPropertiesVector& lookup_properties) {
   DCHECK(CorrespondsTo(lookup_properties));
   for (auto [lookup_it, cached_it] :
-       base::zip(lookup_properties, matched_properties)) {
+       std::views::zip(lookup_properties, matched_properties)) {
     cached_it.properties = lookup_it.properties;
     cached_it.mixin_parameter_bindings = lookup_it.mixin_parameter_bindings;
   }

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -23,7 +24,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
@@ -148,7 +148,7 @@ FindDatesAndSetFormatStrings(
   std::vector<std::pair<data_util::Date, PossibleTypes*>> dates;
 
   // Match formats against individual fields.
-  for (auto [field, pt] : base::zip(fields, possible_types)) {
+  for (auto [field, pt] : std::views::zip(fields, possible_types)) {
     if (!may_be_interesting(field) || !may_be_complete_date(field)) {
       continue;
     }
@@ -195,7 +195,7 @@ void FindAndSetPossibleCvcFieldTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<PossibleTypes> possible_types) {
   if (!last_unlocked_credit_card_cvc.empty()) {
-    for (auto [field, pt] : base::zip(fields, possible_types)) {
+    for (auto [field, pt] : std::views::zip(fields, possible_types)) {
       if (last_unlocked_credit_card_cvc ==
           base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL)) {
         pt.types.insert(CREDIT_CARD_VERIFICATION_CODE);
@@ -222,7 +222,7 @@ void FindAndSetPossibleCvcFieldTypes(
   // * it does not look like an expiration year or an expiration year was
   //   already found;
   // * it is filled with a 3-4 digit number;
-  for (auto [field, pt] : base::zip(fields, possible_types)) {
+  for (auto [field, pt] : std::views::zip(fields, possible_types)) {
     if (pt.types.contains(CREDIT_CARD_NUMBER)) {
       credit_card_number_found = true;
       continue;
@@ -502,7 +502,7 @@ void FindAndSetPossibleOtpFieldTypes(
     return;
   }
 
-  for (auto [field, pt] : base::zip(fields, possible_types)) {
+  for (auto [field, pt] : std::views::zip(fields, possible_types)) {
     const std::string field_value_u8 = base::UTF16ToUTF8(
         base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL));
 
@@ -575,7 +575,7 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
   possible_types.resize(fields.size());
 
   // Most type detection happens in this loop.
-  for (auto [field, pt] : base::zip(fields, possible_types)) {
+  for (auto [field, pt] : std::views::zip(fields, possible_types)) {
     pt = GetPossibleTypes(*field, profiles, credit_cards, entities,
                           loyalty_cards, fields_that_match_state, app_locale);
   }
@@ -601,7 +601,7 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     RationalizePossibleSplitZipFieldTypes(possible_types);
   }
 
-  for (auto [field, pt] : base::zip(fields, possible_types)) {
+  for (auto [field, pt] : std::views::zip(fields, possible_types)) {
     if (pt.types.empty()) {
       pt.types = {UNKNOWN_TYPE};
     }

@@ -5,11 +5,11 @@
 #include "services/audio/delay_buffer.h"
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "media/base/vector_math.h"
 
@@ -38,7 +38,7 @@ void DelayBuffer::Write(FrameTicks position,
   // by scaling the audio signal during the copy.
   auto copy = media::AudioBus::Create(input_bus.channels(), input_bus.frames());
   for (auto [src_ch, dest_ch] :
-       base::zip(input_bus.AllChannels(), copy->AllChannels())) {
+       std::views::zip(input_bus.AllChannels(), copy->AllChannels())) {
     media::vector_math::FMUL(src_ch, volume, dest_ch);
   }
 

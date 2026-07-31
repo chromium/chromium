@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 
 #include <algorithm>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/zip.h"
 #include "base/unguessable_token.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -246,7 +246,7 @@ FormFieldData CreateTestSelectField(std::string_view label,
   std::vector<SelectOption> options;
   options.reserve(values.size());
   for (const auto [option_value, option_content] :
-       base::zip(values, contents)) {
+       std::views::zip(values, contents)) {
     options.push_back({
         .value = base::UTF8ToUTF16(option_value),
         .text = base::UTF8ToUTF16(option_content),
@@ -266,7 +266,7 @@ FormFieldData CreateTestDatalistField(std::string_view label,
       CreateTestFormField(label, name, value, FormControlType::kInputText);
   std::vector<SelectOption> datalist_options;
   datalist_options.reserve(values.size());
-  for (auto [entry_value, entry_label] : base::zip(values, labels)) {
+  for (auto [entry_value, entry_label] : std::views::zip(values, labels)) {
     datalist_options.push_back({.value = base::UTF8ToUTF16(entry_value),
                                 .text = base::UTF8ToUTF16(entry_label)});
   }

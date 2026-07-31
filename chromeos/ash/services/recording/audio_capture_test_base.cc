@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/services/recording/audio_capture_test_base.h"
 
-#include "base/types/zip.h"
+#include <ranges>
+
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 #include "media/base/audio_bus.h"
 
@@ -29,7 +30,7 @@ bool AudioCaptureTestBase::AreBusesEqual(const media::AudioBus& bus1,
   }
 
   for (const auto [bus1_ch, bus2_ch] :
-       base::zip(bus1.AllChannels(), bus2.AllChannels())) {
+       std::views::zip(bus1.AllChannels(), bus2.AllChannels())) {
     if (bus1_ch != bus2_ch) {
       return false;
     }

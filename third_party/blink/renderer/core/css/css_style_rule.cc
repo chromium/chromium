@@ -21,6 +21,8 @@
 
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 
+#include <ranges>
+
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -190,8 +192,8 @@ void CSSStyleRule::Reattach(StyleRuleBase* rule) {
   if (style_rule_->ChildRules()) {
     CHECK_EQ(style_rule_->ChildRules()->size(),
              child_rule_cssom_wrappers_.size());
-    for (auto [child_rule, child_wrapper] :
-         base::zip(*style_rule_->ChildRules(), child_rule_cssom_wrappers_)) {
+    for (auto [child_rule, child_wrapper] : std::views::zip(
+             *style_rule_->ChildRules(), child_rule_cssom_wrappers_)) {
       if (child_wrapper) {
         child_wrapper->Reattach(child_rule);
       }

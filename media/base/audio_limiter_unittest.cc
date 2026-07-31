@@ -5,13 +5,13 @@
 #include "media/base/audio_limiter.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/types/zip.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -30,7 +30,8 @@ bool AudioBusAreEqual(AudioBus* a, AudioBus* b) {
     return false;
   }
 
-  for (auto [ch_a, ch_b] : base::zip(a->AllChannels(), b->AllChannels())) {
+  for (auto [ch_a, ch_b] :
+       std::views::zip(a->AllChannels(), b->AllChannels())) {
     if (ch_a != ch_b) {
       return false;
     }
@@ -190,8 +191,8 @@ TEST_F(LimiterTest, WithLimiting_CompressesSignal) {
 
     int out_of_bounds_before = 0;
     int out_of_bounds_after = 0;
-    for (auto [src, dest] : base::zip(source_bus_->AllChannels(),
-                                      destination_bus_->AllChannels())) {
+    for (auto [src, dest] : std::views::zip(source_bus_->AllChannels(),
+                                            destination_bus_->AllChannels())) {
       out_of_bounds_before += std::ranges::count_if(src, out_of_bounds);
       out_of_bounds_after += std::ranges::count_if(dest, out_of_bounds);
     }

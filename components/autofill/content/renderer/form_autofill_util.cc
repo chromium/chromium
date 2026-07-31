@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -38,7 +39,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/timing.h"
@@ -2101,7 +2101,7 @@ void WebFormControlElementToFormField(
 
     CHECK_EQ(field->options().size(), select_option_elements.size());
     for (const auto [option, option_element] :
-         base::zip(field->options(), select_option_elements)) {
+         std::views::zip(field->options(), select_option_elements)) {
       if (option_element.IsSelected()) {
         field->set_selected_option_text(option.text);
         break;
@@ -2241,7 +2241,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   // Extracts the frame tokens of |iframe_elements|.
   DCHECK_EQ(child_frames.size(), iframe_elements.size());
   for (auto [iframe_element, child_frame] :
-       base::zip(iframe_elements, child_frames)) {
+       std::views::zip(iframe_elements, child_frames)) {
     WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
     if (iframe && iframe->IsWebLocalFrame()) {
       child_frame.token = LocalFrameToken(

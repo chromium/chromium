@@ -6,13 +6,14 @@
 
 #include <stddef.h>
 
+#include <ranges>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
@@ -111,7 +112,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     EXPECT_EQ(bus1->channels(), bus2->channels());
     EXPECT_EQ(bus1->frames(), bus2->frames());
     for (auto [ch_1, ch_2] :
-         base::zip(bus1->AllChannels(), bus2->AllChannels())) {
+         std::views::zip(bus1->AllChannels(), bus2->AllChannels())) {
       if (ch_1 != ch_2) {
         return false;
       }
