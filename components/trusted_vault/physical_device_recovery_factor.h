@@ -22,8 +22,6 @@ namespace trusted_vault {
 // This class represents the local physical device as recovery factor.
 // It stores required (private) keys on disk through the per-user
 // StandaloneTrustedVaultStorage instance.
-// TODO(crbug.com/405381481): Add unittests for this class (by moving tests from
-// StandaloneTrustedVaultBackendTest).
 class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
  public:
   // `storage` and `connection` must not be null and must outlive this object.
