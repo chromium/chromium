@@ -727,25 +727,25 @@ void FragmentBuilder::TransferOutOfFlowCandidates(
 
 void FragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.empty());
-  std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 
-  const auto* layout_inline = DynamicTo<LayoutInline>(layout_object_);
-  if (!layout_inline) {
-    return;
-  }
-
-  for (LogicalOofPositionedNode& candidate : oof_positioned_descendants_) {
-    // If we are inside the inline algorithm, (and creating a fragment for a
-    // <span> or similar), we may add a child (e.g. an atomic-inline) which has
-    // OOF descandants.
-    //
-    // This checks if the object creating this box will be the container for
-    // the given descendant.
-    if (!candidate.InlineContainer() &&
-        IsInlineContainerForNode(candidate.Node(), layout_inline)) {
-      candidate.SetInlineContainer(layout_inline);
+  // If we are inside the inline algorithm, (and creating a fragment for a
+  // <span> or similar), we may add a child (e.g. an atomic-inline) which has
+  // OOF descandants.
+  //
+  // This checks if the object creating this box will be the container for the
+  // given descendant.
+  if (const auto* layout_inline = DynamicTo<LayoutInline>(layout_object_)) {
+    if (layout_inline->CanContainAbsolutePositionObjects()) {
+      for (LogicalOofPositionedNode& candidate : oof_positioned_candidates_) {
+        if (!candidate.InlineContainer() &&
+            IsInlineContainerForNode(candidate.Node(), layout_inline)) {
+          candidate.SetInlineContainer(layout_inline);
+        }
+      }
     }
   }
+
+  std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 }
 
 LayoutUnit FragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
