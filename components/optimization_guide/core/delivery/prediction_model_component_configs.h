@@ -10,14 +10,19 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
 
 // Feature flag to control model delivery via Component Updater.
 BASE_DECLARE_FEATURE(kPredictionModelComponentDelivery);
+
+// Feature parameter for `kPredictionModelComponentDelivery` that specifies a
+// comma-separated list of optimization targets (as ints, e.g. "1,2,3,4") to
+// enable Component Updater delivery for. If empty, no targets are enabled.
+extern const base::FeatureParam<std::string> kPredictionModelTargets;
 
 class PredictionModelComponentConfig {
  public:
@@ -50,7 +55,7 @@ std::optional<PredictionModelComponentConfig> GetPredictionModelComponentConfig(
 
 // Returns all optimization targets that are configured for Component Updater
 // delivery.
-base::span<const proto::OptimizationTarget> GetPredictionModelTargets();
+std::vector<proto::OptimizationTarget> GetPredictionModelTargets();
 
 }  // namespace optimization_guide
 

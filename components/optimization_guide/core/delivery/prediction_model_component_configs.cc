@@ -4,17 +4,25 @@
 
 #include "components/optimization_guide/core/delivery/prediction_model_component_configs.h"
 
+#include <algorithm>
 #include <array>
+#include <string_view>
+#include <vector>
 
-#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "components/crx_file/id_util.h"
 
 namespace optimization_guide {
 
 BASE_FEATURE(kPredictionModelComponentDelivery,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kPredictionModelTargets{
+    &kPredictionModelComponentDelivery, "targets", ""};
 
 PredictionModelComponentConfig::PredictionModelComponentConfig(
     std::string name,
@@ -97,11 +105,27 @@ const ComponentConfigEntry* FindConfigEntry(proto::OptimizationTarget target) {
   return nullptr;
 }
 
+std::optional<proto::OptimizationTarget> ParseOptimizationTarget(
+    std::string_view target_str) {
+  int target_num;
+  if (!base::StringToInt(target_str, &target_num)) {
+    return std::nullopt;
+  }
+  if (!proto::OptimizationTarget_IsValid(target_num)) {
+    return std::nullopt;
+  }
+  return static_cast<proto::OptimizationTarget>(target_num);
+}
+
+bool IsTargetEnabledForComponentDelivery(proto::OptimizationTarget target) {
+  return std::ranges::contains(GetPredictionModelTargets(), target);
+}
+
 }  // namespace
 
 std::optional<PredictionModelComponentConfig> GetPredictionModelComponentConfig(
     proto::OptimizationTarget target) {
-  if (!base::FeatureList::IsEnabled(kPredictionModelComponentDelivery)) {
+  if (!IsTargetEnabledForComponentDelivery(target)) {
     return std::nullopt;
   }
 
@@ -116,20 +140,33 @@ std::optional<PredictionModelComponentConfig> GetPredictionModelComponentConfig(
                            entry->public_key_sha256.end()));
 }
 
-base::span<const proto::OptimizationTarget> GetPredictionModelTargets() {
+std::vector<proto::OptimizationTarget> GetPredictionModelTargets() {
+  std::vector<proto::OptimizationTarget> targets;
   if (!base::FeatureList::IsEnabled(kPredictionModelComponentDelivery)) {
-    return {};
+    return targets;
   }
-  static const base::NoDestructor<std::vector<proto::OptimizationTarget>>
-      targets([] {
-        std::vector<proto::OptimizationTarget> t;
-        t.reserve(kConfigs.size());
-        for (const auto& entry : kConfigs) {
-          t.push_back(entry.target);
-        }
-        return t;
-      }());
-  return *targets;
+
+  const std::string targets_param = kPredictionModelTargets.Get();
+  if (targets_param.empty()) {
+    return targets;
+  }
+
+  std::vector<proto::OptimizationTarget> parsed_targets;
+  for (std::string_view target_str :
+       base::SplitStringPiece(targets_param, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    if (std::optional<proto::OptimizationTarget> parsed_target =
+            ParseOptimizationTarget(target_str)) {
+      parsed_targets.push_back(*parsed_target);
+    }
+  }
+
+  for (const auto& entry : kConfigs) {
+    if (std::ranges::contains(parsed_targets, entry.target)) {
+      targets.push_back(entry.target);
+    }
+  }
+  return targets;
 }
 
 }  // namespace optimization_guide

@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -96,7 +97,15 @@ class PredictionModelComponentUpdateListenerTest : public testing::Test {
   ~PredictionModelComponentUpdateListenerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kPredictionModelComponentDelivery);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kPredictionModelComponentDelivery,
+        {{"targets",
+          base::NumberToString(static_cast<int>(
+              proto::OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS)) +
+              "," +
+              base::NumberToString(static_cast<int>(
+                  proto::
+                      OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS))}});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     listener_ = std::make_unique<PredictionModelComponentUpdateListener>(
         fallback_provider_, base::DoNothing());

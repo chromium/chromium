@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -125,6 +126,10 @@ class PredictionModelComponentInstallerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    feature_list_.InitAndEnableFeatureWithParameters(
+        optimization_guide::kPredictionModelComponentDelivery,
+        {{"targets", base::NumberToString(static_cast<int>(kTestTarget))}});
+
     // Create a default config for testing.
     config_ =
         std::make_unique<optimization_guide::PredictionModelComponentConfig>(
@@ -137,8 +142,7 @@ class PredictionModelComponentInstallerTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedPathOverride scoped_path_override_{DIR_COMPONENT_USER};
-  base::test::ScopedFeatureList feature_list_{
-      optimization_guide::kPredictionModelComponentDelivery};
+  base::test::ScopedFeatureList feature_list_;
   optimization_guide::ModelProviderRegistry fallback_provider_;
   optimization_guide::PredictionModelComponentUpdateListener listener_{
       fallback_provider_, base::DoNothing()};
@@ -227,8 +231,9 @@ TEST_F(PredictionModelComponentInstallerTest,
 TEST_F(PredictionModelComponentInstallerTest,
        RegistersComponentWithFeatureEnabled) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      optimization_guide::kPredictionModelComponentDelivery);
+  scoped_list.InitAndEnableFeatureWithParameters(
+      optimization_guide::kPredictionModelComponentDelivery,
+      {{"targets", base::NumberToString(static_cast<int>(kTestTarget))}});
 
   base::RunLoop run_loop;
   EXPECT_CALL(cus_, RegisterComponent(testing::_))
@@ -244,8 +249,11 @@ TEST_F(PredictionModelComponentInstallerTest,
 TEST_F(PredictionModelComponentInstallerTest,
        DoesNotRegisterComponentWhenNoConfig) {
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      optimization_guide::kPredictionModelComponentDelivery);
+  scoped_list.InitAndEnableFeatureWithParameters(
+      optimization_guide::kPredictionModelComponentDelivery,
+      {{"targets", base::NumberToString(static_cast<int>(
+                       optimization_guide::proto::
+                           OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD))}});
 
   // OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD does not have config in
   // prediction_model_component_configs.cc.
@@ -254,6 +262,17 @@ TEST_F(PredictionModelComponentInstallerTest,
   RegisterPredictionModelComponent(
       &cus_, optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       listener_.GetWeakPtr());
+}
+
+TEST_F(PredictionModelComponentInstallerTest,
+       DoesNotRegisterComponentWhenTargetsEmpty) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      optimization_guide::kPredictionModelComponentDelivery);
+
+  EXPECT_CALL(cus_, RegisterComponent(testing::_)).Times(0);
+
+  RegisterPredictionModelComponent(&cus_, kTestTarget, listener_.GetWeakPtr());
 }
 
 TEST_F(PredictionModelComponentInstallerTest, UninstallNotifiesListener) {
