@@ -325,7 +325,8 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
               "DedicatedWorkerGlobalScope::FetchAndRunClassicScript",
               "script_url", script_url);
   TRACE_EVENT_BEGIN("blink.worker", "DedicatedWorkerGlobalScope Fetch",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "blink::DedicatedWorkerGlobalScope", this));
   fetch_classic_script_start_time_ = base::TimeTicks::Now();
 
   if (policy_container) {
@@ -476,7 +477,9 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
   DCHECK(IsContextThread());
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::DidFetchClassicScript");
-  TRACE_EVENT_END("blink.worker", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("blink.worker",
+                  perfetto::NamedTrack::FromPointer(
+                      "blink::DedicatedWorkerGlobalScope", this));
   base::UmaHistogramTimes(
       "Worker.TopLevelScript.FetchClassicScriptTime",
       base::TimeTicks::Now() - fetch_classic_script_start_time_);

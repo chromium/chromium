@@ -636,7 +636,8 @@ void WorkerGlobalScope::RunWorkerScript() {
   if (auto* controller = GetThread()->GetWorkerInspectorController()) {
     controller->WorkerScriptLoaded();
   }
-  TRACE_EVENT_END("blink.worker", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("blink.worker", perfetto::NamedTrack::FromPointer(
+                                      "blink::WorkerGlobalScope", this));
 }
 
 void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
@@ -758,8 +759,9 @@ WorkerGlobalScope::WorkerGlobalScope(
   // Workers should always maintain the default world of an isolate.
   CHECK(creation_params->is_default_world_of_isolate);
   TRACE_EVENT("blink.worker", "WorkerGlobalScope::WorkerGlobalScope");
-  TRACE_EVENT_BEGIN("blink.worker", "WorkerGlobalScope setup",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "blink.worker", "WorkerGlobalScope setup",
+      perfetto::NamedTrack::FromPointer("blink::WorkerGlobalScope", this));
 
   InstanceCounters::IncrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
