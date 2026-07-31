@@ -4134,6 +4134,7 @@ ci.builder(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--emulator-debug-tags=all",
+                    "--enable-leak-checks",
                 ],
                 swarming = targets.swarming(
                     shards = 47,
