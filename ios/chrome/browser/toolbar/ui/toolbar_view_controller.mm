@@ -79,12 +79,14 @@ constexpr CGFloat kStackViewMarginRegularRegular = 16;
 constexpr CGFloat kStackViewMarginLandscape = 46;
 // iPhone portrait margin.
 constexpr CGFloat kStackViewMarginPortrait = 9;
+constexpr CGFloat kGlassStackViewMarginPortrait = 10;
 
 // The margin between the stack views and the location bar.
 // Regular-Regular (iPad) size class margin.
 constexpr CGFloat kLocationBarStackViewMarginRegularRegular = 40;
 // iPhone portrait margin.
 constexpr CGFloat kLocationBarStackViewMarginPortrait = 9;
+constexpr CGFloat kGlassLocationBarStackViewMarginPortrait = 8;
 // iPhone landscape margin.
 constexpr CGFloat kLocationBarStackViewMarginLandscape = 18;
 
@@ -102,15 +104,8 @@ constexpr CGFloat kFullscreenProgressThreshold = 0.99;
 const base::TimeDelta kProgressBarEndAnimationDuration =
     base::Milliseconds(250);
 
-// Margin for the glass effect background.
-constexpr CGFloat kGlassToolbarMargin = 5;
-constexpr CGFloat kGlassFullscreenMargin = 2;
-
-// Expanded height for the glass effect view.
-constexpr CGFloat kGlassExpandedHeight = 60;
-
-// Collapsed height for the glass effect view.
-constexpr CGFloat kGlassCollapsedHeight = 38;
+// Location bar expanded height for the glass effect view.
+constexpr CGFloat kGlassLocationBarExpandedHeight = 44;
 
 // Shadow radius for the glass effect container.
 constexpr CGFloat kGlassShadowRadius = 7;
@@ -185,6 +180,9 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   UIView* _locationBarContainer;
   // The background for the location bar, which is a pill-shaped view.
   UIView* _locationBarBackground;
+  // Content view for the location bar that clips subviews to the pill shape
+  // without clipping the shadow on `_locationBarBackground`.
+  UIView* _locationBarContentView;
   // The target for the fake omnibox, which replaces the location bar when the
   // location bar is not visible.
   UIView* _fakeOmniboxTarget;
@@ -381,8 +379,13 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   [self addChildViewController:_locationBarViewController];
-  [_locationBarContainer addSubview:locationBarView];
-  AddSameConstraints(locationBarView, _locationBarContainer);
+  if (IsGlassToolbarEnabled()) {
+    [_locationBarContentView addSubview:locationBarView];
+    AddSameConstraints(locationBarView, _locationBarContentView);
+  } else {
+    [_locationBarContainer addSubview:locationBarView];
+    AddSameConstraints(locationBarView, _locationBarContainer);
+  }
   [_locationBarViewController didMoveToParentViewController:self];
 }
 
@@ -769,7 +772,9 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
   CGFloat locationBarExpandedHeight;
-  if (ShouldHaveCompactLocationBar(self.traitCollection)) {
+  if (IsGlassToolbarEnabled()) {
+    locationBarExpandedHeight = kGlassLocationBarExpandedHeight;
+  } else if (ShouldHaveCompactLocationBar(self.traitCollection)) {
     locationBarExpandedHeight = kLocationBarHeight;
   } else {
     locationBarExpandedHeight = kTopLocationBarIPhonePortraitHeight;
@@ -784,6 +789,7 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   _locationBarHeightConstraint.constant = locationBarHeight;
   _locationBarBackground.layer.cornerRadius = locationBarHeight / 2.0;
   _locationBarContainer.layer.cornerRadius = locationBarHeight / 2.0;
+  _locationBarContentView.layer.cornerRadius = locationBarHeight / 2.0;
 
   if (IsGlassToolbarEnabled()) {
     CGFloat glassHeight = progress * kGlassExpandedHeight +
@@ -980,7 +986,7 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   } else {
     if (IsGlassToolbarEnabled()) {
       _glassBackgroundTopConstraint.constant =
-          -[self glassBackgroundTopPaddingForFullscreenProgress:progress];
+          [self glassBackgroundTopPaddingForFullscreenProgress:progress];
     } else {
       _locationBarTopConstraint.constant =
           [self locationBarTopPaddingForFullscreenProgress:progress];
@@ -1177,6 +1183,15 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 
   [locationBarContainer addSubview:locationBarBackground];
   AddSameConstraints(locationBarContainer, locationBarBackground);
+
+  if (IsGlassToolbarEnabled()) {
+    _locationBarContentView = [[UIView alloc] init];
+    _locationBarContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    _locationBarContentView.layer.cornerRadius = kLocationBarHeight / 2.0;
+    _locationBarContentView.clipsToBounds = YES;
+    [locationBarContainer addSubview:_locationBarContentView];
+    AddSameConstraints(locationBarContainer, _locationBarContentView);
+  }
 
   [locationBarContainer
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -1478,27 +1493,40 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   }
 
   [containerView addSubview:_trailingStackView];
-  [self.view addSubview:_progressBarContainer];
-  [self.view addSubview:_innerSeparator];
+  if (IsGlassToolbarEnabled()) {
+    [_locationBarContentView addSubview:_progressBarContainer];
+    [NSLayoutConstraint activateConstraints:@[
+      [_progressBarContainer.leadingAnchor
+          constraintEqualToAnchor:_locationBarContentView.leadingAnchor],
+      [_progressBarContainer.trailingAnchor
+          constraintEqualToAnchor:_locationBarContentView.trailingAnchor],
+      [_progressBarContainer.bottomAnchor
+          constraintEqualToAnchor:_locationBarContentView.bottomAnchor],
+      [_progressBarContainer.heightAnchor
+          constraintEqualToConstant:kProgressBarHeight],
+    ]];
+  } else {
+    [self.view addSubview:_progressBarContainer];
+    NSLayoutConstraint* progressBarEdgeConstraint =
+        _topPosition ? [_progressBarContainer.bottomAnchor
+                           constraintEqualToAnchor:self.view.bottomAnchor]
+                     : [_progressBarContainer.topAnchor
+                           constraintEqualToAnchor:self.view.topAnchor];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_progressBarContainer.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_progressBarContainer.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [_progressBarContainer.heightAnchor
+          constraintEqualToConstant:kProgressBarHeight],
+      progressBarEdgeConstraint
+    ]];
+  }
   [self.view addSubview:_collapsedToolbarButton];
   AddSameConstraints(self.view, _collapsedToolbarButton);
 
-  NSLayoutConstraint* progressBarEdgeConstraint =
-      _topPosition ? [_progressBarContainer.bottomAnchor
-                         constraintEqualToAnchor:self.view.bottomAnchor]
-                   : [_progressBarContainer.topAnchor
-                         constraintEqualToAnchor:self.view.topAnchor];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_progressBarContainer.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_progressBarContainer.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_progressBarContainer.heightAnchor
-        constraintEqualToConstant:kProgressBarHeight],
-    progressBarEdgeConstraint
-  ]];
-
+  [self.view addSubview:_innerSeparator];
   NSLayoutConstraint* innerSeparatorEdgeConstraint =
       _topPosition ? [_innerSeparator.bottomAnchor
                          constraintEqualToAnchor:self.view.bottomAnchor]
@@ -1586,13 +1614,16 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   _leadingStackLeadingConstraint.active = YES;
   _trailingStackTrailingConstraint.active = YES;
 
+  CGFloat locationBarMargin = IsGlassToolbarEnabled()
+                                  ? kGlassLocationBarStackViewMarginPortrait
+                                  : kLocationBarStackViewMarginPortrait;
   _portraitOrientationConstraints = @[
     [_locationBarContainer.leadingAnchor
         constraintEqualToAnchor:_leadingStackView.trailingAnchor
-                       constant:kLocationBarStackViewMarginPortrait],
+                       constant:locationBarMargin],
     [_locationBarContainer.trailingAnchor
         constraintEqualToAnchor:_trailingStackView.leadingAnchor
-                       constant:-kLocationBarStackViewMarginPortrait],
+                       constant:-locationBarMargin],
   ];
 
   CGFloat regularMargin = kLocationBarStackViewMarginRegularRegular;
@@ -1670,8 +1701,11 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
     _trailingStackTrailingConstraint.constant = kStackViewMarginLandscape;
     [NSLayoutConstraint activateConstraints:_landscapeOrientationConstraints];
   } else {
-    _leadingStackLeadingConstraint.constant = kStackViewMarginPortrait;
-    _trailingStackTrailingConstraint.constant = kStackViewMarginPortrait;
+    CGFloat margin = IsGlassToolbarEnabled()
+                         ? kGlassStackViewMarginPortrait + kGlassToolbarMargin
+                         : kStackViewMarginPortrait;
+    _leadingStackLeadingConstraint.constant = margin;
+    _trailingStackTrailingConstraint.constant = margin;
     [NSLayoutConstraint activateConstraints:_portraitOrientationConstraints];
   }
 }

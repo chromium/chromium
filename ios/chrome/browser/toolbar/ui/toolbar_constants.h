@@ -59,4 +59,11 @@ extern const CGFloat kKeyboardAttachedOmniboxBottomPadding;
 // keyboard in landscape orientation.
 extern const CGFloat kKeyboardAttachedOmniboxBottomPaddingLandscape;
 
+// Margin for the glass effect background.
+extern const CGFloat kGlassToolbarMargin;
+extern const CGFloat kGlassFullscreenMargin;
+// Height of the glass effect background.
+extern const CGFloat kGlassExpandedHeight;
+extern const CGFloat kGlassCollapsedHeight;
+
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_CONSTANTS_H_

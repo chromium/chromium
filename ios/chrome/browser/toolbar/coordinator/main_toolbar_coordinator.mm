@@ -624,6 +624,9 @@ inline LayoutStateToolbarPassKey PassKey() {
     if (CanShowTabStrip(self.traitEnvironment)) {
       return kTopToolbarIPadHeightFullscreen;
     }
+    if (IsGlassToolbarEnabled()) {
+      return kGlassCollapsedHeight + 2 * kGlassFullscreenMargin;
+    }
     if (!IsSplitToolbarMode(self.traitEnvironment)) {
       return kToolbarHeightFullscreen;
     }
@@ -670,6 +673,9 @@ inline LayoutStateToolbarPassKey PassKey() {
         return height > 0 ? height : 1;
       }
     }
+    if (IsGlassToolbarEnabled()) {
+      return height + kGlassExpandedHeight + 2 * kGlassToolbarMargin;
+    }
     if (ShouldHaveFullHeightTopToolbar(self.traitEnvironment)) {
       return height + kToolbarHeight;
     }
@@ -703,6 +709,9 @@ inline LayoutStateToolbarPassKey PassKey() {
                                           .preferredContentSizeCategory) +
                safeAreaBottom;
       }
+      if (IsGlassToolbarEnabled()) {
+        return kGlassCollapsedHeight + 2 * kGlassFullscreenMargin;
+      }
       return kToolbarHeightFullscreen;
     }
     return 0.0;
@@ -720,6 +729,9 @@ inline LayoutStateToolbarPassKey PassKey() {
       return 0.0;
     }
     if ([self isToolbarPositionBottom]) {
+      if (IsGlassToolbarEnabled()) {
+        return kGlassExpandedHeight + 2 * kGlassToolbarMargin;
+      }
       return kToolbarHeight;
     }
     return 0.0;

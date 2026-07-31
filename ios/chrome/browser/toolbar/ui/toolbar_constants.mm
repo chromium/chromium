@@ -43,3 +43,8 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 constexpr CGFloat kKeyboardAttachedOmniboxBottomPadding = 10;
 constexpr CGFloat kKeyboardAttachedOmniboxBottomPaddingLandscape =
     kLocationBarHeightFullscreen - kOuterSeparatorVerticalOffset + 1;
+
+constexpr CGFloat kGlassToolbarMargin = 5;
+constexpr CGFloat kGlassFullscreenMargin = 2;
+constexpr CGFloat kGlassExpandedHeight = 60;
+constexpr CGFloat kGlassCollapsedHeight = 38;
