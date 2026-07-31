@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/screen_capture_notification_ui_ash.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
@@ -265,6 +266,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       std::move(platform_file));
 
   viz::SharedImageFormat si_format = GetSharedImageFormat(buffer_format);
+  UMA_HISTOGRAM_ENUMERATION("Arc.ScreenCaptureSession.SharedImageFormat",
+                            viz::GetSharedImageFormatUMA(si_format));
   auto client_shared_image = sii->CreateSharedImage(
       {si_format, size_, gfx::ColorSpace(),
        // NOTE: This SI will be used as the destination of a copy of the desktop
