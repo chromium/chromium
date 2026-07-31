@@ -69,7 +69,9 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
         mObservers.addObserver(obs);
 
         T currentObject = mObject;
-        boolean notify = shouldNotifyOnAdd(behavior) && currentObject != null;
+        boolean notify =
+                shouldNotifyOnAdd(behavior)
+                        && (currentObject != null || shouldAllowNullOnAdd(behavior));
         if (notify) {
             if (shouldPostOnAdd(behavior)) {
                 ThreadUtils.assertOnUiThread();
@@ -149,7 +151,12 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
     }
 
     /** Returns whether the observer should be notified asynchronously on being added. */
-    private static boolean shouldPostOnAdd(int behavior) {
+    private static boolean shouldPostOnAdd(@NotifyBehavior int behavior) {
         return (NotifyBehavior.POST_ON_ADD & behavior) != 0;
+    }
+
+    /** Returns whether the observer should be notified on being added even if value is null. */
+    private static boolean shouldAllowNullOnAdd(@NotifyBehavior int behavior) {
+        return (NotifyBehavior.ALLOW_NULL_ON_ADD & behavior) != 0;
     }
 }

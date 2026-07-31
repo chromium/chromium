@@ -43,6 +43,17 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     }
 
     /**
+     * Adds a synchronous observer to the supplier and calls it immediately, even if the value is
+     * null.
+     *
+     * @param obs The observer to add.
+     * @return The current value of the supplier.
+     */
+    default @Nullable T addSyncObserverAndCall(Callback<@Nullable T> obs) {
+        return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.ALLOW_NULL_ON_ADD);
+    }
+
+    /**
      * Adds a synchronous observer to the supplier and calls it if the value is not null.
      *
      * @param obs The observer to add.
@@ -50,6 +61,26 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      */
     default @Nullable T addSyncObserverAndCallIfNonNull(Callback<@Nullable T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD);
+    }
+
+    /**
+     * Adds a synchronous observer to the supplier and posts a notification immediately, even if the
+     * value is null.
+     *
+     * <ul>
+     *   <li>Posted callbacks are not run if removeObserver() is called before they are run.
+     *   <li>Posted callbacks are not run if set() is called with a new value before they are run.
+     * </ul>
+     *
+     * @param obs The observer to add.
+     * @return The current value of the supplier.
+     */
+    default @Nullable T addSyncObserverAndPost(Callback<@Nullable T> obs) {
+        return addObserver(
+                obs,
+                NotifyBehavior.NOTIFY_ON_ADD
+                        | NotifyBehavior.POST_ON_ADD
+                        | NotifyBehavior.ALLOW_NULL_ON_ADD);
     }
 
     /**

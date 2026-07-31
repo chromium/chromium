@@ -22,6 +22,7 @@ public interface MonotonicObservableSupplier<T> extends NullableObservableSuppli
         int NONE = 0;
         int NOTIFY_ON_ADD = 1;
         int POST_ON_ADD = 1 << 1;
+        int ALLOW_NULL_ON_ADD = 1 << 2;
     }
 
     @SuppressWarnings("NullAway") // Changing nullness of Callback<T>
@@ -48,6 +49,18 @@ public interface MonotonicObservableSupplier<T> extends NullableObservableSuppli
     @Override
     default @Nullable T addSyncObserverAndPostIfNonNull(Callback<T> obs) {
         return addObserver(obs, NotifyBehavior.NOTIFY_ON_ADD | NotifyBehavior.POST_ON_ADD);
+    }
+
+    @SuppressWarnings("NullAway") // Changing nullness of Callback<T>
+    @Override
+    default @Nullable T addSyncObserverAndCall(Callback<T> obs) {
+        return NullableObservableSupplier.super.addSyncObserverAndCall(obs);
+    }
+
+    @SuppressWarnings("NullAway") // Changing nullness of Callback<T>
+    @Override
+    default @Nullable T addSyncObserverAndPost(Callback<T> obs) {
+        return NullableObservableSupplier.super.addSyncObserverAndPost(obs);
     }
 
     /**

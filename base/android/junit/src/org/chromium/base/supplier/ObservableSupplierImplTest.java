@@ -309,6 +309,37 @@ public class ObservableSupplierImplTest {
     }
 
     @Test
+    public void testAddSyncObserverAndCall_NullValue() {
+        AtomicBoolean calledWithNull = new AtomicBoolean(false);
+        mSupplier.addSyncObserverAndCall(
+                (result) -> {
+                    if (result == null) {
+                        calledWithNull.set(true);
+                    }
+                });
+        assertTrue(
+                "addSyncObserverAndCall should notify observer even if value is null",
+                calledWithNull.get());
+    }
+
+    @Test
+    public void testAddSyncObserverAndPost_NullValue() {
+        AtomicBoolean calledWithNull = new AtomicBoolean(false);
+        mSupplier.addSyncObserverAndPost(
+                (result) -> {
+                    if (result == null) {
+                        calledWithNull.set(true);
+                    }
+                });
+        assertFalse("addSyncObserverAndPost should not notify synchronously", calledWithNull.get());
+        ShadowLooper.idleMainLooper();
+        assertTrue(
+                "addSyncObserverAndPost should notify observer after main looper idles even if"
+                        + " value is null",
+                calledWithNull.get());
+    }
+
+    @Test
     public void testMonotonicNonNull() {
         SettableMonotonicObservableSupplier<String> supplier =
                 ObservableSuppliers.createMonotonic();

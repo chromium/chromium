@@ -36,5 +36,22 @@ public interface NonNullObservableSupplier<T> extends Supplier<T>, MonotonicObse
     }
 
     @Override
+    default T addSyncObserverAndCall(Callback<T> obs) {
+        return addObserver(
+                obs,
+                MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
+                        | MonotonicObservableSupplier.NotifyBehavior.ALLOW_NULL_ON_ADD);
+    }
+
+    @Override
+    default T addSyncObserverAndPost(Callback<T> obs) {
+        return addObserver(
+                obs,
+                MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD
+                        | MonotonicObservableSupplier.NotifyBehavior.POST_ON_ADD
+                        | MonotonicObservableSupplier.NotifyBehavior.ALLOW_NULL_ON_ADD);
+    }
+
+    @Override
     T addObserver(Callback<T> obs, @NotifyBehavior int behavior);
 }
