@@ -537,8 +537,8 @@ suite('ComposeboxVoiceSearch', () => {
         tryAgainLink.click();
         await microtasksFinished();
         assertEquals(2, mockSpeechRecognition.startCount);
-        assertEquals(null, voiceSearchElement['error_']);
-        assertEquals('', voiceSearchElement['errorMessage_']);
+        assertEquals(null, voiceSearchElement.getErrorForTesting());
+        assertEquals('', voiceSearchElement.getErrorMessageForTesting());
 
         // Trigger other error (like `audio-capture`).
         mockSpeechRecognition.onerror!
@@ -1306,7 +1306,7 @@ suite('ComposeboxVoiceSearch', () => {
             'static', window.getComputedStyle(voiceSearchElement).position);
 
         // Clean up.
-        voiceSearchElement['voiceModeEndCleanup_']();
+        voiceSearchElement.voiceModeEndCleanupForTesting();
         await microtasksFinished();
       });
 

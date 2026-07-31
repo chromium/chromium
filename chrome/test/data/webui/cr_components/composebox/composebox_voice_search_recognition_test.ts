@@ -237,7 +237,7 @@ suite('ComposeboxVoiceSearchRecognition', () => {
                 VoiceSearchAction.QUERY_SUBMITTED));
 
         // Clean up internal state.
-        voiceSearchElement['voiceModeEndCleanup_']();
+        voiceSearchElement.voiceModeEndCleanupForTesting();
         await microtasksFinished();
       });
 

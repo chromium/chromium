@@ -875,6 +875,10 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     }
     return this.i18n('searchBoxHint');
   }
+
+  getInputStateForTesting(): InputState|null {
+    return this.inputState_;
+  }
 }
 
 declare global {

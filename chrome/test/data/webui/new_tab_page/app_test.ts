@@ -2975,9 +2975,10 @@ suite('NewTabPageAppTest', () => {
 
           // Assert error and state are set.
           assertTrue(app.hasVoiceSearchError);
-          assertTrue(app['voiceSearchListening_']);
-          assertTrue(app['voiceSearchReceivedSpeech_']);
-          assertEquals('partial query', app['voiceSearchTranscript_']);
+          assertTrue(app.getVoiceSearchListeningForTesting());
+          assertTrue(app.getVoiceSearchReceivedSpeechForTesting());
+          assertEquals(
+              'partial query', app.getVoiceSearchTranscriptForTesting());
 
           const searchbox = app.shadowRoot.querySelector('ntp-searchbox');
           assertTrue(!!searchbox);
@@ -2985,7 +2986,7 @@ suite('NewTabPageAppTest', () => {
 
           voiceSearch.hasErrorTimer = true;
           voiceSearch.detailedError_ = 5; // VoiceSearchError.NO_MATCH
-          voiceSearch['errorMessage_'] = 'Didn\'t get that.';
+          voiceSearch.setErrorMessageForTesting('Didn\'t get that.');
           await microtasksFinished();
           const tryAgainLink =
               voiceSearch.shadowRoot.querySelector<HTMLElement>('#tryAgainLink');
@@ -2995,9 +2996,9 @@ suite('NewTabPageAppTest', () => {
 
           // Assert error is cleared and states are reset.
           assertFalse(app.hasVoiceSearchError);
-          assertTrue(app['voiceSearchListening_']);
-          assertFalse(app['voiceSearchReceivedSpeech_']);
-          assertEquals('', app['voiceSearchTranscript_']);
+          assertTrue(app.getVoiceSearchListeningForTesting());
+          assertFalse(app.getVoiceSearchReceivedSpeechForTesting());
+          assertEquals('', app.getVoiceSearchTranscriptForTesting());
           assertTrue(searchbox.isListening);
         });
 

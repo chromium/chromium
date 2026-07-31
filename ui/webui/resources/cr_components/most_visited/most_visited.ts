@@ -1217,6 +1217,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected isFromEnterpriseShortcut_(source: number) {
     return source === TileSource.ENTERPRISE_SHORTCUTS;
   }
+
+  getShowAllForTesting(): boolean {
+    return this.showAll_;
+  }
+
+  getDialogShortcutAlreadyExistsForTesting(): boolean {
+    return this.dialogShortcutAlreadyExists_;
+  }
 }
 
 declare global {
