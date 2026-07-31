@@ -72,9 +72,8 @@ gpu::raster::RasterInterface* WebGpuSharedImageWrapperLease::RasterInterface()
 }
 
 bool WebGpuSharedImageWrapperLease::IsGpuContextLost() const {
-  auto* raster_interface = RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+  return ::blink::IsGpuContextLost(
+      shared_image_wrapper_->context_provider_wrapper_.get());
 }
 
 bool WebGpuSharedImageWrapperLease::UploadToBackingSharedImage(
