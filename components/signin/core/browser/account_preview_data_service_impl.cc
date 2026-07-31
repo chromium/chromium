@@ -330,7 +330,6 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
     return;
   }
 
-  CHECK(!network_delay_helper_->AreNetworkCallsDelayed());
   it->second->Start();
 }
 
