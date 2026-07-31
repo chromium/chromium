@@ -159,22 +159,22 @@ export class GlicInternalsAppElement extends CrLitElement {
 
   protected onGlicConsentChange_(e: CustomEvent<{value: boolean}>) {
     if (!(e.target as HTMLInputElement).checked) {
-       this.browserProxy_.handler.revokeGlicConsent();
-       this.fetchInternalsData_();
+      this.browserProxy_.handler.revokeGlicConsent();
+      this.fetchInternalsData_();
     }
   }
 
   protected onActuationConsentChange_(e: CustomEvent<{value: boolean}>) {
     if (!(e.target as HTMLInputElement).checked) {
-       this.browserProxy_.handler.revokeActuationConsent();
-       this.fetchInternalsData_();
+      this.browserProxy_.handler.revokeActuationConsent();
+      this.fetchInternalsData_();
     }
   }
 
   protected onExperimentalConsentChange_(e: CustomEvent<{value: boolean}>) {
     if (!(e.target as HTMLInputElement).checked) {
-       this.browserProxy_.handler.revokeExperimentalTriggeringConsent();
-       this.fetchInternalsData_();
+      this.browserProxy_.handler.revokeExperimentalTriggeringConsent();
+      this.fetchInternalsData_();
     }
   }
 

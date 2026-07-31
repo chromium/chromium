@@ -34,7 +34,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
-#include "components/glic/glic_pref_names.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,6 +45,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/glic/glic_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
@@ -999,7 +999,7 @@ void GlicInternalsPageHandler::ShowExperimentalOptIn() {
           ? service->opt_in_controller().GetOrCreateSuitableWebContents()
           : webui_contents_.get();
 
-    service->opt_in_controller().ShowDialog(target_contents, base::DoNothing());
+  service->opt_in_controller().ShowDialog(target_contents, base::DoNothing());
 #endif
 }
 
