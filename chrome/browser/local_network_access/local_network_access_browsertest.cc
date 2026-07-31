@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 // Local Network Access browser tests that don't fit into the other files.
@@ -90,47 +91,85 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, FetchAcceptPermission) {
                                    https_server().GetURL("b.com", kLnaPath))));
 }
 
+class LocalNetworkAccessHtmlScriptBrowserTest
+    : public LocalNetworkAccessBrowserTestBase {
+ public:
+  LocalNetworkAccessHtmlScriptBrowserTest() = default;
+  ~LocalNetworkAccessHtmlScriptBrowserTest() override = default;
+
+  void SetUp() override {
+    public_server_.SetCertHostnames({"public.test"});
+    public_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    public_server_.RegisterRequestHandler(base::BindRepeating(
+        &LocalNetworkAccessHtmlScriptBrowserTest::HandlePublicHtmlRequest,
+        base::Unretained(this)));
+
+    local_server_.SetCertHostnames({"local.test"});
+    local_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    local_server_.RegisterRequestHandler(base::BindRepeating(
+        &LocalNetworkAccessHtmlScriptBrowserTest::HandleLocalScriptRequest,
+        base::Unretained(this)));
+
+    LocalNetworkAccessBrowserTestBase::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LocalNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
+
+    ASSERT_TRUE(public_server_.Start());
+    ASSERT_TRUE(local_server_.Start());
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {network::GenerateIpAddressSpaceOverride(
+             local_server(), network::mojom::IPAddressSpace::kLocal),
+         network::GenerateIpAddressSpaceOverride(
+             public_server(), network::mojom::IPAddressSpace::kPublic)},
+        *command_line);
+  }
+
+  net::EmbeddedTestServer& public_server() { return public_server_; }
+  net::EmbeddedTestServer& local_server() { return local_server_; }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandlePublicHtmlRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().GetPath() == "/html") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      http_response->set_content_type("text/html");
+      http_response->set_content(content::JsReplace(
+          "<html><head><script src=$1 defer></script></head></html>",
+          request.GetURL().GetQuery()));
+      return std::move(http_response);
+    }
+    return nullptr;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleLocalScriptRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().GetPath() == "/script") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      http_response->set_content_type("text/javascript");
+      http_response->set_content(
+          "console.log('local-network-access success');");
+      return std::move(http_response);
+    }
+    return nullptr;
+  }
+
+  net::EmbeddedTestServer public_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer local_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
 // Tests that a script tag that is included in the main page HTML (and thus
 // load blocking) correctly triggers the LNA permission prompt.
 // Regression test for crbug.com/439876402.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessHtmlScriptBrowserTest,
                        HtmlScriptSrcAllowPermission) {
-  auto https_server = net::test_server::EmbeddedTestServer(
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetCertHostnames({"public.test", "local.test"});
-
-  // Set up repsonses for the public HTML (using CSP to force the document to be
-  // treated as public) and the local script resource.
-  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
-      [](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().GetPath() == "/html") {
-          auto http_response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_OK);
-          http_response->set_content_type("text/html");
-          http_response->AddCustomHeader("Content-Security-Policy",
-                                         "treat-as-public-address");
-          http_response->set_content(content::JsReplace(
-              "<html><head><script src=$1 defer></script></head></html>",
-              request.GetURL().GetQuery()));
-          return std::move(http_response);
-        }
-        if (request.GetURL().GetPath() == "/script") {
-          auto http_response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_OK);
-          http_response->set_content_type("text/javascript");
-          http_response->set_content(
-              "console.log('local-network-access success');");
-          return std::move(http_response);
-        }
-        return nullptr;
-      }));
-  ASSERT_TRUE(https_server.Start());
-
   // Local script URL
-  GURL script_url = https_server.GetURL("local.test", "/script");
+  GURL script_url = local_server().GetURL("local.test", "/script");
 
   // Enable auto-accept of LNA permission request.
   bubble_factory()->set_response_type(
@@ -142,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   console_observer.SetPattern("local-network-access success");
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(),
-      https_server.GetURL("public.test", "/html?" + script_url.spec())));
+      public_server().GetURL("public.test", "/html?" + script_url.spec())));
   EXPECT_TRUE(console_observer.Wait());
 }
 
