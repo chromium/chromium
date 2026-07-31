@@ -130,7 +130,8 @@ class CONTENT_EXPORT WebContentsViewMac
   void OnMenuClosed() override;
 
   // ViewsHostableView:
-  void ViewsHostableAttach(ViewsHostableView::Host* host) override;
+  void ViewsHostableAttach(ViewsHostableView::Host* host,
+                           bool initially_visible) override;
   void ViewsHostableDetach() override;
   void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview,
                               int superview_height) override;

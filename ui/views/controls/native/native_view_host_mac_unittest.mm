@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/mac/mac_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/views_hostable.h"
 #include "ui/gfx/native_ui_types.h"
@@ -26,7 +27,8 @@ class TestViewsHostable : public ui::ViewsHostableView {
 
  private:
   // ui::ViewsHostableView:
-  void ViewsHostableAttach(ui::ViewsHostableView::Host* host) override {}
+  void ViewsHostableAttach(ui::ViewsHostableView::Host* host,
+                           bool initially_visible) override {}
   void ViewsHostableDetach() override {
     parent_accessibility_element_ = gfx::NativeViewAccessible();
   }
@@ -46,6 +48,15 @@ class TestViewsHostable : public ui::ViewsHostableView {
   }
 
   gfx::NativeViewAccessible parent_accessibility_element_;
+};
+
+class MockViewsHostable : public TestViewsHostable {
+ public:
+  MOCK_METHOD(void,
+              ViewsHostableAttach,
+              (ui::ViewsHostableView::Host*, bool),
+              (override));
+  MOCK_METHOD(void, ViewsHostableSetVisible, (bool), (override));
 };
 
 @interface TestViewsHostableView : NSView <ViewsHostable>
@@ -311,6 +322,34 @@ TEST_F(NativeViewHostMacTest, NativeViewReleased) {
   host()->Detach();
 
   DestroyHost();
+}
+
+// A zero-sized host must hide its native view before attaching it to the
+// NSWindow.
+TEST_F(NativeViewHostMacTest, ZeroSizedViewsHostableHiddenBeforeAttach) {
+  CreateTopLevel();
+  MockViewsHostable views_hostable;
+  TestViewsHostableView* native_view =
+      [[TestViewsHostableView alloc] initWithFrame:NSZeroRect];
+  native_view.viewsHostableView = &views_hostable;
+
+  testing::InSequence sequence;
+  EXPECT_CALL(views_hostable, ViewsHostableSetVisible(false));
+  EXPECT_CALL(views_hostable, ViewsHostableAttach(testing::_, false));
+  EXPECT_CALL(views_hostable, ViewsHostableSetVisible(true))
+      .Times(testing::AtLeast(1));
+
+  NativeViewHost* native_view_host = toplevel()->GetRootView()->AddChildView(
+      std::make_unique<NativeViewHost>());
+  native_view_host->Attach(gfx::NativeView(native_view));
+
+  toplevel()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  native_view_host->SetBounds(10, 10, 80, 60);
+  native_view_host->DeprecatedLayoutImmediately();
+  testing::Mock::VerifyAndClearExpectations(&views_hostable);
+
+  DestroyTopLevel();
+  native_view.viewsHostableView = nullptr;
 }
 
 }  // namespace views
