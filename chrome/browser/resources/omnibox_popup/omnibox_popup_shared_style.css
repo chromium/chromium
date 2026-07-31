@@ -72,5 +72,12 @@ cr-searchbox-dropdown {
   --cr-searchbox-match-text-padding-inline-end: 8px;
   --cr-searchbox-results-action-chip-height: 26px;
   --cr-searchbox-results-search-icon-size: 16px;
+}
+
+/**
+ * Show the secondary side if it can be shown and is currently available to be
+ * shown.
+ */
+:host([can-show-secondary-side][has-secondary-side]) cr-searchbox-dropdown {
   --cr-searchbox-secondary-side-display: block;
 }
