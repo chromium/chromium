@@ -33,6 +33,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace gfx {
+struct PresentationFeedback;
+}  // namespace gfx
+
 namespace omnibox {
 extern const void* kOmniboxWebUIPopupWidgetId;
 }  // namespace omnibox
@@ -199,7 +203,8 @@ class OmniboxPopupPresenterBase
 
   // Logs the ResultToContentReady metric. This is called synchronously when the
   // visual state is ready.
-  virtual void LogResultToContentReadyMetric(base::TimeTicks result_ready_time);
+  virtual void LogResultToContentReadyMetric(base::TimeTicks result_ready_time,
+                                             bool is_first_show);
 
   LocationBar* location_bar() const { return location_bar_.get(); }
 
@@ -280,10 +285,8 @@ class OmniboxPopupPresenterBase
   // Whether the first content ready metric of the popup has been logged.
   bool has_logged_first_content_ready_ = false;
 
-  // Whether the content ready metric has been logged since the popup was
-  // opened.
-  // This should be reset at the beginning of the Show() method.
-  bool has_logged_content_ready_since_open_ = false;
+  // Whether the first paint metric of the popup has been logged.
+  bool has_logged_first_widget_paint_ = false;
 
   // Minimum size bounds of omnibox popup.
   gfx::Size minimum_size_;
@@ -292,6 +295,9 @@ class OmniboxPopupPresenterBase
 
   void RegisterBlocker();
   void UnregisterBlocker();
+
+  void OnWidgetPresented(base::TimeTicks show_request_time,
+                         const gfx::PresentationFeedback& feedback);
 
   // The number of active deactivation blockers currently registered. If this is
   // greater than zero, out-of-focus widget deactivations will be ignored.

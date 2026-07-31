@@ -56,7 +56,8 @@ std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
 }
 
 void OmniboxPopupAimPresenter::LogResultToContentReadyMetric(
-    base::TimeTicks /*result_ready_time*/) {
+    base::TimeTicks /*result_ready_time*/,
+    bool /*is_first_show*/) {
   // The AIM popup calculates its ready state inherently differently than
   // standard dropdowns. We explicitly override this metric to a no-op here to
   // prevent logging garbage data and to avoid polluting standard WebUI

@@ -69,7 +69,7 @@ void OmniboxPopupPresenterBase::Show() {
   if (ShouldPreserveRequestedFocus()) {
     focus_requested_ = false;
   }
-  has_logged_content_ready_since_open_ = false;
+
   // Drop stale visual state callbacks.
   visual_state_weak_factory_.InvalidateWeakPtrs();
 
@@ -133,29 +133,41 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks show_request_time,
     base::TimeTicks result_ready_time,
     bool from_fallback,
-    bool success) {
-  LogResultToContentReadyMetric(result_ready_time);
+    bool /*success*/) {
+  const bool is_first_show = !has_logged_first_content_ready_;
+  LogResultToContentReadyMetric(result_ready_time, is_first_show);
 
   if (!is_deferred_) {
+    has_logged_first_content_ready_ = true;
     return;
   }
 
   base::UmaHistogramBoolean(
-      base::StrCat(
-          {GetPopupMetricPrefix(), ".DeferredShowVisualStateReadyFromTimeout"}),
+      base::StrCat({GetPopupMetricPrefix(), ".ContentReady.FromTimeout"}),
       from_fallback);
+  if (is_first_show) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {GetPopupMetricPrefix(), ".ContentReady.FromTimeout.FirstShow"}),
+        from_fallback);
+  }
 
   base::TimeDelta duration = base::TimeTicks::Now() - show_request_time;
   base::UmaHistogramTimes(
-      base::StrCat(
-          {GetPopupMetricPrefix(), ".DeferredShowVisualStateReadyDuration"}),
+      base::StrCat({GetPopupMetricPrefix(), ".ContentReady.Duration"}),
       duration);
+  if (is_first_show) {
+    base::UmaHistogramTimes(base::StrCat({GetPopupMetricPrefix(),
+                                          ".ContentReady.Duration.FirstShow"}),
+                            duration);
+  }
 
+  has_logged_first_content_ready_ = true;
   is_deferred_ = false;
+  visual_state_weak_factory_.InvalidateWeakPtrs();
   // Fall back to showing the widget even if success == false
   // so the UI state matches the requested visibility.
   ShowWidget(show_request_time);
-  visual_state_weak_factory_.InvalidateWeakPtrs();
 }
 
 void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
@@ -171,18 +183,8 @@ void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
     widget_->SetOpacity(0.0f);
   }
   widget_->GetCompositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
-      [](std::string uma_metric, base::TimeTicks show_request_time,
-         const gfx::PresentationFeedback& feedback) {
-        // If there is ever an error, the timestamp means the timestamp
-        // of the error. In that case we shouldn't record anything.
-        if (feedback.failed()) {
-          return;
-        }
-        const base::TimeDelta delta = feedback.timestamp - show_request_time;
-        base::UmaHistogramTimes(uma_metric, delta);
-      },
-      base::StrCat({GetPopupMetricPrefix(), ".PresenterShowLatency.ToPaint"}),
-      show_request_time));
+      &OmniboxPopupPresenterBase::OnWidgetPresented,
+      visual_state_weak_factory_.GetWeakPtr(), show_request_time));
 
   if (auto* content = GetWebUIContent()) {
     content->GetWebContents()->WasShown();
@@ -209,7 +211,8 @@ void OmniboxPopupPresenterBase::RequestFocus() {
 }
 
 void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(
-    base::TimeTicks result_ready_time) {
+    base::TimeTicks result_ready_time,
+    bool is_first_show) {
   if (result_ready_time.is_null()) {
     omnibox::LogResultToContentReadyEarlyExitReason(
         omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime,
@@ -219,18 +222,31 @@ void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(
 
   const base::TimeDelta delta = base::TimeTicks::Now() - result_ready_time;
 
-  if (!has_logged_content_ready_since_open_) {
-    base::UmaHistogramTimes(
-        base::StrCat({GetPopupMetricPrefix(), ".ResultToContentReadyPerShow"}),
-        delta);
-    has_logged_content_ready_since_open_ = true;
-  }
+  base::UmaHistogramTimes(
+      base::StrCat({GetPopupMetricPrefix(), ".ResultToContentReadyPerShow"}),
+      delta);
 
-  if (!has_logged_first_content_ready_) {
+  if (is_first_show) {
     base::UmaHistogramTimes(base::StrCat({GetPopupMetricPrefix(),
                                           ".ResultToContentReadyOnFirstShow"}),
                             delta);
-    has_logged_first_content_ready_ = true;
+  }
+}
+
+void OmniboxPopupPresenterBase::OnWidgetPresented(
+    base::TimeTicks show_request_time,
+    const gfx::PresentationFeedback& feedback) {
+  if (feedback.failed()) {
+    return;
+  }
+  const base::TimeDelta delta = feedback.timestamp - show_request_time;
+  base::UmaHistogramTimes(
+      base::StrCat({GetPopupMetricPrefix(), ".ShowToPaint.Duration"}), delta);
+  if (!has_logged_first_widget_paint_) {
+    has_logged_first_widget_paint_ = true;
+    base::UmaHistogramTimes(base::StrCat({GetPopupMetricPrefix(),
+                                          ".ShowToPaint.Duration.FirstShow"}),
+                            delta);
   }
 }
 
