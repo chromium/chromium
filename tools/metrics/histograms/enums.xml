@@ -11563,6 +11563,7 @@ from previous Chrome versions.
   <int value="-942935700" label="FastPairKeyboards:disabled"/>
   <int value="-942248285" label="GlicTrustFirstOnboarding:enabled"/>
   <int value="-941752665" label="infobar-refresh:enabled"/>
+  <int value="-941701350" label="MediaCodecBlockModelOutput:enabled"/>
   <int value="-941056354" label="CdmStorageDatabase:enabled"/>
   <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
@@ -17717,6 +17718,7 @@ from previous Chrome versions.
   <int value="1019857902"
       label="disable-hide-inactive-stacked-tab-close-buttons"/>
   <int value="1020127284" label="HardwareSecureDecryption:enabled"/>
+  <int value="1020620455" label="MediaCodecBlockModelOutput:disabled"/>
   <int value="1021266345" label="NearbySharingWifiLan:disabled"/>
   <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>

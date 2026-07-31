@@ -6164,6 +6164,11 @@ inline constexpr char kMediaCodecBlockModelName[] = "MediaCodec Block Model";
 inline constexpr char kMediaCodecBlockModelDescription[] =
     "Enables Block Model for MediaCodec on Android.";
 
+inline constexpr char kMediaCodecBlockModelOutputName[] =
+    "MediaCodec Block Model Output";
+inline constexpr char kMediaCodecBlockModelOutputDescription[] =
+    "Enables Block Model Output (OutputFrame) for MediaCodec on Android.";
+
 inline constexpr char kMediaCodecLowDelayModeName[] =
     "MediaCodec low delay mode";
 inline constexpr char kMediaCodecLowDelayModeDescription[] =

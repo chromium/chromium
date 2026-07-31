@@ -1224,6 +1224,9 @@ BASE_FEATURE(kAndroidZeroCopyVideoCapture, base::FEATURE_DISABLED_BY_DEFAULT);
 // enabled, we need to test it again when Android 17 is released.
 BASE_FEATURE(kMediaCodecBlockModel, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables output-side block model (OutputFrame) on supported devices.
+BASE_FEATURE(kMediaCodecBlockModelOutput, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allow selection of low latency decoders in low delay mode.
 BASE_FEATURE(kMediaCodecLowDelayMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
