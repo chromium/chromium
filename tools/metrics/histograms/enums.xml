@@ -10125,6 +10125,7 @@ from previous Chrome versions.
   <int value="-1396434715" label="AssistMultiWord:disabled"/>
   <int value="-1396365071" label="AutofillAiDedupeEntities:disabled"/>
   <int value="-1396348326" label="DarkLightModeKMeansColor:enabled"/>
+  <int value="-1396284128" label="WebUiAndroidTheming:disabled"/>
   <int value="-1395598866" label="SidePanelResizing:disabled"/>
   <int value="-1395162885" label="enable-search-engine-choice:disabled"/>
   <int value="-1394600460" label="BrowsingHistoryActorIntegrationM2:disabled"/>
@@ -11982,6 +11983,7 @@ from previous Chrome versions.
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
+  <int value="-801312039" label="WebUiAndroidTheming:enabled"/>
   <int value="-801022306" label="BrowserWindowInterfaceMobile:enabled"/>
   <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>

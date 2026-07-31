@@ -70,7 +70,7 @@ public class ColorProviderBridgeImpl implements ColorProviderBridge {
      */
     @Override
     public long[] getThemeColors(@Nullable Context context) {
-        if (!ChromeFeatureList.sWebUiNtpAndroidTheming.isEnabled()) {
+        if (!ChromeFeatureList.sWebUiAndroidTheming.isEnabled()) {
             return new long[0];
         }
 

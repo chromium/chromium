@@ -327,7 +327,7 @@ BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
 BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
 BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
-BASE_DECLARE_FEATURE(kWebUiNtpAndroidTheming);
+BASE_DECLARE_FEATURE(kWebUiAndroidTheming);
 BASE_DECLARE_FEATURE(kXplatSyncedSetup);
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageAndroid);
 // go/keep-sorted end

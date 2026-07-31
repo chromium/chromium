@@ -6526,9 +6526,9 @@ inline constexpr char kUseWebUiNtpAndroidName[] = "Use WebUI NTP on Android";
 inline constexpr char kUseWebUiNtpAndroidDescription[] =
     "When enabled, use the WebUI NTP instead of the native NTP on Android.";
 
-inline constexpr char kWebUiNtpAndroidThemingName[] = "WebUI NTP Android theming";
-inline constexpr char kWebUiNtpAndroidThemingDescription[] =
-    "When enabled, use Android theming on the WebUI NTP.";
+inline constexpr char kWebUiAndroidThemingName[] = "WebUI Android theming";
+inline constexpr char kWebUiAndroidThemingDescription[] =
+    "When enabled, use Android theming on WebUI pages.";
 
 inline constexpr char kTextClassifierTimeoutName[] = "TextClassifier Timeout";
 inline constexpr char kTextClassifierTimeoutDescription[] =

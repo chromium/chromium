@@ -10333,7 +10333,7 @@
     "expiry_milestone": -1
   },
   {
-    "name": "webui-ntp-android-theming",
+    "name": "webui-android-theming",
     "owners": [ "giannich@google.com", "rtatum@google.com", "ruoxih@google.com" ],
     "expiry_milestone": 160
   },
