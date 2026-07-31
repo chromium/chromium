@@ -39,11 +39,12 @@ namespace blink {
 
 class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
  public:
-  static std::unique_ptr<WebGpuSharedImageWrapper> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space);
+  WebGpuSharedImageWrapper(gfx::Size size,
+                           viz::SharedImageFormat format,
+                           SkAlphaType alpha_type,
+                           const gfx::ColorSpace& color_space,
+                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                               context_provider_wrapper);
   ~WebGpuSharedImageWrapper();
 
   gfx::Size Size() const { return shared_image_->size(); }
@@ -64,13 +65,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final {
   gpu::SyncToken release_sync_token_;
   bool is_cleared_ = false;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-
- private:
-  WebGpuSharedImageWrapper(gfx::Size,
-                           viz::SharedImageFormat,
-                           SkAlphaType,
-                           const gfx::ColorSpace&,
-                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 };
 
 }  // namespace blink

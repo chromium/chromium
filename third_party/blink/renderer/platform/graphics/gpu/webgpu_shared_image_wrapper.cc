@@ -43,17 +43,6 @@ namespace blink {
 
 namespace {
 
-bool IsGpuContextLost(
-    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
-  if (!context_provider_wrapper) {
-    return true;
-  }
-  auto* raster_interface =
-      context_provider_wrapper->ContextProvider().RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
-}
-
 scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
     viz::SharedImageFormat format,
     gfx::Size size,
@@ -90,51 +79,7 @@ scoped_refptr<gpu::ClientSharedImage> CreateClientSharedImage(
 
 }  // namespace
 
-std::unique_ptr<WebGpuSharedImageWrapper> WebGpuSharedImageWrapper::Create(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space) {
-  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
-  // IsGpuCompositingEnabled can re-create the context if it has been lost, do
-  // this up front so that we can fail early and not expose ourselves to
-  // use after free bugs (crbug.com/1126424)
-  std::ignore = SharedGpuContext::IsGpuCompositingEnabled();
-
-  // If the context is lost we don't want to re-create it here, the resulting
-  // resource provider would be invalid anyway
-  if (!context_provider_wrapper ||
-      !context_provider_wrapper->ContextProvider().RasterInterface() ||
-      context_provider_wrapper->ContextProvider().IsContextLost()) {
-    return nullptr;
-  }
-
-  const auto& capabilities =
-      context_provider_wrapper->ContextProvider().GetCapabilities();
-  if ((size.width() < 1 || size.height() < 1 ||
-       size.width() > capabilities.max_texture_size ||
-       size.height() > capabilities.max_texture_size)) {
-    return nullptr;
-  }
-
-#if BUILDFLAG(IS_LINUX)
-  // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
-  // dependent on canvas copies being RGBA (not BGRA).
-  if (format != viz::SinglePlaneFormat::kRGBA_F16) {
-    format = viz::SinglePlaneFormat::kRGBA_8888;
-  }
-#endif
-
-  auto provider = base::WrapUnique(
-      new WebGpuSharedImageWrapper(size, format, alpha_type, color_space,
-                                   context_provider_wrapper));
-
-  if (IsGpuContextLost(context_provider_wrapper.get())) {
-    return nullptr;
-  }
-  return provider;
-}
 
 WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     gfx::Size size,

@@ -14,11 +14,23 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+bool IsGpuContextLost(
+    WebGraphicsContext3DProviderWrapper* context_provider_wrapper) {
+  if (!context_provider_wrapper) {
+    return true;
+  }
+  auto* raster_interface =
+      context_provider_wrapper->ContextProvider().RasterInterface();
+  return !raster_interface ||
+         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
 
 WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
@@ -363,9 +375,41 @@ WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
   std::unique_ptr<WebGpuSharedImageWrapper> wrapper =
       AcquireCachedWrapper(size, format, alpha_type, color_space);
   if (!wrapper) {
-    wrapper = WebGpuSharedImageWrapper::Create(size, format, alpha_type,
-                                               color_space);
-    if (!wrapper) {
+    auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+
+    // IsGpuCompositingEnabled can re-create the context if it has been lost, do
+    // this up front so that we can fail early and not expose ourselves to
+    // use after free bugs (crbug.com/1126424)
+    std::ignore = SharedGpuContext::IsGpuCompositingEnabled();
+
+    // If the context is lost we don't want to re-create it here, the resulting
+    // resource provider would be invalid anyway
+    if (!context_provider_wrapper ||
+        !context_provider_wrapper->ContextProvider().RasterInterface() ||
+        context_provider_wrapper->ContextProvider().IsContextLost()) {
+      return nullptr;
+    }
+
+    const auto& capabilities =
+        context_provider_wrapper->ContextProvider().GetCapabilities();
+    if ((size.width() < 1 || size.height() < 1 ||
+         size.width() > capabilities.max_texture_size ||
+         size.height() > capabilities.max_texture_size)) {
+      return nullptr;
+    }
+
+#if BUILDFLAG(IS_LINUX)
+    // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
+    // dependent on canvas copies being RGBA (not BGRA).
+    if (format != viz::SinglePlaneFormat::kRGBA_F16) {
+      format = viz::SinglePlaneFormat::kRGBA_8888;
+    }
+#endif
+
+    wrapper = std::make_unique<WebGpuSharedImageWrapper>(
+        size, format, alpha_type, color_space, context_provider_wrapper);
+
+    if (IsGpuContextLost(context_provider_wrapper.get())) {
       return nullptr;
     }
   }
