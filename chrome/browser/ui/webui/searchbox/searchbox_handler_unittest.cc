@@ -531,9 +531,10 @@ TEST_F(RealboxHandlerTest, SetInputMethodTest) {
   }
 }
 
-TEST_F(RealboxHandlerTest, GetPlaceholderConfig_NoPecApiReturnsEmpty) {
+TEST_F(RealboxHandlerTest,
+       GetCyclingPlaceholderConfig_NoAimEligibilityServiceReturnsEmpty) {
   base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
-  handler_->GetPlaceholderConfig(future.GetCallback());
+  handler_->GetCyclingPlaceholderConfig(future.GetCallback());
   auto config = future.Take();
 
   ASSERT_EQ(config->texts.size(), 0u);
@@ -554,10 +555,10 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
 }
 }  // namespace
 
-class SearchboxHandlerPecApiTest : public RealboxHandlerTest {
+class SearchboxHandlerAimEligibilityTest : public RealboxHandlerTest {
  public:
-  SearchboxHandlerPecApiTest() = default;
-  ~SearchboxHandlerPecApiTest() override = default;
+  SearchboxHandlerAimEligibilityTest() = default;
+  ~SearchboxHandlerAimEligibilityTest() override = default;
 
  protected:
   raw_ptr<testing::NiceMock<MockAimEligibilityService>>
@@ -590,50 +591,30 @@ class SearchboxHandlerPecApiTest : public RealboxHandlerTest {
   }
 };
 
-TEST_F(SearchboxHandlerPecApiTest, GetPlaceholderConfig_WithToolConfigs) {
-  omnibox::SearchboxConfig& config = mock_aim_eligibility_service_->config();
-
-  auto* tool = config.add_tool_configs();
-  tool->set_tool(omnibox::TOOL_MODE_IMAGE_GEN);
-
-  auto* tool2 = config.add_tool_configs();
-  tool2->set_tool(omnibox::TOOL_MODE_CANVAS);
-
-  ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
-      .WillByDefault(testing::Return(&config));
+TEST_F(SearchboxHandlerAimEligibilityTest,
+       GetCyclingPlaceholderConfig_AimEligibleReturnsEvergreenPlaceholders) {
+  ON_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillByDefault(testing::Return(true));
 
   base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
-  handler_->GetPlaceholderConfig(future.GetCallback());
+  handler_->GetCyclingPlaceholderConfig(future.GetCallback());
   auto result = future.Take();
 
-  ASSERT_EQ(result->texts.size(), 3u);
+  ASSERT_EQ(result->texts.size(), 4u);
   EXPECT_EQ(result->texts[0], u"Ask Google");
-  EXPECT_EQ(result->texts[1], u"Describe your image");
-  EXPECT_EQ(result->texts[2], u"Create anything");
+  EXPECT_EQ(result->texts[1], u"Research a topic");
+  EXPECT_EQ(result->texts[2], u"Learn a new skill");
+  EXPECT_EQ(result->texts[3], u"Get advice");
 }
 
-TEST_F(SearchboxHandlerPecApiTest,
-       GetPlaceholderConfig_NoToolConfigsReturnsEmpty) {
-  omnibox::SearchboxConfig& config = mock_aim_eligibility_service_->config();
-
-  ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
-      .WillByDefault(testing::Return(&config));
-
-  base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
-  handler_->GetPlaceholderConfig(future.GetCallback());
-  auto result = future.Take();
-
-  // Not eligible tools -> cycling disabled -> empty placeholder list.
-  ASSERT_EQ(result->texts.size(), 0u);
-}
-
-TEST_F(SearchboxHandlerPecApiTest,
-       GetPlaceholderConfig_NullSearchboxConfigReturnsEmpty) {
-  ON_CALL(*mock_aim_eligibility_service_, GetSearchboxConfig())
-      .WillByDefault(testing::Return(nullptr));
+TEST_F(SearchboxHandlerAimEligibilityTest,
+       GetCyclingPlaceholderConfig_NotAimEligibleReturnsEmpty) {
+  // Explicit: the mock's constructor defaults IsAimEligible() to true.
+  ON_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillByDefault(testing::Return(false));
 
   base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
-  handler_->GetPlaceholderConfig(future.GetCallback());
+  handler_->GetCyclingPlaceholderConfig(future.GetCallback());
   auto result = future.Take();
 
   ASSERT_EQ(result->texts.size(), 0u);

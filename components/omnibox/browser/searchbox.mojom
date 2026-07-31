@@ -437,7 +437,7 @@ interface PageHandler {
 
   // Returns configuration data leveraged when displaying cycling placeholder
   // texts on the searchbox UI.
-  GetPlaceholderConfig() => (PlaceholderConfig config);
+  GetCyclingPlaceholderConfig() => (PlaceholderConfig config);
 
   // Returns information about recent tabs.
   GetRecentTabs() => (array<TabInfo> tabs);

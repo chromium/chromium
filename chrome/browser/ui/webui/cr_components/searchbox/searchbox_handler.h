@@ -157,7 +157,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                      bool ctrl_key,
                      bool meta_key,
                      bool shift_key) override;
-  void GetPlaceholderConfig(GetPlaceholderConfigCallback callback) override;
+  void GetCyclingPlaceholderConfig(
+      GetCyclingPlaceholderConfigCallback callback) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override {}
   void WaitForTabFaviconLoad(int32_t tab_id,
