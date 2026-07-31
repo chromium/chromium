@@ -67,8 +67,7 @@ if (concurrent_links == -1) {
     _args = [ "--mem_per_link_gb=10" ]
   } else if (is_mac) {
     if (enable_dsyms) {
-      # Parallel dsymutil (enabled by default) consumes significant memory
-      _args = [ "--mem_per_link_gb=24" ]
+      _args = [ "--mem_per_link_gb=12" ]
     } else {
       _args = [ "--mem_per_link_gb=4" ]
     }
