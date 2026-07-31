@@ -33,6 +33,9 @@ class TabStripAnimations : public CachingBrowserAnimationProvider {
   // This is additional width used by the hover animations.
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kTabStripHoverWidth);
 
+  // This is the percentage of maximum opacity when doing expand-on-hover.
+  DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kTabStripHoverOpacity);
+
   // These only play during expand/collapse when the tabstrip slides under the
   // caption buttons.
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kTabStripTop);

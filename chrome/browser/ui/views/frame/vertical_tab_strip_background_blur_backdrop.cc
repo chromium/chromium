@@ -29,7 +29,10 @@ void VerticalTabStripBackgroundBlurBackdrop::UpdateGeometry(
     float alpha) {
   border_path_ =
       from->background()->AsA<CustomCornersBackground>()->GetBackgroundPath();
-  alpha_ = alpha;
+  if (alpha_ != alpha) {
+    alpha_ = alpha;
+    SchedulePaint();
+  }
 }
 
 void VerticalTabStripBackgroundBlurBackdrop::OnPaint(gfx::Canvas* canvas) {
