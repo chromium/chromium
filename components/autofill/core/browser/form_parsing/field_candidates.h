@@ -67,7 +67,9 @@ struct FieldCandidate {
 // types and determines which type is the most likely.
 class FieldCandidates {
  public:
-  FieldCandidates();
+  FieldCandidates(FieldType type,
+                  MatchInfo match_info,
+                  FieldCandidatePriority priority);
   FieldCandidates(FieldCandidates&& other);
   FieldCandidates& operator=(FieldCandidates&& other);
   ~FieldCandidates();
@@ -84,9 +86,8 @@ class FieldCandidates {
                          FieldCandidatePriority priority);
 
   // Determines the best type based on `field_candidates_` and returns
-  // the corresponding `FieldCandidate`. Returns `std::nullopt` when there are
-  // no candidates.
-  std::optional<FieldCandidate> BestHeuristicCandidate() const;
+  // the corresponding `FieldCandidate`.
+  FieldCandidate BestHeuristicCandidate() const;
 
   // The MatchAttributes responsible for determining `BestHeuristicCandidate()`.
   DenseSet<MatchAttribute> BestHeuristicTypeReason() const;

@@ -43,9 +43,8 @@ class RegexPredictions {
  private:
   HeuristicSource source_ = internal::IsRequired();
 
-  // Keeps the predictions mapping. The `FieldCandidate` is std::nullopt
-  // when there are no candidates for given field.
-  base::flat_map<FieldGlobalId, std::optional<FieldCandidate>> predictions_;
+  // Keeps the predictions mapping.
+  base::flat_map<FieldGlobalId, FieldCandidate> predictions_;
 };
 
 // Evaluates regular expressions against the form fields to determine their

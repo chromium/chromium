@@ -110,12 +110,10 @@ void FormFieldParserTestBase::TestClassificationExpectations() {
   for (const auto [field_id, expected_field_type] : expected_classifications_) {
     FieldType actual_field_type = UNKNOWN_TYPE;
 
-    if (field_candidates_map_.contains(field_id)) {
-      std::optional<FieldCandidate> field_candidate =
-          field_candidates_map_[field_id].BestHeuristicCandidate();
-      if (field_candidate) {
-        actual_field_type = field_candidate->type;
-      }
+    if (FieldCandidatesMap::const_iterator it =
+            field_candidates_map_.find(field_id);
+        it != field_candidates_map_.end()) {
+      actual_field_type = it->second.BestHeuristicCandidate().type;
     }
 
     SCOPED_TRACE(testing::Message()

@@ -97,10 +97,7 @@ void PhoneFieldParserTest::CheckField(const FieldGlobalId id,
                                       FieldType expected_type) const {
   auto it = field_candidates_map_.find(id);
   ASSERT_TRUE(it != field_candidates_map_.end());
-  std::optional<FieldCandidate> best_candidate =
-      it->second.BestHeuristicCandidate();
-  ASSERT_TRUE(best_candidate);
-  EXPECT_EQ(expected_type, best_candidate->type);
+  EXPECT_EQ(expected_type, it->second.BestHeuristicCandidate().type);
 }
 
 FieldGlobalId PhoneFieldParserTest::AppendField(

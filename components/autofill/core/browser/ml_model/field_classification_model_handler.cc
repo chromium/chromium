@@ -164,15 +164,12 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
     bool ignore_small_forms) const {
   FieldCandidatesMap field_candidates_map;
   for (size_t i = 0; i < predicted_types.size(); ++i) {
-    FieldCandidates candidates;
-    candidates.AddFieldCandidate(
-        predicted_types[i],
+    field_candidates_map.try_emplace(
+        form.fields()[i].global_id(), predicted_types[i],
         // Arbitrary value to satisfy the API - not used.
         MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName},
-        {/*is_name_or_high_quality_label_match=*/true,
-         /*parser_type=*/HeuristicParser::kName});
-    field_candidates_map.try_emplace(form.fields()[i].global_id(),
-                                     std::move(candidates));
+        FieldCandidatePriority{/*is_name_or_high_quality_label_match=*/true,
+                               /*parser_type=*/HeuristicParser::kName});
   }
 
   FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
