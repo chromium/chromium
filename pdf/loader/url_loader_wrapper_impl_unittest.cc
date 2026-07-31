@@ -101,9 +101,7 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_EQ(100, start);
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
-TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartValidContentRangeMaxUint32) {
+TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartValidContentRangeMaxUint32) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range", "bytes 0-4294967295/4294967296");
   auto wrapper = CreateWrapperWithResponse(response);
@@ -113,9 +111,8 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_EQ(0, start);
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
 TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartInvalidContentRangeNoSlashLength) {
+       GetByteRangeStartInvalidContentRangeNoSlashLength) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range", "bytes 0-499");
   auto wrapper = CreateWrapperWithResponse(response);
@@ -124,9 +121,8 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
 TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartInvalidContentRangeUnknownLength) {
+       GetByteRangeStartInvalidContentRangeUnknownLength) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range", "bytes 0-499/*");
   auto wrapper = CreateWrapperWithResponse(response);
@@ -135,9 +131,8 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
 TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartInvalidContentRangeStartAfterEnd) {
+       GetByteRangeStartInvalidContentRangeStartAfterEnd) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range", "bytes 500-499/1000");
   auto wrapper = CreateWrapperWithResponse(response);
@@ -146,9 +141,7 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
-TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartInvalidContentRangeNonDigit) {
+TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartInvalidContentRangeNonDigit) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range", "bytes 0-49a/1000");
   auto wrapper = CreateWrapperWithResponse(response);
@@ -157,9 +150,7 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
-TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartInvalidContentRangeOverflow) {
+TEST_F(URLLoaderWrapperImplTest, GetByteRangeStartInvalidContentRangeOverflow) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range",
                               "bytes 4294967296-4294967297/4294967298");
@@ -170,9 +161,8 @@ TEST_F(URLLoaderWrapperImplTest,
   EXPECT_FALSE(wrapper->GetByteRangeStart(&start));
 }
 
-// TODO(crbug.com/40457613): Fix and re-enable.
 TEST_F(URLLoaderWrapperImplTest,
-       DISABLED_GetByteRangeStartInvalidContentRangeEndOverflow) {
+       GetByteRangeStartInvalidContentRangeEndOverflow) {
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Range", "bytes 0-4294967296/4294967298");
   auto wrapper = CreateWrapperWithResponse(response);
