@@ -67,6 +67,11 @@ class MojoRenderInputRouterDelegateImpl
           remote) {
     rir_delegate_remote_.Bind(std::move(remote));
   }
+  void BindClientReceiverForTesting(
+      mojo::PendingAssociatedReceiver<
+          input::mojom::RenderInputRouterDelegateClient> receiver) {
+    rir_delegate_client_receiver_.Bind(std::move(receiver));
+  }
 
  private:
   mojo::AssociatedReceiver<input::mojom::RenderInputRouterDelegateClient>

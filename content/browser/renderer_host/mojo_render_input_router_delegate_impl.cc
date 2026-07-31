@@ -10,6 +10,19 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 
 namespace content {
+namespace {
+
+// Returns true if the input event type is expected to be handled on Viz
+// (InputVizard). Currently, only touch and gesture events are routed to
+// and handled by Viz; receiving any other event type (such as keyboard or
+// mouse events) indicates an out-of-scope or spoofed event from the GPU
+// process.
+bool IsInputEventExpectedOnViz(blink::WebInputEvent::Type type) {
+  return blink::WebInputEvent::IsTouchEventType(type) ||
+         blink::WebInputEvent::IsGestureEventType(type);
+}
+
+}  // namespace
 
 MojoRenderInputRouterDelegateImpl::MojoRenderInputRouterDelegateImpl(
     RenderWidgetHostImpl* host)
@@ -39,6 +52,11 @@ MojoRenderInputRouterDelegateImpl::GetRenderInputRouterDelegateRemote() {
 void MojoRenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
     bool dispatched_to_renderer) {
+  if (!IsInputEventExpectedOnViz(event->Event().GetType())) {
+    rir_delegate_client_receiver_.ReportBadMessage(
+        "Unexpected event type received from GPU process");
+    return;
+  }
   host_->NotifyObserversOfInputEventWithSource(
       event->Event(), input::InputEventSource::kViz, dispatched_to_renderer);
 }
@@ -47,6 +65,11 @@ void MojoRenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result,
     std::unique_ptr<blink::WebCoalescedInputEvent> event) {
+  if (!IsInputEventExpectedOnViz(event->Event().GetType())) {
+    rir_delegate_client_receiver_.ReportBadMessage(
+        "Unexpected event type received from GPU process");
+    return;
+  }
   host_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                          event->Event());
 }

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
 #include "components/input/render_input_router.mojom.h"
@@ -14,6 +15,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
+#include "content/browser/renderer_host/mojo_render_input_router_delegate_impl.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -23,6 +25,7 @@
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -1842,6 +1845,76 @@ TEST_F(RenderWidgetHostViewAndroidTest, LockUnlockPointer) {
 
   rwhva->UnlockPointer();
   EXPECT_FALSE(rwhva->IsPointerLocked());
+}
+
+// Verifies that MojoRenderInputRouterDelegateImpl rejects non-touch/non-gesture
+// input events sent over the RenderInputRouterDelegateClient mojo connection
+// and terminates the connection via ReportBadMessage (security regression
+// test).
+TEST_F(RenderWidgetHostViewAndroidTest,
+       MojoRenderInputRouterDelegateInputEventValidation) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  mojo::AssociatedRemote<input::mojom::RenderInputRouterDelegateClient>
+      client_remote;
+  rwhva->host()->mojo_rir_delegate()->BindClientReceiverForTesting(
+      client_remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { bad_message_error = error; }));
+
+  // Send an unexpected kKeyDown event from the GPU process.
+  blink::WebKeyboardEvent key_event(blink::WebInputEvent::Type::kKeyDown,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    base::TimeTicks::Now());
+  auto coalesced_event = std::make_unique<blink::WebCoalescedInputEvent>(
+      key_event, ui::LatencyInfo());
+
+  client_remote->NotifyObserversOfInputEvent(std::move(coalesced_event),
+                                             /*dispatched_to_renderer=*/false);
+  client_remote.FlushForTesting();
+
+  EXPECT_EQ(bad_message_error,
+            "Unexpected event type received from GPU process");
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
+// Verifies that MojoRenderInputRouterDelegateImpl rejects non-touch/non-gesture
+// input event acknowledgements sent over the RenderInputRouterDelegateClient
+// mojo connection and terminates the connection via ReportBadMessage
+// (security regression test).
+TEST_F(RenderWidgetHostViewAndroidTest,
+       MojoRenderInputRouterDelegateAckValidation) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  mojo::AssociatedRemote<input::mojom::RenderInputRouterDelegateClient>
+      client_remote;
+  rwhva->host()->mojo_rir_delegate()->BindClientReceiverForTesting(
+      client_remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  std::string bad_message_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { bad_message_error = error; }));
+
+  // Send an unexpected kKeyDown ack from the GPU process.
+  blink::WebKeyboardEvent key_event(blink::WebInputEvent::Type::kKeyDown,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    base::TimeTicks::Now());
+  auto coalesced_event = std::make_unique<blink::WebCoalescedInputEvent>(
+      key_event, ui::LatencyInfo());
+
+  client_remote->NotifyObserversOfInputEventAcks(
+      blink::mojom::InputEventResultSource::kCompositorThread,
+      blink::mojom::InputEventResultState::kConsumed,
+      std::move(coalesced_event));
+  client_remote.FlushForTesting();
+
+  EXPECT_EQ(bad_message_error,
+            "Unexpected event type received from GPU process");
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 }  // namespace content
