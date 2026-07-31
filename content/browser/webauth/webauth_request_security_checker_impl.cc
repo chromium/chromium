@@ -159,6 +159,23 @@ WebAuthRequestSecurityCheckerImpl::ValidateDomainAndRelyingPartyID(
     RequestType request_type,
     const std::optional<url::Origin>& remote_desktop_client_override_origin,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
+  if (remote_desktop_client_override_origin.has_value()) {
+    // SECURITY: `remote_desktop_client_override_origin` comes from the renderer
+    // process and should not be trusted by default. We only allow its use when
+    // the `caller_origin` is explicitly allowlisted through device level
+    // enterprise policy.
+    if (!GetContentClient()
+             ->browser()
+             ->GetWebAuthenticationDelegate()
+             ->OriginMayUseRemoteDesktopClientOverride(
+                 render_frame_host_->GetBrowserContext(), caller_origin)) {
+      std::move(callback).Run(
+          blink::mojom::AuthenticatorStatus::
+              REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+      return nullptr;
+    }
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   // Extensions are not supported on Android.
   if (GetContentClient()
@@ -188,24 +205,8 @@ WebAuthRequestSecurityCheckerImpl::ValidateDomainAndRelyingPartyID(
     return nullptr;
   }
 
-  url::Origin relying_party_origin = caller_origin;
-  if (remote_desktop_client_override_origin.has_value()) {
-    // SECURITY: `remote_desktop_client_override_origin` comes from the renderer
-    // process and should not be trusted by default. We only allow its use when
-    // the `caller_origin` is explicitly allowlisted through device level
-    // enterprise policy.
-    if (!GetContentClient()
-             ->browser()
-             ->GetWebAuthenticationDelegate()
-             ->OriginMayUseRemoteDesktopClientOverride(
-                 render_frame_host_->GetBrowserContext(), caller_origin)) {
-      std::move(callback).Run(
-          blink::mojom::AuthenticatorStatus::
-              REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
-      return nullptr;
-    }
-    relying_party_origin = remote_desktop_client_override_origin.value();
-  }
+  url::Origin relying_party_origin =
+      remote_desktop_client_override_origin.value_or(caller_origin);
 
   if (webauthn::OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
                                                      relying_party_origin)) {

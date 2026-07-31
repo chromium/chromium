@@ -3249,6 +3249,40 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
   }
 }
 
+// A Chrome extension should not be authorized to use the
+// remoteDesktopClientOverride request extension.
+TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
+       ExtensionCallerOrigin) {
+  static const std::string kExtensionOrigin =
+      base::StrCat({kExtensionScheme, "://abcdefg"});
+  test_client_.GetTestWebAuthenticationDelegate()->permit_extensions = true;
+
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->relying_party.id = kExampleRpId;
+    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
+        url::Origin::Create(GURL(kExampleOrigin)), true);
+    EXPECT_EQ(
+        AuthenticatorMakeCredential(std::move(options)).status,
+        AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+  }
+
+  {
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->relying_party_id = kExampleRpId;
+    options->extensions->remote_desktop_client_override =
+        RemoteDesktopClientOverride::New(
+            url::Origin::Create(GURL(kExampleOrigin)), true);
+    ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+        options->allow_credentials[0].id, kExtensionOrigin));
+    EXPECT_EQ(
+        AuthenticatorGetAssertion(std::move(options)).status,
+        AuthenticatorStatus::REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+  }
+}
+
 TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
        GetAssertionImmediateMediation) {
   // Verify that an authorized origin may not use the extension with immediate
