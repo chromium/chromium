@@ -103,6 +103,23 @@ TEST_F(ContentWebStateTest, SetHasOpener) {
   EXPECT_TRUE(content_web_state()->HasOpener());
 }
 
+// Tests that setting and getting the favicon status works.
+//
+// The visible NavigationItem's own favicon status starts out invalid (no
+// favicon fetched yet), so GetFaviconStatus() falls back to the value set via
+// SetFaviconStatus().
+TEST_F(ContentWebStateTest, FaviconStatus) {
+  EXPECT_FALSE(content_web_state()->GetFaviconStatus().valid);
+
+  FaviconStatus favicon_status;
+  favicon_status.valid = true;
+  favicon_status.url = GURL("https://chromium.test/favicon.ico");
+  content_web_state()->SetFaviconStatus(favicon_status);
+
+  EXPECT_TRUE(content_web_state()->GetFaviconStatus().valid);
+  EXPECT_EQ(favicon_status.url, content_web_state()->GetFaviconStatus().url);
+}
+
 // Tests that reload with web::ReloadType::NORMAL is no-op when navigation
 // manager only has the initial NavigationEntry that content::WebContents is
 // created with (i.e. no real navigation has happened yet).
