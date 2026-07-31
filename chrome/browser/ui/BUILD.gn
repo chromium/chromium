@@ -1610,8 +1610,6 @@ static_library("ui") {
       "scoped_tabbed_browser_displayer.h",
       "singleton_tabs.cc",
       "singleton_tabs.h",
-      "uma_browsing_activity_observer.cc",
-      "uma_browsing_activity_observer.h",
       "unload_controller.cc",
       "unload_controller.h",
       "views/search_engine_choice/search_engine_choice_dialog_view.cc",
@@ -1646,6 +1644,7 @@ static_library("ui") {
       ":confirm_bubble_model",
       ":focus_tab_after_navigation_helper",
       ":layout_constants",
+      ":uma_browsing_activity_observer",
       "//base",
       "//chrome/app/vector_icons",
       "//chrome/browser:chrome_browser_interface_binders_webui_parts",
@@ -5492,6 +5491,26 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
       "//testing/gmock",
+    ]
+  }
+
+  source_set("uma_browsing_activity_observer") {
+    public = [ "uma_browsing_activity_observer.h" ]
+    sources = [ "uma_browsing_activity_observer.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/lifetime:termination_notification",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/upgrade_detector",
+      "//components/keep_alive_registry",
+      "//components/search_engines",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//content/public/browser",
     ]
   }
 }

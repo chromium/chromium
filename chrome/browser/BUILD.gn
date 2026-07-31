@@ -1291,6 +1291,7 @@ source_set("core") {
       "//chrome/browser/error_reporting",
       "//chrome/browser/ui:browser_actions_impl",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:uma_browsing_activity_observer",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl",
       "//chrome/browser/ui/views/frame:glass_frame_service",
