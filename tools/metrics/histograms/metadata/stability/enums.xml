@@ -544,6 +544,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="366" label="RFH_INVALID_CONNECTION_ALLOWLIST_ATTRIBUTE"/>
   <int value="367" label="PMM_UNSUBSCRIBE_IN_FENCED_FRAME"/>
   <int value="368" label="PMM_GET_SUBSCRIPTION_IN_FENCED_FRAME"/>
+  <int value="369" label="BIBI_BIND_VIBRATION_MANAGER_FOR_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

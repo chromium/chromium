@@ -741,6 +741,20 @@ void BindBatteryMonitor(
   GetDeviceService().BindBatteryMonitor(std::move(receiver));
 }
 
+void BindVibrationManager(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
+  if (host->IsNestedWithinFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(), bad_message::BadMessageReason::
+                                BIBI_BIND_VIBRATION_MANAGER_FOR_FENCED_FRAME);
+    return;
+  }
+  GetDeviceService().BindVibrationManager(
+      std::move(receiver), static_cast<RenderFrameHostImpl*>(host)
+                               ->CreateVibrationManagerListener());
+}
+
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void BindPressureManager(
     RenderFrameHost* host,
@@ -1434,13 +1448,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::AnchorElementInteractionHost>(
       &AnchorElementInteractionHostImpl::Create);
 
-  map->Add<device::mojom::VibrationManager>(
-      [](RenderFrameHost* host,
-         mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
-        GetDeviceService().BindVibrationManager(
-            std::move(receiver), static_cast<RenderFrameHostImpl*>(host)
-                                     ->CreateVibrationManagerListener());
-      });
+  map->Add<device::mojom::VibrationManager>(&BindVibrationManager);
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {

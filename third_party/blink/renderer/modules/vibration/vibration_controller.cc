@@ -108,6 +108,15 @@ bool VibrationController::vibrate(Navigator& navigator,
   // reference to |window| or |navigator| was retained in another window.
   if (!navigator.DomWindow())
     return false;
+
+  LocalFrame* frame = navigator.DomWindow()->GetFrame();
+  if (frame && frame->IsInFencedFrameTree()) {
+    Intervention::GenerateReport(
+        frame, "NavigatorVibrate",
+        "Blocked call to navigator.vibrate inside a fenced frame.");
+    return false;
+  }
+
   return From(navigator).Vibrate(pattern);
 }
 
@@ -133,13 +142,6 @@ bool VibrationController::Vibrate(const VibrationPattern& pattern) {
   UseCounter::Count(DomWindow(), WebFeature::kNavigatorVibrate);
 
   LocalFrame* frame = DomWindow()->GetFrame();
-  if (frame->IsInFencedFrameTree()) {
-    Intervention::GenerateReport(
-        frame, "NavigatorVibrate",
-        "Blocked call to navigator.vibrate inside a fenced frame.");
-    return false;
-  }
-
   if (!frame->GetPage()->IsPageVisible())
     return false;
 
