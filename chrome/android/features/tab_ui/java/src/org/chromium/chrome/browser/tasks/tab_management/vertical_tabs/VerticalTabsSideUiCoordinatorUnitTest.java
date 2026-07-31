@@ -443,7 +443,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                                 /* availableWidth= */ mExpandedRailWidth,
                                 windowWidth,
                                 /* isFullscreen= */ false)
-                        .width);
+                        .mWidth);
     }
 
     private void setWindowWidthPx(@Px int widthPx) {

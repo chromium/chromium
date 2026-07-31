@@ -128,7 +128,7 @@ public class TopControlsLockCoordinator {
         // Lock if SideUI shows adjacent to top controls.
         if (mSideUiStateProvider != null) {
             for (var entry : mSideUiStateProvider.getCurrentSideUiSpecs().entrySet()) {
-                if (entry.getValue().heightType == HeightType.TOOLBAR) {
+                if (entry.getValue().mHeightType == HeightType.TOOLBAR) {
                     return true;
                 }
             }
