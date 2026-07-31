@@ -28,6 +28,13 @@ namespace signin {
 
 class IdentityManager;
 
+// Test and production exposed list of data types restricted for the statistics
+// API.
+inline constexpr int kRequestedDataTypes[] = {
+    31729, 32904, 37702,  41210,  45873,  48119,
+    48364, 50119, 154522, 330441, 411028, 1164238,
+};
+
 // Helper class to fetch account preview data from the Sync Preview API.
 // Fetches both statistics and entities previews in parallel (after acquiring a
 // SyncPreview OAuth token for the input account). Once both fetches complete,

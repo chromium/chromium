@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_metrics_id_allocator.h"
+#include "components/signin/core/browser/account_preview_data_fetcher.h"
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -40,8 +41,15 @@ class AccountPreviewDataServiceBrowserTest : public SigninBrowserTestBase {
   CreateMockNetworkInterceptor() {
     return std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
         [](content::URLLoaderInterceptor::RequestParams* params) {
+          std::string expected_query;
+          for (int data_type : signin::kRequestedDataTypes) {
+            expected_query += (expected_query.empty() ? "" : "&") +
+                              std::string("dataTypes=") +
+                              base::NumberToString(data_type);
+          }
           if (params->url_request.url.path() ==
-              "/v1/dataTypes/-/dataTypesStatistics") {
+                  "/v1/dataTypes/-/dataTypesStatistics" &&
+              params->url_request.url.query() == expected_query) {
             std::string response = R"({
                "dataTypeStatistics": [
                  {
