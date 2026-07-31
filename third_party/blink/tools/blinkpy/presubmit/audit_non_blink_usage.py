@@ -206,9 +206,6 @@ _CONFIG = [
             'base::ok',
             'base::unexpected',
 
-            # //base/types/zip.h
-            'base::zip',
-
             # //base/functional/bind.h
             'base::IgnoreResult',
 
