@@ -5674,6 +5674,12 @@
       status: "stable",
     },
     {
+      // Makes <select> discover its options, optgroups, separators, and
+      // customizable trigger button through the flat tree.
+      // See https://chromestatus.com/feature/5127427618635776
+      name: "SelectUsesFlatTree",
+    },
+    {
       // Instead of a manual clip, use overflow:clip in the UA stylesheet.
       name: "SelectUsesUAClip",
       status: "stable",
