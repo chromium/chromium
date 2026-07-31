@@ -240,3 +240,22 @@ source_set("tab_dialogs_impl") {
     "//ui/views",
   ]
 }
+
+source_set("device_chooser_content_view") {
+  public = [ "device_chooser_content_view.h" ]
+  sources = [ "device_chooser_content_view.cc" ]
+  public_deps = [
+    "//components/permissions",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/resources",
+  ]
+}

@@ -7650,6 +7650,7 @@ test("unit_tests") {
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views:confirm_bubble",
+      "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views/apps/app_info_dialog:unit_tests",
       "//chrome/browser/ui/views/commerce:unit_tests",

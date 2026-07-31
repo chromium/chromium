@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/toolbar:test_support",
+    "//chrome/browser/ui/views:device_chooser_content_view",
     "//chrome/browser/ui/views/controls",
     "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/browser/ui/views/permissions/chip",
