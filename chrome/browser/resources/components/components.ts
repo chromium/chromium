@@ -64,6 +64,12 @@ function returnComponentsData(componentsData: ComponentsData) {
   bodyContainer.style.visibility = 'hidden';
   body.className = '';
 
+  componentsData.components.sort((a, b) => {
+    const nameA = a.name || a.id;
+    const nameB = b.name || b.id;
+    return nameA.localeCompare(nameB) || a.id.localeCompare(b.id);
+  });
+
   // Initialize |currentComponentsData|, which can also be updated in
   // onComponentEvent() later.
   currentComponentsData = componentsData.components;
