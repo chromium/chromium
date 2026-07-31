@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,7 +42,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class StripTabUnderlineManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private StripLayoutHelper mStripLayoutHelper;
+    @Mock private StripTabUnderlineManager.Observer mObserver;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private StripTabUnderlineManager.Natives mMockJni;
     @Mock private ContextualTasksBridge mContextualTasksBridge;
@@ -66,7 +67,8 @@ public class StripTabUnderlineManagerTest {
         when(mTab2.getId()).thenReturn(TAB_ID_2);
         when(mTab3.getId()).thenReturn(TAB_ID_3);
 
-        mManager = new StripTabUnderlineManager(mStripLayoutHelper, mWindowAndroid);
+        mManager = new StripTabUnderlineManager(mWindowAndroid);
+        mManager.addObserver(mObserver);
     }
 
     @After
@@ -119,23 +121,34 @@ public class StripTabUnderlineManagerTest {
 
     @Test
     public void testSetUnderlineState() {
-        mManager.setUnderlineState(TAB_ID_1, true);
-        verify(mStripLayoutHelper).setTabUnderline(TAB_ID_1, true);
+        mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ true);
+        verify(mObserver).onIndicatorStateChanged(TAB_ID_1, /* isUnderlined= */ true);
 
-        mManager.setUnderlineState(TAB_ID_1, false);
-        verify(mStripLayoutHelper).setTabUnderline(TAB_ID_1, false);
+        mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ false);
+        verify(mObserver).onIndicatorStateChanged(TAB_ID_1, /* isUnderlined= */ false);
     }
 
     @Test
     public void testResetAnimationCycle() {
         mManager.resetAnimationCycle(TAB_ID_1);
-        verify(mStripLayoutHelper).resetTabUnderlineAnimationCycle(TAB_ID_1);
+        verify(mObserver).onResetAnimationCycle(TAB_ID_1);
+    }
+
+    @Test
+    public void testAddAndRemoveObserver() {
+        mManager.removeObserver(mObserver);
+        mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ true);
+        verify(mObserver, never()).onIndicatorStateChanged(anyInt(), anyBoolean());
     }
 
     @Test
     public void testDestroy() {
         mManager.destroy();
         verify(mMockJni).destroy(NATIVE_PTR);
+
+        // Verify observers are cleared after destroy.
+        mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ true);
+        verify(mObserver, never()).onIndicatorStateChanged(anyInt(), anyBoolean());
 
         // Verify double destroy is safe.
         mManager.destroy();

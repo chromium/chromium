@@ -715,6 +715,7 @@ public class StripLayoutHelper
 
     private final StripLayoutTabDelegate mTabDelegate;
     private @Nullable StripTabUnderlineManager mStripTabUnderlineManager;
+    private StripTabUnderlineManager.@Nullable Observer mTabUnderlineObserver;
 
     // Pinned tabs.
     private boolean mIsPinnedOnlyStripRecorded;
@@ -882,7 +883,20 @@ public class StripLayoutHelper
         if (!mIncognito
                 && (GlicEnabling.isEnabledByFlags()
                         || ChromeFeatureList.sContextualTasks.isEnabled())) {
-            mStripTabUnderlineManager = new StripTabUnderlineManager(this, windowAndroid);
+            mStripTabUnderlineManager = new StripTabUnderlineManager(windowAndroid);
+            mTabUnderlineObserver =
+                    new StripTabUnderlineManager.Observer() {
+                        @Override
+                        public void onIndicatorStateChanged(int tabId, boolean isUnderlined) {
+                            setTabUnderline(tabId, isUnderlined);
+                        }
+
+                        @Override
+                        public void onResetAnimationCycle(int tabId) {
+                            resetTabUnderlineAnimationCycle(tabId);
+                        }
+                    };
+            mStripTabUnderlineManager.addObserver(mTabUnderlineObserver);
         }
 
         mIsFirstLayoutPass = true;
@@ -929,6 +943,10 @@ public class StripLayoutHelper
             mTabStripContextMenuCoordinator = null;
         }
         if (mStripTabUnderlineManager != null) {
+            if (mTabUnderlineObserver != null) {
+                mStripTabUnderlineManager.removeObserver(mTabUnderlineObserver);
+                mTabUnderlineObserver = null;
+            }
             mStripTabUnderlineManager.destroy();
             mStripTabUnderlineManager = null;
         }
@@ -4637,7 +4655,7 @@ public class StripLayoutHelper
     }
 
     /** Set the underline state for a tab. */
-    void setTabUnderline(int tabId, boolean isUnderlined) {
+    private void setTabUnderline(int tabId, boolean isUnderlined) {
         StripLayoutTab stripTab = findTabById(tabId);
         if (stripTab != null) {
             stripTab.setIsUnderlined(isUnderlined);
@@ -4645,7 +4663,7 @@ public class StripLayoutHelper
     }
 
     /** Reset the underline animation cycle for a tab. */
-    void resetTabUnderlineAnimationCycle(int tabId) {
+    private void resetTabUnderlineAnimationCycle(int tabId) {
         StripLayoutTab stripTab = findTabById(tabId);
         if (stripTab != null) {
             stripTab.resetUnderlineAnimationCycle();
@@ -6020,5 +6038,9 @@ public class StripLayoutHelper
     void startDragAndDropTabForTesting(StripLayoutTab clickedTab, PointF dragStartPointF) {
         startReorderMode(
                 dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.START_DRAG_DROP);
+    }
+
+    @Nullable StripTabUnderlineManager getStripTabUnderlineManagerForTesting() {
+        return mStripTabUnderlineManager;
     }
 }
