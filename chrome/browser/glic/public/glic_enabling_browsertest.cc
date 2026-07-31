@@ -557,9 +557,8 @@ class GlicEnablingSystemRequirementsTest
 
 IN_PROC_BROWSER_TEST_P(GlicEnablingSystemRequirementsTest,
                        IsSystemRequirementMet) {
-  GlicGlobalEnabling::Delegate delegate;
   EXPECT_EQ(GetParam().expected_result,
-            GlicGlobalEnabling(delegate).IsSystemRequirementMet());
+            GlicGlobalEnabling().IsSystemRequirementMet());
 }
 
 INSTANTIATE_TEST_SUITE_P(

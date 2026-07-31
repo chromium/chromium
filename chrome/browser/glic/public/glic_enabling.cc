@@ -10,6 +10,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
@@ -155,10 +156,11 @@ std::vector<std::string> GetFieldTrialParamAsSplitString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-bool GetCountryEnablement(GlicGlobalEnabling::Delegate& delegate) {
+// TODO(b/535205872): Update this to accept countries directly as arguments.
+bool GetCountryEnablement(const GlicEnablingDelegate& delegate) {
   if (!base::FeatureList::IsEnabled(features::kGlicCountryFiltering)) {
     base::UmaHistogramEnumeration(
-        "Glic.CountryFilteringResult",
+        "Glic.CountryFilteringResult2",
         GlicFilteringResult::kAllowedFilteringDisabled);
     return true;
   }
@@ -187,14 +189,14 @@ bool GetCountryEnablement(GlicGlobalEnabling::Delegate& delegate) {
   if (std::ranges::any_of(disabled_countries, permanent_country_matches) ||
       (use_session_country &&
        std::ranges::any_of(disabled_countries, session_country_matches))) {
-    base::UmaHistogramEnumeration("Glic.CountryFilteringResult",
+    base::UmaHistogramEnumeration("Glic.CountryFilteringResult2",
                                   GlicFilteringResult::kBlockedInExclusionList);
     return false;
   }
 
   if (enabled_countries.size() == 1 && enabled_countries[0] == "*") {
     base::UmaHistogramEnumeration(
-        "Glic.CountryFilteringResult",
+        "Glic.CountryFilteringResult2",
         GlicFilteringResult::kAllowedWildcardInclusion);
     return true;
   }
@@ -202,18 +204,18 @@ bool GetCountryEnablement(GlicGlobalEnabling::Delegate& delegate) {
   if (std::ranges::any_of(enabled_countries, permanent_country_matches) ||
       (use_session_country &&
        std::ranges::any_of(enabled_countries, session_country_matches))) {
-    base::UmaHistogramEnumeration("Glic.CountryFilteringResult",
+    base::UmaHistogramEnumeration("Glic.CountryFilteringResult2",
                                   GlicFilteringResult::kAllowedInInclusionList);
     return true;
   }
 
   base::UmaHistogramEnumeration(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList);
   return false;
 }
 
-bool GetLocaleEnablement(GlicGlobalEnabling::Delegate& delegate) {
+bool GetLocaleEnablement(const GlicEnablingDelegate& delegate) {
   if (!base::FeatureList::IsEnabled(features::kGlicLocaleFiltering)) {
     base::UmaHistogramEnumeration(
         "Glic.LocaleFilteringResult",
@@ -377,6 +379,10 @@ mojom::ProfileReadyState GetSanitizedProfileReadyState(int state_val) {
 
 }  // namespace
 
+bool GetCountryEnablementForTesting(const GlicEnablingDelegate& delegate) {
+  return GetCountryEnablement(delegate);
+}
+
 // static
 void GlicEnabling::SetBypassEnablementChecksForTesting(bool bypass) {
   g_bypass_enablement_checks_for_testing = bypass;
@@ -387,14 +393,14 @@ void GlicEnabling::SetSystemRequirementMetForTesting(std::optional<bool> met) {
   g_system_requirement_met_for_testing = met;
 }
 
-std::string GlicGlobalEnabling::Delegate::GetPermanentCountryCode() {
+std::string GlicEnablingDelegate::GetPermanentCountryCode() const {
   std::string permanent_country_code =
       base::ToLowerASCII(variations::GetCurrentCountryCode(
           g_browser_process->variations_service()));
   return permanent_country_code;
 }
 
-std::string GlicGlobalEnabling::Delegate::GetSessionCountryCode() {
+std::string GlicEnablingDelegate::GetSessionCountryCode() const {
   std::string latest_country;
   if (g_browser_process->variations_service()) {
     latest_country = base::ToLowerASCII(
@@ -403,7 +409,7 @@ std::string GlicGlobalEnabling::Delegate::GetSessionCountryCode() {
   return latest_country;
 }
 
-std::string GlicGlobalEnabling::Delegate::GetLocale() {
+std::string GlicEnablingDelegate::GetLocale() const {
   // Allow null startup_data for tests.
   auto* startup_data = g_browser_process->startup_data();
   if (!startup_data) {
@@ -625,7 +631,11 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
             signin::Tribool::kTrue;
       }
 
-      if (!result.primary_account_is_capable && result.fre_is_consented &&
+      // Decide to still show the entry point if the user has previously
+      // onboarded, but is missing an overridable requirement.
+      bool overridable_requirements_met =
+          result.primary_account_is_capable && result.allowed_by_country_filter;
+      if (!overridable_requirements_met && result.fre_is_consented &&
           base::FeatureList::IsEnabled(
               features::kGlicAnchorEntryPointForOnboardedUsers)) {
         result.anchor_entrypoint_override_active = true;
@@ -687,9 +697,10 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   return result;
 }
 
-GlicGlobalEnabling::GlicGlobalEnabling(Delegate& delegate) {
-  locale_enablement_ = GetLocaleEnablement(delegate);
-  country_enablement_ = GetCountryEnablement(delegate);
+GlicGlobalEnabling::GlicGlobalEnabling(
+    std::unique_ptr<GlicEnablingDelegate> delegate)
+    : delegate_(std::move(delegate)) {
+  locale_enablement_ = GetLocaleEnablement(*delegate_);
 }
 
 GlicGlobalEnabling::~GlicGlobalEnabling() = default;
@@ -732,21 +743,44 @@ bool GlicGlobalEnabling::IsOsVersionSupported() {
 #endif
 }
 
-bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {
+bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() const {
   if (g_bypass_enablement_checks_for_testing) {
     return true;
   }
   // It is important that this value not change at runtime in production. Any
   // future updates to this function must maintain that property.
   bool is_enabled = base::FeatureList::IsEnabled(features::kGlic) &&
-                    locale_enablement_.value_or(true) &&
-                    country_enablement_.value_or(true);
+                    locale_enablement_.value_or(true);
 
   return is_enabled && IsOsVersionSupported() && IsSystemRequirementMet();
 }
 
 bool GlicEnabling::IsOsVersionSupported() {
   return GlicGlobalEnabling::IsOsVersionSupported();
+}
+
+bool GlicGlobalEnabling::IsCountryEnabled() {
+  if (is_country_enabled_) {
+    return true;
+  }
+  LastCheckedCountries current_countries{delegate_->GetPermanentCountryCode(),
+                                         delegate_->GetSessionCountryCode()};
+  if (last_checked_countries_.has_value() &&
+      *last_checked_countries_ == current_countries) {
+    return false;
+  }
+  last_checked_countries_ = current_countries;
+
+  is_country_enabled_ = GetCountryEnablement(*delegate_);
+  return is_country_enabled_;
+}
+
+void GlicGlobalEnabling::UpdateStateForTesting(
+    std::unique_ptr<GlicEnablingDelegate> new_delegate) {
+  delegate_ = std::move(new_delegate);
+  locale_enablement_ = GetLocaleEnablement(*delegate_);
+  is_country_enabled_ = false;
+  last_checked_countries_.reset();
 }
 
 // static
@@ -785,11 +819,6 @@ bool GlicEnabling::IsProfileEligible(Profile* profile) {
     return false;
   }
 
-  // If the main feature flag is disabled, completely kill the feature.
-  if (!base::FeatureList::IsEnabled(features::kGlic)) {
-    return false;
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
   if (!IsChromeOSProfileEligible(profile)) {
     return false;
@@ -809,6 +838,7 @@ bool GlicEnabling::IsProfileEligible(Profile* profile) {
 bool GlicEnabling::IsAnchoredButIneligible(bool global_criteria_met,
                                            bool consented) {
   return !global_criteria_met && consented && IsSystemRequirementMet() &&
+         base::FeatureList::IsEnabled(features::kGlic) &&
          base::FeatureList::IsEnabled(
              features::kGlicAnchorEntryPointForOnboardedUsers);
 }

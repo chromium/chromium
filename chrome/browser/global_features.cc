@@ -210,9 +210,7 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
 
-  glic::GlicGlobalEnabling::Delegate glic_enabling_delegate;
-  glic_global_enabling_ =
-      std::make_unique<glic::GlicGlobalEnabling>(glic_enabling_delegate);
+  glic_global_enabling_ = std::make_unique<glic::GlicGlobalEnabling>();
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(
