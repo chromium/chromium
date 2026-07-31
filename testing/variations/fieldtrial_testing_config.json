@@ -27418,6 +27418,21 @@
             ]
         }
     ],
+    "WebViewLatchedCookiePolicy": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260116",
+                    "enable_features": [
+                        "WebViewLatchedCookiePolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewMoveWorkToProviderInit": [
         {
             "platforms": [
