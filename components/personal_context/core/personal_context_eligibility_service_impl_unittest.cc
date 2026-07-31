@@ -11,10 +11,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/account_settings/account_settings.h"
 #include "components/account_settings/account_settings_features.h"
 #include "components/account_settings/mock_account_setting_service.h"
+#if !BUILDFLAG(IS_IOS)
 #include "components/glic/glic_pref_names.h"
+#endif
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
@@ -84,9 +87,11 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
 
   void SetPrefs() {
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
+#if !BUILDFLAG(IS_IOS)
     pref_service_.registry()->RegisterIntegerPref(
         ::glic::prefs::kGlicCompletedFre,
         std::to_underlying(::glic::prefs::FreStatus::kCompleted));
+#endif
     pref_service_.registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,
         std::to_underlying(optimization_guide::model_execution::prefs::
@@ -420,6 +425,7 @@ TEST_P(PersonalContextEligibilityServiceImplLocaleTest, CheckLocaleEnablement) {
   }
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenGlicFreNotCompleted) {
   pref_service_.SetInteger(
@@ -449,6 +455,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 
   service().RemoveObserver(&observer);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that `PersonalContextEligibilityService` returns `kDisabledNotEligible`
 // when the `FindAndFillWithGeminiSettings` policy is disabled.

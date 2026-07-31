@@ -15,8 +15,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/account_settings/account_setting_service.h"
+#if !BUILDFLAG(IS_IOS)
 #include "components/glic/glic_pref_names.h"
+#endif
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
@@ -147,6 +150,7 @@ SatisfiesPrefsRequirements(const PrefService* pref_service,
     return std::pair{false, std::nullopt};
   }
 
+#if !BUILDFLAG(IS_IOS)
   const glic::prefs::FreStatus fre_status = static_cast<glic::prefs::FreStatus>(
       pref_service->GetInteger(::glic::prefs::kGlicCompletedFre));
   if (fre_status != glic::prefs::FreStatus::kCompleted) {
@@ -154,6 +158,7 @@ SatisfiesPrefsRequirements(const PrefService* pref_service,
     return std::pair{false,
                      PersonalContextNonEligibilityReason::kNotGlicFirstRun};
   }
+#endif
 
   const int policy_value = pref_service->GetInteger(
       optimization_guide::prefs::kFindAndFillWithGeminiSettings);
@@ -211,11 +216,13 @@ PersonalContextEligibilityServiceImpl::PersonalContextEligibilityServiceImpl(
   }
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
+#if !BUILDFLAG(IS_IOS)
     pref_registrar_.Add(
         ::glic::prefs::kGlicCompletedFre,
         base::BindRepeating(
             &PersonalContextEligibilityServiceImpl::UpdateEligibilityState,
             base::Unretained(this)));
+#endif
     pref_registrar_.Add(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings,
         base::BindRepeating(
