@@ -19,6 +19,9 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Centralizes management of NTP background preference data. */
 @NullMarked
 public class NtpBackgroundDataManager {
@@ -80,7 +83,11 @@ public class NtpBackgroundDataManager {
                 currentGroup.remove(index);
             } else {
                 if (currentGroup.size() >= MAXIMUM_REMOTE_HISTORY) {
+                    NtpBackgroundDataBase dataToRemove = currentGroup.get(currentGroup.size() - 1);
                     currentGroup.remove(currentGroup.size() - 1);
+                    if (dataToRemove instanceof NtpBackgroundDataImageBase imageBaseData) {
+                        cleanUpForBackgroundData(imageBaseData, /* isLocalSelected= */ false);
+                    }
                 }
             }
             currentGroup.add(0, backgroundData);
@@ -93,6 +100,43 @@ public class NtpBackgroundDataManager {
                             + " type = %d, data type = %d.",
                     backgroundData.getPlatformType(),
                     backgroundData.getBackgroundType());
+        }
+    }
+
+    /**
+     * Saves a single NTP's background type from cross device sync to the shared preference.
+     *
+     * @param themeCollectionData The background data to save.
+     */
+    public void updateRemoteSyncDataToSharedPreference(
+            NtpBackgroundDataThemeCollection themeCollectionData) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> updateRemoteSyncDataToSharedPreferenceImpl(themeCollectionData));
+    }
+
+    private void updateRemoteSyncDataToSharedPreferenceImpl(
+            NtpBackgroundDataThemeCollection themeCollectionToUpdate) {
+        try {
+            @PlatformType int platformType = themeCollectionToUpdate.getPlatformType();
+            NtpBackgroundDataGroup currentGroup =
+                    getBackgroundDataGroupFromSharedPreference(platformType);
+            if (currentGroup.isEmpty()) return;
+
+            int index = currentGroup.indexOf(themeCollectionToUpdate);
+            if (index == -1) return;
+
+            currentGroup.getList().set(index, themeCollectionToUpdate);
+            // Updates existing remote sync data.
+            writeToSharedPreference(
+                    currentGroup.toJsonArray(), themeCollectionToUpdate.getPlatformType());
+        } catch (JSONException e) {
+            Log.i(
+                    TAG,
+                    "Failed to save NTP's sync background data to the SharedPreference: platform"
+                            + " type = %d, data type = %d.",
+                    themeCollectionToUpdate.getPlatformType(),
+                    themeCollectionToUpdate.getBackgroundType());
         }
     }
 
@@ -119,9 +163,19 @@ public class NtpBackgroundDataManager {
             // selection history list, but remove any existing type from that platform from the
             // local selection history. This allows to cache only the latest chosen background type
             // from any remote platform.
+            List<NtpBackgroundDataBase> removedItems = new ArrayList<>();
             int platformTypeOfNewData = backgroundData.getPlatformType();
             if (platformTypeOfNewData != PlatformType.ANDROID) {
-                currentGroup.removeIf(item -> item.getPlatformType() == platformTypeOfNewData);
+                currentGroup
+                        .getList()
+                        .removeIf(
+                                item -> {
+                                    if (item.getPlatformType() == platformTypeOfNewData) {
+                                        removedItems.add(item);
+                                        return true;
+                                    }
+                                    return false;
+                                });
             }
 
             // If the backgroundData already in local history, removes the existing one.
@@ -130,15 +184,20 @@ public class NtpBackgroundDataManager {
                 currentGroup.remove(index);
             }
             currentGroup.add(0, backgroundData);
-            NtpBackgroundDataBase dataToRemove = null;
             if (currentGroup.size() > MAXIMUM_LOCAL_HISTORY) {
                 int indexToRemove = currentGroup.size() - 1;
-                dataToRemove = currentGroup.get(indexToRemove);
+                removedItems.add(currentGroup.get(indexToRemove));
                 currentGroup.remove(indexToRemove);
             }
             writeToSharedPreference(currentGroup.toJsonArray(), platformTypeToSave);
-            if (dataToRemove != null) {
-                cleanUpForBackgroundData(dataToRemove);
+
+            // Cleans up all removed items. Because we just wrote the new list to shared preference,
+            // isImageStillInUse() will correctly see that backgroundData is in the list,
+            // and will not prematurely delete its file.
+            for (NtpBackgroundDataBase removedItem : removedItems) {
+                if (removedItem instanceof NtpBackgroundDataImageBase imageBaseData) {
+                    cleanUpForBackgroundData(imageBaseData, /* isLocalSelected= */ true);
+                }
             }
         } catch (JSONException e) {
             Log.i(
@@ -149,13 +208,63 @@ public class NtpBackgroundDataManager {
         }
     }
 
-    /** Removes the image file for the backgroundData. */
-    private void cleanUpForBackgroundData(NtpBackgroundDataBase backgroundData) {
-        if (backgroundData instanceof NtpBackgroundDataImageBase imageBaseData) {
-            NtpCustomizationUtils.maybeDeleteFile(
-                    NtpCustomizationUtils.getBackgroundImageFileFromPath(
-                            imageBaseData.getLastUploadImageFilePath()));
+    /**
+     * Removes the image file for the backgroundData if it is no longer referenced in any other
+     * local or remote history list.
+     *
+     * @param imageBaseData The image base data to clean up.
+     * @param isLocalSelected Whether the cleanup was triggered by an eviction from the local
+     *     history list.
+     */
+    private void cleanUpForBackgroundData(
+            NtpBackgroundDataImageBase imageBaseData, boolean isLocalSelected) {
+        String fileIdHash = imageBaseData.getFileIdHash();
+        if (fileIdHash == null) return;
+
+        if (isLocalSelected) {
+            // Checks the fileIdHash from remote groups.
+            for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
+                NtpBackgroundDataGroup remoteGroup = getBackgroundDataGroupFromSharedPreference(i);
+                if (isImageStillInUse(remoteGroup, fileIdHash)) return;
+            }
+        } else {
+            // Checks local and other remote groups which are different from the data's platform
+            // type.
+            NtpBackgroundDataGroup localGroup =
+                    getBackgroundDataGroupFromSharedPreference(PlatformType.ANDROID);
+            if (isImageStillInUse(localGroup, fileIdHash)) return;
+
+            int ownRemotePlatform = imageBaseData.getPlatformType();
+            for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
+                if (i == ownRemotePlatform) continue;
+
+                NtpBackgroundDataGroup remoteGroup = getBackgroundDataGroupFromSharedPreference(i);
+                if (isImageStillInUse(remoteGroup, fileIdHash)) return;
+            }
         }
+
+        NtpCustomizationUtils.maybeDeleteFile(
+                NtpCustomizationUtils.getBackgroundImageFileFromPath(
+                        imageBaseData.getLastUploadImageFilePath()));
+    }
+
+    /**
+     * Checks if any theme collection or upload image in the given group matches the specified file
+     * ID hash.
+     *
+     * @param group The history data group to search in.
+     * @param fileIdHash The unique file ID hash of the image to look for.
+     * @return True if a matching image is found in the group, false otherwise.
+     */
+    private boolean isImageStillInUse(NtpBackgroundDataGroup group, String fileIdHash) {
+        for (NtpBackgroundDataBase data : group) {
+            if (data instanceof NtpBackgroundDataImageBase otherImageBaseData) {
+                if (fileIdHash.equals(otherImageBaseData.getFileIdHash())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

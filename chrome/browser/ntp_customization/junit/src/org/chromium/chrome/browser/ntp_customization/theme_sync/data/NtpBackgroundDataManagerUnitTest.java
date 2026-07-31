@@ -12,8 +12,11 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -27,6 +30,10 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
 
@@ -34,6 +41,11 @@ import java.io.File;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpBackgroundDataManagerUnitTest {
+    private static final String TEST_COLLECTION_ID = "test_collection";
+    private static final String OTHER_COLLECTION_ID = "other_collection";
+    private static final @PlatformType int REMOTE_PLATFORM_TYPE = PlatformType.IOS;
+    private static final @ColorInt int TEST_PRIMARY_COLOR = Color.RED;
+
     private NtpBackgroundDataManager mManager;
     private Context mContext;
 
@@ -314,7 +326,314 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
+    public void testCleanUpForBackgroundData_RemotePlatform() {
+        @PlatformType int remotePlatform = PlatformType.IOS;
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+
+        // Remote data 1.
+        NtpBackgroundDataUploadImage remoteData1 =
+                new NtpBackgroundDataUploadImage(
+                        remotePlatform, null, bitmap, null, "hash_remote1");
+        File file1 = new File(remoteData1.getLastUploadImageFilePath());
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, file1);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(file1.exists());
+
+        // Case 1: Remote platform, in Local List, NOT in Remote List.
+        // Save to Local List.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(remoteData1);
+        // Add 3 local data to evict remoteData1 from Local List.
+        for (int i = 0; i < 3; i++) {
+            mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                    new NtpBackgroundDataColor(
+                            mContext,
+                            PlatformType.ANDROID,
+                            NtpThemeColorId.NTP_COLORS_BLUE + i,
+                            true));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Should be deleted because it's not in Remote List.
+        assertFalse(file1.exists());
+
+        // Case 2: Remote platform, in Local List, AND in Remote List.
+        // Re-create the file.
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, file1);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(file1.exists());
+
+        // Add to Remote List.
+        mManager.saveRemoteSyncDataToSharedPreference(remoteData1);
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Add back to Local List.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(remoteData1);
+        // Evict from Local List again.
+        for (int i = 0; i < 3; i++) {
+            mManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                    new NtpBackgroundDataColor(
+                            mContext,
+                            PlatformType.ANDROID,
+                            NtpThemeColorId.NTP_COLORS_ORANGE + i,
+                            true));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Should NOT be deleted because it is still in Remote List.
+        assertTrue(file1.exists());
+
+        // Now evict from Remote List.
+        // Add 3 more remote data of the same platform to evict remoteData1.
+        for (int i = 0; i < 3; i++) {
+            mManager.saveRemoteSyncDataToSharedPreference(
+                    new NtpBackgroundDataUploadImage(
+                            remotePlatform, null, bitmap, null, "hash_remote_case2_" + i));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Should be deleted because it is not in Local List anymore.
+        assertFalse(file1.exists());
+
+        // Case 3: Evict from Remote List, but it IS in Local List.
+        // Re-create the file.
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, file1);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(file1.exists());
+
+        // Add to Local List first, so it is NOT evicted.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(remoteData1);
+        // Add to Remote List.
+        mManager.saveRemoteSyncDataToSharedPreference(remoteData1);
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Evict from Remote List by adding 3 more remote data.
+        for (int i = 0; i < 3; i++) {
+            mManager.saveRemoteSyncDataToSharedPreference(
+                    new NtpBackgroundDataUploadImage(
+                            remotePlatform, null, bitmap, null, "hash_remote_case3_" + i));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+        // Should NOT be deleted because it is still in Local List.
+        assertTrue(file1.exists());
+
+        // Clean up
+        NtpCustomizationUtils.deleteThemeImageFileDir(NtpCustomizationUtils.NTP_UPLOAD_IMAGES_DIR);
+    }
+
+    @Test
+    public void testCleanUpForBackgroundData_MultipleRemotePlatforms() {
+        @PlatformType int remotePlatform1 = PlatformType.IOS;
+        @PlatformType int remotePlatform2 = PlatformType.DESKTOP;
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        String sharedHash = "shared_remote_hash";
+
+        NtpBackgroundDataUploadImage remoteData1 =
+                new NtpBackgroundDataUploadImage(
+                        remotePlatform1,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        sharedHash);
+        NtpBackgroundDataUploadImage remoteData2 =
+                new NtpBackgroundDataUploadImage(
+                        remotePlatform2,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        sharedHash);
+
+        File sharedFile = new File(remoteData1.getLastUploadImageFilePath());
+        assertEquals(
+                sharedFile.getAbsolutePath(),
+                new File(remoteData2.getLastUploadImageFilePath()).getAbsolutePath());
+
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, sharedFile);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(sharedFile.exists());
+
+        // Save both to their respective remote lists.
+        mManager.saveRemoteSyncDataToSharedPreference(remoteData1);
+        mManager.saveRemoteSyncDataToSharedPreference(remoteData2);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Evict remoteData1 from remotePlatform1 list by adding 3 other themes.
+        for (int i = 0; i < 3; i++) {
+            mManager.saveRemoteSyncDataToSharedPreference(
+                    new NtpBackgroundDataUploadImage(
+                            remotePlatform1,
+                            /* backgroundImageInfo= */ null,
+                            bitmap,
+                            /* primaryColor= */ null,
+                            "other_hash1_" + i));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The file should NOT be deleted because it is still in remotePlatform2 list.
+        assertTrue(sharedFile.exists());
+
+        // Now evict remoteData2 from remotePlatform2 list.
+        for (int j = 0; j < 3; j++) {
+            mManager.saveRemoteSyncDataToSharedPreference(
+                    new NtpBackgroundDataUploadImage(
+                            remotePlatform2,
+                            /* backgroundImageInfo= */ null,
+                            bitmap,
+                            /* primaryColor= */ null,
+                            "other_hash2_" + j));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Now the file SHOULD be deleted.
+        assertFalse(sharedFile.exists());
+
+        // Clean up
+        NtpCustomizationUtils.deleteThemeImageFileDir(NtpCustomizationUtils.NTP_UPLOAD_IMAGES_DIR);
+    }
+
+    @Test
+    public void testCleanUpForBackgroundData_ReplaceRemoteThemeLocally() {
+        @PlatformType int remotePlatform = PlatformType.IOS;
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        String remoteHash = "remote_hash_for_local_replace";
+
+        NtpBackgroundDataUploadImage remoteData =
+                new NtpBackgroundDataUploadImage(
+                        remotePlatform,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        remoteHash);
+
+        File remoteFile = new File(remoteData.getLastUploadImageFilePath());
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, remoteFile);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(remoteFile.exists());
+
+        // Save to Remote List.
+        mManager.saveRemoteSyncDataToSharedPreference(remoteData);
+        // Save to Local List.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(remoteData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Evict from Remote List.
+        for (int i = 0; i < 3; i++) {
+            mManager.saveRemoteSyncDataToSharedPreference(
+                    new NtpBackgroundDataUploadImage(
+                            remotePlatform,
+                            /* backgroundImageInfo= */ null,
+                            bitmap,
+                            /* primaryColor= */ null,
+                            "other_remote_hash_" + i));
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Should NOT be deleted because it is still in Local List.
+        assertTrue(remoteFile.exists());
+
+        // Replace the remote theme in Local List by selecting a NEW theme from the SAME remote
+        // platform.
+        NtpBackgroundDataUploadImage newRemoteData =
+                new NtpBackgroundDataUploadImage(
+                        remotePlatform,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        "new_remote_hash");
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(newRemoteData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Now the file for the old remote theme SHOULD be deleted.
+        assertFalse(remoteFile.exists());
+
+        // Clean up
+        NtpCustomizationUtils.deleteThemeImageFileDir(NtpCustomizationUtils.NTP_UPLOAD_IMAGES_DIR);
+    }
+
+    @Test
     public void testGetJsonArrayFromSharedPreferenceImpl_Empty() {
         assertNull(mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.ANDROID));
+    }
+
+    @Test
+    public void testUpdateRemoteSyncDataToSharedPreference() {
+        GURL url = JUnitTestGURLs.URL_1;
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        url,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection themeCollection =
+                new NtpBackgroundDataThemeCollection(
+                        REMOTE_PLATFORM_TYPE,
+                        info,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        TEST_PRIMARY_COLOR,
+                        /* fileIdHash= */ null);
+
+        // Case 1: List is empty. Update should do nothing.
+        mManager.updateRemoteSyncDataToSharedPreference(themeCollection);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(
+                mManager.getBackgroundDataGroupFromSharedPreference(REMOTE_PLATFORM_TYPE)
+                        .isEmpty());
+
+        // Case 2: Object not in list. Update should do nothing.
+        // First add a different data to the list.
+        NtpBackgroundDataThemeCollection differentCollection =
+                new NtpBackgroundDataThemeCollection(
+                        REMOTE_PLATFORM_TYPE,
+                        new CustomBackgroundInfo(
+                                JUnitTestGURLs.URL_2,
+                                OTHER_COLLECTION_ID,
+                                /* isUploadedImage= */ false,
+                                /* isDailyRefreshEnabled= */ false),
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        TEST_PRIMARY_COLOR,
+                        /* fileIdHash= */ null);
+        mManager.saveRemoteSyncDataToSharedPreference(differentCollection);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mManager.updateRemoteSyncDataToSharedPreference(themeCollection);
+        RobolectricUtil.runAllBackgroundAndUi();
+        NtpBackgroundDataGroup group =
+                mManager.getBackgroundDataGroupFromSharedPreference(REMOTE_PLATFORM_TYPE);
+        assertEquals(1, group.size());
+        assertEquals(differentCollection, group.get(0));
+
+        // Case 3: Object is in the list. Update should find and replace it.
+        mManager.saveRemoteSyncDataToSharedPreference(themeCollection);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        group = mManager.getBackgroundDataGroupFromSharedPreference(REMOTE_PLATFORM_TYPE);
+        assertEquals(2, group.size());
+        // saveRemoteSyncDataToSharedPreference adds to the front or moves to front.
+        // So themeCollection should be at index 0.
+        assertEquals(themeCollection, group.get(0));
+        NtpBackgroundDataThemeCollection savedData =
+                (NtpBackgroundDataThemeCollection) group.get(0);
+        assertFalse(savedData.isBitmapSaved());
+        assertNull(savedData.getBackgroundImageInfo());
+
+        // Modify the object as requested by the user.
+        themeCollection.setIsBitmapSaved(/* isBitmapSaved= */ true);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null);
+        themeCollection.setBackgroundImageInfo(backgroundImageInfo);
+
+        mManager.updateRemoteSyncDataToSharedPreference(themeCollection);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        group = mManager.getBackgroundDataGroupFromSharedPreference(REMOTE_PLATFORM_TYPE);
+        assertEquals(2, group.size());
+        NtpBackgroundDataThemeCollection updatedData =
+                (NtpBackgroundDataThemeCollection) group.get(0);
+        assertTrue(updatedData.isBitmapSaved());
+        assertNotNull(updatedData.getBackgroundImageInfo());
+        assertEquals(backgroundImageInfo, updatedData.getBackgroundImageInfo());
+
+        // Ensure the other object in the list was not modified.
+        assertEquals(differentCollection, group.get(1));
     }
 }

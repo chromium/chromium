@@ -138,48 +138,6 @@ public class NtpCustomizationConfigManagerUnitTest {
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
     })
-    public void testOnBackgroundColorChanged_syncsToDataManager() {
-        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
-        NtpThemeColorInfo colorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
-        NtpBackgroundDataColor backgroundData =
-                new NtpBackgroundDataColor(
-                        PlatformType.ANDROID,
-                        /* isChromeColorDailyRefreshEnabled= */ false,
-                        colorInfo);
-
-        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
-
-        verify(mNtpBackgroundDataManager)
-                .saveUserSelectedBackgroundTypeToSharedPreference(
-                        any(NtpBackgroundDataColor.class));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
-    public void testOnBackgroundColorChanged_colorFromHex_syncsToDataManager() {
-        @ColorInt int backgroundColor = Color.RED;
-        @ColorInt int primaryColor = Color.BLUE;
-        NtpThemeColorFromHexInfo colorFromHexInfo =
-                new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
-        NtpBackgroundDataCustomizedColor backgroundData =
-                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, colorFromHexInfo);
-
-        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
-
-        verify(mNtpBackgroundDataManager)
-                .saveUserSelectedBackgroundTypeToSharedPreference(
-                        any(NtpBackgroundDataCustomizedColor.class));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
     public void testOnBackgroundDataChanged_Color() {
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
@@ -306,9 +264,6 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, uploadImageData);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mNtpBackgroundDataManager)
-                .saveUserSelectedBackgroundTypeToSharedPreference(
-                        any(NtpBackgroundDataUploadImage.class));
         if (primaryColor == null) {
             assertTrue(
                     NtpCustomizationUtils.createUploadImageFileInDirForTesting(FILE_ID_HASH)
@@ -819,9 +774,6 @@ public class NtpCustomizationConfigManagerUnitTest {
                     NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
             assertTrue(backgroundData.isBitmapSaved());
         } else {
-            verify(mNtpBackgroundDataManager)
-                    .saveUserSelectedBackgroundTypeToSharedPreference(
-                            any(NtpBackgroundDataThemeCollection.class));
             assertEquals(
                     primaryColor.intValue(),
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());

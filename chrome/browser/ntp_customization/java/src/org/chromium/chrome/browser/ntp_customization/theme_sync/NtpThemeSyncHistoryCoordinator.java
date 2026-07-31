@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.ntp_customization.theme.upload_image.Backgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataGroup;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
@@ -70,8 +69,7 @@ public class NtpThemeSyncHistoryCoordinator {
     private @Nullable NtpBackgroundDataBase mInitiallySelectedNtpBackgroundData;
     private @Nullable ImageFetcher mImageFetcher;
     private int mLastSelectedIndex;
-    private @Nullable Integer mLocalHistoryStartIndex;
-    private @Nullable Integer mLocalHistoryEndIndex;
+    private boolean mIsDestroyed;
 
     /**
      * Creates a new instance of {@link NtpThemeSyncHistoryCoordinator}.
@@ -263,12 +261,7 @@ public class NtpThemeSyncHistoryCoordinator {
         // Adds all previously selected theming by the users.
         assumeNonNull(localGroup);
         if (!localGroup.isEmpty()) {
-            mLocalHistoryStartIndex = mDataShowingList.size();
             mDataShowingList.addAll(localGroup.getList());
-            mLocalHistoryEndIndex = mDataShowingList.size() - 1;
-        } else {
-            mLocalHistoryStartIndex = null;
-            mLocalHistoryEndIndex = null;
         }
 
         if (currentNtpBackgroundData == null) {
@@ -283,7 +276,7 @@ public class NtpThemeSyncHistoryCoordinator {
             }
         }
 
-        // Adds sync data from remote platforms.
+        // Adds sync data from other platforms.
         for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
             NtpBackgroundDataGroup remoteDataGroup = mNtpBackgroundDataGroups[i];
             if (remoteDataGroup == null || remoteDataGroup.isEmpty()) continue;
@@ -294,7 +287,7 @@ public class NtpThemeSyncHistoryCoordinator {
                 int index = localGroup.indexOf(data);
                 if (index == -1) {
                     // Adds the data and stops here.
-                    mDataShowingList.add(data);
+                    addBackgroundDataFromOtherPlatforms(data);
                     break;
                 }
             }
@@ -322,6 +315,48 @@ public class NtpThemeSyncHistoryCoordinator {
         }
 
         return lastSelectedIndex;
+    }
+
+    /** Adds themes data synced from other platforms. */
+    private void addBackgroundDataFromOtherPlatforms(NtpBackgroundDataBase data) {
+        if (!(data instanceof NtpBackgroundDataThemeCollection themeCollectionData)) {
+            mDataShowingList.add(data);
+            return;
+        }
+
+        if (themeCollectionData.isBitmapSaved()) {
+            mDataShowingList.add(data);
+            return;
+        }
+
+        if (mImageFetcher == null) {
+            mImageFetcher = NtpCustomizationUtils.createImageFetcher(mProfile);
+        }
+
+        NtpCustomizationUtils.fetchThemeCollectionImage(
+                mImageFetcher,
+                themeCollectionData.getCustomBackgroundInfo().backgroundUrl,
+                (bitmap) -> onBitmapOfOtherPlatformsFetched(themeCollectionData, bitmap));
+    }
+
+    /** Called after the bitmap of the data from other platforms is fetched. */
+    private void onBitmapOfOtherPlatformsFetched(
+            NtpBackgroundDataThemeCollection themeCollectionData, @Nullable Bitmap bitmap) {
+        if (bitmap == null) {
+            return;
+        }
+        themeCollectionData.setBitmap(bitmap);
+
+        if (themeCollectionData.getBackgroundImageInfo() == null) {
+            buildDefaultForThemeCollectionData(themeCollectionData);
+            // Updates the data after the information is completed.
+            mNtpBackgroundDataManager.updateRemoteSyncDataToSharedPreference(themeCollectionData);
+        }
+
+        mDataShowingList.add(themeCollectionData);
+        if (mRecyclerViewAdaptor != null) {
+            mRecyclerViewAdaptor.notifyItemInserted(mDataShowingList.size() - 1);
+        }
     }
 
     /**
@@ -372,71 +407,80 @@ public class NtpThemeSyncHistoryCoordinator {
         boolean shouldRecreate = shouldRecreateActivity(backgroundData);
         mBottomSheetDelegate.onNewColorSelected(shouldRecreate);
 
-        if (backgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData
-                && themeCollectionData.getBitmap() == null) {
-            NtpCustomizationUtils.fetchThemeCollectionImage(
-                    assumeNonNull(mImageFetcher),
-                    themeCollectionData.getCustomBackgroundInfo().backgroundUrl,
-                    (bitmap) -> {
-                        onThemeCollectionImageBitmapAvailable(themeCollectionData, bitmap);
-                    });
-        } else {
-            NtpCustomizationConfigManager.getInstance()
-                    .onBackgroundDataChanged(mContext, backgroundData);
-
-            if (isLocalHistory(position)
-                    && backgroundData instanceof NtpBackgroundDataImageBase imageBaseData) {
-                // When any item is clicked, we will update the local history in the
-                // SharedPreference. This will lead to the existing saved bitmap being deleted. When
-                // the user re-select a theme option originally from the local history, its bitmap
-                // might haven deleted. Save it to the disk again.
-                Bitmap bitmap = imageBaseData.getBitmap();
-                if (bitmap != null) {
-                    NtpCustomizationUtils.saveBackgroundImageFile(imageBaseData, bitmap);
+        boolean updateOtherPlatformThemeData = false;
+        if (backgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData) {
+            if (themeCollectionData.getBitmap() == null) {
+                if (mImageFetcher == null) {
+                    mImageFetcher = NtpCustomizationUtils.createImageFetcher(mProfile);
                 }
+                NtpCustomizationUtils.fetchThemeCollectionImage(
+                        assumeNonNull(mImageFetcher),
+                        themeCollectionData.getCustomBackgroundInfo().backgroundUrl,
+                        (bitmap) -> {
+                            onUserClickedThemeCollectionImageBitmapFetched(
+                                    themeCollectionData, bitmap);
+                        });
+                return;
+            }
+
+            if (!themeCollectionData.isBitmapSaved()
+                    && themeCollectionData.getPlatformType() != PlatformType.ANDROID) {
+                // Caches this flag as #onBackgroundDataChanged() will set isBitmapSaved() to true.
+                updateOtherPlatformThemeData = true;
             }
         }
-    }
 
-    /**
-     * Returns whether the selected theme item was originally from a local history.
-     *
-     * @param position The position of the item on the recyclerview.
-     */
-    private boolean isLocalHistory(int position) {
-        if (mLocalHistoryStartIndex == null || mLocalHistoryEndIndex == null) {
-            return false;
+        NtpCustomizationConfigManager.getInstance()
+                .onBackgroundDataChanged(mContext, backgroundData);
+
+        if (updateOtherPlatformThemeData) {
+            // Updates the date in shared preference as the bitmap is saved on the device.
+            mNtpBackgroundDataManager.updateRemoteSyncDataToSharedPreference(
+                    (NtpBackgroundDataThemeCollection) backgroundData);
         }
-        return position >= mLocalHistoryStartIndex && position <= mLocalHistoryEndIndex;
     }
 
     /**
-     * Called when the full-size image bitmap for a theme collection is available. Updates the
+     * Called when the full-size image bitmap for a theme collection is fetched. Updates the
      * background data with the bitmap, primary color, and file path, and applies the new theme.
      *
      * @param themeCollectionData The {@link NtpBackgroundDataThemeCollection} being updated.
      * @param bitmap The full-size image bitmap.
      */
-    private void onThemeCollectionImageBitmapAvailable(
+    private void onUserClickedThemeCollectionImageBitmapFetched(
             NtpBackgroundDataThemeCollection themeCollectionData, @Nullable Bitmap bitmap) {
-        if (bitmap == null || isDestroy()) return;
-
-        CustomBackgroundInfo info = themeCollectionData.getCustomBackgroundInfo();
-        String fileHashId = NtpThemeCollectionManager.getFileName(info.backgroundUrl.getPath());
-        BackgroundImageInfo backgroundImageInfo =
-                NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
-        @ColorInt
-        Integer primaryColor =
-                NtpCustomizationUtils.pickAndSavePrimaryColor(
-                        assumeNonNull(themeCollectionData.getPreviewBitmap()));
+        if (bitmap == null || mIsDestroyed) return;
 
         themeCollectionData.setBitmap(bitmap);
-        themeCollectionData.setFileIdHash(fileHashId);
-        themeCollectionData.setBackgroundImageInfo(backgroundImageInfo);
-        themeCollectionData.setPrimaryColor(primaryColor);
+        if (themeCollectionData.getPrimaryColor() == null) {
+            // We calculate the primary color here as #onBackgroundDataChanged() skips primary color
+            // calculation for all theme collection image data.
+            @Nullable Bitmap smallBitmap = themeCollectionData.getPreviewBitmap();
+            if (smallBitmap == null) {
+                smallBitmap = bitmap;
+            }
+            @ColorInt
+            Integer primaryColor =
+                    NtpCustomizationUtils.pickAndSavePrimaryColor(assumeNonNull(smallBitmap));
+            themeCollectionData.setPrimaryColor(primaryColor);
+        }
+        buildDefaultForThemeCollectionData(themeCollectionData);
 
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundDataChanged(mContext, themeCollectionData);
+    }
+
+    private void buildDefaultForThemeCollectionData(
+            NtpBackgroundDataThemeCollection themeCollectionData) {
+        String fileHashId =
+                NtpThemeCollectionManager.getFileName(
+                        themeCollectionData.getCustomBackgroundInfo().backgroundUrl.getPath());
+        BackgroundImageInfo backgroundImageInfo =
+                NtpCustomizationUtils.getDefaultBackgroundImageInfo(
+                        mContext, assumeNonNull(themeCollectionData.getBitmap()));
+
+        themeCollectionData.setFileIdHash(fileHashId);
+        themeCollectionData.setBackgroundImageInfo(backgroundImageInfo);
     }
 
     /**
@@ -451,18 +495,13 @@ public class NtpThemeSyncHistoryCoordinator {
 
     /** Cleans up resources and references when the coordinator is destroyed. */
     public void destroy() {
+        mIsDestroyed = true;
         mDataShowingList.clear();
         mInitiallySelectedNtpBackgroundData = null;
         mPropertyModel.set(NtpThemeSyncHistoryProperties.MORE_OPTIONS_CLICK_LISTENER, null);
         mPropertyModel.set(NtpThemeSyncHistoryProperties.RECYCLER_VIEW_LAYOUT_MANAGER, null);
         mThemeCollectionManager.destroy();
         mRecyclerViewAdaptor = null;
-        mLocalHistoryStartIndex = null;
-        mLocalHistoryEndIndex = null;
-    }
-
-    private boolean isDestroy() {
-        return mRecyclerViewAdaptor == null;
     }
 
     PropertyModel getPropertyModelForTesting() {

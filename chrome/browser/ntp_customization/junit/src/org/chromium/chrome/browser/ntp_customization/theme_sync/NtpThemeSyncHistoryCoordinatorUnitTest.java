@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Ntp
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataGroup;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
@@ -111,6 +112,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     private ViewGroup mParentView;
     private PropertyModel mPropertyModel;
     private ImageFetcher mMockImageFetcher;
+    private Bitmap mBitmap;
 
     @Before
     public void setUp() {
@@ -156,6 +158,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
         mMockImageFetcher = mock(ImageFetcher.class);
         NtpCustomizationUtils.setImageFetcherForTesting(mMockImageFetcher);
+        mBitmap = Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
     }
 
     @After
@@ -369,9 +372,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         mCoordinator.prepareToShow();
 
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                mCoordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
 
         int position = 1;
         // Click the remote history item (index 1, after Default)
@@ -401,9 +402,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         mCoordinator.prepareToShow();
 
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                mCoordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
 
         // Click the Default item (index 0), which is different from the original selected item
         // (index 1).
@@ -739,9 +738,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 setupThemeCollectionsAndCoordinator(new CollectionImage[] {image1});
 
         coordinator.prepareToShow();
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                coordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(coordinator);
 
         clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
 
@@ -820,9 +817,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         expectedSavedFile.delete();
         assertFalse(expectedSavedFile.exists());
 
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                coordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(coordinator);
 
         clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
 
@@ -876,7 +871,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnItemClicked_LocalHistorySavesToDisk() {
+    public void testOnItemClicked_LocalHistoryAlreadyHasBitmapDoesNotSaveToDisk() {
 
         String fileIdHash = "test_hash_saves";
         NtpBackgroundDataImageBase localThemeInList =
@@ -892,23 +887,24 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
         assertNotNull(localThemeInList.getBitmap());
 
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                mCoordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
 
+        // Pre-create the file and then delete it to verify it won't be saved again.
         File expectedSavedFile = new File(filePath);
         assertTrue(expectedSavedFile.exists());
         expectedSavedFile.delete();
         assertFalse(expectedSavedFile.exists());
 
-        clearInvocations(mMockImageFetcher);
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
         int position = 1;
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        assertTrue(expectedSavedFile.exists());
+        // Verify the file was NOT saved again, and it applies the theme directly without fetching.
+        assertFalse(expectedSavedFile.exists());
         verify(mMockImageFetcher, never()).fetchImage(any(), any());
+        assertBackgroundDataChangedImpl(localThemeInList, /* expectedRecreate= */ true);
     }
 
     @Test
@@ -927,9 +923,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         assertNull(localThemeInList.getBitmap());
 
-        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
-                mCoordinator.getRecyclerViewAdaptorForTesting();
-        assertNotNull(adapter);
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
 
         clearInvocations(mMockImageFetcher);
         int position = 1;
@@ -1046,5 +1040,192 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         verify(mNtpCustomizationConfigManager)
                 .onBackgroundDataChanged(eq(mContext), eq(expectedData));
         verify(mBottomSheetDelegate).onNewColorSelected(eq(expectedRecreate));
+    }
+
+    @Test
+    public void testPrepareToShow_WithRemoteThemeCollection_FetchesImageAndUpdates() {
+        NtpBackgroundDataThemeCollection remoteTheme =
+                createRemoteThemeCollectionImpl(/* isBitmapSaved= */ false);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteTheme);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        clearInvocations(mMockImageFetcher, mNtpCustomizationConfigManager);
+        mCoordinator.prepareToShow();
+
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
+        verify(mMockImageFetcher)
+                .fetchImage(paramsCaptor.capture(), mPreviewCallbackCaptor.capture());
+        assertEquals(TEST_IMAGE_URL_1, paramsCaptor.getValue().url);
+
+        mPreviewCallbackCaptor.getValue().onResult(mBitmap);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        int position = findRemoteThemeCollectionPositionImpl(dataList);
+        assertTrue(position != -1);
+
+        NtpBackgroundDataThemeCollection updatedTheme =
+                (NtpBackgroundDataThemeCollection) dataList.get(position);
+        assertEquals(mBitmap, updatedTheme.getBitmap());
+        assertNotNull(updatedTheme.getBackgroundImageInfo());
+
+        NtpBackgroundDataGroup remoteGroup =
+                mNtpBackgroundDataManager.getBackgroundDataGroupFromSharedPreference(
+                        PlatformType.IOS);
+        assertEquals(1, remoteGroup.size());
+        NtpBackgroundDataThemeCollection savedTheme =
+                (NtpBackgroundDataThemeCollection) remoteGroup.get(0);
+        assertNotNull(savedTheme.getBackgroundImageInfo());
+        assertFalse(savedTheme.isBitmapSaved());
+    }
+
+    @Test
+    public void
+            testOnItemClicked_RemoteThemeCollectionFirstClick_SavesToDiskAndUpdatesRemoteSyncData() {
+        NtpBackgroundDataThemeCollection remoteTheme =
+                createRemoteThemeCollectionImpl(/* isBitmapSaved= */ false);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteTheme);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mCoordinator.prepareToShow();
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
+        verify(mMockImageFetcher)
+                .fetchImage(paramsCaptor.capture(), mPreviewCallbackCaptor.capture());
+
+        mPreviewCallbackCaptor.getValue().onResult(mBitmap);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        int position = findRemoteThemeCollectionPositionImpl(dataList);
+        assertTrue(position != -1);
+
+        NtpBackgroundDataThemeCollection inMemoryTheme =
+                (NtpBackgroundDataThemeCollection) dataList.get(position);
+        assertNotNull(inMemoryTheme.getBitmap());
+        assertFalse(inMemoryTheme.isBitmapSaved());
+
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
+
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockImageFetcher, never()).fetchImage(any(), any());
+        assertTrue(inMemoryTheme.isBitmapSaved());
+        assertBackgroundDataChangedImpl(inMemoryTheme, /* expectedRecreate= */ true);
+
+        NtpBackgroundDataGroup remoteGroup =
+                mNtpBackgroundDataManager.getBackgroundDataGroupFromSharedPreference(
+                        PlatformType.IOS);
+        assertEquals(1, remoteGroup.size());
+        NtpBackgroundDataThemeCollection savedTheme =
+                (NtpBackgroundDataThemeCollection) remoteGroup.get(0);
+        assertTrue(savedTheme.isBitmapSaved());
+    }
+
+    @Test
+    public void testOnItemClicked_RemoteThemeCollectionSubsequentClick_DoesNotFetchAgain() {
+        NtpBackgroundDataThemeCollection remoteTheme =
+                createRemoteThemeCollectionImpl(/* isBitmapSaved= */ true);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteTheme);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mCoordinator.prepareToShow();
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        int position = findRemoteThemeCollectionPositionImpl(dataList);
+        assertTrue(position != -1);
+
+        // Simulate that the bitmap has already been fetched and set in memory in this session.
+        NtpBackgroundDataThemeCollection inMemoryTheme =
+                (NtpBackgroundDataThemeCollection) dataList.get(position);
+        inMemoryTheme.setBitmap(mBitmap);
+        assertTrue(inMemoryTheme.isBitmapSaved());
+
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mMockImageFetcher, never()).fetchImage(any(), any());
+        assertBackgroundDataChangedImpl(inMemoryTheme, /* expectedRecreate= */ true);
+    }
+
+    @Test
+    public void
+            testOnItemClicked_RemoteThemeCollectionSubsequentClick_NoBitmapSet_FetchesBitmapAndApplies() {
+        NtpBackgroundDataThemeCollection remoteTheme =
+                createRemoteThemeCollectionImpl(/* isBitmapSaved= */ true);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteTheme);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        clearInvocations(mMockImageFetcher);
+        mCoordinator.prepareToShow();
+
+        verify(mMockImageFetcher, never()).fetchImage(any(), any());
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter = getAdapterImpl(mCoordinator);
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        int position = findRemoteThemeCollectionPositionImpl(dataList);
+        assertTrue(position != -1);
+
+        NtpBackgroundDataThemeCollection inMemoryTheme =
+                (NtpBackgroundDataThemeCollection) dataList.get(position);
+        assertNull(inMemoryTheme.getBitmap());
+
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
+
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
+        verify(mMockImageFetcher)
+                .fetchImage(paramsCaptor.capture(), mPreviewCallbackCaptor.capture());
+        assertEquals(TEST_IMAGE_URL_1, paramsCaptor.getValue().url);
+
+        mPreviewCallbackCaptor.getValue().onResult(mBitmap);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(mBitmap, inMemoryTheme.getBitmap());
+        assertNotNull(inMemoryTheme.getPrimaryColor());
+        assertBackgroundDataChangedImpl(inMemoryTheme, /* expectedRecreate= */ true);
+    }
+
+    private NtpBackgroundDataThemeCollection createRemoteThemeCollectionImpl(
+            boolean isBitmapSaved) {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        new GURL(TEST_IMAGE_URL_1),
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection remoteTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.IOS,
+                        info,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        "remote_theme_hash");
+        remoteTheme.setIsBitmapSaved(isBitmapSaved);
+        return remoteTheme;
+    }
+
+    private int findRemoteThemeCollectionPositionImpl(List<NtpBackgroundDataBase> dataList) {
+        for (int i = 0; i < dataList.size(); i++) {
+            NtpBackgroundDataBase data = dataList.get(i);
+            if (data instanceof NtpBackgroundDataThemeCollection theme
+                    && theme.getPlatformType() == PlatformType.IOS) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private NtpThemeSyncHistoryRecyclerViewAdaptor getAdapterImpl(
+            NtpThemeSyncHistoryCoordinator coordinator) {
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                coordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+        return adapter;
     }
 }

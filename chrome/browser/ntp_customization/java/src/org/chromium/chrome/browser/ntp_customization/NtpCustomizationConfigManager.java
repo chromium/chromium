@@ -335,14 +335,11 @@ public class NtpCustomizationConfigManager {
      */
     public void onBackgroundDataChanged(
             Context context, @Nullable NtpBackgroundDataBase backgroundData) {
-        boolean saveUserSelectedBackgroundType = true;
         if (backgroundData == null) {
             onBackgroundReset();
-            saveUserSelectedBackgroundType = false;
         } else if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
             if (ntpBackgroundDataColor.getThemeColorId() == NtpThemeColorId.DEFAULT) {
                 onBackgroundReset();
-                saveUserSelectedBackgroundType = false;
             } else {
                 onBackgroundColorChanged(context, backgroundData);
             }
@@ -351,15 +348,7 @@ public class NtpCustomizationConfigManager {
         } else if (backgroundData instanceof NtpBackgroundDataUploadImage uploadImageData) {
             onUploadedImageSelected(uploadImageData);
         } else if (backgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData) {
-            // If the primary color of the NtpBackgroundDataThemeCollection data hasn't been set
-            // yet, this data will be saved to the history after the bottom sheet is closed and the
-            // primary color is picked.
-            saveUserSelectedBackgroundType = themeCollectionData.getPrimaryColor() != null;
             onThemeCollectionImageSelected(themeCollectionData);
-        }
-
-        if (saveUserSelectedBackgroundType) {
-            maybeSaveUserSelectedBackgroundTypeToSharedPreference(context, backgroundData);
         }
     }
 
@@ -532,17 +521,18 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
-     * Maybe save the NtpBackgroundDataBase instance to the user selection history list in the
-     * SharedPreference.
+     * Maybe save the NtpBackgroundDataBase instance to the user selection local history list in the
+     * SharedPreference. This will be called when the NTP customization bottom sheet is closed with
+     * a new customized NTP theme is selected.
      */
-    public void maybeSaveUserSelectedBackgroundTypeToSharedPreference(
-            Context context, @Nullable NtpBackgroundDataBase backgroundData) {
-        if (!mIsNtpCustomizationSyncEnabled || backgroundData == null) return;
+    public void maybeSaveUserSelectedBackgroundTypeToSharedPreference(Context context) {
+        if (!mIsNtpCustomizationSyncEnabled || mNtpBackgroundData == null) return;
 
         if (mNtpBackgroundDataManager == null) {
             mNtpBackgroundDataManager = new NtpBackgroundDataManager(context);
         }
-        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(backgroundData);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                mNtpBackgroundData);
     }
 
     private void cleanupImageInfoAndNotifyBackgroundColorChangeImpl(

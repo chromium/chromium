@@ -152,7 +152,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
                                 && configManager.getNtpBackgroundData()
                                         instanceof
                                         NtpBackgroundDataThemeCollection themeCollectionData) {
-                            saveColorAndImageFilePathForThemeCollectionData(
+                            savePrimaryColorForThemeCollectionData(
                                     mNewThemeCollectionImage, themeCollectionData);
                         }
                         mBottomSheetContent.onSheetClosed();
@@ -160,6 +160,10 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
                         // Notify to recreate activities if a new customized theme color is selected
                         // or removed.
                         if (mShouldRecreate) {
+                            // Saves the newly selected theme data to the local history list in the
+                            // SharedPreference.
+                            configManager.maybeSaveUserSelectedBackgroundTypeToSharedPreference(
+                                    mContext);
                             if (context instanceof Activity activity) {
                                 NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
                                         SnackBarState.PENDING_ON_RECREATE,
@@ -178,11 +182,8 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
-    /**
-     * Saves the primary color of the selected theme collection image and its file path to the
-     * SharedPreference.
-     */
-    private void saveColorAndImageFilePathForThemeCollectionData(
+    /** Saves the primary color of the selected theme collection image to the SharedPreference. */
+    private void savePrimaryColorForThemeCollectionData(
             Bitmap bitmap, NtpBackgroundDataThemeCollection themeCollectionData) {
         assert themeCollectionData.getPrimaryColor() == null;
         @ColorInt Integer primaryColor = NtpCustomizationUtils.pickAndSavePrimaryColor(bitmap);
@@ -190,9 +191,6 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         if (!mIsNtpCustomizationSyncEnabled) return;
 
         themeCollectionData.setPrimaryColor(primaryColor);
-        NtpCustomizationConfigManager.getInstance()
-                .maybeSaveUserSelectedBackgroundTypeToSharedPreference(
-                        mContext, themeCollectionData);
     }
 
     /**
