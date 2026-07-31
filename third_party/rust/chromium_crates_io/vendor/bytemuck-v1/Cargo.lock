@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "bytemuck"
-version = "1.25.1"
+version = "1.25.2"
 dependencies = [
  "bytemuck_derive",
  "rustversion",

@@ -87,3 +87,23 @@ unsafe impl NoUninit for NonZeroU128 {}
 unsafe impl NoUninit for NonZeroI128 {}
 unsafe impl NoUninit for NonZeroUsize {}
 unsafe impl NoUninit for NonZeroIsize {}
+
+#[cfg(feature = "min_const_generics")]
+#[cfg_attr(feature = "nightly_docs", doc(cfg(feature = "min_const_generics")))]
+mod no_uninit_array {
+  use super::*;
+  unsafe impl<const N: usize> NoUninit for [char; N] {}
+  unsafe impl<const N: usize> NoUninit for [bool; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroU8; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroI8; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroU16; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroI16; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroU32; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroI32; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroU64; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroI64; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroU128; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroI128; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroUsize; N] {}
+  unsafe impl<const N: usize> NoUninit for [NonZeroIsize; N] {}
+}
