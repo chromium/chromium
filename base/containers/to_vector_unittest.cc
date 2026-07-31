@@ -8,7 +8,6 @@
 #include <ranges>
 #include <set>
 
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +70,7 @@ TEST(ToVectorTest, MoveOnly) {
   v.push_back(std::make_unique<int>(2));
   v.push_back(std::make_unique<int>(3));
 
-  auto v2 = base::ToVector(base::RangeAsRvalues(std::move(v)));
+  auto v2 = base::ToVector(std::views::as_rvalue(v));
   EXPECT_THAT(v2, ElementsAre(Pointee(1), Pointee(2), Pointee(3)));
 
   // The old vector should be consumed. The standard guarantees that a

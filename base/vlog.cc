@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <ostream>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -128,8 +128,7 @@ VlogInfo* VlogInfo::WithSwitches(std::string_view vmodule_switch) const {
   std::vector<VmodulePattern> vmodule_levels = vmodule_levels_;
   std::vector<VmodulePattern> additional_vmodule_levels =
       ParseVmoduleLevels(vmodule_switch);
-  vmodule_levels.append_range(
-      base::RangeAsRvalues(std::move(additional_vmodule_levels)));
+  vmodule_levels.append_range(std::views::as_rvalue(additional_vmodule_levels));
   return new VlogInfo(std::move(vmodule_levels), *min_log_level_);
 }
 

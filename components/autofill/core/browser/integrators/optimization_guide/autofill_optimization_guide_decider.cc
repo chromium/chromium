@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 
 #include <algorithm>
+#include <ranges>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -154,7 +154,7 @@ void AddCreditCardOptimizationTypes(
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardBenefitsSync)) {
       optimization_types.insert_range(
-          base::RangeAsRvalues(GetCardBenefitsOptimizationTypesForCard(
+          std::views::as_rvalue(GetCardBenefitsOptimizationTypesForCard(
               *card, payments_data_manager)));
     }
   }

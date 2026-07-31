@@ -1508,14 +1508,14 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   // Creates a vector with elements copied or moved from an input and sized
   // range, with optional projection. To move elements, use
-  // base::RangeAsRvalues(std::move(range)) as the first parameter.
+  // std::views::as_rvalue(range) as the first parameter.
   template <typename Range, typename Proj = std::identity>
     requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
   explicit Vector(Range&&, Proj = {});
 
   // Replaces the vector with elements copied or moved from an input and sized
-  // range. To move elements, use base::RangeAsRvalues(std::move(range)) as the
-  // first parameter.
+  // range. To move elements, use std::views::as_rvalue(range) as the first
+  // parameter.
   template <typename Range, typename Proj = std::identity>
     requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
   void assign(Range&&, Proj = {});
@@ -1708,7 +1708,7 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   //     iterator with `std::make_move_iterator()` will move.
   // append_range(range)
   //     Appends elements in `range` to `this`. May copy or move depending on
-  //     the input type, e.g. wrapping a range with `base::RangeAsRvalues()`
+  //     the input type, e.g. wrapping a range with `std::views::as_rvalue()`
   //     will move.
   // UncheckedAppend(value)
   //     Insert a single element like push_back(), but this function assumes

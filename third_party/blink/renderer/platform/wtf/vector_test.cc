@@ -27,8 +27,8 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 
-#include "base/containers/adapters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -817,7 +817,7 @@ TEST(VectorTest, ToVectorMoveOnly) {
   v.push_back(std::make_unique<int>(2));
   v.push_back(std::make_unique<int>(3));
 
-  auto v2 = ToVector(base::RangeAsRvalues(std::move(v)));
+  auto v2 = ToVector(std::views::as_rvalue(v));
   EXPECT_THAT(v2, testing::ElementsAre(testing::Pointee(1), testing::Pointee(2),
                                        testing::Pointee(3)));
 

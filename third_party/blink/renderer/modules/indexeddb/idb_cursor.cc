@@ -27,6 +27,7 @@
 
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <utility>
 
 #include "base/check.h"
@@ -592,12 +593,10 @@ void IDBCursor::SetPrefetchData(Vector<std::unique_ptr<IDBKey>> keys,
                                 Vector<std::unique_ptr<IDBValue>> values) {
   // Keys and values are stored in reverse order so that a cache'd continue can
   // pop a value off of the back and prevent new memory allocations.
-  prefetch_keys_.append_range(
-      base::Reversed(base::RangeAsRvalues(std::move(keys))));
+  prefetch_keys_.append_range(base::Reversed(std::views::as_rvalue(keys)));
   prefetch_primary_keys_.append_range(
-      base::Reversed(base::RangeAsRvalues(std::move(primary_keys))));
-  prefetch_values_.append_range(
-      base::Reversed(base::RangeAsRvalues(std::move(values))));
+      base::Reversed(std::views::as_rvalue(primary_keys)));
+  prefetch_values_.append_range(base::Reversed(std::views::as_rvalue(values)));
 
   used_prefetches_ = 0;
   pending_onsuccess_callbacks_ = 0;

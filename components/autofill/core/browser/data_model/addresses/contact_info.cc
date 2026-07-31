@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -16,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
@@ -137,7 +137,7 @@ std::set<std::u16string> GetNamePartVariantsDeprecated(
       new_variants.push_back(base::CollapseWhitespace(
           base::JoinString({variant, sub_name.substr(0, 1)}, kSpace), true));
     }
-    variants.insert_range(base::RangeAsRvalues(std::move(new_variants)));
+    variants.insert_range(std::views::as_rvalue(new_variants));
   }
 
   // As a common case, also add the variant that just concatenates all of the

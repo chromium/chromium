@@ -4,8 +4,9 @@
 
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 
+#include <ranges>
+
 #include "base/barrier_closure.h"
-#include "base/containers/adapters.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -103,8 +104,7 @@ void CrossOriginNavigationObserver::OnPSLExtensionsReceived(
 
 void CrossOriginNavigationObserver::OnAffiliationsReceived(
     std::vector<std::string> affiliations) {
-  affiliated_domains_.insert_range(
-      base::RangeAsRvalues(std::move(affiliations)));
+  affiliated_domains_.insert_range(std::views::as_rvalue(affiliations));
 }
 
 void CrossOriginNavigationObserver::OnReady() {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/image_downloader/image_downloader_impl.h"
 
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -49,7 +50,7 @@ Vector<SkBitmap> DecodeImageData(const std::string& data,
     std::vector<SkBitmap> original_bitmaps =
         blink::WebImage::FramesFromData(buffer);
     bitmaps.append_range(
-        base::Reversed(base::RangeAsRvalues(std::move(original_bitmaps))));
+        base::Reversed(std::views::as_rvalue(original_bitmaps)));
   }
   return bitmaps;
 }

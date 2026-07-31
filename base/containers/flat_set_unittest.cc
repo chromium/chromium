@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,8 +97,8 @@ TEST(FlatSet, RangesToConstruction) {
   input_list.emplace_back(4);
 
   // Move from range.
-  auto orig = std::ranges::to<flat_set<MoveOnlyInt>>(
-      base::RangeAsRvalues(std::move(input_list)));
+  auto orig =
+      std::ranges::to<flat_set<MoveOnlyInt>>(std::views::as_rvalue(input_list));
 
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(1)));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(2)));
@@ -127,7 +126,7 @@ TEST(FlatSet, RangeConstructor) {
 
   // Move-from range
   flat_set<MoveOnlyInt> orig(std::from_range,
-                             base::RangeAsRvalues(std::move(input_list)));
+                             std::views::as_rvalue(input_list));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(1)));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(2)));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(3)));
@@ -152,7 +151,7 @@ TEST(FlatSet, SortedUninqueRangeConstructor) {
 
   // Move-from list
   flat_set<MoveOnlyInt> orig(std::from_range, base::sorted_unique,
-                             base::RangeAsRvalues(std::move(input_list)));
+                             std::views::as_rvalue(input_list));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(1)));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(2)));
   EXPECT_EQ(1U, orig.count(MoveOnlyInt(3)));

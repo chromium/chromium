@@ -34,11 +34,11 @@
 #include <functional>
 #include <iterator>
 #include <list>
+#include <ranges>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
@@ -970,7 +970,7 @@ TEST(FlatTree, InsertRange) {
     list.emplace_back(2);
 
     MoveOnlyTree tree;
-    tree.insert_range(base::RangeAsRvalues(std::move(list)));
+    tree.insert_range(std::views::as_rvalue(list));
     EXPECT_EQ(1u, tree.count(MoveOnlyInt(1)));
     EXPECT_EQ(1u, tree.count(MoveOnlyInt(2)));
   }

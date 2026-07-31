@@ -34,12 +34,12 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -1151,7 +1151,7 @@ ParseContentSecurityPolicyHeaders(
           network::mojom::blink::ContentSecurityPolicyType::kReport,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP,
           headers.ResponseUrl());
-  parsed_csps.append_range(base::RangeAsRvalues(std::move(report_only_csps)));
+  parsed_csps.append_range(std::views::as_rvalue(report_only_csps));
   return parsed_csps;
 }
 
