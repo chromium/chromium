@@ -83,10 +83,14 @@ public interface ActorForegroundServiceController {
     /** Returns the singleton instance. */
     static ActorForegroundServiceController get() {
         if (Holder.sInstanceForTesting != null) return Holder.sInstanceForTesting;
+        if (Holder.sInstance != null) return Holder.sInstance;
         ActorForegroundServiceController ret =
                 ServiceLoaderUtil.maybeCreate(ActorForegroundServiceController.class);
-        if (ret != null) return ret;
-        return NoOpActorForegroundServiceController.getInstance();
+        if (ret == null) {
+            ret = NoOpActorForegroundServiceController.getInstance();
+        }
+        Holder.sInstance = ret;
+        return ret;
     }
 
     static void setInstanceForTesting(ActorForegroundServiceController controller) {
@@ -95,6 +99,7 @@ public interface ActorForegroundServiceController {
     }
 
     class Holder {
+        static @Nullable ActorForegroundServiceController sInstance;
         static @Nullable ActorForegroundServiceController sInstanceForTesting;
     }
 }
