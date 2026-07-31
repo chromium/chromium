@@ -9410,6 +9410,9 @@ crbug.com/539889938 [ Linux ] external/wpt/html/interaction/focus/processing-mod
 crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?* [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?* [ Failure Pass ]
 
+# Gardener 2026-07-31
+crbug.com/541138839 [ Mac ] wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.https.html [ Failure Pass ]
+
 # Cyclic TLA deferred imports should deadlock per spec, see
 # https://github.com/tc39/proposal-defer-import-eval/issues/83. The test
 # checks the spec behavior; V8 currently diverges. Tolerate both results until
