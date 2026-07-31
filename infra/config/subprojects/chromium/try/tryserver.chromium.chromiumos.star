@@ -334,3 +334,18 @@ try_.builder(
     },
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
+
+try_.builder(
+    name = "linux-chromeos-no-initial-webui-rel",
+    mirrors = [
+        "ci/linux-chromeos-rel",
+        "ci/linux-chromeos-no-initial-webui-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-chromeos-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)

@@ -1,7 +1,9 @@
+ci/linux-chromeos-no-initial-webui-rel
 ci/linux-no-initial-webui-rel
 ci/linux-surface-embed-rel
 ci/mac-no-initial-webui-rel
 ci/windows-no-initial-webui-rel
+try/linux-chromeos-no-initial-webui-rel
 try/linux-no-initial-webui-rel
 try/linux-surface-embed-rel
 try/mac-no-initial-webui-rel

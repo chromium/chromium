@@ -621,6 +621,7 @@ try/linux-chromeos-asan-rel
 try/linux-chromeos-clobber-rel
 try/linux-chromeos-compile-dbg
 try/linux-chromeos-dbg
+try/linux-chromeos-no-initial-webui-rel
 try/linux-chromeos-rel
 try/linux-clobber-rel
 try/linux-crossbench
