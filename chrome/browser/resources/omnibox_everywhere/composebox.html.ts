@@ -35,6 +35,7 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
         <cr-composebox-input id="composeboxInput"
             exportparts="text-container, icon-container, mirror, input,
                          smart-compose, cancel, action-icon, cancel-icon"
+            .composeboxSkillsEnabled="${this.composeboxSkillsEnabled}"
             .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
