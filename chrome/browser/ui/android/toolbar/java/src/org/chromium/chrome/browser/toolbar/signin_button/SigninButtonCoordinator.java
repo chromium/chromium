@@ -184,7 +184,12 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
 
         // Only update signin button if it does not match the intended state.
         if (showSigninButton != isShown()) {
-            mTransitionTrigger.run();
+            View view = (mView != null) ? mView : mViewStub;
+            // Only animate the transition if the view is already fully laid out.
+            // Skipping this during cold starts prevents layout overhead and ANRs.
+            if (view != null && view.isLaidOut()) {
+                mTransitionTrigger.run();
+            }
             mMediator.updateButtonVisibility(showSigninButton);
             maybeInflateView();
         }
