@@ -862,12 +862,6 @@ BASE_FEATURE(kAutofillServerQueryPredictionsEarly,
 // signatures: go/autofill-signatures-more-data.
 BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, password manager and autofill bubbles will be shown based on
-// the priorities of the bubbles.
-// TODO(crbug.com/432429605): Remove when launched.
-BASE_FEATURE(kAutofillShowBubblesBasedOnPriorities,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch: If enabled, the focus check in AutofillPopupControllerImpl and
 // AutofillKeyboardAccessoryControllerImpl is simplified.
 // TODO(crbug.com/530190112): Clean up after September 1, 2026.

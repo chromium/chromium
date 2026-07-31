@@ -431,10 +431,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, *page_action_controller_, *commerce_ui_tab_helper_);
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    autofill_bubble_manager_ = autofill::BubbleManager::Create(&tab);
-  }
+  autofill_bubble_manager_ = autofill::BubbleManager::Create(&tab);
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableOmniboxAutofill) &&
