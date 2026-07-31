@@ -88,6 +88,9 @@ class AssistantAIMUIStateProvider
   AssistantContainerDetent _currentDetent;
   BOOL _isHiding;
 
+  // Whether the coordinator is currently in the middle of stopping.
+  BOOL _isStopping;
+
   // Handler for container related interactions.
   __weak id<AssistantContainerCommands> _containerHandler;
   ActivityReporter* _activityReporter;
@@ -193,6 +196,10 @@ class AssistantAIMUIStateProvider
 }
 
 - (void)stop {
+  if (_isStopping) {
+    return;
+  }
+  _isStopping = YES;
   CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
   if (agent) {
     agent->SetUIStateProvider(nullptr);
@@ -211,6 +218,8 @@ class AssistantAIMUIStateProvider
     [self dismissAssistantContainerAnimated:NO completion:nil];
   }
   [_activityReporter reportInactive];
+  _activityReporter = nil;
+  _isStopping = NO;
 }
 
 - (void)setVisible:(BOOL)visible {
@@ -349,7 +358,7 @@ class AssistantAIMUIStateProvider
 
 // Closes the assistant.
 - (void)closeAssistant {
-  if (!self.browser) {
+  if (!self.browser || _isStopping) {
     return;
   }
   id<SceneCommands> sceneHandler =
@@ -420,7 +429,7 @@ class AssistantAIMUIStateProvider
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
       didDisappearAnimated:(BOOL)animated {
-  if (_isHiding) {
+  if (_isHiding || _isStopping) {
     _isHiding = NO;
     return;
   }
