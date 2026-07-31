@@ -77,6 +77,10 @@ extern const char kProhibitedOrigin[];
 // or kInvalidSslCertificate error.
 extern const char kProhibitedOriginOrInvalidSslExplanation[];
 
+// Mojo call PaymentRequest::UpdateWith() is not allowed for the
+// "secure-payment-confirmation" method once its dialog has been shown.
+extern const char kSecurePaymentConfirmationUpdateWithNotAllowed[];
+
 // The payment handler responded with an invalid shipping address.
 extern const char kShippingAddressInvalid[];
 

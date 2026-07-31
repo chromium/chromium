@@ -476,6 +476,18 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
     return;
   }
 
+  // The "secure-payment-confirmation" dialog displays a snapshot of the
+  // payment details at the time it is shown and does not refresh, so the only
+  // permitted update is the resolution of the promise passed into show()
+  // before the dialog has displayed anything.
+  if (spec_->IsSecurePaymentConfirmationRequested() && spec_->IsInitialized()) {
+    log_.Error(errors::kSecurePaymentConfirmationUpdateWithNotAllowed);
+    mojo::ReportBadMessage(
+        errors::kSecurePaymentConfirmationUpdateWithNotAllowed);
+    ResetAndDeleteThis();
+    return;
+  }
+
   // ID cannot be updated. Updating the total is optional.
   if (!details || details->id) {
     log_.Error(errors::kInvalidPaymentDetails);

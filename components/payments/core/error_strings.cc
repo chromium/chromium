@@ -34,6 +34,7 @@ const char kPayerNameEmpty[] = "Payment app returned invalid response. Missing f
 const char kPayerPhoneEmpty[] = "Payment app returned invalid response. Missing field \"payerPhone\".";
 const char kProhibitedOrigin[] = "Only localhost, file://, and cryptographic scheme origins allowed.";
 const char kProhibitedOriginOrInvalidSslExplanation[] = "No UI will be shown. CanMakePayment and hasEnrolledInstrument will always return false. Show will be rejected with NotSupportedError.";
+const char kSecurePaymentConfirmationUpdateWithNotAllowed[] = "Payment details cannot be updated for the \"secure-payment-confirmation\" method while it is showing.";
 const char kShippingAddressInvalid[] = "Payment app returned invalid shipping address in response.";
 const char kShippingOptionEmpty[] = "Payment app returned invalid response. Missing field \"shipping option\".";
 const char kShippingOptionIdRequired[] = "Shipping option identifier required.";

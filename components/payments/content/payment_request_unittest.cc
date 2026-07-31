@@ -10,6 +10,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/payments/content/mock_content_payment_request_delegate.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,6 +40,8 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
       scoped_features_.InitAndDisableFeature(
           ::features::kSecurePaymentConfirmation);
     }
+    personal_data_manager_.test_address_data_manager()
+        .SetAutofillProfileEnabled(false);
     NavigateAndCommit(page_url_);
   }
 
@@ -56,6 +59,10 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
         .WillByDefault(testing::ReturnRefOfCopy(std::string("en-US")));
     ON_CALL(*delegate, GetLastCommittedURL())
         .WillByDefault(testing::ReturnRef(page_url_));
+    ON_CALL(*delegate, GetPersonalDataManager())
+        .WillByDefault(testing::Return(&personal_data_manager_));
+    ON_CALL(*delegate, IsBrowserWindowActive())
+        .WillByDefault(testing::Return(true));
     return delegate;
   }
 
@@ -66,6 +73,8 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
     if (IsSecurePaymentConfirmationEnabled()) {
       spc_method->secure_payment_confirmation =
           mojom::SecurePaymentConfirmationRequest::New();
+      spc_method->secure_payment_confirmation->credential_ids.push_back(
+          {1, 2, 3, 4});
       spc_method->secure_payment_confirmation->challenge = {1, 2, 3, 4};
       spc_method->secure_payment_confirmation->rp_id = "rp.id";
       spc_method->secure_payment_confirmation->instrument =
@@ -92,6 +101,7 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
   }
 
   const GURL page_url_{"https://a.com"};
+  autofill::TestPersonalDataManager personal_data_manager_;
   PaymentRequestDisplayManager display_manager_;
   base::test::ScopedFeatureList scoped_features_;
 };
@@ -186,6 +196,75 @@ TEST_P(PaymentRequestValidationTest,
       EXPECT_FALSE(bad_message_observer.got_bad_message());
     }
   }
+}
+
+// Tests that the payment details cannot be updated for a
+// "secure-payment-confirmation" request after it has been shown, because the
+// dialog displays a snapshot of the details and would not reflect changes made
+// while it was visible.
+TEST_P(PaymentRequestValidationTest,
+       SecurePaymentConfirmationRejectsUpdateWith) {
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  new PaymentRequest(CreateMockDelegate(),
+                     payment_request.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  method_data.push_back(CreateSpcMethodData());
+
+  payment_request->Init(std::move(client_remote), std::move(method_data),
+                        CreateDummyDetails(), mojom::PaymentOptions::New());
+  payment_request->Show(/*wait_for_updated_details=*/false,
+                        /*had_user_activation=*/true);
+
+  auto updated_details = mojom::PaymentDetails::New();
+  updated_details->total = mojom::PaymentItem::New();
+  updated_details->total->label = "Total";
+  updated_details->total->amount = mojom::PaymentCurrencyAmount::New();
+  updated_details->total->amount->currency = "USD";
+  updated_details->total->amount->value = "5000.00";
+  payment_request->UpdateWith(std::move(updated_details));
+
+  payment_request.FlushForTesting();
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+}
+
+// Tests that updateWith() is allowed when resolving the promise passed into
+// show() for "secure-payment-confirmation", because that update happens before
+// the dialog displays the details.
+TEST_P(PaymentRequestValidationTest,
+       SecurePaymentConfirmationAllowsUpdateWithForShowPromise) {
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  new PaymentRequest(CreateMockDelegate(),
+                     payment_request.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  method_data.push_back(CreateSpcMethodData());
+
+  payment_request->Init(std::move(client_remote), std::move(method_data),
+                        CreateDummyDetails(), mojom::PaymentOptions::New());
+  payment_request->Show(/*wait_for_updated_details=*/true,
+                        /*had_user_activation=*/true);
+
+  auto updated_details = mojom::PaymentDetails::New();
+  updated_details->total = mojom::PaymentItem::New();
+  updated_details->total->label = "Total";
+  updated_details->total->amount = mojom::PaymentCurrencyAmount::New();
+  updated_details->total->amount->currency = "USD";
+  updated_details->total->amount->value = "2.00";
+  payment_request->UpdateWith(std::move(updated_details));
+
+  payment_request.FlushForTesting();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PaymentRequestValidationTest, testing::Bool());
