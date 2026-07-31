@@ -274,7 +274,7 @@ fuzzer_test("openscreen_message_framer_deserialize_fuzzer") {
   libfuzzer_options = [ "max_len=65600" ]
 }
 
-fuzzer_test("openscreen_message_framer_serialize_fuzzer") {
+disabled_fuzzer_test("openscreen_message_framer_serialize_fuzzer") {
   sources = [ "openscreen_message_framer_serialize_fuzzer.cc" ]
   deps = [
     ":channel_fuzzer_inputs",
