@@ -569,7 +569,7 @@
     All Extensions
   </message>
   <message name="IDS_EXTENSIONS_PIN_NEW_EXTENSIONS" desc="The label for the toggle to pin new extensions in chrome://extensions.">
-    Pin new extensions
+    Pin new extensions to Toolbar
   </message>
   <!-- Extension Safety Check Review Panel strings -->
   <message name="IDS_EXTENSIONS_SAFETY_HUB_HEADER" desc="Name of a section in chrome://extensions that gives users an overview over their safety status and where users can take action to improve their safety.">
