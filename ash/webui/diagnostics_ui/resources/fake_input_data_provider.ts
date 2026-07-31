@@ -34,6 +34,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.methods = new FakeMethodResolver();
     this.observers = [];
     this.keyboards = [];
+    this.keyboardObservers = [];
     this.touchDevices = [];
     this.moveAppToTestingScreenCalled = 0;
     this.moveAppBackToPreviousScreenCalled = 0;
