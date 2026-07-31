@@ -23,14 +23,11 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_gdi_object.h"
@@ -1136,18 +1133,10 @@ void NativeThemeWin::RegisterClosedCaptionPropertiesChangedListener() {
   }
 
   EventRegistrationToken token;
-  const scoped_refptr<base::SequencedTaskRunner>& task_runner =
-      base::SequencedTaskRunner::GetCurrentDefault();
   hr = caption_statics2_->add_PropertiesChanged(
       Microsoft::WRL::Callback<ABI::Windows::Foundation::IEventHandler<
-          IInspectable*>>([task_runner](IInspectable*,
-                                        IInspectable*) -> HRESULT {
-        // The event may be delivered on an arbitrary thread; bounce the
-        // notification back to the sequence that registered the listener.
-        task_runner->PostTask(
-            FROM_HERE, base::BindOnce([] {
-              NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
-            }));
+          IInspectable*>>([](IInspectable*, IInspectable*) -> HRESULT {
+        NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
         return S_OK;
       }).Get(),
       &token);
