@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -178,9 +177,6 @@ TEST_F(WalletablePassSaveBubbleControllerTest, Closed) {
 // BubbleManager.
 TEST_F(WalletablePassSaveBubbleControllerTest,
        CallbackNotRunWhenBubblePendingInManager) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillShowBubblesBasedOnPriorities};
-
   base::test::TestFuture<WalletablePassBubbleResult> future;
   controller()->SetUpAndShowSaveBubble({}, future.GetCallback());
   EXPECT_TRUE(controller()->IsShowingBubble());
@@ -198,9 +194,6 @@ TEST_F(WalletablePassSaveBubbleControllerTest,
 // Tests that the callback is run with kDiscarded when the bubble is discarded
 // by the BubbleManager.
 TEST_F(WalletablePassSaveBubbleControllerTest, OnBubbleDiscardedRunsCallback) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillShowBubblesBasedOnPriorities};
-
   base::test::TestFuture<WalletablePassBubbleResult> future;
 
   EXPECT_CALL(bubble_manager(), RequestShowController);
