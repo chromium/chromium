@@ -90,9 +90,8 @@ LocalAuthFactorsPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  const AccountId& account_id = user->GetAccountId();
-  return std::make_unique<LocalAuthFactorsPolicyController>(
-      local_state, profile, account_id);
+  return std::make_unique<LocalAuthFactorsPolicyController>(local_state,
+                                                            profile, *user);
 }
 
 bool LocalAuthFactorsPolicyControllerFactory::

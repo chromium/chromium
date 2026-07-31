@@ -13,6 +13,7 @@
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -24,9 +25,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -42,10 +42,12 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -76,9 +78,16 @@ ash::auth::mojom::AuthFactorConfig& auth_factor_config(
 }
 
 void ShowNotification(Profile* profile,
+                      const std::string& notification_id,
+                      const AccountId& account_id,
                       const std::u16string& title,
                       const std::u16string& message,
                       const std::u16string& button_title) {
+  CHECK_EQ(
+      CHECK_DEREF(BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+          .GetAccountId(),
+      account_id);
+
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(button_title);
   optional_fields.remove_on_click = false;
@@ -88,18 +97,19 @@ void ShowNotification(Profile* profile,
       message_center::NotifierType::SYSTEM_COMPONENT,
       kComplexityUpdateNotificationId,
       NotificationCatalogName::kLocalAuthFactorsComplexity);
+  notifier_id.profile_id = account_id.GetUserEmail();
 
-  auto notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kComplexityUpdateNotificationId,
-      title, message, /*display_source=*/std::u16string(),
+  auto notification = ash::CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), notifier_id, optional_fields,
       base::MakeRefCounted<LocalAuthFactorsNotificationDelegate>(profile),
       ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                           : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
-  notification.SetSystemPriority();
-  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
+  notification->SetSystemPriority();
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 
   if (auto& callback = GetOnNotificationShownClosure()) {
     callback.Run();
@@ -127,8 +137,15 @@ PrefService& LocalAuthFactorsPolicyController::prefs() {
 LocalAuthFactorsPolicyController::LocalAuthFactorsPolicyController(
     PrefService& local_state,
     Profile* profile,
-    const AccountId& account_id)
-    : local_state_(local_state), profile_(profile), account_id_(account_id) {
+    const user_manager::User& user)
+    : local_state_(local_state),
+      profile_(profile),
+      account_id_(user.GetAccountId()),
+      notification_id_(
+          CreateUserScopedNotificationId(kComplexityUpdateNotificationId,
+                                         user.username_hash())) {
+  CHECK_EQ(BrowserContextHelper::Get()->GetUserByBrowserContext(profile),
+           &user);
   pref_change_registrar_.Init(profile->GetPrefs());
   // `base::Unretained(this)` is safe as `this` outlives the registrar.
   pref_change_registrar_.Add(
@@ -371,16 +388,13 @@ void LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification(
         IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_PIN);
   }
 
-  ShowNotification(profile_, title, message, button_title);
+  ShowNotification(profile_, notification_id_, account_id_, title, message,
+                   button_title);
 }
 
 void LocalAuthFactorsPolicyController::DismissComplexityUpdateNotification() {
-  auto* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
-  if (notification_display_service) {
-    notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
-                                        kComplexityUpdateNotificationId);
-  }
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                           /*by_user=*/false);
 }
 
 }  // namespace ash

@@ -26,6 +26,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -42,6 +43,8 @@ DeviceSettingsTestBase::~DeviceSettingsTestBase() {
 }
 
 void DeviceSettingsTestBase::SetUp() {
+  message_center::MessageCenter::Initialize();
+
   // Initialize ProfileHelper including BrowserContextHelper.
   ProfileHelper::Get();
 
@@ -88,6 +91,7 @@ void DeviceSettingsTestBase::TearDown() {
   base::RunLoop().RunUntilIdle();
   profile_.reset();
   ConciergeClient::Shutdown();
+  message_center::MessageCenter::Shutdown();
 }
 
 void DeviceSettingsTestBase::ReloadDevicePolicy() {

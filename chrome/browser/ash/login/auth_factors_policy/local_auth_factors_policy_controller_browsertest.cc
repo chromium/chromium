@@ -8,7 +8,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/reauth_reason.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -35,10 +36,13 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 namespace ash {
 
@@ -48,6 +52,13 @@ using test::UserAuthConfig;
 
 constexpr char kComplexityUpdateNotificationId[] =
     "local_auth_factors_policy_controller.complexity_update";
+
+std::string GetComplexityUpdateMessageCenterId(const AccountId& account_id) {
+  const user_manager::User& user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
+  return CreateUserScopedNotificationId(kComplexityUpdateNotificationId,
+                                        user.username_hash());
+}
 
 }  // namespace
 
@@ -85,11 +96,6 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   void WaitForNotificationShownCallback() {
     ASSERT_TRUE(on_notification_shown_future_.WaitAndClear())
         << "Failed waiting for complexity update notification shown callback";
-  }
-
-  void WaitForNotificationClosedCallback() {
-    ASSERT_TRUE(on_notification_closed_future_.WaitAndClear())
-        << "Failed waiting for complexity update notification closed callback";
   }
 
   void ClearPendingPrefProcessedCallback() {
@@ -200,7 +206,6 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
 
   base::test::TestFuture<void> on_pref_processed_future_;
   base::test::TestFuture<void> on_notification_shown_future_;
-  base::test::TestFuture<void> on_notification_closed_future_;
   CryptohomeMixin cryptohome_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   LoginManagerMixin login_mixin_{
@@ -353,8 +358,8 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   base::HistogramTester histogram_tester;
   const AccountId& account_id = local_password_and_pin_user_.account_id;
   LoginUser(account_id);
-  Profile* profile = GetProfile(account_id);
-  NotificationDisplayServiceTester tester(profile);
+  const std::string notification_id =
+      GetComplexityUpdateMessageCenterId(account_id);
 
   // Set complexity policy to Low.
   SetComplexityPolicy(LocalAuthFactorsComplexity::kLow);
@@ -367,10 +372,11 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
       "Enterprise.LocalAuthFactorsPolicy.PasswordComplexity",
       static_cast<int>(LocalAuthFactorsComplexity::kLow), 1);
 
-  std::optional<message_center::Notification> notification =
-      tester.GetNotification(
-          "local_auth_factors_policy_controller.complexity_update");
-  ASSERT_TRUE(notification.has_value());
+  const message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(notification->notifier_id().profile_id, account_id.GetUserEmail());
   EXPECT_EQ(notification->title(), u"Change your PIN and password");
   EXPECT_EQ(notification->message(),
             u"Your administrator updated the security requirements for your "
@@ -382,10 +388,8 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   base::HistogramTester histogram_tester;
   const AccountId& account_id = local_password_and_pin_user_.account_id;
   LoginUser(account_id);
-  Profile* profile = GetProfile(account_id);
-  NotificationDisplayServiceTester tester(profile);
-  tester.SetNotificationClosedClosure(
-      on_notification_closed_future_.GetRepeatingCallback());
+  const std::string notification_id =
+      GetComplexityUpdateMessageCenterId(account_id);
 
   // Set complexity policy to Low to trigger notification.
   SetComplexityPolicy(LocalAuthFactorsComplexity::kLow);
@@ -393,9 +397,10 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   WaitForNotificationShownCallback();
 
   {
-    std::optional<message_center::Notification> notification =
-        tester.GetNotification(kComplexityUpdateNotificationId);
-    ASSERT_TRUE(notification.has_value());
+    const message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            notification_id);
+    ASSERT_TRUE(notification);
     EXPECT_EQ(notification->title(), u"Change your PIN and password");
   }
 
@@ -406,23 +411,26 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   // The notification should still be shown because PIN also needs update.
   WaitForNotificationShownCallback();
   {
-    std::optional<message_center::Notification> notification =
-        tester.GetNotification(kComplexityUpdateNotificationId);
-    ASSERT_TRUE(notification.has_value());
+    const message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            notification_id);
+    ASSERT_TRUE(notification);
     // Title should have updated to only mention PIN.
     EXPECT_EQ(notification->title(), u"Change your PIN");
   }
 
   // Simulate updating the PIN.
+  message_center::MessageCenterWaiter notification_waiter(notification_id);
   OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kCryptohomePin,
                   ash::auth::mojom::ConfigureResult::kSuccess);
 
   // Wait for the notification to be asynchronously dismissed.
-  WaitForNotificationClosedCallback();
+  notification_waiter.WaitUntilRemoved();
 
   // Notification should finally be dismissed.
   EXPECT_FALSE(
-      tester.GetNotification(kComplexityUpdateNotificationId).has_value());
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id));
 
   histogram_tester.ExpectBucketCount(
       "Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged",
