@@ -14,6 +14,8 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_pointer_driver.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -46,6 +48,13 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
   ~UnboundedElementBrowserTestBase() override = default;
 
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kTouchEventFeatureDetection,
+        switches::kTouchEventFeatureDetectionEnabled);
+  }
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -119,9 +128,6 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // TODO(crbug.com/508672616): Not yet implemented on Android/iOS.
     GTEST_SKIP();
-#elif BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/525899641): Flaky/failing on Linux Aura/Wayland.
-    GTEST_SKIP();
 #else
     feature_list_.InitWithFeatures(
         {blink::features::kUnboundedElement,
@@ -141,7 +147,10 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, ActivationPreconditions) {
 
   // Create an unbounded element via HTML snippet:
   std::string script = R"(
-    document.body.innerHTML = '<div id="target" unbounded></div>';
+    document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <div id="target" unbounded></div>
+    `;
     document.getElementById('target').showUnboundedElement().catch(e => e.name);
   )";
   // showUnboundedElement throws DOMException NotAllowedError without transient
@@ -156,13 +165,22 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
                         std::string(kChromeUIGpuHost));
   EXPECT_TRUE(NavigateToURL(shell(), webui_url));
 
-  // Create an unbounded element via HTML snippet:
+  // Use DOM APIs instead of innerHTML because WebUI pages enforce TrustedTypes
+  // with a strict CSP ("trusted-types static-types;") that disallows creating
+  // custom policies in test scripts.
   std::string script = R"(
+    const meta = document.createElement('meta');
+    meta.name = 'viewport';
+    meta.content = 'width=device-width, initial-scale=1';
+    document.head.appendChild(meta);
+
     const div = document.createElement('div');
+    div.id = 'target';
     div.setAttribute('unbounded', '');
     div.style.width = '100px';
     div.style.height = '100px';
     document.body.appendChild(div);
+
     div.showUnboundedElement().then(() => "Success", e => e.name);
   )";
   // Since it's a privileged WebUI page, it should bypass the transient user
@@ -177,6 +195,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, AncestorClipping) {
 
   std::string setup_script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="container" style="width:50px; height:50px; overflow:hidden;
            position:relative;">
         <div id="child" style="width:100px; height:100px; position:absolute;
@@ -204,6 +223,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRouting) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="child" style="width:100px; height:100px;" unbounded></div>
     `;
     const div = document.getElementById('child');
@@ -224,12 +244,54 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRouting) {
   EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__mouse_y"));
 }
 
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, InputEventRoutingTouch) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <div id="child" style="width:100px; height:100px;" unbounded></div>
+    `;
+    const div = document.getElementById('child');
+    div.addEventListener('touchstart', (e) => {
+      window.__touch_x = e.touches[0].clientX;
+      window.__touch_y = e.touches[0].clientY;
+    });
+    div.showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver =
+      SyntheticPointerDriver::Create(
+          content::mojom::GestureSourceType::kTouchInput,
+          /*from_devtools_debugger=*/true);
+  RenderWidgetHostImpl* render_widget_host =
+      primary_main_frame_host()->GetRenderWidgetHost();
+  auto* root_view = render_widget_host->GetView()->GetRootView();
+  std::unique_ptr<SyntheticGestureTarget> synthetic_gesture_target =
+      root_view ? root_view->CreateSyntheticGestureTarget()
+                : render_widget_host->GetView()->CreateSyntheticGestureTarget();
+
+  synthetic_pointer_driver->Press(50, 50, 0,
+                                  SyntheticPointerActionParams::Button::LEFT);
+  synthetic_pointer_driver->DispatchEvent(synthetic_gesture_target.get(),
+                                          base::TimeTicks::Now());
+
+  RunUntilInputProcessed(render_widget_host);
+
+  EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__touch_x"));
+  EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__touch_y"));
+}
+
 IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissEscKey) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:50px; height:50px;" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
@@ -261,6 +323,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, LightDismissClickOutside) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:50px; height:50px;" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
@@ -291,6 +354,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopoverInsideUnbounded) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="child" style="width:100px; height:100px;" unbounded>
         <div id="popover" popover>Nested Popover</div>
       </div>
@@ -314,6 +378,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CompositorPopupAllocation) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:100px; height:100px;" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
@@ -335,6 +400,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, VisualOverflowBounds) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:100px; height:100px;
            filter:drop-shadow(50px 50px 0px green);" unbounded></div>
     `;
@@ -356,12 +422,15 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // Execute script that calls showUnboundedElement on an unattached element
-  // (empty bounds) and catches the exception name.
+  // Execute script that calls showUnboundedElement on an element with empty
+  // bounds and catches the exception name.
   std::string script = R"(
-    const div = document.createElement('div');
-    div.setAttribute('unbounded', '');
-    div.showUnboundedElement().then(() => "Success", e => e.name);
+    document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <div id="target" style="width:0; height:0;" unbounded></div>
+    `;
+    document.getElementById('target').showUnboundedElement()
+        .then(() => "Success", e => e.name);
   )";
   EXPECT_EQ("NotSupportedError", EvalJs(primary_main_frame_host(), script));
 }
@@ -374,8 +443,12 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   // Execute script that calls showUnboundedElement on an element
   // without the 'unbounded' attribute and catches the exception name.
   std::string script = R"(
-    const div = document.createElement('div');
-    div.showUnboundedElement().then(() => "Success", e => e.name);
+    document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <div id="target" style="width:100px; height:100px;"></div>
+    `;
+    document.getElementById('target').showUnboundedElement()
+        .then(() => "Success", e => e.name);
   )";
   EXPECT_EQ("InvalidStateError", EvalJs(primary_main_frame_host(), script));
 }
@@ -405,6 +478,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:100px; height:100px;" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
@@ -434,6 +508,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         #child {
           width: 200px;
@@ -485,6 +560,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
   std::string script = R"(
     document.body.style.margin = '0';
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="child" style="width:100px; height:100px;" unbounded></div>
     `;
     const div = document.getElementById('child');
@@ -548,6 +624,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
       R"(
     document.body.style.margin = '0';
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="child" style="width:100px; height:100px; position:absolute;
            top:%dpx; left:%dpx;" unbounded></div>
     `;
@@ -602,6 +679,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
     document.body.style.margin = '0';
     document.body.style.height = '2000px';
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="child" style="width:100px; height:100px; position:absolute;
            top:400px; left:50px;" unbounded></div>
     `;
@@ -685,6 +763,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DynamicBoundsSync) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="child" style="width:100px; height:100px; position:absolute;
            top:0; left:0;" unbounded></div>
     `;
@@ -839,6 +918,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:100px; height:100px;" unbounded></div>
       <iframe id="test_iframe" src="about:blank"></iframe>
     `;
@@ -866,6 +946,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="c" style="width: 100px; height: 100px;">
         <input id="i">
       </div>
@@ -898,6 +979,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
 
   std::string script = R"(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="target" style="width:50px; height:50px;" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
@@ -932,6 +1014,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 
   std::string script = R"JS(
     document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <div id="first" style="width:50px; height:50px;" unbounded></div>
       <div id="second" style="width:50px; height:50px;" unbounded></div>
     `;
@@ -948,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
         results.push(getComputedStyle(first).visibility);
         results.push(getComputedStyle(second).visibility);
         return results.join(',');
-      });
+      }, err => "error:" + err);
   )JS";
 
   EXPECT_EQ("visible,hidden,hidden,visible",
@@ -1016,8 +1099,6 @@ class UnboundedElementPermutationBrowserTest
 
   void SetUp() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    GTEST_SKIP();
-#elif BUILDFLAG(IS_LINUX)
     GTEST_SKIP();
 #else
     const auto& params = GetParam();
