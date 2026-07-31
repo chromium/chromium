@@ -5932,6 +5932,9 @@ double GetRandomBaseValue(const RandomCacheKey* random_cache_key,
 const CalculationExpressionNode*
 CSSMathExpressionRandomFunction::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
+  if (random_cache_key_->IsElementScoped()) {
+    length_resolver.ReferenceElementDependentRandom();
+  }
   double random_base_value =
       GetRandomBaseValue(random_cache_key_, length_resolver);
 
