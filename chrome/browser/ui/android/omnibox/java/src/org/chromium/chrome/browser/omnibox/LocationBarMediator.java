@@ -546,6 +546,11 @@ class LocationBarMediator
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
         updateUrlBarAccessibilityWarning();
+
+        LocationBarDragDropHandler dragDropHandler =
+                new LocationBarDragDropHandler(this, mLocationBarDataProvider);
+        mLocationBarLayout.setOnDragListener(dragDropHandler);
+        mLocationBarLayout.getUrlBar().setOnDragListener(dragDropHandler);
     }
 
     private SelectableView wrapSelectableView(View view) {
@@ -980,7 +985,8 @@ class LocationBarMediator
         mLocationBarLayout.onSuggestionsChanged(hasSuggestions);
     }
 
-    /* package */ void loadUrl(OmniboxLoadUrlParams omniboxLoadUrlParams) {
+    @Override
+    public void loadUrl(OmniboxLoadUrlParams omniboxLoadUrlParams) {
         try (TraceEvent e = TraceEvent.scoped("LocationBarMediator.loadUrl")) {
             assert mLocationBarDataProvider != null;
             Tab currentTab = mLocationBarDataProvider.getTab();
