@@ -1,0 +1,126 @@
+caption: Configuration policy for the <ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR">OnDataCopied</ph> Chrome Enterprise Connector
+desc: |-
+  List of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connectors services settings to be applied to the <ph name="ON_DATA_COPIED_ENTERPRISE_CONNECTOR">OnDataCopied</ph> Enterprise Connector, which triggers when data is copied to the clipboard from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+  The <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD">url_list</ph>, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD">tags</ph>, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> fields are used to determine if the connector should send data for analysis when it is copied from a specific page and what tags to include in the analysis request for that data. A tag corresponding to an 'enable' pattern will be included in the analysis request if the page URL matches a pattern associated to that tag as long as no 'disable' pattern with that same tag matches the page URL. The analysis occurs if at least 1 tag is to be included in the request.
+
+  The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which analysis service provider the settings correspond to.
+
+  The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will wait to get a response from the analysis service before giving the OS clipboard access to the data. Any other integer value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> gives the OS clipboard access to the data immediately.
+
+  The <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD">default_action</ph> field being set to block means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not give the OS clipboard access to the data if an error occurs while communicating with the analysis service. Any other value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> gives the OS clipboard access to the data.
+
+  The <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE">minimum_data_size</ph> field indicates the minimum size (in bytes) data copied from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must equal or surpass to be scanned. The default value is 100 bytes if the field is unset.
+
+  The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
+
+  The <ph name="ENTERPRISE_CONNECTOR_VERIFICATION_FIELD">verification</ph> field allows administrators to configure platform-specific verification requirements.
+
+  This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
+example_value:
+- block_until_verdict: 0
+  default_action: allow
+  disable:
+  - tags:
+    - malware
+    url_list:
+    - '*.us.com'
+  enable:
+  - tags:
+    - malware
+    url_list:
+    - '*'
+  - tags:
+    - dlp
+    url_list:
+    - '*.them.com'
+    - '*.others.com'
+  minimum_data_size: 100
+  require_justification_tags:
+  - malware
+  - dlp
+  service_provider: google
+  verification:
+    linux:
+    - key
+    mac:
+    - key
+    windows:
+    - key
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+owners:
+- cbe-cep-eng@google.com
+- eliashomsi@google.com
+schema:
+  items:
+    properties:
+      block_until_verdict:
+        type: integer
+      default_action:
+        enum:
+        - allow
+        - block
+        type: string
+      disable:
+        items:
+          type: object
+          properties:
+            tags:
+              items:
+                type: string
+              type: array
+            url_list:
+              items:
+                type: string
+              type: array
+        type: array
+      enable:
+        items:
+          type: object
+          properties:
+            tags:
+              items:
+                type: string
+              type: array
+            url_list:
+              items:
+                type: string
+              type: array
+        type: array
+      minimum_data_size:
+        minimum: 0
+        type: integer
+      require_justification_tags:
+        items:
+          type: string
+        type: array
+      service_provider:
+        enum:
+        - google
+        type: string
+      verification:
+        properties:
+          linux:
+            items:
+              type: string
+            type: array
+          mac:
+            items:
+              type: string
+            type: array
+          windows:
+            items:
+              type: string
+            type: array
+        type: object
+    type: object
+  type: array
+tags: []
+type: dict
+

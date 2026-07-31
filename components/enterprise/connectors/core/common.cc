@@ -128,7 +128,7 @@ const char* AnalysisConnectorPref(AnalysisConnector connector) {
       return kOnFileTransferPref;
 #endif
     case AnalysisConnector::DATA_COPIED:
-      return kOnTextCopiedPref;
+      return kOnDataCopiedPref;
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED() << "Using unspecified analysis connector";
   }
@@ -151,7 +151,7 @@ const char* AnalysisConnectorScopePref(AnalysisConnector connector) {
       return kOnFileTransferScopePref;
 #endif
     case AnalysisConnector::DATA_COPIED:
-      return kOnTextCopiedScopePref;
+      return kOnDataCopiedScopePref;
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED() << "Using unspecified analysis connector";
   }

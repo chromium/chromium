@@ -36,7 +36,7 @@ const char kOnBulkDataEntryPref[] = "enterprise_connectors.on_bulk_data_entry";
 
 const char kOnPrintPref[] = "enterprise_connectors.on_print";
 
-const char kOnTextCopiedPref[] = "enterprise_connectors.on_text_copied";
+const char kOnDataCopiedPref[] = "enterprise_connectors.on_data_copied";
 
 const char kOnNetworkRequestPref[] = "enterprise_connectors.on_network_request";
 
@@ -53,8 +53,8 @@ const char kOnFileDownloadedScopePref[] =
 const char kOnBulkDataEntryScopePref[] =
     "enterprise_connectors.scope.on_bulk_data_entry";
 const char kOnPrintScopePref[] = "enterprise_connectors.scope.on_print";
-const char kOnTextCopiedScopePref[] =
-    "enterprise_connectors.scope.on_text_copied";
+const char kOnDataCopiedScopePref[] =
+    "enterprise_connectors.scope.on_data_copied";
 const char kOnNetworkRequestScopePref[] =
     "enterprise_connectors.scope.on_network_request";
 
@@ -93,15 +93,15 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                kWatermarkStyleTimestampTimezoneDefault);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  registry->RegisterListPref(kOnDataCopiedPref);
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnPrintPref);
-  registry->RegisterListPref(kOnTextCopiedPref);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(kOnFileTransferPref);
 #endif
   registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
   registry->RegisterIntegerPref(kOnPrintScopePref, 0);
-  registry->RegisterIntegerPref(kOnTextCopiedScopePref, 0);
+  registry->RegisterIntegerPref(kOnDataCopiedScopePref, 0);
 
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);

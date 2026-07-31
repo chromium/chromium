@@ -2526,6 +2526,7 @@ chromium-metrics-reviews@google.com.
   <int value="1474" label="FindAndFillWithGeminiSettings"/>
   <int value="1475" label="OnNetworkRequestEnterpriseConnector"/>
   <int value="1476" label="EnterprisePublishedSkills"/>
+  <int value="1477" label="OnDataCopiedEnterpriseConnector"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

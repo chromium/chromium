@@ -1,0 +1,92 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_connectors.on_data_copied",
+      "default_value": [],
+      "values_to_test": [
+        [
+          {
+            "block_until_verdict": 0,
+            "disable": [
+              {
+                "tags": [
+                  "malware"
+                ],
+                "url_list": [
+                  "*.us.com"
+                ]
+              }
+            ],
+            "enable": [
+              {
+                "tags": [
+                  "malware"
+                ],
+                "url_list": [
+                  "*"
+                ]
+              },
+              {
+                "tags": [
+                  "dlp"
+                ],
+                "url_list": [
+                  "*.them.com",
+                  "*.others.com"
+                ]
+              }
+            ],
+            "service_provider": "google"
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_connectors.on_data_copied",
+      "default_value": [],
+      "values_to_test": [
+        [
+          {
+            "block_until_verdict": 1,
+            "disable": [],
+            "enable": [
+              {
+                "tags": [
+                  "dlp"
+                ],
+                "url_list": [
+                  "*"
+                ]
+              }
+            ],
+            "service_provider": "google",
+            "verification": {
+              "linux": [
+                "key"
+              ],
+              "mac": [
+                "key"
+              ],
+              "windows": [
+                "key"
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

@@ -146,6 +146,7 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
   // LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Miscellaneous)
   // The following policies should have their service_provider entries updated:
   //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnBulkDataEntryEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnDataCopiedEnterpriseConnector.yaml,
   //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnFileAttachedEnterpriseConnector.yaml,
   //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnFileDownloadedEnterpriseConnector.yaml,
   //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnPrintEnterpriseConnector.yaml
