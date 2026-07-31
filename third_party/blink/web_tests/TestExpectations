@@ -1417,8 +1417,6 @@ crbug.com/1223214 external/wpt/html/rendering/non-replaced-elements/the-fieldset
 crbug.com/1521188 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-resize.html [ Failure ]
 crbug.com/1223214 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-display-rendering.html [ Failure ]
 crbug.com/1223214 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-tall.html [ Failure ]
-crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3s.html [ Failure ]
-crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3q.html [ Failure ]
 crbug.com/40745409 external/wpt/html/rendering/non-replaced-elements/tables/table-border-color-not-inherited.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1i.html [ Failure ]
 crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1j.html [ Failure ]
