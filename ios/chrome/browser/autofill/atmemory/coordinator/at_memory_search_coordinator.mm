@@ -5,8 +5,13 @@
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_coordinator.h"
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_search_mediator.h"
+#import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/web/public/web_state.h"
 
 @implementation AtMemorySearchCoordinator {
   // Search view controller.
@@ -32,7 +37,14 @@
   _atMemorySearchViewController = [[AtMemorySearchViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _atMemorySearchViewController.searchResultHandler = self.searchResultHandler;
-  _mediator = [[AtMemorySearchMediator alloc] init];
+
+  autofill::AtMemoryQueryService* atMemoryQueryService =
+      IOSAtMemoryQueryServiceFactory::GetForProfile(self.browser->GetProfile());
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  _mediator = [[AtMemorySearchMediator alloc]
+      initWithAtMemoryQueryService:atMemoryQueryService
+                          webState:webState];
 
   [self.baseNavigationController
       pushViewController:_atMemorySearchViewController

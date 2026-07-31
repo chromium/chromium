@@ -7,8 +7,30 @@
 
 #import <Foundation/Foundation.h>
 
-// Mediator for AtMemory search.
+namespace autofill {
+class AtMemoryQueryService;
+}
+
+namespace web {
+class WebState;
+}
+
+// Mediator for AtMemory search feature page.
 @interface AtMemorySearchMediator : NSObject
+
+// The designated initializer. `atMemoryQueryService` takes the string provided
+// by the user and provides results to the user if available. If not, the
+// service provides an empty result along with a status indicating the error.
+// `webState` is used to retrieve context like the current URL and page title.
+- (instancetype)initWithAtMemoryQueryService:
+                    (autofill::AtMemoryQueryService*)atMemoryQueryService
+                                    webState:(web::WebState*)webState
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Disconnects the mediator and stops any ongoing observations.
+- (void)disconnect;
 
 @end
 

@@ -18,11 +18,15 @@ source_set("coordinator") {
     "scoped_at_memory_search_provider_override.mm",
   ]
   deps = [
+    "//ios/chrome/browser/autofill/atmemory/model",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/web/public",
   ]
 }
