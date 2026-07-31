@@ -458,8 +458,6 @@ source_set("web_applications") {
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
-      "os_integration/dynamic_launcher_portal.cc",
-      "os_integration/dynamic_launcher_portal.h",
       "os_integration/web_app_file_handler_registration_linux.cc",
       "os_integration/web_app_run_on_os_login_linux.cc",
       "os_integration/web_app_shortcut_linux.cc",
@@ -679,10 +677,7 @@ source_set("web_applications") {
   }
 
   if (is_linux) {
-    deps += [
-      "//chrome/browser:shell_integration_linux",
-      "//components/dbus",
-    ]
+    deps += [ "//chrome/browser:shell_integration_linux" ]
   }
 
   if (is_chromeos) {
@@ -1117,7 +1112,6 @@ source_set("web_applications_unit_tests") {
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
-      "os_integration/dynamic_launcher_portal_unittest.cc",
       "os_integration/web_app_run_on_os_login_linux_unittest.cc",
       "os_integration/web_app_shortcut_linux_unittest.cc",
     ]
@@ -1232,10 +1226,7 @@ source_set("web_applications_unit_tests") {
   }
 
   if (is_linux) {
-    deps += [
-      "//chrome/browser:shell_integration_linux",
-      "//dbus:test_support",
-    ]
+    deps += [ "//chrome/browser:shell_integration_linux" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
