@@ -18,14 +18,6 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/child_window_win.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "ui/gl/android/scoped_a_native_window.h"
-#endif
-
 namespace gpu {
 class SharedContextState;
 }  // namespace gpu
@@ -56,9 +48,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   ~SkiaOutputDeviceDawn() override;
 
 #if BUILDFLAG(IS_WIN)
-  gpu::SurfaceHandle GetChildSurfaceHandle() const {
-    return child_window_.window();
-  }
+  virtual gpu::SurfaceHandle GetChildSurfaceHandle() const;
 #endif
 
   // SkiaOutputDevice implementation:
@@ -70,32 +60,20 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 
- private:
-  bool Initialize(gpu::SurfaceHandle surface_handle);
+ protected:
+  virtual bool Initialize(gpu::SurfaceHandle surface_handle) = 0;
+  virtual bool ResizeBackbuffer() = 0;
+  virtual wgpu::Texture AcquireSwapChainTexture() = 0;
+  virtual void ReleaseSwapChainTexture() = 0;
+  virtual void PresentImpl(const std::optional<gfx::Rect>& rect) = 0;
 
   scoped_refptr<gpu::SharedContextState> context_state_;
-  wgpu::Surface surface_;
-  wgpu::Texture texture_;
   sk_sp<SkSurface> sk_surface_;
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_;
 
   gfx::Size size_;
   sk_sp<SkColorSpace> sk_color_space_;
   int sample_count_ = 1;
-
-#if BUILDFLAG(IS_WIN)
-  // D3D requires that we use flip model swap chains. Flip swap chains require
-  // that the swap chain be connected with DWM. DWM requires that the rendering
-  // windows are owned by the process that's currently doing the rendering.
-  // gl::ChildWindowWin creates and owns a window which is reparented by the
-  // browser to be a child of its window.
-  gl::ChildWindowWin child_window_;
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  // Use ScopedANativeWindow to keep the window alive
-  gl::ScopedANativeWindow android_native_window_;
-#endif
 };
 
 }  // namespace viz
