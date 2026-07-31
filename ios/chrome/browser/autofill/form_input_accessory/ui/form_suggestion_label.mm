@@ -442,107 +442,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     _accessoryTrailingView = accessoryTrailingView;
     _delegate = delegate;
 
-    UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
-    stackView.axis = UILayoutConstraintAxisHorizontal;
-    stackView.alignment = UIStackViewAlignmentCenter;
-    stackView.layoutMarginsRelativeArrangement = YES;
-    stackView.layoutMargins =
-        UIEdgeInsetsMake(0, kBorderWidth, 0, kBorderWidth);
-    stackView.spacing = kSpacing;
-    stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:stackView];
-    if (IsLiquidGlassEffectEnabled()) {
-      AddSameConstraintsToSides(
-          stackView, self,
-          LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-      [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor]
-          .active = YES;
-    } else {
-      AddSameConstraints(stackView, self);
-    }
-
-    if (suggestion.type == SuggestionType::kFetchingAmbientData) {
-      ConfigureFetchingAmbientDataSuggestion(stackView, suggestion.value);
-      [self setUserInteractionEnabled:NO];
-      return self;
-    }
-
-    if (suggestion.icon) {
-      UIImageView* iconView = [[UIImageView alloc]
-          initWithImage:[self resizeIconIfNecessary:suggestion.icon]];
-      // If we have an icon, we want to see the icon and let the text be
-      // truncated rather than expanding the text area and hiding the icon.
-      [iconView
-          setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                          forAxis:
-                                              UILayoutConstraintAxisHorizontal];
-      [stackView addArrangedSubview:iconView];
-    }
-
-    NSString* suggestionText =
-        IsPasswordSuggestion(suggestion)
-            ? PasswordSuggestionDisplayText(suggestion.value)
-            : suggestion.value;
-
-    BOOL isPasskey =
-        suggestion.type == autofill::SuggestionType::kWebauthnCredential;
-
-    if (isPasskey && [suggestionText length] == 0) {
-      suggestionText =
-          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME);
-    }
-
-    NSString* displayDescription =
-        [delegate displayDescriptionForSuggestion:suggestion];
-
-    NSString* minorValue = isPasskey ? nil : suggestion.minorValue;
-
-    BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-
-    BOOL hasText =
-        suggestion.type != SuggestionType::kAutocompleteAtMemoryButton &&
-        (suggestionText.length > 0 || minorValue.length > 0 ||
-         displayDescription.length > 0);
-
-    if (hasText) {
-      if (isTablet) {
-        // On tablets, the stage manager causes an issue where an infinite loop
-        // happens if we add stack views here, so we can't use more stack views
-        // until the stage manager issue is fixed. As a workaround, on tablets,
-        // since we don't need to truncate the suggestion text, the stack views
-        // can be replaced by a single attributed string to present the data the
-        // same way without having to rely on a stack of UILabel objects, which,
-        // on the plus side, might actually be more light weight in the end.
-        [stackView addArrangedSubview:AttributedTextLabel(
-                                          suggestionText, minorValue,
-                                          displayDescription, suggestion.icon)];
-      } else {
-        // On phones, store the suggestion information in a stack view so that
-        // it can be selectively truncated if necessary.
-        UIStackView* verticalStackView =
-            [[UIStackView alloc] initWithArrangedSubviews:@[]];
-        verticalStackView.axis = UILayoutConstraintAxisVertical;
-        verticalStackView.alignment = UIStackViewAlignmentLeading;
-        verticalStackView.layoutMarginsRelativeArrangement = YES;
-        verticalStackView.layoutMargins =
-            UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
-        verticalStackView.spacing = kVerticalSpacing;
-        [stackView addArrangedSubview:verticalStackView];
-
-        // Insert the next subviews vertically instead of horizontally.
-        stackView = verticalStackView;
-
-        // Format the suggestion information using a stack view so that each
-        // piece of information can be truncated individually when truncation is
-        // needed.
-        NSArray<UIView*>* views =
-            TextViews(suggestionText, minorValue, displayDescription,
-                      [self isCreditCardSuggestion]);
-        for (UIView* view in views) {
-          [stackView addArrangedSubview:view];
-        }
-      }
-    }
+    [self updateSubviews];
 
     [self setBackgroundColor:[self customBackgroundColor]];
     if (IsLiquidGlassEffectEnabled()) {
@@ -552,27 +452,6 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
     [self setIsAccessibilityElement:YES];
-    [self setAccessibilityLabel:AccessibilityLabel(
-                                    suggestionText, displayDescription,
-                                    suggestion.type ==
-                                        SuggestionType::kBackupPasswordEntry)];
-    [self
-        setAccessibilityValue:l10n_util::GetNSStringF(
-                                  IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
-                                  base::NumberToString16(index + 1),
-                                  base::NumberToString16(numberOfSuggestions))];
-    [self
-        setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
-
-    // On phones, set a maximum width to save space on the keyboard accessory.
-    if (!isTablet) {
-      CGFloat maximumWidth = [self maximumWidth];
-      if (maximumWidth < CGFLOAT_MAX) {
-        _widthConstraint =
-            [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth];
-        _widthConstraint.active = YES;
-      }
-    }
 
     if (ShouldShowContextMenu(suggestion)) {
       if (autofill::IsAmbientAutofillEnabled()) {
@@ -700,6 +579,138 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
 }
 
 #pragma mark - Private
+
+// Updates subviews and layout of the suggestion label.
+- (void)updateSubviews {
+  for (UIView* view in self.subviews) {
+    [view removeFromSuperview];
+  }
+
+  UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
+  stackView.axis = UILayoutConstraintAxisHorizontal;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.layoutMarginsRelativeArrangement = YES;
+  stackView.layoutMargins = UIEdgeInsetsMake(0, kBorderWidth, 0, kBorderWidth);
+  stackView.spacing = kSpacing;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:stackView];
+  if (IsLiquidGlassEffectEnabled()) {
+    AddSameConstraintsToSides(
+        stackView, self,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor].active =
+        YES;
+  } else {
+    AddSameConstraints(stackView, self);
+  }
+
+  if (_suggestion.type == SuggestionType::kFetchingAmbientData) {
+    ConfigureFetchingAmbientDataSuggestion(stackView, _suggestion.value);
+    [self setUserInteractionEnabled:NO];
+    return;
+  }
+
+  if (_suggestion.icon) {
+    UIImageView* iconView = [[UIImageView alloc]
+        initWithImage:[self resizeIconIfNecessary:_suggestion.icon]];
+    // If we have an icon, we want to see the icon and let the text be
+    // truncated rather than expanding the text area and hiding the icon.
+    [iconView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [stackView addArrangedSubview:iconView];
+  }
+
+  NSString* suggestionText =
+      IsPasswordSuggestion(_suggestion)
+          ? PasswordSuggestionDisplayText(_suggestion.value)
+          : _suggestion.value;
+
+  BOOL isPasskey =
+      _suggestion.type == autofill::SuggestionType::kWebauthnCredential;
+
+  if (isPasskey && [suggestionText length] == 0) {
+    suggestionText =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME);
+  }
+
+  NSString* displayDescription =
+      [_delegate displayDescriptionForSuggestion:_suggestion];
+
+  [self setAccessibilityLabel:AccessibilityLabel(
+                                  suggestionText, displayDescription,
+                                  _suggestion.type ==
+                                      SuggestionType::kBackupPasswordEntry)];
+  [self
+      setAccessibilityValue:l10n_util::GetNSStringF(
+                                IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
+                                base::NumberToString16(_suggestionIndex + 1),
+                                base::NumberToString16(_numberOfSuggestions))];
+  [self setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
+
+  NSString* minorValue = isPasskey ? nil : _suggestion.minorValue;
+
+  BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+
+  BOOL hasText =
+      _suggestion.type != SuggestionType::kAutocompleteAtMemoryButton &&
+      (suggestionText.length > 0 || minorValue.length > 0 ||
+       displayDescription.length > 0);
+
+  if (hasText) {
+    if (isTablet) {
+      // On tablets, the stage manager causes an issue where an infinite loop
+      // happens if we add stack views here, so we can't use more stack views
+      // until the stage manager issue is fixed. As a workaround, on tablets,
+      // since we don't need to truncate the suggestion text, the stack views
+      // can be replaced by a single attributed string to present the data the
+      // same way without having to rely on a stack of UILabel objects, which,
+      // on the plus side, might actually be more light weight in the end.
+      [stackView addArrangedSubview:AttributedTextLabel(
+                                        suggestionText, minorValue,
+                                        displayDescription, _suggestion.icon)];
+    } else {
+      // On phones, store the suggestion information in a stack view so that
+      // it can be selectively truncated if necessary.
+      UIStackView* verticalStackView =
+          [[UIStackView alloc] initWithArrangedSubviews:@[]];
+      verticalStackView.axis = UILayoutConstraintAxisVertical;
+      verticalStackView.alignment = UIStackViewAlignmentLeading;
+      verticalStackView.layoutMarginsRelativeArrangement = YES;
+      verticalStackView.layoutMargins =
+          UIEdgeInsetsMake(0, _suggestion.icon ? kSpacing : 0, 0, 0);
+      verticalStackView.spacing = kVerticalSpacing;
+      [stackView addArrangedSubview:verticalStackView];
+
+      // Insert the next subviews vertically instead of horizontally.
+      stackView = verticalStackView;
+
+      // Format the suggestion information using a stack view so that each
+      // piece of information can be truncated individually when truncation is
+      // needed.
+      NSArray<UIView*>* views =
+          TextViews(suggestionText, minorValue, displayDescription,
+                    [self isCreditCardSuggestion]);
+      for (UIView* view in views) {
+        [stackView addArrangedSubview:view];
+      }
+    }
+  }
+
+  _widthConstraint.active = NO;
+  _widthConstraint = nil;
+
+  // On phones, set a maximum width to save space on the keyboard accessory.
+  if (!isTablet) {
+    CGFloat maximumWidth = [self maximumWidth];
+    if (maximumWidth < CGFLOAT_MAX) {
+      _widthConstraint =
+          [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth];
+      _widthConstraint.active = YES;
+    }
+  }
+}
 
 // Sets the corner radius. Can be dymamic if the liquid glass effect is enabled.
 - (void)setCornerRadius:(CGFloat)cornerRadius {
