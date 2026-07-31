@@ -82,20 +82,6 @@ class DataDecoder {
   // InProcessDataDecoderService.
   mojom::DataDecoderService* GetService();
 
-  // Parses the potentially unsafe JSON string in |json| using this
-  // DataDecoder's service instance or some other platform-specific decoding
-  // facility. The parser conforms to RFC 8259.
-  //
-  // Note that |callback| will only be called if the parsing operation succeeds
-  // or fails before this DataDecoder is destroyed.
-  void ParseJson(const std::string& json, ValueParseCallback callback);
-
-  // Parses the potentially unsafe JSON string in |json|. This static helper
-  // uses a dedicated instance of the Data Decoder service on applicable
-  // platforms.
-  static void ParseJsonIsolated(const std::string& json,
-                                ValueParseCallback callback);
-
   // Parses the potentially unsafe string in |header| as a structured header
   // item using this DataDecoder's service instance or some other
   // platform-specific decoding facility.

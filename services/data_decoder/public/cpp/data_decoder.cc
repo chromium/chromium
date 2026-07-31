@@ -9,14 +9,11 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
@@ -137,20 +134,6 @@ void BindInProcessService(
 }
 #endif
 
-void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
-                     DataDecoder::ValueParseCallback callback,
-                     base::JSONReader::Result value_with_error) {
-  if (is_cancelled->data) {
-    return;
-  }
-
-  if (!value_with_error.has_value()) {
-    std::move(callback).Run(base::unexpected(value_with_error.error().message));
-  } else {
-    std::move(callback).Run(std::move(*value_with_error));
-  }
-}
-
 }  // namespace
 
 DataDecoder::DataDecoder() : DataDecoder(kServiceProcessIdleTimeoutDefault) {}
@@ -183,42 +166,6 @@ mojom::DataDecoderService* DataDecoder::GetService() {
   }
 
   return service_.get();
-}
-
-void DataDecoder::ParseJson(const std::string& json,
-                            ValueParseCallback callback) {
-  // Measure decoding time by intercepting the callback.
-  callback = base::BindOnce(
-      [](base::ElapsedTimer timer, ValueParseCallback callback,
-         base::expected<base::Value, std::string> result) {
-        base::UmaHistogramTimes("Security.DataDecoder.Json.DecodingTime",
-                                timer.Elapsed());
-        std::move(callback).Run(std::move(result));
-      },
-      base::ElapsedTimer(), std::move(callback));
-
-  base::JSONReader::Result result =
-      base::JSONReader::ReadAndReturnValueWithError(json, base::JSON_PARSE_RFC);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ParsingComplete, cancel_requests_,
-                                std::move(callback), std::move(result)));
-}
-
-// static
-void DataDecoder::ParseJsonIsolated(const std::string& json,
-                                    ValueParseCallback callback) {
-  auto decoder = std::make_unique<DataDecoder>();
-  auto* raw_decoder = decoder.get();
-
-  // We bind the DataDecoder's ownership into the result callback to ensure that
-  // it stays alive until the operation is complete.
-  raw_decoder->ParseJson(
-      json, base::BindOnce(
-                [](std::unique_ptr<DataDecoder>, ValueParseCallback callback,
-                   ValueOrError result) {
-                  std::move(callback).Run(std::move(result));
-                },
-                std::move(decoder), std::move(callback)));
 }
 
 void DataDecoder::ParseStructuredHeaderItem(
