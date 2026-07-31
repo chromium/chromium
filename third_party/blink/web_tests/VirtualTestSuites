@@ -783,6 +783,28 @@
     "expires": "never"
   },
   {
+    "prefix": "subapps",
+    "owners": [
+      "vkrot@google.com",
+      "iwa-team@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win",
+      "ChromeOS"
+    ],
+    "bases": [
+      "external/wpt/subapps"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--isolated-context-origins=https://web-platform.test",
+      "--enable-blink-features=SubApps"
+    ],
+    "expires": "never"
+  },
+  {
     "prefix": "disable-css-line-clamp",
     "platforms": [
       "Linux"

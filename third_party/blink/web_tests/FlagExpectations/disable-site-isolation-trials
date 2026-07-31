@@ -166,6 +166,7 @@ external/wpt/html/document-isolation-policy/* [ Skip ]
 # IsolatedContext, so skip them here.
 virtual/isolated-context/* [ Skip ]
 virtual/isolated-context-stable/* [ Skip ]
+virtual/subapps/* [ Skip ]
 
 # Reftest failure related to off-main-thread interaction (imperceptible AA differences)
 crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
