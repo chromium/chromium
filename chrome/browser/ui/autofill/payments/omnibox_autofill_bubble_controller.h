@@ -107,6 +107,12 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
       const AutofillSuggestionDelegate::SuggestionMetadata&)>
       did_accept_suggestion_callback_;
 
+  // Whether the Google Pay logo should be shown in the omnibox autofill bubble.
+  // Saved as a state variable and determined upon initial bubble initialization
+  // because GUIDs can potentially change during the flow and cause
+  // discrepancies.
+  bool should_show_google_pay_logo_ = false;
+
   base::WeakPtrFactory<OmniboxAutofillBubbleController> weak_ptr_factory_{this};
 };
 

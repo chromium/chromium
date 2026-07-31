@@ -83,6 +83,23 @@ void OmniboxAutofillBubbleController::Initialize(
   did_select_suggestion_callback_ = std::move(did_select_suggestion);
   did_deselect_suggestion_callback_ = std::move(did_deselect_suggestion);
   did_accept_suggestion_callback_ = std::move(did_accept_suggestion);
+
+  // If any cards are server cards, ensure the GPay logo is shown. Determined
+  // here at initialization time because GUIDs may update/refresh during the
+  // autofill flow.
+  // TODO(crbug.com/527195586): The underlying fix should be to use instrument
+  // IDs rather than GUIDs.
+  if (!should_show_google_pay_logo_) {
+    for (const auto& suggestion : suggestions_) {
+      const CreditCard* credit_card =
+          payments_data_manager_->GetCreditCardByGUID(
+              std::get<Suggestion::Guid>(suggestion.payload).value());
+      if (credit_card && payments_data_manager_->IsServerCard(credit_card)) {
+        should_show_google_pay_logo_ = true;
+        break;
+      }
+    }
+  }
 }
 
 // static
@@ -134,14 +151,7 @@ const std::vector<Suggestion>& OmniboxAutofillBubbleController::GetSuggestions()
 }
 
 bool OmniboxAutofillBubbleController::ShouldShowGooglePayLogo() const {
-  for (const auto& suggestion : suggestions_) {
-    const CreditCard* credit_card = payments_data_manager_->GetCreditCardByGUID(
-        std::get<Suggestion::Guid>(suggestion.payload).value());
-    if (credit_card && payments_data_manager_->IsServerCard(credit_card)) {
-      return true;
-    }
-  }
-  return false;
+  return should_show_google_pay_logo_;
 }
 
 void OmniboxAutofillBubbleController::OnSuggestionsShown() {
