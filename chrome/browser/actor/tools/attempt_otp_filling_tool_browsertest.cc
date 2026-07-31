@@ -712,8 +712,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       "is_actor_login=true;"));
 }
 
-IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       IsActorLoginFlow_Mismatch_RequiresConfirmation) {
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    IsActorLoginFlow_MainFrameOriginMismatch_RequiresConfirmation) {
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -748,8 +749,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       "is_actor_login=false;"));
 }
 
-IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       IsActorLoginFlow_AffiliationMatch_SilentFilling) {
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    IsActorLoginFlow_MainFrameAffiliationMatch_SilentFilling) {
   const GURL url = embedded_https_test_server().GetURL("b.example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -795,8 +797,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       "is_actor_login=true;"));
 }
 
-IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       IsActorLoginFlow_PslMatchStrong_RequiresConfirmation) {
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    IsActorLoginFlow_MainFramePslMatchStrong_RequiresConfirmation) {
   const GURL url = embedded_https_test_server().GetURL("sub1.example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -831,8 +834,9 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       "is_actor_login=false;"));
 }
 
-IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       IsActorLoginFlow_PslMatchWeak_SilentFilling) {
+IN_PROC_BROWSER_TEST_F(
+    AttemptOtpFillingToolBrowserTest,
+    IsActorLoginFlow_MainFramePslNavigation_RequiresConfirmation) {
   const GURL url = embedded_https_test_server().GetURL("sub1.example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -843,18 +847,6 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 
   // Sign-in started on sub2.example.com.
   GURL login_url = GURL("https://sub2.example.com");
-
-  // Seed affiliation group containing page origin and standard HTTPS origin
-  // of the sender to allow OTP sender matching (which requires exact or
-  // affiliated matches).
-  // The login flow match (`sub2.example.com` vs `sub1.example.com`) is still
-  // tested via PSL match since they are not affiliated.
-  std::string page_spec = url::Origin::Create(url).Serialize();
-  fake_affiliation_service()->AddAffiliationGroup({
-      affiliations::Facet(affiliations::FacetURI::FromCanonicalSpec(page_spec)),
-      affiliations::Facet(
-          affiliations::FacetURI::FromCanonicalSpec("https://example.com")),
-  });
 
   actor_task()
       .GetExecutionEngine()
@@ -867,15 +859,19 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
-  SetExpectedOtp("1234");
+  SeedTestServerAffiliation("sub1.example.com");
+  SetExpectedOtp("1234", "sender@sub1.example.com");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectOkResult(result);
+  ExpectErrorResult(result, mojom::ActionResultCode::kOtpUnableToFill);
 
   EXPECT_TRUE(HasJournalEntryWithDetails(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
-      "is_actor_login=true;"));
+      "is_actor_login=false;"));
+  EXPECT_TRUE(HasJournalEntryWithDetails(
+      "AttemptOtpFillingTool::OnOtpRetrieved",
+      "status=Showing Gmail OTP confirmation dialog;"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -929,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     AttemptOtpFillingToolBrowserTest,
-    IsActorLoginFlow_EmbeddedOtpIframeOriginMismatch_ToolFails) {
+    IsActorLoginFlow_OtpFrameOriginMismatch_RequiresConfirmation) {
   const GURL main_url = embedded_https_test_server().GetURL(
       "example.com", "/actor/positioned_iframe.html");
   const GURL iframe_url =
@@ -979,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       IsActorLoginFlow_EmbeddedOtpIframe_SucceedsValidation) {
+                       IsActorLoginFlow_OtpFramePslMatchWeak_SilentFilling) {
   const GURL main_url = embedded_https_test_server().GetURL(
       "example.com", "/actor/positioned_iframe.html");
   const GURL iframe_url = embedded_https_test_server().GetURL(

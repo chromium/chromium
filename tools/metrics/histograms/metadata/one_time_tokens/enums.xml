@@ -112,6 +112,7 @@ found in the LICENSE file.
   <int value="7" label="GroupedOrOtherMismatch"/>
   <int value="8" label="ExactMatchAllowed"/>
   <int value="9" label="AffiliatedMatchAllowed"/>
+  <int value="10" label="MainFrameOriginMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:VerifyIsActorLoginFlowEvent) -->

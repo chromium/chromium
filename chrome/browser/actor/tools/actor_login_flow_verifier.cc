@@ -78,6 +78,7 @@ ActorLoginFlowVerifier::~ActorLoginFlowVerifier() = default;
 void ActorLoginFlowVerifier::VerifyIsActorLoginFlow(
     content::FrameTreeNodeId otp_frame_id,
     const url::Origin& otp_frame_origin,
+    const url::Origin& main_frame_origin,
     const std::optional<autofill::ActorLoginContext>& context,
     base::OnceCallback<void(bool)> callback) {
   RecordActorLoginFlowVerification(kStart);
@@ -111,6 +112,41 @@ void ActorLoginFlowVerifier::VerifyIsActorLoginFlow(
     return;
   }
 
+  // Verify that the login flow started on the same origin (or an affiliated
+  // one) as the current main frame origin. This prevents silent filling if the
+  // user navigated away from the original login flow to a different, unrelated
+  // website.
+  domain_relation_checker_.Check(
+      context->origin, main_frame_origin,
+      base::BindOnce(&ActorLoginFlowVerifier::OnMainFrameOriginMatchEvaluated,
+                     weak_ptr_factory_.GetWeakPtr(), otp_frame_origin,
+                     context->origin, context->should_use_strong_matching,
+                     std::move(callback)));
+}
+
+void ActorLoginFlowVerifier::OnMainFrameOriginMatchEvaluated(
+    const url::Origin& otp_frame_origin,
+    const url::Origin& context_origin,
+    bool should_use_strong_matching,
+    base::OnceCallback<void(bool)> callback,
+    std::optional<affiliations::MatchType> match_type) {
+  if (!match_type.has_value()) {
+    RecordActorLoginFlowVerification(kMainFrameOriginMismatch);
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Only exact or affiliated matches are allowed for the main frame.
+  bool is_exact_match = *match_type == affiliations::MatchType::kExact;
+  bool is_affiliated_match =
+      static_cast<int>(*match_type) &
+      static_cast<int>(affiliations::MatchType::kAffiliated);
+  if (!is_exact_match && !is_affiliated_match) {
+    RecordActorLoginFlowVerification(kMainFrameOriginMismatch);
+    std::move(callback).Run(false);
+    return;
+  }
+
   // Last check: verify OTP form origin and main frame origin are related.
   // We need to make sure that we don't skip user confirmation for OTPs that do
   // not belong to actor login flows. Actor login fills credentials in all
@@ -123,9 +159,9 @@ void ActorLoginFlowVerifier::VerifyIsActorLoginFlow(
   // frame where actor login flow started and rely on the fact that affiliations
   // are transitive.
   domain_relation_checker_.Check(
-      context->origin, otp_frame_origin,
+      context_origin, otp_frame_origin,
       base::BindOnce(&OnOtpFrameOriginMatchEvaluated,
-                     context->should_use_strong_matching, std::move(callback)));
+                     should_use_strong_matching, std::move(callback)));
 }
 
 }  // namespace actor

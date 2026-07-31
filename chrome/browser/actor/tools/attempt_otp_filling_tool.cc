@@ -334,9 +334,16 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
           .GetActorOneTimeTokenFillingService()
           .ConsumeLoginContext();
 
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+  url::Origin main_frame_origin =
+      web_contents
+          ? web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+          : url::Origin();
+
   actor_login_flow_verifier_->VerifyIsActorLoginFlow(
       otp_frame->GetFrameTreeNodeId(), otp_frame->GetLastCommittedOrigin(),
-      context,
+      main_frame_origin, context,
       base::BindOnce(&AttemptOtpFillingTool::OnActorLoginFlowChecked,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

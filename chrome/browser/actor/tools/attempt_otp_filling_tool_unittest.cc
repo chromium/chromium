@@ -116,6 +116,7 @@ class MockActorLoginFlowVerifier : public ActorLoginFlowVerifier {
               VerifyIsActorLoginFlow,
               (content::FrameTreeNodeId otp_frame_id,
                const url::Origin& otp_frame_origin,
+               const url::Origin& main_frame_origin,
                const std::optional<autofill::ActorLoginContext>& context,
                base::OnceCallback<void(bool)> callback),
               (override));
@@ -766,7 +767,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
       std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
           fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
-      .WillOnce(base::test::RunOnceCallback<3>(false));
+      .WillOnce(base::test::RunOnceCallback<4>(false));
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool(
       {target}, /*for_signin=*/true,
@@ -799,7 +800,7 @@ TEST_F(AttemptOtpFillingToolTest,
       std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
           fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
-      .WillOnce(base::test::RunOnceCallback<3>(false));
+      .WillOnce(base::test::RunOnceCallback<4>(false));
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool = CreateTool(
       {target}, /*for_signin=*/true,
@@ -972,6 +973,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_FrameLostDuringVerification) {
       .WillOnce([this](
                     content::FrameTreeNodeId otp_frame_id,
                     const url::Origin& otp_frame_origin,
+                    const url::Origin& main_frame_origin,
                     const std::optional<autofill::ActorLoginContext>& context,
                     base::OnceCallback<void(bool)> callback) {
         // Simulate tab/contents going away during verification.

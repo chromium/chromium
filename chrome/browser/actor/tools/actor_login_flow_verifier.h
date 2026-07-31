@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -48,11 +49,20 @@ class ActorLoginFlowVerifier {
   virtual void VerifyIsActorLoginFlow(
       content::FrameTreeNodeId otp_frame_id,
       const url::Origin& otp_frame_origin,
+      const url::Origin& main_frame_origin,
       const std::optional<autofill::ActorLoginContext>& context,
       base::OnceCallback<void(bool)> callback);
 
  private:
+  void OnMainFrameOriginMatchEvaluated(
+      const url::Origin& otp_frame_origin,
+      const url::Origin& context_origin,
+      bool should_use_strong_matching,
+      base::OnceCallback<void(bool)> callback,
+      std::optional<affiliations::MatchType> match_type);
+
   affiliations::DomainRelationChecker domain_relation_checker_;
+  base::WeakPtrFactory<ActorLoginFlowVerifier> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

@@ -28,7 +28,8 @@ enum class VerifyIsActorLoginFlowEvent {
   kGroupedOrOtherMismatch = 7,
   kExactMatchAllowed = 8,
   kAffiliatedMatchAllowed = 9,
-  kMaxValue = kAffiliatedMatchAllowed
+  kMainFrameOriginMismatch = 10,
+  kMaxValue = kMainFrameOriginMismatch
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:VerifyIsActorLoginFlowEvent)
 
