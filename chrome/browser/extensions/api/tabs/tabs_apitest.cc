@@ -326,8 +326,10 @@ class ExtensionApiCaptureTest : public ExtensionApiTabTest {
 };
 
 // https://crbug.com/40915448 Flaky on Mac.
+// TODO(crbug.com/540627656): Disabled on Linux dbg due to timeout.
 // TODO(crbug.com/488154807): Flaky on desktop Android.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
