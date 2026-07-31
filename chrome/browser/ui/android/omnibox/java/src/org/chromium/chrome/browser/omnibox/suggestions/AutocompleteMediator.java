@@ -2124,6 +2124,7 @@ class AutocompleteMediator
                 installAutocompleteObservers();
                 onInputChanged();
             } else {
+                dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
                 stopAutocomplete(AutocompleteStopReason.CLOBBERED);
                 removeAutocompleteObservers();
             }

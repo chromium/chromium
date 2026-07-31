@@ -114,6 +114,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -2556,6 +2557,26 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.endInput();
         assertFalse(mMediator.isInInputSession());
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_dismissesDeleteDialog() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        AutocompleteMatch match = mock(AutocompleteMatch.class);
+        doReturn(true).when(match).isDeletable();
+        doReturn(1L).when(match).getNativeObjectRef();
+
+        mMediator.showDeleteDialog(match, "Title", () -> {});
+
+        // Verify dialog is shown.
+        verify(mModalDialogManager).showDialog(any(), eq(ModalDialogManager.ModalDialogType.APP));
+
+        // Deactivate: should dismiss the dialog.
+        mMediator.onTopResumedActivityChanged(false);
+        verify(mModalDialogManager)
+                .dismissDialog(any(), eq(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
     }
 
     private void setUpSiteSearchSpaceTrigger(
