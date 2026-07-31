@@ -270,6 +270,11 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "x86-64-e4"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 71
         },

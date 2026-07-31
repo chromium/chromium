@@ -680,6 +680,14 @@ ci.thin_tester(
             ),
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
+                    # Move to faster machine types to reduce capacity impact.
+                    # TODO(crbug.com/475614290): Can remove this if/when
+                    # everything's been migrated.
+                    optional_dimensions = {
+                        30: {
+                            "cpu": "x86-64-e4",
+                        },
+                    },
                     shards = 20,
                 ),
             ),
