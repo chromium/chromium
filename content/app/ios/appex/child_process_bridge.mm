@@ -13,6 +13,7 @@
 #include "base/apple/mach_port_rendezvous_ios.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -81,7 +82,7 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
     g_argc = xpc_array_get_count(args_array);
     g_argv.resize(g_argc);
     for (size_t i = 0; i < g_argc; ++i) {
-      g_argv[i] = strdup(xpc_array_get_string(args_array, i));
+      g_argv[i] = UNSAFE_TODO(strdup(xpc_array_get_string(args_array, i)));
     }
 
     // Setup stdout/stderr.
