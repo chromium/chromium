@@ -151,12 +151,25 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 new SideUiSize(0, HeightType.NOT_APPLICABLE),
                 mCoordinator.determineShowableSize(
                         /* availableWidth= */ mExpandedRailWidth - 1,
-                        /* windowWidth= */ mWideWindowWidth));
+                        /* windowWidth= */ mWideWindowWidth,
+                        /* isFullscreen= */ false));
         assertEquals(
                 new SideUiSize(mExpandedRailWidth, HeightType.TOOLBAR),
                 mCoordinator.determineShowableSize(
                         /* availableWidth= */ mExpandedRailWidth,
-                        /* windowWidth= */ mWideWindowWidth));
+                        /* windowWidth= */ mWideWindowWidth,
+                        /* isFullscreen= */ false));
+    }
+
+    @Test
+    @SmallTest
+    public void testDetermineShowableSize_FullscreenReturnsZeroWidth() {
+        assertEquals(
+                new SideUiSize(0, HeightType.NOT_APPLICABLE),
+                mCoordinator.determineShowableSize(
+                        /* availableWidth= */ mExpandedRailWidth,
+                        /* windowWidth= */ mWideWindowWidth,
+                        /* isFullscreen= */ true));
     }
 
     @Test
@@ -433,7 +446,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertEquals(
                 expectedWidth,
                 mCoordinator.determineShowableSize(
-                                /* availableWidth= */ mExpandedRailWidth, windowWidth)
+                                /* availableWidth= */ mExpandedRailWidth,
+                                windowWidth,
+                                /* isFullscreen= */ false)
                         .width);
     }
 

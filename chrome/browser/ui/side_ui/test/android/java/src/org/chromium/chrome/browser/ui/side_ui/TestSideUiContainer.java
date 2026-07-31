@@ -42,6 +42,9 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** The last {@code windowWidth} received by {@link #determineShowableSize}. */
     public @Nullable @Px Integer mLastWindowWidth;
 
+    /** The last {@code isFullscreen} received by {@link #determineShowableSize}. */
+    public boolean mLastIsFullscreen;
+
     /** Maximum width for this {@link SideUiContainer}. */
     public int mMaxWidthDp = DEFAULT_MAX_WIDTH_DP;
 
@@ -98,13 +101,15 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
-    public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
+    public SideUiSize determineShowableSize(
+            @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
         assert availableWidth <= windowWidth;
         assert mMinWidthDp <= mMaxWidthDp;
         assert mMaxWidthDp <= windowWidth;
 
         mLastAvailableWidth = availableWidth;
         mLastWindowWidth = windowWidth;
+        mLastIsFullscreen = isFullscreen;
 
         @Px int minWidth = ViewUtils.dpToPx(mSideUiContainerView.getContext(), mMinWidthDp);
         @Px int maxWidth = ViewUtils.dpToPx(mSideUiContainerView.getContext(), mMaxWidthDp);

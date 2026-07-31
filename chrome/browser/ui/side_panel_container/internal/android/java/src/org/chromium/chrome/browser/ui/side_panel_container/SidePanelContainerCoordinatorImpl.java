@@ -309,8 +309,9 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public SideUiSize determineShowableSize(@Px int availableWidth, @Px int windowWidth) {
-        log(TAG, "determineShowableSize", availableWidth, windowWidth);
+    public SideUiSize determineShowableSize(
+            @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
+        log(TAG, "determineShowableSize", availableWidth, windowWidth, isFullscreen);
         ThreadUtils.assertOnUiThread();
 
         int availableWidthDp = ViewUtils.pxToDp(mParentActivity, availableWidth);

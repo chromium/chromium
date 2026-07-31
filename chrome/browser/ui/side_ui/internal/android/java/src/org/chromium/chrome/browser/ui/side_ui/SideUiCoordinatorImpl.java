@@ -34,11 +34,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
@@ -53,7 +56,8 @@ import java.util.Map;
 final class SideUiCoordinatorImpl
         implements SideUiCoordinator,
                 ConfigurationChangedObserver,
-                BrowserControlsStateProvider.Observer {
+                BrowserControlsStateProvider.Observer,
+                FullscreenManager.Observer {
 
     private static final long TRANSITION_DURATION_MS = 350L;
 
@@ -61,6 +65,7 @@ final class SideUiCoordinatorImpl
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TopControlsStacker mTopControlsStacker;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final FullscreenManager mFullscreenManager;
 
     private final ViewGroup mAnchorContainerParent;
 
@@ -99,6 +104,7 @@ final class SideUiCoordinatorImpl
      * @param layoutStateProviderSupplier Supplier for the {@link LayoutStateProvider}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
      *     top controls changes.
+     * @param fullscreenManager {@link FullscreenManager} to observe fullscreen mode switching.
      * @param topControlsStacker The {@link TopControlsStacker} to calculate heights for top
      *     controls.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
@@ -115,6 +121,7 @@ final class SideUiCoordinatorImpl
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
+            FullscreenManager fullscreenManager,
             TopControlsStacker topControlsStacker,
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
@@ -124,6 +131,7 @@ final class SideUiCoordinatorImpl
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mFullscreenManager = fullscreenManager;
         mTopControlsStacker = topControlsStacker;
         mAnchorContainerParent = anchorContainerParent;
 
@@ -151,6 +159,7 @@ final class SideUiCoordinatorImpl
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
         browserControlsStateProvider.addObserver(this);
+        mFullscreenManager.addObserver(this);
         mActivityLifecycleDispatcher.register(this);
     }
 
@@ -211,6 +220,7 @@ final class SideUiCoordinatorImpl
         mSideUiContainers.clear();
         mTabStripBottomPxSupplier.removeObserver(mTabStripBottomPxObserver);
         mBrowserControlsStateProvider.removeObserver(this);
+        mFullscreenManager.removeObserver(this);
         mWebContentsHairlineManager.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }
@@ -258,7 +268,9 @@ final class SideUiCoordinatorImpl
         ThreadUtils.assertOnUiThread();
         @Px int windowWidth = getWindowWidth();
         @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
-        var sideUiShowability = determineSideUiShowability(windowWidth, minWebContentsWidth);
+        boolean isFullscreen = mFullscreenManager.getPersistentFullscreenMode();
+        var sideUiShowability =
+                determineSideUiShowability(windowWidth, minWebContentsWidth, isFullscreen);
 
         return sideUiShowability.mShowableSideUiIds.contains(sideUiId);
     }
@@ -326,6 +338,17 @@ final class SideUiCoordinatorImpl
         updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
     }
 
+    // FullscreenManager.Observer implementation:
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
+        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+    }
+
     @VisibleForTesting
     @Nullable SideUiContainer getSideUiContainerById(@SideUiId int id) {
         for (SideUiContainer container : mSideUiContainers) {
@@ -385,9 +408,11 @@ final class SideUiCoordinatorImpl
         // 3. Determine the new SideUiShowability, SideUiSpecs, and AnchorContainerTopMargins.
         @Px int windowWidth = getWindowWidth();
         @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        boolean isFullscreen = mFullscreenManager.getPersistentFullscreenMode();
         SideUiShowability newSideUiShowability =
-                determineSideUiShowability(windowWidth, minWebContentsWidth);
-        SideUiSpecs newSideUiSpecs = determineSideUiSpecs(windowWidth, minWebContentsWidth);
+                determineSideUiShowability(windowWidth, minWebContentsWidth, isFullscreen);
+        SideUiSpecs newSideUiSpecs =
+                determineSideUiSpecs(windowWidth, minWebContentsWidth, isFullscreen);
         AnchorContainerTopMargins newTopMargins =
                 determineAnchorContainerTopMargins(newSideUiSpecs);
 
@@ -481,16 +506,19 @@ final class SideUiCoordinatorImpl
      *
      * @param windowWidth The current window width (in px).
      * @param minWebContentsWidth The minimum width reserved for {@code WebContents} (in px).
+     * @param isFullscreen Whether the app is in persistent fullscreen mode.
      * @return The new {@link SideUiShowability}.
      */
     private SideUiShowability determineSideUiShowability(
-            @Px int windowWidth, @Px int minWebContentsWidth) {
+            @Px int windowWidth, @Px int minWebContentsWidth, boolean isFullscreen) {
         int availableWidth = windowWidth - minWebContentsWidth;
         List<@SideUiId Integer> showableSideUiIds = new ArrayList<>();
         List<@SideUiId Integer> unShowableSideUiIds = new ArrayList<>();
 
         for (var container : mSideUiContainers) {
-            int showableWidth = container.determineShowableSize(availableWidth, windowWidth).width;
+            int showableWidth =
+                    container.determineShowableSize(availableWidth, windowWidth, isFullscreen)
+                            .width;
             if (showableWidth > 0) {
                 showableSideUiIds.add(container.getSideUiId());
             } else {
@@ -512,9 +540,11 @@ final class SideUiCoordinatorImpl
      *
      * @param windowWidth The current window width (in px).
      * @param minWebContentsWidth The minimum width reserved for {@code WebContents} (in px).
+     * @param isFullscreen Whether the app is in persistent fullscreen mode.
      * @return The new {@link SideUiSpecs}.
      */
-    private SideUiSpecs determineSideUiSpecs(@Px int windowWidth, @Px int minWebContentsWidth) {
+    private SideUiSpecs determineSideUiSpecs(
+            @Px int windowWidth, @Px int minWebContentsWidth, boolean isFullscreen) {
         int availableWidth = windowWidth - minWebContentsWidth;
         Map<@AnchorSide Integer, SideUiSize> sideUiSpecs = new ArrayMap<>(); // anchorSide -> spec
 
@@ -525,7 +555,8 @@ final class SideUiCoordinatorImpl
         for (var container : mSideUiContainers) {
             SideUiSize newSideUiSize =
                     container.hasContentToShow()
-                            ? container.determineShowableSize(availableWidth, windowWidth)
+                            ? container.determineShowableSize(
+                                    availableWidth, windowWidth, isFullscreen)
                             : new SideUiSize(0, HeightType.NOT_APPLICABLE);
             sideUiSpecs.put(container.getAnchorSide(), newSideUiSize);
             availableWidth = Math.max(availableWidth - newSideUiSize.width, 0);
@@ -550,15 +581,18 @@ final class SideUiCoordinatorImpl
 
             @Px
             int marginForTopControls =
-                    switch (heightType) {
-                        case HeightType.TOOLBAR -> 0;
-                        case HeightType.WEB_CONTENTS ->
-                                mTopControlsStacker.getVisibleTopControlsTotalHeight();
-                        default ->
-                                // includes HeightType.NOT_APPLICABLE
-                                throw new IllegalStateException(
-                                        "Unable to get top margin for HeightType: " + heightType);
-                    };
+                    mFullscreenManager.getPersistentFullscreenMode()
+                            ? 0
+                            : switch (heightType) {
+                                case HeightType.TOOLBAR -> 0;
+                                case HeightType.WEB_CONTENTS ->
+                                        mTopControlsStacker.getVisibleTopControlsTotalHeight();
+                                default ->
+                                        // includes HeightType.NOT_APPLICABLE
+                                        throw new IllegalStateException(
+                                                "Unable to get top margin for HeightType: "
+                                                        + heightType);
+                            };
             topMargins.put(anchorSide, marginForTabStrip + marginForTopControls);
         }
 
