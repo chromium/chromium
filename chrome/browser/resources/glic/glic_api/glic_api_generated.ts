@@ -1286,6 +1286,8 @@ export declare interface TaskOptions {
   duration?: TaskDuration;
   // The feature mode for the task.
   featureMode?: FeatureMode;
+  // The initial target tab to actuate on.
+  actuationTabId?: string;
 }
 
 // A credential used for the auto-login.

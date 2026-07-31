@@ -485,6 +485,9 @@ function taskOptionsToMojo(taskOptions?: TaskOptions): TaskOptionsMojo|null {
       duration: enumFromClient(taskOptions.duration),
       featureMode:
           enumFromClient(taskOptions.featureMode ?? FeatureMode.UNSPECIFIED),
+      actuationTabId: taskOptions.actuationTabId ?
+          idFromClient(taskOptions.actuationTabId) :
+          null,
     };
   }
   return null;

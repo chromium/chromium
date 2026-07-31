@@ -33,6 +33,8 @@ struct TaskOptions {
   TaskDuration? duration;
   // The feature mode for the task.
   glic.mojom.FeatureMode? feature_mode;
+  // The initial target tab to actuate on.
+  int32? actuation_tab_id;
 };
 
 // @generate glic_api

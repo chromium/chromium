@@ -267,6 +267,24 @@ TEST_F(ActorKeyedServiceTest, GetActiveTasksDuringStateChangeCallback) {
   EXPECT_TRUE(callback_called);
 }
 
+TEST_F(ActorKeyedServiceTest, InitialTabAssociationOnCreate) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  const tabs::TabHandle tab_handle(123);
+  auto options = webui::mojom::TaskOptions::New();
+  options->actuation_tab_id = tab_handle.raw_value();
+
+  TaskId id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
+      /*delegate=*/nullptr);
+
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  EXPECT_TRUE(task->HasTab(tab_handle));
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_EQ(task->GetTabs().size(), 1u);
+  EXPECT_TRUE(task->GetTabs().contains(tab_handle));
+}
+
 }  // namespace
 
 }  // namespace actor

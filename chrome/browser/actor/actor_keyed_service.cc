@@ -392,10 +392,20 @@ TaskId ActorKeyedService::CreateTaskImpl(
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
   const TaskId task_id = next_task_id_.GenerateNextId();
+  tabs::TabHandle initial_tab_handle = tabs::TabHandle::Null();
+  if (options && options->actuation_tab_id.has_value()) {
+    initial_tab_handle = tabs::TabHandle(options->actuation_tab_id.value());
+  }
+
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), *this, task_id,
       std::move(ui_event_dispatcher), std::move(options), source_info,
       policy_checker, std::move(delegate), initial_invocation_source);
+
+  if (initial_tab_handle != tabs::TabHandle::Null()) {
+    actor_task->AddTab(initial_tab_handle, /*stop_task_on_detach=*/true,
+                       base::DoNothing());
+  }
 
   active_tasks_[task_id] = std::move(actor_task);
 
