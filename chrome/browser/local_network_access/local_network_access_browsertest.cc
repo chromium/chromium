@@ -30,6 +30,7 @@
 #include "extensions/common/extension_builder.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 // Local Network Access browser tests that don't fit into the other files.
@@ -183,9 +184,33 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 // 0.0.0.0 TESTS
 // ================
 
+class LocalNetworkAccessNullIPBrowserTest
+    : public LocalNetworkAccessBrowserTestBase {
+ public:
+  net::EmbeddedTestServer& public_server() { return public_server_; }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    public_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(public_server_.Start());
+    LocalNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {network::GenerateIpAddressSpaceOverride(
+             https_local_server(), network::mojom::IPAddressSpace::kLocal),
+         network::GenerateIpAddressSpaceOverride(
+             https_public_server(), network::mojom::IPAddressSpace::kPublic),
+         network::GenerateIpAddressSpaceOverride(
+             public_server_, network::mojom::IPAddressSpace::kPublic)},
+        *command_line);
+  }
+
+ private:
+  net::EmbeddedTestServer public_server_{net::EmbeddedTestServer::TYPE_HTTP};
+};
+
 // This test verifies that a 0.0.0.0 subresource is blocked on a nonsecure
 // public URL.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessNullIPBrowserTest,
                        NullIPBlockedOnNonsecure) {
   if constexpr (BUILDFLAG(IS_WIN)) {
     GTEST_SKIP() << "0.0.0.0 behavior varies across platforms and is "
@@ -193,10 +218,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   }
 
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_test_server()->GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
+      web_contents(), public_server().GetURL("a.com", kNoFaviconPath)));
   GURL subresource_url =
       embedded_test_server()->GetURL("0.0.0.0", "/cors-ok.txt");
   EXPECT_EQ(false,
