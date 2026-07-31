@@ -6,25 +6,22 @@ package org.chromium.chrome.browser.payments;
 
 import android.text.TextUtils;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.payments.ErrorStrings;
 
 import java.lang.reflect.Field;
 
 /** Tests for generated {@link ErrorStrings.java}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class PaymentErrorStringsTest {
     // Tests that error strings are generated successfully and have non-empty values.
     @Test
-    @SmallTest
-    @Feature({"Payments"})
     public void checkNonemptyTest() throws Throwable {
         Field[] fields = ErrorStrings.class.getFields();
         for (Field f : fields) {

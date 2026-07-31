@@ -1167,13 +1167,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
     "src/org/chromium/chrome/browser/payments/WebPaymentIntentHelperTest.java",
   ]
 
-  # This test can be broken by R8 and isn't testing functionality.
-  if (is_java_debug) {
-    sources += [
-      "src/org/chromium/chrome/browser/payments/PaymentErrorStringsTest.java",
-    ]
-  }
-
   deps = [
     ":chrome_test_java_helper",
     "//components/payments/content/android:service_impl_java",
