@@ -1,0 +1,32 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+.expand-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.expand-row > .text-content-group {
+  margin-inline-end: auto;
+}
+
+cr-expand-button.cr-row {
+  align-items: flex-start;
+}
+
+cr-expand-button::part(icon) {
+  margin-inline-start: 0;
+  margin-top: 10px;
+}
+
+.no-shortcuts-found {
+  padding: 8px 20px;
+}
