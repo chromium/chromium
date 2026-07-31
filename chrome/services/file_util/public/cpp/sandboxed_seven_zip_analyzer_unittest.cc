@@ -235,6 +235,18 @@ TEST_F(SandboxedSevenZipAnalyzerTest, Encrypted) {
   EXPECT_FALSE(results.archived_binary[0].is_archive());
 }
 
+TEST_F(SandboxedSevenZipAnalyzerTest, UnsupportedCoderChainFailsAnalysis) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(
+      dir_test_data_.Append(FILE_PATH_LITERAL("unsupported_coder_chain.7z")),
+      &results);
+  EXPECT_FALSE(results.success);
+  EXPECT_EQ(ArchiveAnalysisResult::kFailedDuringIteration,
+            results.analysis_result);
+  EXPECT_FALSE(results.encryption_info.is_encrypted);
+  EXPECT_EQ(0, results.archived_binary.size());
+}
+
 TEST_F(SandboxedSevenZipAnalyzerTest, NotASevenZip) {
   safe_browsing::ArchiveAnalyzerResults results;
   RunAnalyzer(dir_test_data_.Append(FILE_PATH_LITERAL("not_a_seven_zip.7z")),

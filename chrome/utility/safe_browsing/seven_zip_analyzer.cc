@@ -93,6 +93,11 @@ bool SevenZipAnalyzer::EntryDone(seven_zip::Result result,
       awaiting_nested_ = true;
       return false;
     }
+  } else {
+    // If an unencrypted entry failed to unpack, mark the entire archive
+    // analysis as failed so we do not report it as a valid archive.
+    results()->success = false;
+    results()->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
 
   return true;
