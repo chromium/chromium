@@ -541,4 +541,15 @@ std::u16string IcuBridge::DateTimeFormatter::Format(
   return FormatWithLocale(time, options, icu_locale);
 }
 
+base::HourClockType IcuBridge::DateTimeFormatter::GetHourClockType() const {
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(status));
+  DCHECK(U_SUCCESS(status));
+  icu::UnicodeString pattern =
+      generator->getBestPattern(icu::UnicodeString("j"), status);
+  DCHECK(U_SUCCESS(status));
+  return pattern.indexOf('a') == -1 ? base::k24HourClock : base::k12HourClock;
+}
+
 }  // namespace base::i18n

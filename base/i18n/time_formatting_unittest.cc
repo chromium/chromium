@@ -659,5 +659,23 @@ TEST(TimeFormattingTest, GetHourClockType_Persian) {
   EXPECT_EQ(k24HourClock, type);
 }
 
+TEST(TimeFormattingTest, GetHourClockType_Arabic) {
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+  i18n::SetICUDefaultLocale("ar-EG");
+  HourClockType type = GetHourClockType();
+  // Arabic (Egypt) normally uses eastern Arabic-Indic digits.
+  // Verify that the hour clock type (12-hour) is correctly detected.
+  EXPECT_EQ(k12HourClock, type);
+}
+
+TEST(TimeFormattingTest, GetHourClockType_PersianIR) {
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+  // Persian (Iran) normally uses eastern Arabic-Indic digits natively.
+  // Verify that the hour clock type (24-hour) is correctly detected.
+  i18n::SetICUDefaultLocale("fa-IR");
+  HourClockType type = GetHourClockType();
+  EXPECT_EQ(k24HourClock, type);
+}
+
 }  // namespace
 }  // namespace base

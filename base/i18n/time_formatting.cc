@@ -374,39 +374,7 @@ bool TimeDurationCompactFormatWithSeconds(TimeDelta time,
 }
 
 HourClockType GetHourClockType() {
-  // TODO(satorux,jshin): Rework this with ures_getByKeyWithFallback()
-  // once it becomes public. The short time format can be found at
-  // "calendar/gregorian/DateTimePatterns/3" in the resources.
-  std::unique_ptr<icu::SimpleDateFormat> formatter(
-      static_cast<icu::SimpleDateFormat*>(
-          icu::DateFormat::createTimeInstance(icu::DateFormat::kShort)));
-  // Retrieve the short time format.
-  icu::UnicodeString pattern_unicode;
-  formatter->toPattern(pattern_unicode);
-
-  // Determine what hour clock type the current locale uses, by checking
-  // "a" (am/pm marker) in the short time format. This is reliable as "a"
-  // is used by all of 12-hour clock formats, but not any of 24-hour clock
-  // formats, as shown below.
-  //
-  // % grep -A4 DateTimePatterns third_party/icu/source/data/locales/*.txt |
-  //   grep -B1 -- -- |grep -v -- '--' |
-  //   perl -nle 'print $1 if /^\S+\s+"(.*)"/' |sort -u
-  //
-  // H.mm
-  // H:mm
-  // HH.mm
-  // HH:mm
-  // a h:mm
-  // ah:mm
-  // ahh:mm
-  // h-mm a
-  // h:mm a
-  // hh:mm a
-  //
-  // See http://userguide.icu-project.org/formatparse/datetime for details
-  // about the date/time format syntax.
-  return pattern_unicode.indexOf('a') == -1 ? k24HourClock : k12HourClock;
+  return GetDateTimeFormatter().GetHourClockType();
 }
 
 }  // namespace base

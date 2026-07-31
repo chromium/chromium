@@ -70,6 +70,9 @@ class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
                         const LanguageTag& locale,
                         const DateTimeFormatterOptions& options) const;
 
+  // Returns the hour clock type for the default locale.
+  base::HourClockType GetHourClockType() const;
+
   explicit DateTimeFormatter(base::PassKey<IcuBridge>) {}
 };
 

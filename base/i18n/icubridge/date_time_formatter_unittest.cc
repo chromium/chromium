@@ -10,6 +10,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -1647,6 +1648,27 @@ TEST_F(DateTimeFormatterTest, MD_AllChromiumPlatformLocales) {
                                    datetime_options::MD::Medium(),
                                    datetime_options::MD::Long()},
                        .expectations = expectations}});
+}
+
+TEST_F(DateTimeFormatterTest, GetHourClockType) {
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  // Test zero-argument version (which checks default locale) under different
+  // default locales.
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+
+  i18n::SetICUDefaultLocale("en-US");
+  EXPECT_EQ(base::k12HourClock, formatter.GetHourClockType());
+
+  i18n::SetICUDefaultLocale("en-GB");
+  EXPECT_EQ(base::k24HourClock, formatter.GetHourClockType());
+
+  i18n::SetICUDefaultLocale("ar-EG");
+  EXPECT_EQ(base::k12HourClock, formatter.GetHourClockType());
+
+  i18n::SetICUDefaultLocale("fa-IR");
+  EXPECT_EQ(base::k24HourClock, formatter.GetHourClockType());
 }
 
 }  // namespace base::i18n
