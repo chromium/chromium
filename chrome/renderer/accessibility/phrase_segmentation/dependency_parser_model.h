@@ -60,7 +60,7 @@ class DependencyParserModel {
 
   // Runs the TFLite dependency parser model on a string. This will return
   // a vector of dependency head for each word in the string.
-  std::vector<size_t> GetDependencyHeads(base::span<const std::string> input);
+  std::vector<size_t> GetDependencyHeads(const std::vector<std::string>& input);
 
  private:
   // Returns the dependency head of each node in a dependency graph. The input

@@ -28,16 +28,13 @@
 namespace {
 
 // Returns the dependency parser model for this renderer process.
-DependencyParserModel& GetDependencyParserModel_() {
-  static base::NoDestructor<DependencyParserModel> instance;
+// All access to this model is asynchronous and safely executed on a background
+// sequenced task runner.
+base::SequenceBound<DependencyParserModel>& GetDependencyParserModel_() {
+  static base::NoDestructor<base::SequenceBound<DependencyParserModel>>
+      instance(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   return *instance;
-}
-
-std::vector<size_t> GetDependencyHeads(base::span<const std::string> input) {
-  DependencyParserModel& dependency_parser_model = GetDependencyParserModel_();
-  return dependency_parser_model.IsAvailable()
-             ? dependency_parser_model.GetDependencyHeads(input)
-             : std::vector<size_t>();
 }
 
 }  // namespace
@@ -156,7 +153,8 @@ void ReadAloudAppModel::PreprocessTextForSpeech(
   }
 }
 
-DependencyParserModel& ReadAloudAppModel::GetDependencyParserModel() {
+base::SequenceBound<DependencyParserModel>&
+ReadAloudAppModel::GetDependencyParserModel() {
   return GetDependencyParserModel_();
 }
 
@@ -210,11 +208,11 @@ void ReadAloudAppModel::CalculatePhrases(
       static_cast<std::string (*)(std::u16string_view)>(&base::UTF16ToUTF8));
 
   // Perform computation of dependency heads asynchronously.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetDependencyHeads, phrase_tokens),
-      base::BindOnce(&ReadAloudAppModel::UpdatePhraseBoundaries,
-                     weak_ptr_factory_.GetWeakPtr(), phrase_tokens));
+  GetDependencyParserModel_()
+      .AsyncCall(&DependencyParserModel::GetDependencyHeads)
+      .WithArgs(phrase_tokens)
+      .Then(base::BindOnce(&ReadAloudAppModel::UpdatePhraseBoundaries,
+                           weak_ptr_factory_.GetWeakPtr(), phrase_tokens));
 }
 
 static const Strategy kPhraseStrategy = Strategy::kWords;

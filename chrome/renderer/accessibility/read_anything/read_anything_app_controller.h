@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/scoped_observation.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
@@ -403,7 +404,10 @@ class ReadAnythingAppController
   // available.
   void UpdateDependencyParserModel(base::File model_file);
 
-  DependencyParserModel& GetDependencyParserModelForTesting();
+  void OnDependencyParserModelAvailabilityChecked(bool is_available);
+
+  base::SequenceBound<DependencyParserModel>&
+  GetDependencyParserModelForTesting();
 
   // Called when distillation has completed.
   void OnAXTreeDistilled(const ui::AXTreeID& tree_id,

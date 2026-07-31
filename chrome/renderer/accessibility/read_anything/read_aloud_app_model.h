@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ALOUD_APP_MODEL_H_
 
 #include "base/metrics/single_sample_metrics.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
@@ -136,7 +137,7 @@ class ReadAloudAppModel {
                                const std::set<ui::AXNodeID>* current_nodes);
 
   // Get the dependency parsing model for this renderer process.
-  DependencyParserModel& GetDependencyParserModel();
+  base::SequenceBound<DependencyParserModel>& GetDependencyParserModel();
 
   // Increments the processed_granularity_index_, updating ReadAloud's state of
   // the current granularity to refer to the next granularity. The current

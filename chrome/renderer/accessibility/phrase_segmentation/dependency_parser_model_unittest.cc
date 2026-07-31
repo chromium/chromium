@@ -127,9 +127,9 @@ TEST_F(DependencyParserModelValidTest, GetDependencyHeads) {
   // #             - cream(11)
   // #               children:
   // #                 - or(10)
-  static const auto input = std::to_array<std::string>(
-      {"Ice", "cream", "is", "a", "frozen", "dessert", "typically", "made",
-       "from", "milk", "or", "cream"});
+  const std::vector<std::string> input = {
+      "Ice",       "cream", "is",   "a",    "frozen", "dessert",
+      "typically", "made",  "from", "milk", "or",     "cream"};
   auto prediction = dependency_parser_model_->GetDependencyHeads(input);
   EXPECT_THAT(prediction,
               ::testing::ElementsAre(1, 5, 5, 5, 5, 5, 7, 5, 9, 7, 11, 9));
