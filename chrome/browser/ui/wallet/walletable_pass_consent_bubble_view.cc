@@ -38,10 +38,10 @@ std::unique_ptr<views::BoxLayoutView> GetSubtitleDescriptionContainer() {
 }  // namespace
 
 WalletablePassConsentBubbleView::WalletablePassConsentBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     WalletablePassConsentBubbleController* controller)
-    : WalletablePassBubbleViewBase(anchor_view, web_contents, controller),
+    : WalletablePassBubbleViewBase(anchor, web_contents, controller),
       pass_category_(controller->pass_category()),
       controller_(controller->GetWeakPtr()) {
   set_fixed_width(kBubbleWidth);

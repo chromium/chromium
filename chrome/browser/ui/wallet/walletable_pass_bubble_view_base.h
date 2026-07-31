@@ -7,10 +7,7 @@
 
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-
-namespace views {
-class View;
-}  // namespace views
+#include "ui/views/bubble/bubble_anchor.h"
 
 namespace content {
 class WebContents;
@@ -26,7 +23,7 @@ class WalletablePassBubbleViewBase : public LocationBarBubbleDelegateView {
   METADATA_HEADER(WalletablePassBubbleViewBase, LocationBarBubbleDelegateView)
 
  public:
-  WalletablePassBubbleViewBase(views::View* anchor_view,
+  WalletablePassBubbleViewBase(views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                WalletablePassBubbleControllerBase* controller);
 

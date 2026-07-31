@@ -82,7 +82,8 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
     controller_ = std::make_unique<TestWalletablePassSaveBubbleController>(
         tab_interface_.get());
     test_bubble_view_ = std::make_unique<WalletablePassBubbleViewBase>(
-        nullptr, tab_interface_->GetContents(), controller_.get());
+        views::BubbleAnchor(), tab_interface_->GetContents(),
+        controller_.get());
     controller_->SetTestBubbleView(test_bubble_view_.get());
 
     auto mock_manager =

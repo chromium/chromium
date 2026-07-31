@@ -27,7 +27,7 @@ class WalletablePassConsentBubbleView : public WalletablePassBubbleViewBase {
 
  public:
   WalletablePassConsentBubbleView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       WalletablePassConsentBubbleController* controller);
   ~WalletablePassConsentBubbleView() override;

@@ -6,35 +6,35 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view.h"
 
 namespace wallet {
 
 namespace {
 
-static views::View* FindAnchorView(content::WebContents* web_contents) {
+static views::BubbleAnchor FindAnchor(content::WebContents* web_contents) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
-    return nullptr;
+    return views::BubbleAnchor();
   }
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  return browser_view->GetLocationBarView();
+  return bubble_anchor_util::GetPageInfoAnchorConfiguration(browser).anchor;
 }
 
 template <typename BubbleView, typename... Args>
 BubbleView* CreateBubbleView(content::WebContents* web_contents,
                              Args&&... args) {
-  views::View* anchor_view = FindAnchorView(web_contents);
-  auto bubble_view = std::make_unique<BubbleView>(anchor_view, web_contents,
+  auto anchor = FindAnchor(web_contents);
+  auto bubble_view = std::make_unique<BubbleView>(anchor, web_contents,
                                                   std::forward<Args>(args)...);
   BubbleView* const ptr = bubble_view.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));

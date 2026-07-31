@@ -39,10 +39,10 @@ GetWalletablePassBubbleClosedReasonFromWidget(const views::Widget* widget) {
 }  // namespace
 
 WalletablePassBubbleViewBase::WalletablePassBubbleViewBase(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     WalletablePassBubbleControllerBase* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor, web_contents),
       controller_(controller->GetWalletablePassBubbleControllerBaseWeakPtr()) {}
 
 WalletablePassBubbleViewBase::~WalletablePassBubbleViewBase() = default;
