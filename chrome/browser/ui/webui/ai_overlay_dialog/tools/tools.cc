@@ -36,6 +36,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -878,6 +879,20 @@ void AiOverlayTools::ClickElement(int32_t dom_node_id,
             }
           },
           std::move(chrome_render_frame), std::move(callback)));
+}
+
+void AiOverlayTools::SetFullscreen(bool fullscreen,
+                                   SetFullscreenCallback callback) {
+  RecordToolCallInvoked("SetFullscreen");
+  if (!browser_ || !browser_->GetWindow()) {
+    std::move(callback).Run(base::unexpected("No active browser window"));
+    return;
+  }
+  bool is_fullscreen = browser_->GetWindow()->IsFullscreen();
+  if (fullscreen != is_fullscreen) {
+    chrome::ToggleFullscreenMode(browser_.get());
+  }
+  std::move(callback).Run(base::ok(std::monostate()));
 }
 
 void AiOverlayTools::GetToolDefinitions(GetToolDefinitionsCallback callback) {

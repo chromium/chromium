@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 
 namespace ttc {
 namespace {
@@ -853,6 +854,18 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementRadioButton) {
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(true,
             content::EvalJs(contents, "document.getElementById('test_radio').checked"));
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SetFullscreen) {
+  base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+  tools()->SetFullscreen(true, future.GetCallback());
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+
+  base::test::TestFuture<base::expected<std::monostate, std::string>> future2;
+  tools()->SetFullscreen(false, future2.GetCallback());
+  EXPECT_TRUE(future2.Get().has_value());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 }
 }  // namespace
 }  // namespace ttc

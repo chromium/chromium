@@ -144,6 +144,13 @@ interface AiOverlayTools {
   // TODO(crbug.com/541165698): Migrate dom_node_id to blink.mojom.DOMNodeId.
   ClickElement(int32 dom_node_id)
       => result<mojo_base.mojom.Empty, string>;
+
+  // Set or exit full screen mode for the active browser window.
+  //
+  // fullscreen: Set to true to enter full screen, false to exit full screen.
+  SetFullscreen(bool fullscreen)
+      => result<mojo_base.mojom.Empty, string>;
+
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
   // video, or long text. Prefer direct voice replies for quick (<1s) tasks.
