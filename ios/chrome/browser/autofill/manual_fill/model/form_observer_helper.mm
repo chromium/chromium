@@ -4,22 +4,22 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/model/form_observer_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
 @interface FormObserverHelper () <FormActivityObserver, WebStateListObserving>
-// The WebStateList this instance is observing in order to update the
-// active WebState.
-@property(nonatomic, assign) WebStateList* webStateList;
-
-// The WebState this instance is observing. Can be nullptr.
-@property(nonatomic, assign) web::WebState* webState;
-
 @end
 
 @implementation FormObserverHelper {
+  // The WebStateList this instance is observing.
+  raw_ptr<WebStateList> _webStateList;
+
+  // The WebState this instance is observing. Can be nullptr.
+  raw_ptr<web::WebState> _webState;
+
   // Bridge to observe the web state list from Objective-C.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
@@ -88,7 +88,7 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   if (status.active_web_state_change()) {
-    self.webState = status.new_active_web_state;
+    [self setWebState:status.new_active_web_state];
   }
 }
 
