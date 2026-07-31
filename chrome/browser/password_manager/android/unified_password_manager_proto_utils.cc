@@ -11,9 +11,9 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/password_manager/android/protos/list_affiliated_passwords_result.pb.h"
-#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
-#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
+#include "chrome/browser/password_manager/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 using autofill::FormData;

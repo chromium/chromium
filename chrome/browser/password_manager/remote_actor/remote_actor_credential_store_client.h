@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 
 namespace signin {
 class IdentityManager;
@@ -58,8 +59,7 @@ class RemoteActorCredentialStoreClient {
   void UpdateCredential(const std::string& obfuscated_gaia_id,
                         const std::string& web_origin,
                         const std::string& password_client_tag_hash,
-                        const std::u16string& username,
-                        const std::u16string& password,
+                        sync_pb::PasswordSpecificsData password_data,
                         base::TimeDelta ttl,
                         UpdateCallback callback);
 

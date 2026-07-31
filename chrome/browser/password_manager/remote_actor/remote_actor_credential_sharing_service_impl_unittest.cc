@@ -74,8 +74,10 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordSuccess) {
   params.obfuscated_gaia_id = "12345";
   params.web_origin = "https://nike.com";
   params.password_client_tag_hash = "tag_hash";
-  params.username = u"alice";
-  params.password = u"password";
+  params.password_data.set_signon_realm("https://nike.com");
+  params.password_data.set_origin("https://nike.com");
+  params.password_data.set_username_value("alice");
+  params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
   params.agent_oauth_client_id = "agent_client_id";
 
@@ -131,8 +133,10 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest,
   params.obfuscated_gaia_id = "12345";
   params.web_origin = "https://nike.com";
   params.password_client_tag_hash = "tag_hash";
-  params.username = u"alice";
-  params.password = u"password";
+  params.password_data.set_signon_realm("https://nike.com");
+  params.password_data.set_origin("https://nike.com");
+  params.password_data.set_username_value("alice");
+  params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
   params.agent_oauth_client_id = "agent_client_id";
 
@@ -166,8 +170,10 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordAPSFailure) {
   params.obfuscated_gaia_id = "12345";
   params.web_origin = "https://nike.com";
   params.password_client_tag_hash = "tag_hash";
-  params.username = u"alice";
-  params.password = u"password";
+  params.password_data.set_signon_realm("https://nike.com");
+  params.password_data.set_origin("https://nike.com");
+  params.password_data.set_username_value("alice");
+  params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
   params.agent_oauth_client_id = "agent_client_id";
 
@@ -212,8 +218,10 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest,
   params.obfuscated_gaia_id = "12345";
   params.web_origin = "https://nike.com";
   params.password_client_tag_hash = "tag_hash";
-  params.username = u"alice";
-  params.password = u"password";
+  params.password_data.set_signon_realm("https://nike.com");
+  params.password_data.set_origin("https://nike.com");
+  params.password_data.set_username_value("alice");
+  params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
   params.agent_oauth_client_id = "agent_client_id";
 
@@ -245,8 +253,10 @@ TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
   params.obfuscated_gaia_id = tc.obfuscated_gaia_id;
   params.web_origin = tc.web_origin;
   params.password_client_tag_hash = tc.password_client_tag_hash;
-  params.username = u"alice";
-  params.password = u"password";
+  params.password_data.set_signon_realm("https://nike.com");
+  params.password_data.set_origin("https://nike.com");
+  params.password_data.set_username_value("alice");
+  params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
   params.agent_oauth_client_id = tc.agent_oauth_client_id;
 

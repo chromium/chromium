@@ -47,7 +47,7 @@ void RemoteActorCredentialSharingServiceImpl::SharePassword(
 
   credential_store_->UpdateCredential(
       params.obfuscated_gaia_id, params.web_origin,
-      params.password_client_tag_hash, params.username, params.password,
+      params.password_client_tag_hash, params.password_data,
       params.time_to_live,
       base::BindOnce(
           &RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted,

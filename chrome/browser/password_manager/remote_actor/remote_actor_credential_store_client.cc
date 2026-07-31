@@ -22,10 +22,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 #include "google_apis/common/time_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -109,24 +111,23 @@ void RemoteActorCredentialStoreClient::UpdateCredential(
     const std::string& obfuscated_gaia_id,
     const std::string& web_origin,
     const std::string& password_client_tag_hash,
-    const std::u16string& username,
-    const std::u16string& password,
+    sync_pb::PasswordSpecificsData password_data,
     base::TimeDelta ttl,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::DictValue payload;
-  payload.Set("signon_realm", web_origin);
-  payload.Set("username", base::UTF16ToUTF8(username));
-  payload.Set("password", base::UTF16ToUTF8(password));
-
-  std::string json_payload;
-  if (!base::JSONWriter::Write(payload, &json_payload)) {
+  ListAffiliatedPasswordsResult::AffiliatedPassword proto;
+  *proto.mutable_password_data()->mutable_password_specifics_data() =
+      std::move(password_data);
+  // Only username and password are needed by the remote actor.
+  // TODO(crbug.com/540786152): consider alternative payload after teamfood.
+  std::string serialized_proto;
+  if (!proto.SerializeToString(&serialized_proto)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
-  std::string base64_payload = base::Base64Encode(json_payload);
+  std::string base64_payload = base::Base64Encode(serialized_proto);
 
   std::string escaped_origin =
       base::EscapeQueryParamValue(web_origin, /*use_plus=*/false);

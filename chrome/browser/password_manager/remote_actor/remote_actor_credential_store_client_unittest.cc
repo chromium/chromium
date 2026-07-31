@@ -14,8 +14,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 #include "google_apis/common/time_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -60,8 +62,14 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
                                                  signin::ConsentLevel::kSignin);
 
   base::test::TestFuture<bool> future;
+  sync_pb::PasswordSpecificsData password_data;
+  password_data.set_signon_realm(kTestWebOrigin);
+  password_data.set_origin(kTestWebOrigin);
+  password_data.set_username_value(base::UTF16ToUTF8(kTestUsername));
+  password_data.set_password_value(base::UTF16ToUTF8(kTestPassword));
+
   store_->UpdateCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
-                           kTestUsername, kTestPassword, base::Minutes(10),
+                           std::move(password_data), base::Minutes(10),
                            future.GetCallback());
 
   // 1. Access token request
@@ -91,14 +99,18 @@ TEST_F(RemoteActorCredentialStoreClientTest, UpdateCredentialSuccess) {
       request_dict.FindDict("credentialData");
   ASSERT_TRUE(credential_data_dict);
   std::string base64_payload = *credential_data_dict->FindString("data");
-  std::string json_payload;
-  ASSERT_TRUE(base::Base64Decode(base64_payload, &json_payload));
-  base::DictValue payload_dict = base::test::ParseJsonDict(json_payload);
+  std::string serialized_proto;
+  ASSERT_TRUE(base::Base64Decode(base64_payload, &serialized_proto));
+  password_manager::ListAffiliatedPasswordsResult::AffiliatedPassword proto;
+  ASSERT_TRUE(proto.ParseFromString(serialized_proto));
 
-  EXPECT_EQ(*payload_dict.FindString("signon_realm"), kTestWebOrigin);
-  EXPECT_EQ(*payload_dict.FindString("username"),
+  EXPECT_EQ(proto.password_data().password_specifics_data().signon_realm(),
+            kTestWebOrigin);
+  EXPECT_EQ(proto.password_data().password_specifics_data().origin(),
+            kTestWebOrigin);
+  EXPECT_EQ(proto.password_data().password_specifics_data().username_value(),
             base::UTF16ToUTF8(kTestUsername));
-  EXPECT_EQ(*payload_dict.FindString("password"),
+  EXPECT_EQ(proto.password_data().password_specifics_data().password_value(),
             base::UTF16ToUTF8(kTestPassword));
 
   // Respond to Passbox with 200 OK
@@ -121,9 +133,15 @@ TEST_F(RemoteActorCredentialStoreClientTest,
                                                  signin::ConsentLevel::kSignin);
 
   base::test::TestFuture<bool> future;
+  sync_pb::PasswordSpecificsData password_data;
+  password_data.set_signon_realm(kTestWebOrigin);
+  password_data.set_origin(kTestWebOrigin);
+  password_data.set_username_value(base::UTF16ToUTF8(kTestUsername));
+  password_data.set_password_value(base::UTF16ToUTF8(kTestPassword));
+
   custom_store->UpdateCredential(kTestGaiaId, kTestWebOrigin, kTestTagHash,
-                                 kTestUsername, kTestPassword,
-                                 base::Minutes(10), future.GetCallback());
+                                 std::move(password_data), base::Minutes(10),
+                                 future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "token", base::Time::Max());

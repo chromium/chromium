@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("password_manager_proto") {
+  sources = [
+    "list_affiliated_passwords_result.proto",
+    "list_passwords_result.proto",
+    "password_info.proto",
+    "password_with_local_data.proto",
+  ]
+  deps = [ "//components/sync/protocol" ]
+  proto_in_dir = "//"
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("password_manager_proto_java") {
+    proto_path = "//"
+    sources = [
+      "list_affiliated_passwords_result.proto",
+      "list_passwords_result.proto",
+      "password_info.proto",
+      "password_with_local_data.proto",
+    ]
+    deps = [ "//components/sync/protocol:protocol_java" ]
+  }
+}

@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 
 namespace password_manager {
 
@@ -30,11 +31,8 @@ class RemoteActorCredentialSharingService : public KeyedService {
     // password.
     std::string password_client_tag_hash;
 
-    // The username of the credential.
-    std::u16string username;
-
-    // The password of the credential.
-    std::u16string password;
+    // The fully populated sync specifics data for the password.
+    sync_pb::PasswordSpecificsData password_data;
 
     // The duration for which the shared credential remains valid.
     base::TimeDelta time_to_live;
