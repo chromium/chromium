@@ -186,18 +186,6 @@ std::unique_ptr<Canvas2DResourceProvider> MakeCanvas2DResourceProvider(
       RasterMode::kGPU, shared_image_usage_flags);
 }
 
-scoped_refptr<CanvasResource> UpdateResource(
-    Canvas2DResourceProvider* provider) {
-  if (provider->Recorder().HasReleasableDrawOps()) {
-    provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
-  }
-  provider->ProduceCanvasResource();
-  // Resource updated after draw.
-  provider->GetCanvasForTesting().clear(SkColors::kWhite);
-  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
-  return provider->ProduceCanvasResource();
-}
-
 TEST_F(Canvas2DResourceProviderTest, SharedImageResourceRecycling) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
@@ -256,7 +244,9 @@ TEST_F(Canvas2DResourceProviderTest, UnusedResources) {
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource();
-  auto new_resource = UpdateResource(provider.get());
+  provider->GetCanvasForTesting().clear(SkColors::kWhite);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
+  auto new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
 
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -286,7 +276,9 @@ TEST_F(Canvas2DResourceProviderTest,
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource();
-  auto new_resource = UpdateResource(provider.get());
+  provider->GetCanvasForTesting().clear(SkColors::kWhite);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
+  auto new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   EXPECT_FALSE(
@@ -305,7 +297,9 @@ TEST_F(Canvas2DResourceProviderTest, UnusedResourcesAreNotCollectedWhenYoung) {
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource();
-  auto new_resource = UpdateResource(provider.get());
+  provider->GetCanvasForTesting().clear(SkColors::kWhite);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
+  auto new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   EXPECT_FALSE(
@@ -323,9 +317,13 @@ TEST_F(Canvas2DResourceProviderTest, UnusedResourcesAreNotCollectedWhenYoung) {
   EXPECT_TRUE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
-  resource = UpdateResource(provider.get());
+  provider->GetCanvasForTesting().clear(SkColors::kWhite);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
+  resource = provider->ProduceCanvasResource();
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
-  new_resource = UpdateResource(provider.get());
+  provider->GetCanvasForTesting().clear(SkColors::kWhite);
+  provider->RasterRecord(provider->Recorder().ReleaseMainRecording());
+  new_resource = provider->ProduceCanvasResource();
   ASSERT_NE(resource, new_resource);
   ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
 
