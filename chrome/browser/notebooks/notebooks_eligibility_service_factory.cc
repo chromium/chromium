@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/notebooks/internal/notebooks_eligibility_service_impl.h"
 #include "components/notebooks/public/notebooks_eligibility_service.h"
 #include "content/public/browser/browser_context.h"
@@ -31,7 +32,9 @@ NotebooksEligibilityServiceFactory::GetInstance() {
 NotebooksEligibilityServiceFactory::NotebooksEligibilityServiceFactory()
     : ProfileKeyedServiceFactory(
           "NotebooksEligibilityService",
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 NotebooksEligibilityServiceFactory::~NotebooksEligibilityServiceFactory() =
     default;
@@ -43,7 +46,10 @@ NotebooksEligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
   // Note: Guest and system profiles are excluded by ProfileSelections above
   // and will never reach this factory method.
   bool is_profile_eligible = !profile->IsOffTheRecord();
-  return std::make_unique<NotebooksEligibilityServiceImpl>(is_profile_eligible);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return std::make_unique<NotebooksEligibilityServiceImpl>(is_profile_eligible,
+                                                           identity_manager);
 }
 
 }  // namespace notebooks

@@ -8,11 +8,13 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/notebooks/public/features.h"
 #include "components/notebooks/public/notebooks_eligibility_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +47,9 @@ class NotebooksEligibilityServiceFactoryTest : public testing::Test {
 TEST_F(NotebooksEligibilityServiceFactoryTest, FeatureEnabledCreatesService) {
   InitFeature(/*enable_feature=*/true);
   TestingProfile* profile = profile_manager()->CreateTestingProfile("profile");
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile), "test@gmail.com",
+      signin::ConsentLevel::kSignin);
   NotebooksEligibilityService* service =
       NotebooksEligibilityServiceFactory::GetForProfile(profile);
   ASSERT_NE(service, nullptr);

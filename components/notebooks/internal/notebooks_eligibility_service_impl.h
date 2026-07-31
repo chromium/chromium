@@ -5,17 +5,23 @@
 #ifndef COMPONENTS_NOTEBOOKS_INTERNAL_NOTEBOOKS_ELIGIBILITY_SERVICE_IMPL_H_
 #define COMPONENTS_NOTEBOOKS_INTERNAL_NOTEBOOKS_ELIGIBILITY_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/notebooks/public/notebooks_eligibility_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace notebooks {
 
 // The internal implementation of NotebooksEligibilityService.
-class NotebooksEligibilityServiceImpl : public NotebooksEligibilityService {
+class NotebooksEligibilityServiceImpl
+    : public NotebooksEligibilityService,
+      public signin::IdentityManager::Observer {
  public:
   // `is_profile_eligible` indicates whether the profile meets static
   // prerequisites (e.g. regular non-incognito profile).
-  explicit NotebooksEligibilityServiceImpl(bool is_profile_eligible);
+  NotebooksEligibilityServiceImpl(bool is_profile_eligible,
+                                  signin::IdentityManager* identity_manager);
   ~NotebooksEligibilityServiceImpl() override;
 
   NotebooksEligibilityServiceImpl(const NotebooksEligibilityServiceImpl&) =
@@ -24,15 +30,28 @@ class NotebooksEligibilityServiceImpl : public NotebooksEligibilityService {
       const NotebooksEligibilityServiceImpl&) = delete;
 
   // NotebooksEligibilityService:
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(NotebooksEligibilityService::Observer* observer) override;
+  void RemoveObserver(NotebooksEligibilityService::Observer* observer) override;
   bool IsEligible() const override;
   bool IsEligibilityLoading() const override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
  private:
-  // Indicates if the underlying profile is eligible based on profile type.
+  // Evaluates current conditions to determine eligibility.
+  bool ComputeEligibility() const;
+
   const bool is_profile_eligible_;
-  base::ObserverList<Observer> observers_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  bool is_eligible_ = false;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::ObserverList<NotebooksEligibilityService::Observer> observers_;
 };
 
 }  // namespace notebooks
