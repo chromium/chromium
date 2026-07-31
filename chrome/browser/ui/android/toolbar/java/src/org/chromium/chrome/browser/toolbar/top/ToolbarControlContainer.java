@@ -375,6 +375,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         int toolbarAndTabStripHeight = tabStripHeight + getToolbarHeight();
         mutateHairlineLayoutParams().topMargin = toolbarAndTabStripHeight;
+        if (!applyScrimOverlay) {
+            setMinimumHeight(toolbarAndTabStripHeight + getToolbarHairlineHeight());
+        }
 
         // Update the find toolbar view or view stub. We only do this for tablets
         // (find_toolbar_tablet_stub) since find_toolbar_stub is used for phone only.
