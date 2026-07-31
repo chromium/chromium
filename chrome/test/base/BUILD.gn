@@ -111,6 +111,33 @@ if (!is_android) {
   }
 }
 
+# Thin header-only target that exposes chrome_test_utils.h for gn check. The
+# implementation (chrome_test_utils.cc) still lives in
+# //chrome/test:test_support until the TestingBrowserProcessDeathTestMixin
+# dependency cycle is resolved.
+#
+# TODO(crbug.com/353332589): Add chrome_test_utils.cc as a source and remove
+# from //chrome/test:test_support once testing_browser_process is split into a
+# thin header + impl target (Pattern A), breaking the dep cycle through
+# //chrome/browser/extensions:test_support.
+source_set("chrome_test_utils") {
+  testonly = true
+  sources = [ "chrome_test_utils.h" ]
+  public_deps = [
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+  if (is_android) {
+    # TODO(crbug.com/353332589): Remove once android_browser_test.cc no longer
+    # includes chrome_test_utils.h, or the android_browser_test functions it
+    # calls are moved to a dep-graph-safe separate target.
+    allow_circular_includes_from = [ "//chrome/test:test_support_ui_android" ]
+    public_deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    public_deps += [ "//chrome/test/base:platform_browser_test" ]
+  }
+}
+
 source_set("chrome_render_view_host_test_harness") {
   testonly = true
   sources = [
