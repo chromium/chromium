@@ -12,6 +12,9 @@ grit("resources") {
 
   inputs = [
     "audio_resources.grdp",
+    "growth_framework_resources.grdp",
+    "scalable_iph_unscaled_resources.grdp",
+    "scanner_resources.grdp",
     "public/sounds/accessibility/camera_snap.wav",
     "public/sounds/accessibility/earcons/enter_screen.wav",
     "public/sounds/accessibility/earcons/exit_screen.wav",
@@ -35,10 +38,22 @@ grit("resources") {
 
   if (is_chrome_branded) {
     inputs += [
-      "growth_framework_resources.grdp",
-      "scalable_iph_unscaled_resources.grdp",
-      "scanner_resources.grdp",
+      "//chromeos/ash/components/growth/resources/logo_one_color_2x_web_96dp.png",
+      "//chromeos/ash/components/growth/resources/mall_nudge_2x_96dp.png",
+      "//chromeos/assistant/internal/resources/scalable_iph/google_docs_icon_120.png",
+      "//chromeos/assistant/internal/resources/scalable_iph/google_play_icon_120.png",
+      "//chromeos/assistant/internal/resources/scalable_iph/youtube_icon_120.png",
+      "internal/g1_notification_1x.png",
+      "internal/gemini_app.png",
+      "internal/r_notification_1x.png",
+      "internal/scanner_disclaimer_illustration.png",
+      "internal/sounds/startup.wav",
+      "internal/spark_1p_app_2x.png",
+      "internal/spark_rebuy_2x.png",
+      "internal/spark_v2_1x.png",
     ]
+  } else {
+    inputs += [ "public/sounds/startup.wav" ]
   }
 
   outputs = [

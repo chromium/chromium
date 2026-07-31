@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -673,6 +674,55 @@ grit("resources") {
     ":symbol_data_sv",
     ":symbol_test_data",
   ]
+
+  inputs = [
+    "$target_gen_dir/emoji_15_0_ordering_remaining.json",
+    "$target_gen_dir/emoji_15_0_ordering_start.json",
+    "$target_gen_dir/emoji_da_remaining.json",
+    "$target_gen_dir/emoji_da_start.json",
+    "$target_gen_dir/emoji_de_remaining.json",
+    "$target_gen_dir/emoji_de_start.json",
+    "$target_gen_dir/emoji_es_remaining.json",
+    "$target_gen_dir/emoji_es_start.json",
+    "$target_gen_dir/emoji_fi_remaining.json",
+    "$target_gen_dir/emoji_fi_start.json",
+    "$target_gen_dir/emoji_fr_remaining.json",
+    "$target_gen_dir/emoji_fr_start.json",
+    "$target_gen_dir/emoji_ja_remaining.json",
+    "$target_gen_dir/emoji_ja_start.json",
+    "$target_gen_dir/emoji_no_remaining.json",
+    "$target_gen_dir/emoji_no_start.json",
+    "$target_gen_dir/emoji_sv_remaining.json",
+    "$target_gen_dir/emoji_sv_start.json",
+    "$target_gen_dir/emoji_test_ordering_remaining.json",
+    "$target_gen_dir/emoji_test_ordering_start.json",
+    "$target_gen_dir/emoticon_ordering.json",
+    "$target_gen_dir/emoticon_test_ordering.json",
+    "$target_gen_dir/symbol_ordering.json",
+    "$target_gen_dir/symbol_test_ordering.json",
+    "$target_gen_dir/symbols_da.json",
+    "$target_gen_dir/symbols_de.json",
+    "$target_gen_dir/symbols_es.json",
+    "$target_gen_dir/symbols_fi.json",
+    "$target_gen_dir/symbols_fr.json",
+    "$target_gen_dir/symbols_ja.json",
+    "$target_gen_dir/symbols_no.json",
+    "$target_gen_dir/symbols_sv.json",
+  ]
+
+  if (is_chrome_branded) {
+    inputs += [
+      "//chromeos/ash/resources/internal/emoji-search-da-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-de-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-en-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-es-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-fi-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-fr-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-ja-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-no-keywords.json",
+      "//chromeos/ash/resources/internal/emoji-search-sv-keywords.json",
+    ]
+  }
 
   outputs = [
     "grit/emoji.h",
