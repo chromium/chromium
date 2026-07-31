@@ -130,3 +130,14 @@ TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingURLValidEntries) {
   EXPECT_EQ(renderer_preferences.webrtc_ip_handling_urls[1].handling,
             blink::mojom::WebRtcIpHandlingPolicy::kDefault);
 }
+
+TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryTriggerString) {
+  blink::RendererPreferences renderer_preferences;
+  renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                      &profile_);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_TRUE(renderer_preferences.autofill_trigger_string.empty());
+  } else {
+    EXPECT_EQ(renderer_preferences.autofill_trigger_string, "@@");
+  }
+}
