@@ -5073,9 +5073,4 @@ IN_PROC_BROWSER_TEST_P(
       "list-with-multi-line-list-item-in-content-editable.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityApgPatternThirdPartyMeter) {
-  RunApgPatternThirdPartyTest(FILE_PATH_LITERAL("meter/examples/meter.html"));
-}
-
 }  // namespace content

@@ -1,0 +1,20 @@
+# Crowbar workflow configuration for third_party/aria-practices
+
+# 1. Fetch Upstream
+Upstream-URL: https://chromium.googlesource.com/external/github.com/w3c/aria-practices.git
+Revision: 7b134ce6d19497cce8a67db4a9f59980baf853dc
+
+# 2. Check for Upstream Releases
+Update-Check: Use latest commit on 'main' branch
+
+# 3. Transform Rules & Directory Structure
+Patch-Directory: patches/
+
+Transform Steps:
+1. Create empty working directory workdir.
+2. Copy specified upstream pattern files and license into workdir:
+   - content/patterns/ -> workdir/content/patterns/
+   - LICENSE.md -> workdir/LICENSE.md
+3. Exclude upstream CI, tooling, node_modules, build configs, and test files (.github, .husky, .vscode, test/, scripts/).
+4. Apply local patch files from patches/ directory in alphabetical order.
+5. Copy post-transformation workdir content into third_party/aria-practices/src/.
