@@ -1,4 +1,4 @@
-#!/bin/bash
+SHELL := /bin/bash
 
 BROTLI=brotli
 MIMETYPE=mimetype
@@ -21,9 +21,8 @@ all: \
   subframe-001-compressed-by-style-001.html.dcb \
   subframe-001-compressed-by-style-001.html.dcz \
   subframe-001-compressed-by-script-001.html.dcb \
-  subframe-001-compressed-by-script-001.html.dcz
-
-.PHONY: hashes
+  subframe-001-compressed-by-script-001.html.dcz \
+  dictionary-hashes.js
 
 define generate_dcb
 	$(eval in=$(1))
@@ -56,7 +55,7 @@ define generate_dcz
 endef
 
 clean:
-	rm -f *compressed* *.headers
+	rm -f *compressed* *.headers dictionary-hashes.js
 
 self-compressed-%.dcb: %
 	$(call generate_dcb,$<,$<,$@)
@@ -76,12 +75,12 @@ subframe-001-compressed-by-script-001.html.dcb: subframe-001.html script-001.js
 subframe-001-compressed-by-script-001.html.dcz: subframe-001.html script-001.js
 	$(call generate_dcz,$<,$(word 2,$^),$@)
 
-# Not used by the tests, but just in case one needs it...
-hashes: style-001.css script-001.js subframe-001.html image-001.png
-	@echo "{"
-	@for file in $^; do \
-	    echo -n '  "'$$file'": ":'; \
-	    cat $$file | $(OPENSSL) dgst -binary -sha256  | $(OPENSSL) base64 -A; \
-	    echo ':",'; \
+dictionary-hashes.js: image-001.png script-001.js style-001.css	subframe-001.html
+	echo "// Automatically generated. Do not edit." > $@
+	echo "const kDictionaryHashes = {" >> $@
+	for file in $^; do \
+	    echo -n "  '"$$file"': ':"  >> $@; \
+	    cat $$file | $(OPENSSL) dgst -binary -sha256  | $(OPENSSL) base64 -A >> $@; \
+	    echo ":'," >> $@; \
 	    done
-	@echo "}"
+	echo "};" >> $@
