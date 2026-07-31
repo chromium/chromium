@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -76,7 +77,8 @@ RegexPredictions::RegexPredictions(HeuristicSource source,
                                    base::span<const FormFieldData> fields)
     : source_(source) {
   const HeuristicSource active_source = GetActiveHeuristicSource();
-  std::vector<std::pair<FieldGlobalId, FieldType>> field_predictions;
+  std::vector<std::pair<FieldGlobalId, std::optional<FieldCandidate>>>
+      field_predictions;
   for (const FormFieldData& field : fields) {
     auto iter = field_type_map.find(field.global_id());
     if (iter == field_type_map.end()) {
@@ -90,7 +92,7 @@ RegexPredictions::RegexPredictions(HeuristicSource source,
     }
 
     field_predictions.emplace_back(field.global_id(),
-                                   candidates.BestHeuristicType());
+                                   candidates.BestHeuristicCandidate());
   }
   predictions_ = base::flat_map(std::move(field_predictions));
 }
@@ -120,7 +122,15 @@ void RegexPredictions::ApplyTo(
     if (it == predictions_.end()) {
       continue;
     }
-    field->set_heuristic_type(source_, it->second);
+
+    const std::optional<FieldCandidate>& candidate = it->second;
+    if (candidate) {
+      field->set_heuristic_type(source_, candidate->type);
+      field->set_regex_match_info(candidate->match_info);
+    } else {
+      field->set_heuristic_type(source_, UNKNOWN_TYPE);
+      field->set_regex_match_info(std::nullopt);
+    }
 
     const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
     // Log the field type predicted from local heuristics.

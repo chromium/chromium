@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <optional>
 
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -62,19 +63,24 @@ void FieldCandidates::AddFieldCandidate(FieldType type,
 }
 
 // We currently select a type with the maximum score sum.
-FieldType FieldCandidates::BestHeuristicType() const {
+std::optional<FieldCandidate> FieldCandidates::BestHeuristicCandidate() const {
   if (field_candidates_.empty()) {
-    return UNKNOWN_TYPE;
+    return std::nullopt;
   }
 
-  return std::ranges::max_element(field_candidates_, {},
-                                  &FieldCandidate::priority)
-      ->type;
+  return *std::ranges::max_element(field_candidates_, {},
+                                   &FieldCandidate::priority);
 }
 
 DenseSet<MatchAttribute> FieldCandidates::BestHeuristicTypeReason() const {
-  FieldType best_type = BestHeuristicType();
   DenseSet<MatchAttribute> attributes;
+  std::optional<FieldCandidate> best_candidate = BestHeuristicCandidate();
+  // Terminate early if there were no candidates.
+  if (!best_candidate) {
+    return attributes;
+  }
+
+  FieldType best_type = best_candidate->type;
   for (const FieldCandidate& candidate : field_candidates_) {
     if (candidate.type == best_type) {
       attributes.insert(candidate.match_info.matched_attribute ==

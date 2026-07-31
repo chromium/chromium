@@ -1095,6 +1095,8 @@ void AutofillManager::UpdateFormCache(
       }
       // This is set by running the ML model.
       field->set_ml_supported_types({});
+      // This is set when regex matching happens.
+      field->set_regex_match_info(std::nullopt);
     }
   };
 

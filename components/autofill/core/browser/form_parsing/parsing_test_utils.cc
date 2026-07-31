@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 
+#include <optional>
+
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
@@ -106,10 +108,16 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
 void FormFieldParserTestBase::TestClassificationExpectations() {
   size_t num_classifications = 0;
   for (const auto [field_id, expected_field_type] : expected_classifications_) {
-    FieldType actual_field_type =
-        field_candidates_map_.contains(field_id)
-            ? field_candidates_map_[field_id].BestHeuristicType()
-            : UNKNOWN_TYPE;
+    FieldType actual_field_type = UNKNOWN_TYPE;
+
+    if (field_candidates_map_.contains(field_id)) {
+      std::optional<FieldCandidate> field_candidate =
+          field_candidates_map_[field_id].BestHeuristicCandidate();
+      if (field_candidate) {
+        actual_field_type = field_candidate->type;
+      }
+    }
+
     SCOPED_TRACE(testing::Message()
                  << "Found type " << FieldTypeToStringView(actual_field_type)
                  << ", expected type "

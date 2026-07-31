@@ -288,9 +288,10 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   // Set to count distinct field types.
   FieldTypeSet heuristic_types;
   for (const auto& [field_id, candidates] : field_candidates) {
-    if (FieldType heuristic_type = candidates.BestHeuristicType();
-        IsFillableFieldType(heuristic_type)) {
-      heuristic_types.insert(heuristic_type);
+    if (std::optional<FieldCandidate> best_candidate =
+            candidates.BestHeuristicCandidate();
+        best_candidate && IsFillableFieldType(best_candidate->type)) {
+      heuristic_types.insert(best_candidate->type);
     }
   }
 
@@ -332,7 +333,10 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   std::vector<WipedField> wiped_fields;
   if (IsLoggingActive(log_manager)) {
     for (const auto& [field_id, candidates] : field_candidates) {
-      FieldType heuristic_type = candidates.BestHeuristicType();
+      std::optional<FieldCandidate> best_candidate =
+          candidates.BestHeuristicCandidate();
+      FieldType heuristic_type =
+          best_candidate ? best_candidate->type : UNKNOWN_TYPE;
       if (!permitted_single_field_types.contains(heuristic_type)) {
         wiped_fields.emplace_back(WipedField{field_id, heuristic_type});
       }
@@ -346,9 +350,11 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   base::EraseIf(
       field_candidates,
       [&permitted_single_field_types](
-          const FieldCandidatesMap::container_type::value_type& candidate) {
-        return !permitted_single_field_types.contains(
-            candidate.second.BestHeuristicType());
+          const FieldCandidatesMap::value_type& field_candidate) {
+        std::optional<FieldCandidate> best_candidate =
+            field_candidate.second.BestHeuristicCandidate();
+        return !best_candidate ||
+               !permitted_single_field_types.contains(best_candidate->type);
       });
 
   if (IsLoggingActive(log_manager)) {

@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
@@ -494,6 +495,13 @@ class AutofillField : public FormFieldData {
     return ml_supported_types_;
   }
 
+  void set_regex_match_info(std::optional<MatchInfo> match_info) {
+    regex_match_info_ = std::move(match_info);
+  }
+  const std::optional<MatchInfo>& regex_match_info() const LIFETIME_BOUND {
+    return regex_match_info_;
+  }
+
   void UpdateFieldData(const FormFieldData& field_data,
                        base::PassKey<FormStructure> pass_key) {
     UpdateFieldData(field_data);
@@ -580,6 +588,13 @@ class AutofillField : public FormFieldData {
   // attempted.
   std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
       local_type_predictions_;
+
+  // Structure that holds the additional information on the regex match (e.g.
+  // matched attribute). The value will be std::nullopt before local heuristics
+  // were executed or there were no matches.
+  // TODO(crbug.com/430258039): Remove once the feature
+  // `AutofillBetterLocalHeuristicPlaceholderSupport` is launched.
+  std::optional<MatchInfo> regex_match_info_;
 
   // The rationalized `GetComputedPredictionResult()`. This is the type used for
   // all autofilling operations. It defaults to `GetComputedPredictionResult()`
