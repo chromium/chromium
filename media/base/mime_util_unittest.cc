@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media.h"
@@ -125,9 +126,8 @@ static bool HasAc4Support() {
   return false;
 }
 
-static bool HasIamfSupport() {
-  // TODO (crbug.com/1517114): Enable once IAMF is supported on Android.
-  return false;
+static bool HasIamfSupport(bool is_encrypted) {
+  return !is_encrypted && IsIamfAudioDecodingSupported();
 }
 
 TEST(MimeUtilTest, CommonMediaMimeType) {
@@ -541,7 +541,7 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
             break;
 
           case MimeUtil::IAMF:
-            EXPECT_EQ(HasIamfSupport(), result);
+            EXPECT_EQ(HasIamfSupport(true), result);
             break;
         }
       });
@@ -612,11 +612,40 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
             break;
 
           case MimeUtil::IAMF:
-            EXPECT_EQ(HasIamfSupport(), result);
+            EXPECT_EQ(HasIamfSupport(false), result);
             break;
         }
       });
 }
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+TEST(IsCodecSupportedOnAndroidTest,
+     IamfSupportTracksDecoderAvailability) {
+  const MimeUtil::PlatformInfo platform_info;
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kIamfAudioDecoding);
+
+    EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO),
+              MimeUtil::IsCodecSupportedOnAndroid(
+                  MimeUtil::IAMF, kTestMimeType, false,
+                  VIDEO_CODEC_PROFILE_UNKNOWN, platform_info));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kIamfAudioDecoding);
+
+    EXPECT_TRUE(MimeUtil::IsCodecSupportedOnAndroid(
+        MimeUtil::IAMF, kTestMimeType, false, VIDEO_CODEC_PROFILE_UNKNOWN,
+        platform_info));
+    EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
+        MimeUtil::IAMF, kTestMimeType, true, VIDEO_CODEC_PROFILE_UNKNOWN,
+        platform_info));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_IAMF_TOOLS)
 
 TEST(IsCodecSupportedOnAndroidTest, OpusOggSupport) {
   // Vary all parameters; thus use default initial state.

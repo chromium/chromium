@@ -4,6 +4,7 @@
 
 #include "media/base/supported_types.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -268,6 +269,30 @@ TEST(SupportedTypesTest,
                                             AudioCodecProfile::kUnknown,
                                             is_spatial_rendering}));
 }
+
+#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+TEST(SupportedTypesTest, IamfSupportTracksDecoderAvailability) {
+  const AudioType iamf{AudioCodec::kIAMF};
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kIamfAudioDecoding);
+
+    EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO),
+              IsIamfAudioDecodingSupported());
+    EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO),
+              IsDefaultDecoderSupportedAudioType(iamf));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kIamfAudioDecoding);
+
+    EXPECT_TRUE(IsIamfAudioDecodingSupported());
+    EXPECT_TRUE(IsDefaultDecoderSupportedAudioType(iamf));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_IAMF_TOOLS)
 
 TEST(SupportedTypesTest, XHE_AACSupported) {
   AudioType aac{AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false};

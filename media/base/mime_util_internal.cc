@@ -662,8 +662,10 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
 #endif
 
     case AC4:
-    case IAMF:
       return false;
+
+    case IAMF:
+      return !is_encrypted && IsIamfAudioDecodingSupported();
   }
 
   return false;

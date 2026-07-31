@@ -410,14 +410,6 @@ bool IsEncoderAv1BuiltInVideoType(const VideoType& type) {
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
 }
 
-constexpr bool IsDecoderIamfBuiltInAudioType() {
-#if BUILDFLAG(ENABLE_IAMF_AUDIO)
-  return true;
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_IAMF_AUDIO)
-}
-
 }  // namespace
 
 bool IsDecoderSupportedAudioType(const AudioType& type) {
@@ -507,7 +499,7 @@ bool IsDefaultDecoderSupportedAudioType(const AudioType& type) {
     case AudioCodec::kUnknown:
       return false;
     case AudioCodec::kIAMF:
-      return IsDecoderIamfBuiltInAudioType();
+      return IsIamfAudioDecodingSupported();
     case AudioCodec::kDTS:
     case AudioCodec::kDTSXP2:
     case AudioCodec::kDTSE:

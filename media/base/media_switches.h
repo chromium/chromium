@@ -641,6 +641,7 @@ MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowNsInTandem();
 MEDIA_EXPORT bool IsDedicatedMediaServiceThreadEnabled(
     gl::ANGLEImplementation impl);
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
+MEDIA_EXPORT bool IsIamfAudioDecodingSupported();
 MEDIA_EXPORT bool IsLiveTranslateEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 MEDIA_EXPORT bool IsRestrictOwnAudioSupported();

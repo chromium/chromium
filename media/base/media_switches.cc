@@ -1955,6 +1955,16 @@ bool IsHardwareSecureDecryptionEnabled() {
   return base::FeatureList::IsEnabled(kHardwareSecureDecryption);
 }
 
+bool IsIamfAudioDecodingSupported() {
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
+  return true;
+#elif BUILDFLAG(ENABLE_IAMF_TOOLS)
+  return base::FeatureList::IsEnabled(kIamfAudioDecoding);
+#else
+  return false;
+#endif
+}
+
 bool IsLiveTranslateEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kFeatureManagementLiveTranslateCrOS);
