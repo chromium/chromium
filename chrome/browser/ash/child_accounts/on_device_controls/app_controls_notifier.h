@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_ON_DEVICE_CONTROLS_APP_CONTROLS_NOTIFIER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -42,6 +43,7 @@ class AppControlsNotifier {
   void ShowNotification();
 
   const raw_ptr<Profile> profile_;
+  const std::string notification_id_;
 
   base::WeakPtrFactory<AppControlsNotifier> weak_ptr_factory_{this};
 };

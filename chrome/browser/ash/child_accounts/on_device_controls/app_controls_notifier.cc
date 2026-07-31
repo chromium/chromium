@@ -18,13 +18,12 @@
 #include "base/metrics/user_metrics.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
@@ -55,7 +54,12 @@ void AppControlsNotifier::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 AppControlsNotifier::AppControlsNotifier(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile),
+      notification_id_(CreateUserScopedNotificationId(
+          kShowNotificationId,
+          CHECK_DEREF(
+              BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+              .username_hash())) {}
 
 AppControlsNotifier::~AppControlsNotifier() = default;
 
@@ -74,8 +78,8 @@ void AppControlsNotifier::HandleClick(std::optional<int> button_index) {
   }
   base::RecordAction(base::UserMetricsAction(kNotificationClickedActionName));
   OpenAppsSettings();
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kShowNotificationId);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                           /*by_user=*/false);
 }
 
 void AppControlsNotifier::OpenAppsSettings() {
@@ -110,12 +114,17 @@ void AppControlsNotifier::ShowNotification() {
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ON_DEVICE_APP_CONTROLS_NOTIFICATION_OPEN_SETTINGS_BUTTON_LABEL));
 
-  message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kShowNotificationId, title,
-      message, /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kShowNotificationId,
-                                 NotificationCatalogName::kOnDeviceAppControls),
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, kShowNotificationId,
+      NotificationCatalogName::kOnDeviceAppControls);
+  notifier_id.profile_id = user.GetAccountId().GetUserEmail();
+
+  auto notification = ash::CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title,
+      message,
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
       rich_notification_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&AppControlsNotifier::HandleClick,
@@ -123,9 +132,8 @@ void AppControlsNotifier::ShowNotification() {
       /*small_image=*/gfx::VectorIcon::EmptyIcon(),
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 
   base::RecordAction(base::UserMetricsAction(kNotificationShownActionName));
 }
