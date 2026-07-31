@@ -273,8 +273,7 @@ TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
 
   // Create the data resource for testing purposes.
   const unsigned char data[] = "My test data";
-  scoped_refptr<base::RefCountedStaticMemory> static_memory(
-      new base::RefCountedStaticMemory(data));
+  auto static_memory = base::MakeRefCounted<base::RefCountedStaticMemory>(data);
 
   int resource_id = 5;
   ResourceScaleFactor scale_factor = ui::kScaleFactorNone;

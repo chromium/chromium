@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/memory/ref_counted_memory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -27,7 +28,7 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
   MOCK_METHOD(gfx::Image, GetImageNamed, (int resource_id), (override));
   MOCK_METHOD(gfx::Image, GetNativeImageNamed, (int resource_id), (override));
   MOCK_METHOD(bool, HasDataResource, (int resource_id), (const override));
-  MOCK_METHOD(base::RefCountedMemory*,
+  MOCK_METHOD(scoped_refptr<base::RefCountedMemory>,
               LoadDataResourceBytes,
               (int resource_id, ResourceScaleFactor scale_factor),
               (override));
