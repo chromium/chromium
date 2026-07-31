@@ -1965,6 +1965,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         # When the experimental OS version is identical to the stable version,
@@ -2012,6 +2013,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         # When the experimental OS version is identical to the stable version,
@@ -2178,6 +2180,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         # Different targets than 'Mac FYI Retina Release (AMD)' since there is
@@ -2457,6 +2460,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -2618,6 +2622,7 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
         run_tests_serially = True,
+        use_test_trigger_cas = True,
     ),
     targets = targets.bundle(
         targets = [

@@ -55,7 +55,8 @@
                 "builder": "GPU FYI Mac Builder",
                 "project": "chromium"
               },
-              "run_tests_serially": true
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
             }
           },
           {
@@ -84,7 +85,8 @@
                 "builder": "GPU FYI Mac Builder",
                 "project": "chromium"
               },
-              "run_tests_serially": true
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
             }
           },
           {
@@ -113,7 +115,8 @@
                 "builder": "GPU FYI Mac Builder",
                 "project": "chromium"
               },
-              "run_tests_serially": true
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
             }
           },
           {
@@ -142,7 +145,8 @@
                 "builder": "GPU FYI Mac Builder",
                 "project": "chromium"
               },
-              "run_tests_serially": true
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
             }
           },
           {
@@ -171,7 +175,8 @@
                 "builder": "GPU FYI Mac Builder",
                 "project": "chromium"
               },
-              "run_tests_serially": true
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
             }
           }
         ]
