@@ -311,8 +311,6 @@ TEST_F(RequestRegistryTest, RequestServiceSetIdpSigninStatus) {
 
 // Test PreventSilentAccess via FederatedRequestService.
 TEST_F(RequestRegistryTest, RequestServicePreventSilentAccess) {
-  EXPECT_CALL(*mock_permission_delegate_, HasSharingPermission(_))
-      .WillOnce(Return(false));
   EXPECT_CALL(*mock_auto_reauthn_permission_delegate_,
               SetRequiresUserMediation(_, true))
       .WillOnce(Return());

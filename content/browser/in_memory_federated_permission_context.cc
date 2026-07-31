@@ -122,11 +122,6 @@ void InMemoryFederatedPermissionContext::OnSetRequiresUserMediation(
   std::move(callback).Run();
 }
 
-base::Time InMemoryFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
-    const url::Origin& relying_party_embedder) {
-  return base::Time();
-}
-
 void InMemoryFederatedPermissionContext::RecordEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {}
 

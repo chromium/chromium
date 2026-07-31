@@ -1825,9 +1825,6 @@ class RequestTest : public RenderViewHostImplTestHarness {
     histogram_tester_.ExpectUniqueSample(
         "Blink.FedCm.AutoReauthn.BlockedByEmbargo",
         expected_auto_reauthn_embargoed, 1);
-    histogram_tester_.ExpectTotalCount(
-        "Blink.FedCm.AutoReauthn.TimeFromEmbargoWhenBlocked",
-        expected_auto_reauthn_embargoed ? 1 : 0);
     histogram_tester_.ExpectUniqueSample(
         "Blink.FedCm.AutoReauthn.BlockedByPreventSilentAccess",
         expected_prevent_silent_access, 1);
@@ -1854,8 +1851,6 @@ class RequestTest : public RenderViewHostImplTestHarness {
             entry, "AutoReauthn.BlockedByContentSettings"));
         EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
             entry, "AutoReauthn.BlockedByEmbargo"));
-        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
-            entry, "AutoReauthn.TimeFromEmbargoWhenBlocked"));
         EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
             entry, "AutoReauthn.BlockedByPreventSilentAccess"));
         continue;
@@ -1884,10 +1879,6 @@ class RequestTest : public RenderViewHostImplTestHarness {
           ukm_recorder()->GetEntryMetric(entry, "AutoReauthn.BlockedByEmbargo");
       ASSERT_TRUE(metric) << "AutoReauthn.BlockedByEmbargo was not found";
       EXPECT_EQ(expected_auto_reauthn_embargoed, *metric);
-
-      metric = ukm_recorder()->GetEntryMetric(
-          entry, "AutoReauthn.TimeFromEmbargoWhenBlocked");
-      EXPECT_EQ(expected_auto_reauthn_embargoed, !!metric);
 
       metric = ukm_recorder()->GetEntryMetric(
           entry, "AutoReauthn.BlockedByPreventSilentAccess");

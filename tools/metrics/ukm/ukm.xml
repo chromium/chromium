@@ -4875,17 +4875,6 @@ be describing additional metrics about the same event.
       completed.
     </summary>
   </metric>
-  <metric name="AutoReauthn.TimeFromEmbargoWhenBlocked">
-    <summary>
-      Records the amount of time that has passed from the time the FedCM auto
-      re-authn API was embargoed to the time in which the next call occurs. Only
-      records a sample when there is an auto re-authn FedCM API call which is
-      blocked due to embargo. Samples are exponentially bucketed, with a max
-      bucket of 10 minutes, the embargo duration (see
-      `kFederatedIdentityAutoReauthnEmbargoDuration`). Records at the time the
-      API call is completed.
-    </summary>
-  </metric>
   <metric name="Button.AccountChooserResult" enum="FedCmAccountChooserResult">
     <summary>
       Records the outcome of the last account chooser the user sees in a button
@@ -5063,16 +5052,6 @@ be describing additional metrics about the same event.
       No samples are recorded if the count is 0. Records at the time the API
       call is completed. The bucketing method used is
       base::UmaHistogramCounts100.
-    </summary>
-  </metric>
-  <metric name="PreventSilentAccessFrameType" enum="FedCmRequesterFrameType">
-    <summary>
-      Records the type of frame that invokes preventSilentAccess(). Records only
-      when there is an existing FedCM sharing permission on the main frame, and
-      some frame in the page invokes the preventSilentAccess() JavaScript call.
-      Possible values are: main frame, same-site iframe, and cross-site iframe,
-      where the site of the caller frame is compared with the site of the main
-      frame. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="RpMode" enum="FedCmRpMode">

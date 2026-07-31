@@ -487,21 +487,6 @@ void RequestService::CloseModalDialogView() {
 }
 void RequestService::PreventSilentAccess(PreventSilentAccessCallback callback) {
   SetRequiresUserMediation(true, std::move(callback));
-
-  if (permission_delegate_->HasSharingPermission(
-          render_frame_host().GetMainFrame()->GetLastCommittedOrigin())) {
-    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
-    // prerendering page. As Request runs behind the
-    // BrowserInterfaceBinders, the service doesn't receive any request while
-    // prerendering, and the CHECK should always meet the condition.
-    CHECK(!render_frame_host().IsInLifecycleState(
-        RenderFrameHost::LifecycleState::kPrerendering));
-    RecordPreventSilentAccess(
-        ComputeRequesterFrameType(
-            render_frame_host(), render_frame_host().GetLastCommittedOrigin(),
-            render_frame_host().GetMainFrame()->GetLastCommittedOrigin()),
-        render_frame_host().GetPageUkmSourceId());
-  }
 }
 
 void RequestService::SetRequiresUserMediation(bool requires_user_mediation,

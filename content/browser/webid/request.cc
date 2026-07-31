@@ -868,13 +868,7 @@ Request::AutoReauthnInfo Request::CheckAutoReauthnEligibility() {
       auto_reauthn_permission_delegate()->IsAutoReauthnDisabledByEmbedder(
           WebContents::FromRenderFrameHost(&render_frame_host()));
 
-  std::optional<base::TimeDelta> time_from_embargo;
   if (is_auto_reauthn_embargoed) {
-    time_from_embargo =
-        base::Time::Now() -
-        auto_reauthn_permission_delegate()->GetAutoReauthnEmbargoStartTime(
-            GetEmbeddingOrigin());
-
     // See `kFederatedIdentityAutoReauthnEmbargoDuration`.
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kInfo,
@@ -897,8 +891,7 @@ Request::AutoReauthnInfo Request::CheckAutoReauthnEligibility() {
   fedcm_metrics_->RecordAutoReauthnMetrics(
       has_single_returning_account, auto_reauthn_account.get(), is_eligible,
       !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-      is_auto_reauthn_blocked_by_embedder, time_from_embargo,
-      requires_user_mediation);
+      is_auto_reauthn_blocked_by_embedder, requires_user_mediation);
 
   if (is_eligible) {
     result.is_eligible = true;
@@ -2315,12 +2308,7 @@ bool Request::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
   bool is_auto_reauthn_embargoed =
       auto_reauthn_permission_delegate()->IsAutoReauthnEmbargoed(
           GetEmbeddingOrigin());
-  std::optional<base::TimeDelta> time_from_embargo;
   if (is_auto_reauthn_embargoed) {
-    time_from_embargo =
-        base::Time::Now() -
-        auto_reauthn_permission_delegate()->GetAutoReauthnEmbargoStartTime(
-            GetEmbeddingOrigin());
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "Silent mediation issue: auto re-authn is in quiet period because it "
@@ -2357,7 +2345,7 @@ bool Request::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
         /*auto_signin_account=*/nullptr,
         /*auto_reauthn_success=*/false, !is_auto_reauthn_setting_enabled,
         is_auto_reauthn_embargoed, is_auto_reauthn_blocked_by_embedder,
-        time_from_embargo, requires_user_mediation);
+        requires_user_mediation);
     return true;
   }
   return false;

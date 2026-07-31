@@ -66,14 +66,6 @@ bool FederatedIdentityAutoReauthnPermissionContext::
          actor_service->IsActiveOnTab(*tab_interface);
 }
 
-base::Time
-FederatedIdentityAutoReauthnPermissionContext::GetAutoReauthnEmbargoStartTime(
-    const url::Origin& relying_party_embedder) {
-  return permission_autoblocker_->GetEmbargoStartTime(
-      relying_party_embedder.GetURL(),
-      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
-}
-
 void FederatedIdentityAutoReauthnPermissionContext::RecordEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {
   const GURL rp_embedder_url = relying_party_embedder.GetURL();

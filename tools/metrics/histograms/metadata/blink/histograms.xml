@@ -1702,7 +1702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByContentSettings"
-    enum="Boolean" expires_after="2026-09-05">
+    enum="Boolean" expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -1715,7 +1715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByEmbargo" enum="Boolean"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -1740,7 +1740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByPreventSilentAccess"
-    enum="Boolean" expires_after="2026-09-05">
+    enum="Boolean" expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1752,7 +1752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.ReturningAccounts"
-    enum="FedCmNumAccounts" expires_after="2026-09-05">
+    enum="FedCmNumAccounts" expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -1777,21 +1777,6 @@ chromium-metrics-reviews@google.com.
     blocked for some non-network related reason. Records at most one sample per
     FedCM API with auto re-authn enabled: some failures could occur before this
     metric is recorded.
-  </summary>
-</histogram>
-
-<histogram name="Blink.FedCm.AutoReauthn.TimeFromEmbargoWhenBlocked" units="ms"
-    expires_after="2026-09-05">
-  <owner>npm@chromium.org</owner>
-  <owner>yigu@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records the amount of time that has passed from the time the FedCM auto
-    re-authn API was embargoed to the time in which the next call occurs. Only
-    records a sample when there is an auto re-authn FedCM API call which is
-    blocked due to embargo. Samples are exponentially bucketed, with a max
-    bucket of 10 minutes, the embargo duration (see
-    `kFederatedIdentityAutoReauthnEmbargoDuration`).
   </summary>
 </histogram>
 
@@ -1871,7 +1856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.ClosedSheetType.Android" enum="FedCmSheetType"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2033,7 +2018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.HasNonce" enum="BooleanHit"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2241,20 +2226,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.PreventSilentAccessFrameType"
-    enum="FedCmRequesterFrameType" expires_after="2026-09-05">
-  <owner>npm@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records the type of frame that invokes preventSilentAccess(). Records only
-    when there is an existing FedCM sharing permission on the main frame, and
-    some frame in the page invokes the preventSilentAccess() JavaScript call.
-    Possible values are: main frame, same-site iframe, and cross-site iframe,
-    where the site of the caller frame is compared with the site of the main
-    frame.
-  </summary>
-</histogram>
-
 <histogram name="Blink.FedCm.RpContext" enum="FedCmRpContext"
     expires_after="2026-12-27">
   <owner>npm@chromium.org</owner>
@@ -2299,7 +2270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.SignInStatusSetToSignout.NetError"
-    enum="NetErrorCodes" expires_after="2026-09-05">
+    enum="NetErrorCodes" expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2465,7 +2436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.Disconnect" units="ms"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2590,7 +2561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.UserInfo.NumAccounts" enum="FedCmNumAccounts"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2601,7 +2572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.UserInfo.Status" enum="FedCmUserInfoStatus"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2611,7 +2582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.UserInfo.TimeToRequestCompleted" units="ms"
-    expires_after="2026-09-05">
+    expires_after="2027-09-05">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>

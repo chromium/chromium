@@ -40,12 +40,6 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
   virtual bool IsAutoReauthnDisabledByEmbedder(
       content::WebContents* web_contents) = 0;
 
-  // Returns the most recent recorded time an auto-reauthn embargo was started
-  // with the given |relying_party_embedder|. Returns base::Time() if no record
-  // is found.
-  virtual base::Time GetAutoReauthnEmbargoStartTime(
-      const url::Origin& relying_party_embedder) = 0;
-
   // Records that an auto re-authn prompt was displayed to the user and places
   // the permission under embargo for the passed-in |relying_party_embedder|.
   virtual void RecordEmbargoForAutoReauthn(

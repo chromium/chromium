@@ -501,7 +501,6 @@ class CONTENT_EXPORT Metrics {
       bool is_auto_reauthn_setting_blocked,
       bool is_auto_reauthn_embargoed,
       bool is_auto_reauthn_blocked_by_embedder,
-      std::optional<base::TimeDelta> time_from_embargo,
       bool requires_user_mediation);
 
   // Records a sample when an accounts dialog is shown.
@@ -633,12 +632,6 @@ class CONTENT_EXPORT Metrics {
   // Whether |RecordRequestTokenStatus| has been called.
   bool has_recorded_request_token_status_{false};
 };
-
-// The following metric is recorded for UMA and UKM, but does not require an
-// existing FedCM call. Records metrics associated with a preventSilentAccess()
-// call from the given RenderFrameHost.
-void RecordPreventSilentAccess(const RequesterFrameType& requester_frame_type,
-                               int source_id);
 
 // Records the page scroll Y-axis position upon account selection.
 void RecordAccountSelectionScrollPosition(int source_id,

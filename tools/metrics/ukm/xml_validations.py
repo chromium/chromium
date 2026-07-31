@@ -108,7 +108,6 @@ _TIME_UNIT_EVENT_METRIC_ALLOWLIST = frozenset({
     ('AmpPageLoad',
      'SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration2'
      ), ('AppListAppClickData', 'TimeSinceLastClick'),
-    ('Blink.FedCm', 'AutoReauthn.TimeFromEmbargoWhenBlocked'),
     ('Blink.FedCm', 'Timing.AccountsDialogShownDuration'),
     ('Blink.FedCm', 'Timing.MismatchDialogShownDuration'),
     ('Blink.FedCm', 'Timing.TurnaroundTime'),
