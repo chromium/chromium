@@ -80,6 +80,7 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
   std::string full_url = "test.com";
   std::string permanent_display_text = "permanent.com";
   bool show_full_url = true;
+  bool query_zps = true;
   EXPECT_CALL(page_, SetInputState(testing::_))
       .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
         EXPECT_EQ(state->text, test_text);
@@ -89,11 +90,12 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
         EXPECT_TRUE(state->is_focused);
         EXPECT_EQ(state->permanent_display_text, permanent_display_text);
         EXPECT_TRUE(state->show_full_url);
+        EXPECT_TRUE(state->query_zps);
       });
   handler_->SetInputState(test_text, test_selection,
                           /*user_input_in_progress=*/true, full_url,
                           /*is_focused=*/true, permanent_display_text,
-                          show_full_url);
+                          show_full_url, query_zps);
   page_.FlushForTesting();
 }
 
@@ -113,7 +115,7 @@ TEST_F(OmniboxPopupHandlerTest, OnSelectionChangedSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false);
 
   // A call with stale sequence number 0 should be discarded.
   gfx::Range selection2(2, 6);
@@ -173,7 +175,7 @@ TEST_F(OmniboxPopupHandlerTest, OnInputClearedSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false);
   omnibox_controller->edit_model()->SetUserText(u"some text");
   test_omnibox_view->SetWindowTextAndCaretPos(u"some text", 0, false, false);
 
@@ -202,7 +204,7 @@ TEST_F(OmniboxPopupHandlerTest, RevertSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false);
   omnibox_controller->edit_model()->SetUserText(u"draft text");
 
   handler_->Revert(/*sequence_number=*/0);

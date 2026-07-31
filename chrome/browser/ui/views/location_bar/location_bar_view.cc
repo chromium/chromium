@@ -2003,11 +2003,11 @@ void LocationBarView::OnOmniboxFocused() {
   RefreshAiModePageAction();
 }
 
-void LocationBarView::OpenOmniboxPopup() {
+void LocationBarView::OpenOmniboxPopup(bool query_zps) {
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
       !in_popup_state_transition_) {
     if (auto* popup_view = GetOmniboxPopupView()) {
-      popup_view->OnFocus();
+      popup_view->OnFocus(query_zps);
     }
   }
 }

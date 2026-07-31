@@ -546,7 +546,7 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   if (is_user_initiated) {
     controller()->edit_model()->StartZeroSuggestRequest();
     if (location_bar_view_) {
-      location_bar_view_->OpenOmniboxPopup();
+      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/is_user_initiated);
     }
   }
 
@@ -1485,13 +1485,14 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
   }
 
   if (location_bar_view_) {
-    location_bar_view_->OpenOmniboxPopup();
+    location_bar_view_->OpenOmniboxPopup(/*query_zps=*/true);
 
     // Transfer selection to the full webui popup.
     if (location_bar_view_->GetOmniboxPopupView() &&
         base::FeatureList::IsEnabled(
             omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
-      location_bar_view_->GetOmniboxPopupView()->SyncNativeStateToWebUI();
+      location_bar_view_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
+          /*query_zps=*/true);
     }
   }
 }

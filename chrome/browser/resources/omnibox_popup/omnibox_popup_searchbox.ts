@@ -365,11 +365,17 @@ export class OmniboxPopupSearchboxElement extends
   // Event handlers
   //========================================================================
 
-  override onInputFocusChanged(e: CustomEvent<{value: string}>) {
+  override onInputFocusChanged(
+      e: CustomEvent<{value: string, isOnFocus: boolean}>) {
     // Don't populate results if the user edited the input.
     if (this.userInputInProgress_ || this.isChromeScheme_()) {
       return;
     }
+
+    // Unlike other searchboxes where emptiness indicates an unedited input,
+    // this searchbox may contain prepopulated text (e.g., the page's URL).
+    // Therefore, explicitly set `isOnFocus` to true for all focus queries.
+    e.detail.isOnFocus = true;
     super.onInputFocusChanged(e);
   }
 
@@ -519,7 +525,16 @@ export class OmniboxPopupSearchboxElement extends
 
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
-    this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
+    // If zero-prefix suggestions are requested by the new state, initiate
+    // an on-focus autocomplete query. Otherwise, halt any in-flight
+    // autocomplete requests while preserving the current dropdown results.
+    if (state.queryZps) {
+      this.queryAutocomplete(
+          state.text, /*preventInlineAutocomplete=*/ false,
+          /*isOnFocus=*/ true);
+    } else {
+      this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
+    }
   }
 
   /**

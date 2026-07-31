@@ -49,7 +49,7 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
   // called directly from specific events (focus, tab switch).
 }
 
-void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI() {
+void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
   controller()->edit_model()->ResetDisplayTexts();
   auto* popup_handler = GetPopupHandler();
   if (!popup_handler) {
@@ -93,7 +93,8 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI() {
     popup_handler->SetInputState(
         base::UTF16ToUTF8(text), selection, user_input_in_progress,
         base::UTF16ToUTF8(full_url), controller()->edit_model()->has_focus(),
-        base::UTF16ToUTF8(permanent_display_text), /*show_full_url=*/false);
+        base::UTF16ToUTF8(permanent_display_text), /*show_full_url=*/false,
+        query_zps);
     last_sent_text_ = text;
     last_sent_focus_ = focus;
   }
@@ -260,13 +261,14 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     popup_handler->SetInputState(
         base::UTF16ToUTF8(text), selection, user_input_in_progress,
         base::UTF16ToUTF8(full_url), should_focus_popup,
-        base::UTF16ToUTF8(permanent_display_text), show_full_url);
+        base::UTF16ToUTF8(permanent_display_text), show_full_url,
+        /*query_zps=*/false);
     last_sent_text_ = text;
     last_sent_focus_ = should_focus_popup;
   }
 }
 
-void OmniboxPopupViewFullWebUI::OnFocus() {
+void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps) {
   bool changed = controller()->popup_state_manager()->popup_state() !=
                  OmniboxPopupState::kFull;
 
@@ -286,7 +288,7 @@ void OmniboxPopupViewFullWebUI::OnFocus() {
   }
 
   if (changed) {
-    SyncNativeStateToWebUI();
+    SyncNativeStateToWebUI(query_zps);
   } else if (auto* popup_handler = GetPopupHandler()) {
     // If the popup was already open (`!changed`), explicitly send
     // `SetFocus(true)` via IPC to ensure WebUI DOM input element focus is
