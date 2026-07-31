@@ -34,6 +34,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -316,8 +317,14 @@ bool RemoteActorCredentialSharingImpl::VerifyUserIdentityAndSyncState(
   }
 
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
-  if (sync_service && sync_service->GetAuthError().IsPersistentError()) {
-    return false;
+  if (sync_service) {
+    if (sync_service->GetAuthError().IsPersistentError()) {
+      return false;
+    }
+    if (sync_service->GetUserSettings()
+            ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
+      return false;
+    }
   }
 
   return true;

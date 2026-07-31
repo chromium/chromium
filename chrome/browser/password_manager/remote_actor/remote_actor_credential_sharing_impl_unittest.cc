@@ -906,4 +906,22 @@ TEST_F(RemoteActorCredentialSharingImplTest, ReauthDisabled_NoPrompt) {
 }
 #endif
 
+TEST_F(RemoteActorCredentialSharingImplTest,
+       RequestFailsWhenTrustedVaultKeyRequired) {
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
+      SetUpAndBindFlow();
+
+  // Set trusted vault key required.
+  ON_CALL(*mock_sync_service_->GetMockUserSettings(),
+          IsTrustedVaultKeyRequiredForPreferredDataTypes())
+      .WillByDefault(testing::Return(true));
+
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> result;
+  remote->RequestAgentAuthentication(account_info_.gaia.ToString(),
+                                     "google.com", "actor_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+}
+
 }  // namespace password_manager
