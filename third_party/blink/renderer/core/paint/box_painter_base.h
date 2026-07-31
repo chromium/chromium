@@ -47,8 +47,12 @@ class BoxPainterBase {
  public:
   BoxPainterBase(const Document& document,
                  const ComputedStyle& style,
-                 Node* node)
-      : document_(document), style_(style), node_(node) {}
+                 Node* node,
+                 Node* generating_node)
+      : document_(document),
+        style_(style),
+        node_(node),
+        generating_node_(generating_node) {}
 
   void PaintFillLayers(const PaintInfo&,
                        const Color&,
@@ -202,6 +206,11 @@ class BoxPainterBase {
   const Document& document_;
   const ComputedStyle& style_;
   Node* node_;
+  // The node the paint-timing path attributes background images to, resolved
+  // by the caller with LayoutObject::GeneratingNode(). Kept separate from
+  // `node_` so DevTools and image-animation paths continue to see the raw box
+  // node.
+  Node* generating_node_;
 };
 
 }  // namespace blink

@@ -348,7 +348,10 @@ inline BoxFragmentPainter::BoxFragmentPainter(
     const InlineCursor* inline_box_cursor,
     const FragmentItem* box_item,
     InlinePaintContext* inline_context)
-    : BoxPainterBase(box.GetDocument(), box.Style(), box.GetNode()),
+    : BoxPainterBase(box.GetDocument(),
+                     box.Style(),
+                     box.GetNode(),
+                     box.GeneratingNode()),
       box_fragment_(box),
       display_item_client_(display_item_client),
       items_(box.Items()),

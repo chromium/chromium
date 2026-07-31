@@ -21,13 +21,6 @@ class LocalFrameView;
 
 namespace blink::paint_timing {
 
-// Returns the `Node` causing the image to be generated. For pseudo elements,
-// this is the parent node; for all other nodes, this is the `node` itself.
-inline CORE_EXPORT Node* ImageGeneratingNode(Node* node) {
-  return node && node->IsPseudoElement() ? node->ParentOrShadowHostNode()
-                                         : node;
-}
-
 // Returns true if `object` will cause an image to be rendered, and false
 // otherwise.
 inline bool CORE_EXPORT IsImageType(const LayoutObject& object) {

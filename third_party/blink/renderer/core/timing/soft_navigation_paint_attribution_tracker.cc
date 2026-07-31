@@ -181,8 +181,7 @@ SoftNavigationPaintAttributionTracker::UpdateOnPrePaint(
       // not be leaf nodes -- but it's fine to store intermediate nodes in the
       // tree whose parent and descendants have the same context.
       MarkNodeForPaintTrackingIfNeeded(
-          node->IsTextNode() ? text_aggregator
-                             : paint_timing::ImageGeneratingNode(node),
+          node->IsTextNode() ? text_aggregator : object.GeneratingNode(),
           inherited_state);
     }
   }
