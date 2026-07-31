@@ -735,7 +735,11 @@ impl From<&Error> for ffi::SymphoniaDecodeStatus {
     fn from(err: &Error) -> Self {
         match err {
             Error::DecodeError(_) => ffi::SymphoniaDecodeStatus::DecodeError,
-            Error::IoError(io_err) if io_err.kind() == std::io::ErrorKind::UnexpectedEof => {
+            Error::IoError(io_err)
+                if io_err.kind() == std::io::ErrorKind::UnexpectedEof
+                    || (io_err.kind() == std::io::ErrorKind::Other
+                        && io_err.to_string() == "unexpected end of bitstream") =>
+            {
                 ffi::SymphoniaDecodeStatus::UnexpectedEndOfStream
             }
             Error::IoError(_) => ffi::SymphoniaDecodeStatus::IoError,

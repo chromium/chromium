@@ -85,6 +85,7 @@ constexpr int kVP8AWebMFileDurationMs = 2733;
 constexpr char kSfxLosslessHash[] = "3.03,2.86,2.99,3.31,3.57,4.06,";
 constexpr char kBear320x240AudioHash[] = "-3.59,-2.06,-0.43,2.15,0.77,-0.95,";
 constexpr char kSfxMp3Hash[] = "1.30,2.72,4.56,5.08,3.74,2.03,";
+constexpr char kSilentSectionMp3Hash[] = "-4.37,-4.44,-3.23,-6.92,-6.71,-8.27,";
 
 constexpr char kSfxMseMp3Hash[] = "1.01,2.71,4.18,4.32,3.04,1.12,";
 
@@ -1844,6 +1845,13 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_MP3) {
   EXPECT_AUDIO_HASH(kSfxMp3Hash);
 }
 
+TEST_F(PipelineIntegrationTest, BasicPlayback_SilentSection_MP3) {
+  ASSERT_EQ(PIPELINE_OK, Start("silent-section.mp3", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSilentSectionMp3Hash);
+}
+
 TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_FlacInMp4) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx-flac.mp4", kHashed));
   Play();
@@ -3109,6 +3117,13 @@ TEST_F(SymphoniaPipelineIntegrationTest, BasicPlaybackHashed_MP3) {
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_AUDIO_HASH(kSfxMp3Hash);
+}
+
+TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_SilentSection_MP3) {
+  ASSERT_EQ(PIPELINE_OK, Start("silent-section.mp3", kHashed));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_AUDIO_HASH(kSilentSectionMp3Hash);
 }
 
 TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Flac) {

@@ -485,6 +485,7 @@ data/sfx_s16le.wav
 data/sfx_s24le.wav
 data/sfx_s32le.wav
 data/sfx_u8.wav
+data/silent-section.mp3
 data/solid_green_2015x2015.webp
 data/speech_16b_stereo_48kHz.raw
 data/speex_audio_vorbis_video.ogv

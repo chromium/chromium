@@ -143,6 +143,12 @@ ffmpeg -i sfx.flac -map 0:0 -acodec copy -strict -2 -movflags frag_keyframe+empt
 #### with_mask.flac
 A 4-channel FLAC file with a `WAVEFORMATEXTENSIBLE_CHANNEL_MASK` tag. Used to verify that `AudioFileReader` can handle files where FFmpeg refines the channel layout during decoding without failing due to "unsupported midstream configuration change".
 
+### MP3
+
+#### silent-section.mp3
+MP3 file containing silent sections filled with 0xff bytes, causing Symphonia decoder to trigger out-of-bounds error on bit reservoir. Used to verify the fix for this regression.
+Source: https://abfiles.s3.amazonaws.com/jds/silent-section.mp3
+
 ### VVC
 
 #### bear_180p.vvc

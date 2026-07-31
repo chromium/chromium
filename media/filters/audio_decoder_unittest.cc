@@ -247,7 +247,16 @@ class AudioDecoderTest
       return IsDecoderSupportedAudioType(
           {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false});
     }
-    return true;
+    switch (decoder_type_) {
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+      case AudioDecoderType::kSymphonia:
+        return SymphoniaAudioDecoder::IsCodecSupported(params_.codec);
+#endif
+      case AudioDecoderType::kOpus:
+        return params_.codec == AudioCodec::kOpus;
+      default:
+        return true;
+    }
   }
 
   bool IsIamfTest() const { return codec() == AudioCodec::kIAMF; }
@@ -510,21 +519,17 @@ class AudioDecoderTest
 
     const DecodedBufferExpectations& sample_info = params_.expectations[i];
 
-    // Accept either set of timestamp/duration values if both exist.
+    const DecodedBufferExpectations* matched_info = &sample_info;
     if (params_.alt_expectations.has_value()) {
       const DecodedBufferExpectations& alt_info =
           (*params_.alt_expectations)[i];
-      EXPECT_TRUE(buffer->timestamp().InMicroseconds() ==
-                      sample_info.timestamp ||
-                  buffer->timestamp().InMicroseconds() == alt_info.timestamp)
-          << "Timestamp: " << buffer->timestamp().InMicroseconds()
-          << " expected: " << sample_info.timestamp
-          << " or: " << alt_info.timestamp;
-      EXPECT_TRUE(buffer->duration().InMicroseconds() == sample_info.duration ||
-                  buffer->duration().InMicroseconds() == alt_info.duration)
-          << "Duration: " << buffer->duration().InMicroseconds()
-          << " expected: " << sample_info.duration
-          << " or: " << alt_info.duration;
+      if (buffer->timestamp().InMicroseconds() == alt_info.timestamp &&
+          buffer->duration().InMicroseconds() == alt_info.duration) {
+        matched_info = &alt_info;
+      } else {
+        EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
+        EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
+      }
     } else {
       EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
       EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
@@ -536,11 +541,11 @@ class AudioDecoderTest
     buffer->ReadFrames(buffer->frame_count(), 0, 0, output.get());
 
     // Generate a lossy hash of the audio used for comparison across platforms.
-    if (sample_info.hash) {
+    if (matched_info->hash) {
       AudioHash audio_hash;
       audio_hash.Update(output.get(), output->frames());
-      EXPECT_TRUE(audio_hash.IsEquivalent(sample_info.hash, 0.03))
-          << "Audio hashes differ. Expected: " << sample_info.hash
+      EXPECT_TRUE(audio_hash.IsEquivalent(matched_info->hash, 0.03))
+          << "Audio hashes differ. Expected: " << matched_info->hash
           << " Actual: " << audio_hash.ToString();
     }
 
@@ -732,7 +737,34 @@ constexpr DataExpectations kSfxFlacExpectations = {{
     {208979, 79433, "2.84,2.70,3.23,4.06,4.59,4.44,"},
 }};
 
-constexpr TestParams kFFmpegTestParams[] = {
+constexpr DataExpectations kBearFlac192kHzExpectations = {
+    {{0, 85333, "-0.30,-0.76,0.01,0.52,2.09,0.90,"},
+     {85333, 85333, "-3.54,-1.84,-3.22,-0.56,-1.13,-0.17,"},
+     {170666, 85333, "0.79,-0.39,1.11,0.89,3.22,1.28,"}}};
+
+constexpr DataExpectations kSfxVorbisSymphoniaExpectations = {{
+    {0, 13061, nullptr},
+    {13061, 23219, nullptr},
+    {36281, 23219, nullptr},
+}};
+
+constexpr DataExpectations kBearVorbisSymphoniaExpectations = {{
+    {0, 2902, nullptr},
+    {2902, 13061, nullptr},
+    {15963, 23219, nullptr},
+}};
+
+constexpr TestParams kFlacMonoParams = {
+    AudioCodec::kFLAC,  "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
+    CHANNEL_LAYOUT_MONO};
+constexpr TestParams kFlacStereoParams = {AudioCodec::kFLAC,
+                                          "bear-flac-192kHz.mp4",
+                                          kBearFlac192kHzExpectations,
+                                          0,
+                                          192000,
+                                          CHANNEL_LAYOUT_STEREO};
+
+constexpr TestParams kCommonTestParams[] = {
     {AudioCodec::kMP3,
      "sfx.mp3",
      {{
@@ -742,7 +774,13 @@ constexpr TestParams kFFmpegTestParams[] = {
      }},
      0,
      44100,
-     CHANNEL_LAYOUT_MONO},
+     CHANNEL_LAYOUT_MONO,
+     AudioCodecProfile::kUnknown,
+     DataExpectations{{
+         {0, 26122, nullptr},
+         {26122, 26122, nullptr},
+         {52244, 26122, nullptr},
+     }}},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {AudioCodec::kAAC,
      "sfx.adts",
@@ -755,10 +793,10 @@ constexpr TestParams kFFmpegTestParams[] = {
      44100,
      CHANNEL_LAYOUT_MONO},
 #endif
-    {AudioCodec::kFLAC, "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
-     CHANNEL_LAYOUT_MONO},
+    kFlacMonoParams,
     {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
      CHANNEL_LAYOUT_MONO},
+    kFlacStereoParams,
     {AudioCodec::kPCM,
      "sfx_f32le.wav",
      {{
@@ -788,9 +826,9 @@ constexpr TestParams kFFmpegTestParams[] = {
      }},
      0,
      44100,
-     CHANNEL_LAYOUT_MONO},
-    // Note: bear.ogv is incorrectly muxed such that valid samples are given
-    // negative timestamps, this marks them for discard per the ogg vorbis spec.
+     CHANNEL_LAYOUT_MONO,
+     AudioCodecProfile::kUnknown,
+     kSfxVorbisSymphoniaExpectations},
     {AudioCodec::kVorbis,
      "bear.ogv",
      {{
@@ -800,26 +838,11 @@ constexpr TestParams kFFmpegTestParams[] = {
      }},
      -704,
      44100,
-     CHANNEL_LAYOUT_STEREO},
+     CHANNEL_LAYOUT_STEREO,
+     AudioCodecProfile::kUnknown,
+     kBearVorbisSymphoniaExpectations},
     kSfxOpusParams,
-    kBearOpusParams,
-};
-
-#if BUILDFLAG(ENABLE_SYMPHONIA)
-constexpr DataExpectations kBearFlac192kHzExpectations = {
-    {{0, 85333, "-0.30,-0.76,0.01,0.52,2.09,0.90,"},
-     {85333, 85333, "-3.54,-1.84,-3.22,-0.56,-1.13,-0.17,"},
-     {170666, 85333, "0.79,-0.39,1.11,0.89,3.22,1.28,"}}};
-
-// Currently, Symphonia is only enabled for FLAC audio.
-constexpr TestParams kSymphoniaTestParams[] = {
-    {AudioCodec::kFLAC, "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
-     CHANNEL_LAYOUT_MONO},
-    {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
-     CHANNEL_LAYOUT_MONO},
-    {AudioCodec::kFLAC, "bear-flac-192kHz.mp4", kBearFlac192kHzExpectations, 0,
-     192000, CHANNEL_LAYOUT_STEREO}};
-#endif
+    kBearOpusParams};
 
 #if BUILDFLAG(ENABLE_IAMF_TOOLS)
 constexpr DataExpectations kIamfExpectations = {{
@@ -889,12 +912,12 @@ void AudioDecoderTest::SetReinitializeParams() {
 #endif
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)
-  // Currently, Symphonia only supports FLAC audio, so we can't use the Opus
+  // Currently, Symphonia does not support Opus audio, so we can't use the Opus
   // params for reinitialization. Modify the channel layout instead.
   if (decoder_type_ == AudioDecoderType::kSymphonia) {
-    set_params(params_.channel_layout == kSymphoniaTestParams[0].channel_layout
-                   ? kSymphoniaTestParams[2]
-                   : kSymphoniaTestParams[0]);
+    set_params(params_.channel_layout == kFlacMonoParams.channel_layout
+                   ? kFlacStereoParams
+                   : kFlacMonoParams);
     return;
   }
 #endif
@@ -1164,7 +1187,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
                          Combine(Values(AudioDecoderType::kFFmpeg),
-                                 ValuesIn(kFFmpegTestParams)));
+                                 ValuesIn(kCommonTestParams)));
 
 INSTANTIATE_TEST_SUITE_P(Opus,
                          AudioDecoderTest,
@@ -1175,7 +1198,7 @@ INSTANTIATE_TEST_SUITE_P(Opus,
 INSTANTIATE_TEST_SUITE_P(Symphonia,
                          AudioDecoderTest,
                          Combine(Values(AudioDecoderType::kSymphonia),
-                                 ValuesIn(kSymphoniaTestParams)));
+                                 ValuesIn(kCommonTestParams)));
 #endif
 
 #if BUILDFLAG(ENABLE_IAMF_TOOLS)

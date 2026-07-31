@@ -1,0 +1,31 @@
+From bd6ae12ffbac24e7bb8cea875cd9341f3a0a7ac2 Mon Sep 17 00:00:00 2001
+From: Jordan Bayles <jophba@chromium.org>
+Date: Mon, 20 Jul 2026 11:21:58 -0700
+Subject: [PATCH] layer3: Fix decoding failure on zero-length channels
+
+Change byte_index < main_data.len() to byte_index <= main_data.len().
+This avoids an out-of-bounds check (mpa: invalid main_data offset) when
+the bit reservoir is exactly exhausted at granule boundaries (byte_index
+equals main_data.len()).
+
+Upstream PR: https://github.com/pdeljanov/Symphonia/pull/528
+Fixes #529
+---
+ third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/mod.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/mod.rs b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/mod.rs
+index 27179761..26952a1b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/symphonia-bundle-mp3-v0_6/src/layer3/mod.rs
+@@ -305,7 +305,7 @@ impl Layer3 {
+                 let byte_index = part2_3_begin >> 3;
+
+                 // Create a bit reader at the expected starting bit position.
+-                let mut bs = if byte_index < main_data.len() {
++                let mut bs = if byte_index <= main_data.len() {
+                     let mut bs = BitReaderLtr::new(&main_data[byte_index..]);
+
+                     let bit_index = part2_3_begin & 0x7;
+-- 
+2.42.0.869.gea05f2083d-goog

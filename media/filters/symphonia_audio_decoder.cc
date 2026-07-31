@@ -447,10 +447,15 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
                                   result.status);
   }
 
+  if (result.status != SymphoniaDecodeStatus::Ok &&
+      result.status != SymphoniaDecodeStatus::UnexpectedEndOfStream) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Symphonia error occurred: " << result.error_str.c_str();
+    return ToDecoderStatus(result);
+  }
+
   // The Symphonia glue will return an empty buffer if end of stream is reached.
   if (result.buffer->data.empty()) {
-    // The stream end was unexpected, which is not as severe of an error as the
-    // other potential cases logged below.
     if (result.status == SymphoniaDecodeStatus::UnexpectedEndOfStream) {
       MEDIA_LOG(WARNING, media_log_) << "Reached an unexpected end of stream.";
     }
@@ -469,12 +474,6 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   // buffer, then the input buffer should definitely not have been end of
   // stream.
   CHECK(!buffer.end_of_stream());
-
-  if (result.status != SymphoniaDecodeStatus::Ok) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "Symphonia error occurred: " << result.error_str.c_str();
-    return ToDecoderStatus(result);
-  }
 
   // TODO(crbug.com/40074653): similar to FFMPEG audio decoder, add support
   // for midstream channel and sample rate changes.

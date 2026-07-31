@@ -305,7 +305,7 @@ impl Layer3 {
                 let byte_index = part2_3_begin >> 3;
 
                 // Create a bit reader at the expected starting bit position.
-                let mut bs = if byte_index < main_data.len() {
+                let mut bs = if byte_index <= main_data.len() {
                     let mut bs = BitReaderLtr::new(&main_data[byte_index..]);
 
                     let bit_index = part2_3_begin & 0x7;
