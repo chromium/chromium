@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -105,6 +106,8 @@ import java.util.function.Supplier;
 @NullMarked
 public class VerticalTabListCoordinator {
     static final int DEFAULT_GRID_SPAN_COUNT = 4;
+    private static @Nullable Supplier<TabSwitcherDragHandler>
+            sTabSwitcherDragHandlerSupplierForTesting;
     private final VerticalTabRailLayout mContainerView;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabListModel mModelList;
@@ -132,10 +135,10 @@ public class VerticalTabListCoordinator {
             mRailCollapseStateSupplier;
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
+    private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
-    private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
     private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
@@ -143,6 +146,8 @@ public class VerticalTabListCoordinator {
     private @Nullable RailCollapseListener mRailCollapseListener;
     private @Nullable TabHoverCardView mTabHoverCardView;
     private @Nullable Token mLastDraggedGroupId;
+    private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
+
     private boolean mIsActive;
 
     /** Listener for collapse state changes. */
@@ -263,7 +268,10 @@ public class VerticalTabListCoordinator {
                 parent ->
                         (ViewGroup)
                                 LayoutInflater.from(activity)
-                                        .inflate(R.layout.vertical_tab_item, parent, false),
+                                        .inflate(
+                                                R.layout.vertical_tab_item,
+                                                parent,
+                                                /* attachToRoot= */ false),
                 TabVerticalViewBinder::bindTab);
 
         // Pinned tabs are rendered in a separate sticky layout. This zero-height hidden layout in
@@ -284,13 +292,19 @@ public class VerticalTabListCoordinator {
                 parent ->
                         (ViewGroup)
                                 LayoutInflater.from(activity)
-                                        .inflate(R.layout.vertical_tab_group_header, parent, false),
+                                        .inflate(
+                                                R.layout.vertical_tab_group_header,
+                                                parent,
+                                                /* attachToRoot= */ false),
                 TabVerticalViewBinder::bindTabGroupHeader);
 
         mContainerView =
                 (VerticalTabRailLayout)
                         LayoutInflater.from(activity)
-                                .inflate(R.layout.vertical_tab_layout, null, false);
+                                .inflate(
+                                        R.layout.vertical_tab_layout,
+                                        null,
+                                        /* attachToRoot= */ false);
         mContainerView.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -498,7 +512,10 @@ public class VerticalTabListCoordinator {
                 parent ->
                         (ViewGroup)
                                 LayoutInflater.from(activity)
-                                        .inflate(R.layout.vertical_tab_pinned_item, parent, false),
+                                        .inflate(
+                                                R.layout.vertical_tab_pinned_item,
+                                                parent,
+                                                /* attachToRoot= */ false),
                 TabVerticalViewBinder::bindPinnedTab);
 
         pinnedTabsRecyclerView.setAdapter(pinnedTabsAdapter);
@@ -820,6 +837,9 @@ public class VerticalTabListCoordinator {
                         activity,
                         modelList,
                         tabModelSelector.getCurrentTabModelSupplier().asNonNull());
+        if (mMainTouchHelperCallback == null) {
+            mMainTouchHelperCallback = touchHelperCallback;
+        }
 
         // Handles long-presses for tab item/group context menus. Long-presses for empty space
         // context menus are handled by the gesture detector.
@@ -944,6 +964,12 @@ public class VerticalTabListCoordinator {
 
     private TabSwitcherDragHandler createTabSwitcherDragHandler(
             Activity activity, TabModelSelector tabModelSelector) {
+        if (sTabSwitcherDragHandlerSupplierForTesting != null) {
+            TabSwitcherDragHandler dragHandler = sTabSwitcherDragHandlerSupplierForTesting.get();
+            mTabSwitcherDragHandlers.add(dragHandler);
+            return dragHandler;
+        }
+
         Supplier<@Nullable Activity> activitySupplier = () -> activity;
         DragAndDropDelegate dragDropDelegate = new DragAndDropDelegateImpl();
         dragDropDelegate.setDragAndDropBrowserDelegate(
@@ -1005,7 +1031,8 @@ public class VerticalTabListCoordinator {
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
                     if (tabModel != null) {
                         // Always expand tab group on drop.
-                        tabModel.setTabGroupCollapsed(groupId, false, /* animate= */ false);
+                        tabModel.setTabGroupCollapsed(
+                                groupId, /* isCollapsed= */ false, /* animate= */ false);
                     }
                 }
                 return true;
@@ -1418,6 +1445,23 @@ public class VerticalTabListCoordinator {
         groupHeaderView.layout(0, 0, width, height);
 
         return groupHeaderView;
+    }
+
+    /** Sets the tab switcher drag handler supplier override for testing. */
+    static void setTabSwitcherDragHandlerSupplierForTesting(
+            @Nullable Supplier<TabSwitcherDragHandler> supplier) {
+        sTabSwitcherDragHandlerSupplierForTesting = supplier;
+        ResettersForTesting.register(() -> sTabSwitcherDragHandlerSupplierForTesting = null);
+    }
+
+    /** Returns the main touch helper callback for testing. */
+    @Nullable VerticalTabListItemTouchHelperCallback getMainTouchHelperCallbackForTesting() {
+        return mMainTouchHelperCallback;
+    }
+
+    /** Returns the active tab switcher drag handlers for testing. */
+    List<TabSwitcherDragHandler> getTabSwitcherDragHandlersForTesting() {
+        return mTabSwitcherDragHandlers;
     }
 
     NonNullObservableSupplier<@RailCollapseState Integer> getRailCollapseStateSupplierForTesting() {
