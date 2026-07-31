@@ -4,6 +4,7 @@
 
 source_set("signals") {
   sources = [
+    "ios_device_identifier_delegate.h",
     "ios_system_signals_collector.h",
     "ios_system_signals_collector.mm",
     "profile_signals_collector_ios.h",

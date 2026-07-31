@@ -12,6 +12,7 @@
 #import "base/system/sys_info.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/enterprise/signals/model/ios_device_identifier_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace {
@@ -27,12 +28,16 @@ device_signals::SettingValue GetScreenLockSecured() {
 
 }  // namespace
 
-IOSSystemSignalsCollector::IOSSystemSignalsCollector()
+IOSSystemSignalsCollector::IOSSystemSignalsCollector(
+    std::unique_ptr<IOSDeviceIdentifierDelegate> delegate)
     : device_signals::BaseSignalsCollector({
           {device_signals::SignalName::kOsSignals,
            base::BindRepeating(&IOSSystemSignalsCollector::GetOsSignals,
                                base::Unretained(this))},
-      }) {}
+      }),
+      delegate_(std::move(delegate)) {
+  CHECK(delegate_);
+}
 
 IOSSystemSignalsCollector::~IOSSystemSignalsCollector() = default;
 
@@ -47,10 +52,9 @@ void IOSSystemSignalsCollector::GetOsSignals(
   signal_response->browser_version =
       std::string(version_info::GetVersionNumber());
   signal_response->operating_system = kIOSOperatingSystem;
-
+  signal_response->vendor_id = delegate_->GetVendorId();
   device_signals::SettingValue screen_lock = GetScreenLockSecured();
   signal_response->screen_lock_secured = screen_lock;
-
   // `diskEncryption` mirrors `screenLockSecured` on iOS.
   signal_response->disk_encryption = screen_lock;
 
