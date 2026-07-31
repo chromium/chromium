@@ -88,6 +88,8 @@ public class ProfileDataCache
     private final @Nullable IdentityManagerAccountsChangeObserver
             mIdentityManagerAccountsChangeObserver;
     private final int mImageSize;
+    private final int mAvatarSize;
+    private final int mTotalPadding;
     // The badge for a given account is selected as follows:
     // * If there is a config for that specific account, use that
     // * Else if there is a default config, use that
@@ -130,7 +132,21 @@ public class ProfileDataCache
         mAiTierRingEnabled = aiTierRingEnabled;
         mBrandingDelegate = brandingDelegate;
         mSubscriptionEligibilityService = subscriptionEligibilityService;
-        mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
+
+        if (mAiTierRingEnabled) {
+            int ringSpacingPx =
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    org.chromium.components.browser_ui.util.R.dimen
+                                            .ai_tier_ring_spacing);
+            mTotalPadding = mRingThicknessPx + ringSpacingPx;
+            mAvatarSize = mImageSize - 2 * mTotalPadding;
+        } else {
+            mTotalPadding = 0;
+            mAvatarSize = mImageSize;
+        }
+
+        mPlaceholderImage = getScaledPlaceholderImage(context, mAvatarSize);
         updateCache();
     }
 
@@ -453,7 +469,7 @@ public class ProfileDataCache
         Drawable croppedAvatar =
                 accountInfo.getAccountImage() != null
                         ? AvatarGenerator.makeRoundAvatar(
-                                mContext.getResources(), accountInfo.getAccountImage(), mImageSize)
+                                mContext.getResources(), accountInfo.getAccountImage(), mAvatarSize)
                         : mPlaceholderImage;
         BadgeConfig badgeConfig = getBadgeConfigForAccount(accountInfo.getId());
         boolean hasAiTierRing = false;
@@ -566,14 +582,7 @@ public class ProfileDataCache
     // TODO(crbug.com/40944114): Consider using UiUtils.drawIconWithBadge instead.
     private Drawable overlayBadgeOnUserPicture(
             BadgeConfig badgeConfig, Drawable userPicture, boolean isPadded) {
-        int padding =
-                isPadded
-                        ? mRingThicknessPx
-                                + mContext.getResources()
-                                        .getDimensionPixelSize(
-                                                org.chromium.components.browser_ui.util.R.dimen
-                                                        .ai_tier_ring_spacing)
-                        : 0;
+        int padding = isPadded ? mTotalPadding : 0;
 
         int badgeSize = badgeConfig.getBadgeSize();
         int badgeX = badgeConfig.getPosition().x + padding;
@@ -607,27 +616,15 @@ public class ProfileDataCache
     }
 
     private Drawable padAvatarForAiTierRing(Drawable userPicture) {
-        int ringSpacingPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.components.browser_ui.util.R.dimen
-                                        .ai_tier_ring_spacing);
-        int totalPadding = mRingThicknessPx + ringSpacingPx;
-
-        int badgedPictureWidth = mImageSize;
-        int badgedPictureHeight = mImageSize;
-
-        Bitmap badgedPicture =
-                Bitmap.createBitmap(
-                        badgedPictureWidth, badgedPictureHeight, Bitmap.Config.ARGB_8888);
+        Bitmap badgedPicture = Bitmap.createBitmap(mImageSize, mImageSize, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(badgedPicture);
 
         Rect oldBounds = userPicture.getBounds();
         userPicture.setBounds(
-                totalPadding,
-                totalPadding,
-                badgedPictureWidth - totalPadding,
-                badgedPictureHeight - totalPadding);
+                mTotalPadding,
+                mTotalPadding,
+                mImageSize - mTotalPadding,
+                mImageSize - mTotalPadding);
         userPicture.draw(canvas);
         userPicture.setBounds(oldBounds);
 
