@@ -302,6 +302,15 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
     return;
   }
 
+  // Ensure the new frame's active state is in sync. This is necessary because
+  // early-commit of speculative frames goes directly from kSpeculative to
+  // kActive, skipping the RenderFrameHostStateChanged notification entirely
+  // due to a check in content/ that avoids exposing kSpeculative states to
+  // embedders.
+  if (new_frame) {
+    new_frame->SetIsActive(new_host->IsActive());
+  }
+
   FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
                                     PerformanceManagerImpl::GetGraphImpl());
 }

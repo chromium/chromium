@@ -4,8 +4,10 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
+#include <optional>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,9 +21,13 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/viewport_intersection.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -327,6 +333,100 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return IsDocumentCoordinatorUnitBound(prerender_rfh); }));
+}
+
+class FrameNodeImplIsActiveBrowserTest : public FrameNodeImplBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    FrameNodeImplBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
+// Tests that FrameNode::IsActive() is correctly set for speculative frames
+// that go through a standard (non-early-commit) cross-site navigation.
+IN_PROC_BROWSER_TEST_F(FrameNodeImplIsActiveBrowserTest,
+                       IsActiveSpeculativeFrame_StandardCommit) {
+  const GURL kUrl1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  // Initial navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl1));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* initial_rfh = web_contents->GetPrimaryMainFrame();
+  base::WeakPtr<FrameNode> initial_frame_ptr =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(initial_rfh);
+  ASSERT_TRUE(initial_frame_ptr);
+  EXPECT_TRUE(initial_frame_ptr->IsActive());
+
+  // Navigate to a different site to trigger a speculative RenderFrameHost that
+  // commits normally (standard commit).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
+
+  // Ask content for the new primary main frame, and independently assert its
+  // states.
+  content::RenderFrameHost* new_rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_NE(initial_rfh, new_rfh);
+
+  base::WeakPtr<FrameNode> new_frame_ptr =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(new_rfh);
+  ASSERT_TRUE(new_frame_ptr);
+
+  EXPECT_NE(initial_frame_ptr.get(), new_frame_ptr.get());
+  EXPECT_TRUE(new_frame_ptr->IsActive());
+  EXPECT_TRUE(new_frame_ptr->IsCurrent());
+}
+
+// Tests that FrameNode::IsActive() is correctly set for speculative frames
+// that go through an early-commit cross-site navigation (triggered here by
+// navigating from a crashed RFH).
+IN_PROC_BROWSER_TEST_F(FrameNodeImplIsActiveBrowserTest,
+                       IsActiveSpeculativeFrame_EarlyCommit) {
+  const GURL kUrl1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  // Initial navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl1));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* initial_rfh = web_contents->GetPrimaryMainFrame();
+  base::WeakPtr<FrameNode> initial_frame_ptr =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(initial_rfh);
+  ASSERT_TRUE(initial_frame_ptr);
+  EXPECT_TRUE(initial_frame_ptr->IsActive());
+
+  // Crash the current renderer process to trigger an early-commit path on the
+  // next navigation.
+  content::RenderProcessHost* process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(process);
+  content::RenderProcessHostWatcher process_exit_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(content::RESULT_CODE_KILLED);
+  process_exit_observer.Wait();
+
+  // Navigate to a different site. Because the previous process was crashed,
+  // this will trigger an early-commit of the speculative RenderFrameHost.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
+
+  // Ask content for the new primary main frame, and independently assert its
+  // states.
+  content::RenderFrameHost* new_rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_NE(initial_rfh, new_rfh);
+
+  base::WeakPtr<FrameNode> new_frame_ptr =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(new_rfh);
+  ASSERT_TRUE(new_frame_ptr);
+
+  EXPECT_NE(initial_frame_ptr.get(), new_frame_ptr.get());
+  EXPECT_TRUE(new_frame_ptr->IsActive());
+  EXPECT_TRUE(new_frame_ptr->IsCurrent());
 }
 
 }  // namespace performance_manager
