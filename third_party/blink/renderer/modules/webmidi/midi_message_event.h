@@ -59,7 +59,7 @@ class MIDIMessageEvent final : public Event {
   MIDIMessageEvent(const AtomicString& type,
                    const MIDIMessageEventInit* initializer);
 
-  NotShared<DOMUint8Array> data() { return data_; }
+  NotShared<DOMUint8Array> data() const { return data_; }
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kMIDIMessageEvent;

@@ -50,7 +50,7 @@ using midi::mojom::PortState;
 
 // Since "open" status is separately managed per MIDIAccess instance, we do not
 // expose service level PortState directly.
-PortState ToDeviceState(PortState state) {
+constexpr PortState ToDeviceState(PortState state) {
   if (state == PortState::OPENED)
     return PortState::CONNECTED;
   return state;

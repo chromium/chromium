@@ -157,13 +157,13 @@ class MessageValidator {
   }
 
  private:
-  bool IsEndOfData() { return offset_ >= data_.size(); }
-  bool IsSysex() { return data_[offset_] == 0xf0; }
-  bool IsSystemMessage() { return data_[offset_] >= 0xf0; }
-  bool IsEndOfSysex() { return data_[offset_] == 0xf7; }
-  bool IsRealTimeMessage() { return data_[offset_] >= 0xf8; }
-  bool IsStatusByte() { return data_[offset_] & 0x80; }
-  bool IsReservedStatusByte() {
+  bool IsEndOfData() const { return offset_ >= data_.size(); }
+  bool IsSysex() const { return data_[offset_] == 0xf0; }
+  bool IsSystemMessage() const { return data_[offset_] >= 0xf0; }
+  bool IsEndOfSysex() const { return data_[offset_] == 0xf7; }
+  bool IsRealTimeMessage() const { return data_[offset_] >= 0xf8; }
+  bool IsStatusByte() const { return data_[offset_] & 0x80; }
+  bool IsReservedStatusByte() const {
     return data_[offset_] == 0xf4 || data_[offset_] == 0xf5 ||
            data_[offset_] == 0xf9 || data_[offset_] == 0xfd;
   }
@@ -200,9 +200,9 @@ class MessageValidator {
     DCHECK(!IsReservedStatusByte());
     DCHECK(!IsRealTimeMessage());
     DCHECK(!IsEndOfSysex());
-    static constexpr std::array<int, 7> kChannelMessageLength = {
+    static constexpr std::array<size_t, 7> kChannelMessageLength = {
         3, 3, 3, 3, 2, 2, 3};  // for 0x8*, 0x9*, ..., 0xe*
-    static constexpr std::array<int, 7> kSystemMessageLength = {
+    static constexpr std::array<size_t, 7> kSystemMessageLength = {
         2, 3, 2, 0, 0, 1, 0};  // for 0xf1, 0xf2, ..., 0xf7
     size_t length = IsSystemMessage()
                         ? kSystemMessageLength[data_[offset_] - 0xf1]
@@ -226,7 +226,7 @@ class MessageValidator {
     return false;
   }
 
-  String GetPositionString() {
+  String GetPositionString() const {
     return StrCat({"at index ", String::Number(offset_), " (",
                    String::Number(static_cast<uint16_t>(data_[offset_])),
                    ")."});

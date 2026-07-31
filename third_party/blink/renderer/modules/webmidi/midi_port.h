@@ -97,7 +97,7 @@ class MIDIPort : public EventTarget,
            midi::mojom::PortState);
 
   void open();
-  bool IsOpening() { return running_open_count_; }
+  bool IsOpening() const { return running_open_count_; }
   MIDIAccess* midiAccess() const { return access_.Get(); }
 
  private:
